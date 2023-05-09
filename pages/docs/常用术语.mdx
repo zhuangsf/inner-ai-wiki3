@@ -1,0 +1,178 @@
+# Android常用术语
+
+IDE(Integrated Development Environment) : 集成开发环境
+一类辅助开发计算机程序的应用软件，一般包括代码编辑器、编译器、调试器和图形用户界面工具。
+
+APK(AndroidPackage) : Android开发包
+Android操作系统使用的一种应用程序包文件格式，用于分发和安装移动应用及中间件。APK文件其实是zip格式，但后缀名被修改为apk，通过UnZip解压后，可以看到Dex文件
+
+SDK (Software Development Kit) : 软件开发工具包
+一般都是一些被软件工程师用于为特定的软件包、软件架构、硬件平台、操作系统等建立应用软件的开发工具的集合。通俗点是指由第三方服务商提供的实现软件产品某项功能的工具包。
+
+API (Application Programming Interface) : 应用程序编程接口
+是一些预先定义的函数，目的是提供应用程序与开发人员基于某软件或硬件得以访问一组例程的能力，而又无需访问源码，或理解内部工作机制的细节。良好的接口设计可以降低系统各部分的相互依赖。
+
+JNI (Java Native Interface) Java本地接口
+可在 Java代码 里调用 C、C++等语言的代码 或 C、C++代码调用 Java 代码，以使程序拥有更强大的功能
+
+NDK（Native Development Kit） 本地开发工具包
+快速开发C、 C++的动态库，并自动将so和应用一起打包成 APK
+
+JIT（just in time） 即时编译技术
+JVM读入.class文件解释后，将其发给JIT编译器。JIT编译器将字节码编译成本机机器代码。 使用该技术，能够加速java程序的执行速度。
+
+JDK、JRE和JVM
+JDK(Java Development Kit) Java 语言的软件开发工具包
+JDK是整个Java的核心，包括了Java运行环境JRE、Java编译运行工具。
+JRE (Java Runtime Environment) Java运行环境
+包括了JVM和JVM所需的Java系统类库
+JVM(Java Virtual Machine) Java虚拟机
+它是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。
+
+ADB（ Android Debug Bridge ）Android调试桥
+Android SDK自带的一个基于命令行的调试程序。
+
+AIDL (Android Interface Definition Language) Android接口定义语言
+Android系统中的进程之间不能共享内存。Android就用AIDL来公开服务的接口，解决跨进程访问。
+
+HIDL
+
+Dalvik
+Dalvik虚拟机是基于apache的java虚拟机，并被改进以适应低内存，低处理器速度的移动设备环境。Dalvik虚拟机依赖于Linux内核，实现进程隔离与线程调试管理，安全和异常管理，垃圾回收等重要功能。
+
+ART (Android Runtime)
+在ART 环境中，应用在第一次安装的时候，字节码就会预先编译成机器码，使其成为真正的本地应用。这个过程叫做预编译（AOT,Ahead-Of-Time）。这样的话，应用的启动(首次)和执行都会变得更加快速。
+
+AAPT (Android Asset Packaging Tool) Android 打包工具
+开发工具生成Apk时会自动使用aapt将代码和资源文件打包在其中。
+
+DDMS (Dalvik Debug Monitor ServiceDalvik) 调试监视服务
+SDK自带的一个可视的调试工具。它提供了屏幕捕捉、日志存储和进程检测能力。
+
+ADT(Android Developer ToolKit)
+ADT是Eclipse的一个插件，它提供了很多android sdk 工具内的命令行转化为图形用户界面操作。（Android Studio是Android官方的IDE）
+
+Dex (Dalvik Executable)
+Android程序被编译成.dex文件, 然后再经过aapt打包进设备上的一个.apk文件。
+
+AVD（Android Virtual Device） Android运行的模拟器
+建立的Android要运行，必须创建AVD，每个AVD上都可以配置很多的运行项目。
+
+ANR (Application Not Responding)
+在Android 中，如果你的应用程序有一段时间没有响应，系统会向用户显示一个应用程序无响应对话框。
+
+CRUD (Create、Retrieve 、Update、Delete) 增查改删
+指在做计算处理时的增加(Create)、读取查询(Retrieve)、更新(Update)和删除(Delete)几个单词的首字母简写。主要被用在描述软件系统中DataBase或者持久层的基本操作功能。
+
+Javac
+Javac的任务就是将java源码编译成Java字节码。Javac是位于JRE->bin目录下的编译工具，它就是一个普通的.exe的文件。
+
+
+
+# Cemera中的基本概念及专业词汇
+DPHY 通路
+camera mipi数据通路几通道（LANE）
+5M及以下：2通道
+8M及以上：4通道
+
+BPS
+像素时钟速率，摄像头模组的最大bps=芯片支持最大的bsp/1.2
+如：SC9863最大支持1.6Gb，那么这个平台摄像头模组最大建议                                          只能用到1.6/1.2=1.33Gb，对应mipi时钟为1.33/2=667M
+
+CSI
+图像数据控制，解析合并mipi数据
+
+ISP
+主要功能:RAW图-à标准BAYER图
+
+DCAM:代码路径：bsp\modules\common\camera
+                性能由芯片平台决定，如UMS512(T616)
+
+Raw图数据
+有灰度构成的一组原始数据图。通常sensor只要能出raw图就说明摄像头模组打        样符合主板设计。
+
+标准bayer图
+两个绿色块一个红色块一个蓝色块
+
+Yuv数据
+一般用于算法计算，人像计算，预览显示
+
+Jpg数据
+图像数据，最终成像
+
+HDR
+高动态范围图像，A11以前拍2张，A12后算法拍3张，通过算法进行 2合1或3合1计算生成一张。
+
+PDAF 相位对焦，通过模拟人眼左右眼睛视觉差的一种对焦方式
+优点对焦速度快：
+要求        
+1、平台算法支持
+2、带有PDAF信息的sensor模组            
+3、模组厂将相位数据及相位对应的步进数据写在EEPROM上
+4、软件上需要针对芯片上的PD数据进行驱动调试，将sensor上的相位信息导通到软件算法中。
+
+反差式对焦
+在具有伸缩功能的马达，通过按固定步进从最远到最近移动镜头，并通过计算每一帧的图片的清晰度，来确定焦点位置。
+
+4IN1模组
+三星/索尼/OV 一些品牌IC独有的设计，4合1概念。如：常规是5M出标准bayer图，出20M的tetrapixel图。
+模组一般支持除了常规bayer出图方式外，还支持4IN1类型的出图方式。需要IC厂商提供特殊的反马赛克解析方法来生成标准的bayer图。
+正常BAYER出图（BINNING SIZE），TETRAPIXEL方式出图（FULLSIZE）
+
+3A算法：AE/AWB/AF
+        自动曝光、自动白平衡、自动对焦
+
+Tuning参数主要功能：
+为算法库提供输入参数，用于优化camera出图效果。
+        主要涉及：AE,AWB,AF,NR
+
+OTP
+模组厂写在外挂EEPROM上的一组数据，用于摄像头算法使用
+          最常用的写：白平衡（awb）、暗角（shading）这些数据
+
+主摄/前摄/微距/广角/景深（副摄）/长焦摄像头
+按功能类型划分的摄像头类型，都是软件意义上的，即：软件有功能菜单能激活对应的摄像头，具体的每种类型的摄像头应用将依赖算法库支持。
+注意：展讯平台目前的双摄算法是要同时使用符合相应角度的一组主摄+副摄
+
+实际模组对于各种类型摄像头的规格建议要求：
+前摄：DOF(15cm~无穷远) 
+          FOV（78°~80°）
+后摄：AF(15cm~无穷远)
+      FOV(85°~100°)
+微距：2-4cm，10cm
+广角：FOV(>120°)
+景深（副摄）：FOV大于主摄
+长焦：光学变焦
+参考：软件开发 /2-培训文档/新员工培训/2022年厦门Android驱动培训/Camera 基础知识分享-陈群贤.docx
+camx
+在看高通的文档的时候会发现很多缩略语，更清晰的理解它们会使我们阅读文档的时候更容易理解，主要针对高通camx 驱动与效果的一些整理，后续慢慢积累更新：
+缩写        全称
+CHI        Camera Hardware Interface 摄像头硬件接口
+IFE        Image Front End  图像前端
+IPE        Image processing engine 图像处理引擎
+BPS        Bayer processing segment Bayer处理阶段
+TFE        Thin Front End 轻前端
+OPE        Offline Processing Engine 离线处理引擎
+UMD        User Mode Driver 用户模式驱动程序
+KMD        Kernal Mode Driver 内核模式驱动程序
+RDI        Raw Dump Interface 原始转储接口
+RTB        Real Time Bokeh 实时框
+MFNR        Multi Frame Noise Reduction 多帧降噪
+MCTF        Motion Compensation Temporal Filtering 运动补偿时域滤波
+QCFA        Quad (Bayer Coding) Color Filter Arrangement/Array 四合一
+ASD        Auto Scene Detection 自动场景检测
+AFD        Auto Flicker Detection 自动闪烁检测
+ABF        Auto Bayer Filter 自动Bayer 过滤
+DRG   Dynamic Range Control 动态范围控制
+ROI   Region of Interest  感兴趣的区域
+CCM   Color Correction Matrix 色彩校正矩阵
+CC    Color Conversion 色彩转换
+SNR   Signal-to-Noise Ratio 信噪比 
+MCC   Macbeth Color Checker Macbeth色卡
+AWB   Auto White Balance 自动白平衡
+CCT   Correlated Color Temperature 关联色温
+AEC   Automatic Exposure Control 自动曝光控制
+LA    Luna Adaption 亮度调整
+CE    Chroma Enhancement 色度增强 
+AE    Auto Exposure 自动曝光
+STD   Standard Deviation  标准差
