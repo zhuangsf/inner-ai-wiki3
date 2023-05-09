@@ -49,7 +49,6 @@ export default function Home() {
               dark:text-slate-900
               dark:border-slate-900
                text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/MagickPen.png'}  width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="" />
                 wiki(内网)
               </Link>
             </li>
@@ -57,7 +56,6 @@ export default function Home() {
               <Link href="http://27.154.56.242:9000/" className='dark:bg-white/30
               dark:border-slate-900
               dark:text-slate-900 text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/TeachAnything.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="" />
                 赛凡云盘
               </Link>
             </li>
@@ -65,8 +63,14 @@ export default function Home() {
               <Link href="https://www.baidu.com" className='dark:bg-white/30
               dark:border-slate-900
               dark:text-slate-900 text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/BetterPrompt.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="" />
                 百度
+              </Link>
+            </li>
+            <li>
+              <Link href="https://www.google.com" className='dark:bg-white/30
+              dark:border-slate-900
+              dark:text-slate-900 text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
+                谷歌
               </Link>
             </li>
           </ul>
