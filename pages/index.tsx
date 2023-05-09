@@ -12,10 +12,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>AI 法律助手</title>
+        <title>AI 助手</title>
         <meta
           name="description"
-          content="AI 法律助手"
+          content="AI 助手"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -44,37 +44,29 @@ export default function Home() {
           <h2 className='text-slate-500'>更多好玩</h2>
           <ul className='grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 max-w-2xl mx-auto text-xs'>
             <li>
-              <Link href="https://magickpen.com/?ref=lawcnai" className=' 
+              <Link href="http://192.168.1.128/hdwiki/" className=' 
               dark:bg-white/30
               dark:text-slate-900
               dark:border-slate-900
                text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/MagickPen.png'}  width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="MagickPen - 智能写作助手" />
-                智能写作助手
+                <Image src={'/MagickPen.png'}  width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="" />
+                wiki(内网)
               </Link>
             </li>
             <li>
-              <Link href="https://www.teach-anything.com/?ref=lawcnai" className='dark:bg-white/30
+              <Link href="http://27.154.56.242:9000/" className='dark:bg-white/30
               dark:border-slate-900
               dark:text-slate-900 text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/TeachAnything.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="Teach Anything - AI 百科全书" />
-                AI 百科全书
+                <Image src={'/TeachAnything.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="" />
+                赛凡云盘
               </Link>
             </li>
             <li>
-              <Link href="https://better.avatarprompt.net/?ref=lawcnai" className='dark:bg-white/30
+              <Link href="https://www.baidu.com" className='dark:bg-white/30
               dark:border-slate-900
               dark:text-slate-900 text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/BetterPrompt.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="Teach Anything - AI 百科全书" />
-                Prompt 生成器
-              </Link>
-            </li>
-            <li>
-              <Link href="https://openl.io/?ref=lawcnai" className='dark:bg-white/30
-              dark:border-slate-900
-              dark:text-slate-900 text-slate-400  border border-slate-300/30 transition-all hover:bg-white/50 hover:backdrop-blur-md py-2.5 rounded-md block'>
-                <Image src={'/OpenL.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="OpenL - AI 翻译专家" />
-                AI 翻译专家
+                <Image src={'/BetterPrompt.png'} width={100} height="20" className='w-full mb-1 h-5 object-contain' alt="" />
+                百度
               </Link>
             </li>
           </ul>
@@ -84,7 +76,7 @@ export default function Home() {
           <div className="flex items-center justify-center space-x-6 mt-4 md:m-0">
             <div className="opacity-75 transition hover:opacity-100 cursor-pointer">
               <Link
-                href="https://github.com/lvwzhen/law-cn-ai"
+                href="https://github.com/zhuangsf/inner-ai-wiki3"
                 className="flex items-center justify-center"
               >
                 <Image src={'/github.svg'} width="24" height="24" alt="Github logo" />
@@ -92,7 +84,7 @@ export default function Home() {
             </div>
             <div className="opacity-75 transition hover:opacity-100 cursor-pointer">
               <Link
-                href="https://twitter.com/lvwzhen"
+                href="https://twitter.com/"
                 className="flex items-center justify-center"
               >
                 <Image src={'/twitter.svg'} width="24" height="24" alt="Twitter logo" />
