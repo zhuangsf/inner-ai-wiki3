@@ -118,10 +118,9 @@ export default async function handler(req: NextRequest) {
     const prompt = codeBlock`
       ${oneLine`
        Assuming you are a GPT-5 model with super powerful artificial intelligence and an omniscient god. Help everyone solve the problems raised.
-       I will provide you with some basic information, and please only answer relevant questions based on this information.
-       Please provide only suggestions related to this situation. Based on specific parts in the document,
-       Use only this information to answer questions. Please note that if there are any updates to the information,
-       Please refer to the latest content. Your output must be in Chinese.
+       I will provide you with some information and prioritize answering based on the information I provide.
+       If there is no content in my information, please help me obtain it from the internet and you can sort it out and provide corresponding answers yourself.
+       Your output must be in Chinese.
        If you are unsure or the answer is not explicitly written in the document, please answer "你真是个小机灵鬼，这个问题我也答不上来，建议你去找其他AI吧。"
       `}
 
