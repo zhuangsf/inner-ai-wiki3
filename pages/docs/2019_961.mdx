@@ -1,0 +1,1378 @@
+# SPCSS00637183|[SC9863A][Waterworld][WW851][18部] 发送视频，彩信收到的花屏|步骤：
+
+现象：使用google messages
+
+测试机1，camera录制视频3秒，和在messages拍摄视频5秒。彩信发送到测试机2
+测试机1无论是message还是相册查看视频都是正常的，
+测试机2无论是message还是保存查看相册都是花屏
+camera录制发送的3秒视频是花屏，messages拍摄发送的视频是黑屏，见附件1 2 3三种对比图
+分析：
+附件为对比参考图，及发送样机的Ylog，和接受彩信样机的Ylog|
+==== State: Closed by: cmadmin on 19 December 2019 00:34:35 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 November 2019 15:58:12 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+发送视频，彩信收到的花屏，gms原生问题
+Solution:
+更新messaging后，问题解决
+
+==== State: Opened by: waterworld on 27 November 2019 15:40:28 ====
+
+Dear sprd，
+更新google message到最新，是正常的
+当下我使用的是10月份的GMS包，在MTK平台上是OK，9863A平台的其他项目也是有此问题
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 10:17:19 ====
+
+  == Lucas.Li@unisoc.com On 2019-11-27T02:15:21Z (json) ==
+你好：
+     根据log和视频，彩信发送的cap包和接收的cap包大小一致，且在视频发送前视频已花屏，现在怀疑是google的压缩视频过程出现了问题。还请帮忙验证：
+1.先把google message 升级到最新，看能否复现问题。
+2.若不能，用其他平台对比机用最新版本测试一下。
+3.最新版本能复现，只有回退版本，我们提交google issue。
+谢谢。
+(2019-11-27T01:34:28Z)
+
+==== State: Opened by: cmadmin on 27 November 2019 09:36:41 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637150|[SC9863A][Waterworld][FS176CF8][XM]测试机打开深色主题背景Dark theme时,Note应用没有对深色主题背景做适配,还请对Note应用做深色主题背景适配修改|现象：
+      测试机打开深色主题背景Dark theme时,Note应用没有对深色主题背景做适配,
+预期：
+      还请对Note应用做深色主题背景适配修改|
+==== State: Closed by: waterworld on 29 November 2019 14:28:39 ====
+
+合入验证OK，可关闭
+谢谢！
+
+==== State: Resolved by: cmadmin on 29 November 2019 10:48:26 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:Note 没有适配darktheme
+
+[2.Resolution        ]:需要按照Google文档适配note darktheme
+
+
+
+==== State: Opened by: cmadmin on 29 November 2019 10:41:27 ====
+
+  == Guangdong.Wu@unisoc.com On 20191129T02:38:38 (xml) ==
+尊敬的客户您好,
+
+
+  Note 适配已经完成，主要说下具体的内容：
+
+1.修改：
+  修改的文件：     
+
+	modified:   AndroidManifest.xml
+        modified:   src/main/java/com/sprd/sprdnote/SecurityActivity.java
+        modified:   src/main/res/layout/folder_list.xml
+        modified:   src/main/res/layout/preference_layout.xml
+        modified:   src/main/res/layout/security.xml
+        modified:   src/main/res/values/colors.xml
+        modified:   src/main/res/values/styles.xml
+
+  添加的文件：
+        src/main/res/drawable-night/
+       src/main/res/values-night/
+
+2.原理：
+  可以参照google 文档适配，地址如下：
+ https://developer.android.com/guide/topics/ui/look-and-feel/darktheme
+
+3.本地验证：
+
+  A:验证note 个界面的颜色可以切换为DarkTheme--pass
+  B：切换正常主题，Note界面显示正常--pass
+
+
+以上请知，有问题及时联系，感谢
+
+==== State: Opened by: cmadmin on 27 November 2019 10:24:39 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637148|[SC9863A][Waterworld][FS176CF8][XM]测试机打开深色主题背景Dark theme时,Calculator应用没有对深色主题背景做适配,还请对Calculator应用做深色主题背景适配修改|现象：
+      测试机打开深色主题背景Dark theme时,Calculator应用没有对深色主题背景做适配,
+预期：
+      还请对Calculator应用做深色主题背景适配修改|
+==== State: Closed by: waterworld on 27 November 2019 10:50:16 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 27 November 2019 10:39:11 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户评估使用google计算器，已经适配深色主题
+Solution:
+客户评估使用google计算器，已经适配深色主题
+
+==== State: Opened by: waterworld on 27 November 2019 09:55:48 ====
+
+您好，我这边沟通了下，就不使用平台计算器，改用谷歌的计算器
+关闭
+
+==== State: Opened by: cmadmin on 26 November 2019 18:31:16 ====
+
+  == Lei.Dong@unisoc.com On 2019-11-26T10:28:23Z (json) ==
+客户您好，
+
+如沟通9863平台使用的google计算器，9863平台的计算器不在维护，请知。
+
+==== State: Opened by: cmadmin on 26 November 2019 17:17:33 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637141|[SC9820E][Waterworld][A356]9820E是否支持双ESIM卡的方案，是否有调试过，我们现在A371新项目是双ESIM卡，
+有没有特殊的要求|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 27 December 2019 00:40:50 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 05 December 2019 11:29:28 ====
+
+  == Yifan.Bai@unisoc.com On 2019-12-05T03:28:15Z (json) ==
+客户您好
+
+如电话沟通，目前还不明确树米的软件设计，无法评估，该CQ先关闭处理，感谢理解
+
+后续树米回复软件设计后可以再提新的CQ，或者直接和我电话沟通，谢谢
+
+Analysis and Solution:
+RootCause:
+客户咨询双卡ESIM软件是否支持
+Solution:
+目前无软件相关资料介绍，和客户沟通，未来电话沟通
+
+==== State: Opened by: waterworld on 04 December 2019 15:00:07 ====
+
+HI 白工:
+   我约下供应商来我公司，约好后提前通知你什么时候电话会议
+
+==== State: NeedInfo by: cmadmin on 04 December 2019 09:42:30 ====
+
+  == Yifan.Bai@unisoc.com On 2019-12-04T01:41:04Z (json) ==
+客户您好
+
+从您上传的需求说明书上看不出该卡是否是遵循GSMA ESIM协议的ESIM卡。请您和提供该卡的“北京树米”沟通一下该卡如何实现写卡，是按照GSMA的ESIM RSP协议么？ 调用的系统接口是Android Telephony API还是OMAPI？
+
+如果是Android Telephony API，4.4的安卓版本能否支持？
+或者最好我们可以拉一个电话会议直接沟通一下
+
+
+谢谢
+白一帆
+Tel： 15652374074
+(2019-12-03T11:35:07Z)
+
+==== State: Opened by: waterworld on 03 December 2019 14:29:23 ====
+
+HI:
+    怎么样了，是否要实现，现在已经在画板了
+
+==== State: Opened by: waterworld on 27 November 2019 18:18:25 ====
+
+Hi
+    附件ESIM规格书已上传
+
+==== State: Opened by: cmadmin on 26 November 2019 17:15:01 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637139|[SC9820E][Waterworld][FS357][6部]进入USSD界面，多按几次上下键后再按无法进入输入选择|步骤：输入指令进入USSD界面，多按几次上下键
+
+现象：上下键无法进入输入选择
+
+分析：附件是slog和视频|
+==== State: Closed by: waterworld on 06 December 2019 10:19:40 ====
+
+已跟客户沟通，同意关闭
+
+==== State: NeedInfo by: cmadmin on 02 December 2019 17:34:16 ====
+
+  == Ning.Zhang2@unisoc.com On 2019-12-02T09:28:02Z (json) ==
+Hi, customer:
+
+关于USSD界面不退出的问题，USSD界面对应的窗口是TYPE_SYSTEM_DIALOG类型，优先级是非常高的，意味着用户必须与之交互，按power键不退出是正常的
+
+请确认，谢谢
+(2019-12-02T05:52:45Z)
+
+==== State: Opened by: waterworld on 02 December 2019 13:46:56 ====
+
+Hi 你好！
+     现在按上下的键的问题解决了，但是在USSD界面直接按power键USSD界面不会退出，
+附件是USSD界面不退出的视频
+
+==== State: NeedInfo by: cmadmin on 29 November 2019 18:05:51 ====
+
+  == Ning.Zhang2@unisoc.com On 2019-11-29T10:04:09Z (json) ==
+Hi, customer:
+
+请在如下文件：
+packages/services/Telephony/res/layout/dialog_ussd_response.xml
+TextView 增加 android:focusable="true"
+如下：
+
+        <TextView
+            android:id="@+id/text_view"
+            style="@android:style/TextAppearance.Material.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="15dp"
++           android:focusable="true"
+            android:paddingRight="15dp"
+            android:autoLink="phone" />
+
+然后反馈测试结果，谢谢
+(2019-11-29T08:42:22Z)
+
+==== State: Opened by: waterworld on 29 November 2019 16:37:49 ====
+
+Hi Ning.Zhang：
+    附件是新的视频和log
+
+==== State: NeedInfo by: cmadmin on 28 November 2019 18:30:58 ====
+
+  == Ning.Zhang2@unisoc.com On 20191128T10:28:43 (xml) ==
+Hi, customer:
+
+请在如下路径取 SPCSS00637139_samplecode：
+\\shnas02\CustomerData\产品工程管理部\ZYT\FTPDATA\SPCSS00637139\PatchesForCUS\
+
+将其中的diff文件中的差异部分合入下面的相应文件：
+packages/services/Telephony/res/layout/dialog_ussd_response.xml
+packages/services/Telephony/src/com/android/phone/PhoneUtils.java
+
+然后编译debug版本去测试验证，
+然后反馈测试结果，谢谢
+(20191128T09:43:20)
+
+==== State: Opened by: cmadmin on 28 November 2019 17:19:27 ====
+
+  == Jinglong.Yuan@unisoc.com On 2019-11-28T09:15:50Z (json) ==
+Dear孟工：
+可通过hierarchy Viewer或 monitor工具查看当前控件是在那部分定义
+多谢！
+
+==== State: Opened by: cmadmin on 28 November 2019 13:59:56 ====
+
+  == Ning.Zhang2@unisoc.com On 2019-11-28T05:57:46Z (json) ==
+按上下导航键输入焦点不发生变化
+请view帮忙分析，谢谢
+
+==== State: Opened by: waterworld on 28 November 2019 13:42:54 ====
+
+我这边验证短信输入界面、连接wifi输入密码界面、蓝牙重命名输入界面收是正常的，没有复现问题
+
+==== State: Opened by: cmadmin on 27 November 2019 14:06:10 ====
+
+  == Ning.Zhang2@unisoc.com On 20191127T06:04:22 (xml) ==
+处理中
+|
+# SPCSS00637136|[SC9863A][Waterworld][FS168CF8][XM]FM中耳机跟喇叭相互切换无效|您好，打开FM，插入耳机后点击右上方喇叭图标对FM进行耳机跟喇叭相互切换模式，
+在切换过程中，会出现耳机或者喇叭没声音。
+操作视频及log已上传到附件，请帮忙看下，十分感谢~|
+==== State: Closed by: cmadmin on 24 December 2019 00:42:49 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 02 December 2019 15:38:59 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+fm mute有误
+Solution:
+修改fm_mute条件
+
+==== State: Opened by: waterworld on 02 December 2019 15:01:52 ====
+
+您好，方案有效，可关闭此cq，十分感谢~
+
+==== State: Opened by: cmadmin on 02 December 2019 10:33:21 ====
+
+  == Zoey.Zhang@unisoc.com On 2019-12-02T02:29:47Z (json) ==
+尊敬的客户:
+   您好! patch已经放在\\shnas02\CustomerData\产品工程管理部\ZYT\FTPDATA\SPCSS00637136\PatchesForCUS\fm.patch下,请帮忙验证下是否可以解决问题,谢谢~
+
+==== State: Opened by: waterworld on 29 November 2019 11:32:06 ====
+
+您好，有分析结果吗？
+
+==== State: Opened by: cmadmin on 27 November 2019 11:15:39 ====
+
+  == Sandy.Wan@unisoc.com On 2019-11-27T03:08:49Z (json) ==
+据和客户沟通，FM播放时，切换扬声器和耳机，需要调节音量，然后很容易复现该问题，我这边使用MOCORDROIDQ_Trunk_W19.46.2复测，调节音量，耳机切换到扬声器时，扬声器没有声音，其实此时音量足够大，然后再调一下音量按键，则会有声音。
+
+以下是客户的log，里面有音量调节FmService: setVolume FM_Volume，有audio_hw_primary: set_fm_mute_noramp, mute:1 
+ ，转BSP_Audio模块看看，谢谢～
+
+\ylog_20191127\ylog\ap\000-1126_232130--1126_232216\main log
+M02B282  11-26 23:21:30.321   428  8222 I audio_hw_primary: set_fm_mute_noramp, mute:0
+M02B287  11-26 23:21:30.324  8158  8158 D FmService: setVolume FM_Volume=12
+M02B3A2  11-26 23:21:32.786   428   428 I audio_hw_primary: set_fm_mute_noramp, mute:0
+M02B3AA  11-26 23:21:32.790  8158  8158 D FmService: setVolume FM_Volume=13
+M02B3F4  11-26 23:21:33.119   428  8222 I audio_hw_primary: set_fm_mute_noramp, mute:0
+M02B3FE  11-26 23:21:33.123  8158  8158 D FmService: setVolume FM_Volume=14
+M02B44C  11-26 23:21:33.448   428  8222 I audio_hw_primary: set_fm_mute_noramp, mute:0
+M02B451  11-26 23:21:33.450  8158  8158 D FmService: setVolume FM_Volume=15
+M02B48E  11-26 23:21:33.768   428  8222 I audio_hw_primary: set_fm_mute_noramp, mute:0
+M02B493  11-26 23:21:33.772  8158  8158 D FmService: setVolume FM_Volume=16
+M02B4EF  11-26 23:21:35.733  8158  8158 D FmService: fmapp setMute:true
+M02B4FA  11-26 23:21:35.776   428  8222 I audio_hw_primary: out_codec_mute_check out_codec_mute_check master_mute
+M02B500  11-26 23:21:35.787   428  8222 I audio_hw_primary: set_fm_mute_noramp, mute:1
+M02B503  11-26 23:21:35.788   428   780 I audio_hw_primary: cache_mute=0 ,mastermute=1
+
+==== State: Opened by: waterworld on 27 November 2019 10:37:50 ====
+
+您好，新抓取的ylog见附件，手机没联网，在11点21时，发生过两次
+
+==== State: Opened by: cmadmin on 27 November 2019 10:12:41 ====
+
+  == Sandy.Wan@unisoc.com On 2019-11-27T02:09:34Z (json) ==
+如电话沟通，贵司注明的2019.11.25,16：30分-16：31分左右出现FM耳机跟喇叭切换过程中，出现无声的现象 这个时间段的log没有，请先删除之前的ylog，然后复现问题，告诉问题发生的时间点，导出ylog，谢谢～
+|
+# SPCSS00637117|[SC9820E][Waterworld][FS357][6部]播放音乐和视频连接蓝牙耳机前提下，再插入有线耳机，声音需要默认从蓝牙耳机出来，怎么修改？|1.在播放音乐和视频的时候，并且连接了蓝牙耳机；
+2.插入有线耳机声音就转到了有线耳机；
+3.声音直接就从有线耳机出来
+
+现在需要在插入有线耳机的时候，声音还是从蓝牙耳机出来，只能手动切换才从有线耳机出，这个怎么修改？|
+==== State: Closed by: waterworld on 06 December 2019 19:01:02 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 29 November 2019 16:52:14 ====
+
+  == Qiang.Lu@unisoc.com On 2019-11-29T08:49:53Z (json) ==
+你好：
+如电话沟通此问题先关闭
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户特殊需求
+Solution:
+提供方案给客户，在连接有线耳机是不断开蓝牙
+
+==== State: Opened by: cmadmin on 29 November 2019 16:49:33 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 10:33:53 ====
+
+  == Qiang.Lu@unisoc.com On 2019-11-27T02:31:08Z (json) ==
+你好：
+附件samplecode.rar请合入验证
+(2019-11-27T02:14:21Z)
+
+==== State: Opened by: cmadmin on 27 November 2019 10:17:13 ====
+
+  == Sandy.Wan@unisoc.com On 2019-11-27T02:14:21Z (json) ==
+听音乐和播放视频时，先连接蓝牙耳机，再插入有线耳机，客户要求此时声音仍然从蓝牙耳机出来，转fw_audio帮看看。
+|
+# SPCSS00637102|[SC9820E][Waterworld][A356]9820E，充电从百分之三十开始充电，硬件已充满，对了充电电流没了，
+但电量还是显示在百分之七十几一下不变，拔掉电池重开机电池电量检测正常满电
+
+这个是软件提的CQ:SPCSS00635854里面有LOG|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 20 December 2019 00:37:34 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 November 2019 17:43:40 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+FGU电流读取准确
+Solution:
+FGU电流读取准确
+
+==== State: Opened by: cmadmin on 28 November 2019 17:43:38 ====
+
+  == Jing_j.Lei@unisoc.com On 2019-11-28T09:40:09Z (json) ==
+FGU电流读取准确，软件进一步分析。
+
+==== State: Opened by: waterworld on 28 November 2019 14:51:32 ====
+
+HI:
+  雷工，些问题硬件先关闭，软件问题，我们直接用贵司方法把0.02R电阻上灌电流软件读出来是准确的，
+
+==== State: Opened by: cmadmin on 27 November 2019 09:20:59 ====
+
+  == Jing_j.Lei@unisoc.com On 20191127T01:19:39 (xml) ==
+原理图、PCB还有 battery.dtsi文件上传一下。
+
+==== State: Opened by: cmadmin on 26 November 2019 16:41:27 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637096|[SC9820E][Waterworld][AC920][SL8521E]同时开启wifi和蓝牙并都连接，发现蓝牙传输数据卡顿，并连接经常断开。|Dear sprd:
+
+ 同时开启wifi和蓝牙并都连接，发现蓝牙传输数据卡顿，并连接经常断开。|
+==== State: Closed by: waterworld on 09 December 2019 19:05:59 ====
+
+Dear sprd:
+请关闭此CQ,谢谢
+
+==== State: NeedInfo by: cmadmin on 26 November 2019 18:28:51 ====
+
+  == vincent.chen@unisoc.com On 20191126T10:25:33 (xml) ==
+请内部沟通，或者咨询CPM。
+(20191126T10:10:00)
+
+==== State: Opened by: waterworld on 26 November 2019 18:06:45 ====
+
+Dear sprd:
+   现在版本为MOCOR5_SFPHONE_17F_RLS1_W18.19.git  ，Marlin2_17A_RLS1_W19.37.2_CUSTOMER.rar怎样合入进去 ？？ 直接替换WCN_Marlin2_17A_rls1_W18.28.1.rar 文件吗？？
+
+
+==== State: NeedInfo by: cmadmin on 26 November 2019 17:26:46 ====
+
+  == vincent.chen@unisoc.com On 20191126T09:23:47 (xml) ==
+patch号为PATCH00623639。
+
+如何抓取hci log，请从isupport上获取相关文档。
+
+请按照comment 1的描述提供相关信息。
+
+请知悉～
+(20191126T09:08:57)
+
+==== State: Opened by: waterworld on 26 November 2019 17:20:53 ====
+
+Dear sprd:
+  ylog 中hci log 怎样抓取，需要打开哪些开关？？
+
+==== State: Opened by: waterworld on 26 November 2019 17:08:57 ====
+
+Dear sprd:
+  请提供相关patch号码，已经合入PATCH00597327，谢谢
+
+==== State: NeedInfo by: cmadmin on 26 November 2019 16:22:25 ====
+
+  == vincent.chen@unisoc.com On 2019-11-26T08:18:22Z (json) ==
+Dear Customer，
+
+请问你们是否有合入我们推送的CP2 patch（版本为W19.37.2），没有的话，请合入后复测。
+
+如果还有问题的话，请提供完整的ylog（包含cp2 log和hci log）。
+
+同时，请提供你们WCN天线的OTA测试报告。
+
+以上，请知悉～
+(2019-11-26T07:55:24Z)
+
+==== State: Submitted by: waterworld on 26 November 2019 16:16:23 ====
+
+Dear sprd:
+  log 已经上传，时间在20191126 15：50分左右开始到16:00
+|
+# SPCSS00637091|[SC9863A][Waterworld][WW855][18部]请帮忙测试电池曲线、rint、cnom、rsense-real等电池参数，谢谢！|客户软件电量百分比不准确，请帮忙测试电池曲线、rint、cnom、rsense-real等电池参数，谢谢！
+|
+==== State: Closed by: cmadmin on 24 December 2019 00:42:51 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 02 December 2019 17:18:29 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:修改电池配置文件
+
+[2.Resolution        ]:修改电池配置文件
+
+
+
+==== State: Opened by: cmadmin on 02 December 2019 16:54:18 ====
+
+  == Jing_j.Lei@unisoc.com On 20191202T08:49:39 (xml) ==
+电池参数见如下链接：
+
+\\shnas02\CustomerData\产品工程管理部\ZYT\FTPDATA\SPCSS00637091\PatchesForCUS\
+
+==== State: Opened by: cmadmin on 29 November 2019 14:12:16 ====
+
+  == Jing_j.Lei@unisoc.com On 2019-11-29T06:09:36Z (json) ==
+测试中，预计下周一完成。
+
+==== State: Opened by: cmadmin on 28 November 2019 17:39:16 ====
+
+  == Jing_j.Lei@unisoc.com On 2019-11-28T09:37:02Z (json) ==
+电池收到，已安排测试。
+
+==== State: Opened by: cmadmin on 26 November 2019 17:53:09 ====
+
+  == Jing_j.Lei@unisoc.com On 20191126T09:47:00 (xml) ==
+提供三块电池寄到如下地址：
+深圳市南山区科技园科技南五路005号英唐大厦2楼 雷晶 15818540803
+
+由于目前正在搬迁，先把电池寄过来，待新实验室搭建完成后开始测试。
+
+==== State: Opened by: cmadmin on 26 November 2019 16:41:22 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 November 2019 15:55:41 ====
+
+Dear SPRD:
+      电池容量3000mAh，充电极限电压4.4V，截止电流120mA.
+
+==== State: Submitted by: waterworld on 26 November 2019 15:55:28 ====
+
+ == Headline Changed from == 
+[SC9863A][Waterworld][WW875][18部]请帮忙测试电池曲线、rint、cnom、rsense-real等电池参数，谢谢！
+To
+[SC9863A][Waterworld][WW855][18部]请帮忙测试电池曲线、rint、cnom、rsense-real等电池参数，谢谢！
+
+|
+# SPCSS00637088|[SC9863A][Waterworld][FS179_Hisense]【6部】【海信】副摄像头无法点亮，帮忙分析，谢谢|多摄项目，现在仅配置后主摄hi1336及副摄2375H，副摄当前摄配置，目前副摄2375H读不到ID，后主摄可以读到ID，
+DTS相关配置及log如附件，帮忙分析下是否哪里还异常，感谢！|
+==== State: Closed by: waterworld on 27 November 2019 11:07:46 ====
+
+谢谢！
+
+==== State: Resolved by: cmadmin on 27 November 2019 10:41:54 ====
+
+  == Nanjun.Zhong@unisoc.com On 20191127T02:39:31 (xml) ==
+close
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+customer need bring up gc2375
+Solution:
+modify the dts config
+
+==== State: Opened by: cmadmin on 27 November 2019 10:41:50 ====
+
+  == Nanjun.Zhong@unisoc.com On 20191127T02:39:16 (xml) ==
+修改后已经点亮，但四摄配置后需要重新修改dts，此问题关闭。thanks
+
+==== State: Opened by: waterworld on 27 November 2019 10:26:27 ====
+
+钟工， dts里面修改 compatible = "sprd,sensor-sub"; 后验证OK，谢谢！！！
+
+==== State: Opened by: cmadmin on 26 November 2019 19:15:00 ====
+
+  == Nanjun.Zhong@unisoc.com On 20191126T11:12:00 (xml) ==
+Hi 郑工，请按照附件
+sp9863a-1h10.dts
+修改测试一下，并确保编译到，另外，如果是i2c地址问题，那可能要找模组厂和硬件一起测试一下。thanks
+
+==== State: Opened by: waterworld on 26 November 2019 17:17:36 ====
+
+钟工，资料都已上传到附件。 这个gc2375是副摄景深，因为现在多摄相关配置贵司暂时无法释放，所以我们是当成前摄去配置调试。
+
+==== State: Opened by: cmadmin on 26 November 2019 16:50:33 ====
+
+  == Nanjun.Zhong@unisoc.com On 20191126T08:46:22 (xml) ==
+Hi 郑工，请将原理图和dts文件上传一下。thanks
+
+==== State: Opened by: cmadmin on 26 November 2019 16:00:51 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637080|[SC6531E][Waterworld][FF257][遵义6部]关于截屏功能,现截屏时间大概花费4s左右,是否有方案能缩短时间到2s左右|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 20 December 2019 00:37:39 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 November 2019 09:24:22 ====
+
+  == Boda.Lin@unisoc.com On 2019-11-28T01:22:28Z (json) ==
+Dear Customer:
+
+Please let us know if you have any questions.
+
+Thank you.
+
+Sincerely,
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]: Customer question
+
+[2.Resolution        ]: provide the suggestion
+
+
+
+==== State: Opened by: cmadmin on 28 November 2019 09:22:01 ====
+
+  == Boda.Lin@unisoc.com On 2019-11-28T01:20:37Z (json) ==
+Dear Customer:
+
+Thank you for your feedback and we will close this issue.
+
+Thank you.
+
+Cordially,
+
+==== State: Opened by: waterworld on 27 November 2019 21:58:31 ====
+
+你好,按上诉修改方式修改后客户接受,此cq可关闭,谢谢贵司的帮助！
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 16:52:42 ====
+
+  == Boda.Lin@unisoc.com On 2019-11-27T08:50:35Z (json) ==
+Dear Customer:
+
+按照架构
+
+只能缩短longtime 的时间
+
+@mmi_theme.h
+------#define MMI_KBD_LONG_KEY_VALUE          1500
+
+改成1200
+
+烦请贵司试验一下
+
+谢谢～
+
+Please modify the value and test it.
+
+Thank you.
+
+Best wishes,
+(2019-11-27T07:13:06Z)
+
+==== State: Opened by: waterworld on 27 November 2019 15:13:05 ====
+
+从长按开始到弹出截图成功的提示时间
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 13:59:22 ====
+
+  == Boda.Lin@unisoc.com On 20191127T05:20:37 (xml) ==
+Dear Customer:
+
+感谢贵司的帮忙～
+
+请问贵司设计是
+
+long press按钮后去截图
+
+对于慢的定义是在
+
+存图慢？
+
+还是要等4秒long press去截图？
+
+谢谢～
+
+Could you explain more screen snapshot definitions?
+
+Thank you.
+
+Best regards,
+(20191126T11:34:22)
+
+==== State: Opened by: waterworld on 26 November 2019 19:31:57 ====
+
+你好,相关资料见附件
+
+==== State: NeedInfo by: cmadmin on 26 November 2019 16:33:18 ====
+
+  == Boda.Lin@unisoc.com On 2019-11-26T08:28:42Z (json) ==
+Dear Customer:
+
+请贵司提供相关修改代码
+
+并提供简单视频与相关log
+
+在麻烦贵司了
+
+谢谢～
+
+Please provide the modified source code and capturing a simple video.
+
+Thank you.
+
+Best regards,
+(2019-11-26T07:43:32Z)
+
+==== State: Opened by: cmadmin on 26 November 2019 15:47:51 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637057|[SC6531E][Waterworld][FF257]客户回复：http格式的能打开网页，https格式的不能打开网页|步骤：
+正常输入http格式开头的网址，能正常登录。正常输入https的网址不能登录
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 20 December 2019 00:37:44 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 November 2019 18:23:52 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+SSL_SUPPORT 宏设为false导致，导致无法访问https的网站
+Solution:
+把相应board下的SSL_SUPPORT 设为True
+
+==== State: Opened by: waterworld on 28 November 2019 15:45:13 ====
+
+你好：
+解决报错后 https能够正常上网。关闭问题点
+谢谢
+
+==== State: Opened by: cmadmin on 28 November 2019 13:32:55 ====
+
+  == Lei.Dong@unisoc.com On 2019-11-28T05:31:03Z (json) ==
+客户您好，
+
+从第二张编译报错看，都是SCI_TRACE方法找不到，沟通确认是使用大屏debug版本上的daps库和在正式版本小屏上编译，两边使用同一个版本再尝试一下。
+
+==== State: Opened by: waterworld on 28 November 2019 11:02:04 ====
+
+你好：
+SSL_SUPPORT = TRUE ，的报错已经图片上传
+谢谢
+
+==== State: Opened by: cmadmin on 28 November 2019 10:56:50 ====
+
+  == Lei.Dong@unisoc.com On 20191128T02:52:35 (xml) ==
+客户您好，
+
+如电话沟通，sc6531efm_32X32_160X128BAR_AB_BT_Dialer中的SSL_SUPPORT 红开关必须打开才能支持https的网站，请打开后提供编译报错的log。
+
+==== State: Opened by: waterworld on 27 November 2019 17:03:40 ====
+
+你好：
+复现的log以上传（http能上网https不能上网的log）
+复现步骤：http能上网，再以https不能上网，麻烦尽快分析，客户特别急！！！
+谢谢
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 16:25:16 ====
+
+  == Andrew.Kao@unisoc.com On 2019-11-27T08:23:03Z (json) ==
+再麻烦提供 log 分析,  谢谢!
+(2019-11-27T07:08:59Z)
+
+==== State: Opened by: waterworld on 27 November 2019 15:08:04 ====
+
+你好：
+现在的这个问题是不带蓝牙拨号的大屏lib库可以打开https网址，
+带蓝牙拨号功能换小屏的蓝牙拨号lib库(没有大屏蓝牙库)后不能打开https网址
+，稍后我会抓一版log
+谢谢
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 13:58:54 ====
+
+  == Andrew.Kao@unisoc.com On 20191127T05:36:46 (xml) ==
+你好,
+早上对比了你附件的库已经跟原本 idh 包不同, 而且没有 armlog.  还是请抓一版 log, 並用原本的 idh 包编译一版验证.  请知悉.
+(20191127T03:21:05)
+
+==== State: Opened by: waterworld on 27 November 2019 11:20:14 ====
+
+你好:
+请问这个问题分析得怎么样了，客户比较着急，能不能给个进度我好和客户沟通
+谢谢
+
+==== State: Opened by: waterworld on 27 November 2019 09:24:13 ====
+
+你好：
+问题分析得怎么样了，如有不清楚的地方打我电话，电话沟通
+谢谢
+
+==== State: Opened by: waterworld on 26 November 2019 21:12:34 ====
+
+你好:
+编译抓log的软件上未复现，但是有动过库文件。
+
+软件上现在的lib库文件是（sc6531efm_32X32_160X128BAR_AB_BT_Dialer_Sfs），
+编译抓log的lib库是（sc6531efm_32X32_320X240BAR_AB_Trace）
+
+附件已经上传，麻烦分析下是不是什么重要的库文件未对应导致的，这个比较急，请帮忙优先处理下
+谢谢
+
+==== State: NeedInfo by: cmadmin on 26 November 2019 15:12:48 ====
+
+  == Andrew.Kao@unisoc.com On 2019-11-26T07:10:59Z (json) ==
+你好,
+请提供上网 log 分析, 谢谢!
+(2019-11-26T07:06:38Z)
+
+==== State: Opened by: cmadmin on 26 November 2019 15:09:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 November 2019 15:05:45 ====
+
+你好：
+这个问题比较着急，客户今天就要结果，麻烦尽快分析下，附件现象已经上传（http和https），客户反馈，别家其他功能机是可以正常打开以两个网址开头的。
+谢谢
+|
+# SPCSS00637039|[SC6531E][Waterworld][FF257]【6部】【遵义】主板FF126 英迈项目Z18420 麻烦帮忙调试音频，谢谢。|
+1 终端客户要求去他们印度办公室现场调试。客户已经联系展讯印度FAE，麻烦帮忙转一下展讯印度FAE帮忙调试谢谢。
+ 
+2 具体问题点现场质询终端客户。软件是带蓝牙拨号的，一起调试一下。|
+==== State: Closed by: cmadmin on 21 December 2019 00:39:33 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: Saravanan.Raja on 29 November 2019 19:55:34 ====
+
+Dear Customer, 
+
+Please help to use the attached tuned file "SPCSS00637039.rar" into customer official SW.
+
+Thanks
+saravanan.
+
+==== State: Resolved by: cmadmin on 29 November 2019 19:54:24 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:   subjective quality issue on FM and voice call 
+
+[2.Resolution        ]:   corrected the subjective quality on FM and voice call 
+
+
+
+==== State: Opened by: cmadmin on 28 November 2019 19:38:09 ====
+
+  == Saravanan.Raja@unisoc.com On 2019-11-28T11:35:39Z (json) ==
+Issues list update from MMX - shared by Gajendra Choudhary <gajendra.choudhary@Micromaxinfo.com> 
+
+Model :X419
+
+Software version : MMX_X419_SW_V1.0_HW_V1.0_26092019
+
+Call Volume & Sound Quality
+
+1. Sound Quality is not good at downlink side in normal mode.
+2. Sound Quality is not good at downlink side in loudspeaker mode.
+3. Low Volume at downlink side in loudspeaker mode.
+4. Low volume at downlink side in earphone.
+
+FM Sound Level & Quality
+5. Low volume in Loudspeaker mode.
+
+==== State: NeedInfo by: cmadmin on 28 November 2019 14:53:43 ====
+
+  == Saravanan.Raja@unisoc.com On 20191128T06:50:50 (xml) ==
+Testing is in progress at end customer place and awaiting their feedback.
+(20191127T04:43:31)
+
+==== State: Opened by: cmadmin on 26 November 2019 14:54:30 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637037|[SC9863A][Waterworld][FS176CF8][XM][Alex]AndroidQ上展锐硬件反馈push ini后无效|如 SPCSS00622653 上我司硬件同事同展锐硬件同事的沟通，调完wifi指标后，相关ini文件以前展锐可以直接push到 vendor/etc下验证，但是现在展锐硬件发现push后验证无效
+请确认下：
+1、AndroidQ上硬件单独验证wifi参数时，需要push到什么位置？
+2、软件我们仍然是将ini文件编译到 /vendor/etc 目录，是否也要更改目录？
+
+谢谢！|
+==== State: Closed by: waterworld on 29 November 2019 17:37:03 ====
+
+谢谢支持！
+
+==== State: Resolved by: cmadmin on 29 November 2019 11:51:39 ====
+
+  == Lishan.Zeng@unisoc.com On 20191129T03:49:06 (xml) ==
+请关闭，谢谢。
+
+==== State: Opened by: cmadmin on 29 November 2019 11:51:39 ====
+
+  == vincent.chen@unisoc.com On 20191129T03:48:17 (xml) ==
+Dear 金前，
+
+这个问题从我们的经验来看，应该就是没有unlock导致的。由于后面还需要好几天时间来验证（我司惠州硬件那边没有ubuntu环境，需要你们重新unlock后再寄机器给他们验证），我这边先把这个问题走掉了。
+
+后续如果还有其他问题，再继续新提CQ处理。
+
+谢谢。
+
+==== State: Opened by: cmadmin on 29 November 2019 11:48:22 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+
+==== State: NeedInfo by: cmadmin on 27 November 2019 10:02:48 ====
+
+Dear Customer:
+  We need more information with this Issue, please renew and reopen it.(2019-11-27T01:52:35Z)
+Thank you.
+(2019-11-27T01:52:35Z)
+
+==== State: Opened by: waterworld on 27 November 2019 09:49:13 ====
+
+立山，我们这边确认过了：
+1、我们目前的版本adb root;adb remount 后虽然会提示remount fail，但是是因为目前socko和odmko等几个分区现在还无法remount（展锐还没有方案），但是ini所在的vendor分区是remount 成功的。我们试过push后重启再pull出来是有修改过的。这已经很能说明问题了
+2、展锐平台要执行 adb root和adb remount需要先执行unlock动作，这个是Google要求的。你们在本地验证OK肯定是先unlock了，我们的机器如果先执行unlock动作，肯定也是没问题的
+
+所以贵司昨天的结论（无效是跟remount fail有关）还是不正确。目前可以做的是：
+1、刚刚我们让荣生帮忙确认下 unlock我们的机器后再remount再push，看是否生效
+2、如果生效，那我们再看下remount这个事情（但是重启后pull文件是修改的，这个说不通）
+    如果不生效，那还是要看下是否ini命名或其他有什么跟AndroidP不一样的呢？
+
+==== State: Resolved by: cmadmin on 26 November 2019 19:09:31 ====
+
+  == Lishan.Zeng@unisoc.com On 2019-11-26T11:07:22Z (json) ==
+Dear 金前，
+
+我们本地试了，push到vendor/etc下是生效的。但前提是手机能adb remount succ。
+
+rongsheng手头上你们的机器目前提示remount fail，这个是ini不生效的原因。
+
+请知悉～
+
+==== State: Opened by: cmadmin on 26 November 2019 19:07:35 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637021|[SC6531E][Waterworld][FF257]【6部】【遵义】主板FF126 英迈项目Z18365 麻烦帮忙调试音频，谢谢。|
+1 终端客户要求去他们印度办公室现场调试。客户已经联系展讯印度FAE，麻烦帮忙转一下展讯印度FAE帮忙调试谢谢。
+ 
+2 具体问题点现场质询终端客户。软件是带蓝牙拨号的，一起调试一下。
+
+|
+==== State: Closed by: cmadmin on 25 December 2019 00:45:00 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 29 November 2019 17:59:04 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+Subjective voice and fm quality problems
+Solution:
+corrected the subjective voice & FM quality
+
+==== State: Opened by: Saravanan.Raja on 29 November 2019 17:55:51 ====
+
+Dear Customer,
+
+Please help to use the attached tuned file "SPCSS00637021.rar" into customer's official build  .
+
+thanks
+saravanan
+
+==== State: Opened by: cmadmin on 28 November 2019 19:41:12 ====
+
+  == Saravanan.Raja@unisoc.com On 2019-11-28T11:39:09Z (json) ==
+Issues list shared over email by Gajendra Choudhary <gajendra.choudhary@Micromaxinfo.com> 
+
+Model :X381
+
+Software version : MMX_X381_SW_V1.0_HW_V1.0_24102019
+
+Call Volume & Sound Quality
+
+1. Sound Quality is not good at downlink side in normal mode.
+2. Sound Quality is not good at downlink side in loudspeaker mode
+3. Low volume at downlink side in earphone.
+
+
+FM Sound Level & Quality
+4. Low volume in Loudspeaker mode.
+
+==== State: NeedInfo by: cmadmin on 28 November 2019 14:53:40 ====
+
+  == Saravanan.Raja@unisoc.com On 20191128T06:51:08 (xml) ==
+Testing is in progress at end customer place and awaiting their feedback.
+(20191126T08:33:01)
+
+==== State: Opened by: cmadmin on 26 November 2019 15:09:40 ====
+
+  == Yang.Bai@unisoc.com On 20191126T07:05:41 (xml) ==
+请回复一下印度那边是哪个客户，哪个项目。
+谢谢
+
+==== State: Opened by: cmadmin on 26 November 2019 14:54:23 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00637008|[SC9863A][Waterworld][WW859][18部] BOARD_ID|SC9863A的 BOARD_ID0，BOARD_ID1，BOARD_ID2  用做了别的功能，想问下，
+时钟，RF频段配置以及DDR的单软多硬是共用一个开关还是？简单点理解就是关掉时钟以及DDR单软多硬，
+还可以使用RF的单软多硬吗？|
+==== State: Closed by: cmadmin on 19 December 2019 00:34:44 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 November 2019 09:25:48 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+可以使用
+Solution:
+可以使用
+
+==== State: Opened by: cmadmin on 26 November 2019 15:24:36 ====
+
+  == Zuyun.Zhou@unisoc.com On 2019-11-26T07:20:26Z (json) ==
+可以使用
+请参考Isupport系统《SC9863A_Single_Software_For_Multi-Hardware_Application_note_v1.1》
+单软多硬2:RF band单软多硬的配置方法-软件开关
+
+==== State: Opened by: cmadmin on 26 November 2019 14:29:59 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00636996|[SC7731EF][Waterworld][FS361][遵义][六部]闭源库从sp7731ef_1h10_nosec-user-native改为sp7731ef_1h10_native-user-native后，无法开机，帮忙分析一下|步骤：
+升级大版本SPRDROID4.4_KAIOS2.5_W19.45.4后，蒋sp7731ef_1h10_nosec-user-native闭源库改为
+sp7731ef_1h10_native-user-native后，手机无法开机，还原回去就正常，由于无法开机，故没有提供log，帮忙分析下，
+如何定位问题或者抓取log，谢谢
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 18 December 2019 00:34:49 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 26 November 2019 20:26:58 ====
+
+  == James.Zhang@unisoc.com On 20191126T12:25:42 (xml) ==
+展锐家里SPRDROID4.4_KAIOS2.5_W19.45.4版本有device/sprd/pike2/sp7731ef_1h10/sp7731ef_1h10_native.mk这个makefile，可以lunch到，对应的IDH也有闭源库
+
+==== State: Resolved by: cmadmin on 26 November 2019 16:12:26 ====
+
+  == James.Zhang@unisoc.com On 20191126T08:07:12 (xml) ==
+编译版本lunch的时候，选择sp7731ef_1h10_native-user，然后闭源库也使用sp7731ef_1h10_native-user的，不要使用nosec的
+
+pac打包的时候，按照sp7731ef_1h10_native-user打包，会有tos的binary打包进去
+
+==== State: Resolved by: cmadmin on 26 November 2019 15:57:05 ====
+
+  == James.Zhang@unisoc.com On 20191126T07:54:03 (xml) ==
+nosec和native版本由于tos的原因，不能互相替换库文件
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为紫光展锐提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 紫光展锐工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+nosec版本不能直接改成native版本
+Solution:
+sp7731ef_1h10_nosec-userdebug-native 可对应 sp7731ef_1h10_nosec-user-native
+sp7731ef_1h10_native-userdebug-native 可对应 sp7731ef_1h10_native-user-native
+
+==== State: Opened by: cmadmin on 26 November 2019 15:09:27 ====
+
+  == James.Zhang@unisoc.com On 20191126T07:06:29 (xml) ==
+不能把sp7731ef_1h10_nosec-user-native改成sp7731ef_1h10_native-user-native
+而是要把sp7731ef_1h10_native-userdebug-native改成sp7731ef_1h10_native-user-native
+nosec版本没有tos，不能作为native版本的基线
+
+sp7731ef_1h10_nosec-userdebug-native 可对应 sp7731ef_1h10_nosec-user-native
+sp7731ef_1h10_native-userdebug-native 可对应 sp7731ef_1h10_native-user-native
+
+==== State: Opened by: cmadmin on 26 November 2019 15:06:48 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00636973|[SC9820E][Waterworld][A356][1部][CF13][KAIOS][E241S] [客户反馈T-Mobile:- (Telekom Czech)的SS有问题]|9820E kaios 241S客户反馈	T-Mobile:- (Telekom Czech)的SS有问题
+upplementary services does not work. The device is not able to check/change any of it (Call Waiting, Call Hold, Hide ID, Call Forward, Call Conference)
+The device stays in 4G / VoLTE, no CSFB to 2G hence no answer
+
+modem版本：FM_BASE_17B_Release_W19.44.3_9820e_CUSTOMER
+log已上传附件|
+==== State: Closed by: cmadmin on 06 January 2020 17:23:15 ====
+
+  == Auto@kaiostech.com On 20200106T09:20:41 (xml) ==
+=============== xiangrui.huang@kaiostech.com ==== 2020-01-06 13:56:08 ========================
+Close per comment#8
+
+==== State: Closed by: cmadmin on 22 December 2019 00:34:25 ====
+
+尊敬的客户，NeedInfo状态超过15个工作日贵司未有状态更新和反馈的问题，现做关闭处理。如果还有其他问题，请重新提交CR或者联系对应的TAM处理。 Thanks
+
+
+==== State: NeedInfo by: cmadmin on 06 December 2019 10:17:20 ====
+
+  == Licun.Cheng@unisoc.com On 20191206T02:09:32 (xml) ==
+尊敬的客户，您好：
+  附件log：TMCZ SS nok没有发现任何upplementary services相关的log，因为没有给出问题时间点，无法准确判定问题原因。还请帮忙复测，除上传完整log外，还请备注手机上的问题时间点，或者提供视频。多谢。
+(20191205T10:14:56)
+
+==== State: Opened by: cmadmin on 04 December 2019 19:30:30 ====
+
+  == Nelson.Lee@unisoc.com On 20191204T11:29:19 (xml) ==
+Dear all,
+
+抱歉,請忽略comment 2 & 5.
+此問題為捷克Telekom的問題.
+
+comment 2 & 5所提供的Log為斯洛伐克Telekom的Log.
+
+請針對客戶所提供的Log繼續進行分析.
+Thanks.
+
+==== State: Opened by: cmadmin on 30 November 2019 05:01:42 ====
+
+  == Nelson.Lee@unisoc.com On 2019-11-29T20:53:32Z (json) ==
+Dear all,
+
+使用Bug 1209137, comment 19的臨時版本驗證.
+驗證結果為Fail.
+
+Test result:
+call forwarding/call barring/call waiting會CSFB.
+
+Expect result:
+call forwarding/call barring/call waiting不該CSFB,該走xcap.
+
+LogName: 1210210_TempVersionLog_1129.rar
+LogPath: \\shnas02\TestData\TestLogs\CSFT\Overseas\2019\Slovakia\1129
+
+==== State: Opened by: cmadmin on 29 November 2019 15:24:14 ====
+
+  == Licun.Cheng@unisoc.com On 20191129T07:22:22 (xml) ==
+上层没有下发ss相关的请求，请Kai帮忙确认，多谢。
+
+==== State: Opened by: waterworld on 29 November 2019 13:31:42 ====
+
+Dears， 
+   此CQ报的是Telekom CZ的SS问题。
+
+==== State: Opened by: cmadmin on 27 November 2019 05:04:33 ====
+
+  == Nelson.Lee@unisoc.com On 2019-11-26T21:03:28Z (json) ==
+Dear all,
+
+已使用新版本(A356_02H_MS248A_ENERGY_E241S_EN_V16_191118_DEBUG.pac)複現出問題,
+並抓取Log (包含開機Log), 視頻, 以及apn.json檔,
+
+Log如下:
+SPRD FTP:
+Logname: 1210210_Telekom_NewLog_1126.rar
+Logpath: \\shnas02\TestData\TestLogs\CSFT\KaiOS\9820E\Slovakia
+LogPath: \\shnas02\TestData\TestLogs\CSFT\Overseas\2019\Slovakia\1126
+
+KaiOS FTP:
+Logname: 1210210_Telekom_NewLog_1126.rar
+Logpath: ftp://TCL Communication@ftp.spreadtrum.com/SPRD Release/log/New_CSFT/9820E/Slovakia
+
+請幫忙繼續分析Log.
+Thanks.
+
+==== State: Opened by: cmadmin on 26 November 2019 11:44:52 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00636963|[SC9832E][Waterworld][FS272TRX][SC9832E][Waterworld][FS272M02-B10] [六部][遵义] 9.0 锁卡不生效|我没有配置移动的锁卡，我插入移动卡之后，锁卡不生效，log已提供至附件，请帮忙分析一下|
+==== State: Closed by: waterworld on 28 November 2019 10:59:15 ====
+
+了解了，问题已解决，谢谢
+
+==== State: NeedInfo by: cmadmin on 28 November 2019 10:48:21 ====
+
+  == chunhua.tan@unisoc.com On 2019-11-28T02:46:12Z (json) ==
+客户您好，
+如电话沟通，对于已经烧录过NV的手机，修改simlock相关的NV的话，进行验证的时候，在使用researchdownload工具下载的时候，需要将backup中以simlock开头的NV勾选掉，否则修改的NV会不生效，用的是备份的NV。
+
+谢谢！
+(2019-11-26T07:11:12Z)
+
+==== State: Opened by: cmadmin on 26 November 2019 15:15:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

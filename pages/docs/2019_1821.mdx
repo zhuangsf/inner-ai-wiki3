@@ -1,0 +1,1237 @@
+# SPCSS00629004|[SC7731E][Waterworld][FS198_TPLINK][六部][tplink]充电时，当有未读信息或消息时，指示灯不闪烁，而是常亮，请帮忙分析一下，谢谢。附件是ylog。|步骤：
+
+现象：手机是带有指示灯的，当有未读信息或消息时指示灯会闪烁。
+但当充电时，指示灯是常亮，当有未读信息或消息时，指示灯是常亮，而不是闪烁。
+
+分析：附件ylog8：28有未读信息，8点29有未接电话。
+在充电时BatteryService.java文件里mBatteryLight.setColor(mBatteryLowARGB);这里一直是指示灯长亮。
+但在充电时NotificationManagerService.java文件里的未读信息或消息指示灯闪烁这里不起作用，指示灯还是常亮：
+mNotificationLight.setFlashing(light.color, Light.LIGHT_FLASH_TIMED,
+                        light.onMs, light.offMs);
+|
+==== State: Closed by: cmadmin on 21 November 2019 00:37:30 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 30 October 2019 11:00:32 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户需求
+Solution:
+已修改
+
+==== State: Opened by: cmadmin on 30 October 2019 11:00:31 ====
+
+  == shuaiyu.zhang1@unisoc.com On 2019-10-30T02:58:51Z (json) ==
+解决方案上传到：\\shnas02\CustomerData\产品工程管理部\ZYT\FTPDATA\SPCSS00629004\PatchesForCUS\
+文件名称：led.diff
+
+==== State: Opened by: waterworld on 29 October 2019 17:03:14 ====
+
+Dear unisoc ：
+      工程师是不是请假了，麻烦看一下这个问题。
+
+==== State: Opened by: cmadmin on 28 October 2019 09:44:09 ====
+
+  == Yu.Li@unisoc.com On 20191028T01:41:51 (xml) ==
+SMS设置灯闪烁，仅仅对Notification设置一个标志，只有消息的时候灯的闪烁是正常的。
+客户要求：对于Notification与充电的常亮之间的需要有优先级别处理，
+充电的灯会被其它事件的呼吸灯打断。
+请协助处理下。
+
+==== State: Opened by: cmadmin on 26 October 2019 17:47:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00629003|[SC7731E][Waterworld][FS198]6部财富二部FS198M30-C90 TP-Link项目，2G/3G的850频段下马达震动场景下存在较大干扰问题分析，帮忙加急安排，谢谢！|我们希望周一（28日）能带机器现场处理
+在马达电路增加33p/47p/56p/100n电容有改善，但还是存在较大干扰
+
+2G/3G的850频段下马达震动场景下存在较大干扰
+
+马达震动干扰和前后摄干扰：
+与传导测试结果相比，TIS影响要小于等于3dB。
+1. TIS恶化5dB，C类
+2. TIS恶化8dB，B类
+
+小板及主板图纸、测试报告如附件|
+==== State: Closed by: waterworld on 12 November 2019 21:52:11 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 30 October 2019 13:40:54 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+马达干扰
+Solution:
+加强马达接地 + 适当降低马达供电电压
+
+==== State: Opened by: cmadmin on 30 October 2019 13:40:51 ====
+
+  == Weijun.Liu@unisoc.com On 2019-10-30T05:39:14Z (json) ==
+目前针对马达干扰问题硬件处理就只这几种方法，或者还可以适当降一下电压。
+
+==== State: Opened by: cmadmin on 29 October 2019 09:40:49 ====
+
+  == Weijun.Liu@unisoc.com On 20191029T01:39:06 (xml) ==
+如昨天实验，针对马达干扰问题，需要注意的地方如下：
+1. 主板与中框的接地处理。
+2. 马达与中框的接地处理。
+3. 马达的电源线必须做成双绞线。
+4. 把C38改成56PF。
+谢谢！
+
+==== State: Opened by: waterworld on 28 October 2019 09:21:14 ====
+
+马达是焊在小板上（小板同过FPC连接主板），马达及屏FPC包地无改善
+
+==== State: Opened by: cmadmin on 28 October 2019 09:07:03 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628999|[SC7731E][Waterworld][FS198_TPLINK]【Message】【小区广播】小区广播开启“使用最大音量”，警报声音音量无改变|步骤：1.手机端开启开发者选项，进入短信，点击右上角溢出菜单-设置-高级-无线紧急广播，点击右上角设置，开启"Use full 
+volume"；
+2.从CMW500发送紧急广播信息，查看手机端显示；
+3.关闭"Use full volume"，重复2
+4.对比步骤2和3的声音音量
+
+现象：警报声音音量无明显改变
+
+分析：警报声音音量应该有明显改变|
+==== State: Closed by: waterworld on 31 October 2019 16:22:55 ====
+
+Dear unisoc：
+        不影响认证，请关闭此cq，谢谢。
+
+==== State: Resolved by: cmadmin on 30 October 2019 16:06:27 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+保留了原生的菜单设计，但是迪拜认证的时候不需要关注这些
+Solution:
+保留了原生的菜单设计，但是迪拜认证的时候不需要关注这些，跟客户沟通看是否需要修改
+
+==== State: Opened by: waterworld on 28 October 2019 17:52:02 ====
+
+这个问题已与客户沟通，不影响过认证
+
+==== State: Opened by: cmadmin on 28 October 2019 09:45:37 ====
+
+  == Yu.Li@unisoc.com On 2019-10-28T01:43:31Z (json) ==
+请确认下测试的小区广播的区域，部分区域音量是不能修改的。
+
+==== State: Opened by: cmadmin on 26 October 2019 15:19:27 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628997|[SC9820E][Waterworld][FS358][SC9820E][Waterworld][FS358]SC9820E][Waterworld][FS358][SC9820E][六部]申请flash认证。|flash信息:  4Gb NAND FLASH  +   2GB LPDDR2       AS4G08G32FMHE-440EH  ATO   |
+==== State: Closed by: qijia.yu on 30 October 2019 18:59:58 ====
+
+close
+
+==== State: NeedInfo by: cmadmin on 30 October 2019 11:03:02 ====
+
+  == Qijia.Yu@unisoc.com On 20191030T03:00:13 (xml) ==
+wenbo，如沟通，ATO这颗料不接受验证
+(20191029T12:03:43)
+
+==== State: Opened by: cmadmin on 29 October 2019 19:55:46 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 11:16:46 ====
+
+  == Mingwen.Chen@unisoc.com On 2019-10-28T03:07:28Z (json) ==
+Dear  customer
+    请帮忙填写一下附件的文档《客户物料验证申请表V1 3》
+(2019-10-28T01:05:34Z)
+
+==== State: Opened by: cmadmin on 28 October 2019 09:06:26 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 October 2019 15:09:23 ====
+
+尊敬的展讯同事:
+      附件为规格书,  请帮安排验证, 谢谢!
+|
+# SPCSS00628996|[SC7731E][Waterworld][FS198_TPLINK]【Message】【小区广播】"Speak alert message"功能不生效|步骤：1.手机端开启开发者选项，进入短信，点击右上角溢出菜单-设置-高级-无线紧急广播，点击右上角设置，开启"Speak 
+alert message"（此功能默认开启）
+2.从CMW500发送紧急广播信息，查看手机端显示
+
+现象：手机收到小区广播，提醒结束后不会读出警报内容
+
+分析：手机收到小区广播，提醒结束后应该会读出警报内容，具体代码见附件压缩文件。
+|
+==== State: Closed by: waterworld on 31 October 2019 16:21:53 ====
+
+Dear unisoc:
+      已与客户沟通，不影响认证，不需修改。请关闭此cq，谢谢。
+
+==== State: NeedInfo by: cmadmin on 30 October 2019 16:11:32 ====
+
+  == yinhua.tu@unisoc.com On 20191030T08:09:16 (xml) ==
+dear waterworld,
+劳烦帮忙回复下此问题是否需要修改，感谢
+(20191028T01:51:10)
+
+==== State: Opened by: cmadmin on 26 October 2019 15:19:23 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628995|[SC7731E][Waterworld][FS198_TPLINK]【深圳】【六部】在小区广播页面点击已收到的小区广播，点击HIDE后弹出询问是否再接收紧急警报的弹框|步骤：
+1.手机已收到多个小区广播
+2.点击查看已收到的小区广播(Emergency Alert、Warnning Alert，Test Alert等，National Emergency Alert没有问题)，然后点击hide
+3.遍历点击No和Yes
+
+现象：2.弹出询问是否再接收紧急警报的弹框
+3.1点击Yes会停留在本页面
+3.2点击No会跳转小区广播设置页面
+期望：不会弹出询问是否再接收紧急警报的弹框
+
+分析：请帮忙分析，
+|
+==== State: Closed by: waterworld on 31 October 2019 16:30:02 ====
+
+Dear unisoc：
+        不影响认证，请关闭此cq，谢谢。
+
+==== State: Resolved by: cmadmin on 29 October 2019 10:52:05 ====
+
+  == Weicn.Chen@unisoc.com On 2019-10-29T02:49:17Z (json) ==
+和SPCSS00628988属同一个问题，请参考SPCSS00628988 中的方案修改并验证
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+弹框提示是否继续接收广播消息
+Solution:
+按照要求不再弹框提示
+
+==== State: Opened by: cmadmin on 28 October 2019 09:23:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 October 2019 15:17:44 ====
+
+您好，相关文件已上传附件，请帮忙分析谢谢
+|
+# SPCSS00628993|[SC7731E][Waterworld][FS198_TPLINK]ETWS测试广播警报响铃时间约为3s|步骤：1.手机点击打开接收ETWS测试广播信息
+         2.从CMW500发送ETWS测试广播信息，查看手机端显示
+
+现象：手机收到小区广播信息，警报响铃时间约为3s
+
+分析：手机收到小区广播信息，警报响铃时间应该约为10.5s
+|
+==== State: Closed by: waterworld on 05 November 2019 14:38:12 ====
+
+验证成功，可以关闭
+
+==== State: Resolved by: cmadmin on 04 November 2019 15:30:54 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+ETWS延用goole原生的设计，默认响铃3S，迪拜PWS测试需要修改成10.5S
+Solution:
+按照迪拜标准来修改，ETWS来消息响铃修改成10.5S
+
+==== State: Opened by: cmadmin on 04 November 2019 15:30:53 ====
+
+  == yinhua.tu@unisoc.com On 20191104T07:29:47 (xml) ==
+dear waterworld,
+修改sample code见附件SPCSS00628993-sample code.7z，ETWS告警铃声GOOLE原生的设计是3S，如果迪拜PWS需要修改成10.5S，按照附件sample code修改验证，如果有任何问题，请保持联系，感谢
+
+==== State: Opened by: waterworld on 31 October 2019 15:17:25 ====
+
+您好，
+    经过确认，只需要修改SPCSS00628993这个CQ。谢谢
+
+==== State: NeedInfo by: cmadmin on 30 October 2019 10:55:12 ====
+
+  == yinhua.tu@unisoc.com On 2019-10-30T02:51:29Z (json) ==
+dear waterworld,
+如之前电话沟通内容，跟您客户确认这6个问题有进展结果吗，劳烦帮忙及时更新下，感谢
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 11:16:31 ====
+
+  == yinhua.tu@unisoc.com On 2019-10-28T03:10:12Z (json) ==
+dear waterworld,
+如电话沟通，此项是保留了goole原生的小区广播设计，在以往的迪拜PWS测试用例里面没有提到，故劳烦帮忙跟您的客户沟通，看这项是否按迪拜标准来测试验收，感谢
+(2019-10-28T01:49:25Z)
+
+==== State: Opened by: cmadmin on 26 October 2019 15:19:20 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628992|[SC7731E][Waterworld][FS198_TPLINK]【深圳】【六部】不开启"ETWS test broadcats"开关，也能收到ETWS测试广播|步骤：不开启"ETWS test broadcats"开关，从CMW500发送ETWS测试广播，查看手机端显示
+
+现象：手机收到ETWS测试广播
+
+
+分析：请帮忙分析谢谢|
+==== State: Closed by: waterworld on 31 October 2019 16:27:09 ====
+
+Dear unisoc:
+        不影响认证，请关闭此cq，谢谢。
+
+==== State: NeedInfo by: cmadmin on 30 October 2019 16:11:30 ====
+
+  == yinhua.tu@unisoc.com On 20191030T08:07:55 (xml) ==
+dear waterworld,
+劳烦帮忙回复下此问题是否需要修改，感谢
+(20191028T01:54:53)
+
+==== State: Opened by: cmadmin on 28 October 2019 09:25:40 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 October 2019 15:18:01 ====
+
+您好，相关文件已上传附件，请帮忙分析谢谢
+|
+# SPCSS00628991|[SC7731E][Waterworld][FS198_TPLINK]设置小区广播警报提醒提示音为“Every 15 minutes”，再次提醒时间与设置不符|步骤：1.设置手机小区广播"Alert reminder"为"Every 15 minutes"；
+         2.从CMW500发送紧急广播信息，查看手机端显示（不点击隐藏弹框）
+
+现象：手机收到小区广播提醒，第二次提醒时间为17m54s后，第三次提醒时间为17m50s后
+
+
+分析：手机收到小区广播提醒，每隔15分钟提醒一次
+|
+==== State: Closed by: waterworld on 05 November 2019 14:39:49 ====
+
+验证成功，可以关闭
+
+==== State: Resolved by: cmadmin on 04 November 2019 13:53:05 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+迪拜PWS是按照迪拜SPEC开发，小区广播菜单保留了原生的设计，只是功能为了适应迪拜PWS做了屏蔽
+Solution:
+建议按照迪拜PWS SPEC项逐项测试验证
+
+==== State: Opened by: cmadmin on 04 November 2019 13:45:17 ====
+
+  == yinhua.tu@unisoc.com On 2019-11-04T05:44:24Z (json) ==
+dear waterworld,
+除SPCSS00628993这个CQ外都不需要修改，故走fixed流程
+
+==== State: NeedInfo by: cmadmin on 30 October 2019 16:14:31 ====
+
+  == yinhua.tu@unisoc.com On 2019-10-30T08:10:20Z (json) ==
+dear waterworld,
+劳烦帮忙回复下此问题是否需要修改，感谢
+(2019-10-28T01:49:11Z)
+
+==== State: Opened by: waterworld on 26 October 2019 15:20:30 ====
+
+您好，
+        ylog和相关文件已上传，接收广播时间为19:12，第一次再次提醒时间约为19:30，第二次再次提醒时间约为19:48
+请分析，谢谢
+
+==== State: Opened by: cmadmin on 26 October 2019 15:19:00 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628990|[SC7731E][Waterworld][FS198_TPLINK]【深圳】【六部】当小区广播的消息内容较短时，弹框的标题的图标和字符显示异常 (|步骤：从CMW500发送4384的紧急广播信息（配置较短的消息），查看手机端显示
+
+现象：当小区广播的消息内容较短时，弹框的标题的图标和字符显示异常
+
+分析：当小区广播的消息内容较短时，弹框的标题的图标和字符显示异常
+|
+==== State: Closed by: cmadmin on 19 November 2019 00:36:24 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 October 2019 14:19:20 ====
+
+  == Zhiguo.Li@unisoc.com On 20191028T06:15:55 (xml) ==
+请参照\\shnas02\CustomerData\产品工程管理部\ZYT\FTPDATA\SPCSS00628990\PatchesForCUS的diff和jpg附件，对文件sprdroid9.0_trunk_18c_rls1\vendor\sprd\platform\packages\apps\CellBroadcastReceiver\res\layout\cell_broadcast_alert.xml 做修改，并重新编译验证（注意重新编译小区广播资源），谢谢。
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:cell_broadcast_alert.xml中TextView android:layout_height="wrap_content" android:layout_width="wrap_content" 的layout_width属性不对；
+
+[2.Resolution        ]:修改android:layout_width="wrap_content"为android:layout_width="match_parent"
+
+
+
+==== State: Opened by: waterworld on 28 October 2019 09:55:04 ====
+
+您好，异常界面已上传，请知悉
+
+==== State: Opened by: cmadmin on 28 October 2019 09:26:41 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 October 2019 15:18:13 ====
+
+您好，相关文件已上传附件，请帮忙分析谢谢
+|
+# SPCSS00628988|[SC7731E][Waterworld][FS198_TPLINK]【Message】【小区广播】收到Emergency Alert类型的紧急广播点击HIDE后弹出询问是否再接收紧急警报的弹框，选择否后会跳转小区广播页面，但此广播类型的开关是不可修改的|步骤：1.手机恢复出厂设置（确保第一次收到小区广播，弹框弹出后不会再弹出）
+2.从CMW500发送4384的紧急广播信息，查看手机端显示
+3.点击OK按钮
+4.点击NO
+
+现象：1.收到小区广播
+2.弹出询问是否接受紧急警报的弹框
+3.点击NO后跳转小区广播设置页面，但对应的Emergency Alerts类型广播是置灰不可关闭的
+
+分析：应符合认证，不会有弹框弹出，具体代码见附件文件。
+|
+==== State: Closed by: waterworld on 31 October 2019 16:24:15 ====
+
+Dear unisoc：
+        请关闭此cq，谢谢。
+
+==== State: Resolved by: cmadmin on 29 October 2019 10:52:03 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:弹框提示是否继续接收广播消息
+
+[2.Resolution        ]:按照要求不再弹框提示
+
+
+
+==== State: Opened by: cmadmin on 29 October 2019 10:48:35 ====
+
+  == Weicn.Chen@unisoc.com On 20191029T02:45:00 (xml) ==
+在CellBroadcastReceiver\src\com\android\cellbroadcastreceiver\CellBroadcastAlertFullScreen.java  中：
+
+函数 void dismiss() 中,做如下修改：
+
+if (lastMessage.isCmasMessage() && lastMessage.getCmasMessageClass() !=
+                SmsCbCmasInfo.CMAS_CLASS_PRESIDENTIAL_LEVEL_ALERT) {
+-            mShowOptOutDialog = true;
++            // mShowOptOutDialog = true;
+        }
+
+==== State: Opened by: cmadmin on 29 October 2019 09:30:59 ====
+
+  == Zhiguo.Li@unisoc.com On 2019-10-29T01:29:44Z (json) ==
+"收到Emergency Alert类型的紧急广播点击HIDE后弹出询问是否再接收紧急警报的弹框，选择否后会跳转小区广播页面，但此广播类型的开关是不可修改的"---从8.1开始google一直是这样设计的，之前一直没有其他客户认证的时候报过类似问题，请帮忙和客户确认清楚是问题还是体验？谢谢。
+
+==== State: Opened by: cmadmin on 26 October 2019 15:19:21 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628986|[SC7731E][Waterworld][FS198_TPLINK]小区广播警报提醒提示音的“Once after 2 minutes”功能异常|步骤：1.设置手机小区广播"Alert reminder"为"Once after 2 minutes"；
+         2.从CMW500发送紧急广播信息，查看手机端显示
+
+现象：手机收到小区广播信息后会有提醒，提醒结束后每隔1分钟提醒一次
+
+分析：手机收到小区广播信息后会有提醒，仅2分钟后提醒一次
+|
+==== State: Closed by: waterworld on 05 November 2019 14:40:32 ====
+
+验证成功，可以关闭
+
+==== State: Resolved by: cmadmin on 04 November 2019 14:13:40 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:迪拜PWS是按照迪拜SPEC开发，小区广播菜单保留了原生的设计，只是功能为了适应迪拜PWS做了屏蔽
+
+[2.Resolution        ]:建议按照迪拜PWS SPEC项逐项测试验证
+
+
+
+==== State: Opened by: cmadmin on 04 November 2019 14:12:15 ====
+
+  == yinhua.tu@unisoc.com On 20191104T06:10:38 (xml) ==
+dear waterworld,
+经确认除SPCSS00628993这个CQ外都不需要修改，故走fixed流程
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 30 October 2019 16:08:22 ====
+
+  == yinhua.tu@unisoc.com On 2019-10-30T08:06:53Z (json) ==
+dear waterworld,
+劳烦帮忙回复下此问题是否需要修改，感谢
+(2019-10-28T01:46:42Z)
+
+==== State: Opened by: cmadmin on 26 October 2019 15:18:45 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628981|[SC9820E][Waterworld][WW863][18部][ww863]修改音频输出音量等级，不生效|Dear SPRD,
+我们这边有个项目，客户反馈最低音量太小，需要修改音频输出音量等级，
+我是在default_volume_tables.xml里面修改DEFAULT_DEVICE_CATEGORY_SPEAKER_VOLUME_CURVE这个标签对的参数，
+无论是全编译烧录还是adb push之后，音量都没任何变化，还请贵司协助分析一下为什么修改不生效，谢谢！|
+==== State: Closed by: waterworld on 30 October 2019 10:24:47 ====
+
+感谢贵司支持！
+
+==== State: Resolved by: cmadmin on 29 October 2019 15:02:31 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+android4.4音量曲线调节的地方不是通过配置文件调节的
+Solution:
+提供音量曲线调试方法给客户
+
+==== State: Opened by: waterworld on 29 October 2019 14:07:20 ====
+
+Dear SPRD,
+此CQ可以关闭了，谢谢！
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 15:29:24 ====
+
+  == Qiang.Lu@unisoc.com On 20191028T07:27:28 (xml) ==
+你好：
+附件4.4_曲线调试工具.rar是调试曲线工具和使用说明请参考
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 10:59:04 ====
+
+  == Qiang.Lu@unisoc.com On 2019-10-28T02:54:56Z (json) ==
+你好：
+如点话沟通android4.4不需要修改配置文件调试方法同样是用曲线调试工具调
+(2019-10-28T02:37:27Z)
+
+==== State: Opened by: waterworld on 28 October 2019 10:34:52 ====
+
+Dear SPRD,
+那么xml也需要同步修改吗？
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 10:02:15 ====
+
+  == Qiang.Lu@unisoc.com On 2019-10-28T01:58:31Z (json) ==
+你好：
+android4.4修改音量等级需要修改
+hardware/libhardware_legacy/audio/AudioPolicyManagerBase.cpp这个文件中的
+这个值修
+const AudioPolicyManagerBase::VolumeCurvePoint
+    AudioPolicyManagerBase::sSpeakerMediaVolumeCurve[AudioPolicyManagerBase::VOLCNT] = {
+    {1, -56.0f}, {20, -34.0f}, {60, -11.0f}, {100, 0.0f}
+};
+(2019-10-28T01:50:29Z)
+
+==== State: Opened by: cmadmin on 28 October 2019 09:46:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628980|[SC7731E][Waterworld][FS198_TPLINK]给样机刷入user版本的软件，通过暗码进入工程模式，切到HARDWARE页面，Root check的值为rooted|步骤：给样机刷入user、r、debug任一版本的软件，通过暗码进入工程模式，切到HARDWARE页面，Root check的值为rooted
+
+
+分析：在没进行adb root+adb remount之前（手机没root成功之前）应该显示为no root。root成功后显示rooted.
+|
+==== State: Closed by: waterworld on 18 November 2019 15:28:52 ====
+
+问题解决，可以关闭
+
+==== State: NeedInfo by: cmadmin on 06 November 2019 09:47:26 ====
+
+  == Fei.Li@unisoc.com On 20191106T01:45:19 (xml) ==
+Dear customer，
+
+    每次进入Hardware界面，都会检查root check的情况，方法就是检查贵司之前提供的偏移地址下的标记，具体代码就下面几行，请贵司自行检查和调试下就好了.
+
+\vendor\sprd\tools\phasecheckserver\phasecheckserver.cpp文件中：
+
+------#define MISCDATA_ROOT_CHECK_OFFSET 768 * 1024 + 24 //这是检查是否root check的miscdata的偏移位置
+
+
+具体判断就是检查上面的偏移地址的字段：
+        case TYPE_GET_ROOT_CHECK_FLAG:
+            {
+                //read root-check value
+                static int i = 1;
+                int ret = 0;
+                ALOGE("phasecheck_sprd nativeservice read root-check: %d", i++);
+                jbyte value = 0;
+                ret = eng_readOffset(MISCDATA_ROOT_CHECK_OFFSET, &value);
+                ALOGE("~~~~~~~~~~~~~~~~~~~~~~phasecheck_sprd nativeservice read root-check is 0x%x, ret = %d", value, ret);
+                if (value == 0x52)
+                {
+                    reply->write("pass", 5);
+                }
+                else if (value == 0x4E)
+                {
+                    reply->write("fail", 5);
+                }
+                else
+                {
+                    reply->write("none", 5);
+                }
+                return NO_ERROR;
+            } break;
+(20191105T07:16:33)
+
+==== State: Opened by: waterworld on 05 November 2019 15:08:57 ====
+
+您好，
+如电话沟通，请帮忙继续分析。压缩文件local.rar已上传。谢谢
+
+==== State: NeedInfo by: cmadmin on 31 October 2019 15:02:01 ====
+
+  == Fei.Li@unisoc.com On 20191031T06:59:35 (xml) ==
+Dear customer，
+
+    附件的sample code包请合入验证。
+
+Thanks!
+(20191028T02:42:12)
+
+==== State: Opened by: cmadmin on 28 October 2019 10:42:48 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628979|[SC9820E][Waterworld][A356]【1部】【kaios】【老化无法打开】|步骤：
+按照贵司提供老化测试方案（SPCSS00618312）编译完成之后。输入暗码*#*#1234#*#*，手机自动返回了待机界面
+重复检查了贵司提供的添加方案，确保的无误的。
+附件上传了操作的LOG，请帮忙分析，谢谢
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 26 October 2019 15:51:19 ====
+
+hi：
+  经过内部同事讨论，/gaia/build/config/phone/apps-production.list 新增代码：apps/runtimetest
+尾部需要空行。问题已解决，麻烦关闭问题，多谢
+|
+# SPCSS00628978|[SC7731E][Waterworld][FS198_TPLINK]播放视频时接通来电，挂断电话后，点击播放按钮，视频无法继续播放|步骤：
+         1. 使用相机录制一段视频，进入文件极客APP中，点击视频，进行查看，视频播放期间，使用陪测样机给测试样机拨打电话。
+         2. 点击播放按钮，查看播放情况。 
+
+现象：  测试样机接通电话后，视频暂停播放，测试机主动挂断电话后，自动回到视频播放界面
+          点击播放按钮，视频无法播放，必须退出播放界面后重新进入才能播放该视频。
+
+分析：挂断电话后，可以继续播放之前暂停的视频.
+         发生异常的log已上传，请分析，谢谢。
+|
+==== State: Closed by: waterworld on 31 October 2019 15:56:00 ====
+
+验证ok，可以关闭
+
+==== State: Resolved by: cmadmin on 31 October 2019 13:22:49 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+google files应用播放视频过程中来电接听，视频暂停播放，本机主动挂断电话后，点击播放按钮没有反应，视频无法继续播放，该测试现象和files应用本身有关。
+Solution:
+在google play 商店把files应用更新到最新版本：1.0.273162057后，files应用播放视频过程中来电接听，视频暂停播放，本机主动挂断电话后，点击播放按钮，视频可以继续播放，最新版本已经修复了该问题。
+
+==== State: Opened by: cmadmin on 30 October 2019 17:44:00 ====
+
+  == Sandy.Wan@unisoc.com On 20191030T09:42:25 (xml) ==
+我这边使用目前最新的google files版本：1.0.273162057，测试机使用files播放视频，收到来电，电话接通后，视频播放暂停，本机主动挂断电话，回到视频播放界面，点击播放按钮，视频可以继续播放，如电话沟通，请贵司在谷歌商店把files更新到最新版本后复查验证并反馈测试结果，谢谢～
+
+==== State: Opened by: cmadmin on 29 October 2019 09:51:55 ====
+
+  == Sandy.Wan@unisoc.com On 2019-10-29T01:50:22Z (json) ==
+贵司之前另外一个项目提过类似的问题：SPCSS00609806，是文件极客app本身的问题，需要把文件极客app升级到最新版本后再复测验证。
+
+(SPCSS00609806) - [SC9832E][Waterworld][FS097M11-R90][六部][遵义]结束通话后返回视频播放界面，界面黑屏，此时点击播放按钮时无法继续播放
+
+==== State: Opened by: cmadmin on 29 October 2019 09:43:24 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628966|[SC6531E][Waterworld][FF257][遵义6部]关于截图功能PRINTSCREEN_SUPPORT,是否有方案支持长按左软键(Left Softkey)|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 20 November 2019 00:37:37 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 29 October 2019 10:14:09 ====
+
+  == Boda.Lin@unisoc.com On 20191029T02:13:29 (xml) ==
+Dear Customer:
+
+Free feel to contact us if you have any questions.
+
+Thank you.
+
+Sincerely,
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+Customer query
+Solution:
+Suggestion
+
+==== State: Opened by: cmadmin on 29 October 2019 10:14:07 ====
+
+  == Boda.Lin@unisoc.com On 20191029T02:12:48 (xml) ==
+Dear Customer:
+
+Thank you for your feedback.
+
+We will close this issue.
+
+Thank you.
+
+Cordially,
+
+==== State: Opened by: waterworld on 29 October 2019 10:06:36 ====
+
+好的,感觉贵司的提供的信息,此CQ可关闭
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 16:53:35 ====
+
+  == Boda.Lin@unisoc.com On 20191028T08:49:28 (xml) ==
+Dear Customer:
+
+发现原因是
+
+KEY会先 press 
+
+所以idle window会先收到后执行
+
+所以换成其他key的风险是
+
+有可能window会先收走处理
+
+long release方式可能来不及处 
+
+解决方式
+
+1. 修改idle win key的process
+
+2. 换其他key 来print screen
+
+烦请贵司思考一下
+
+谢谢～
+
+Please think about the way on a future plan.
+
+Thank you.
+
+Best wishes,
+(20191028T08:02:55)
+
+==== State: Opened by: cmadmin on 28 October 2019 16:05:47 ====
+
+  == Boda.Lin@unisoc.com On 20191028T08:02:55 (xml) ==
+Dear Customer:
+
+估计是key message先被收走 
+
+本地端我验证看看
+
+谢谢～
+
+I will try this way on my local.
+
+Thank you.
+
+Best wishes,
+
+==== State: Opened by: waterworld on 28 October 2019 14:51:18 ====
+
+问题现象如下:待机长按左键截图,会先进入主菜单,截图的结果变成了主菜单
+
+==== State: Opened by: waterworld on 28 October 2019 14:50:23 ====
+
+只单单修改这里有问题,基于PRINTSCREEN_SUPPORT,做了处理,代码见附件
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 14:09:55 ====
+
+  == Boda.Lin@unisoc.com On 20191028T06:06:39 (xml) ==
+Dear Customer:
+
+抱歉
+
+贵司可以更改测试看看
+
+print_key --> KEY_OK
+
+谢谢～
+
+Please modify the source code on your codebase.
+
+Thank you.
+
+Best wishes,
+(20191028T06:02:15)
+
+==== State: Opened by: waterworld on 28 October 2019 13:57:22 ====
+
+上述修改是长按左方向键?需要的是长按左软键(ok键)
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 09:42:55 ====
+
+  == Boda.Lin@unisoc.com On 2019-10-28T01:41:23Z (json) ==
+Dear Customer:
+
+理论上可行的
+
+从代码来看
+
+DefaultPrintScreen()@mmo_default.c
+
+    if (print_key != keycode) return FALSE;
+    if (KEY_PRESSED != keystatus) return FALSE;
+
+keystatus --> KEY_LONG_RELEASED
+print_key --> KEY_LEFT
+
+烦请贵司试验一下
+
+谢谢～
+
+Could you modify the source code to try?
+
+Thank you.
+
+Best regards,
+(2019-10-27T23:52:12Z)
+
+==== State: Opened by: cmadmin on 28 October 2019 07:56:34 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628953|[SC7731E][Waterworld][FS198_TPLINK]【深圳】【六部】【迪拜场测】手机每次重启都会自动变为震动模式|步骤：设为响铃模式，重启手机
+
+现象：手机每次重启都会自动变为震动模式 
+
+分析：手机每次重启都会自动变为震动模式，相关log已上传附件，请帮忙分析谢谢
+                                                   |
+==== State: Closed by: waterworld on 20 November 2019 14:09:51 ====
+
+此问题关闭。谢谢。
+
+==== State: NeedInfo by: cmadmin on 14 November 2019 17:33:41 ====
+
+  == Bingxing.Liu@unisoc.com On 20191114T09:31:42 (xml) ==
+客户您好，
+请帮忙反馈一下问题是否解决，如果解决，请帮忙关闭bug，多谢
+
+==== State: NeedInfo by: cmadmin on 07 November 2019 15:14:36 ====
+
+  == Bingxing.Liu@unisoc.com On 2019-11-07T06:09:45Z (json) ==
+等待客户的客户反馈测试结果，bug置为needinfo
+(2019-11-07T01:14:15Z)
+
+==== State: Opened by: waterworld on 07 November 2019 14:13:10 ====
+
+您好，
+      此问题客户反馈，由于只有在迪拜当地才会出现此问题，所以将在11号版本迪拜当地测试才能得到结果，请知悉，谢谢
+
+==== State: Opened by: waterworld on 07 November 2019 14:04:36 ====
+
+您好，
+     此问题待客户反馈，已提供软件给客户验证
+
+==== State: NeedInfo by: cmadmin on 07 November 2019 09:14:47 ====
+
+  == Bingxing.Liu@unisoc.com On 20191107T01:14:15 (xml) ==
+客户您好，
+请问问题是否解决？多谢
+
+==== State: NeedInfo by: cmadmin on 05 November 2019 15:01:04 ====
+
+  == Bingxing.Liu@unisoc.com On 20191105T06:58:17 (xml) ==
+客户您好，
+请帮忙测试如下修改是否可以解决问题，多谢
+
+frameworks/base/services/core/java/com/android/server/policy/PhoneWindowManager.java
+
+case MSG_NOTIFY_USER_ACTIVITY:
+                    removeMessages(MSG_NOTIFY_USER_ACTIVITY);
+                    Intent intent = new Intent(ACTION_USER_ACTIVITY_NOTIFICATION);
+                    intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+                    mContext.sendBroadcastAsUser(intent, UserHandle.ALL,
+                            android.Manifest.permission.USER_ACTIVITY);
+             +       break;
+(20191105T06:53:15)
+
+==== State: Opened by: waterworld on 05 November 2019 14:37:59 ====
+
+您好，
+      相关log已上传附件，请帮忙分析谢谢
+
+==== State: Opened by: waterworld on 04 November 2019 10:36:58 ====
+
+您好，已告知客户重新提供log。
+
+==== State: NeedInfo by: cmadmin on 01 November 2019 10:38:23 ====
+
+  == Chunlei.Liu@unisoc.com On 2019-11-01T02:35:40Z (json) ==
+如电话沟通，当前提供的ylog使用py脚本无法解析。无法直接查看源log文件，显示乱码。请知悉。
+(2019-10-29T02:47:37Z)
+
+==== State: Opened by: cmadmin on 29 October 2019 10:51:59 ====
+
+  == Chunlei.Liu@unisoc.com On 2019-10-29T02:47:37Z (json) ==
+如电话沟通，当前提供的ylog使用py脚本无法解析。无法直接查看源log文件，显示乱码。请知悉。
+
+==== State: Opened by: waterworld on 29 October 2019 10:22:17 ====
+
+您好，相关ylog已上传附件，请知悉谢谢
+
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 13:23:05 ====
+
+  == Chunlei.Liu@unisoc.com On 20191028T05:20:05 (xml) ==
+如电话沟通，当前提供的log无法确认问题，需要提供对应的ylog，方便确认问题。
+(20191028T01:47:23)
+
+==== State: Opened by: cmadmin on 28 October 2019 09:51:09 ====
+
+  == Chunlei.Liu@unisoc.com On 20191028T01:47:23 (xml) ==
+尊敬的客户：贵司本地可以复现？请帮忙提供ylog，以便确认问题。现有log不是ylog。也找不到有效信息。
+
+==== State: Opened by: cmadmin on 28 October 2019 09:36:24 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628946|[SC9832E][Waterworld][FS097CF2][六部][遵义]工厂反馈拔插电池开机后电量跳变异常问题，请问是否属于正常现象，正常跳变范围是多大。|客户反馈信息如下：
+        工厂生产，发现插拔电池有电量跳变比较大的问题
+具体描述：充放电发现一个问题，放电到30%，把电池拔掉重新开机，电量变成了25%，重新开机又变成17%，再开机又变成15%了，这个电量不准
+机器54%的时候反复开机电量都正常，刚放了下电到51%，拔电池重新开机就41%了
+电量大概在15%-50%之间，重新开机电量都会变
+分析：
+1、我这边用电量90%左右的样机和50%左右的样机多次反复拔插电池
+   90%左右的电量样机电量跳变变化小在1-3%之间（多数跳变为1%）
+   50%左右的电量样机电量跳变变化稍大，大多跳变在2-10%之间，偶尔跳变20%（情况较少）
+2、20%左右的电量样机跳变幅度稍小在1-2%之间（多数为1%）
+3、如果正常开关机，不拔插电池的情况下，电池电量跳变大概范围就是1-2%左右，不会变化太大（大多数为1%）
+我看了其他样机9863、9832、7731都是这样子的现象。这个现象应该属于正常，但是不知道该怎么解释。
+帮忙看下是否合理、是否在正常范围之内、给客户一个合理的解释。感谢！|
+==== State: Closed by: cmadmin on 20 November 2019 00:37:40 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 29 October 2019 09:59:43 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:
+工厂反馈拔插电池开机后电量跳变异常问题
+[2.Resolution        ]:
+插拔电池会发生电池跳变是正常的，解释如下：
+1、为了保持关机前和开机后的电池电量的一致性，关机时，会更新电量一个rtc寄存器中，当不插拔电池时在次开机时，会读取此寄存器的值，来更新给ui，这就保持了关机前和开机后电量一致。
+2、当插拔电池时，此rtc寄存器会掉电，保存的关机前电量值丢失，这时再开机时，会读取pocv寄存器的值（电流很小的时候读取，相当于没有负载，读取的是ocv的值），去重新匹配电池曲线，得到当前电量，这会导致关机前和开机后电量不一致的情况，即跳变。
+3、pocv是通过adc读取，误差范围是正负20mv，因此，在电量密集区（3.7V左右），跳变的范围会更大，但在低电量去和高电量去，误差范围会相对较小。
+
+
+贵司做的测试结果和上述解释是吻合的。
+
+
+==== State: Opened by: cmadmin on 29 October 2019 09:59:43 ====
+
+  == Jihang.Yan@unisoc.com On 20191029T01:57:33 (xml) ==
+陈工，
+   请提交硬件CQ，来测试一下电池曲线和其他相关参数，然后在具体看一下电池曲线，看一下是否能满足贵司客户的要求。
+
+==== State: Opened by: waterworld on 29 October 2019 09:33:18 ====
+
+Hi 展讯您好：该电池曲线由客户提供，不是贵司测试的曲线。是否需要重新测试电池曲线，我这边安排客户寄电池到贵司帮忙测试电池曲线，并验证问题。谢谢！
+
+==== State: NeedInfo by: cmadmin on 29 October 2019 09:24:33 ====
+
+  == Jihang.Yan@unisoc.com On 2019-10-29T01:23:45Z (json) ==
+贵司的电池曲线是否用展讯测试方法测试过？
+(2019-10-28T09:54:55Z)
+
+==== State: Opened by: waterworld on 28 October 2019 17:52:02 ====
+
+另外客户的联系电话：18824585587 测试标准可以跟客户了解下，我已经给他说了电量密集区，如果跳变刚好在20mv的话可能会导致很大的跳变。
+
+==== State: Opened by: waterworld on 28 October 2019 17:46:57 ====
+
+Hi 展讯您好：
+您提供的解释我已经提供给客户，但是客户说他们需要控制误差范围在5%以内，我看了下他们提供的电池曲线在3.7-3.8v之间有一段很密集，怀疑是这个地方导致了拔插电池跳变过大的原因，劳烦您那边帮忙分析下电池曲线,看是不是导致这个的原因，看看如果不行的话，帮忙测试一下电池曲线。客户提供的电池曲线以及项目配置sprd-battery.dtsi见附件 电池曲线.zip     谢谢！
+
+==== State: Resolved by: cmadmin on 28 October 2019 11:02:47 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+工厂反馈拔插电池开机后电量跳变异常问题
+Solution:
+插拔电池会发生电池跳变是正常的，解释如下：
+1、为了保持关机前和开机后的电池电量的一致性，关机时，会更新电量一个rtc寄存器中，当不插拔电池时在次开机时，会读取此寄存器的值，来更新给ui，这就保持了关机前和开机后电量一致。
+2、当插拔电池时，此rtc寄存器会掉电，保存的关机前电量值丢失，这时再开机时，会读取pocv寄存器的值（电流很小的时候读取，相当于没有负载，读取的是ocv的值），去重新匹配电池曲线，得到当前电量，这会导致关机前和开机后电量不一致的情况，即跳变。
+3、pocv是通过ad c读取，误差范围是正负20mv，因此，在电量密集区（3.7V左右），跳变的范围会更大，但在低电量去和高电量去，误差范围会相对较小。
+
+
+贵司做的测试结果和上述解释是吻合的。
+
+==== State: Opened by: cmadmin on 28 October 2019 11:02:46 ====
+
+  == Jihang.Yan@unisoc.com On 20191028T02:58:02 (xml) ==
+插拔电池会发生电池跳变是正常的，解释如下：
+1、为了保持关机前和开机后的电池电量的一致性，关机时，会更新电量一个rtc寄存器中，当不插拔电池时在次开机时，会读取此寄存器的值，来更新给ui，这就保持了关机前和开机后电量一致。
+2、当插拔电池时，此rtc寄存器会掉电，保存的关机前电量值丢失，这时再开机时，会读取pocv寄存器的值（电流很小的时候读取，相当于没有负载，读取的是ocv的值），去重新匹配电池曲线，得到当前电量，这会导致关机前和开机后电量不一致的情况，即跳变。
+3、pocv是通过adc读取，误差范围是正负20mv，因此，在电量密集区（3.7V左右），跳变的范围会更大，但在低电量去和高电量去，误差范围会相对较小。
+
+
+贵司做的测试结果和上述解释是吻合的。
+
+==== State: Opened by: cmadmin on 28 October 2019 09:02:10 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00628939|[SC9832E][Waterworld][WW867][18部][TELCEL]    去掉紧急号码060失败|步骤：
+
+现象：
+
+分析：
+TELCEL项目：
+因为060已经不是紧急号码了，客户反馈在不插卡的情况下060仍被作为紧急号码拨出，我司修改：
+\packages\apps\CarrierConfig\assets\carrier_config_334020.xml
+<string name="ecclist_nocard">060,112,911,000,08,110,118,119,999</string>
+改为：
+<string name="ecclist_nocard">112,911,000,08,110,118,119,999</string>
+但是客户验证没插卡时还是能以紧急电话拨出去。
+附件是客户提供的Log信息，其中有显示紧急号码包含了060：
+emergencyNumbers: 060,112,911,000,08,110,118,119,999
+很奇怪，请分析，谢谢。|
+==== State: Closed by: waterworld on 28 October 2019 17:18:54 ====
+
+Dear  sprd：
+       修改有效，请关闭，谢谢。
+
+==== State: NeedInfo by: cmadmin on 28 October 2019 11:11:06 ====
+
+  == Xu.Peng@unisoc.com On 20191028T03:05:21 (xml) ==
+(In reply to waterworld from comment #0)
+Dear Customer,
+    请帮忙尽快反馈验证结果，谢谢！
+
+==== State: NeedInfo by: cmadmin on 26 October 2019 09:30:37 ====
+
+  == Ying.Song@unisoc.com On 2019-10-26T01:23:09Z (json) ==
+尊敬的客户，
+　　您好！
+　　如果060不需要作为紧急号码的话，需要将fake_ecclist_withcard下的060一并删除．
+
+对应plmn不需要作为紧急的进行删除如下：
+diff --git a/assets/carrier_config_334020.xml b/assets/carrier_config_334020.xml
+index 168a863..5379b8d 100644
+--- a/assets/carrier_config_334020.xml
++++ b/assets/carrier_config_334020.xml
+@@ -17,7 +17,6 @@
+     <carrier_config network_preferred="true">
+         <string name="ecclist_nocard">060,112,911,000,08,110,118,119,999</string>
+         <string name="ecclist_withcard">112,911</string>
+-        <string name="fake_ecclist_withcard">060</string>
+         <string name="default_vm_number_string">*86</string>
+(2019-10-25T12:07:04Z)
+|

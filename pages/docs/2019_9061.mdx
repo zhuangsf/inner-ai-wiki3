@@ -1,0 +1,1447 @@
+# SPCSS00567515|[SC9863A][Waterworld][ww859][18部] 去掉相机设置内AI scene recognition|步骤：
+
+现象：
+
+分析：
+Dear Sprd，
+   如何去掉相机设置内AI scene recognition？请告知如何修改.
+感谢！|
+==== State: Closed by: waterworld on 22 March 2019 09:43:13 ====
+
+Dear Sprd,
+   问题解，感谢支持！
+
+==== State: NeedInfo by: cmadmin on 21 March 2019 14:44:13 ====
+
+  == wangsx@spreadst.com On 2019-03-21T06:37:35Z (json) ==
+Dear Customer，
+
+  将Ai scene detect switch注释掉即可，请合入以下patch, 有问题反馈，谢谢！
+
+diff --git a/res/xml/dream_camera_preferences.xml b/res/xml/dream_camera_preferences.xml
+index 1e71288..e9bf36b 100644
+--- a/res/xml/dream_camera_preferences.xml
++++ b/res/xml/dream_camera_preferences.xml
+@@ -166,12 +166,12 @@
+             android:title="@string/pref_camera_photograph_eois_key_title" />
+ 
+         <!-- SPRD: Ai scene detect switch -->
+-        <com.dream.camera.settings.DreamUIPreferenceItemSwitch
++        <!--<com.dream.camera.settings.DreamUIPreferenceItemSwitch
+             android:defaultValue="true"
+             android:key="@string/pref_camera_ai_scene_detect_key"
+             android:layout="@layout/dream_ui_preference_custom"
+             android:title="@string/pref_camera_ai_scene_title"
+-            android:summary="@string/pref_camera_ai_scene_summy"/>
++            android:summary="@string/pref_camera_ai_scene_summy"/>-->
+(2019-03-20T12:40:21Z)
+
+==== State: Opened by: cmadmin on 20 March 2019 16:26:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567513|[SC9863A][Waterworld][FS170-02C]天锐祥FS170-02C S601-63A 项目音频调试需求|步骤：
+
+现象：同时用两台S601的机器对打，MIC送话断音且环境音大，听筒音量小且音质差,客户明天下午去贵司调试确认。
+
+
+分析：
+|
+==== State: Closed by: waterworld on 22 March 2019 09:41:17 ====
+
+ok
+
+==== State: Resolved by: cmadmin on 21 March 2019 17:57:21 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+音频参数优化
+Solution:
+音频参数优化
+
+==== State: Opened by: Tao_t.Zhou on 21 March 2019 17:53:35 ====
+
+尊敬的客户，您好!
+
+调试的参数见附件.
+
+谢谢!
+
+==== State: Opened by: cmadmin on 20 March 2019 16:26:58 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567511|[SC7731EF][Waterworld][FS361]6部FS361V0.1B 新版本测试天线OTA，请帮忙加急安排，谢谢|主板第2次改板改善GSM低频和W低频天线干扰问题。|
+==== State: Closed by: waterworld on 08 April 2019 10:45:30 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 29 March 2019 17:33:38 ====
+
+  == Wuqiang.Li@unisoc.com On 20190329T09:29:40 (xml) ==
+机器已寄出
+
+Analysis and Solution:
+[1.Root Cause        ]:test
+
+[2.Resolution        ]:test
+
+
+
+==== State: Opened by: wuqiang.li on 26 March 2019 13:29:30 ====
+
+样机已寄出，顺丰单号：441802627603.
+谢谢!
+
+==== State: Opened by: waterworld on 26 March 2019 12:12:58 ====
+
+您好，帮将样机寄回，谢谢！
+
+沃特沃德集团—董刚勇
+手机：13751057149 
+地址：中国 · 深圳市南山区南海大道1079号花园城数码大厦B座5楼 
+
+==== State: Resolved by: cmadmin on 25 March 2019 09:53:16 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+test
+Solution:
+test
+
+==== State: Opened by: wuqiang.li on 25 March 2019 09:47:54 ====
+
+测试数据见附件。其中2# WCDMA band5在暗室无信号.谢谢!
+
+==== State: Opened by: waterworld on 21 March 2019 14:21:52 ====
+
+测试GSM850和W850
+
+==== State: Opened by: cmadmin on 20 March 2019 16:04:36 ====
+
+  == Yu_y.Chen@unisoc.com On 20190320T07:53:58 (xml) ==
+请明确需要测试的频段，谢谢。
+|
+# SPCSS00567510|[SC9863A][Waterworld][ww859][18部] 去掉所有SIM卡下Mobile data always online选项|步骤：
+
+现象：
+
+分析：
+Dear Sprd,
+    如图，客户要求去掉所有SIM卡下Mobile data always online选项，请问该如何修改？
+感谢！
+|
+==== State: Closed by: cmadmin on 12 April 2019 00:34:23 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 21 March 2019 10:29:32 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户需求
+Solution:
+已告知修改方案
+
+==== State: Opened by: cmadmin on 20 March 2019 16:47:15 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567507|[SC9863A][Waterworld][ww859][18部]删除app battery settings下所有选项|步骤：
+
+现象：
+
+分析：
+dear Sprd,
+   删除app battery settings下所有选项,请告知如何修改？
+图片见附件
+感谢！|
+==== State: Closed by: cmadmin on 12 April 2019 00:34:23 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 21 March 2019 15:25:53 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:需求：删除app battery settings下所有选项
+
+[2.Resolution        ]:删除app battery settings下所有选项
+
+
+
+==== State: Opened by: waterworld on 21 March 2019 13:35:23 ====
+
+Dear Sprd,
+   问题已解决，感谢支持
+
+==== State: Opened by: cmadmin on 21 March 2019 11:17:29 ====
+
+  == zhuhao0701@spreadst.com On 2019-03-21T03:01:13Z (json) ==
+尊敬的客户，您好：
+   请执行以下修改，
+
+1、请在vendor/sprd/platform/packages/apps/Settings路经下，合入附件中vender.patch
+
+2、请在packages/apps/Settings路经下，合入附件中packages.patch
+
+请您尽快验证并且反馈结果，如有问题，请及时联系我们，谢谢。
+
+==== State: Opened by: cmadmin on 21 March 2019 09:50:03 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567505|[SC9863A][Waterworld][FS168][xm][tcl][7488992]条目排序应从英语条目开始，然后应该是俄语条目|步骤：
+1.进入联系人添加一些俄语姓名的联系人和英语姓名的联系人
+2.查看联系人列表，发现联系人排序是先俄语条目，然后英语条目->KO
+现象：
+期望:条目排序应从英语条目开始，然后应该是俄语条目
+分析：
+|
+==== State: Closed by: cmadmin on 16 April 2019 00:34:25 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 25 March 2019 20:32:50 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:需求拒绝
+
+[2.Resolution        ]:关闭
+
+
+
+==== State: Opened by: cmadmin on 25 March 2019 20:29:31 ====
+
+  == Xiaojie.Liu@unisoc.com On 20190325T12:27:55 (xml) ==
+Dear 其鸿
+如沟通，该需求展锐评估为客制化需求，请自行实现，如开发时有问题可以另提CQ咨询，谢谢！
+
+==== State: Opened by: cmadmin on 22 March 2019 15:02:43 ====
+
+  == Xiaojie.Liu@unisoc.com On 2019-03-22T06:57:55Z (json) ==
+Dear Customer：
+如沟通，之前禾苗的方案是8.1上调试的，目前需要在9.0上重新确认，我们内部还在走需求评估流程，时间可能稍长，另外该改动应该主要涉及上层，请先自行尝试能否处理，谢谢！
+
+==== State: Opened by: waterworld on 22 March 2019 11:32:01 ====
+
+您好，这个问题之前沟通说是会将禾苗的patch放上来，不过挺久了我看一直没给上来，看什么时候可以给出呢，另外联系方式可否留一下以便联系
+
+==== State: Opened by: cmadmin on 20 March 2019 18:46:56 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 20 March 2019 15:59:09 ====
+
+您好，这个问题根据客户那边的描述是禾苗的CQ：SPCSS00523388上面有处理过了，能否先将那个CQ上的patch给过来先验证一下呢
+|
+# SPCSS00567500|[SC9863A][Waterworld][ww859][18部] 删除Smart motion" and "Pocket mode选项|步骤：
+
+现象：
+
+分析：
+Dear Sprd,
+    设置-Smart controls，删除Smart motion" and "Pocket mode选项，请告知如何修改？
+感谢！|
+==== State: Closed by: cmadmin on 12 April 2019 00:34:24 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 21 March 2019 13:41:05 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户希望删除Smart motion" and "Pocket mode选项
+Solution:
+已将方案提供给客户
+
+==== State: Opened by: waterworld on 21 March 2019 13:35:47 ====
+
+Dear Sprd，
+   问题已解决，感谢支持
+
+==== State: Opened by: cmadmin on 21 March 2019 11:04:59 ====
+
+  == xubb0326@spreadst.com On 20190321T02:47:07 (xml) ==
+尊敬的客户您好，
+   如需删除Smart motion" and "Pocket mode选项，最简单的方法是将对应PreferenceController的isAvailable()返回false即可，贵司可参考以下进行修改：
+diff --git a/src/com/sprd/settings/smartcontrols/PocketModePreferenceController.java b/src/com/sprd/settings/smartcontrols/PocketModePreferenceController.java
+index 989cd27..45c083d 100644
+--- a/src/com/sprd/settings/smartcontrols/PocketModePreferenceController.java
++++ b/src/com/sprd/settings/smartcontrols/PocketModePreferenceController.java
+@@ -35,7 +35,8 @@ public class PocketModePreferenceController extends AbstractPreferenceController
+ 
+     @Override
+     public boolean isAvailable() {
+-        return isPocketModeAvailable(mContext);
++        //return isPocketModeAvailable(mContext);
++        return false;
+     }
+ 
+     @Override
+diff --git a/src/com/sprd/settings/smartcontrols/SmartMotionPreferenceController.java b/src/com/sprd/settings/smartcontrols/SmartMotionPreferenceController.java
+index f671ee2..9cdab24 100644
+--- a/src/com/sprd/settings/smartcontrols/SmartMotionPreferenceController.java
++++ b/src/com/sprd/settings/smartcontrols/SmartMotionPreferenceController.java
+@@ -44,7 +44,8 @@ public class SmartMotionPreferenceController extends AbstractPreferenceControlle
+ 
+     @Override
+     public boolean isAvailable() {
+-        return isSmartMotionAvailable(mContext);
++        //return isSmartMotionAvailable(mContext);
++        return false;
+     }
+ 
+     @Override
+
+还麻烦将验证结果及时反馈，我们将第一时间进行跟进，谢谢。
+
+==== State: Opened by: cmadmin on 20 March 2019 18:04:04 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567495|[SC9863A][Waterworld][ww859][18部] 删除系统中的运营商视频呼叫选项和VoLTE视频分辨率选项|步骤：
+
+现象：
+
+分析：
+Dear Sprd
+   设置-mobile network-Carrier video Calling，客户要求删除系统中的运营商视频呼叫选项和VoLTE视频分辨率选项
+请告知如何修改？
+图片见附件
+感谢！|
+==== State: Closed by: cmadmin on 11 April 2019 00:34:00 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 20 March 2019 19:57:31 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户需求
+Solution:
+已告知修改方案
+
+==== State: Opened by: cmadmin on 20 March 2019 19:57:28 ====
+
+  == caoyang1220@spreadst.com On 20190320T11:55:09 (xml) ==
+Dear customer,
+  烦请合入以下patch后验证,修改路径
+packages/services/Telephony/src/com/android/phone/MobileNetworkSettings.java
+
+diff --git a/src/com/android/phone/MobileNetworkSettings.java b/src/com/android/phone/MobileNetworkSettings.java
+index 1102e8e..5de78ec 100644
+--- a/src/com/android/phone/MobileNetworkSettings.java
++++ b/src/com/android/phone/MobileNetworkSettings.java
+@@ -2648,7 +2648,7 @@ public class MobileNetworkSettings extends Activity  {
+ 
+         private void updateVideoCallState() {
+             /* UNISOC: bug 900718 @{ */
+-            if (mVideoCallingPref == null || mPreferredSetResolution == null
++            /*if (mVideoCallingPref == null || mPreferredSetResolution == null
+                     || mCallingCategory == null) {
+                 return;
+             }
+@@ -2686,9 +2686,11 @@ public class MobileNetworkSettings extends Activity  {
+                 }
+             }else {
+                 mCallingCategory.removePreference(mVideoCallingPref);
+-                mCallingCategory.removePreference(mPreferredSetResolution);
++                mCallingCategory.removePreference(mPreferredSetResolution);*/
+                 /*  @} */
+-            }
++            //}
++            mCallingCategory.removePreference(mVideoCallingPref);
++            mCallingCategory.removePreference(mPreferredSetResolution);
+         }
+ 
+         private void updateCallingCategory() {
+@@ -2973,11 +2975,12 @@ public class MobileNetworkSettings extends Activity  {
+         }
+
+如有问题,请及时联系,感谢!
+ 
+         private boolean enableDataAlwaysOnline() {
+-            PersistableBundle carrierConfig = PhoneGlobals.getInstance().getCarrierConfig();
+-            if (carrierConfig != null) {
+-                return carrierConfig.getBoolean("enable_data_always_online_bool", true);
+-            }
+-            return true;
++//            PersistableBundle carrierConfig = PhoneGlobals.getInstance().getCarrierConfig();
++//            if (carrierConfig != null) {
++//                return carrierConfig.getBoolean("enable_data_always_online_bool", true);
++//            }
++//            return true;
++            return false;
+         }
+ 
+         private boolean isMobileDataAlwaysOnline(int subId) {
+
+==== State: Opened by: cmadmin on 20 March 2019 16:46:58 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567493|[SC7731E][Waterworld][FS383]GPS性能调试|请按照展讯标准调试GPS性能，谢谢！|
+==== State: Closed by: cmadmin on 03 May 2019 00:40:59 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 04 April 2019 11:02:59 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:GPS传导验证
+
+[2.Resolution        ]:客户反馈模块载板有更新，后续基于新载板软硬件调试验证
+
+
+
+==== State: Opened by: cmadmin on 04 April 2019 10:49:47 ====
+
+  == Jiwen.Yu@unisoc.com On 20190404T02:48:47 (xml) ==
+客户反馈模块载板有更新，后续基于新载板软硬件调试验证，先关闭此CQ。
+
+==== State: Opened by: cmadmin on 04 April 2019 10:49:45 ====
+
+  == Jiwen.Yu@unisoc.com On 20190404T02:45:54 (xml) ==
+reopen
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 29 March 2019 18:41:35 ====
+
+  == Jiwen.Yu@unisoc.com On 20190329T10:39:41 (xml) ==
+刘工，如沟通，当前软件版本耗电流偏高，请安排出一版优化了耗电流的软件版本，谢谢！
+(20190327T12:03:59)
+
+==== State: Opened by: cmadmin on 27 March 2019 20:05:53 ====
+
+  == Jiwen.Yu@unisoc.com On 2019-03-27T12:03:59Z (json) ==
+Tracking sensitivity，clock drift fail问题调试中
+
+==== State: Opened by: cmadmin on 22 March 2019 15:53:05 ====
+
+  == Jiwen.Yu@unisoc.com On 2019-03-22T07:48:30Z (json) ==
+样机clock drift超标，TSX与PMU/RF PA距离不满足要求
+-130dBm/-140dBm TTFF/定位精度验证OK，捕获灵敏度验证OK
+Tracking sensitivity测试值为-157dBm，未达标
+
+==== State: Opened by: cmadmin on 21 March 2019 19:59:39 ====
+
+  == Jiwen.Yu@unisoc.com On 2019-03-21T11:57:08Z (json) ==
+GPS馈点处CN0值为40
+
+==== State: Opened by: cmadmin on 20 March 2019 17:54:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567488|[SC9832E][Waterworld][FS097M11-K10][六部遵义]需要关展频，并将MIPI CLK频率改为250MHz|步骤：
+需要关展频，并将MIPI CLK频率改为250MHz
+现象：
+
+分析：请问这个需要怎么修改|
+==== State: Closed by: cmadmin on 12 April 2019 00:34:24 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 21 March 2019 10:52:18 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:lcd config
+
+[2.Resolution        ]:展频（ssc）开关请硬件在nv中配置
+
+clk是mipi速率的一半
+lcd驱动配置中的
+uboot
+.phy_freq = 500*1000,
+kernel
+clock-frequency = <500000>;
+
+
+
+==== State: Opened by: cmadmin on 20 March 2019 17:09:47 ====
+
+  == Evin.Wei@unisoc.com On 20190320T08:59:55 (xml) ==
+展频（ssc）开关请硬件在nv中配置
+
+clk是mipi速率的一半
+lcd驱动配置中的
+uboot
+.phy_freq = 500*1000,
+kernel
+clock-frequency = <500000>;
+
+==== State: Opened by: cmadmin on 20 March 2019 17:09:23 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567473|[SC9863A][Waterworld][FS170][XM]长截屏功能，以chrome为例，打开chrome后第一页支持长截图，后面随意打开可以上下滚动的网页，就不支持了!|长截屏功能，以chrome为例，打开chrome后第一页支持长截图，后面随意打开可以上下滚动的网页，就不支持了!
+详细可见附件视频，请帮忙看下，十分感谢~
+|
+==== State: Closed by: cmadmin on 19 April 2019 00:35:02 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 March 2019 13:06:22 ====
+
+  == Chrison.Chai@unisoc.com On 20190328T05:05:25 (xml) ==
+Dear Customer,
+如之前沟通，目前无法支持，请帮忙走关闭流程
+Thanks
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+目前长截屏设计在个别场景下不支持此功能
+Solution:
+目前长截屏设计在个别场景下不支持此功能
+
+==== State: Opened by: waterworld on 28 March 2019 11:25:52 ====
+
+您好，已和客户沟通，可以关闭此问题，十分感谢~
+
+==== State: NeedInfo by: cmadmin on 27 March 2019 10:21:54 ====
+
+  == Chrison.Chai@unisoc.com On 20190327T02:12:53 (xml) ==
+Dear Customer,
+这边使用对比机测试验证（小米机器）下载最新版本chrome应用测试同样有此情况，目前chrome代码无法修改，目前方案无法满足此种情况下的长截屏需求，建议贵司跟测试和客户沟通处理。
+Thanks.
+(20190326T02:38:01)
+
+==== State: Opened by: cmadmin on 26 March 2019 10:40:17 ====
+
+  == Chrison.Chai@unisoc.com On 20190326T02:38:01 (xml) ==
+Dear Customer,
+贵司能否将此问题类型修改为task?
+这边正在评估chrome应用支持的情况
+Thanks.
+
+==== State: Opened by: waterworld on 21 March 2019 11:52:12 ====
+
+您好，那目前可以先做到适配浏览器吗？
+
+==== State: Opened by: cmadmin on 21 March 2019 10:16:11 ====
+
+  == Chrison.Chai@unisoc.com On 2019-03-21T02:11:12Z (json) ==
+Dear Customer,
+目前长截屏功能无法覆盖各个场景，此种情况可能需要再进行适配开发，待完善后通知修改，具体时间未知
+Thanks.
+
+==== State: Opened by: cmadmin on 20 March 2019 16:03:33 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567451|[SC9820E][Waterworld][ww853][18部] 内置客需壁纸，显示异常|步骤：
+
+现象：预置一些客户需求的壁纸后，壁纸显示错乱，部分壁纸没有显示，部分壁纸重复显示
+(例如：内置10张壁纸，显示的壁纸个数是OK的10张，但是显示的壁纸不全，部分重复，部分没有显示出来)
+之前修改应用图标也是不会起效果，touch一下图片会OK，但是壁纸touch还是不行，请帮忙分析，感谢~
+
+分析：
+|
+==== State: Closed by: cmadmin on 13 April 2019 00:34:34 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 March 2019 18:59:03 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+getView中convertView复用，导致没有正确setImageResource
+Solution:
+调整getView中setImageResource逻辑。
+
+==== State: Opened by: waterworld on 22 March 2019 18:46:18 ====
+
+Dear,
+此问题可以了，感谢~
+
+==== State: Opened by: cmadmin on 22 March 2019 18:33:01 ====
+
+  == Wentong.Zhang@unisoc.com On 2019-03-22T10:29:08Z (json) ==
+如沟通，合入方案有问题，请参照comment5中方案谨慎合入后验证。
+
+谢谢
+
+==== State: Opened by: waterworld on 22 March 2019 17:24:03 ====
+
+Dear,
+code已上传，感谢分析~
+
+==== State: Opened by: cmadmin on 22 March 2019 17:13:54 ====
+
+  == Wentong.Zhang@unisoc.com On 20190322T09:08:28 (xml) ==
+dear，
+
+如电话沟通，不好意思，传成调试问题的apk了。
+
+贵司上传的我司apk截图与我本地现象一样。本地合入comment5中方案确认ok。
+
+请帮忙使用new apk文件夹中的apk重新确认。
+
+如使用apk确认问题修复，请检查贵司代码修改是否生效；如确认问题没有修复，我们再进一步跟踪。
+
+谢谢
+
+==== State: Opened by: waterworld on 22 March 2019 16:33:48 ====
+
+Dear,
+我 push提供的APK还是有此现象，看提供的图片2.jpg  3.jpg，
+我全编译了还是一样的！
+
+==== State: Opened by: cmadmin on 22 March 2019 15:40:39 ====
+
+  == Wentong.Zhang@unisoc.com On 2019-03-22T07:37:00Z (json) ==
+dear，
+
+请使用FTP中apk确认问题是否修复。
+
+如问题修复，请自行确认贵司修改是否生效。
+
+谢谢
+
+==== State: Opened by: waterworld on 22 March 2019 13:55:37 ====
+
+Dear,
+验证没修复！
+
+==== State: Opened by: cmadmin on 22 March 2019 13:36:27 ====
+
+  == Wentong.Zhang@unisoc.com On 2019-03-22T05:33:13Z (json) ==
+dear,
+
+请帮忙使用以下修改验证问题是否修复：
+packages/apps/SimpleHome/WallpaperPicker/src/com/sprd/wallpaperpicker/SetWallpaperAdapter.java
+... ...
+        if (convertView == null) {
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.wallpaper_item, null);
+--            ImageView imageView = (ImageView) convertView.findViewById(R.id.wallpaper_item);
+--            imageView.setImageResource(WallpaperUtil.getWallpaperRes(mContext, position));
+        }
+++        if (convertView != null) {
+++            ImageView imageView = (ImageView) convertView.findViewById(R.id.wallpaper_item);
+++            imageView.setImageResource(WallpaperUtil.getWallpaperRes(mContext, position));
+++        }
+
+谢谢
+
+==== State: Opened by: waterworld on 21 March 2019 16:55:17 ====
+
+Dear，
+多次验证发现，只要一个界面显示不完都会有此现象，此项目是320*240的，界面显示6张壁纸，所以内置大于7张壁纸都会发生此现象，内置在6张内就没发现此现象
+
+==== State: Opened by: cmadmin on 21 March 2019 16:42:08 ====
+
+  == Wentong.Zhang@unisoc.com On 2019-03-21T08:35:35Z (json) ==
+正在分析中，有进展会及时反馈。
+
+谢谢
+
+==== State: Opened by: waterworld on 21 March 2019 15:07:43 ====
+
+Dear,
+下载文档查看客制化壁纸，我就是这样做的。
+现在的情况是：壁纸列表显示错乱，如附件1.jpg。点开查看/设置成壁纸是正常的
+
+==== State: Opened by: cmadmin on 20 March 2019 16:56:46 ====
+
+  == Wentong.Zhang@unisoc.com On 2019-03-20T08:42:46Z (json) ==
+dear,
+
+如何增加预置壁纸，请参考《Mocor5 ClassicHome客制化文档》有关如何增加壁纸章节。
+
+PS：
+1.每张平台240X320壁纸资源大小为20多K，如贵司目前壁纸每张为100多K的话，请贵司处理一下壁纸资源，以免引出其他性能问题。
+2.相关文档，请贵司自行从isupport中获得。
+
+谢谢
+
+==== State: Opened by: cmadmin on 20 March 2019 15:46:13 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567450|[SC9850K][Waterworld][DT850][3部][DT850][Launcher]内置APK后开机速度非常慢|Dear  展讯，
+        SC9850K平台8.1系统，内置APK后开机速度非常慢。
+用的是user版本验证的，并且内置的APK对应的.mk文件中也没有LOCAL_DEX_PREOPT := false这个选项。|
+==== State: Closed by: cmadmin on 13 April 2019 00:34:34 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 March 2019 15:17:45 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+PackageParser中修改引起。
+Solution:
+回退有关PackageParser的修改后，问题修复。
+
+==== State: Opened by: cmadmin on 21 March 2019 14:00:58 ====
+
+  == Wentong.Zhang@unisoc.com On 20190321T05:57:37 (xml) ==
+dear,
+
+M001C2A 01-01 00:06:28.163   806   950 I PackageParser: it is not system app!!!!
+M001C2B 01-01 00:06:28.187   806   950 I PackageParser: ---> com.iflytek.inputmethod
+M001C2C 01-01 00:06:28.187   806   950 I PackageParser: isAppInstall()
+M001C2D 01-01 00:06:28.187   806   950 I PackageParser: state :0
+M001C2E 01-01 00:06:28.187   806   950 I PackageParser: ------------------------------------
+M001C2F 01-01 00:06:28.187   806   950 I PackageParser: packageName: com.iflytek.inputmethod
+M001C30 01-01 00:06:28.187   806   950 I PackageParser: packageNameInstall: null
+M001C31 01-01 00:06:28.187   806   950 I PackageParser: verifyPacakgeCerts()
+S001C32 01-01 00:06:28.188   806   950 D PackageParser: readLocalSiagnatrue()
+S001C33 01-01 00:06:28.188   806   950 D PackageParser: siagnafile.exists() :false
+M001C34 01-01 00:06:28.188   806   950 I PackageParser: mSize :0
+S001C35 01-01 00:06:28.188   806   950 D PackageParser: readLocalSiagnatrue(SiagnatruePath) return false --> 闇€缂栬瘧permit_app_signs.xml鏂囦欢鍒扮郴缁熸潈闄愭墠鐢熸晥锛?M001C36 01-01 00:06:28.203   806   950 I PackageParser: ---> com.iflytek.inputmethod
+M001C37 01-01 00:06:28.203   806   950 I PackageParser: isAppInstall()
+M001C38 01-01 00:06:28.204   806   950 I PackageParser: state :0
+
+
+M03BC56 01-01 00:17:00.457   806   948 I PackageParser: ------------------------------------
+M03BC57 01-01 00:17:00.457   806   948 I PackageParser: packageName: com.baidu.BaiduMap
+M03BC58 01-01 00:17:00.457   806   948 I PackageParser: packageNameInstall: null
+M03BC59 01-01 00:17:00.458   806   948 I PackageParser: verifyPacakgeCerts()
+S03BC5A 01-01 00:17:00.458   806   948 D PackageParser: readLocalSiagnatrue()
+S03BC5B 01-01 00:17:00.458   806   948 D PackageParser: siagnafile.exists() :false
+M03BC5C 01-01 00:17:00.458   806   948 I PackageParser: mSize :0
+S03BC5D 01-01 00:17:00.458   806   948 D PackageParser: readLocalSiagnatrue(SiagnatruePath) return false --> 闇€缂栬瘧permit_app_signs.xml鏂囦欢鍒扮郴缁熸潈闄愭墠鐢熸晥锛?S03BC5E 01-01 00:17:00.458   806   948 I PackageParserUtils: collectCertificates length = 11105
+S03BC5F 01-01 00:17:00.459   806  1989 E PackageParserUtils: asyncNum = 1
+S03BC60 01-01 00:17:00.460   806  1990 E PackageParserUtils: asyncNum = 2
+M03BC61 01-01 00:17:00.464   806  1989 D PackageParserUtils: pkg: com.baidu.BaiduMappkg.mCertificates:  [[Ljava.security.cert.Certificate;@1bccb5f  pkg.mSignatures: [Landroid.content.pm.Signature;@dd3b9ac
+
+由以上log得知，从00:06:28到00:17:00，PackageParser中一直在打印上述log，请帮忙确认贵司在PackageParser中是否有修改，并确认是否修改引起。
+
+另请帮忙将相关文件上传：
+frameworks/base/core/java/android/content/pm/PackageParser.java
+
+
+谢谢
+
+==== State: Opened by: waterworld on 20 March 2019 17:55:17 ====
+
+附件已上传
+
+==== State: Opened by: cmadmin on 20 March 2019 15:55:00 ====
+
+  == Wentong.Zhang@unisoc.com On 2019-03-20T07:52:16Z (json) ==
+dear，
+
+如电话沟通，贵司debug版本存在同样问题。
+
+请帮忙提供debug版本开机log以及出问题的APK
+
+谢谢
+
+==== State: Opened by: cmadmin on 20 March 2019 15:54:56 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567443|[SC9832E][Waterworld][FS098][六部][遵义]你好，请问下9832E 8.1 平台是否支持投影功能？若支持，在什么地方控制的，谢谢|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 22 March 2019 10:12:11 ====
+
+关闭，谢谢
+
+==== State: Resolved by: cmadmin on 21 March 2019 17:54:06 ====
+
+  == Ethan.Lin@unisoc.com On 20190321T09:52:25 (xml) ==
+后续如果还有相关问题，请直接提交一个新CQ追踪，谢谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+已全数回覆客户
+Solution:
+已全数回覆客户
+
+==== State: Opened by: cmadmin on 21 March 2019 17:54:02 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 21 March 2019 17:13:26 ====
+
+  == Ethan.Lin@unisoc.com On 20190321T09:06:01 (xml) ==
+尊敬的客户您好：
+
+感谢提供，若贵司使用的是这个里面编译工程目录的话，是不支持wifi-display的没错
+这个是go项目，我司不支持
+
+相关的关闭修改是有在里面的, 例如
+common/wlan/overlay/frameworks/base/core/res/res/values/config.xml
+
+故不支持，请知悉
+(20190321T08:57:03)
+
+==== State: Opened by: waterworld on 21 March 2019 16:48:54 ====
+
+你好，已上传附件
+
+==== State: NeedInfo by: cmadmin on 21 March 2019 16:30:20 ====
+
+  == Ethan.Lin@unisoc.com On 2019-03-21T08:23:45Z (json) ==
+尊敬的客户您好：
+
+请提供贵司代码 "device/sprd/sharkle"底下的文件打包上传给我们看看
+
+谢谢
+(2019-03-21T07:29:41Z)
+
+==== State: Opened by: waterworld on 21 March 2019 15:26:31 ====
+
+你好，目前本项目没有cast菜单，跟进去发现是 packages\apps\Settings\src\com\android\settings\wfd\WifiDisplaySettings.java 中的isAvailable(Context context)函数控制，里面有2个系统服务的判断，请问这2个服务有什么作用，怎么确认本项目是否开启，谢谢
+
+==== State: Opened by: cmadmin on 21 March 2019 09:45:51 ====
+
+  == Ethan.Lin@unisoc.com On 20190321T01:44:20 (xml) ==
+尊敬的客户您好：
+
+支持。
+
+相关代码是开源的，在frameworks/av/media/libstagefright/wifi-display/底下
+
+本地用样机看，手机的settings->connected devices->Cast 可以选。
+
+请知悉，谢谢。
+
+==== State: Opened by: cmadmin on 20 March 2019 17:33:13 ====
+
+  == Lishan.Zeng@unisoc.com On 20190320T09:12:15 (xml) ==
+不好意思，我刚刚理解有误。投影的功能，请media同事确认，底层都是ok的。
+N2AInBug
+
+
+==== State: Resolved by: cmadmin on 20 March 2019 16:56:34 ====
+
+  == Lishan.Zeng@unisoc.com On 2019-03-20T08:40:13Z (json) ==
+客户你好，如今天电话沟通，相关项目立项相关的东西请统一找CPM处理，thanks！
+
+==== State: Opened by: cmadmin on 20 March 2019 16:56:15 ====
+
+Dear Waterworld:
+The Issue is under processing now
+Thank you
+
+|
+# SPCSS00567442|[SC9863A][Waterworld][blu][6部]UBER Driver  app crashes|blu 反馈优步APP应用程序登录后崩溃，CQ解决过，这是个已知的问题。。。客户只给到这些信息。。。
+|
+==== State: Closed by: cmadmin on 08 May 2019 00:44:05 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 16 April 2019 19:37:59 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:该问题暂时无法提供log，先关闭
+
+[2.Resolution        ]:该问题暂时无法提供log，先关闭
+
+
+
+==== State: Opened by: cmadmin on 16 April 2019 19:18:30 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+
+==== State: NeedInfo by: cmadmin on 04 April 2019 17:48:58 ====
+
+  == Hang.Xu@unisoc.com On 2019-04-04T09:47:34Z (json) ==
+等待基于W19.10.4版本提供的so未反馈测试结果，需要先提供这个结果后，我们再基于W19.11.5_P2提供新的so.
+(2019-04-03T08:17:27Z)
+
+==== State: Opened by: waterworld on 03 April 2019 15:58:09 ====
+
+你好，请问一下现在的库能在MOCORDROID9.0_Trunk_18C_W19.11.5_P1这个大版本上使用么 还是需要更新库？
+
+==== State: Opened by: cmadmin on 03 April 2019 10:31:54 ====
+
+  == Hang.Xu@unisoc.com On 20190403T02:29:41 (xml) ==
+WW你好：
+MOCORDROID9.0_Trunk_18C_W19.11.5_P1这个大版本 没有包含UBER crash的修改
+
+==== State: Opened by: waterworld on 03 April 2019 09:59:20 ====
+
+昨天合入了MOCORDROID9.0_Trunk_18C_W19.11.5_P1这个大版本发现这两个文件也有做修改 想确认一下信息 这个大版本的修改 是否也包含了这个patch
+
+==== State: Opened by: cmadmin on 02 April 2019 16:24:13 ====
+
+  == lutong0321@spreadst.com On 20190402T08:21:13 (xml) ==
+你好尊敬的客户：
+	so的路径为：
+	vendor/sprd/external/drivers/gpu/rogue/usr/sharkl3/lib/
+	vendor/sprd/external/drivers/gpu/rogue/usr/sharkl3/lib64/
+	
+如有问题，请及时与我联系，十分感谢
+[C][NJ_ST_MM_Graphics][19/4/2][lutong0321]
+
+==== State: Opened by: cmadmin on 01 April 2019 14:13:25 ====
+
+  == lutong0321@spreadst.com On 2019-04-01T06:11:06Z (json) ==
+你好尊敬的客户：
+  附件我们提供了临时的patch，请将libs解压，执行以下命令：
+adb root
+adb remount
+adb push lib/libusc.so /vendor/lib/
+adb push lib64/libusc.so /vendor/lib64/
+adb reboot
+请验证是否解决问题。
+如有问题，请及时与我联系，十分感谢
+[C][NJ_ST_MM_Graphics][19/4/1][lutong0321]
+
+==== State: Opened by: waterworld on 01 April 2019 10:15:29 ====
+
+目前大版本是MOCORDROID9.0_Trunk_18C_W19.10.4
+
+==== State: Opened by: waterworld on 01 April 2019 09:57:29 ====
+
+请问一下 什么时候能提供patch
+
+==== State: Opened by: cmadmin on 29 March 2019 22:53:40 ====
+
+  == Hang.Xu@unisoc.com On 20190329T14:42:32 (xml) ==
+hI 
+请尽快给客户提供PATCH
+
+==== State: Opened by: cmadmin on 27 March 2019 10:21:50 ====
+
+  == Hang.Xu@unisoc.com On 20190327T02:16:02 (xml) ==
+HI 
+此问题是平台共性问题，已经在内部 Bug 1019692 修复
+
+不需要客户提供LOG 
+
+请将解决方案提供给客户
+
+==== State: Resolved by: cmadmin on 26 March 2019 14:02:54 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+该问题暂时无法提供log，先关闭
+Solution:
+该问题暂时无法提供log，先关闭
+
+==== State: Opened by: cmadmin on 26 March 2019 14:02:50 ====
+
+  == huguang0718@spreadst.com On 2019-03-26T05:51:34Z (json) ==
+Dear Customer,
+如电话沟通，该问题暂时无法提供log，先关闭，后续反馈重提cq解决，谢谢。
+
+==== State: NeedInfo by: cmadmin on 20 March 2019 15:17:06 ====
+
+  == zhouyong0701@spreadst.com On 20190320T07:08:48 (xml) ==
+有log文件吗？
+(20190320T06:56:44)
+|
+# SPCSS00567429|[SC9820E][Waterworld][WW833_V1.0][18部]喇叭马达二合一的目前有震动，但是效果很差，而且有尖叫声，请帮忙调试。|此喇叭马达二合一效果软件客户等着给终端客户确认，请加急处理|
+==== State: Closed by: cmadmin on 02 May 2019 00:40:37 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 03 April 2019 17:37:04 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+调试的参数见附件。结构上还需要做好mic密封，喇叭后音腔的那圈泡棉一定要贴。
+Solution:
+调试完毕，我手上这台机器先寄回，还有一台机器在上海研发那边测试一下震动效果。
+
+==== State: Opened by: waterworld on 29 March 2019 20:25:38 ====
+
+白工：
+此问题客户接受不了，后继项目用不带震动功能的喇叭和震动马达来实现。这段时间辛苦你了，并帮忙把2台样机寄回来
+
+==== State: Opened by: cmadmin on 29 March 2019 16:30:34 ====
+
+  == Yang.Bai@unisoc.com On 2019-03-29T08:27:39Z (json) ==
+Hi 客户
+如电话沟通，首先请确认一下是否能接受震动时的pop音。可以在震动正常的时候听到每次震动开头会有个啪一声。
+如果pop音接受不了建议不要使用此功能。如果能接受，我司正常样机上验证这个异常音的问题。
+
+==== State: Opened by: waterworld on 28 March 2019 16:51:32 ====
+
+Dear SPRD,
+如上午电话沟通，得知现在是贵司硬件同事跟进，请问现在分析的进展如何？
+
+==== State: Opened by: waterworld on 27 March 2019 19:32:36 ====
+
+Dear SPRD,
+请问贵司现在的进展如何？是否需要寄机器给贵司分析？
+
+==== State: Opened by: cmadmin on 27 March 2019 16:23:36 ====
+
+  == Ye.Zhang@unisoc.com On 2019-03-27T08:20:12Z (json) ==
+dump 寄存器看正常的异常的时候没有差别,请jianlin在我们平台手机上复现一下
+谢谢!
+
+==== State: Opened by: waterworld on 27 March 2019 15:00:38 ====
+
+Dear SPRD,
+请问贵司抓取寄存器的结果如何？
+
+==== State: Opened by: cmadmin on 26 March 2019 19:45:49 ====
+
+  == Ye.Zhang@unisoc.com On 20190326T11:41:45 (xml) ==
+(In reply to waterworld from comment #9)
+尊敬的客户
+tao已经在抓寄存器了
+
+==== State: Opened by: waterworld on 26 March 2019 18:54:37 ====
+
+Dear SPRD,
+请问贵司现在的进展如何？
+
+==== State: Opened by: cmadmin on 26 March 2019 17:24:00 ====
+
+  == Ye.Zhang@unisoc.com On 20190326T09:15:23 (xml) ==
+(In reply to waterworld from comment #7)
+add tao
+
+==== State: Opened by: waterworld on 26 March 2019 16:19:14 ====
+
+Dear SPRD,
+如刚才电话沟通，贵司负责硬件的对接人请假，能否安排其他同事跟进，并且把联系方式提供一下，这项目非常急，需要这周有结果，希望贵司可以积极配合，谢谢！
+
+==== State: Opened by: waterworld on 26 March 2019 11:41:23 ====
+
+Dear SPRD,
+请问贵司硬件查看寄存器的结果如何，另外，负责软件的同事是否需要我们寄机器给贵司分析？
+
+==== State: Opened by: cmadmin on 26 March 2019 10:09:07 ====
+
+  == Ye.Zhang@unisoc.com On 2019-03-26T02:08:11Z (json) ==
+(In reply to waterworld from comment #4)
+尊敬的客户
+让我们这边硬件同事先帮忙抓寄存器
+
+==== State: Opened by: waterworld on 25 March 2019 20:58:23 ====
+
+Dear SPRD,
+是需要我们这边抓取寄存的值吗？请问如何抓取
+谢谢
+
+==== State: Opened by: cmadmin on 25 March 2019 20:40:26 ====
+
+  == Ye.Zhang@unisoc.com On 20190325T12:39:10 (xml) ==
+hi yang
+如邮件沟通,请帮忙对比下异常和正常时的寄存器
+
+==== State: Opened by: waterworld on 25 March 2019 20:22:01 ====
+
+Dear SPRD,
+贵司现在的进展如何，能否提供当前处理人的联系方式，谢谢
+
+==== State: Opened by: cmadmin on 20 March 2019 14:49:01 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567428|[SC9820E][Waterworld][WW853_V1.0][18部]请在9820E平台上帮忙验证MEMROY,规格为H9TP32A4GDCCPR-KGM,HYNIX|待TYC0FH121597RA后，用这个机器来验证H9TP32A4GDCCPR-KGM|
+==== State: Closed by: cmadmin on 16 April 2019 00:34:26 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 25 March 2019 13:25:14 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 25 March 2019 13:25:11 ====
+
+  == lu.huang@unisoc.com On 2019-03-25T05:21:34Z (json) ==
+该物料已经认证pass！贵司寄送的样片我寄回给小华。
+
+==== State: NeedInfo by: cmadmin on 20 March 2019 17:33:03 ====
+
+  == lu.huang@unisoc.com On 20190320T09:15:26 (xml) ==
+已经上传“展锐memory物料认证入口条件_V1.1”，还请按照此表格准备样机，至少寄送10台符合要求的样机。
+(20190320T06:45:54)
+
+==== State: Opened by: cmadmin on 20 March 2019 14:49:08 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567416|[SC7731E][Waterworld][FS383]WCN调试|按照展讯的标准调试WIFI/GPS/BT/FM，相关资料及PCBA，工程师现场提供。谢谢！|
+==== State: Closed by: cmadmin on 25 April 2019 00:43:09 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 20:12:28 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+WCN调试
+Solution:
+优化ini，匹配器件
+
+==== State: Opened by: cmadmin on 27 March 2019 20:12:25 ====
+
+  == Jiwen.Yu@unisoc.com On 2019-03-27T12:08:59Z (json) ==
+调试ini参数，匹配器件，WiFi/BT传导性能pass，数据见CQ附档。
+请将更新的ini文件放入软件vendor/etc/wcn路径。
+
+==== State: Opened by: cmadmin on 27 March 2019 13:42:45 ====
+
+  == Jiwen.Yu@unisoc.com On 20190327T05:37:58 (xml) ==
+调试ini参数，匹配器件，WiFi/BT传导性能pass
+
+==== State: Opened by: cmadmin on 25 March 2019 15:48:18 ====
+
+  == Jiwen.Yu@unisoc.com On 2019-03-25T07:43:16Z (json) ==
+WiFi/BT传导性能调试中
+
+==== State: Opened by: cmadmin on 22 March 2019 16:02:21 ====
+
+  == Jiwen.Yu@unisoc.com On 20190322T07:56:04 (xml) ==
+模块及载板上没有接出耳机座电路，样机软件也不支持FM外放模式，与客户沟通FM传导参数暂无法测试
+
+==== State: Opened by: cmadmin on 21 March 2019 20:02:28 ====
+
+  == Jiwen.Yu@unisoc.com On 20190321T11:58:58 (xml) ==
+刘工，如沟通，模块GPS/WiFi天线pad建议包地，用地pad隔开。
+模块载板上RF线需做50ohm阻抗管控。
+
+==== State: Opened by: cmadmin on 20 March 2019 14:55:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567414|[SC9850K][Waterworld][AB897]9850K+3595A 另一组LVDS和SPI B可否不接|你好：
+     我们有个9850K+3595A项目，不做CAT6,只做CAT4，这两处信号能否不连？LVDS管脚 H10 ,J11 K12,H12,J9,K8和
+SPI中的J13,J15,K14。这几个管脚不接。|
+==== State: Closed by: cmadmin on 12 April 2019 00:34:27 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 21 March 2019 13:48:17 ====
+
+  == Ethan.Feng@unisoc.com On 2019-03-21T05:44:42Z (json) ==
+刘工
+如电话沟通，SC9850K做cat4与cat7接线方式一致，另一组LVDS和SPI B请都接上。
+请以此结论为准，知悉。感谢
+
+==== State: Resolved by: cmadmin on 21 March 2019 11:30:48 ====
+
+  == Ethan.Feng@unisoc.com On 20190321T03:15:39 (xml) ==
+刘工
+如电话沟通，SC9850K做cat4与cat7接线方式一致，另一组LVDS和SPI B请都接上。
+请以此结论为准，知悉。感谢
+
+Analysis and Solution:
+RootCause:
+如电话沟通，SC9850K做cat4与cat7接线方式一致，另一组LVDS和SPI B请都接上。
+请以此结论为准，知悉。感谢
+Solution:
+如电话沟通，SC9850K做cat4与cat7接线方式一致，另一组LVDS和SPI B请都接上。
+请以此结论为准，知悉。感谢
+
+==== State: Opened by: cmadmin on 21 March 2019 11:30:46 ====
+
+  == Ethan.Feng@unisoc.com On 20190321T03:15:15 (xml) ==
+刘工
+如电话沟通，SC9850K做cat4与cat7接线方式一致，另一组LVDS和SPI B请都接上。
+请以此结论为准，知悉。感谢
+
+==== State: Resolved by: cmadmin on 21 March 2019 10:51:57 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:如果是Cat4，LVDSRF1（SCC）六根线全部悬空即可，软件请注意选择带CAT4标识的NV工程；SPI 6根都不能删除，知悉。
+
+[2.Resolution        ]:如果是Cat4，LVDSRF1（SCC）六根线全部悬空即可，软件请注意选择带CAT4标识的NV工程；SPI 6根都不能删除，知悉。
+
+
+
+==== State: Opened by: cmadmin on 20 March 2019 17:59:06 ====
+
+  == Ethan.Feng@unisoc.com On 20190320T09:54:13 (xml) ==
+刘工
+如果是Cat4，LVDSRF1（SCC）六根线全部悬空即可，软件请注意选择带CAT4标识的NV工程；SPI 6根都不能删除，知悉。
+
+==== State: Opened by: cmadmin on 20 March 2019 14:48:36 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00567413|[SC9820W][Waterworld][FS352]威恳FS352-03V LTE B2 B7 灵敏度比较差，帮忙安排优化|威恳FS352-03V LTE B2 B7 灵敏度比较差，帮忙安排优化  主板在惠州，项目比较急 请帮忙加急处理 ，
+附件上传FIAL 报告|
+==== State: Closed by: cmadmin on 13 April 2019 00:34:35 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 March 2019 17:39:15 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+TX Desense 1~3dB，盖屏蔽盖恶化2~3dB
+Solution:
+重新调试匹配后主加分可以达到要求。
+
+==== State: Opened by: cmadmin on 21 March 2019 16:52:28 ====
+
+  == Biao.Yang@unisoc.com On 2019-03-21T08:47:29Z (json) ==
+shiwei
+
+现在WISOL用这组匹配，盖上屏蔽盖，主分同开的情况下有2.5dB余量了。
+
+==== State: Opened by: cmadmin on 20 March 2019 16:55:57 ====
+
+  == Biao.Yang@unisoc.com On 2019-03-20T08:44:23Z (json) ==
+shiwei
+如沟通请更改物料：C0477=47pf,C0499=1.8nh验证。
+
+==== State: Opened by: cmadmin on 20 March 2019 14:48:23 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

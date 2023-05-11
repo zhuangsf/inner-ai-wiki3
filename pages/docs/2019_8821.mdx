@@ -1,0 +1,1140 @@
+# SPCSS00569437|[SC9820E][Waterworld][A359][SC9820E][1部][A359]SC9820E平台做双屏硬件上是怎么实现的，谢谢|[SC9820E][1部][A359]SC9820E平台做双屏硬件上是怎么实现的，谢谢|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:04 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 16:58:47 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NC
+Solution:
+GPIO模拟SPI的片选来实现接口控制，背光建议外置电路实现
+
+==== State: Opened by: cmadmin on 27 March 2019 16:58:44 ====
+
+  == Nick.Xiang@unisoc.com On 20190327T08:53:58 (xml) ==
+Dear customer：
+     如电话沟通，硬件上是可行的，通过GPIO口模拟一个片选去控制多出来的副屏即可，帧同步信号及复位信号均可用GPIO口实现；背光可用RGB LED分出来的一路来实现，但需要考虑电流，单路RGB的电流最大才27.7mA; 因此建议用外置的背光电路来控制。建议提交软件CQ，由软件同事来评估软件的可行性。谢谢！
+
+==== State: Opened by: waterworld on 27 March 2019 10:52:25 ====
+
+做翻盖机，主屏240x320 副屏128x128,显示不同步。谢谢
+
+==== State: Opened by: cmadmin on 27 March 2019 09:50:58 ====
+
+  == Nick.Xiang@unisoc.com On 20190327T01:44:52 (xml) ==
+Dear customer:
+     请明确一下需求。双屏是指用两个一样的屏吗？屏的分辨率是多少？是否同时同步显示？背光是否同步控制？
+
+==== State: Opened by: cmadmin on 26 March 2019 18:04:31 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569415|[SC9820E][Waterworld][A355]音频部分技术表格参数确认|你好：
+     附件是TCL那边的技术表格，帮忙安排确认表格中对应黄色部分的音频参数是否支持？
+|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:04 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 15:02:44 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:通话参数确认
+
+[2.Resolution        ]:
+通话参数确认
+
+
+==== State: Opened by: cmadmin on 27 March 2019 13:27:05 ====
+
+  == He.Yang@unisoc.com On 2019-03-27T05:20:07Z (json) ==
+信息参考附件的文档
+
+==== State: Opened by: cmadmin on 27 March 2019 13:04:28 ====
+
+  == Daowei.Jie@unisoc.com On 2019-03-27T05:02:43Z (json) ==
+Hi he:
+   请帮忙和客户沟通下，comment3和comment5是确认结果，谢谢！
+
+==== State: Opened by: cmadmin on 26 March 2019 18:00:30 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569410|[SC9820E][Waterworld][A350]听筒，喇叭，麦克CTA指标测试|展讯的同事，你好：
+     由于客户更换喇叭，并自行测了CAT指标反馈上行音量小，故请帮忙再次从新安排实验室，按照CTA标准帮忙测试一下听筒，喇叭，麦克的CTA性能。谢谢！（昨天预约今天上午9点半过去的，但由于今天软件版本原因去了贵司无法连接音频工具调试，带来不便敬请谅解，所以请从新再次安排时间，谢谢！）|
+==== State: Closed by: cmadmin on 02 May 2019 00:40:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 03 April 2019 14:56:39 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+1#和2#样机硬件有不同，都换了喇叭进行CTA调试
+Solution:
+na
+
+==== State: Opened by: cmadmin on 03 April 2019 14:56:36 ====
+
+  == Jinlian.Lin@unisoc.com On 20190403T06:52:59 (xml) ==
+已完成1#和2#样机的CTA认证调试。
+
+==== State: Opened by: cmadmin on 03 April 2019 14:56:34 ====
+
+  == Jinlian.Lin@unisoc.com On 20190403T06:51:35 (xml) ==
+hi 唐工，
+    1#样机的CTA认证参数已上传，下午下来实验室volte成功call上了。
+    1#和2#样机的CTA认证测试报告都在实验室电脑上，需要你们自己过来拷。
+
+==== State: Opened by: waterworld on 03 April 2019 11:21:54 ====
+
+针对无法连接的问题，已建cq SPCSS00571406,帮忙捉log进行分析，谢谢
+
+==== State: NeedInfo by: cmadmin on 03 April 2019 11:15:47 ====
+
+  == Jinlian.Lin@unisoc.com On 2019-04-03T03:09:20Z (json) ==
+等待客户给1#样机软件版本，目前1#机call不上volte.还未调试volte部分
+(2019-04-02T06:14:23Z)
+
+==== State: Opened by: cmadmin on 02 April 2019 14:16:58 ====
+
+  == Jinlian.Lin@unisoc.com On 2019-04-02T06:14:23Z (json) ==
+我们拷不出来报告呀，刚下去拿报告没拿出来，需要你们自己过来拷了。
+
+==== State: Opened by: waterworld on 02 April 2019 13:48:34 ====
+
+林工，修改好的样机最好报告也提供一份，谢谢。
+
+==== State: Opened by: waterworld on 02 April 2019 13:44:10 ====
+
+林工，1号样机的软件我们这边的软件工程师还在处理，预计今天才能处理好，一号样机的软件明天发给你。请明天收到我们一号机
+的软件后再帮修改好VOLTE的参数。
+
+非常感谢！辛苦了。
+
+==== State: Opened by: cmadmin on 02 April 2019 13:30:17 ====
+
+  == Jinlian.Lin@unisoc.com On 20190402T05:29:15 (xml) ==
+Dear customer，
+     2#样机的CTA认证参数已上传至附件，1#的CTA认证G网的参数已上传至附件。
+     1#样机call不上volte，未进行调试。还发1#样机的软件版本调试吗？
+
+==== State: Opened by: waterworld on 01 April 2019 13:18:03 ====
+
+林工，附件是我们这边的软件提供的之前过了CTA的软件版本，且能连接上音频工具，请用你们那边的2号机升级此软件，看能否建立VOLTE通话，若行，请帮忙用此软件调试修改，谢谢。
+
+==== State: Opened by: cmadmin on 29 March 2019 18:31:39 ====
+
+  == Jinlian.Lin@unisoc.com On 2019-03-29T10:30:04Z (json) ==
+Dear customer，
+      如沟通，样机volte电话大约30s会自动挂断，需要客户确认下软件是否ok。
+
+==== State: Opened by: cmadmin on 27 March 2019 17:58:35 ====
+
+  == Jinlian.Lin@unisoc.com On 2019-03-27T09:50:25Z (json) ==
+Dear customer，
+     如电话沟通，周五上午过来实验室测试。
+
+==== State: Opened by: waterworld on 27 March 2019 13:08:45 ====
+
+ == Description Changed from == 
+你好：
+     由于客户更换喇叭，请帮忙安排实验室，按照CTA标准测试一下喇叭性能。谢谢！
+To
+展讯的同事，你好：
+     由于客户更换喇叭，并自行测了CAT指标反馈上行音量小，故请帮忙再次从新安排实验室，按照CTA标准帮忙测试一下听筒，喇叭，麦克的CTA性能。谢谢！（昨天预约今天上午9点半过去的，但由于今天软件版本原因去了贵司无法连接音频工具调试，带来不便敬请谅解，所以请从新再次安排时间，谢谢！）
+ == Headline Changed from == 
+[SC9820E][Waterworld][A350]喇叭CTA测试
+To
+[SC9820E][Waterworld][A350]听筒，喇叭，麦克CTA指标测试
+
+
+==== State: Opened by: cmadmin on 26 March 2019 18:00:24 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569408|[SC9820E][Waterworld][A355][一部][kaios][tcl]大版本更新NV格式化问题|Dear 展讯：
+贵司大版本从SPRDROID4.4_KAIOS2.5_W18.52.5_P1升级到SPRDROID4.4_KAIOS2.5_W19.12.5__20190322_1850
+中涉及到大量的NV的修改，请确认这些修改是否必须？如果必须是需要格式化才能生效？
+注：我们已经贴片了1000多片，请知悉！|
+==== State: Closed by: waterworld on 28 March 2019 11:04:15 ====
+
+关闭
+
+==== State: NeedInfo by: cmadmin on 27 March 2019 19:06:18 ====
+
+  == Kim.Yu@unisoc.com On 20190327T11:01:24 (xml) ==
+请确认是否还有其他问题，如果没有的话请关闭。谢谢！
+(20190326T11:52:46)
+
+==== State: Opened by: cmadmin on 26 March 2019 20:00:15 ====
+
+  == Kim.Yu@unisoc.com On 20190326T11:52:46 (xml) ==
+nv跟modem bin是需要同步升级的。客户版本是由跟贵司对接的CPM来控制的，原则上CPM推送的版本是必须要升级上来的，版本升级问题可以再跟贵司对接的CPM确认一下。
+关于升级后是否需要格式化问题，有个方法贵司可以自行确认一下：版本升级上来后用UpgradeDownload工具，如果能升级成功即无需格式化，否则需要格式化。
+
+==== State: Opened by: cmadmin on 26 March 2019 17:10:44 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569396|[SC9863A][Waterworld][FS171M90-B10][六部][遵义]您好，内置了shortcat，把两个shortcat合并为一个文件夹时，运行时报错。|步骤：
+
+现象：
+
+分析：
+ 附件是抓的一个报错信息，帮忙分析下原因，在8.1的项目中没有上述问题，感谢！|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:05 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 11:20:47 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+开启未读功能时，形成文件夹时判断逻辑有误
+Solution:
+修改判断逻辑，只有ITEM_TYPE_APPLICATION类型图标才参与未读图标计算
+
+==== State: Opened by: cmadmin on 27 March 2019 11:20:27 ====
+
+  == Pichao.Gao@unisoc.com On 2019-03-27T03:01:37Z (json) ==
+您好：请按照如下修改合入后验证此问题，本地验证OK
+Launcher3\src\com\android\launcher3\folder\FolderIcon.java
+
+    private int getBadgeUnreadCount() {
+        int unreadNum = 0;
+        final ArrayList<ComponentKey> components = new ArrayList<>();
+        final ArrayList<ShortcutInfo> shortcutInfos = new ArrayList<>();
+        FolderInfo info = (FolderInfo) this.getTag();
+        for (ShortcutInfo si : info.contents) {
++            if (si.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
+                ComponentKey tempKey = new ComponentKey(si.getTargetComponent(), si.user);
+                if (!components.contains(tempKey)) {
+                    components.add(tempKey);
+                    shortcutInfos.add(si);
+                }
++            }
+        }
+		......
+	}
+
+==== State: Opened by: cmadmin on 26 March 2019 17:36:29 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569388|[SC7731E][Waterworld][FS280][6部]手动新建apn参数，参数不对应仍可以正常上网，应不能上网|步骤：
+
+插入移动卡测试，然后进入设置下，apn参数列表，手动新建一个apn,Name和APN项任意输入字符后保存，并选中激活该参数
+现象：
+
+打开浏览器，用百度搜索浏览网页，仍然可以正常上网
+分析：
+
+APN参数不对应应不能上网，附件是对应的log,麻烦帮忙分析下|
+==== State: Closed by: waterworld on 02 April 2019 10:58:52 ====
+
+Dear sprd:
+
+已了解，问题先关心，感谢支持！
+
+==== State: Resolved by: cmadmin on 27 March 2019 17:43:02 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+手动新建apn参数，参数不对应仍可以正常上网
+Solution:
+手动新建apn参数，参数不对应仍可以正常上网
+
+==== State: Opened by: cmadmin on 27 March 2019 17:42:59 ====
+
+  == sunping1229@spreadst.com On 2019-03-27T09:32:06Z (json) ==
+尊敬的客户：
+
+使用新建的apn参数去建立pdp，能不能建立成功是网络侧决定的，我们不好控制。
+
+通过其他厂商芯片对比也可发现，该现象为正常的
+
+请知
+
+==== State: Opened by: cmadmin on 27 March 2019 16:02:31 ====
+
+  == Hong.Yu@unisoc.com On 2019-03-27T07:47:47Z (json) ==
+dataconnection check pls
+|
+# SPCSS00569387|[SC9863A][Waterworld][FS168][XM][TCL]GPS定位不准确|步骤：
+2- Introduce a SIM Card with PLMN 370 02
+3- Test GPS on Google Maps / Waze.
+4- Verify.
+GPS is not working correctly. See video and logs
+如附件视频和log，GPS定位不准确
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 10 April 2019 15:51:50 ====
+
+先关闭，后续有问题再提cq，谢谢
+
+==== State: NeedInfo by: cmadmin on 10 April 2019 14:54:38 ====
+
+  == Andy.Hao@unisoc.com On 20190410T06:38:56 (xml) ==
+Dear Customer，
+
+如电话沟通，请先关闭此CQ。
+
+后续如复现问题，请重新提CQ，谢谢。
+
+==== State: NeedInfo by: cmadmin on 08 April 2019 16:45:55 ====
+
+  == Andy.Hao@unisoc.com On 2019-04-08T08:35:19Z (json) ==
+Dear Customer,
+
+新抓log已分析，主要问题还是AGPS不生效，测试机和对比机的信号环境都非常弱（小于20dB），难以独立解码星历。
+
+有关APN配置的问题贵司之前有提单跟踪（SPCSS00568309），APN配置方法已提供给贵司，请参考该CQ。
+
+最后状态是：
+waterworld 2019-04-04 09:26:33 CST
+TheNotesSyncFromCustomerSupportSystem2TheBug:
+Closed by: waterworld on 04 April 2019 09:24:49 ====
+
+ok,这个问题先关闭.怎么修改我们跟客户讨论.谢谢.
+(2019-04-08T07:39:09Z)
+
+==== State: Opened by: waterworld on 08 April 2019 15:13:58 ====
+
+您好，附件是展讯样机和mtk对比机的log，请帮忙查看一下LOG是否可以看出什么问题。
+AGPS功能未生效，客户测试时是否配置了APN？--能不能帮忙确认一下正确的APN需要怎么配置，我发给客户确认是否和要求一致
+
+==== State: NeedInfo by: cmadmin on 04 April 2019 10:23:29 ====
+
+  == Andy.Hao@unisoc.com On 20190404T02:20:32 (xml) ==
+Dear Customer，
+
+gnss log有效，如附件《定位轨迹》是GoogleEarth中的定位轨迹图，请帮忙确认测试场景是否与轨迹一致。从轨迹上看未发现明显的定位漂移现象。
+
+另，AGPS功能未生效，客户测试时是否配置了APN？
+(20190404T01:47:18)
+
+==== State: Opened by: waterworld on 04 April 2019 09:44:40 ====
+
+您好，客户只提供了gnss下的Log，其他没有提供，请帮忙确认此log是否有效
+
+==== State: NeedInfo by: cmadmin on 03 April 2019 14:14:52 ====
+
+  == Andy.Hao@unisoc.com On 20190403T06:08:25 (xml) ==
+Dear Customer，
+
+请问有获取到log了吗？
+
+如果当前没有log，还请先关闭此CQ，等log抓好了再新提一单，谢谢。
+
+==== State: NeedInfo by: cmadmin on 26 March 2019 17:56:01 ====
+
+  == Andy.Hao@unisoc.com On 2019-03-26T09:49:07Z (json) ==
+Dear Customer,
+
+GNSS问题还请提供gnss log，位于ylog/connectivity/gnss目录中，谢谢。
+(2019-03-26T09:32:52Z)
+
+==== State: Opened by: cmadmin on 26 March 2019 17:36:00 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569386|[SC9863A][Waterworld][FS168V0.2][RD6][TCL]财富八部LS036 GCF认证音频指标测试|FS168V0.2财富八部LS036需要过一下GCF音频指标测试，麻烦安排一下，谢谢！！
+
+附件是客户需要测试的清单！|
+==== State: Closed by: cmadmin on 30 April 2019 00:39:49 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 01 April 2019 19:19:06 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+音频参数调试
+Solution:
+音频参数调试
+
+==== State: Opened by: Tao_t.Zhou on 01 April 2019 19:14:03 ====
+
+尊敬的客户，您好!
+
+调试的参数见附件.
+
+谢谢!
+
+==== State: Opened by: cmadmin on 28 March 2019 23:04:33 ====
+
+  == Tao_t.Zhou@unisoc.com On 20190328T14:52:10 (xml) ==
+手持相关的物料和结构看起来都还好,但是免提部分麦克的密封性能不好,造成麦克发送响度和回声相关测试项无法调试Pass
+
+==== State: Opened by: waterworld on 27 March 2019 18:35:37 ====
+
+您好！
+
+附件上传了客户的测试报告！
+报告里面前面部分是传导的，ANNEX B.2: Audio test position 搜这个开始。
+
+==== State: Opened by: cmadmin on 27 March 2019 17:22:26 ====
+
+  == Tao_t.Zhou@unisoc.com On 2019-03-27T09:15:29Z (json) ==
+看了下附件的测试清单,测试项太乱了,而且很多项我们这边测不了.
+有之前哪个项目的测试报告吗？
+
+==== State: Opened by: cmadmin on 26 March 2019 16:43:39 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569379|[SC7731E][Waterworld][WW835][GMSCert][18部]    请贵司协助我司认证失败项复测|步骤：
+
+现象：
+
+分析：
+客户直接送谷歌认证，是不经过3PL的，所以需要全部PASS的报告，但是我司这边有于环境受限，有些失败项测试不过，请贵司协助。
+# SPCSS00566150这个CQ上贵司协助测试过，且都PASS了的，后来客户更新了一个三方APK，又重出软件，所以需要贵司帮忙再测一次。
+GMS包 8.1_201812      安全补丁是3月5号的
+CTS ：8.1_R13
+CTSV: 8.1_R13
+GTS  : 6.0 R3
+VTS-GSI：8.1 R6|
+==== State: Closed by: waterworld on 30 March 2019 09:37:32 ====
+
+Dear sprd:
+       感谢贵司复测，已全部PASS，请关闭，谢谢。
+
+==== State: Resolved by: cmadmin on 27 March 2019 18:04:26 ====
+
+  == Tiande.Ye@unisoc.com On 20190327T09:59:07 (xml) ==
+fixed
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+协助复测
+Solution:
+协助复测
+
+==== State: Opened by: cmadmin on 27 March 2019 18:04:23 ====
+
+  == Tiande.Ye@unisoc.com On 20190327T09:57:50 (xml) ==
+已完成复测，如还有其他疑问或需要协助的问题，请另提CQ，谢谢。
+
+==== State: Opened by: cmadmin on 27 March 2019 14:52:45 ====
+
+  == Tiande.Ye@unisoc.com On 20190327T06:44:11 (xml) ==
+Hi：
+
+测试已完成，GTS一项：testPeakPssOfAllApps复测报告三次结果fail，CTS、GSI、CTSV测试pass。报告路径如下：\\10.29.1.12\cq\SPCSS\2019-1\SPCSS00569379\GMS复测报告.7z
+
+==== State: Submitted by: waterworld on 27 March 2019 14:04:12 ====
+
+Dear  sprd:
+        请问该项目有在开始测试了吗？今天能否反馈测试结果？
+
+==== State: Submitted by: waterworld on 26 March 2019 16:50:15 ====
+
+Dear  sprd：
+      SW11_FLY_Life_Zen_2019_03_21.rar软件已经上传到FTP，谷歌IMG上一个CQ：SPCSS00566150已经上传，去那里取就可以。
+      测试所用的样机也在贵司。测试失败的报告见附件，需要复测的项有：GSI两项，CTSV一项，CTS两项，GTS一项：testPeakPssOfAllApps，我司单项测试能通过，但是retry测试一直失败，请贵司帮忙测试下看retry是否能过测试通过，如果贵司retry也是一直失败，我司就发这个单项测试PASS的报告给客户。请贵司尽快安排，如有疑问请联系我司，谢谢。
+|
+# SPCSS00569376|[SC9863A][Waterworld][FS168][TCL][GSI]CtsActivityManagerDeviceTestCases又测不过了|arm64-v8a CtsActivityManagerDeviceTestCases
+android.server.am.ActivityManagerDisplayLockedKeyguardTests#testDismissKeyguard_whileO
+
+ccluded_secondaryDisplay
+
+GSI这项又测不过了
+
+报错信息：
+ 	
+java.lang.AssertionError: Activity=android.server.am/.DismissKeyguardActivity must be 
+
+visible. expected:<true> but was:<false>|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:06 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 19:01:39 ====
+
+  == daixm0718@spreadst.com On 2019-03-27T10:54:32Z (json) ==
+Dear Customer
+
+如上午电话沟通，从目前能拿到的信息（贵公司提供的log）来分析，还是因为测试case过程中发生anr，一直检测不到其window，导致case失败，此为已知问题，google也已经waive，详见comemnt，如果是后续通过插件修复，请自行和google联系（目前log上看到的，window状态仍然不对，是case失败的根本原因），感谢！！！
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:Activity ANR影响判断
+
+[2.Resolution        ]:GSI版本有更新
+
+
+
+==== State: Opened by: waterworld on 27 March 2019 13:34:36 ====
+
+2月5号的system img，测试环境是9.0_R6 (5363054) 
+
+我之前能过的，现在这个包也过不了
+
+==== State: Resolved by: cmadmin on 27 March 2019 13:27:00 ====
+
+  == daixm0718@spreadst.com On 2019-03-27T05:24:33Z (json) ==
+Dear Customer
+
+
+    此issue google已经给了Waiver：
+
+Already added in the VTS Waiver hotlist 9.0_R6 , Waiver approved. Bug reference : https://b.corp.google.com/issues/124556520#comment22. Thanks !
+
+    WaiverID: 124556520
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+Activity ANR影响判断
+Solution:
+GSI版本有更新
+
+==== State: Opened by: cmadmin on 27 March 2019 13:26:39 ====
+
+  == daixm0718@spreadst.com On 2019-03-27T05:23:41Z (json) ==
+12-31 18:35:52.068 14323 14338 I TestRunner: started: testDismissKeyguard_whileOccluded_secondaryDisplay(android.server.am.ActivityManagerDisplayLockedKeyguardTests)
+12-31 18:36:02.380 14323 14342 I AMWM    : Activity window not visible: android.server.am/android.server.am.DismissKeyguardActivity
+12-31 18:36:03.500 14323 14342 I AMWM    : Activity window not visible: android.server.am/android.server.am.DismissKeyguardActivity
+12-31 18:36:04.616 14323 14342 I AMWM    : Activity window not visible: android.server.am/android.server.am.DismissKeyguardActivity
+12-31 18:36:05.738 14323 14342 I AMWM    : Activity window not visible: android.server.am/android.server.am.DismissKeyguardActivity
+12-31 18:36:06.739 14323 14342 E AMWM    : ***Waiting for states failed: [wait: activity=android.server.am/.DismissKeyguardActivity window=android.server.am/android.server.am.DismissKeyguardActivity]
+12-31 18:36:25.173 14323 14342 E AMWM    : ***Waiting for states failed: [wait: activity=android.server.am/.DismissKeyguardActivity window=android.server.am/android.server.am.DismissKeyguardActivity]
+12-31 18:36:31.900   610   694 I InputDispatcher: Application is not responding: AppWindowToken{af2266a token=Token{5de1c55 ActivityRecord{87db0c u0 android.server.am/.DismissKeyguardActivity t33}}}.  It has been 5008.8ms since event, 5006.2ms since wait started.  Reason: Waiting because no window has focus but there is a focused application that may eventually add a window when it finishes starting up.
+12-31 18:36:39.623 14323 14338 I TestRunner: failed: testDismissKeyguard_whileOccluded_secondaryDisplay(android.server.am.ActivityManagerDisplayLockedKeyguardTests)
+
+==== State: Opened by: waterworld on 27 March 2019 11:37:49 ====
+
+之前已经上传好了的。
+
+==== State: Opened by: waterworld on 27 March 2019 11:37:21 ====
+
+请查看附加你，谢谢
+
+==== State: NeedInfo by: cmadmin on 26 March 2019 16:17:30 ====
+
+  == daixm0718@spreadst.com On 2019-03-26T08:12:00Z (json) ==
+请先提供下log
+(2019-03-26T08:01:44Z)
+
+==== State: Opened by: cmadmin on 26 March 2019 16:17:27 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 26 March 2019 16:04:30 ====
+
+测试环境是9.0_R6 (5363054)
+这个包之前这项是能测过的。
+测试log和报告已上传，请帮忙分析
+|
+# SPCSS00569375|[SC9832E][Waterworld][M9101A][SC9832E][Waterworld][M9101A][18部] 单卡软件ctsv 测试com.android.cts.verifier.telecom.EnablePhoneAccountTestActivity FAIL|步骤：
+
+现象：
+
+分析：
+因单卡软件没有通话帐号菜单，此项com.android.cts.verifier.telecom.EnablePhoneAccountTestActivity无法设置通过，
+请问有相关的解决方案吗？|
+==== State: Closed by: cmadmin on 24 April 2019 08:40:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 02 April 2019 11:49:19 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:修改单卡phone account 显示问题
+
+[2.Resolution        ]:显示单卡phone account 菜单
+
+
+
+==== State: Opened by: cmadmin on 29 March 2019 18:01:34 ====
+
+  == huangwei0701@spreadst.com On 20190329T09:58:57 (xml) ==
+尊敬的客户
+
+   如沟通，合入如下patch后，仅会显示calling accounts
+
+vendor/sprd/platform/packages/apps/SprdDialer/java/com/android/dialer/app/settings/DialerSettingsActivity.java
+
+diff --git a/java/com/android/dialer/app/settings/DialerSettingsActivity.java b/java/com/android/dialer/app/settings/DialerSettingsActivity.java
+index c03aab9..9e4aabf 100644
+--- a/java/com/android/dialer/app/settings/DialerSettingsActivity.java
++++ b/java/com/android/dialer/app/settings/DialerSettingsActivity.java
+@@ -136,7 +136,7 @@ public class DialerSettingsActivity extends AppCompatPreferenceActivity {
+     // primary user and there are multiple SIMs. In N+, "Calling accounts" is shown whenever
+     // "Call Settings" is not shown.
+     boolean isPrimaryUser = isPrimaryUser();
+-    if (isPrimaryUser && TelephonyManagerCompat.getPhoneCount(telephonyManager) <= 1) {
++    if (isPrimaryUser && TelephonyManagerCompat.getPhoneCount(telephonyManager) <= 1 && false) {
+       /* SPRD: add for bug861008 @{ */
+       if (mSubscriptionManager.getActiveSubscriptionInfoCount() > 0) {
+         Header callSettingsHeader = new Header();
+
+==== State: Opened by: waterworld on 29 March 2019 17:04:28 ====
+
+Dear Sprd，
+
+附件合入最新Patch的最新log 请查收。
+
+==== State: NeedInfo by: cmadmin on 29 March 2019 14:09:22 ====
+
+  == huangwei0701@spreadst.com On 2019-03-29T06:06:22Z (json) ==
+Dear customer :
+
+请在之前patch基础上,合入最新的patch(phone_account_0329),log若有重复请忽略.
+(2019-03-28T08:16:58Z)
+
+==== State: Opened by: waterworld on 28 March 2019 16:02:22 ====
+
+Dear  Sprd,
+
+附件为log文件和问题的图片，请查收。
+
+==== State: Resolved by: cmadmin on 28 March 2019 11:22:34 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:修改单卡phone account 显示问题
+
+[2.Resolution        ]:显示单卡phone account 菜单
+
+
+
+==== State: Opened by: cmadmin on 27 March 2019 11:32:29 ====
+
+  == huangwei0701@spreadst.com On 20190327T03:18:20 (xml) ==
+patch已重新上传,请查收
+
+==== State: Opened by: waterworld on 27 March 2019 10:35:28 ====
+
+Dear Sprd，
+
+附件为操作的视频，请查收 ，另外在附件里没有diff文件，请帮忙再确认一下。
+
+==== State: Opened by: cmadmin on 27 March 2019 10:10:02 ====
+
+  == huangwei0701@spreadst.com On 20190327T02:03:05 (xml) ==
+Created attachment 351252
+参考diff文件
+
+请参考patch修改后,重新编译模块验证
+
+==== State: Opened by: waterworld on 27 March 2019 10:07:00 ====
+
+Dear Sprd，
+
+CallFeaturesSetting.java已提交，请查收。
+
+==== State: NeedInfo by: cmadmin on 26 March 2019 17:41:57 ====
+
+  == huangwei0701@spreadst.com On 20190326T09:31:33 (xml) ==
+Dear customer :
+
+请提供userdebug版本的复现log以及对应时间点的视频 
+
+
+另请提供如下文件: packages/services/Telephony/src/com/android/phone/CallFeaturesSetting.java
+
+谢谢
+(20190326T09:08:04)
+
+==== State: Opened by: cmadmin on 26 March 2019 17:10:07 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569348|[SC7703][Waterworld][A163]【1部】【TCL】【SPCSS00564340 无法上传附件借宝地上传】|Dear：
+
+      SPCSS00564340 无法上传附件借宝地上传|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:07 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 09:11:35 ====
+
+  == Boda.Lin@unisoc.com On 20190327T01:10:49 (xml) ==
+Dear Customer:
+
+We will close this issue.
+
+If you still have any question, please submit a new CQ.
+
+Thank you.
+
+Sincerely,
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]: NULL
+
+[2.Resolution        ]: Copy files
+
+
+
+==== State: Opened by: cmadmin on 26 March 2019 15:57:51 ====
+
+  == Boda.Lin@unisoc.com On 20190326T07:56:10 (xml) ==
+Dear Customer:
+
+3025X_EU_MINI_V2.1_190326.zip
+
+已经放到
+
+ftp://cqlog:2xf45xSm@ftp.unisoc.com/SPCSS/2019-1/SPCSS00564340/PatchesForCUS
+
+谢谢～
+
+Should you have any question please contact us.
+
+Thank you.
+
+Cordially,
+
+==== State: Opened by: cmadmin on 26 March 2019 15:57:48 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569341|[SC9863A][Waterworld][SC9863][18部]请在SC9863平台上帮忙验证32GB+3GB MEMROY,规格为KMR21000BM-B809 SAMSUNG|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 15 May 2019 00:48:39 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 23 April 2019 13:57:17 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+为二手物料，客户取消验证
+
+==== State: Opened by: waterworld on 30 March 2019 13:49:37 ====
+
+展锐memory物料认证入口条件_V1.2已填写
+
+==== State: Opened by: cmadmin on 26 March 2019 17:09:41 ====
+
+  == enlai.kong@unisoc.com On 20190326T08:57:12 (xml) ==
+请上传物料规格书并填写服务器中的《展锐memory物料认证入口条件_V1.2》
+
+==== State: Opened by: cmadmin on 26 March 2019 15:26:24 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569338|[SC9863A][Waterworld][SC9863][18部]请在SC9863平台上帮忙验证16GB+1GB MEMROY,规格为KMQ8X000SA-B414,SAMSUNG|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:07 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 13:39:39 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+经确认下，这个料我们先不认账了，会安排另一个相同容量的其他型号的来走流程认证，请将这个CQ关闭，谢谢！
+Solution:
+取消此物料认证
+
+==== State: Opened by: cmadmin on 27 March 2019 13:39:36 ====
+
+  == enlai.kong@unisoc.com On 2019-03-27T05:34:38Z (json) ==
+客户自行取消此物料认证，CQ关闭。
+
+==== State: Opened by: cmadmin on 26 March 2019 20:33:45 ====
+
+  == enlai.kong@unisoc.com On 20190326T12:28:10 (xml) ==
+规格书page7标注的eMMC周期为6ns换算下来达不到200MHZ，但是features里面标注该emmc-CLK能达到200MHZ，请与原厂确认下eMMC及DDR的最大时钟频率。
+
+==== State: Opened by: cmadmin on 26 March 2019 17:09:11 ====
+
+  == enlai.kong@unisoc.com On 20190326T08:56:47 (xml) ==
+请上传物料规格书并填写服务器中的《展锐memory物料认证入口条件_V1.2》
+
+==== State: Opened by: cmadmin on 26 March 2019 15:26:18 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569337|[SC9820E][Waterworld][ww833][18部]是否支持email功能？|步骤：
+
+现象：4+2内存的是否支持email功能？我把android。mk文件打开以后编译报错，log我上传附件了，你那边看下，谢谢
+
+分析：
+|
+==== State: Closed by: cmadmin on 18 April 2019 00:34:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 10:25:58 ====
+
+The Issue should not to be processed.
+
+==== State: Opened by: cmadmin on 26 March 2019 15:57:36 ====
+
+  == Jie.Shen@unisoc.com On 20190326T07:43:23 (xml) ==
+尊敬的客户，您好
+
+在MOCOR5版本上默认没有添加支持Email功能，主要是因为适配工作量较大，需要根据手机对应的分辨率和屏幕大小修改布局文件和图片资源，同时还需要修改代码逻辑以支持实体按键及处理焦点等问题，同时由于MOCOR5手机本身的内存和存储都比较小，合入Email后系统中会增加两个进程Email和Exchange，对手机性能存在一定的影响，每次系统接收到一封新邮件后，系统都会将邮件内容和其中包含的附件保存到data分区中，当用户长时间使用后会出现手机存储空间不足的情况，建议直接使用浏览器访问网页版的Email。
+
+如果需要编译Email模块需要将源码中Email和UnifiedEmail目录下的Android.mk都打开
+
+非常感谢~
+
+==== State: Opened by: cmadmin on 26 March 2019 15:18:49 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569334|[SC9863A][Waterworld][SC9863][18部]请在SC9863平台上帮忙验证16GB+1GB MEMROY,规格为KMF820012M-B305,SAMSUNG|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 15 May 2019 00:48:52 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 23 April 2019 13:48:21 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+为二手物料，客户取消验证。
+
+==== State: Opened by: cmadmin on 23 April 2019 13:48:14 ====
+
+  == enlai.kong@unisoc.com On 20190423T05:47:24 (xml) ==
+客户取消验证。
+
+==== State: Opened by: waterworld on 30 March 2019 13:50:24 ====
+
+展锐memory物料认证入口条件_V1.2已填写
+
+==== State: Opened by: cmadmin on 26 March 2019 17:09:07 ====
+
+  == enlai.kong@unisoc.com On 20190326T08:55:39 (xml) ==
+请上传物料规格书并填写服务器中的《展锐memory物料认证入口条件_V1.2》
+
+==== State: Opened by: cmadmin on 26 March 2019 15:33:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569332|[SC9863A][Waterworld][SC9863][18部]请在SC9863平台上帮忙验证64GB+4GB MEMROY,规格为KMRC10014M-B809,SAMSUNG|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 15 May 2019 00:49:13 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 23 April 2019 13:57:12 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+为二手物料，客户取消验证
+
+==== State: Opened by: cmadmin on 23 April 2019 13:57:09 ====
+
+  == enlai.kong@unisoc.com On 20190423T05:52:57 (xml) ==
+为二手物料，客户取消验证
+
+==== State: Opened by: waterworld on 30 March 2019 13:50:58 ====
+
+展锐memory物料认证入口条件_V1.2已填写
+
+==== State: Opened by: cmadmin on 26 March 2019 17:08:20 ====
+
+  == enlai.kong@unisoc.com On 20190326T08:56:27 (xml) ==
+请上传物料规格书并填写服务器中的《展锐memory物料认证入口条件_V1.2》
+
+==== State: Opened by: cmadmin on 26 March 2019 15:26:04 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00569331|[SC7715][Waterworld][fs331][6部]测试机通过数据线连接电脑时出现设置停止运行|步骤：
+    手机连接电脑
+现象：
+    出现设置停止运行
+分析：
+   附件是客户给的log ,由于项目紧急，需要加急处理，请协助解决，谢谢！|
+==== State: Closed by: waterworld on 28 March 2019 09:55:44 ====
+
+此问题验证未复现，可以关闭了，感谢支持！！
+
+==== State: NeedInfo by: cmadmin on 26 March 2019 17:20:42 ====
+
+  == luying0627@spreadst.com On 2019-03-26T09:09:34Z (json) ==
+Dear Customer:
+
+麻烦做如下修改
+diff --git a/src/com/sprd/settings/SprdUsbSettings.java b/src/com/sprd/settings/SprdUsbSettings.java
+index 777cab9..cc4246f 100644
+--- a/src/com/sprd/settings/SprdUsbSettings.java
++++ b/src/com/sprd/settings/SprdUsbSettings.java
+@@ -305,6 +305,11 @@ public class SprdUsbSettings extends PreferenceActivity {
+         if (DBG)
+             Log.d(LOG_TAG, "on Resume");
+ 
+-               if (SprdUsbReceiver.isPowerOff()) {
+-            finish();
+-            return;
+-        }
+               
+         selectedItem = Settings.Global.getInt(getContentResolver(),
+                 Settings.Global.USB_CURRENT_FUNCTION, DEFAUT_FUNCTION);
+         if (selectedItem == UMS && !isSdcardAvailable() && !isInternalSdcardAvailable()) {
+
+Thanks
+(2019-03-26T08:33:10Z)
+
+==== State: Opened by: waterworld on 26 March 2019 16:38:42 ====
+
+您好，文件已提供，请查收，谢谢！
+
+==== State: Opened by: waterworld on 26 March 2019 16:20:56 ====
+
+您好，刚与客户沟通，此操作是正常插拔引起的，附件是提供的文件，请查收，谢谢！
+
+==== State: Opened by: cmadmin on 26 March 2019 16:16:44 ====
+
+  == luying0627@spreadst.com On 2019-03-26T08:10:05Z (json) ==
+Dear Customer:
+
+麻烦提供下/packages/apps/Settings/src/com/sprd/settings/SprdUsbSettings.java文件
+
+Thanks
+|
+# SPCSS00569329|[SC9863A][Waterworld][SC9863][18部]请在SC9863平台上帮忙验证64GB+4GB MEMROY,规格为KMRH60014M-B614,SAMSUNG|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 15 May 2019 00:49:33 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 23 April 2019 13:52:29 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+为二手物料，客户取消验证。
+
+==== State: Opened by: cmadmin on 23 April 2019 13:52:26 ====
+
+  == enlai.kong@unisoc.com On 2019-04-23T05:51:11Z (json) ==
+为二手物料，客户取消验证。
+
+==== State: Opened by: waterworld on 30 March 2019 13:52:35 ====
+
+展锐memory物料认证入口条件_V1.2已填写
+
+==== State: Opened by: cmadmin on 26 March 2019 17:08:10 ====
+
+  == enlai.kong@unisoc.com On 20190326T08:56:07 (xml) ==
+请上传物料规格书并填写服务器中的《展锐memory物料认证入口条件_V1.2》
+
+==== State: Opened by: cmadmin on 26 March 2019 15:25:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

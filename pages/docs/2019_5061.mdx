@@ -1,0 +1,1171 @@
+# SPCSS00603535：
+.0. .... = Indicator 103: PDSCH TM9 when up to 4 CSI reference signal ports are configured - Not supported
+
+EXPECTED BEHAVIOUR:
+FGI103 Recommended ON
+
+# SPCSS00603555：
+
+EXPECTED BEHAVIOUR:
+LTE SON RACH report Recommended OFF
+
+# SPCSS00603543：
+
+EXPECTED BEHAVIOUR:
+Simultaneous transmission of PUCCH and PUSCH (band agnostic) Mandatory OFF
+Simultaneous transmission of PUCCH and PUSCH (band agnostic)Mandatory OFFMTR-29383Rel-10 IE "phyLayerParameters-v1020/simultaneousPUCCH-PUSCH-r10"
+
+==== State: NeedInfo by: cmadmin on 15 July 2019 17:14:55 ====
+
+  == Hao.Jiang@unisoc.com On 20190715T09:11:41 (xml) ==
+尊敬的客户你好，
+
+请先修改NV中的如下项
+
+PS_NV_PARAMS\LTE_NV_MODE_CFG\lte_cfg修改为0x800610
+
+PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO
+FGI修改为0x2F8FF6BC
+
+FGIadd_r9修改为0x0xC0800000
+
+FGI_r10修改为0x20240000
+
+生成新的nv bin后替换。
+
+再替换
+
+\\10.29.1.12\CQ\SPCSS\2019-2\SPCSS00600975\patchsForCUS中的modem bin后复测。
+
+请注意以上，修改仅作为实验室测试使用，量产修改还是建议使用UE实际支持的能力上报。
+(20190715T04:49:22)
+
+==== State: Opened by: cmadmin on 12 July 2019 15:50:42 ====
+
+  == Hao.Jiang@unisoc.com On 20190712T07:45:10 (xml) ==
+客户你好，
+
+综合现在的需求，主要有：
+
+# SPCSS00600968	手机入4G网络抓取log，从log搜rach_Report_r9得到以下参数：
+son_Parameters_r9 rach_Report_r9Opt 0x1 rach_Report_r9 Lte_SON_Parameters_r9Enum_LTE_SUPPORTED
+需要disable，这是T-Mobile运营商的需求，谢谢
+
+# SPCSS00600975	手机4G网络下的UE CAPABILITY INFORMATION消息携带参数enhancedDualLayerFDD-r9为supported，
+期望行为应该关闭，谢谢
+
+# SPCSS00601034	手机4G网络下信令UE CAPABILITY INFORMATION携带参数ue_SpecificRefSigsSupported为true，
+期望行为是false，谢谢
+
+# SPCSS00601060	Description:
+Following bits from LTE Feature Group Indicator - Rel.10 are not in line with ISD requirements:
+Current FGI rel.10 = 0000 0000 0000 0100 0000 0000 0000 0000
+FGI103 Disabled - Should be enabled 
+FGI111 Disabled - Should be enabled 
+
+# SPCSS00601052	Description:
+UE has LTE FGIs not in line with ISD Current FGI : 1111 1111 1100 1111 1111 1110 1011 1010
+FGI1 Enabled - Should be disabled
+FGI2 Enabled - Should be disabled
+FGI4 Enabled - Should be disabled
+FGI10 Enabled - Should be disabled
+FGI21 Enabled - Should be disabled
+FGI30 Disabled - Should be enabled
+FGI31 Enabled - Should be disabled 
+
+根据SPCSS00600397
+FGIadd_r9设置为0xC0800000
+
+我这边会尽快修改版本，因为该问题不是bug，而是根据运行商的需求做的特定修改，类型改为Task。
+
+==== State: Opened by: waterworld on 12 July 2019 14:29:23 ====
+
+附件为BUG 需求详细文档，可供参考
+
+==== State: Opened by: waterworld on 12 July 2019 11:40:06 ====
+
+版本号：FM_BASE_17B_Release_W19.25.4_9820e_CUSTOMER
+modem bin：SC9600_sharkle_pubcp_customer_Feature_Phone_modem
+
+==== State: NeedInfo by: cmadmin on 12 July 2019 10:47:07 ====
+
+  == Hao.Jiang@unisoc.com On 2019-07-12T02:43:53Z (json) ==
+# SPCSS00601060
+
+FGI103 Disabled - Should be enabled
+FGI111 Disabled - Should be enabled
+
+==== State: NeedInfo by: cmadmin on 12 July 2019 09:24:04 ====
+
+  == Hao.Jiang@unisoc.com On 20190712T01:22:51 (xml) ==
+请客户提供以下使用的版本号以及modem bin的名称（据此可以得到编译的工程），另外，最好能有现场抓回来的log。
+(20190711T10:05:18)
+
+==== State: Opened by: cmadmin on 11 July 2019 18:08:06 ====
+
+  == Hao.Jiang@unisoc.com On 20190711T10:05:18 (xml) ==
+客户你好，
+
+如沟通，这个问题我们会提供一个临时版本给你这边验证，但该版本只是根据实验室的要求来改变的特定的功能，该临时版本仅作为临时版本验证，不推荐合入到量产版本。
+
+量产中我们还是以实际的能力上报。
+
+==== State: Opened by: cmadmin on 11 July 2019 17:36:01 ====
+
+  == Hao.Jiang@unisoc.com On 20190711T09:32:01 (xml) ==
+CQ SPCSS00600968
+手机入4G网络抓取log，从log搜rach_Report_r9得到以下参数：
+son_Parameters_r9 rach_Report_r9Opt 0x1 rach_Report_r9 Lte_SON_Parameters_r9Enum_LTE_SUPPORTED
+需要disable
+
+CQ SPCSS00601034
+手机4G网络下信令UE CAPABILITY INFORMATION携带参数ue_SpecificRefSigsSupported为true，
+期望行为是false
+
+==== State: Opened by: waterworld on 11 July 2019 16:23:06 ====
+
+前方场测人员反馈：
+手机4G网络下的UE CAPABILITY INFORMATION消息携带参数enhancedDualLayerFDD-r9为supported，
+期望行为应该关闭，谢谢
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 10:30:18 ====
+
+  == Hao.Jiang@unisoc.com On 2019-07-08T02:26:14Z (json) ==
+尊敬的客户你好，
+
+1.ISD indicates that LTE Enhanced Dual Layer (TM8) for FDD should be OFF (Mandatory OFF)
+
+意思是我们上报的支持，但是ISD要求不支持？
+
+如果是这样的话，那么就要请问一下，为何我们已经确定支持的能力为何要上报不支持，若一定要修改，请确认是临时修改（满足过认证需要），还是以后的实网版本也要修改？
+(2019-07-08T01:30:06Z)
+
+==== State: Opened by: cmadmin on 08 July 2019 08:39:35 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600968|[SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] LTE SON RACH Report (3GPP Rel. 9) is activated|Description: 
+LTE SON RACH Report (3GPP Rel. 9) is activated and ISD requires it to be disabled (Recommended OFF)
+rach_Report_r9 = supported (0)
+
+Detailed steps to reproduce (incl. actual and expected behaviour):Step
+
+Test procedure
+Expected result
+1.
+Prepare the L3 tracing and message capturing either on device or network side
+Log files will be captured once the DUT is switched on.
+2.
+Ensure the DUT is in automatic network mode! DON'T switch it to LTE only.
+The device is in automatic network mode.
+3.
+Set up and enable a LTE cell on a supported band, e.g.
+band 3 (1800 MHz) or band 8 (900 MHz). Avoid other cells on different technologies as this may force the device to register there.
+The LTE cell is available and suitable.
+4.
+Switch on the DUT and wait until it has registered to the LTE network.
+The device is succesfully attached and registered to the LTE network.
+In the trace an [UE Capability Info Indication] message is captured.
+5.
+Check the [UE Capability Info Indication] message in the trace and verify with the [rach-Report-r9] information element if LTE SON RACH Report is activated or not.
+The activation of LTE SON RACH Report is in line with the DT MTR SoC and the DT ISD.
+6.
+Note if LTE SON RACH Report is activated in the KPI field. Use "1" if LTE SON RACH Report is activated or "0" if deactivated.
+Example: 0
+The activation status of LTE SON RACH Report is documented in the KPI field.
+
+Specification references (MTR, ISD, 3GPP, RFC, ?): ISD V2019.1-2
+
+Test case reference: FS3.16|
+==== State: Closed by: waterworld on 19 July 2019 11:39:25 ====
+
+复测pass，关闭此问题
+
+==== State: Resolved by: cmadmin on 11 July 2019 17:32:58 ====
+
+  == Hao.Jiang@unisoc.com On 2019-07-11T09:30:31Z (json) ==
+fix
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+UE能力问题，使用Bug 1111556 (SPCSS00600975) - [SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] LTE SON RACH Report (3GPP Rel. 9) is activated统一跟踪。
+Solution:
+UE能力问题，使用Bug 1111556 (SPCSS00600975) - [SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] LTE SON RACH Report (3GPP Rel. 9) is activated统一跟踪。
+
+==== State: Opened by: cmadmin on 11 July 2019 17:32:55 ====
+
+  == Hao.Jiang@unisoc.com On 2019-07-11T09:30:10Z (json) ==
+UE能力问题，使用Bug 1111556 (SPCSS00600975) - [SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] LTE SON RACH Report (3GPP Rel. 9) is activated统一跟踪。
+
+==== State: Opened by: waterworld on 11 July 2019 16:21:50 ====
+
+前方场测人员反馈：
+手机入4G网络抓取log，从log搜rach_Report_r9得到以下参数：
+son_Parameters_r9 rach_Report_r9Opt 0x1 rach_Report_r9 Lte_SON_Parameters_r9Enum_LTE_SUPPORTED
+需要disable，这是T-Mobile运营商的需求，谢谢
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 11:06:38 ====
+
+  == Hao.Jiang@unisoc.com On 20190708T03:00:16 (xml) ==
+尊敬的客户你好，
+
+如沟通，请与运营商沟通，我们是按照我们实际的能力上报，网络若不支持这些能力，忽略掉即可，没有必要要求UE将实际支持的能力上报为不支持。
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 10:24:11 ====
+
+  == Hao.Jiang@unisoc.com On 2019-07-08T02:18:20Z (json) ==
+尊敬的客户你好，
+
+有几个问题请帮忙确认下:
+
+1.LTE SON RACH Report (3GPP Rel. 9) is activated and ISD requires it to be disabled (Recommended OFF)?
+
+意思是我们上报的activated，但是ISD要求不支持？ISD是什么？
+
+如果是这样的话，那么就要请问一下，为何我们已经确定支持的能力为何要上报不支持，若一定要修改，请确认是临时修改（满足过认证需要），还是以后的实网版本也要修改？
+(2019-07-08T01:29:46Z)
+
+==== State: Opened by: cmadmin on 08 July 2019 08:39:33 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600948|[SC9863A][Waterworld][FS170-TELCEL][XM]PTCRB认证测试遇到问题,请帮忙确认一下是否支持|Argon PTCRB Start testing little problem
+-      We need to 3G TEST No 35 shield new Software.
+ 
+ 两款4g的项目提供的申请表这一项选择的不支持，样机实际是支持的，测试过程中出现报错，
+需要确认样机是否是支持的，或者提供修改指令。
+ 
+一般展讯平板的项目基本都把这项改成了不支持，如确实支持有一条Case
+有其他测试Case资源难找
+ 
+另外那款3G的手机样机是确实不支持这项的：
+    Support UEA2/UIA2 fully IOT tested
+
+请看截图|
+==== State: Closed by: cmadmin on 13 August 2019 00:50:55 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 July 2019 10:10:14 ====
+
+  == Link.Zhang@unisoc.com On 20190722T02:08:43 (xml) ==
+客户问题已解决，Fix
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:需要UEA2/UIA2功能
+
+[2.Resolution        ]:关闭UEA2/UIA2功能
+
+
+
+==== State: Opened by: waterworld on 22 July 2019 09:46:04 ====
+
+客户一直没给回复，应该是解决了，可以走关闭流程了
+
+==== State: Resolved by: cmadmin on 08 July 2019 20:34:34 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you  == Link.Zhang@unisoc.com On 2019-07-08T12:32:49Z (json) ==
+请帮忙验证后反馈结果，谢谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+需要UEA2/UIA2功能
+Solution:
+关闭UEA2/UIA2功能
+
+==== State: Opened by: cmadmin on 08 July 2019 20:34:32 ====
+
+  == Link.Zhang@unisoc.com On 2019-07-08T12:31:48Z (json) ==
+Dear Customer
+
+  NV已经修改为关闭UEA2/UIA2功能，请使用FTP下新的NV文件复测，谢谢
+  FILE: FS170_W125_L4_5_7_28A_28B_TRX_S602_63A_TELCEL_modify
+
+==== State: Opened by: waterworld on 08 July 2019 19:10:37 ====
+
+NV工程已上传---FS170_W125_L4_5_7_28A_28B_TRX_S602_63A_TELCEL.rar
+
+==== State: Opened by: cmadmin on 08 July 2019 18:20:49 ====
+
+  == Guorui.Wang@unisoc.com On 2019-07-08T10:17:58Z (json) ==
+不好意思，刚看到之前waterworld已决定关闭UEA2/UIA2功能，需要我们修改NV即可。
+
+需要客户提供NV工程。
+
+==== State: Opened by: cmadmin on 08 July 2019 18:15:42 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 17:53:10 ====
+
+  == Link.Zhang@unisoc.com On 2019-07-08T09:48:57Z (json) ==
+Dear Customer
+
+  请帮忙提供一下所使用版本的NV工程，我这边修改后再传回给您
+(2019-07-08T09:40:04Z)
+
+==== State: Opened by: waterworld on 08 July 2019 17:34:30 ====
+
+有进展了没有？
+
+==== State: Opened by: waterworld on 08 July 2019 16:33:44 ====
+
+今天要重新提供认证版本，请尽快帮忙看一下，谢谢！
+
+==== State: Opened by: waterworld on 08 July 2019 14:07:44 ====
+
+王工，跟客户确认后，决定去掉该项测试的支持，请尽快提供patch，谢谢！
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 10:30:11 ====
+
+  == Huanhuan.Wang@unisoc.com On 2019-07-08T02:27:52Z (json) ==
+客户你好，
+9863A平台支持，其他项目请提供具体CP分支信息。
+(2019-07-08T02:22:30Z)
+
+==== State: Opened by: cmadmin on 05 July 2019 20:15:48 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600944|[SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] [2G网络下接收到的CMAS消息无内容显示]|[Pre condition to reproduce the case]
+ 手机处于2G网络
+
+[Test Step]
+ 1.手机接收到一条带内容的CMAS（ID:4371）信息
+
+[Expect Result]
+ 1.能够显示出CMAS的内容
+[Actual Result]
+ 1.无法显示CMAS的内容，消息内容显示空白
+
+分析：3G网络下没有问题的，kaios分析称是因为3G下的数据包字符长度比2G下的数据包长度大（超过了56字符长度）,而2G下不满56字符长度
+被按照ETWS消息解析，导致异常，需要修改vendor/sprd/gecko_ril/vendor_ril/ril/ril_worker.js，给了附件的0001-Bug-52726-Distinguish-with-cell-broadcast-and-etws-a.patch，但这个patch的内容
+我看我们代码是早就已经合入的，还请帮忙提供解决方法。
+log见附件NL Alert_V2.5.rar|
+==== State: Closed by: cmadmin on 10 August 2019 00:33:47 ====
+
+尊敬的客户，NeedInfo状态超过15个工作日贵司未有状态更新和反馈的问题，现做关闭处理。如果还有其他问题，请重新提交CR或者联系对应的TAM处理。 Thanks
+
+
+==== State: NeedInfo by: cmadmin on 25 July 2019 14:50:02 ====
+
+  == Auto@kaiostech.com On 20190725T06:46:54 (xml) ==
+=============== jin.zhang@kaiostech.com ==== 2019-07-25 14:22:56 ========================
+Close this at Kai side.
+
+==== State: NeedInfo by: cmadmin on 17 July 2019 11:05:18 ====
+
+  == Licun.Cheng@unisoc.com On 2019-07-17T03:00:32Z (json) ==
+同客户确认，客户看的是dom/system/gonk下的代码，所以是patch已经合入状态。已经告知客户，需要将patch合入vendor/sprd/gecko_ril/vendor_ril/ril仓库下。待客户反馈验证结果。
+(2019-07-16T11:12:28Z)
+
+==== State: Opened by: waterworld on 15 July 2019 17:29:28 ====
+
+请问展锐什么时候可以释放patch？如果patch是指附件的0001-Bug-52726-etws-a.patch，我看代码里确实是已经合入了。
+
+==== State: Opened by: cmadmin on 12 July 2019 15:54:29 ====
+
+  == Auto@kaiostech.com On 2019-07-12T07:49:45Z (json) ==
+=============== yu.zheng@kaiostech.com ==== 2019-07-12 14:58:47 ========================
+根据 双喜查看WW提供的测试对象版本，刷机后检查code中，没有对应patch。
+该测试版本为 A355_01C_3088X_ALWE_V2.8_20190626_UNLOCK_DEBUG ，
+
+请Unisoc 为WW/TCL提供对应ril patch
+
+==== State: Opened by: cmadmin on 09 July 2019 18:06:33 ====
+
+  == Auto@kaiostech.com On 20190709T10:02:30 (xml) ==
+=============== jin.zhang@kaiostech.com ==== 2019-07-09 17:06:19 ========================
+Need UNISOC to check and merge patch in
+`0001-Bug-52726-Distinguish-with-cell-broadcast-and-etws-a.patch`
+
+to `vendor/sprd/gecko_ril` if it's not merged.
+
+==== State: Opened by: waterworld on 09 July 2019 17:56:47 ====
+
+以下是对应的软件包
+链接：https://pan.baidu.com/s/18iF5O0zrmdFDOmtCakOP-Q 提取码：1ego 复制这段内容后打开百度网盘手机App，操作更方便哦
+
+==== State: Opened by: waterworld on 08 July 2019 10:27:31 ====
+
+this.CB_GSM_MESSAGEID_ETWS_BEGIN = 0x1100;
+this.CB_GSM_MESSAGEID_ETWS_END   = 0x1107;
+log里接收到的消息是4371，但是从log中却判断却是属于ETWS，现在问题点已经定位到了，还请kaios及展锐协助我们WW解决掉这个这个问题，这个问题是影响到所有项目的。
+
+==== State: Opened by: cmadmin on 05 July 2019 20:06:00 ====
+
+  == Licun.Cheng@unisoc.com On 20190705T12:03:17 (xml) ==
+客户反馈Kai提供的patch已经合入，但仍存在问题，请Kai继续分析。
+|
+# SPCSS00600941|[SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] [香港运营商 IMS需求评估]|Dear：
+       我司9820E平台kaios系统A355项目，客户需要评估香港运营商 IMS需求，烦请协助|
+==== State: Closed by: cmadmin on 07 August 2019 00:44:49 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 16 July 2019 09:56:18 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:lack of ims configuration for hongkong operators
+
+[2.Resolution        ]:add the ims configuration for hongkong operators
+
+
+
+==== State: Opened by: cmadmin on 10 July 2019 15:38:10 ====
+
+  == Faye.Liu@unisoc.com On 2019-07-10T07:35:50Z (json) ==
+补充下运营商：
+3 (Hutchison Telecom)
+CMCC
+CSL
+PCCW
+SmarTone
+
+==== State: Opened by: cmadmin on 10 July 2019 15:38:09 ====
+
+  == Faye.Liu@unisoc.com On 2019-07-10T07:34:29Z (json) ==
+Dear Customer,
+
+香港以下几家运营商的NV参数已经在软件中做过兼容，不需要额外配置，但有一些conf_uri的参数需要在AP进行配置，稍后bug会转给AP同事，谢谢！
+
+==== State: Opened by: cmadmin on 08 July 2019 14:56:16 ====
+
+  == Qi.Yuan@unisoc.com On 20190708T06:53:29 (xml) ==
+Dear Customer
+
+    你提供的IMS需求中关于VoWiFi参数，只有3HK运营商可以配置，但是这个运营商的参数只有与APN相关的部分，配置后进行测试的话，可能会遇到其他问题，请确认是否还需要配置，谢谢
+
+    其他运营商VoWiFi参数因为缺少信息都无法配置，请知晓。
+
+    香港运营商VoLTE配置方法，我们会通过CQ告知，谢谢~
+
+==== State: Opened by: cmadmin on 08 July 2019 08:39:32 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600928|[SC7731E][Waterworld][FS286M71-F80/S901[S532]]添加SN2对应的属性gsm.serial。（详情请见附件serial-spreadtrum.pdf）|步骤：
+
+手机在开发者模式下连接主机，通过adb shell getprop命令查看当前的一些属性。这些属性中有SN对应的ro.serialno属性
+但是没有SN2对应的
+现象：
+这些属性中有SN对应的ro.serialno属性，但是并没有SN2对应的gsm.serial属性
+分析：
+应该是文件中不存在名为gsm.serial的属性，麻烦请分析一下如何添加。谢谢|
+==== State: Closed by: qijia.yu on 12 July 2019 15:08:28 ====
+
+请自行开发
+
+==== State: NeedInfo by: cmadmin on 12 July 2019 10:21:21 ====
+
+  == Qijia.Yu@unisoc.com On 20190712T02:17:47 (xml) ==
+如邮件沟通，此需求建议你们先自己先做起来。
+
+关于SN2 号，工具是写到手机的miscdata文件中，可以参考下代码中SN1  是如何关联到ro.serialno
+附件miscdata分区访问说明可以参考下。
+(20190711T05:55:38)
+
+==== State: Opened by: waterworld on 11 July 2019 10:50:10 ====
+
+客户的要求是添加一个名为gsm.serial的属性，它的值为SN2号，并可以通过adb shell getprop gsm.serial命令显示这个值。如果有疑问可以电话沟通，谢谢。
+
+==== State: Opened by: cmadmin on 10 July 2019 20:26:41 ====
+
+  == Qijia.Yu@unisoc.com On 20190710T12:24:31 (xml) ==
+SN2已经用工具写进去了，请再看下这个问题：
+如何添加gsm.serial属性
+
+==== State: Opened by: waterworld on 10 July 2019 19:02:52 ====
+
+现在的问题是如何添加gsm.serial属性，使它的值等于SN2号。谢谢
+
+==== State: Opened by: waterworld on 10 July 2019 17:27:16 ====
+
+通过工具写入SN2之后，可以使用工具读取到已写入的SN2号，但是无法通过adb查询到。麻烦请分析一下原因，谢谢。
+
+==== State: NeedInfo by: cmadmin on 10 July 2019 16:05:36 ====
+
+  == Qijia.Yu@unisoc.com On 2019-07-10T08:02:22Z (json) ==
+SIMBA工具可以写SN2，关于SIMBA工具使用如有疑问，请跟贵司硬件或测试沟通了解下。
+(2019-07-10T05:45:39Z)
+
+==== State: Opened by: waterworld on 10 July 2019 13:38:18 ====
+
+可以提供一下具体操作吗？谢谢。
+
+==== State: NeedInfo by: cmadmin on 10 July 2019 09:24:18 ====
+
+  == Qijia.Yu@unisoc.com On 2019-07-10T01:23:37Z (json) ==
+贵司之前提过类似问题，请参考下
+
+(SPCSS00591548) - [SC7731E][Waterworld][FS286]6部FS286巴西生产准备工作，如下客户提出的存储SN需求
+(2019-07-09T11:56:52Z)
+
+==== State: Opened by: waterworld on 09 July 2019 10:35:09 ====
+
+请问，这个有cq有解决方法了吗？谢谢
+
+==== State: Opened by: cmadmin on 07 July 2019 23:54:10 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600918|[SC9820E][Waterworld][ww843][18部]我们的机器连接名称为希腊语的wifi时，我们的wifi搜索界面该wifi名称会显示乱码|步骤：
+
+现象：我们的机器连接名称为希腊语的wifi时，我们的wifi搜索界面该wifi名称会显示乱码，现象图我上传附件，
+
+分析：
+|
+==== State: Closed by: cmadmin on 02 August 2019 00:46:49 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 11 July 2019 16:57:12 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+我们的机器连接名称为希腊语的wifi时，我们的wifi搜索界面该wifi名称会显示乱码
+Solution:
+编解码流程问题，除去isGBK编解码流程
+
+==== State: Opened by: cmadmin on 11 July 2019 16:57:09 ====
+
+  == zuoql0719@spreadst.com On 20190711T08:44:10 (xml) ==
+Dear Customer
+
+   如沟通，验证ok可以关闭。后续若有其他问题，可以在另提单。
+
+感谢！
+
+==== State: Opened by: waterworld on 11 July 2019 16:24:03 ====
+
+Dear 展讯
+         客户验证ok可以关闭了，谢谢支持
+
+==== State: Opened by: cmadmin on 11 July 2019 13:50:36 ====
+
+  == zuoql0719@spreadst.com On 20190711T05:46:59 (xml) ==
+Dear Customer
+  
+   请从如下路径获取如下patch，并验证：
+ftp://cqlog:2xf45xSm@ftp.unisoc.com/SPCSS/2019-2/SPCSS00600918/PatchesForCUS/SPCSS00600918_patch.zip
+
+感谢！
+
+==== State: Opened by: waterworld on 10 July 2019 17:31:09 ====
+
+Dear 展讯
+        有进展麻烦第一时间回复，谢谢。
+
+==== State: Opened by: cmadmin on 09 July 2019 14:02:38 ====
+
+  == zuoql0719@spreadst.com On 2019-07-09T05:59:57Z (json) ==
+Dear Customer
+
+   如电话沟通，目前已经定位到问题所在，但还需梳理下逻辑。从提供的log看是SSID编解码有问题导致：
+
+//选择网络
+07-08 15:55:28.858   639   687 D WifiNative-wlan0: doBoolean: SET_NETWORK 3 ssid "ηκτκτ"
+07-08 15:55:28.858  1624  1624 D wpa_supplicant: RX ctrl_iface - hexdump(len=31): [REMOVED]
+07-08 15:55:28.858  1624  1624 D wpa_supplicant: CTRL_IFACE: SET_NETWORK id=3 name='ssid'
+07-08 15:55:28.858  1624  1624 D wpa_supplicant: CTRL_IFACE: value - hexdump(len=12): [REMOVED]
+07-08 15:55:28.858  1624  1624 D wpa_supplicant: SSID hexdump before convert: ' - hexdump(len=10): ce b7 ce ba cf 84 ce ba cf 84
+07-08 15:55:28.858  1624  1624 D wpa_supplicant: SSID hexdump after convert: ' - hexdump(len=10): ce b7 ce ba cf 84 ce ba cf 84
+07-08 15:55:28.858  1624  1624 D wpa_supplicant: ssid - hexdump(len=10): ce b7 ce ba cf 84 ce ba cf 84
+07-08 15:55:28.868   639   687 D WifiNative-wlan0:    returned true
+
+
+07-08 15:55:28.868   639   687 D WifiNative-wlan0: doString: GET_NETWORK 3 ssid
+07-08 15:55:28.868  1624  1624 D wpa_supplicant: RX ctrl_iface - hexdump(len=18): 47 45 54 5f 4e 45 54 57 4f 52 4b 20 33 20 73 73 69 64
+07-08 15:55:28.868  1624  1624 D wpa_supplicant: wlan0: Control interface command 'GET_NETWORK 3 ssid'
+07-08 15:55:28.868  1624  1624 D wpa_supplicant: CTRL_IFACE: GET_NETWORK id=3 name='ssid'
+07-08 15:55:28.868  1624  1624 D wpa_supplicant: SSID hexdump before convert:  - hexdump(len=10): ce b7 ce ba cf 84 ce ba cf 84
+07-08 15:55:28.868  1624  1624 I wpa_supplicant: twobytes_count:5, asian_count:0, strlen:10!!!!!
+//按照正常逻辑不用在去进行转码，但此处进行了转码
+07-08 15:55:28.868  1624  1624 I wpa_supplicant: is GBK!!!!!
+07-08 15:55:28.868  1624  1624 I wpa_supplicant: GBK-String!!
+07-08 15:55:28.868  1624  1624 I wpa_supplicant: check_and_get_truncated_char_index: len: 10, code_type: 1!!!!!
+07-08 15:55:28.868  1624  1624 I wpa_supplicant: Begin to covert gb2312 to utf-8!!
+07-08 15:55:28.868  1624  1624 D wpa_supplicant: SSID hexdump after convert:  - hexdump(len=16): e7 95 8f e9 ad 8f e8 9f bf e9 ad 8f e8 9f bf 01
+
+
+感谢！
+
+==== State: Opened by: waterworld on 09 July 2019 09:40:17 ====
+
+Dear 展讯
+        看的有进展了吗？
+
+
+
+==== State: Opened by: waterworld on 08 July 2019 16:47:39 ====
+
+Dear 展讯
+        如电话沟通，log已上传附件，请知悉
+
+==== State: Opened by: waterworld on 08 July 2019 13:48:28 ====
+
+Dear 展讯
+         请问这个问题咋样啦？
+
+==== State: Opened by: cmadmin on 05 July 2019 18:21:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600913|[SC9832E][Waterworld][FS097LE][TRX][XM]概率性的进入工厂测试后出现黑屏后按home键退出，再次进入工厂测试还是显示黑色，需要重启手机才能正常；恢复出厂值再次操作显示正常|现象：
+       概率性的进入工厂测试后出现黑屏后按home键退出，再次进入工厂测试还是显示黑色，需要重启手机才能正常；恢复出厂值再次操作显示正常
+分析：
+      抓的ylog比较大，会传到ftp上，还请分析黑屏的原因
+|
+==== State: Closed by: waterworld on 13 July 2019 16:28:59 ====
+
+暂时没复现，关闭吧
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 09:52:41 ====
+
+  == Peng.Shen@unisoc.com On 20190708T01:49:40 (xml) ==
+尊敬的客户，您好：
+
+    从当前log中并没有看到ValidationTools程序异常的相关log。
+
+    请问，该问题发生的概率大概有多高？是否是输入暗码后，一进入ValidationTools界面就黑屏了？
+    
+    请打包提供ValidationTools代码，并尽量重新复现该问题，记录下发生该问题的时间点，然后再抓取一份ylog上传。
+
+    请按照上述进行操作并反馈，谢谢。
+(20190708T01:23:43)
+
+==== State: Opened by: waterworld on 08 July 2019 09:21:48 ====
+
+您好，请查看附件的analyzer.py解压缩后的《android.rar》
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 06 July 2019 10:25:15 ====
+
+  == Peng.Shen@unisoc.com On 2019-07-06T02:06:25Z (json) ==
+尊敬的客户，您好：
+
+    您上传的log中，external_storage\ylog\ap\current\00-0704_101507\android目录下的analyzer.py文件无法打开解压，无法进一步分析，请您本地尝试解压该文件，然后将解压后的android目录打包上传即可，不需要提供全部log文件，请知悉。
+(2019-07-05T11:29:06Z)
+
+==== State: Opened by: waterworld on 05 July 2019 19:26:25 ====
+
+抓的ylog有600M，上传到ftp路径：/SPCSS/2019-2/SPCSS00600913/概率性的进入工厂模式界面显示黑屏重启手机后进入工厂模式系统测试界面也是显示黑屏.rar
+谢谢！
+
+==== State: Opened by: cmadmin on 05 July 2019 18:48:30 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600901|[SC9820E][Waterworld][ww843][18部]当设置了sim卡锁以后，开启飞行模式，锁屏界面会显示为普通锁屏界面|步骤：
+
+现象：当设置了sim卡锁以后，开启飞行模式，锁屏界面会显示为普通锁屏界面。客户要修改为不管开不开飞行模式，都显示sim
+卡pin解锁界面，帮忙看下怎么修改，谢谢！！！
+
+分析：|
+==== State: Closed by: cmadmin on 31 July 2019 00:44:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 09 July 2019 14:20:10 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+４．４分支设置了sim卡锁以后，开启飞行模式，锁屏界面会显示为普通锁屏界面，客户要求改为锁卡界面
+Solution:
+已告知解决方案
+
+==== State: Opened by: cmadmin on 09 July 2019 14:16:15 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 08 July 2019 16:07:25 ====
+
+  == caoyang1220@spreadst.com On 2019-07-08T08:02:27Z (json) ==
+Dear customer,
+  本地尝试了一下，4.4上的确会有该现象，请合入下面的修改后重新试一下，看是否可以解决问题，感谢！
+
+修改文件如下：
+
+frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardSecurityModel.java
+
+请将该文件中SecurityMode getSecurityMode()方法中的
+if (!isAirplaneMode) 判断去掉，然后试一下~
+(2019-07-08T06:10:51Z)
+
+==== State: Opened by: cmadmin on 08 July 2019 14:09:46 ====
+
+  == nick.nie@unisoc.com On 20190708T06:06:31 (xml) ==
+麻烦tele同事帮忙看下。
+
+在android9.0项目上是有此功能的。但是在4.4上不支持。
+
+看代码上9.0上应该是通过onSubscriptionsChanged回调实现的，但是在4.4上没有此接口。
+麻烦帮忙看下4.4上是否可以实现此功能。
+谢谢。
+
+==== State: Opened by: cmadmin on 08 July 2019 09:37:57 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 08 July 2019 09:27:47 ====
+
+Dear 展讯
+        这问题帮忙看下，谢谢
+|
+# SPCSS00600897|[SC9863A][Waterworld][FS170-TELCEL][XM]刘海屏和水滴屏墙纸预览异常。|Launcher，进入设置/显示/壁纸，墙纸是全屏显示的，但是刘海屏和水滴屏上面的区域显示是黑的，
+当选中任意一张墙纸进行预览，整张墙纸会往下移，刘海屏和水滴屏上面的区域显示还是黑的。其他的屏不会有这种问题。
+
+希望预览界面的显示跟待机界面的显示效果一样。刘海屏和水滴屏上面的区域显示要正常.
+
+附件有视频和ylog，请帮忙分析看看，谢谢！|
+==== State: Closed by: waterworld on 08 July 2019 11:42:20 ====
+
+验证OK, 可以关闭，谢谢！
+
+==== State: Resolved by: cmadmin on 05 July 2019 19:07:50 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+刚进入设置壁纸界面时显示的是手机ImageWallpaper进程draw 的wallpaper，就像luancher待机界面中显示的壁纸。点击选中其中一个预置壁纸资源后，选中的壁纸资源加载显示在设置壁纸界面中。
+由于贵司为水滴屏，全屏窗口不会完全覆盖水滴屏，导致两种显示的图像在位置中有差异，造成感觉图像移动的现象。
+Solution:
+如Root Cause描述，此为android原生设计，不建议修改。
+如需修改，请参照以下方案：
+packages/apps/WallpaperPickerres/values-v19/styles.xml
+... ...
+ <resources>
+     <style name="WallpaperTheme" parent="@android:style/Theme.DeviceDefault.Light">
+         <item name="android:actionBarStyle">@style/WallpaperCropperActionBar</item>
+-        <item name="android:windowFullscreen">true</item>
++        <item name="android:windowFullscreen">false</item>
++        <item name="android:statusBarColor">#00000000</item>
+         <item name="android:windowActionBarOverlay">true</item>
+         <item name="android:windowTranslucentNavigation">true</item>
+     </style>
+
+==== State: Opened by: waterworld on 05 July 2019 17:36:37 ====
+
+张工，验证OK，效果很好，可以走关闭流程了。非常感谢！
+
+==== State: Opened by: cmadmin on 05 July 2019 17:24:06 ====
+
+  == Wentong.Zhang@unisoc.com On 20190705T09:15:24 (xml) ==
+dear,
+
+刚进入设置壁纸界面时显示的是手机ImageWallpaper进程draw 的wallpaper，就像luancher待机界面中显示的壁纸。点击选中其中一个预置壁纸资源后，选中的壁纸资源加载显示在设置壁纸界面中。
+
+由于贵司为水滴屏，全屏窗口不会完全覆盖水滴屏，导致两种显示的图像在位置中有差异，造成感觉图像移动的现象。
+此为android原生设计，不建议修改。
+
+如需修改，请参照以下方案：
+packages/apps/WallpaperPickerres/res/values-v19/styles.xml
+... ...
+ <resources>
+     <style name="WallpaperTheme" parent="@android:style/Theme.DeviceDefault.Light">
+         <item name="android:actionBarStyle">@style/WallpaperCropperActionBar</item>
+-        <item name="android:windowFullscreen">true</item>
++        <item name="android:windowFullscreen">false</item>
++        <item name="android:statusBarColor">#00000000</item>
+         <item name="android:windowActionBarOverlay">true</item>
+         <item name="android:windowTranslucentNavigation">true</item>
+     </style>
+
+谢谢
+
+==== State: Opened by: cmadmin on 05 July 2019 17:09:57 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600888|[SC9820E][Waterworld][AC920_60C]【AC920_60C】【科强】【移动入库】申请现场支持|项目信息：
+内部项目代号：AC923
+客户项目代号：H003
+
+版本信息：
+AP：MOCOR5_SFPHONE_17F_RLS1_W19.19.5
+CP：
+
+Band支持情况：
+LTE-FDD：B1/3/8
+LTE-TDD：B38/B39/B40/B41(100M)
+WCDMA：B1/8
+GSM：EGSM900/DCS1800
+
+Class等级支持情况：
+GPRS：12
+EDGE：12
+LTE：Cat4
+
+现场问题： 
+[标题]被测终端在IPv4v6双栈情况下无法优先使用IPv6业务
+[标题]被测终端无法激活IPv6 PDN并使用IPv6业务
+（聊天记录见附件message.png）
+
+主要联系人：
+韩祥，18352923045
+
+申请展讯现场支持
+|
+==== State: Closed by: cmadmin on 15 October 2019 00:46:01 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 23 September 2019 09:40:40 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:客户软件实现及方法问题导致
+
+[2.Resolution        ]:优化软件的同时采用正确的方法
+
+
+
+==== State: Opened by: waterworld on 24 July 2019 15:28:50 ====
+
+您好，关于这问题，是软件有些问题，不过是不影响WiFi热点开启的，WiFi热点开启的时候，不要点击checkbox打开，那个checkbox是无效的，需要点击checkbox所在的item即可打开。
+
+==== State: Opened by: cmadmin on 23 July 2019 09:22:52 ====
+
+  == yu.meng@unisoc.com On 20190723T01:22:27 (xml) ==
+IPv6问题，由于邮寄样机wifi热点不可用。
+已经将验证的方法提供给客户，需要客户本地进行验证后反馈结果。
+
+==== State: Opened by: cmadmin on 15 July 2019 14:22:14 ====
+
+  == yu.meng@unisoc.com On 2019-07-15T02:33:53Z (json) ==
+和客户进行了沟通确认，volte选项开关问题已经指导客户自行实现，ipv6两个问题，需要客户先确认wifi热点功能是否有删减；网络图标问题已经流转给launcher模块进行处理。
+
+==== State: Opened by: cmadmin on 08 July 2019 17:43:52 ====
+
+  == yu.meng@unisoc.com On 20190708T09:41:04 (xml) ==
+尊敬的客户，您好
+今天与品牌客户韩工有过沟通，目前贵司及客户在北京都没有工程师，无法协调样机进行问题的确认，待后续安排问题确认后，根据问题归属提交CQ流转，请知悉。
+
+==== State: Opened by: waterworld on 08 July 2019 14:14:20 ====
+
+Dear sprd：
+附件是至今汇总的移动入库的问题点，希望有帮助。
+
+==== State: Opened by: waterworld on 08 July 2019 13:49:13 ====
+
+Dear sprd:
+如下是北京那边测试VoLTE无HD标识的信息。
+
+标题]被测终端插入USIM卡,设置没有VOLTE开关选项且界面无显示网络标识
+[IMEI]864891030546645
+[涉及卡]USIM卡:东信,大唐,雅思拓,捷德,天瑜,握奇,华宏,柯斯,欧贝特,恒宝,楚天龙
+[重现概率]10/10 
+[操作步骤] 
+被测终端插入USIM卡,1.检查是否有VoLTE开关VoLTE开关是否默认打开
+2.VoLTE开关打开或者关闭的场景下进行主被叫语音通话
+[预期结果]
+被测终端插入USIM卡,1.界面有显示网络标识且VoLTE开关默认打开
+2.VoLTE打开场景下手表能够进行正常语音通话且显示VOLTE标识
+VoLTE关闭场景下手表能够进行正常语音通话
+
+[实际结果]
+被测终端插入USIM卡,设置没有VOLTE开关选项且界面无显示网络标识
+[备注]
+涉及用例1.1
+
+
+==== State: Opened by: waterworld on 08 July 2019 13:47:12 ====
+
+Dear SPRD:
+主要联系人：韩祥，18352923045
+
+==== State: Opened by: cmadmin on 08 July 2019 09:54:51 ====
+
+  == yu.meng@unisoc.com On 2019-07-08T01:51:06Z (json) ==
+尊敬的客户，您好
+请提供北京现场工程师的联系方式，平台版本不存在上述问题，需要使用送测终端先进行确认。谢谢！
+
+==== State: Opened by: waterworld on 05 July 2019 17:59:10 ====
+
+ == Description Changed from == 
+问题： [标题]被测终端在IPv4v6双栈情况下无法优先使用IPv6业务
+          [标题]被测终端无法激活IPv6 PDN并使用IPv6业务
+聊天记录见附件message.png
+
+申请展讯现场支持
+
+To
+项目信息：
+内部项目代号：AC923
+客户项目代号：H003
+
+版本信息：
+AP：MOCOR5_SFPHONE_17F_RLS1_W19.19.5
+CP：
+
+Band支持情况：
+LTE-FDD：B1/3/8
+LTE-TDD：B38/B39/B40/B41(100M)
+WCDMA：B1/8
+GSM：EGSM900/DCS1800
+
+Class等级支持情况：
+GPRS：12
+EDGE：12
+LTE：Cat4
+
+现场问题： 
+[标题]被测终端在IPv4v6双栈情况下无法优先使用IPv6业务
+[标题]被测终端无法激活IPv6 PDN并使用IPv6业务
+（聊天记录见附件message.png）
+
+主要联系人：
+韩祥，18352923045
+
+申请展讯现场支持
+
+
+
+==== State: Opened by: cmadmin on 05 July 2019 17:28:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00600883|[SC9832E][Waterworld][FS097M11][六部][遵义]设置低电量值20%，充电到20%及以上没有自动关闭低电量模式|步骤：
+设置》电池》打开低电量省电模式》设置低电量值为20%》充电从19%到20%及其以上时，没有自动关闭低电量模式
+现象：
+开启低电量省电模式后，电量低于20%状态栏变红，但是充电超过20%后，状态栏还是红色，这应该是BUG
+分析：
+请分析修改：电量超过设置值后，自动关闭低电量模式，即现象是状态栏颜色恢复。
+log见附件，麻烦了谢谢。|
+==== State: Closed by: cmadmin on 31 July 2019 00:44:29 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 09 July 2019 15:39:41 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+充电时低电量阈值+5%退出低电量模式
+Solution:
+将5改为0
+
+==== State: Opened by: waterworld on 09 July 2019 15:35:54 ====
+
+修改private static final int LOWBATTERY_CLOSEWARNING_BUMP = 0，验证成功，该问题可以关闭了。 
+
+==== State: Opened by: cmadmin on 08 July 2019 15:06:19 ====
+
+  == Ruby.Sun@unisoc.com On 2019-07-08T07:03:09Z (json) ==
+(In reply to waterworld from comment #4)
+另外，comment3中的patch 如果贵司未包含，也建议合入。
+
+==== State: Opened by: cmadmin on 08 July 2019 15:06:10 ====
+
+  == Ruby.Sun@unisoc.com On 2019-07-08T07:00:22Z (json) ==
+(In reply to waterworld from comment #4)
+
+你好！
+
+目前的design是高于设定值+ 5% 会自动退出省电模式。
+
+如果您需要修改的话，请将PowerController.java中的下值修改为0
+private static final int LOWBATTERY_CLOSEWARNING_BUMP = 5;
+
+==== State: Opened by: waterworld on 08 July 2019 14:47:23 ====
+
+验证失败，期望的是：低电量模式值设为20%，当充电冲到回复20%或以上的时候请自动关闭低电量模式(省电模式)，及状态栏颜色由红色恢复到正常。麻烦在分析一下谢谢。
+
+==== State: Opened by: cmadmin on 05 July 2019 18:54:13 ====
+
+  == shuaiyu.zhang1@unisoc.com On 20190705T10:50:30 (xml) ==
+修改如下，请帮忙验证一下，验证后请及时反馈信息。
+diff --git a/services/core/java/com/android/server/power/PowerController.java b/services/core/java/com/android/server/power/PowerController.java
+index 8f1f39c..b52e215 100644
+--- a/services/core/java/com/android/server/power/PowerController.java
++++ b/services/core/java/com/android/server/power/PowerController.java
+@@ -635,6 +635,13 @@ public class PowerController //extends IPowerController.Stub
+                 break;
+             case MSG_SET_AUTOLOWPOWER_ENABLE:
+                 mModeConfigArray[MODECONFIG_AUTOLOWPOWER].mEnable = (boolean)msg.obj;
++                if (mModeConfigArray[MODECONFIG_AUTOLOWPOWER].mEnable) {
++                    if (DEBUG) Slog.d(TAG, "enable auto lowpower mode!!");
++                    updateBatteryLevelLow(true);
++                } else {
++                    if (DEBUG) Slog.d(TAG, "disable auto lowpower mode!!");
++                    mBatteryLevelLow = false;
++                }
+                 // if disable, should reset relevant configs
+                 /*if (!mEnable_AutoLowPowerMode) {
+                     mPowerSaveMode_LowPower = DEFAULT_AUTOLOWPOWER_MODE;
+@@ -646,6 +653,7 @@ public class PowerController //extends IPowerController.Stub
+                 break;
+             case MSG_SET_AUTOLOWPOWER_BATTVALUE:
+                 mLowBatteryWarningLevel = msg.arg1;
++                if (DEBUG) Slog.d(TAG, "set battery level: " +mLowBatteryWarningLevel + " for auto lowpower mode!!");
+                 writeConfig();
+                 Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL, mLowBatteryWarningLevel);
+                 updateBatteryLevelLow(true);
+@@ -3461,7 +3469,7 @@ public class PowerController //extends IPowerController.Stub
+             if (battLevel >= mLowBatteryWarningLevel + LOWBATTERY_CLOSEWARNING_BUMP)  {
+                 if (DEBUG) Slog.d(TAG, "way 1, beyond close warning level:" + (mLowBatteryWarningLevel + LOWBATTERY_CLOSEWARNING_BUMP) + ", false");
+                 mBatteryLevelLow = false;
+-            } else if (force && battLevel >= mLowBatteryWarningLevel) {
++            } else if (force && battLevel > mLowBatteryWarningLevel) {
+                 // If being forced, the previous state doesn't matter, we will just
+                 // absolutely check to see if we are now above the warning level.
+                 if (DEBUG) Slog.d(TAG, "way 2, force");
+
+
+另外，请不要在省电模式选择为低电量模式的情况下测试该case，如有问题，可以电话联系我，谢谢
+
+==== State: Opened by: cmadmin on 05 July 2019 17:06:33 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

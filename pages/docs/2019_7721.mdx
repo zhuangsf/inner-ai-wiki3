@@ -1,0 +1,1297 @@
+# SPCSS00577398|[SL8521E][Waterworld][AC923]双SIM卡变成单SIM卡怎么配置|步骤：
+
+现象：双SIM卡变成单SIM卡怎么配置
+
+分析：因为我们编译的是SP9820e_1h10_oversea.mk 但是在
+sl8521e_ac923\MOCOR5_SFPHONE_17F_RLS1_W18.42.3_P1\idh.code\device\sprd\sharkle\sp9820e_1h10\sp9820e_1h10_oversea.mk
+ 下找到不到SIM 相关的配置，我在sp9820e_1h10_native.mk可以看到ro.msms.phone_count=1 \
++        ro.modem.l.count=1 \
++       persist.msms.phone_count=1 \
+
+ro.digital.fm.support=0 
++               #persist.radio.multisim.config=dsds 
+那在sp9820e_1h10_oversea.mk里怎么配单SIM卡
+
+|
+==== State: Closed by: cmadmin on 19 June 2019 01:11:31 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 May 2019 09:56:15 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+==== State: Resolved by: cmadmin on 08 May 2019 20:50:42 ====
+
+  == Mingwen.Chen@unisoc.com On 20190508T12:49:40 (xml) ==
+Dear customer
+     该问题是customerverify，请验证后reject CQ 反馈验证结果，谢谢
+
+==== State: Resolved by: cmadmin on 26 April 2019 11:02:05 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+  == jinhui0917@spreadst.com On 20190426T03:00:48 (xml) ==
+尊敬的客户:
+   验证结果如何.请反馈一下.
+谢谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+单卡配置
+Solution:
+单卡配置
+
+==== State: Opened by: cmadmin on 22 April 2019 16:12:31 ====
+
+  == jinhui0917@spreadst.com On 20190422T07:08:59 (xml) ==
+尊敬的客户
+1 需要贵司根据自己编译的具体工程进行修改，以/device/sprd/sharkle/sp9820e_2h10/sp9820e_xxxx_xxxx.mk为例，需要在末尾加入如下的内容：
+SIM_COUNT := 1
+
+PRODUCT_PROPERTY_OVERRIDES := \
+ro.modem.l.count=1 \
+persist.msms.phone_count=1 \
+persist.radio.multisim.config=ssss \
+$(PRODUCT_PROPERTY_OVERRIDES)
+即可。
+
+2 请使用附件中9820e_bin.zip中的文件（2个：modemd、phoneserver）替换/out/target/product/sp9820e_1h10/下对应文档. 此替换的2个文件user和userdebug版本通用。
+
+注意下面的都要替换：
+\out\target\product\sp9820e_1h10\system\bin\modemd
+\out\target\product\sp9820e_1h10\system\bin\phoneserver  
+\out\target\product\sp9820e_1h10\obj\EXECUTABLES\modemd_intermediates\modemd
+\out\target\product\sp9820e_1h10\obj\EXECUTABLES\phoneserver_intermediates\phoneserver
+
+请修改后验证，反馈一下结果
+
+谢谢
+
+==== State: Opened by: cmadmin on 22 April 2019 16:11:27 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577394|[SC9820E][Waterworld][A355]【A1】默认APN可以编辑和删除|1.插入SIM卡/setting/mobile network&data/APN settings/进入任意项
+2.默认APN可以编辑和删除
+|
+==== State: Closed by: cmadmin on 30 June 2019 00:35:58 ====
+
+尊敬的客户，NeedInfo状态超过15个工作日贵司未有状态更新和反馈的问题，现做关闭处理。如果还有其他问题，请重新提交CR或者联系对应的TAM处理。 Thanks
+
+
+==== State: NeedInfo by: cmadmin on 14 June 2019 17:15:57 ====
+
+  == Mingwen.Chen@unisoc.com On 20190614T09:14:50 (xml) ==
+Dear customer
+    这个问题可以关闭了吗？
+(20190422T02:17:51)
+|
+# SPCSS00577380|[SC6531E][Waterworld][FF257_6]【6部 遵义】关于FF257-MB-V17 主板侧键实现锁屏问题，目前不能实现此功能，怀疑是驱动为配置OK,请帮忙确认pinmap是否有配置正确 接口用GPIO22控制，附件为原理图 和pinmap文件 谢谢！|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 14 May 2019 00:38:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 April 2019 16:02:43 ====
+
+  == Zhong.Huang@unisoc.com On 20190422T07:22:42 (xml) ==
+不知道贵司是不是跑的这一行
+
+{PIN_SPI0_CS0_REG, (PIN_SLP_IE|PIN_SPU_EN|PIN_FUNC_3|PIN_FPU_EN|PIN_BSR_WPX|PIN_DS_0|PIN_DSLP_EN)}, //NC
+
+这一行对GPIO22做配置，IE和fun的选择都是对，请知悉
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+不知道贵司是不是跑的这一行
+
+{PIN_SPI0_CS0_REG, (PIN_SLP_IE|PIN_SPU_EN|PIN_FUNC_3|PIN_FPU_EN|PIN_BSR_WPX|PIN_DS_0|PIN_DSLP_EN)}, //NC
+
+这一行对GPIO22做配置，IE和fun的选择都是对，请知悉
+Solution:
+不知道贵司是不是跑的这一行
+
+{PIN_SPI0_CS0_REG, (PIN_SLP_IE|PIN_SPU_EN|PIN_FUNC_3|PIN_FPU_EN|PIN_BSR_WPX|PIN_DS_0|PIN_DSLP_EN)}, //NC
+
+这一行对GPIO22做配置，IE和fun的选择都是对，请知悉
+
+==== State: Opened by: cmadmin on 22 April 2019 16:02:34 ====
+
+  == Zhong.Huang@unisoc.com On 20190422T07:21:51 (xml) ==
+不知道贵司是不是跑的这一行
+
+{PIN_SPI0_CS0_REG, (PIN_SLP_IE|PIN_SPU_EN|PIN_FUNC_3|PIN_FPU_EN|PIN_BSR_WPX|PIN_DS_0|PIN_DSLP_EN)}, //NC
+
+这一行对GPIO22做配置，IE和fun的选择都是对，请知悉
+
+==== State: Opened by: cmadmin on 22 April 2019 16:02:03 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577372|[SC9863A][Waterworld][tcl]【wright】go版本第一次烧写完开机，或者恢复出厂设置开机，systemui报错|之前已经提交过 SPCSS00571239   SPCSS00564765
+
+目前我们用drvonly的纯驱动版本 仅预置了go版本的gms包，验证存在同样问题。
+
+# SPCSS00571239沟通记录中说的“纯洁版本不存在这个问题” 纯洁版本没预置gms包，肯定没问题
+之前分析方向说是预置太多app导致  看来并不完全正确
+
+|
+==== State: Closed by: waterworld on 28 April 2019 14:06:50 ====
+
+此问题先关闭，后续测试有问题再另提id。
+感谢
+
+==== State: NeedInfo by: cmadmin on 26 April 2019 15:02:23 ====
+
+  == qudf@spreadst.com On 20190426T06:55:18 (xml) ==
+hi, waterworld:
+　　１．原因是swap被挂载的太晚，现在的做法只是将swap的挂载提前了，因为在我们平台上没有测试出该问题，希望贵司能增加一些稳定型的测试，来反馈该问题的结果，感谢！
+　　2.目前来看应该不会影响到user版本和cts测试，但还是需要经过测试来验证的。
+　　３．我已经咨询过我们的cpm同事，先以我给贵司的sample_code_1来进行测试。
+　　４．测试完在决定是否将该patch合入贵司代码库。
+　　有问题请联系我，手机：18097886186
+谢谢！
+(20190426T06:39:44)
+
+==== State: Opened by: waterworld on 26 April 2019 14:35:30 ====
+
+是否会影响user 版本 和 cts测试
+
+==== State: Opened by: waterworld on 26 April 2019 14:33:26 ====
+
+我们会加强验证，
+请告知下此问题的具体原因。
+是否可以提交大版本，贵司是否会release 正式的patch。
+
+合入此修改会有什么负面的影响吗？
+
+==== State: NeedInfo by: cmadmin on 26 April 2019 14:29:31 ====
+
+  == qudf@spreadst.com On 2019-04-26T06:24:03Z (json) ==
+hi,  waterworld:
+ 麻烦请继续测试一下，如果确定该问题已经解决，请关闭cq，patch以sampel_code_1为准。
+有问题请联系我，手机：18097886186
+谢谢！
+(2019-04-26T05:50:24Z)
+
+==== State: Opened by: waterworld on 26 April 2019 13:48:08 ====
+
+验证了同样不会报错 附上log
+
+==== State: NeedInfo by: cmadmin on 26 April 2019 11:42:08 ====
+
+  == qudf@spreadst.com On 20190426T03:37:24 (xml) ==
+hi,  waterworld:
+ 我上传了一份sample_code_1，请按照此patch修改，复测，并将复测结果说明并上传相关log。
+说明，这不是正式patch。
+　有问题请联系我，手机：18097886186
+谢谢！
+(20190426T03:04:55)
+
+==== State: Opened by: waterworld on 26 April 2019 10:57:48 ====
+
+初步验证了 debug版本不再提示systemui报错。
+附上对应的log
+
+==== State: NeedInfo by: cmadmin on 25 April 2019 18:42:04 ====
+
+  == qudf@spreadst.com On 2019-04-25T10:40:14Z (json) ==
+hi,  waterworld:
+ 我上传了一份sample_code，请按照此patch修改，复测，并将复测结果说明并上传相关log。
+说明，这不是正式patch。
+　有问题请联系我，手机：18097886186
+谢谢！
+(2019-04-25T07:01:00Z)
+
+==== State: Opened by: cmadmin on 25 April 2019 10:32:18 ====
+
+  == Alfred.Yang@unisoc.com On 20190425T02:25:59 (xml) ==
+Dears
+
+   此问题提出快一周了，客户很着急，请帮忙优先处理。
+
+==== State: Opened by: cmadmin on 23 April 2019 19:18:57 ====
+
+  == Xiaorong.Xu@unisoc.com On 20190423T11:14:20 (xml) ==
+此问题已经在优先分析，有进展会及时反馈，谢谢~~
+
+==== State: Opened by: waterworld on 23 April 2019 17:59:27 ====
+
+请问是否有进展？ 
+
+==== State: Opened by: waterworld on 22 April 2019 20:11:40 ====
+
+请问是否有进展？
+
+==== State: Opened by: cmadmin on 22 April 2019 16:00:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 20 April 2019 11:08:42 ====
+
+链接：https://pan.baidu.com/s/1Fx-M4Kal7IrofyHQD_LRdA 
+提取码：g99m 
+
+上传了一个纯驱动带gms包的版本。贵司有我们的机器，可以烧写了验证。
+|
+# SPCSS00577355|[SC9820E][Waterworld][AC920_60C_nbkq]无法连接AT执行测试命令|步骤：1.进入拨号盘，输入 *#*#83781#*#* 进入工程模式，找到“Debug&LOG”，选择 log settings，选择PC Log，选择EngPCService，打开这个开关
+2.然后再测试AT
+
+
+现象：无法执行测试命令
+
+分析：暂不清楚是什么原因，需要协助
+|
+==== State: Closed by: cmadmin on 23 May 2019 00:36:34 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 24 April 2019 10:10:10 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:客户硬件故障
+
+[2.Resolution        ]:客户硬件故障
+
+
+
+==== State: Opened by: waterworld on 23 April 2019 20:06:34 ====
+
+您好，经实验室反馈，为硬件故障，可关闭
+
+==== State: Opened by: cmadmin on 23 April 2019 19:23:38 ====
+
+  == Kai.Ke@unisoc.com On 2019-04-23T11:19:29Z (json) ==
+请反馈问题进展，谢谢！
+
+==== State: Opened by: cmadmin on 22 April 2019 18:09:40 ====
+
+  == Kai.Ke@unisoc.com On 20190422T07:22:17 (xml) ==
+如果是需要开机状态下接收AT指令，可参照文档中“2.开机连接”
+
+==== State: Opened by: cmadmin on 22 April 2019 18:09:37 ====
+
+  == Kai.Ke@unisoc.com On 20190422T07:20:41 (xml) ==
+“联通实验室验证”具体什么流程？
+
+==== State: Opened by: waterworld on 22 April 2019 14:45:51 ====
+
+您好，按照文档验证Pandora工具能正常使用，见附件，那么联通实验室那边该怎么验证呢
+
+==== State: Opened by: cmadmin on 22 April 2019 13:56:30 ====
+
+  == Kai.Ke@unisoc.com On 20190422T05:24:00 (xml) ==
+请按附件“Pandora_R22.19.0802连接和发送AT指令.docx”验证Pandora工具能否正常使用，其中AP侧AT指令请用AT+GETVBAT试机
+
+==== State: Opened by: cmadmin on 22 April 2019 13:56:06 ====
+
+  == Jie.Yang@unisoc.com On 20190422T03:21:15 (xml) ==
+请看下ENGPC问题
+
+==== State: Opened by: cmadmin on 22 April 2019 13:55:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577349|[SC9863A][Waterworld][tcl]【wright】go版本LOW ROM阈值是多少|请问下 16+1 go版本的 LOW ROM阈值是多少
+
+就是低于多少rom系统会提示存储空间不足，无法正常使用？  该如何修改这个阈值|
+==== State: Closed by: waterworld on 15 May 2019 17:35:46 ====
+
+id关闭
+
+==== State: Resolved by: cmadmin on 24 April 2019 15:08:14 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+go版本LOW ROM阈值是多少
+Solution:
+已解释
+
+==== State: Opened by: cmadmin on 24 April 2019 15:08:11 ====
+
+  == qinxy0718@spreadst.com On 20190424T07:05:18 (xml) ==
+客户你好
+  如沟通，按照上一条comment的修改方式，如果需要二次提示，可以参考在写一套提示。我们关闭问题
+谢谢
+
+==== State: Opened by: cmadmin on 24 April 2019 11:28:16 ====
+
+  == qinxy0718@spreadst.com On 2019-04-24T03:14:14Z (json) ==
+8.1支持内存不足时弹出提示框，修改如下值可以满足需求：
+
+ xref: /sprdroid8.1_trunk_18b/frameworks/base/core/java/android/os/storage/StorageManager.java 
+
+private static final int DEFAULT_THRESHOLD_PERCENTAGE = 5;
+容量剩余百分之5弹出提示，
+
+private static final long DEFAULT_THRESHOLD_MAX_BYTES = 500 * MB_IN_BYTES;
+容量剩余500M弹出提示，
+
+这两个值系统会选其中的较大的值来确定弹出提示的最小容量。
+
+==== State: Opened by: cmadmin on 23 April 2019 09:51:18 ====
+
+  == qinxy0718@spreadst.com On 2019-04-23T01:49:10Z (json) ==
+客户你好
+  已做出解释，如没有其他问题，请关闭cq
+谢谢
+
+==== State: Opened by: cmadmin on 22 April 2019 15:56:29 ====
+
+  == qinxy0718@spreadst.com On 20190422T06:22:59 (xml) ==
+客户你好
+  控制代码大概在如下：
+  if (stats.isQuotaSupported(volumeUuid)) {
+3082                final long cacheTotal = stats.getCacheBytes(volumeUuid);
+3083                final long cacheReserved = storage.getStorageCacheBytes(path, flags);
+3084                final long cacheClearable = Math.max(0, cacheTotal - cacheReserved);
+3085
+3086                if ((flags & StorageManager.FLAG_ALLOCATE_AGGRESSIVE) != 0) {
+3087                    return Math.max(0, (usable + cacheClearable) - fullReserved);
+3088                } else {
+>3089                    return Math.max(0, (usable + cacheClearable) - lowReserved);
+3090                }
+
+
+lowReseverd是取的data总空间的5%和500M之间的较小值, 在16G rom上是500M。
+
+==== State: Opened by: cmadmin on 22 April 2019 13:55:16 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 22 April 2019 10:44:03 ====
+
+请问是否有进展
+|
+# SPCSS00577324|[SC9863A][Waterworld][FS168][XM][TCLWright]后摄（gc8034）预览与成像不一致|您好：
+    使用后摄（gc8034）预览与拍照成像效果不一致。附件（相机预览与成像不一致log.rar）是log和操作视频，请帮忙分析，谢谢|
+==== State: Closed by: waterworld on 24 April 2019 14:09:00 ====
+
+您好：
+    关闭该CQ，谢谢
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 17:04:52 ====
+
+  == zhangfan@spreadst.com On 20190423T08:54:57 (xml) ==
+Dear customer ：
+  预览和成像产生的差异的原因是因为您自行修改了预览尺寸选择的逻辑，在图片尺寸4:3的情况下选了16:9的预览，由于不清楚您此处修改是为何，还请您自行获取一个optimalSizeIndex 为4:3的index，还请及时反馈，谢谢！
+>>> log看发生错误的原因是因为您预览尺寸和拍照尺寸比例不一致
+07AD77 02-22 09:10:38.061 21655 21655 D CAM_CameraUtil: getAdaptedThumbnailSize:320x240; with ratio: 1.3333333333333333
+07AD78 02-22 09:10:38.062 21655 21655 D CAM_PhotoModule: isRefocus = false
+07AD79 02-22 09:10:38.062 21655 21655 D CAM_CameraUtil: isFrontCamera = false, optimalSizeIndex = 11
+07AD7A 02-22 09:10:38.062 21655 21655 I CAM_PhotoModule: setting preview size. optimal: 1920x1080original: 0x0
+07AD7B 02-22 09:10:38.063 21655 21655 I CAM_PhotoModule: updating aspect ratio
+07AD7C 02-22 09:10:38.063 21655 21655 V CAM_TexViewHelper: updateAspectRatio 1.7777778
+07AD7D 02-22 09:10:38.063 21655 21655 V CAM_TexViewHelper: setAspectRatio: 1.7777778
+ 3526 07ADA2 02-22 09:10:38.081 21655 21688 W OutputConfiguration: Added surface size 480x960 is different than pre-configured size 1920x1080, the pre-configured size 
+ 3555 07ADBF 02-22 09:10:38.091   343   724 I Cam3HWI : 837, configureStreams: :hal3: prev: w=1920, h=1080, video: w=0, h=0
+ 3556 07ADC0 02-22 09:10:38.091   343   724 I Cam3HWI : 839, configureStreams: :hal3: callback: w=0, h=0, cap: w=4160, h=3120
+
+>>> 您自行修改的逻辑如下，还请取一个4:3的index
+>>> DreamCamera2/src/com/android/camera/util/CameraUtil.java
+    public static int getOptimalPreviewSizeIndex(
+            List<Size> previewSizes, double targetRatio, boolean isFrontCamera) {
+        int optimalSizeIndex = -1;
+        final double aspectRatioTolerance = 0.025;
+
+        if (Math.abs((double)4 / 3 - targetRatio) <= aspectRatioTolerance) {
+            optimalSizeIndex = 11;
+        } else if (Math.abs((double)16 / 9 - targetRatio) <= aspectRatioTolerance) {
+            if (isFrontCamera) {
+                optimalSizeIndex = 8;
+            } else {
+                optimalSizeIndex = 13;
+            }
+        }
+(20190423T07:42:42)
+
+==== State: Opened by: waterworld on 23 April 2019 15:31:40 ====
+
+您好：
+    vendor/sprd/platform/packages/apps/DreamCamera2请见附件文件（DreamCamera2.rar）
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 14:06:41 ====
+
+  == zhangfan@spreadst.com On 20190423T06:05:21 (xml) ==
+Dear customer :
+  您之前是不是合入过有关分辨率选择的patch，如果有的话，还烦请告知一下对应cq号，然后请您上传一下您的本地代码，代码目录：vendor/sprd/platform/packages/apps/DreamCamera2
+Thanks
+(20190423T03:23:05)
+
+==== State: Opened by: waterworld on 22 April 2019 14:06:01 ====
+
+您好：
+   打开停用HW叠加层项，验证结果:无改善。
+   附件（sensor_gc8034_mipi_raw_FS168_CF8.rar）是现在使用的摄像头驱动和参数文件
+
+==== State: Opened by: cmadmin on 22 April 2019 13:54:37 ====
+
+  == Qiao.Lei@unisoc.com On 20190422T05:12:46 (xml) ==
+如过没有改善请上传使用的驱动和参数文件，谢谢！
+
+==== State: Opened by: cmadmin on 22 April 2019 13:54:13 ====
+
+  == Qiao.Lei@unisoc.com On 20190422T05:12:01 (xml) ==
+你好，在手机setting->system->开发者选项->打开停用HW叠加层项，请尽快验证，谢谢！
+
+==== State: Opened by: cmadmin on 19 April 2019 18:50:16 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577306|[SC9832E][Waterworld][WW869_v9.2][WW869_v9.2][18部]WW869_9832E_v9.2,麻烦帮忙验证GPS温飘|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 23 May 2019 00:36:54 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 24 April 2019 15:02:57 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+验证GPS温飘
+Solution:
+验证OK，请见报告
+
+==== State: Opened by: cmadmin on 19 April 2019 18:21:48 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577300|[SC9863A][Waterworld][FS170V0.3][RD6]财富九部海信项目KS618预约主观和客观音频调试|财富九部海信项目KS618预约主观和客观音频调试，由于此项目较紧急且礼拜一（4/22日）需要评审，客户要求安排预约明天(4/20）调试，麻烦安排一下，谢谢！！
+
+附件上传了客户的音频测试报告！
+ |
+==== State: Closed by: cmadmin on 22 May 2019 00:40:58 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: Tao_t.Zhou on 23 April 2019 17:16:45 ====
+
+尊敬的客户，您好!
+
+降低听筒输出功率的参数见附件.
+
+谢谢!
+
+==== State: Resolved by: cmadmin on 23 April 2019 11:46:17 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+音频参数优化及具体回复见附件.Music参数需要拿adb端口打开的机器,将Music参数写入手机再导出audio_para文件.
+Solution:
+音频参数优化及具体回复见附件.Music参数需要拿adb端口打开的机器,将Music参数写入手机再导出audio_para文件.
+
+==== State: Opened by: Tao_t.Zhou on 23 April 2019 11:20:44 ====
+
+尊敬的客户，您好!
+
+针对现场要求的一些Fail项进行了适当的参数优化,具体修改和回复见附件中蓝色和红色的标注.
+(附件中Fail项里没有标注的基本是现场不要求调的)
+
+谢谢!
+
+==== State: Opened by: Tao_t.Zhou on 22 April 2019 22:03:05 ====
+
+尊敬的客户，您好!
+
+优化的参数见附件.由于带过来的机器adb端口打不开,audio_para文件无法导出,需要将Music的参数写入机器,再从data/vendor/local/media目录下导出来合入软件.
+
+谢谢!
+
+==== State: Opened by: cmadmin on 19 April 2019 18:17:56 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577298|[SC9832E][Waterworld][WW869_v9.2][WW869_v9.2][18部]WW869_9832E_v9.2，请帮忙调试HW_WCN-WIFI/Bluetooth/GPS/FM|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 27 May 2019 00:57:42 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 April 2019 11:38:32 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+调试HW_WCN-WIFI/Bluetooth/GPS/FM
+Solution:
+调试OK，请见附件
+
+==== State: Opened by: cmadmin on 25 April 2019 18:48:37 ====
+
+  == Puggy.Ou@unisoc.com On 2019-04-25T10:46:28Z (json) ==
+WiFi匹配调试OK
+
+==== State: Opened by: cmadmin on 24 April 2019 14:45:26 ====
+
+  == Puggy.Ou@unisoc.com On 20190424T06:42:57 (xml) ==
+GPS/FM调试OK
+
+==== State: Opened by: cmadmin on 19 April 2019 18:21:37 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577288|[SC9863A][Waterworld][FS170][TRX][XM]CTS-Verifiery 9.0_r7 项目不带光感，只有TP接近，手动测试出现Sensor Batching Manual Tests光感测试项，需要移除光感测试的内容|现象： 
+     项目不带光感，只有TP接近，手动测试出现Sensor Batching Manual Tests中第一项testLight_batching和testLight_flush光感测试项，
+环境： 
+    GMS包：2019.03 
+      安全补丁：2019-03-05 
+      CTSV境：9.0_r7
+预期： 
+      需要移除光感测试项的内容
+谢谢！ |
+==== State: Closed by: waterworld on 22 April 2019 19:15:31 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 22 April 2019 15:50:33 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户项目不支持 light sensor，但是软件中 Boardconfig.mk 和 framework featurelist 错误配置了 light，导致 cts 测试fail。
+Solution:
+去掉软件中 Boardconfig.mk 和 framework featurelist 关于 light sensor 的配置。
+
+==== State: Opened by: waterworld on 22 April 2019 09:37:27 ====
+
+问题解决，可关闭
+
+==== State: Opened by: cmadmin on 19 April 2019 19:57:45 ====
+
+  == Calm.Xia@unisoc.com On 2019-04-19T11:55:31Z (json) ==
+Dear Customer:
+    BoardConfig.mk 当中 SENSOR_HUB_LIGHT 也要注释掉或者设置 null。
+
+Appreciate.
+
+==== State: Opened by: cmadmin on 19 April 2019 19:32:07 ====
+
+  == Calm.Xia@unisoc.com On 20190419T11:28:51 (xml) ==
+Dear Customer：
+
+
+
+1. Android原生定义处保持原样（注意，此处是android原始总的定义处，不要修改，保持原样）：
+frameworks\native\data\etc\android.hardware.sensor.light.xml文件请恢复
+<permissions> 
+    <feature name="android.hardware.sensor.light" /> 
+</permissions> 
+
+
+2. 平台总开关common处先全部注释掉关闭
+device/sprd/${Platform}/common/handheld_core_hardware.xml
+
+    <feature name="android.hardware.sensor.light" />
+
+改成
+
+    <!-- feature name="android.hardware.sensor.light" -->
+
+
+3. 具体平台具体项目根据使用情况再打开或者去掉即可
+device\sprd\${Platform}\${Customer_Project}.mk
+
+------# config sensor features supported by this board
+PRODUCT_COPY_FILES += \
+     ...
+     - frameworks/native/data/etc/android.hardware.sensor.light.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.light.xml \
+
+
+Appreciate.
+
+==== State: Opened by: cmadmin on 19 April 2019 17:33:18 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577283|[SC9863A][Waterworld][FS168TCL][XM][TCL]9.0如何修改和添加时区|步骤：
+之前有提过一个CQ：SPCSS00571165询问如何新增时区，后面给了一个文档。
+Mexico应该有11个城市时区
+ <!-- MEXICO, -6:00 -->   <timezone code="mx">America/Mexico_City</timezone> 
+<timezone code="mx">America/Merida</timezone> 
+<timezone code="mx">America/Monterrey</timezone>
+ <timezone code="mx">America/Matamoros</timezone>
+ <timezone code="mx">America/Bahia_Banderas</timezone> 
+  <!-- MEXICO, -5:00 -->   <timezone code="mx">America/Cancun</timezone> 
+ <!-- MEXICO, -7:00 -->   <timezone code="mx">America/Chihuahua</timezone>
+ <timezone code="mx">America/Hermosillo</timezone> 
+<timezone code="mx">America/Mazatlan</timezone> 
+<timezone code="mx">America/Ojinaga</timezone> 
+  <!-- MEXICO, -8:00 -->  
+ <timezone code="mx">America/Tijuana</timezone>
+现在手机里面mexico只有7个时区，少了4个时区，如附件的tzlookup.xml，减少的4个时区前面都有<id notafter="891766800000">
+字样，把前面的字样去掉还是不生效。请帮忙查看这个怎么修改，谢谢
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 24 April 2019 13:34:33 ====
+
+已解决，谢谢
+
+==== State: Resolved by: cmadmin on 24 April 2019 10:33:00 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+America/Chihuahua正处于夏时令时节，显示-6为正常现象
+Solution:
+无需修改
+
+==== State: Opened by: cmadmin on 24 April 2019 10:32:54 ====
+
+  == zhangfeng0502@spreadst.com On 2019-04-24T02:13:25Z (json) ==
+Dear Customer,
+   如电话沟通，问题可以关闭
+后续如有其他问题还请另提cq解决,thanks
+
+==== State: Opened by: cmadmin on 24 April 2019 10:32:35 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+
+==== State: NeedInfo by: cmadmin on 24 April 2019 10:32:26 ====
+
+  == zhangfeng0502@spreadst.com On 2019-04-24T02:03:28Z (json) ==
+Dear Customer,
+  墨西哥，奇瓦瓦州时区如下：
+
+标准时区： UTC/GMT -7小时
+夏令时：   +1小时
+当前时区偏移： UTC/GMT -6小时
+
+夏令时于当地标准时间 星期日 07 四月 2019, 02:00开始
+夏令时于当地标准时间 星期日 27 十月 2019, 02:00结束
+
+请将系统时间调至当前时间，查看时区是否显示为-6
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 19:07:20 ====
+
+  == zhangfeng0502@spreadst.com On 2019-04-23T11:03:33Z (json) ==
+Dear Customer,
+   如我们电话沟通，America/Chihuahua的时区显示为-7而客户要求显示-6
+还请确认系统时间是否处于夏时令时节。
+(2019-04-23T01:39:03Z)
+
+==== State: Opened by: cmadmin on 23 April 2019 09:39:46 ====
+
+  == zhangfeng0502@spreadst.com On 20190423T01:39:03 (xml) ==
+Dear Customer,
+   本地验证过，修改tzlookup.xml，push到
+/system/usr/share/zoneinfo/　路径下，重启手机可生效
+
+==== State: Opened by: cmadmin on 22 April 2019 15:49:46 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577277|[SC9863A][Waterworld][fs170][6部][海信]GSI失败项|步骤：
+       我司测试GSI9.0_r7  时出现CtsCameraTestCases失败项
+现象：
+       如沟通，报告和log已上传到附件：2019.04.19_13.55.03.rar|
+==== State: Closed by: waterworld on 22 April 2019 15:58:11 ====
+
+谢谢
+
+==== State: Resolved by: cmadmin on 22 April 2019 15:50:04 ====
+
+  == husf@spreadst.com On 20190422T06:27:41 (xml) ==
+影响的工程模式中测试camera，需要修改文件如下：
+vendor/sprd/platform/packages/apps/ValidationTools/src/com/sprd/validationtools/Const.java
+
+==== State: Resolved by: cmadmin on 22 April 2019 15:50:01 ====
+
+  == husf@spreadst.com On 20190422T05:34:22 (xml) ==
+如电话沟通，验证通过，问题关闭
+
+==== State: Resolved by: cmadmin on 22 April 2019 15:49:55 ====
+
+  == husf@spreadst.com On 20190422T01:37:30 (xml) ==
+请问验证结果如何，请及时反馈，谢谢
+
+==== State: Resolved by: cmadmin on 19 April 2019 20:02:30 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+GSI 测试报错
+Solution:
+提供修改方案
+
+==== State: Opened by: cmadmin on 19 April 2019 20:02:27 ====
+
+  == husf@spreadst.com On 2019-04-19T12:00:02Z (json) ==
+Hi 郑工，
+   如电话沟通，请按如下方法修改：
+1.由于是gsi版本，framework层被google版本覆盖，只能在hal层把get_number_of_cameras直接返回2
+int SprdCamera3Factory::get_number_of_cameras() {
+---    return gSprdCamera3Factory.getNumberOfCameras();
++++    return 2;
+}
+
+
+2.影响的工程模式中测试camera，修改工程模式的应用，
+是"com.sprd.validationtools"
+直接在应用里面修改，看当前产品实际有几个sensor, 就填多少
+如果是2就不用改，是3就直接改成
+---int mNumberOfCameras = android.hardware.Camera.getNumberOfCameras();
++++int mNumberOfCameras = 3
+
+==== State: Opened by: waterworld on 19 April 2019 17:51:56 ====
+
+你好，每个都单跑后还剩下3个失败项，log和报告都上传到附件了，麻烦帮忙分析下，谢谢！
+testCameraToSurfaceTextureMetadata.rar  +  testImmediateZoom.rar  +  testPreviewFpsRange.rar
+CTS都PASS了，是同一版软件
+
+==== State: Opened by: cmadmin on 19 April 2019 17:23:24 ====
+
+  == husf@spreadst.com On 20190419T09:13:48 (xml) ==
+Hi 郑工，
+   如电话沟通，目前正在rerty 报告中的fail项,待所有fail 项retry 后请及时反馈结果；另外如果仍有fail项，建议在CTS 版本复测，交叉验证一下fail 项，因为正常来说CTS Pass了，GSI 是不会有问题的，如果发现GSI 报错，基本还是CTS 问题没有解决所致，请知
+Thanks
+
+==== State: Opened by: cmadmin on 19 April 2019 17:23:20 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577266|[SC9863A][Waterworld][fs170]【6部】切换访客模式，WLAN、便携式热点不允许用户操作，SystemUI去掉WLAN便携式热点的快捷开关|步骤：
+   从机主模式切换到访客模式，查看WLAN、便携式热点支持情况
+现象：
+   目前访客模式下，设置中的WLAN提示用户无权操作WLAN，但是WLAN开关还能开关，systemUI中还有WLAN开关，能打开关闭
+分析：
+   客户要求访客模式下，WLAN、便携式热点不允许用户操作，SystemUI去掉WLAN便携式热点的快捷开关，麻烦贵司协助处理，
+谢谢！|
+==== State: Closed by: qijia.yu on 20 April 2019 10:40:24 ====
+
+原生设计，UI定制，请贵司自行实现
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 22:14:16 ====
+
+  == Qijia.Yu@unisoc.com On 20190419T13:59:26 (xml) ==
+您好，平台设计流程如此，需要贵司自行定制修改。
+(20190419T09:48:48)
+
+==== State: Opened by: cmadmin on 19 April 2019 17:52:45 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577264|[SC9863A][Waterworld][FS168][XM][TCL][Alex][TEE][TA]关于TA/TEE的咨询|我司客户关于人脸和指纹的TEE/TA有如下问题。
+1、从AndroidO开始，Google要求带指纹的产品必须支持TEE（Trusted Execution Environment） 和 TA（Trusted APP）。从AndroidP开始，Googole要求人脸识别也必须TEE和TA。
+2、目前TCL所有指纹模组自带TA，不需额外增加TA，但人脸解锁SDK不带TA，需额外增加TA。
+3、Google CDD文档 9.0版本第7.3.10.2节对人脸识别的要求有详细的说明“如果非指纹生物识别用于第三方Apps，那么必须要支持TA”
+
+这块具体细节我们不太清楚，想咨询下：TA 是个什么东西？TEE呢？|
+==== State: Closed by: waterworld on 28 April 2019 17:21:39 ====
+
+展讯的回复已经通知到客户，但是客户那边一直没反馈回来。先关闭。谢谢支持！
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 10:26:55 ====
+
+  == Xuewu.Cao@unisoc.com On 2019-04-23T02:22:37Z (json) ==
+Dear customer,
+如昨天沟通，请帮忙尽快更新信息，谢谢。
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 17:23:07 ====
+
+  == Xuewu.Cao@unisoc.com On 20190419T09:02:31 (xml) ==
+Dear customer,
+Tee的全称为Trusted Execution Environment，即可信执行环境。
+相对有个概念叫REE，全称为Rich Execution Environment。
+对于android手机系统，ree即指android运行环境，而tee则是指tos运行环境。
+一般应用逻辑都是跑在android运行环境的，对于一些安全性要求高的逻辑可以拆分到tee运行环境之下执行，比如加密运算，生物识别算法（如指纹/人脸算法）。那些运行在tee中的逻辑也是以一个一个应用的形式运行，这些应用就叫ta（Trusted APP），比如指纹算法应用就叫指纹ta。
+
+平台指纹/人脸都是tee方案的，特别是人脸方案是平台自研开发的，不涉及第三方，所有代码及库文件（包括ta）都已经包含在IDH中，不需要额外提供。
+
+至于贵司提到的“人脸解锁SDK不带TA”，不明白是什么意思，平台这边并未提供人脸解锁的SDK，请再确认下问题是指什么？
+
+谢谢。
+(20190419T08:39:38)
+
+==== State: Opened by: cmadmin on 19 April 2019 16:53:18 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577244|[SC9863A][Waterworld][FS168][XM][TCLWright]增加video stabilization的可行性|您好：
+    Video stabilization这个功能对Video比较重要。请评估增加video stabilization的可行性|
+==== State: Closed by: cmadmin on 16 May 2019 00:37:48 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 24 April 2019 16:16:17 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户取消评估需求
+Solution:
+客户取消评估需求
+
+==== State: Opened by: cmadmin on 22 April 2019 21:35:16 ====
+
+  == Alfred.Yang@unisoc.com On 2019-04-22T13:20:35Z (json) ==
+尊敬的客户：
+
+      如沟通，请先描述功能：“video stabilization”， 在实现此功能过程中有何困难？
+      针对问题，我司协助给出解决指引。
+
+==== State: Opened by: cmadmin on 19 April 2019 17:41:57 ====
+
+  == xiaojuan.lv@spreadtrum.com On 20190419T09:33:02 (xml) ==
+请CPM和客户准备详细的需求说明书，提交RAT流程评估
+
+==== State: Opened by: cmadmin on 19 April 2019 16:39:29 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577237|[SC9863A][Waterworld][FS168][XM][TCLWright]Video night shot是否有方案|您好：
+    是否有Video night shot方案可供项目使用？|
+==== State: Closed by: qijia.yu on 20 April 2019 10:34:35 ====
+
+Video night shot不支持，无开发计划
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 21:55:58 ====
+
+  == Qijia.Yu@unisoc.com On 20190419T13:45:53 (xml) ==
+您好，目前不支持此功能，暂无开发计划
+(20190419T09:35:45)
+
+==== State: Opened by: cmadmin on 19 April 2019 17:48:13 ====
+
+  == xiaojuan.lv@spreadtrum.com On 2019-04-19T09:35:45Z (json) ==
+目前版本未支持，如需支持请提供需求说明书，请CPM走RAT流程评估
+
+==== State: Opened by: cmadmin on 19 April 2019 16:39:19 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577223|[SC9863A][Waterworld][FS168][XM][TCL]the device get registered in Yoigo 3G, rebooting where Yoigo 3G coverage is good,device registered in Orange 3G|[XM][TCL] When the device get registered in Yoigo 3G, rebooting it in an area where Yoigo 3G coverage is good,
+ the device get registered in Orange 3G
+
+这个问题在SPCSS00566593上提供的临时modem上,客户验证ok,
+但是正是modem的时候,客户又重新reopen.
+modem版本号:
+2019-04-12	Modem:		FM_BASE_18B_W19.08.1_P10_2_52
+
+附件是log,请帮忙看下|
+==== State: Closed by: cmadmin on 29 May 2019 00:56:47 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 07 May 2019 14:21:57 ====
+
+  == Kang.Liu@unisoc.com On 2019-05-07T06:14:54Z (json) ==
+Dear customer：
+
+问题已经解决，CQ走流程关闭，正在走流程出正式版本，版本问题请联系CPM获取，谢谢您的配合和理解！
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:
+1. YOIGO的卡注册到YOIGO网络，如果EPLMN是ORANGE或者MOVISTAR，重启需要先找YOIGO网络驻留；
+2. YOIGO的卡注册到MOVISTAR网络或者ORANGE网络，开机重启后需要先找YOIGO网络；
+
+3. 手动搜网之后，无网之后也需要先驻网YOIGO网络，而且在信号弱的地方也要能够驻留到YOIGO网络；
+
+[2.Resolution        ]:
+1. YOIGO的卡注册到YOIGO网络，如果EPLMN是ORANGE或者MOVISTAR，重启需要先找YOIGO网络驻留；
+2. YOIGO的卡注册到MOVISTAR网络或者ORANGE网络，开机重启后需要先找YOIGO网络；
+
+
+
+==== State: Opened by: waterworld on 07 May 2019 11:44:45 ====
+
+客户验证ok,
+请安排出正式modem
+
+==== State: NeedInfo by: cmadmin on 06 May 2019 10:21:08 ====
+
+  == Kang.Liu@unisoc.com On 20190506T02:13:39 (xml) ==
+Dear customer:
+
+已经基于FM_BASE_18B_W19.10.2_P4出了临时版本，临时版本路径如下：
+\\10.29.1.12\cq\SPCSS\2019-2\SPCSS00577223\PatchesForCUS\FM_BASE_18B_W19.10.2_P4
+
+请帮忙验证，如有问题，请电话沟通，谢谢！
+(20190503T09:34:30)
+
+==== State: Opened by: waterworld on 30 April 2019 15:52:42 ====
+
+因为之前量产版本客户是用ptr2来量产的,问题也是在ptr2上报的
+现在让客户在ptr3上重新验证.后续的版本也在ptr3上出,
+所以还请在ptr3上帮忙重新出一个临时modem.谢谢
+大版本:		MOCORDROID9.0_Trunk_18C_W19.11.5_P2
+Modem:		FM_BASE_18B_W19.10.2_P4_9863a_CP0
+CP2:			WCN_Marlin2_17A_rls1_W19.13.2
+
+==== State: Resolved by: cmadmin on 30 April 2019 14:00:08 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you  == Kang.Liu@unisoc.com On 2019-04-30T05:54:20Z (json) ==
+Dear customer:
+
+在手动搜网之后，和重启之后会驻网到Orange网络，需要出临时版本验证；
+
+已经基于分支FM_BASE_18B_W19.08.1_P10处理临时版本，临时版本路径如下：
+\\10.29.1.12\cq\SPCSS\2019-2\SPCSS00577223\PatchesForCUS
+
+麻烦您使用临时版本验证，谢谢您的配合和理解！
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:
+1. YOIGO的卡注册到YOIGO网络，如果EPLMN是ORANGE或者MOVISTAR，重启需要先找YOIGO网络驻留；
+2. YOIGO的卡注册到MOVISTAR网络或者ORANGE网络，开机重启后需要先找YOIGO网络；
+
+3. 手动搜网之后，无网之后也需要先驻网YOIGO网络，而且在信号弱的地方也要能够驻留到YOIGO网络；
+
+[2.Resolution        ]:
+1. YOIGO的卡注册到YOIGO网络，如果EPLMN是ORANGE或者MOVISTAR，重启需要先找YOIGO网络驻留；
+2. YOIGO的卡注册到MOVISTAR网络或者ORANGE网络，开机重启后需要先找YOIGO网络；
+
+
+
+==== State: Opened by: waterworld on 30 April 2019 09:33:42 ====
+
+客户最新版本还反馈一种情况:
+1 Insert Yoigo SIM 214 04.
+2 Change network mode to 3G/2G automatic
+3 Perform Manual network search: pick Yoigo 214 04 manually
+4 Reboot phone
+5 After reboot, device registers in Yoigo 214 04 correctly ------ OK
+6 Reboot phone again
+7 After new reboot, device registers in Orange Spain 214 03 ------ NOK
+Issue happened on 2019-04-29 at around 14.03h
+
+附件是log,也请帮忙分析下.
+
+==== State: Opened by: cmadmin on 29 April 2019 15:48:05 ====
+
+  == Kang.Liu@unisoc.com On 2019-04-29T07:45:38Z (json) ==
+Dear customer:
+
+根据指出的时间点分析，这个问题的描述有误，驻留到21403的PLMN不是发生在重启协议栈，而是发生在手动搜网之后；
+
+重启协议栈时时驻留在YOIGO 3G，而手动搜网之后驻留到了Orange 3G的网络；
+
+正在编译临时版本，等待出了临时版本后给贵司验证，谢谢～
+
+--         	20:38:18.456 	--    	--	Modem Version: FM_BASE_18B_W19.08.1_P10             	----->----                                   	0:15:30.026  	
+
+173	10186567-1	20:39:07.247	MSG_ID_MM_PLM_PLMN_SRCH_REQ	MOD_GMM_1->MOD_PLM_1
+210	10251252-1	20:39:41.966	MSG_ID_RR_PLM_SYS_INFO_IND	MOD_RRC_1->MOD_PLM_1
+	plmn_id
+		mcc2 = 0x1
+		mcc1 = 0x2
+		mnc3 = 0xf
+		mcc3 = 0x4
+		mnc2 = 0x3
+		mnc1 = 0x0
+
+==== State: Opened by: waterworld on 29 April 2019 14:49:07 ====
+
+客户的回复:
+Please check screenshots, it clearly shows that device registered in Orange Spain 214 03 after reboot, before time 20:41:45 
+Could you please recheck with Unisoc? 
+
+我自己搜索上层相关的aplog, 运营商的名字也显示成
+RIL     : updated plmn = Orange
+RILJ    : [3814]< OPERATOR {Orange, Orange, 21403} [SUB0]
+RILJ    : [3814]< OPERATOR {Orange, Orange, 21403} [SUB0]
+RIL     : match NITZ plmn: 21403, Name: Orange
+RIL     : get Operator Name: Orange
+RIL     : get Operator Name = Orange
+RILJ    : [3817]< OPERATOR {Orange, Orange, 21403} [SUB0]
+RILJ    : [3817]< OPERATOR {Orange, Orange, 21403} [SUB0]
+
+但是mcc ,mnc是21403,跟从底层协议栈看到的21404怎么不一样?
+请帮忙确认下.
+
+
+==== State: NeedInfo by: cmadmin on 26 April 2019 17:19:19 ====
+
+  == Tianren.Luo@unisoc.com On 2019-04-26T09:16:29Z (json) ==
+尊敬的客户：
+
+    您好，如电话沟通，如果新版本测试仍有相同问题，烦请再提供Log，十分感谢！
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 19:44:14 ====
+
+  == Kang.Liu@unisoc.com On 20190419T11:39:07 (xml) ==
+Dear  customer:
+根据提供的LOG分析，没有描述的开机之后驻留到Orange 3G网络的LOG；
+并且修改已经生效；
+
+所有的开机都是先驻网到Yoigo 3G网络；
+例如，20:38:26.711开协议栈，之后直接在21404的3G网络上注册成功；
+
+请帮忙指出那个时间点注册到了Orange 3G网络；
+或者帮忙重新测试，并提供出问题的时间的；
+
+LOG：ylog SW 2.5 bug 7545642 NOK\modem\md_20190415-203827
+9440780-1  	20:38:26.711 	3G    	0x105E	MSG_ID_MNC_PROTOCOL_STACK_ACTIVATE_REQ              	MOD_MN_AL_1->MOD_MNC_1                       	0:15:38.281  	
+9477319-1  	20:38:31.846 	3G    	0x245E	MSG_ID_MM_PLM_REGN_STATUS_UPDATE_REQ                	MOD_GMM_1->MOD_PLM_1                         	0:15:43.416  	
+	status = LU_PROCEDURE_SUCCESS
+	lai
+		la_code
+			[0] = 0x8
+			[1] = 0xfe
+		plmn_id
+			mcc2 = 0x1
+			mcc1 = 0x2
+			mnc3 = 0xf
+			mcc3 = 0x4
+			mnc2 = 0x4
+			mnc1 = 0x0
+10006612-1 	20:38:55.830 	3G    	0x2419	MSG_ID_GMMREG_POWERON_PS_REQ                        	MOD_MNM_1->MOD_GMM_1                         	0:16:07.400  	
+137	10035055-1	20:38:59.794	MSG_ID_MM_PLM_REGN_STATUS_UPDATE_REQ	MOD_GMM_1->MOD_PLM_1
+	lai
+		la_code
+			[0] = 0x8
+			[1] = 0xfe
+		plmn_id
+			mcc2 = 0x1
+			mcc1 = 0x2
+			mnc3 = 0xf
+			mcc3 = 0x4
+			mnc2 = 0x4
+			mnc1 = 0x0
+(20190419T08:07:28)
+
+==== State: Opened by: cmadmin on 19 April 2019 16:17:23 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00577221|[SC6531E][Waterworld][FF257_6][遵义6部]电话本own number菜单在开启MMIPB_SIMDN_SUPPORT此宏情况下，own number菜单未显示sim号码.log见附件|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 14 May 2019 00:38:15 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 April 2019 15:48:04 ====
+
+  == Stefano.Chu@unisoc.com On 20190422T00:01:55 (xml) ==
+本cq先行关闭流程，后续有其它问题请再提交新cq支持，谢谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+本机号码无法读出，应为sim卡内没有写入所致
+Solution:
+n/a
+
+==== State: Opened by: waterworld on 19 April 2019 17:20:19 ====
+
+好的，谢谢
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 17:07:28 ====
+
+  == Stefano.Chu@unisoc.com On 2019-04-19T08:46:19Z (json) ==
+应该是此张sim卡本身就没有写入本号码所致，可以在对比机做下测试，谢谢
+(2019-04-19T08:03:19Z)
+
+==== State: Opened by: cmadmin on 19 April 2019 16:11:58 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

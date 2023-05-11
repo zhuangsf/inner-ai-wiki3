@@ -1,0 +1,1197 @@
+# SPCSS00557809|[SC9863A][Waterworld][FS170][TRX][XM]CTS 8.1_r12 CtsCameraTestCases  --android.hardware.cts.CameraTest#testVideoSnapshot   fail|环境： 
+    GMS包：2018-12 
+      安全补丁：2019-01-05 
+      CTS环境：8.1_r12 
+现象: 
+     CtsCameraTestCases  --android.hardware.cts.CameraTest#testVideoSnapshot   fail 
+项目的前摄是gc2385插值到5M，后摄是5025插值到8M 
+附件是抓的cts报告和log 
+
+预期： 
+    希望能pass 
+
+谢谢！|
+==== State: Closed by: waterworld on 22 February 2019 10:50:53 ====
+
+关闭，谢谢！
+
+==== State: Resolved by: cmadmin on 21 February 2019 19:42:18 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+19:9差值尺寸导致
+Solution:
+如comment描述
+
+==== State: Opened by: waterworld on 21 February 2019 19:33:56 ====
+
+不好意思，fail的ylog漏传了，请看附件
+
+==== State: Opened by: waterworld on 21 February 2019 11:30:15 ====
+
+您好，附件是抓的testJpegThumbnailSize case失败和OK的CTS报告和ylog
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 21 February 2019 09:55:12 ====
+
+  == liangshuai@spreadst.com On 2019-02-21T01:52:28Z (json) ==
+dear   customer
+如沟通，麻烦提供相关测试ylog，谢谢
+(2019-02-20T07:10:04Z)
+
+==== State: Opened by: waterworld on 20 February 2019 15:00:09 ====
+
+你好，见附件2个文件，一个是测试失败的信息，一个是测试OK的信息
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 20 February 2019 13:20:22 ====
+
+  == liangshuai@spreadst.com On 2019-02-20T05:18:37Z (json) ==
+dear  customer
+
+麻烦使用adb 导出之前CTS测试失败的camera信息，以及替换尺寸信息CTS测试通过的camera信息，命令如下
+adb shell dumpsys media.camera > result.txt」
+(2019-02-20T02:40:07Z)
+
+==== State: Opened by: waterworld on 20 February 2019 10:31:29 ====
+
+您好，附件是在debug版本跑的CTS报告和log,还有ylog
+测试是OK的
+谢谢！
+
+==== State: Opened by: waterworld on 19 February 2019 16:58:29 ====
+
+您好，liangshuai
+下午我拿到易景的SprdCamera3Setting.cpp文件，对比我了我这边cpp文件 
+了大体相同，就是添加顺序不太一样，我直接用易景的cpp文件，对testVideoSnapshot ，还有SPCSS00557784和SPCSS00557761进行复测都可以pass 
+帮我看下附件的2个文件，能否看出什么区别 
+谢谢！
+
+==== State: Opened by: waterworld on 19 February 2019 10:34:02 ====
+
+您好，见附件的debug版本的ylog,CTS报告和log,还有cpp.xml文件
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 16:53:15 ====
+
+  == liangshuai@spreadst.com On 2019-02-18T08:38:36Z (json) ==
+dear customer
+麻烦提供debug版本测试的ylog，以及media_profile.xml文件，SprdCamera3Setting.cpp文件，谢谢
+(2019-02-18T07:49:13Z)
+
+==== State: Opened by: cmadmin on 18 February 2019 14:58:46 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557804|[SC9863A][Waterworld][fs170][6部][BLU]使用SearchLauncherQuickStep按menu键能否修改像SearchLauncher一样点击中间图标释放清除app|客户需要滑动效果的基础上添加一个图标释放apk内存
+|
+==== State: Closed by: cmadmin on 14 March 2019 00:34:36 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 20 February 2019 16:38:12 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+android quickstep原生设计，建议使用systemui的recent功能。
+Solution:
+android quickstep原生设计，建议使用systemui的recent功能。
+
+==== State: Opened by: waterworld on 20 February 2019 14:38:04 ====
+
+附件为客户的效果图 在SearchLauncherQuickStep基础上 能否帮忙分析修改一下ths
+
+==== State: Opened by: cmadmin on 18 February 2019 15:52:37 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557802|[SC9863A][Waterworld][fs170][SC9863A][Waterworld][FS170][6部]桌面布局Google search要求显示顶部|步骤：
+   进行桌面布局的时候，查看Google search位置 
+现象：
+   Google search位置在底部，客户要求在顶部
+分析：
+   Google search位置客户要求在顶部，如果按照SearchLauncher来修改可以，但是如果按照SearchLauncherQuickStep来是
+如何修改的？
+另外之前有提过相关的cq：SPCSS00554977
+       ifeq ($(strip $(TARGET_BUILD_VERSION)),gms) 
+-            LAUNCHER_PACKAGE_NAME := SearchLauncherQuickStep 
++            LAUNCHER_PACKAGE_NAME := SearchLauncher 
+        else 
+            LAUNCHER_PACKAGE_NAME := Launcher3QuickStep 
+        endif |
+==== State: Closed by: cmadmin on 14 March 2019 00:34:36 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 20 February 2019 16:31:48 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+android原生设计
+Solution:
+1.SearchLauncher/SearchLauncherQuickStep部分代码在GMS中，SearchLauncherQuickStep代码中将google搜索框布局放到屏幕底部。
+2.GMS包基本上每月更新一次。
+
+所以贵司如需将googlessk移到顶部，建议更换launcher为SearchLauncher。
+
+==== State: Opened by: waterworld on 20 February 2019 14:33:28 ====
+
+您好，客户要求一定要在SearchLauncherQuickStep上去改，会影响到手势操作上菜单以及一键清理等
+
+==== State: Opened by: cmadmin on 18 February 2019 15:59:15 ====
+
+  == Wentong.Zhang@unisoc.com On 20190218T07:48:19 (xml) ==
+dear，
+
+如电话沟通，
+1.SearchLauncher/SearchLauncherQuickStep部分代码在GMS中，SearchLauncherQuickStep代码中将google搜索框布局放到屏幕底部。
+2.GMS包基本上每月更新一次。
+
+所以贵司如需将googlessk移到顶部，建议更换launcher为SearchLauncher。
+
+谢谢
+
+==== State: Opened by: cmadmin on 18 February 2019 15:28:58 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557785|[SC9820E][Waterworld][FS355][6部]CLM：1140998 - Silent FOTA should not be install when user is busy in call|Pre-condition 
+1) Device is flashed with software version LYF-F221S-000-00-12-250119. 
+2) DM version 1.0.0.9 
+
+Steps to Reproduce 
+1) Power ON the device 
+2) Make a call 
+3) Run Server side Silent FOTA Campaign 
+4) Observe 
+
+Actual Result:- Silent FOTA get install even when user is busy with call 
+
+Expected Result:- Silent FOTA should not be install when user is busy doing some activity on device. 
+
+Frequency:- Always|
+==== State: Closed by: cmadmin on 30 January 2020 01:05:41 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 08 January 2020 18:05:07 ====
+
+  == Selina.Wang@unisoc.com On 2020-01-08T09:50:25Z (json) ==
+KaiOS问题由Kai处理，统一关闭。
+
+==== State: Resolved by: cmadmin on 07 January 2020 17:08:30 ====
+
+The Issue should not to be processed.
+
+==== State: Opened by: cmadmin on 14 June 2019 17:26:49 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557784|[SC9863A][Waterworld][FS170][TRX][XM]CTS 8.1_r12 CtsCameraTestCases  --android.hardware.cts.CameraTest#testJpegThumbnailSize fail|环境： 
+    GMS包：2018-12 
+      安全补丁：2019-01-05 
+      CTS环境：8.1_r12 
+现象: 
+     CtsCameraTestCases  --android.hardware.cts.CameraTest#testJpegThumbnailSize fail
+项目的前摄是gc2385插值到5M，后摄是5025插值到8M
+附件是抓的cts报告和log 
+
+预期： 
+    希望能pass 
+
+谢谢！|
+==== State: Closed by: waterworld on 20 February 2019 08:56:45 ====
+
+问题解决，关闭，谢谢！
+
+==== State: Resolved by: cmadmin on 19 February 2019 17:17:32 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+==== State: Resolved by: cmadmin on 19 February 2019 14:26:10 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+有不规则18:9尺寸差值
+Solution:
+如沟通去除不规则尺寸
+
+==== State: Opened by: cmadmin on 19 February 2019 14:26:05 ====
+
+  == liangshuai@spreadst.com On 20190219T06:20:20 (xml) ==
+dear  customer
+想请问下去除该18:9差值尺寸，该cts测试能否通过，请反馈下测试结果，谢谢
+
+==== State: Opened by: waterworld on 19 February 2019 10:18:01 ====
+
+您好，附件是debug版本的ylog,CTS报告和log还有SprdCamera3Setting.cpp文件
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 16:52:55 ====
+
+  == liangshuai@spreadst.com On 2019-02-18T08:40:08Z (json) ==
+dear  customer
+麻烦提供测试该项时debug版本ylog以及libcamera目录下SprdCamera3Setting.cpp文件，谢谢
+(2019-02-18T07:40:22Z)
+
+==== State: Opened by: cmadmin on 18 February 2019 14:35:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557782|[SC9820E][Waterworld][FS355][6部CLM:1141012 - "General no-fatal transport error" pop-up shown when FOTA check after time auto-sync off (date set to next year).|Pre-condition 
+1) Device is flashed with software version LYF-F221S-000-00-12-250119. 
+2) DM version 1.0.0.9 
+
+Steps to Reproduce 
+1) Power ON the device 
+2) Run Server side FOTA Campaign 
+3) Auto date-time sync off 
+4) Set the date to next year 
+5) Check for software update 
+6) Observe 
+
+Actual Result:- "General no-fatal transport error" pop-up shown on DUT when checked 
+
+Expected Result:- DUT should not show this pop-up because FOTA is working with real-time clock timer. 
+
+Frequency:- Always|
+==== State: Closed by: cmadmin on 30 January 2020 01:05:42 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 08 January 2020 18:04:50 ====
+
+  == Selina.Wang@unisoc.com On 2020-01-08T09:46:37Z (json) ==
+KaiOS问题由Kai处理，统一关闭。
+
+==== State: Resolved by: cmadmin on 07 January 2020 16:14:57 ====
+
+The Issue should not to be processed.
+
+==== State: Opened by: cmadmin on 18 February 2019 14:52:38 ====
+
+  == Licun.Cheng@unisoc.com On 20190218T06:47:54 (xml) ==
+请Kai先帮忙分析，谢谢。
+
+==== State: Submitted by: waterworld on 18 February 2019 14:19:07 ====
+
+ == Headline Changed from == 
+[SC9820E][Waterworld][FS355][6部CLM:1141012 - "General no-fatal transport error" pop-up shown when FOTA check after time auto-sync off
+To
+[SC9820E][Waterworld][FS355][6部CLM:1141012 - "General no-fatal transport error" pop-up shown when FOTA check after time auto-sync off (date set to next year).
+
+|
+# SPCSS00557778|[SC9820E][Waterworld][FS355][6部][VIT_F221s]: Device sends incorrect IE in initial attach request after every reboot/factory reset.|Precondition: 
+Device must be Flashed on latest build: LYF-F221S-000-00-12-250119. 
+
+
+Steps to Reproduce: 
+1) Turn on the device with Jio sim card. 
+2) Ensure that device is latched on LTE and IMS. 
+3) Check the logs – LTE(Attach request and ESM message response) and IMS 
+
+
+Actual Result: 
+
+Device is not sending EIT flag and sends PCO information in initial attach request after reboot/factory reset; followed by Modem Comp port disconnected automatically 
+
+Expected Result: 
+
+DUT should include EIT flag in Attach request and should not send PCO information in Attach request. 
+
+EIT flag= 1 DUT should include APN information is included in ESM message response 
+
+Reproducibility: 100%|
+==== State: Closed by: waterworld on 04 March 2019 17:36:49 ====
+
+先行关闭CQ,获取参考样机LOG需要时间
+
+==== State: NeedInfo by: cmadmin on 27 February 2019 12:49:41 ====
+
+  == Qiang.Zeng@unisoc.com On 20190227T04:47:50 (xml) ==
+客户您好
+
+这个问题我们内部讨论了很久，但是还是没有达成共识
+
+问题的原因是我们的方案APN的管理在AP侧实现，AP是通过获取到SIM卡的IMSI后再去查询对应的APN信息，然后配置给CP，但是由于AP是在开协议栈后才去获取SIM卡的信息，所以AP在配置APN给CP之前，CP已经发起了attach，这时attach所带的esm flag为0以及pco信息为空。
+
+我们建立AP在开协议栈之前配置APN，但AP说kaios不方便改。
+
+所以想您们能使用MTK的对比机帮忙测一下该问题，我想了解一下MTK是如何解决这个问题的。
+
+测试方案，插入jio的卡，上电开机，抓取上电开机过程的log。
+
+谢谢
+(20190225T04:51:49)
+
+==== State: Opened by: cmadmin on 22 February 2019 17:31:18 ====
+
+  == Qiang.Zeng@unisoc.com On 2019-02-22T09:18:52Z (json) ==
+..
+
+==== State: Opened by: cmadmin on 18 February 2019 14:58:08 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557775|[SC9820E][Waterworld][FS355][6部][VIT_F221s]: "Debug icon" displaying in notification bar for 10-15 seconds on User build device after factory reset.|Precondition: 
+Device must be Flashed on latest build: LYF-F221S-000-00-12-250119. 
+
+Steps to Reproduce:- 
+1. Factory reset device & check if "Debug icon" displaying in notification bar or not. 
+
+Actual Behaviour:- 
+"Debug icon" displaying in notification bar for 10-15 seconds on User build device after factory reset. 
+
+Expected Behaviour:- 
+Debug icon should not display for User build devices. 
+
+Reproducibility:- 3/3|
+==== State: Closed by: cmadmin on 30 January 2020 01:05:43 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 07 January 2020 17:32:03 ====
+
+The Issue should not to be processed.
+
+==== State: Opened by: cmadmin on 18 February 2019 14:58:03 ====
+
+  == Licun.Cheng@unisoc.com On 2019-02-18T06:51:10Z (json) ==
+界面提示问题，请Kai先帮忙分析，谢谢。
+|
+# SPCSS00557773|[SC9820E][Waterworld][FS355][6部]CLM:1141205 [VIT_FOTA_F221S]:- Get Client logs campaign is failing|Pre-condition
+1) Device is flashed with software version  LYF-F221S-000-00-12-250119.
+2) DM version 1.0.0.9
+
+Steps to Reproduce
+1) Power ON the device
+2) Make sure data is working fine
+3) Run Get client logs campaign server initiated
+4) Keep device in Idle state
+5) Go to Settings > Software update
+6) Observe
+
+Actual Result:- 
+Get Client logs campaign is failing.
+
+Expected Result:-
+Get Client logs campaign should PASS
+
+Frequency:- Always|
+==== State: Closed by: cmadmin on 30 January 2020 01:06:03 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 07 January 2020 16:49:13 ====
+
+The Issue should not to be processed.
+
+==== State: Opened by: cmadmin on 14 June 2019 17:26:47 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557769|[SC9820E][Waterworld][[FS091]][6部]board 2h10 nand4+2怎么改成emmc 32+4|步骤：
+
+现象：
+
+分析：|
+==== State: Closed by: cmadmin on 14 March 2019 00:34:37 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 20 February 2019 13:20:19 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-02-20T05:18:17Z (json) ==
+有问题随时联系。
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:平台KAIOS2.5不支持eMMC系统
+
+[2.Resolution        ]:参照之前的1h10修改2h10
+
+
+
+==== State: Opened by: cmadmin on 20 February 2019 10:26:49 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-02-20T02:22:00Z (json) ==
+如沟通，1h10是emmc工程系统，2h10是nand系统。一部那边有参照1h10把2h10改为emmc系统的经验，具体可以参考之前的SPCSS00548808。
+
+==== State: Opened by: waterworld on 19 February 2019 15:13:28 ====
+
+1h10工程编译报错
+
+==== State: Opened by: cmadmin on 18 February 2019 19:46:56 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-02-18T11:43:17Z (json) ==
+emmc项目请使用1h10工程
+
+==== State: Opened by: cmadmin on 18 February 2019 14:35:30 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557768|[SC9820E][Waterworld][FS355][6部]CLM:1140798 [VIT_F221s]: Device fails to establish emergency call when non-jio sim card is inserted.|Precondition: 
+Device must be Flashed on latest build: LYF-F221S-000-00-12-250119. 
+
+
+Steps Steps to Reproduce: 
+
+1. Check if DUT has PLMN Lock feature turned on. 
+2. Insert Non-jio sim card in the device. 
+3. Reboot the device and check for PLMN lock pop-up. 
+4. Skip the pop-up and try to dial e112 call. 
+5. Monitor the screen and logs 
+
+Actual Result: 
+DUT fails to establish emergency call 
+
+Expected Result: 
+DUT should be able to establish emergency call and should not hang. 
+
+Frequency:Always.|
+==== State: Closed by: waterworld on 27 February 2019 09:41:26 ====
+
+关闭问题，感谢支持
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 16:32:57 ====
+
+  == Koben.Wang@unisoc.com On 2019-02-18T08:17:06Z (json) ==
+dear customer,
+
+Current cell doesn’t support the EMC call, so rej the EMC attach, call fail, please use the qcomm ref device re-test and fetch total log.
+
+log: EMERGENCY WITH NON JIO SIM\EMERGENCY WITH NON JIO SIM.logel
+119008-1	12:57:37.507	ATC: ATC_RecNewLineSig,link_id:2,sim:0,len:11,line:ATD112@,#;	ATC
+119086-1	12:57:37.507	when UE in limit service and current cell doesn't support emergency service, reject attach	LNAS
+(2019-02-18T07:55:14Z)
+
+==== State: Opened by: cmadmin on 18 February 2019 15:18:18 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557761|[SC9863A][Waterworld][FS170][TRX][XM]CTS 8.1_r12 CtsCameraTestCases  --android.hardware.camera2.cts.StaticMetadataTest#testHwSupportedLevel fail|环境： 
+    GMS包：2018-12 
+      安全补丁：2019-01-05 
+      CTS环境：8.1_r12 
+现象: 
+     CtsCameraTestCases  --android.hardware.camera2.cts.StaticMetadataTest#testHwSupportedLevel fail
+项目的前摄是gc2385插值到5M，后摄是5025插值到8M， 
+客户要求的前后摄分辨率列表，见附件的2张截图
+还有抓的cts报告和log 
+
+预期： 
+    希望能pass
+
+谢谢！|
+==== State: Closed by: waterworld on 20 February 2019 08:56:59 ====
+
+问题解决，关闭，谢谢！
+
+==== State: Resolved by: cmadmin on 19 February 2019 17:16:57 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+==== State: Resolved by: cmadmin on 19 February 2019 14:17:19 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+  == liangshuai@spreadst.com On 20190219T06:14:20 (xml) ==
+客户验证
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+差值尺寸问题
+Solution:
+如沟通去除18:9相关差值尺寸
+
+==== State: Opened by: waterworld on 19 February 2019 10:10:56 ====
+
+您好，附件压缩包是您要的文件
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 16:33:00 ====
+
+  == liangshuai@spreadst.com On 2019-02-18T08:22:07Z (json) ==
+dear   customer
+麻烦提供boardconfig.mk文件以及libcamera目录下hal3_2v1目录以及oem2v1目录下所有文件，谢谢
+(2019-02-18T07:40:30Z)
+
+==== State: Opened by: cmadmin on 18 February 2019 14:20:54 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557749|[SC9820E][Waterworld][FM332][6部】【加急】出RF框图|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 14 March 2019 00:34:37 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 20 February 2019 14:20:38 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+1.SC9820E不支持TDSCDMA；
+2.RF框图见附件，请参考修改SCH;
+主路把B5挪到了 TDD sawless通路跟FDD MB之间，TXM和RFCI port口有调整.
+辅路B8 开关处网络漏掉了，建议把B8跟B5交换，B8走DRX L1.
+Solution:
+1.SC9820E不支持TDSCDMA；
+2.RF框图见附件，请参考修改SCH;
+主路把B5挪到了 TDD sawless通路跟FDD MB之间，TXM和RFCI port口有调整.
+辅路B8 开关处网络漏掉了，建议把B8跟B5交换，B8走DRX L1.
+
+==== State: Opened by: cmadmin on 19 February 2019 15:07:31 ====
+
+  == Ethan.Feng@unisoc.com On 2019-02-19T07:03:23Z (json) ==
+汪工
+1.SC9820E不支持TDSCDMA；
+2.RF框图见附件，请参考修改SCH;
+主路把B5挪到了 TDD sawless通路跟FDD MB之间，TXM和RFCI port口有调整.
+辅路B8 开关处网络漏掉了，建议把B8跟B5交换，B8走DRX L1.
+
+==== State: Opened by: waterworld on 19 February 2019 09:57:57 ====
+
+支持2G（GSM 900MHZ/1800MHZ)
+3G(WCDMA:B1,TDSCDMA:B34/B39)
+4G(LTE-FDD:B1/B3/5/8,LTE-TDD:B38/B39/B40/B41)
+
+==== State: Opened by: waterworld on 19 February 2019 09:45:04 ====
+
+更改RF重新出RF框图！（见附件：FM332-MB-V0.1-20190219更改RF.sch)
+
+==== State: Opened by: waterworld on 18 February 2019 19:38:40 ====
+
+FM332的RF框图先不出，客户可能要改频段，我确认后再通知，TKS!
+
+==== State: Opened by: cmadmin on 18 February 2019 13:24:04 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557745|[SC7731E][Waterworld][ww849][18部]外部K类功放喇叭的功放模式在软件上如何设置|外部K类功放喇叭的功放模式在软件上如何设置，如何附件图片所示的功放模式。麻烦帮忙提供下修改方法，谢谢|
+==== State: Closed by: waterworld on 22 February 2019 09:42:13 ====
+
+已解决，谢谢
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 13:30:47 ====
+
+  == Yang.Xiang@unisoc.com On 2019-02-18T05:25:55Z (json) ==
+DTS配置举例：
+/*ext_control_type, hook selection, mode, gpio share*/
+sprd,spk-ext-pa-info = <0 0 4 0>;
+
+其中：
+4代表脉冲个数，根据PA厂家的设计需要改成对应的脉冲个数1.2.3.4.5.6.......
+(2019-02-18T05:14:13Z)
+
+==== State: Opened by: cmadmin on 18 February 2019 13:08:13 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557723|[SC9863A][Waterworld][FS170][trx][XM]在主菜单列表界面背景为白色，需要做成透明|现象: 
+     主菜单列表界面背景为白色
+      
+预期： 
+    希望能把背景做成透明 
+ 谢谢！|
+==== State: Closed by: waterworld on 21 February 2019 14:16:13 ====
+
+关闭此CQ.
+
+==== State: Resolved by: cmadmin on 19 February 2019 12:43:13 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+主菜单背景透明
+Solution:
+参照《Android 9.0 Launcher3客制化文档》（2.7.1 背景透明）。
+
+==== State: Opened by: waterworld on 19 February 2019 11:33:43 ====
+
+问题已解决，请关闭此CQ。
+谢谢！
+
+==== State: Opened by: cmadmin on 18 February 2019 12:51:57 ====
+
+  == Wentong.Zhang@unisoc.com On 20190218T04:50:41 (xml) ==
+dear,
+
+请贵司自行参照《Android 9.0 Launcher3客制化文档》（2.7.1 背景透明）。
+
+贵司可以从isupport中自行获得。
+
+谢谢
+
+==== State: Opened by: cmadmin on 18 February 2019 12:51:55 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557721|[SC9863A][Waterworld][FS170][TRX][XM]CTS-verifier 8.1_r12 FOV calibration测试失败|环境： 
+    GMS包：2018-12
+      安全补丁：2019-01-05 
+      CTSV环境：8.1_r12 
+现象: 
+     FOV calibration测试失败
+项目的前摄是gc2385,插值到5M，后摄是5025插值到8M，
+客户要求的前后摄分辨率列表，见附件的2张截图
+我有试图将前摄5M，后摄8M的18：9分辨率移除，在进行FOV测试，是OK的
+可是客户说他们另一个项目也是9863，8.1平台，是易景方案做的，说插值到前摄5M，后摄8M的18：9分辨率下，能过FOV，不会影响CTS
+预期： 
+    还请在附件截图分辨率显示下提供方案，希望FOV能pass 
+
+谢谢！|
+==== State: Closed by: waterworld on 22 February 2019 10:51:15 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 20 February 2019 18:03:50 ====
+
+  == Nanjun.Zhong@unisoc.com On 2019-02-20T10:01:57Z (json) ==
+close
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+the bigger size fov issue
+Solution:
+modify 3stting size order
+
+==== State: Opened by: cmadmin on 20 February 2019 18:03:46 ====
+
+  == Nanjun.Zhong@unisoc.com On 2019-02-20T10:01:23Z (json) ==
+Hi 叶工,如电话沟通，如果这样能过也OK。thanks
+
+==== State: Opened by: cmadmin on 20 February 2019 08:43:08 ====
+
+  == Nanjun.Zhong@unisoc.com On 2019-02-20T00:42:03Z (json) ==
+Hi 叶工，应该是看驱动中的配置，而不是看SprdCamera3Setting.cpp文件里面的配置，这个文件修改就算过了，也是做假的，现在已经不允许做假了，你可以换成一样，确认看看能不能过。thanks
+
+==== State: Opened by: waterworld on 19 February 2019 16:54:19 ====
+
+钟工，下午我拿到易景的SprdCamera3Setting.cpp文件，对比我了我这边cpp文件
+我看了大体相同，就是添加顺序不太一样，但是FOV我测试2次，可以pass
+帮我看下附件的2个文件，能否看出什么区别
+谢谢！
+
+==== State: Opened by: cmadmin on 19 February 2019 10:27:59 ====
+
+  == Nanjun.Zhong@unisoc.com On 2019-02-19T02:22:04Z (json) ==
+Hi 叶工，如刚才的电话沟通，如果按照这样的配置，这个肯定是达不到的，麻烦跟客户那边沟通一下，我们看看他们设置的到底是什么值。thanks
+
+==== State: Opened by: waterworld on 19 February 2019 09:49:12 ====
+
+你好，我有让客户把易景过GMS认证项目的机器告知下sensor的实际尺寸是多少，然后需要插值后的实际尺寸是多少，得知：
+前摄是gc2385,实际尺寸是1600*1200， 
+      插值到5M，实际尺寸是2592*1944(4:3)和3136*1568（18:9） 
+
+后摄是gc5025实际尺寸是2592*1944 
+         插值到8M，实际尺寸是3264*2448(4:3)和3968*1984（18:9） 
+就是前后插值最大的18:9比例尺寸比我之前来的小，也没有超过4:3比例的最大尺寸
+可是我这边把18:9比例的8M和5M尺寸改为跟易景的一样，FOV测试结果还是不行
+还请帮忙看看，改成跟易景的一样
+谢谢！
+
+==== State: Opened by: cmadmin on 18 February 2019 16:42:45 ====
+
+  == Nanjun.Zhong@unisoc.com On 20190218T08:34:57 (xml) ==
+Hi 叶工，你这个插值是实现不了的，因为sensor都是4：3的，插值到5M或者8M只能按照4:3去裁剪。
+而目前你插值的是：
+2592*1944(4:3) < 3168*1584（18:9）
+3264*2448(4:3) < 4032*2016（18:9）
+这个fov是实现不了的，一定要前摄像头18:9的尺寸相乘要小于2592*1944
+后摄像头18:9的尺寸相乘要小于3264*2448
+才能实现。
+
+这两个19：9的尺寸需要插值到前为8M，后摄像头为13M，这个不允许的。
+
+thanks
+
+==== State: Opened by: waterworld on 18 February 2019 16:28:16 ====
+
+你好，
+前摄是gc2385,实际尺寸是1600*1200，
+      插值到5M，实际尺寸是2592*1944(4:3)和3168*1584（18:9）
+
+后摄是gc5025实际尺寸是2592*1944
+         插值到8M，实际尺寸是3264*2448(4:3)和4032*2016（18:9）
+谢谢！
+
+==== State: Opened by: cmadmin on 18 February 2019 15:52:08 ====
+
+  == Nanjun.Zhong@unisoc.com On 2019-02-18T07:42:52Z (json) ==
+Hi 叶工，请问题贵司目前前后摄像头使用的是哪个sensor，
+sensor的实际尺寸是多少，
+然后需要插值后的实际尺寸是多少？请回复一下。thanks
+
+==== State: Opened by: cmadmin on 18 February 2019 13:32:45 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557713|[SC9863A][Waterworld][FS170][XM]9863 android9.0上有调试ok的摄像头SP8809的相关驱动和效果参数吗？|请问9863 android9.0上有调试ok的摄像头SP8809的相关驱动和效果参数吗？有的话，请提供一下。谢谢！|
+==== State: Closed by: cmadmin on 13 March 2019 00:34:07 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 19 February 2019 19:01:44 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+平台未使用过SP8809
+Solution:
+平台未使用过SP8809
+
+==== State: Opened by: cmadmin on 18 February 2019 13:23:25 ====
+
+  == Gongkai.Liu@unisoc.com On 2019-02-18T05:19:30Z (json) ==
+尊敬的客户，您好：展讯未使用过 SP8809 这颗sensor，没有相关的驱动文件，请让原厂支持提供相应的驱动和配置，thanks！
+
+==== State: Opened by: cmadmin on 18 February 2019 11:51:41 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557700|[SC9863A][Waterworld][FS168][6部][sz][TCL]7440772[ALWE] MO call fails to start|[ALWE] MO call fails to start
+
+Problem reproduced at least two times.
+When trying to launch a Mobile Originator CAll (MO CAll) the device does not start the call and device remains "Calling" forever.
+
+See attached logs:
+
+2019-02-05 Log1 Telcable MO Call Failed
+2019-02-05 Log2 Telcable MO Call Failed|
+==== State: Closed by: waterworld on 22 February 2019 14:02:38 ====
+
+Dear 展讯:
+        客户用userdebug验证进行验证时候发现不会复现问题，问题先进行关闭，谢谢。
+
+==== State: NeedInfo by: cmadmin on 19 February 2019 19:11:27 ====
+
+  == Zhongyong.Wang@unisoc.com On 2019-02-19T11:08:44Z (json) ==
+Dear customer
+  The two logs you provided have no modem log, it just has AP log, but we need to check modem issues now, so please confirm it again and give logs of AP and Modem, Thanks.
+
+  log files: 
+2019-02-05 Log1 Telcable MO Call Failed.rar
+2019-02-05 Log2 Telcable MO Call Failed.rar
+(2019-02-19T07:47:33Z)
+
+==== State: Opened by: waterworld on 19 February 2019 11:13:12 ====
+
+ == VersionBasedOn Changed from == 
+MOCORDROID8.1_Trunk_18B_SHARKL3_W18.46.4
+To
+MOCORDROID9.0_Trunk_18C_W19.02.7_P3
+
+
+==== State: Opened by: cmadmin on 18 February 2019 11:51:21 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557697|[SC9863A][Waterworld][FS168][6部][TCL]指纹解锁概率性出现很难解锁和无法解锁问题|步骤：
+通过指纹解锁手机
+
+现象：
+概率性出现要尝试几次才能解锁和解锁不了的问题
+
+问题非必现，问题在持续关注中，暂未抓到对应log
+麻烦帮忙看下能否优化此类问题|
+==== State: Closed by: waterworld on 02 March 2019 11:14:15 ====
+
+Dear sprd:
+      已了解，已安排指纹厂商优化，问题关闭，谢谢！
+
+==== State: NeedInfo by: cmadmin on 23 February 2019 14:21:51 ====
+
+  == Liyun.Wang@unisoc.com On 2019-02-23T06:10:45Z (json) ==
+Dear Customer,
+
+查看贵司提供的log中最后一个成功解锁的总流程，分析如下：
+进入指纹解锁模式后，共有7次尝试指纹解锁，最后一次成功，其中有2次可能手指接触指纹模组时间太短，没有触发真正的解锁流程，其余4次解锁均出现尝试2次均score=0的情况。
+请贵司联系指纹厂商sunwave进一步确认。
+
+M00F094 02-22 14:48:01.633   513   513 D android.hardware.biometrics.fingerprint@2.1-service: authenticate(operationId=0, gid=0)
+
+618[02-22 14:48:02.464] <6>[  825.968898] c0  1038 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F1E3 02-22 14:48:02.508   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(0)
+M00F1E4 02-22 14:48:02.509   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(6)
+635[02-22 14:48:02.590] <6>[  826.092859] c1   256 trusty: [I] [sunwave-ta-core]: (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 0
+644[02-22 14:48:02.666] <6>[  826.168875] c1   256 trusty: [I] [sunwave-ta-core]: (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 1
+
+647[02-22 14:48:02.670] <6>[  826.175277] c0     0 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F228 02-22 14:48:02.673   513   653 I   513   653 [sunwave-ta-core] : (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 0
+M00F22F 02-22 14:48:02.673   513   653 I   513   653 [sunwave-ta-core] : (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 1
+
+664[02-22 14:48:03.751] <6>[  827.258061] c0     0 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F2A9 02-22 14:48:03.758   513   653 I   513   653 [sunwave-ic8271] : (2552) irq: fp leave
+M00F2AC 02-22 14:48:03.758   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(6)
+
+694[02-22 14:48:06.854] <6>[  830.356984] c0     0 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F2C7 02-22 14:48:06.875   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(0)
+M00F2C8 02-22 14:48:06.875   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(6)
+711[02-22 14:48:06.966] <6>[  830.468831] c0   492 trusty: [I] [sunwave-ta-core]: (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 0
+720[02-22 14:48:07.058] <6>[  830.560830] c0   492 trusty: [I] [sunwave-ta-core]: (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 1
+
+723[02-22 14:48:07.059] <6>[  830.566243] c0   492 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F2D3 02-22 14:48:07.063   513   653 I   513   653 [sunwave-ta-core] : (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 0
+M00F2DA 02-22 14:48:07.063   513   653 I   513   653 [sunwave-ta-core] : (757) do_authenticate: score = 0, fid = 0. study = 0 retry_cnt = 1
+
+738[02-22 14:48:07.550] <6>[  831.056346] c0     0 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F321 02-22 14:48:07.557   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(6)
+M00F31E 02-22 14:48:07.557   513   653 I   513   653 [sunwave-ic8271] : (2552) irq: fp leave
+
+752[02-22 14:48:08.457] <6>[  831.963913] c0     0 sunwave-sf_ctl-243: sf_ctl_device_irq(irq = 83, ..) toggled.
+M00F338 02-22 14:48:08.481   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(0)
+M00F339 02-22 14:48:08.481   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(6)
+M00F343 02-22 14:48:08.572   513   653 I   513   653 [sunwave-ta-core] : (757) do_authenticate: score = 60, fid = 1690268899. study = 2 retry_cnt = 0
+M00F34B 02-22 14:48:08.572   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAcquired(0)
+M00F34C 02-22 14:48:08.573   513   653 D android.hardware.biometrics.fingerprint@2.1-service: onAuthenticated(fid=1690268899, gid=0)
+(2019-02-23T03:35:41Z)
+
+==== State: Opened by: waterworld on 23 February 2019 11:17:39 ====
+
+Dear sprd：
+     上传指纹解锁问题的log
+       客户反馈新版本软件未复现之前解锁难的问题，这个是新版本偶尔出现两次才能解锁
+     麻烦check下是否有异常
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 12:42:41 ====
+
+  == Liyun.Wang@unisoc.com On 20190218T04:40:57 (xml) ==
+Dear Customer,
+
+平台未能复现贵司描述的问题，故请提供log后具体问题具体分析。
+(20190218T04:37:24)
+
+==== State: Opened by: cmadmin on 18 February 2019 12:40:01 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00557694|[SC9863A][Waterworld][FS168][6部][sz][TCL]739048[ALWE] Notification from Telegram app (new messages) not received unless I manually open the app|Description:  Notification from Telegram app (new messages) not received unless I manually open the app
+
+Steps to reproduce: 
+1. Install Telegram app and configure it (https://play.google.com/store/apps/details?id=org.telegram.messenger)
+2. Receive some Telegram chat from time to time
+3. Nothing is received in Faraday 5024D -> NOK  4. After some hours, open Telegram app -> all chats are received only then
+ Expected behaviour:  Telegram chats should be received when app is in background, just like any other chat app.|
+==== State: Closed by: waterworld on 04 March 2019 09:24:34 ====
+
+close
+
+==== State: Resolved by: cmadmin on 01 March 2019 11:56:49 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+lmk导致应用被force stop
+Solution:
+提供lmk白名单方案，将telegram应用添加白名单后可能会影响其他应用因lmk被kill，需要客户自行考量是否使用此方案
+
+==== State: Opened by: cmadmin on 01 March 2019 11:52:27 ====
+
+  == Ellen.Yang@unisoc.com On 20190301T03:50:42 (xml) ==
+Dear Customer，
+如电话沟通，此问题最近两天验证一直未复现，先走关闭流程，后续如仍有问题还请帮忙重新提交CQ，非常感谢～
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 27 February 2019 09:55:40 ====
+
+  == Ellen.Yang@unisoc.com On 20190227T01:54:51 (xml) ==
+Dear Customer,
+请帮忙尽快提供完整log，非常感谢～
+
+==== State: NeedInfo by: cmadmin on 25 February 2019 08:41:42 ====
+
+  == Ellen.Yang@unisoc.com On 2019-02-25T00:38:11Z (json) ==
+Dear Customer,
+附件最新提供的log不完整，还请帮忙复现并提供完整log，非常感谢～
+(2019-02-24T03:01:33Z)
+
+==== State: Opened by: waterworld on 24 February 2019 10:33:44 ====
+
+Dear 展讯:
+         按新方案修改依然有问题，见附件log
+
+==== State: NeedInfo by: cmadmin on 22 February 2019 14:30:01 ====
+
+  == Ellen.Yang@unisoc.com On 20190222T06:28:04 (xml) ==
+Dear Customer,
+请帮忙使用如下方案添加lmk白名单并验证，如仍收不到消息还请帮忙提供完整log，非常感谢～
+    public LmKillerTracker() {
+        mService = (ActivityManagerServiceEx) ActivityManager.getService();
+
+        ......
+
+        mLmKillerBypassPackages.add("org.telegram.messenger");
+    }
+(20190222T06:14:47)
+
+==== State: Opened by: waterworld on 22 February 2019 14:11:17 ====
+
+Dear 展讯:
+        不好意思，您要的文件见附件，感谢。
+
+==== State: NeedInfo by: cmadmin on 22 February 2019 11:56:46 ====
+
+  == Ellen.Yang@unisoc.com On 20190222T03:53:27 (xml) ==
+Dear Customer,
+电话未联系上您，从目前log看修改未生效，仍显示lmk。
+M01407D 02-21 21:00:51.995   404   414 D lowmemorykiller: received lmk:10120,8359,905
+M01407E 02-21 21:00:51.996   404   414 D lowmemorykiller: handle killing  8359 done
+S01407F 02-21 21:00:51.996   748  1328 D LmKillerTracker: doLmkForceStop pid=8359
+S014080 02-21 21:00:51.997   748  1328 I LmKillerTracker: org.telegram.messengerdie, see childs:
+S014081 02-21 21:00:51.998   748  1328 I ActivityManager: Force stopping org.telegram.messenger appid=10120 user=0: from pid 748
+S014083 02-21 21:00:51.998   748  1328 I ActivityManager: Killing 8359:org.telegram.messenger/u0a120 (adj 905): stop org.telegram.messenger
+S014088 02-21 21:00:52.002   748  1328 I ActivityManager:   Force finishing activity ActivityRecord{26846c1 u0 org.telegram.messenger/org.telegram.ui.LaunchActivity t8}
+S01408B 02-21 21:00:52.009   748  1328 I LmKillerTracker: force stop pkg:org.telegram.messenger, pid:8359 (adj 905) has done.
+
+请帮忙上传下以下文件，感谢～
+frameworks/base/services/core/java/com/android/server/am/LmKillerTracker.java
+(20190222T02:09:34)
+
+==== State: Opened by: waterworld on 22 February 2019 09:59:08 ====
+
+Dear 展讯:
+        按您提供的方法合入后还是不行，相关log，以及修改已经上传附件，谢谢。
+
+==== State: NeedInfo by: cmadmin on 21 February 2019 11:19:06 ====
+
+  == Ellen.Yang@unisoc.com On 2019-02-21T03:14:55Z (json) ==
+Dear Customer,
+log显示应用由于lowmemory被kill掉了。
+
+M0468A4 02-18 19:35:51.198   403   417 D lowmemorykiller: received lmk:10121,8975,906
+M0468A5 02-18 19:35:51.198   403   417 D lowmemorykiller: handle killing  8975 done
+S0468A6 02-18 19:35:51.198   723   915 D LmKillerTracker: doLmkForceStop pid=8975
+S0468C1 02-18 19:35:51.303   723  5892 I ActivityManager: Process org.telegram.messenger (pid 8975) has died: cch+6CRE 
+E0468C2 02-18 19:35:51.303   723  5892 I am_proc_died: [0,8975,org.telegram.messenger,906,17]
+S0468EE 02-18 19:35:51.454   723   915 I LmKillerTracker: org.telegram.messengerdie, see childs:
+S046908 02-18 19:35:51.533   723   915 I ActivityManager: Force stopping org.telegram.messenger appid=10121 user=0: from pid 723
+S046935 02-18 19:35:51.686   723   915 I LmKillerTracker: force stop pkg:org.telegram.messenger, pid:8975 (adj 906) has done.
+
+
+请帮忙将这个应用添加lmk白名单，添加方法:
+frameworks/base/core/res/res/values/config_ex.xml:
+<string-array translatable="false" name="low_memory_killer_tracker_whitelist" >
+        
+        ......
+
+        <item>org.telegram.messenger</item>
+</string-array>
+
+
+如已确认添加白名单，仍收不到消息，请帮忙提供完整log，非常感谢～
+(2019-02-21T01:56:00Z)
+
+==== State: Opened by: waterworld on 21 February 2019 09:51:39 ====
+
+Dear 展讯:
+        从刚开始能正常收到消息到待机几小时后收不到消息的log已经上传到ftp在，请查收，谢谢。
+
+==== State: NeedInfo by: cmadmin on 20 February 2019 09:23:22 ====
+
+  == Ellen.Yang@unisoc.com On 2019-02-20T01:22:36Z (json) ==
+Dear Customer,
+还请尽快帮忙提供完整log，非常感谢～
+
+==== State: NeedInfo by: cmadmin on 18 February 2019 13:13:31 ====
+
+  == Ellen.Yang@unisoc.com On 20190218T05:10:44 (xml) ==
+Dear Customer，
+请帮忙提供完整log，从刚开始能正常收到消息到待机几小时后收不到消息，非常感谢～
+(20190218T04:10:02)
+
+==== State: Opened by: cmadmin on 18 February 2019 12:13:45 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

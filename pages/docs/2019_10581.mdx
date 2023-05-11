@@ -1,0 +1,1143 @@
+# SPCSS00554972|[SC9863A][Waterworld][FS168][6部][TCL]无法去掉118紧急号码|步骤：
+     您好，我在carrier_config_46001.xml里面只配置了
+        <string name="ecclist_nocard">112,911,000,08,110,118,119,999,3919</string>
+        <string name="ecclist_withcard">112,911</string>
+但是还是有118做为紧急号码；
+log在附件；看log好像从网络来的
+ RadioInteractor: [RadioInteractor] [3650]> UPDATE_REAL_ECCLIST ecclist = 112,911,000,08,110,118,119,999
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 18 February 2019 00:33:50 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 January 2019 14:47:12 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:紧急号码遍历双卡
+
+[2.Resolution        ]:紧急号码从对应卡槽去读
+
+
+
+==== State: Opened by: cmadmin on 27 January 2019 10:55:46 ====
+
+  == liujing0428@spreadst.com On 2019-01-27T02:39:09Z (json) ==
+Dear customer.
+   由于紧急号码需要遍历双卡的机制，导致118未被去掉，请合入附件去掉118为紧急号码patch.diff.zip， 注意base可能不一致，请对应合入，务必不要合错位置等引起其他问题，谢谢。有问题请联系我们，谢谢。
+
+==== State: Opened by: cmadmin on 27 January 2019 10:19:47 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554971|[SC9863A][Waterworld][FS168][XM][TCL] 锁屏时候下拉状态栏,点击空白地方,界面跳动异常|[XM][TCL] 锁屏时候下拉状态栏,点击空白地方,界面跳动异常
+
+Lock screen->Drop down the notification panel->Touch the blank area on the bottom of the screen
+通知面板和状态栏闪烁频率异常，非正常闪烁动画
+
+附件是异常的视频还有对应的log,
+
+请帮忙分析下是什么原因导致的.谢谢.|
+==== State: Closed by: waterworld on 28 January 2019 17:08:54 ====
+
+好的,先关闭,有问题再提交.谢谢.
+
+==== State: NeedInfo by: cmadmin on 28 January 2019 16:38:14 ====
+
+  == nick.nie@unisoc.com On 2019-01-28T08:33:11Z (json) ==
+Dear Customer:
+如电话沟通，不建议将动画效果直接移除，贵司可以尝试调整动画持续时间。
+有两种方式验证：
+1：在开发者模式里设置Animator duration scale的倍数验证
+2：在frameworks\base\packages\SystemUI\src\com\android\systemui\statusbar\phone\PanelView.java
+里搜索animator.setDuration，修改setDuration()的值
+
+问题置为needinfo，有疑问请及时反馈或者电话联系。
+Thanks!
+(2019-01-28T05:58:29Z)
+
+==== State: Opened by: waterworld on 28 January 2019 13:54:32 ====
+
+这个异常跳动的地方,要仔细观察才看的出来,
+或者可以先帮忙告诉我关闭动画效果是在哪里吧,谢谢.
+
+==== State: Opened by: cmadmin on 28 January 2019 10:08:24 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554970|[SC9863A][Waterworld][FS168][XM][TCL] 录音文件设置成来电铃声后删除录音文件,来电铃声异常|[XM][TCL] 录音文件设置成来电铃声后删除录音文件,来电铃声异常
+
+录音文件设置成来电铃声后删除录音文件,来电铃声异常
+去查看情景模式里面的铃声,显示是默认铃声,但是实际来电铃声不是这个默认铃声.
+
+附件是log
+请帮忙看下需要如何修改.谢谢.|
+==== State: Closed by: waterworld on 28 January 2019 16:42:40 ====
+
+验证有效,关闭.
+
+==== State: Resolved by: cmadmin on 28 January 2019 15:06:59 ====
+
+  == zengming0530@spreadst.com On 2019-01-28T06:56:24Z (json) ==
+Dear Customer,
+
+请合入附件中Ringtone_new.diff文件以修复此问题.
+如仍复现请提供ylog.
+
+Thanks
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+存入数据库时都是以SettingsEx.SystemEx.DEFAULT_RINGTONE + slotId 来存的, 所以不加slotId来取是取不到的
+Solution:
+加slotId来取对应的ringtone URI
+
+==== State: Opened by: cmadmin on 28 January 2019 10:44:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554956|[SC9820E][Waterworld][A355]音频指标测试申请|TCL项目，要进行音频指标测试，依据标准 Y/D T1538-2014，请帮忙在贵司实验室摸底测试，然后去TCL现场测试。谢谢！|
+==== State: Closed by: waterworld on 20 February 2019 17:33:01 ====
+
+多谢支持！
+
+==== State: Resolved by: cmadmin on 31 January 2019 10:24:20 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+测试完毕
+Solution:
+测试完毕
+
+==== State: Opened by: cmadmin on 30 January 2019 17:20:00 ====
+
+  == Yang.Bai@unisoc.com On 2019-01-30T09:16:12Z (json) ==
+补充一下，提供的这两台机器里，10#机器都能测过，但是8#机器测试结果偏差很大，特别是上行部分，应该是mic的密封没做好造成的，响度差很多，频响很奇怪，回声也不过。所以8#机器不能用。
+谢谢
+
+==== State: Opened by: cmadmin on 30 January 2019 15:42:15 ====
+
+  == Yang.Bai@unisoc.com On 2019-01-30T07:37:34Z (json) ==
+调试后各项指标能pass，附件是音频参数。
+但是报告现在发不了，因为我司在进行usb权限更改，所以报告拷不出来，可能需要年后IT建设完后才能发出。如果贵司急需报告的话可以找个u盘来测试电脑上拷。
+
+==== State: Opened by: waterworld on 28 January 2019 16:22:49 ====
+
+HD voice标准
+两台样机已经寄出，请注意查收，顺丰单号：058406837612
+
+==== State: Opened by: cmadmin on 28 January 2019 09:54:13 ====
+
+  == Yang.Bai@unisoc.com On 2019-01-28T01:51:10Z (json) ==
+有详细测试标准吗？请提供一下。
+请寄机器给我司测试。
+谢谢
+
+==== State: Opened by: cmadmin on 25 January 2019 18:59:01 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554947|[SC9863A][Waterworld][FS168][XM][TCL] 从谷歌photo设置壁纸会失败|[XM][TCL] 从谷歌photo设置壁纸会失败
+
+1. Sign in Google account; 
+2. Tap and hold over homescreen. 
+3.Go to Wallpapers. 
+4.Enter to My photos -> Photos. 
+5.Choose a picture (the picture must be stored in Photos server, not local picture),
+It will show "Downloading.."progress bar. 
+6.When the Downloading... progress disappeared it show Crop photo ,
+this page the picture show Black before set it as wallpaper. 
+7. Set it as wallpaper,it will show black.
+
+附件是视频还有对应的log,请帮忙确认.
+
+
+|
+==== State: Closed by: cmadmin on 19 February 2019 00:35:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 January 2019 10:44:43 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+第三方WallpaperPickerActivity问题
+Solution:
+如电话沟通，由视频得知，第三方WallpaperPickerActivity加载资源出现问题：
+ 5935 E000001 01-22 11:19:56.627   713  1910 I am_set_resumed_activity: [0,com.tcl.android.launcher/.wallpaperpicker.WallpaperPickerActivity,resumeTopActivityInnerLocked]
+ 5936 E000001 01-22 11:19:56.636   713  1910 I am_resume_activity: [0,69001637,2,com.tcl.android.launcher/.wallpaperpicker.WallpaperPickerActivity]
+
+
+请协调第三方跟踪，如有其他问题，请帮忙另提CQ跟踪或者直接电话联系。
+
+==== State: Opened by: cmadmin on 28 January 2019 10:44:03 ====
+
+  == Wentong.Zhang@unisoc.com On 20190128T02:25:55 (xml) ==
+dear,
+
+如电话沟通，由视频得知，第三方WallpaperPickerActivity加载资源出现问题：
+ 5935 E000001 01-22 11:19:56.627   713  1910 I am_set_resumed_activity: [0,com.tcl.android.launcher/.wallpaperpicker.WallpaperPickerActivity,resumeTopActivityInnerLocked]
+ 5936 E000001 01-22 11:19:56.636   713  1910 I am_resume_activity: [0,69001637,2,com.tcl.android.launcher/.wallpaperpicker.WallpaperPickerActivity]
+
+请贵司协调第三方解决。
+
+谢谢
+
+==== State: Opened by: cmadmin on 28 January 2019 10:43:42 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554941|[SC9863A][Waterworld][tcl]拨打了紧急呼叫号码，通话记录需要显示文本“紧急号码” 而不是紧急呼叫的号码|拨打了紧急呼叫号码，通话记录需要显示文本“紧急号码” 而不是紧急呼叫的号码
+almid：7403440
+|
+==== State: Closed by: waterworld on 28 January 2019 10:06:38 ====
+
+验证ok，关闭id，非常感谢
+
+==== State: Resolved by: cmadmin on 27 January 2019 10:47:02 ====
+
+  == shiyong0701@spreadst.com On 20190127T02:37:03 (xml) ==
+Dear Customer:
+
+目前代码中有两处控制通话记录中显示紧急号码：
+packages/services/Telecomm/src/com/android/server/telecom/CallLogManager.java
+        okToLogEmergencyNumber = mContext.getResources()
+                .getBoolean(R.bool.allow_emergency_numbers_in_call_log);
+此出逻辑控制是否添加拨打的紧急号码在通话记录中。
+
+packages/apps/Dialer/java/com/android/dialer/app/calllog/PhoneCallDetailsHelper.java
+      boolean shouldShowEmergency = mContext.getResources()
+              .getBoolean(R.bool.allow_emergency_numbers_in_call_log);
+      if (shouldShowEmergency && PhoneNumberUtils.isEmergencyNumber(displayNumber.toString())) {
+        nameText = mContext.getResources().getString(R.string.emergency_call);
+      } else {
+        nameText = displayNumber;
+      }
+此处逻辑控制显示成“紧急号码”，还是实际号码。
+
+请同步修改Dialer模块的allow_emergency_numbers_in_call_log为true,
+
+谢谢！
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+只修改了telecom中的allow_emergency_numbers_in_call_log
+Solution:
+同步修改Dialer中allow_emergency_numbers_in_call_log也为true
+
+==== State: Opened by: cmadmin on 27 January 2019 09:48:04 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554932|[SC9832E][Waterworld][FS097]6部财富一部FS097M11-E50，帮忙安排测试GPS OTA，谢谢！|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 16 February 2019 11:23:15 ====
+
+关闭
+
+==== State: Resolved by: cmadmin on 26 January 2019 18:35:36 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+客户需求关闭；
+Solution:
+客户需求关闭；
+
+==== State: Opened by: waterworld on 26 January 2019 10:45:25 ====
+
+您好，此CQ先关闭，直接转硬件调试GPS传导，帮将样机转给此调试CQ：SPCSS00555004，谢谢！
+
+==== State: Opened by: cmadmin on 25 January 2019 18:11:20 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 25 January 2019 17:59:59 ====
+
+1台FS097-11B,1台FS097-11E（两个机型只是频段不一样，其他一致） 已顺丰寄出441702245281，陈（宇）工收
+|
+# SPCSS00554924|[SC9832E][Waterworld][fs097][6部] 分离式FLASH方案的DDR数据接口与原来的连接完全不同，麻烦调试下DDR部分|FS097 V1.2分离FLASH方案的DDR数据接口与原来的连接完全不同，麻烦调试一下DDR部分(PIN连接同展讯参考设计SPM_SC9832E_B_SCH_V0.2.0_Discrete_LPDDR3_0201.sch）|
+==== State: Closed by: cmadmin on 22 February 2019 00:41:08 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 31 January 2019 13:19:14 ====
+
+  == Ronghu.Zhong@unisoc.com On 20190131T05:17:09 (xml) ==
+如沟通，ERF后续排查需要协助的随时联系。
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:ERF和DDR DQ调整
+
+[2.Resolution        ]:ERF的错误需要检查硬件emmc，DQ调整需要软件适配已给出方案
+
+
+
+==== State: Opened by: cmadmin on 30 January 2019 19:25:43 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-01-30T11:24:51Z (json) ==
+ERF的错误请检查emmc或者flash的硬件焊接和周边电阻是否贴对。
+
+==== State: Opened by: waterworld on 30 January 2019 17:48:49 ====
+
+合入附件代码验证还是不行   下载一直卡在FDL
+
+黆UUUUERF
+MCI
+ERF
+ROM
+ERF
+MCI
+ERF
+ROM
+SIF
+SRF
+SIF
+SRF
+UBD
+RBS
+DDR init start
+
+==== State: Opened by: cmadmin on 30 January 2019 17:19:45 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-01-30T09:17:59Z (json) ==
+请按照PatchesForCUS下修改后的文件替换验证，如有问题请提供串口log
+
+==== State: Opened by: waterworld on 29 January 2019 15:05:29 ====
+
+钟工，请帮忙尽快分析一下，谢谢
+
+==== State: Opened by: waterworld on 29 January 2019 10:38:01 ====
+
+下载一直卡在FDL2这里  串口log如下：
+
+ERF
+ROM
+ERF
+MCI
+ERF
+ROM
+SIF
+SRF
+SIF
+SRF
+UBD
+RBS
+DDR init start
+Swap later
+CS0_MR8:0x0000009B 
+lpddr auto detect failed
+DDR init OK
+DDR init start
+Swap later
+CS0_MR8:0x0000009B 
+lpddr auto detect failed
+DDR init OK
+
+
+
+==== State: Opened by: waterworld on 28 January 2019 18:40:38 ====
+
+合入验证还是不行，chipram代码已上传，下载的串口log明天提供
+
+==== State: Opened by: cmadmin on 28 January 2019 14:31:33 ====
+
+  == Ronghu.Zhong@unisoc.com On 20190128T06:28:03 (xml) ==
+请按照PatchesForCUS下修改后的文件替换验证，如有问题请提供串口log和chipram下的代码。
+
+==== State: Opened by: waterworld on 28 January 2019 09:36:35 ====
+
+已上传到附件：调试资料.rar
+
+==== State: Opened by: cmadmin on 25 January 2019 18:20:55 ====
+
+  == Ronghu.Zhong@unisoc.com On 20190125T10:15:24 (xml) ==
+请提供原理图和ddr规格书，chipram/include/configs/xxx.h工程头文件
+
+==== State: Opened by: cmadmin on 25 January 2019 17:49:56 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554922|[SC9832E][Waterworld][FS097][SC9832E][Waterworld][FS097]SC9832E][Waterworld][FS097][SC9832E][Waterworld][FS097][SC9832E][六部]申请flash认证。|FLASH信息：IC,EMMCP(8GB eMMC5.1 + 8Gb LPDDR3 SDRAM),221FBGA,11.5x13.0x1.0mm,支持FOTA,H9TQ64A8GTCCUR-KUM(Spreadtrum),HYNIX(AF)|
+==== State: Closed by: cmadmin on 08 May 2019 00:44:43 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 16 April 2019 10:52:33 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 16 April 2019 10:52:26 ====
+
+  == lu.huang@unisoc.com On 2019-04-16T02:39:29Z (json) ==
+认证pass！
+
+==== State: Opened by: cmadmin on 25 January 2019 18:23:46 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 25 January 2019 17:37:56 ====
+
+尊敬的展讯同事：
+    样品今天已安排快递给上海黄（路）工，快递单号：SF058406843468，请帮忙验证，谢谢！
+|
+# SPCSS00554909|[SC7731E][Waterworld][FS286][SC7731E][Waterworld][FS286]SC7731E][Waterworld][FS286][SC7731E][Waterworld][FS286][SC7731E][六部]申请flash认证。|flash信息:IC,EMMCP(8GB eMMC5.1 +8Gb LPDDR3 SDRAM),221FBGA,11.5x13.0x1.0mm,KMFNX0012M-B214,SAMSUNG  AF|
+==== State: Closed by: cmadmin on 24 April 2019 08:42:23 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 02 April 2019 18:28:24 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 02 April 2019 18:27:56 ====
+
+  == lu.huang@unisoc.com On 20190402T10:25:15 (xml) ==
+认证pass！
+
+==== State: Opened by: cmadmin on 25 January 2019 18:20:46 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 25 January 2019 17:00:27 ====
+
+尊敬的展讯同事：
+    样品15PCS今天安排快递给上海黄（路）工，快递单号：SF058406843468  附件为规格书，请帮忙安排验证，谢谢！
+|
+# SPCSS00554900|[SC7731C][Waterworld][ww863][18部]马其顿的一个运营商，插2张不同的卡，网络正常情况下一个显示 T-mobile 和 Tele Kabel  ,我们的手机，都只显示 T-mobile|步骤：
+
+现象：马其顿的一个运营商，插2张不同的卡，网络正常情况下一个显示 T-mobile 和 Tele Kabel  ,
+我们的手机，都只显示 T-mobile，分析下吧，log上传附件了。
+
+分析：
+|
+==== State: Closed by: cmadmin on 19 February 2019 00:35:12 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 January 2019 10:32:38 ====
+
+  == bairj0401@spreadst.com On 2019-01-28T02:19:19Z (json) ==
+与客户沟通，暂时关闭，后续有问题另提cq处理
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+运营商名称显示问题
+Solution:
+运营商名称显示问题
+
+==== State: Opened by: cmadmin on 25 January 2019 17:30:54 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554895|[SC9832E][Waterworld][FS097][SC9832E][Waterworld][FS097]SC9832E][Waterworld][FS097][SC9832E][Waterworld][FS097][SC9832E][六部]申请flash认证。|FLASH信息：IC,EMMCP(8GB eMMC5.1 + 8Gb LPDDR3 SDRAM),221FBGA,11.5x13.0x1.0mm,支持FOTA,H9TQ64A8GTACUR-KUM(Spreadtrum),HYNIX(AF)|
+==== State: Closed by: cmadmin on 16 July 2019 00:56:27 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 24 June 2019 17:15:12 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+器件委员会决定验证取消
+
+==== State: Opened by: cmadmin on 24 June 2019 17:15:10 ====
+
+  == enlai.kong@unisoc.com On 20190624T09:12:06 (xml) ==
+器件委员会决定验证取消
+
+==== State: Opened by: cmadmin on 22 April 2019 17:21:40 ====
+
+  == lu.huang@unisoc.com On 20190422T08:42:03 (xml) ==
+预计还需要3周时间。
+
+==== State: Opened by: waterworld on 22 April 2019 15:40:13 ====
+
+尊敬的展讯同事：
+    帮忙看下这颗FLASH的认证进度，预计多久可以完成，谢谢！
+
+==== State: Opened by: cmadmin on 02 April 2019 10:25:17 ====
+
+  == lu.huang@unisoc.com On 2019-04-02T02:21:24Z (json) ==
+(In reply to waterworld from comment #2)
+排在第二顺位。
+
+==== State: Opened by: waterworld on 01 April 2019 17:27:37 ====
+
+尊敬的展讯同事：
+    请确认回复下此颗FLASH目前验证进展情况，谢谢！
+
+==== State: Opened by: cmadmin on 25 January 2019 16:50:56 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 25 January 2019 16:40:36 ====
+
+尊敬的展讯同事：
+    样品15PCS今天已安排快递给上海黄（路）工，快递单号：SF058406843468，附件为规格书，请帮安排验证，谢谢！
+    
+|
+# SPCSS00554894|[SC9863A][Waterworld][[FS168][XM][TCL]]simlock手机，通过暗码弹出输入解锁码界面用于解锁sim卡|手机使用加密狗方案，通过工具写simlock后，在没有sim卡或使用白名单sim卡的情况下，
+可以使用拨号盘输入暗码“*#2539#”，弹出输入解锁码界面，用于解锁非白名单的sim卡。
+
+备注：
+之前有提过CQ：SPCSS00545486，已实现了使用非白名单sim卡时，能够通过暗码，弹出输入解锁码的界面用于解锁非白名单sim卡
+现在是要在没有sim卡或使用白名单sim卡的情况下，也能够弹出输入解锁码的界面用于解锁非白名单sim卡
+
+请帮忙看下能否实现
+
+谢谢
+
+|
+==== State: Closed by: cmadmin on 09 March 2019 00:45:41 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 15 February 2019 14:27:14 ====
+
+  == hucb0312@spreadst.com On 20190215T06:25:54 (xml) ==
+如沟通, 此问题验证OK, 后续有其他问题可以继续提CQ咨询.
+
+==== State: Resolved by: cmadmin on 31 January 2019 15:29:58 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you  == hucb0312@spreadst.com On 2019-01-31T07:28:31Z (json) ==
+Dear Customer,
+烦请参考附件patch验证:
+ftp://ftp.spreadtrum.com/SPCSS/2019-1/SPCSS00554894/PatchesForCUS/SPCSS00554894.tar.gz
+谢谢!
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+客户需求
+Solution:
+通过暗码弹出输入解锁码界面用于解锁sim卡
+
+==== State: Opened by: cmadmin on 29 January 2019 19:28:17 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 29 January 2019 14:26:56 ====
+
+Dear SPRD:
+在\frameworks\base\packages\SystemUI\src\com\android\keyguard\KeyguardSimLockMonitor.java文件里，
+使用如下判断代码：
+if (mRadioInteractor.getSimLockStatus(IccCardStatusEx.UNLOCK_NETWORK, 0) > 0 ) 
+
+自己验证可以在没有sim卡或使用白名单sim卡的情况下，弹出输入解锁码的界面用于解锁非白名单sim卡。
+具体代码修改见附件SPCSS00554894_modify
+
+请帮忙分析确认看下该修改是否正确合理，会不会存在问题和缺陷?
+目前该修改还需进一步详细测试验证是否ok
+
+谢谢
+
+==== State: Submitted by: cmadmin on 28 January 2019 18:46:11 ====
+
+  == Nicole.Wang@unisoc.com On 2019-01-28T10:41:23Z (json) ==
+请TAM确认是否走RAT流程决策。
+
+==== State: Submitted by: waterworld on 28 January 2019 17:25:12 ====
+
+ == VersionBasedOn Changed from == 
+MOCORDROID9.0_Trunk_W18.51.5
+To
+MOCORDROID9.0_Trunk_18C_W19.01.6
+
+|
+# SPCSS00554889|[SC9863A][Waterworld][FS168]客户反馈3G上网慢|步骤：
+Megafon的运营商3G上网慢，MTS上网正常，如附件logylog_Megafon.7z和对比log（ylog_MTS.7z）
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 11 February 2019 00:34:18 ====
+
+尊敬的客户，NeedInfo状态超过15个工作日贵司未有状态更新和反馈的问题，现做关闭处理。如果还有其他问题，请重新提交CR或者联系对应的TAM处理。 Thanks
+
+
+==== State: NeedInfo by: cmadmin on 25 January 2019 17:14:13 ====
+
+  == You.Li@unisoc.com On 2019-01-25T09:05:58Z (json) ==
+请确认同张Megafon运营商卡的其他品牌的对比机测试情况。
+请重新提供有效log，当前tcp cap log为空。
+(2019-01-25T08:41:48Z)
+
+==== State: Opened by: cmadmin on 25 January 2019 16:50:32 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554881|[SC9863A][Waterworld][tcl]智利国家 133必须是紧急呼叫号码|
+按 SPCSS00552174要求修改，发版本客户验证
+有以下问题
+插730 01白卡，拨打133，显示Mobile network not available
+插入730 01白卡，拨打133，手机还会重启
+|
+==== State: Closed by: cmadmin on 20 February 2019 00:41:30 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 29 January 2019 13:39:52 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+133必须配置为紧急号码
+Solution:
+配置133为紧急号码
+
+==== State: Opened by: cmadmin on 29 January 2019 13:39:37 ====
+
+  == liujing0428@spreadst.com On 2019-01-29T05:38:04Z (json) ==
+Dear customer.
+   如电话沟通，133在插卡下以正常形式打出是正常的。类似与我国的110，虽然是紧急号码，但是是已正常拨号打出且有真人接听的。
+   另外无卡下，也需要将133加进去。无卡下133也是紧急号码的。可类似中国移动运营商加在
+<carrier_config network_preferred="true"> 
+下面，请知，谢谢。
+
+==== State: Opened by: waterworld on 29 January 2019 11:50:47 ====
+
+拨打电话过程有：手机时间没有校准，且log没有开启前，1：27分别拨打了一个133
+
+时间校准后，开启log,插入白卡，没有在实验室入网,10:43分拨打一个133
+
+手机实验室入网后,10:48分手机拨打一个133
+
+
+操作步骤如上。log上传附件
+插730 01白卡没在实验室入网拨打133，是以正常号码拨打出去
+
+==== State: NeedInfo by: cmadmin on 27 January 2019 10:19:31 ====
+
+  == liujing0428@spreadst.com On 2019-01-27T02:13:52Z (json) ==
+Dear customer.
+
+    日志上有打了N通电话，8份日志，每份都有打N通电话，还有有打通的，有失败的，可否能间隔抓下日志，并标注出现何问题的log上的对应大概时间点，这样分析起来却是难以分析，谢谢。
+(2019-01-27T01:46:50Z)
+
+==== State: Opened by: cmadmin on 27 January 2019 10:12:12 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554865|[SC9832E][Waterworld][FM601][6部]录像稍微长点时间就会出现ANR，请帮忙分析解决|步骤：进入相机，切换到录像模式，开始录像
+
+现象：有的时候录像4分多钟，有的时候录像9分钟，录像时间不动多3分钟左右弹出相机没有响应
+
+分析：附件是log|
+==== State: Closed by: waterworld on 29 January 2019 15:21:04 ====
+
+验证OK
+
+==== State: Resolved by: cmadmin on 29 January 2019 11:01:45 ====
+
+  == livet.chen@unisoc.com On 2019-01-29T02:58:05Z (json) ==
+电话沟通后贵司将录像存储改成内部后, 测试1080p录制40分钟按停止已无法复现问题, 确认T卡单体问题, 同时该方案也需要合入, 请操作close关闭该单, 多谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]: Optimized stop（） in mediarecorder
+
+[2.Resolution        ]: excute setStopTimeUs directly
+
+
+
+==== State: Opened by: cmadmin on 29 January 2019 11:01:18 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+
+==== State: NeedInfo by: cmadmin on 28 January 2019 18:28:24 ====
+
+  == livet.chen@unisoc.com On 2019-01-28T10:26:01Z (json) ==
+Dear Waterworld,
+
+//查看log确认修改有合入
+M4E6F4F 01-28 17:21:36.489  3445 13418 I MediaCodecSource: setStopTimeUs 6159996894, audio
+M4E6F50 01-28 17:21:36.490  3445 13418 I MediaCodecSource: setStopTimeUs 6159996894, video
+...
+//Stopping writer thread
+M4E746E 01-28 17:21:40.480  3445  5889 D MPEG4Writer: Duration from tracks range is [1783482118, 1807433000] us
+M4E746F 01-28 17:21:40.481  3445  5889 D MPEG4Writer: Stopping writer thread
+...
+//writer最后还有586 chunks在最后做写入, 显示当下stop VideoRecording时系统很忙碌或写入mp4文件至存储时I/O过大都会发生该现象
+M50E521 01-28 17:28:42.267  3445 13459 D MPEG4Writer: 586 chunks are written in the last batch
+M50E522 01-28 17:28:42.276  3445  5889 D MPEG4Writer: Writer thread stopped
+
+查看anr时打印cpu占用最高为37% 23802/busybox
+01-28 17:22:05.184  3703  3720 E ActivityManager: PID: 23836
+01-28 17:22:05.184  3703  3720 E ActivityManager: Reason: Broadcast of Intent { act=android.media.RINGER_MODE_CHANGED flg=0x35000010 cmp=com.android.settings/com.sprd.audioprofile.AudioProfileSettings$ModeChangeReceiver (has extras) }
+01-28 17:22:05.184  3703  3720 E ActivityManager: Load: 0.0 / 0.0 / 0.0
+01-28 17:22:05.184  3703  3720 E ActivityManager: CPU usage from 3ms to 13678ms later (2019-01-28 17:21:51.420 to 2019-01-28 17:22:05.095):
+01-28 17:22:05.184  3703  3720 E ActivityManager:   37% 23802/busybox: 34% user + 2.9% kernel / faults: 42 minor
+01-28 17:22:05.184  3703  3720 E ActivityManager:   26% 3085/android.hardware.camera.provider@2.4-service: 18% user + 7.6% kernel / faults: 410 minor
+
+请问贵司录像时使用的存储是内部还是外部T卡？
+若是外部T卡, 请帮忙更换更高速(class 10)T卡后再次测试确认是否单体T卡问题
+多谢
+(2019-01-28T09:54:05Z)
+
+==== State: Opened by: waterworld on 28 January 2019 17:41:17 ====
+
+合入后，验证还是会出现，附件：Ylog-0128.zip是新的log
+
+==== State: Opened by: cmadmin on 28 January 2019 13:16:03 ====
+
+  == livet.chen@unisoc.com On 2019-01-28T05:15:00Z (json) ==
+Dear Waterworld,
+
+Camera2 anr堆栈显示执行stopVideoRecording后发生阻塞,
+(Java_android_media_MediaRecorder_stop__+124)
+  at android.media.MediaRecorder.stop(Native method)
+  at com.android.camera.VideoModule.stopVideoRecording(VideoModule.java:2282)
+  at com.android.camera.VideoModule.stopVideoRecording(VideoModule.java:2221)
+  at com.android.camera.VideoModule.onStopVideoRecording(VideoModule.java:986)
+
+查看贵司提供文件缺少一笔解决mediarecorder stop阻塞的解决方案,修改差分包已上传cq ftp PatchesForCUS\SampleCode, 请合入后验证并帮忙即时反馈结果, 多谢
+
+==== State: Opened by: waterworld on 28 January 2019 11:30:29 ====
+
+Dear  livet.chen:
+       文件已上传附件
+
+==== State: NeedInfo by: cmadmin on 28 January 2019 11:16:46 ====
+
+  == livet.chen@unisoc.com On 2019-01-28T03:08:53Z (json) ==
+Dear Waterworld,
+
+请帮忙上传下列路径代码
+frameworks/av/media/libstagefright/MediaCodecSource.cpp
+
+多谢
+(2019-01-28T02:57:19Z)
+
+==== State: Opened by: cmadmin on 27 January 2019 10:19:27 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554860|[SC9863A][Waterworld][FS168-11B][TCL][XM]telcel脚本用CMWRUN测试反馈B4/66容易掉线，请帮忙配合测试抓取LOG供软件分析原因。---转上海徐友法|telcel脚本用CMWRUN测试反馈B4/66容易掉线，请帮忙配合测试抓取LOG供软件分析原因。|
+==== State: Closed by: waterworld on 30 January 2019 14:07:48 ====
+
+谢谢支持，可以关闭。
+
+==== State: Resolved by: cmadmin on 30 January 2019 13:58:14 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+确认完成
+Solution:
+更新DSP.bin
+
+==== State: Opened by: cmadmin on 30 January 2019 13:58:10 ====
+
+  == Youfa.Xu@unisoc.com On 20190130T05:55:56 (xml) ==
+更新bug1004160中提供的DSP.bin后验证pass
+问题暂时关闭。
+
+==== State: Opened by: cmadmin on 29 January 2019 09:50:45 ====
+
+  == Youfa.Xu@unisoc.com On 20190129T01:49:11 (xml) ==
+LTE B4/B66掉话问题，后续又做了6次验证，均pass。
+（其中1次出现了掉话，但是飞行之后可以及时连上测试pass）
+
+==== State: Opened by: cmadmin on 28 January 2019 09:44:09 ====
+
+  == Youfa.Xu@unisoc.com On 20190128T01:42:06 (xml) ==
+更新DSP后验证3遍未复现LTE B4/66掉话，今天再多验证几遍确保稳定性。
+
+==== State: Opened by: cmadmin on 25 January 2019 16:04:53 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554857|[SC9863A][Waterworld][fs170][6部]ALTAN VoLTE|ForLTE models, ALTAN VoLTE must be implemented. 
+ODM Should open Ticket with MTK orSPRD for this solution. 
+Altan Volte客户做BLU需要，是否有patch
+|
+==== State: Closed by: cmadmin on 19 February 2019 00:35:22 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 January 2019 15:06:00 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:参数配置
+
+[2.Resolution        ]:参数配置
+
+
+
+==== State: Opened by: cmadmin on 28 January 2019 13:42:22 ====
+
+  == niurk0708@spreadst.com On 20190128T05:37:21 (xml) ==
+
+尊敬的客户您好：
+请根据以下两个步骤配置白名单和ims apn。如有问题轻及时联系。谢谢。
+
+1.apn文件路经 vendor/sprd/telephony-res/apn/apns-conf_8.xml
+  <apn carrier="ims"
+	   mcc="334"
+	   mnc="140"
+	   apn="ims"
+	   protocol="IPV4V6"
+	   roaming_protocol="IPV4V6"
+	   type="ims"
+	/>
+2.白名单文件路经 vendor/sprd/telephony-res/volte/volte-conf.xml
+<allowPlmn numeric="334140" enable="true"/>
+
+==== State: Opened by: cmadmin on 28 January 2019 11:16:31 ====
+
+  == Faye.Liu@unisoc.com On 2019-01-28T03:06:40Z (json) ==
+尊敬的客户，
+
+您好！
+
+要支持ALTAN VoLTE，需要升级modem版本到FM_BASE_18B_W19.04.5，版本升级请联系CPM或TAM.
+
+另外，AP侧需要配置白名单，稍后由AP同事提供配置方法，谢谢！
+
+==== State: Opened by: cmadmin on 26 January 2019 15:41:38 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554855|[SC7731E][Waterworld][FS361]FS361M01-C50 V0.1A 无法下载无法显示端口，请帮忙分析|FS361M01-C50 V0.1A 无法下载无法显示端口，请帮忙分析|
+==== State: Closed by: cmadmin on 16 February 2019 00:37:56 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 25 January 2019 17:19:09 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+DCXO晶体方向贴反了，更新后就可以下载了。
+Solution:
+DCXO晶体方向贴反了，更新后就可以下载了。
+
+==== State: Opened by: cmadmin on 25 January 2019 17:19:07 ====
+
+  == Shijun.Shu@unisoc.com On 20190125T09:11:47 (xml) ==
+HI 戴工
+
+DCXO晶体方向贴反了，更新后就可以下载了。
+
+==== State: Opened by: cmadmin on 25 January 2019 16:12:50 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00554851|[SC9863A][Waterworld][fs170][6部]menu键清除内存|步骤：点击menu键需要划到最右边
+
+现象：出现clear all才能清除
+
+分析：是否有清除球的方式
+直接点击menu就可以点击清除球直接清除
+|
+==== State: Closed by: cmadmin on 19 February 2019 00:35:25 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 28 January 2019 09:57:48 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+贵司要求使用systemui中recent功能
+Solution:
+如电话沟通，贵司目前使用SearchLauncherQuickStep，需要使用systemui中recent功能。
+目前有两种方案：
+方案一：
+贵司使用Launcher3NoQsb，然后再做以下修改：
+packages/apps/Launcher3/quickstep/AndroidManifest.xml
+... ...
+        <service
+            android:name="com.android.quickstep.TouchInteractionService"
++            android:enabled="false"
+            android:permission="android.permission.STATUS_BAR_SERVICE" >
+            <intent-filter>
+                <action android:name="android.intent.action.QUICKSTEP_SERVICE" />
+            </intent-filter>
+        </service>
+方案二：
+launcher切换为SearchLauncher：
+vendor/sprd/generic/misc/launchercfg/LauncherPackages.mk
+... ...
+        ifeq ($(strip $(TARGET_BUILD_VERSION)),gms)
+-            LAUNCHER_PACKAGE_NAME := SearchLauncherQuickStep
++            LAUNCHER_PACKAGE_NAME := SearchLauncher
+        else
+            LAUNCHER_PACKAGE_NAME := Launcher3QuickStep
+        endif
+如使用方案二，编译出不是SearchLauncher，请检查贵司功能是否配置其他launcher覆盖了SearchLauncher。
+
+==== State: Opened by: cmadmin on 25 January 2019 17:59:46 ====
+
+  == Wentong.Zhang@unisoc.com On 20190125T09:55:49 (xml) ==
+dear,
+
+如电话沟通，贵司目前使用SearchLauncherQuickStep，需要使用systemui中recent功能。
+目前有两种方案：
+方案一：
+贵司使用Launcher3NoQsb，然后再做以下修改：
+packages/apps/Launcher3/quickstep/AndroidManifest.xml
+... ...
+        <service
+            android:name="com.android.quickstep.TouchInteractionService"
++            android:enabled="false"
+            android:permission="android.permission.STATUS_BAR_SERVICE" >
+            <intent-filter>
+                <action android:name="android.intent.action.QUICKSTEP_SERVICE" />
+            </intent-filter>
+        </service>
+方案二：
+launcher切换为SearchLauncher：
+vendor/sprd/generic/misc/launchercfg/LauncherPackages.mk
+... ...
+        ifeq ($(strip $(TARGET_BUILD_VERSION)),gms)
+-            LAUNCHER_PACKAGE_NAME := SearchLauncherQuickStep
++            LAUNCHER_PACKAGE_NAME := SearchLauncher
+        else
+            LAUNCHER_PACKAGE_NAME := Launcher3QuickStep
+        endif
+如使用方案二，编译出不是SearchLauncher，请检查贵司功能是否配置其他launcher覆盖了SearchLauncher。
+
+
+请帮忙验证确认后反馈。
+
+谢谢
+
+==== State: Opened by: cmadmin on 25 January 2019 15:29:36 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|

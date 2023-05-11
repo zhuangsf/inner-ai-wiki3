@@ -1,0 +1,1316 @@
+# SPCSS00576407|[SC9863A][Waterworld][A557]红外hal层编译（Android默认的hal层代码）|红外hal层的库文件
+hardware/libhardware/modules/consumerir/
+hardware/interfaces/ir/
+然后需要在manifest.xml添加hal层定义，该定义如何添加(具体哪个文件)，
+发现编译相应的库文件后(全编)，该文件夹在编译时都没有生成/vendor/etc/vintf/,导致系统起来后内核异常|
+==== State: Closed by: waterworld on 19 April 2019 10:23:00 ====
+
+已解决，谢谢，可能是校验失败，导致vintf文件夹没生成
++PRODUCT_PACKAGES = \
++       android.hardware.ir@1.0-impl    \
++       android.hardware.ir@1.0-service \
++       consumerir.default
+改成
+ 
++PRODUCT_PACKAGES += \
++       android.hardware.ir@1.0-impl    \
++       android.hardware.ir@1.0-service \
++       consumerir.default
+
+
+==== State: Resolved by: cmadmin on 18 April 2019 19:26:03 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+需要添加在device/sprd/sharkle/common/manifest_main.xml。
+Solution:
+device/sprd/sharkle/common/manifest_main.xml
+
+==== State: Opened by: cmadmin on 18 April 2019 19:25:36 ====
+
+  == Chunlei.Liu@unisoc.com On 20190418T11:23:22 (xml) ==
+如有问题，请先电话沟通。谢谢
+
+==== State: Opened by: cmadmin on 18 April 2019 16:50:31 ====
+
+  == Chunlei.Liu@unisoc.com On 20190418T08:45:36 (xml) ==
+如电话沟通，请手动编译，请直接添加，然后去生成的manifest里面查看是否已添加成功。
+
+==== State: Opened by: waterworld on 18 April 2019 16:03:51 ====
+
+ == VersionBasedOn Changed from == 
+MOCORDROID9.0_Trunk_18C_W19.02.7_P3
+To
+MOCORDROID9.0_Trunk_18C_W19.02.7_P3
+ == ModuleName Changed from == 
+Android_APP_Setting/AudioProfile/MTP/Calculator/ScreenSaver
+To
+Android_APP_Setting/AudioProfile/MTP/Calculator/ScreenSaver
+ == Product Changed from == 
+SC9863A
+To
+SC9832E
+ == ModuleName Changed from == 
+Android_APP_Setting/AudioProfile/MTP/Calculator/ScreenSaver
+To
+
+ == VersionBasedOn Changed from == 
+MOCORDROID9.0_Trunk_18C_W19.02.7_P3
+To
+
+
+
+==== State: Opened by: waterworld on 18 April 2019 16:01:43 ====
+
+抱歉，是sp9832e_1h10_gofu 这个工程，由于这个项目有高低配(9863和9832e),是用9832ｅ,修改的是哪个文件
+
+==== State: Opened by: cmadmin on 18 April 2019 15:54:45 ====
+
+  == Chunlei.Liu@unisoc.com On 2019-04-18T07:42:05Z (json) ==
+贵司现在lunch的是那个工程，lunch 工程对应的board里面的文件对应修改。看你提的不是9863A，不应该是sharkl3.请帮忙确认，谢谢
+
+==== State: Opened by: waterworld on 18 April 2019 14:44:23 ====
+
+删除out目录，重新编译
+
+==== State: Opened by: cmadmin on 18 April 2019 14:27:20 ====
+
+  == Chunlei.Liu@unisoc.com On 2019-04-18T06:15:24Z (json) ==
+重新lunch了吗？
+
+==== State: Submitted by: waterworld on 18 April 2019 13:30:55 ====
+
+不是这个文件吧，加错误编译不报错（全编），编译的工程是sp9832e_1h10_gofu
+
+==== State: Submitted by: cmadmin on 18 April 2019 11:49:24 ====
+
+  == Chunlei.Liu@unisoc.com On 20190418T03:23:31 (xml) ==
+device/sprd/sharkle/common/manifest_main.xml
+|
+# SPCSS00576405|[SC9863A][Waterworld][FS168]【HOMO】【Hong Kong】【SmarTone】alcatel_5024i_005 Can't see other party during video call|步骤：
+make Video call with some Android handsets (e.g. LG V20). Samsung Note5 (OK), on 5024I there is no other party's pictures
+现象：
+
+分析：
+请帮忙看一下，谢谢。|
+==== State: Closed by: cmadmin on 18 May 2019 00:42:33 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 26 April 2019 19:35:48 ====
+
+  == dengjun0819@spreadst.com On 20190426T11:35:22 (xml) ==
+Dear Customer,
+
+如电话沟通,因长时间无法提供log且目前仍无法提供,此问题先关闭.后续有log再重新提交.
+
+Thanks
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+与客户电话沟通,因长时间无法提供log且目前仍无法提供,此问题先关闭.
+Solution:
+与客户电话沟通,因长时间无法提供log且目前仍无法提供,此问题先关闭.
+
+==== State: Opened by: cmadmin on 26 April 2019 19:35:45 ====
+
+Dear Customer:
+ The Issue is ReOpen and continue to process now.
+Thank you
+
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 24 April 2019 18:55:25 ====
+
+  == zengming0530@spreadst.com On 20190424T10:53:32 (xml) ==
+Dear Customer,
+
+此问题已经很长时间没有反馈log了，请及时提供．
+
+Thanks
+
+==== State: NeedInfo by: cmadmin on 22 April 2019 17:56:11 ====
+
+  == dengjun0819@spreadst.com On 20190422T08:18:38 (xml) ==
+Dear Customer,
+
+如电话沟通，请帮忙尽快提供ylog和视频以便我们继续分析．
+
+Thanks
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 11:19:43 ====
+
+  == dengjun0819@spreadst.com On 20190418T03:06:57 (xml) ==
+Dear Customer,
+
+平台无法复现此问题．
+请提供从问题发生时的视频和对应的ylog以便我们继续分析．
+
+Thanks
+(20190418T02:23:05)
+
+==== State: Opened by: cmadmin on 18 April 2019 10:30:15 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576402|[SC9863A][Waterworld][FS170M02]【六部遵义】更新了modem，ALTAN VoLTE配置的白名单方式不生效|步骤：
+
+现象：
+更新了modem，ALTAN VoLTE配置的白名单方式不生效
+
+之前提个配置白名单的cq : SPCSS00554857
+
+分析：
+您好！请帮忙分析一下！|
+==== State: Closed by: waterworld on 19 April 2019 10:07:23 ====
+
+验证ok，关闭cq.
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 12:51:27 ====
+
+  == Chencheng.Huang@unisoc.com On 2019-04-18T04:46:35Z (json) ==
+尊敬的客户您好，
+
+如邮件沟通，最新版本VoLTE白名单功能已经从AP移到了CP侧，以前在AP配置白名单的方式已失效。
+
+CP侧的白名单保存在NV文件中。后续新版本如需添加VoLTE白名单，均需加到对应的NV文件中。
+
+如添加白名单后，VoLTE注册仍失败，请帮忙保存驻网过程AP+modem log，以供后续分析，谢谢！
+(2019-04-18T02:24:34Z)
+
+==== State: Opened by: cmadmin on 18 April 2019 10:23:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 18 April 2019 10:07:43 ====
+
+ == Headline Changed from == 
+[SC9863A][Waterworld][FS170M02]【六部遵义】更新了modem，配置的白名单方式不生效
+To
+[SC9863A][Waterworld][FS170M02]【六部遵义】更新了modem，ALTAN VoLTE配置的白名单方式不生效
+ == Description Changed from == 
+步骤：
+
+现象：
+更新了modem，配置的白名单方式不生效
+配置白名单的cq : SPCSS00554857
+
+分析：
+您好！请帮忙分析一下！
+To
+步骤：
+
+现象：
+更新了modem，ALTAN VoLTE配置的白名单方式不生效
+
+之前提个配置白名单的cq : SPCSS00554857
+
+分析：
+您好！请帮忙分析一下！
+
+|
+# SPCSS00576396|[SC9832E][Waterworld][FS098][六部遵义]在前摄录像预览界面进行放大缩小有焦距调节杆，但是前摄不支持变焦。请帮忙改成不支持变焦提示语|以前提过 SPCSS00569845 ，将相机前摄照相录像状态按音量上下键提示不支持变焦，但是目前前摄录像放大缩小界面会有焦距提示，请帮忙去掉放大缩小出现的焦距调节，弹出不支持变焦提示
+
+见附件视频，请帮忙提供下修改方案，谢谢|
+==== State: Closed by: waterworld on 29 April 2019 18:06:20 ====
+
+已解决，关闭，谢谢
+
+==== State: Resolved by: cmadmin on 29 April 2019 14:49:27 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+不支持变焦提示语
+Solution:
+不支持变焦提示语
+
+==== State: Opened by: cmadmin on 29 April 2019 14:49:23 ====
+
+  == zhangfan@spreadst.com On 20190429T06:47:00 (xml) ==
+Dear customer ：
+  如沟通，问题解决，此问题关闭。
+Thanks
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 26 April 2019 17:24:44 ====
+
+  == zhangfan@spreadst.com On 20190426T09:19:01 (xml) ==
+Dear customer ：
+  请把mPreviewOverlay.resetZoomBgSeekBarVisibility();这句替换成hideZoomProcessorIfNeeded();进行验证。
+Thanks
+(20190426T06:18:41)
+
+==== State: Opened by: waterworld on 26 April 2019 11:44:49 ====
+
+你好，没有这个方法 resetZoomBgSeekBarVisibility
+
+==== State: NeedInfo by: cmadmin on 24 April 2019 10:58:29 ====
+
+  == wangsx@spreadst.com On 20190424T02:35:03 (xml) ==
+Dear Customer,
+
+  请及时反馈情况，谢谢！
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 15:58:52 ====
+
+  == wangsx@spreadst.com On 20190423T07:51:25 (xml) ==
+Dear Customer，
+
+  请合入以下patch 进行验证，有问题反馈，谢谢！
+
+diff --git a/src/com/android/camera/VideoUI.java b/src/com/android/camera/VideoUI.java
+index b67a0ba..ca854a7 100644
+--- a/src/com/android/camera/VideoUI.java
++++ b/src/com/android/camera/VideoUI.java
+@@ -283,6 +283,11 @@ public class VideoUI extends DreamUI implements PreviewStatusListener, SurfaceHo
+                 !DataModuleManager.getInstance(mActivity).getCurrentDataModule().getBoolean(Keys.KEY_DREAM_ZOOM_ENABLE_PHOTO_MODULE) || !CameraUtil.isZoomPanelEnabled()){
+             return;
+         }
++        if ((capabilities == null) || settings == null ||
++                !capabilities.supports(CameraCapabilities.Feature.ZOOM)) {
++            mPreviewOverlay.resetZoomBgSeekBarVisibility();
++            return;
++        }
+         mZoomMax = capabilities.getMaxZoomRatio();
+         // Currently we use immediate zoom for fast zooming to get better UX and
+         // there is no plan to take advantage of the smooth zoom.
+
+==== State: NeedInfo by: cmadmin on 22 April 2019 15:21:46 ====
+
+  == wangsx@spreadst.com On 20190422T06:26:40 (xml) ==
+Dear All，
+
+  如电话沟通，提示语已经正常，需要移除两指缩放过程中Zoom UI的显示。
+
+==== State: NeedInfo by: cmadmin on 22 April 2019 15:21:45 ====
+
+  == wangsx@spreadst.com On 20190422T01:58:53 (xml) ==
+Dear Customer，
+
+  是UI显示有问题吗，还请用录屏提供一下复现视频， 或者截屏图片，
+
+在图片中标出需要修改的地方，谢谢！
+
+录屏命令 如下
+adb shell screenrecord /sdcard/log.mp4
+(20190419T13:07:17)
+
+==== State: Opened by: waterworld on 19 April 2019 21:01:30 ====
+
+你好，提供的附件，在 SPCSS00569845  中已经给过，已经合入
+现在是前摄录像的时候放大缩小还有焦距调节，需要去掉，谢谢
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 11:00:36 ====
+
+  == wangsx@spreadst.com On 2019-04-19T02:49:17Z (json) ==
+Dear Customer，
+
+  请合入附件中的Samplecode_SPCSS00576396_前摄不支持变焦_wangsx.patch进行验证，
+
+有问题反馈，谢谢！
+(2019-04-18T02:00:47Z)
+
+==== State: Opened by: cmadmin on 18 April 2019 10:04:45 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576390|[SC9863A][Waterworld][FS168]【HOMO】【Hong Kong】【SmarTone】[7635285]alcatel_5024i_004 connecting tone is incorrect|步骤：
+   SmarTone HK SIM to make VoLTE call to another SmarTone HK VoLTE side, the connecting tone is incorrect.
+VoLTE call - MO call, not hong Kong ring back tone Handset should be play HongKong Ringback tone Pls refer 
+to P.9 of the OFCA documentation hkca3210.pdf
+  Type of Tone Frequency (Hz) Cadence (Second) Ringing Tone 440 + 480 0.4 sec ON / 0.2 sec OFF / 0.4 sec 
+ON / 3.0 sec OFFx
+现象：
+
+分析：
+附件有 hkca3210.pdf 文件请帮忙看一下，谢谢。|
+==== State: Closed by: cmadmin on 18 May 2019 00:42:34 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 26 April 2019 10:10:29 ====
+
+  == chengyg0921@spreadst.com On 2019-04-26T02:07:41Z (json) ==
+Dear customer
+   如电话沟通，本问题无香港环境测试，本地卡验证情况不一致。与客户沟通先关闭，后续若有其他问题则新提case，谢谢
+
+==== State: Resolved by: cmadmin on 23 April 2019 19:06:59 ====
+
+  == liujing0428@spreadst.com On 2019-04-23T11:03:24Z (json) ==
+Dear sir;
+  请在  RingBackTonePlugin.java中加入3组
+定义下：
+    private static final String HK_MCCMNC = "xxx";
+    private static final String HK_MCCMNC1 = "xxx";
+    private static final String HK_MCCMNC2 = "xxx";
+如下：
+    public boolean isHKNetwork() {
+        Call call = mCallsManager.getForegroundCall();
+        if (call != null) {
+            int slotId = TelecomUtils.getSlotIdForPhoneAccountHandle(
+                    mContext, call.getTargetPhoneAccount());
+            String netWorkOperator = mTelephonyManager.getNetworkOperatorForPhone(slotId);
+            Log.d(TAG, "isHKNetwork netWorkOperator: " + netWorkOperator+" slotId: "+slotId);
+            if (!TextUtils.isEmpty(netWorkOperator) && (netWorkOperator.startsWith(HK_MCCMNC)
+                || netWorkOperator.startsWith(HK_MCCMNC1) || netWorkOperator.startsWith(HK_MCCMNC2))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+==== State: Resolved by: cmadmin on 23 April 2019 10:11:13 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+  == liujing0428@spreadst.com On 20190423T02:06:00 (xml) ==
+Dear customer
+   请取走验证，有其他疑问，请联系我们，谢谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+增加HK的条件
+Solution:
+增加HK的条件
+
+==== State: Opened by: cmadmin on 23 April 2019 10:11:01 ====
+
+  == liujing0428@spreadst.com On 20190423T02:05:00 (xml) ==
+尊敬的客户您好：
+    patch已经放在：
+# SPCSS\2019-2\SPCSS00576390\PatchesForCUS\
+下了。
+    请取出验证。
+几个注意点：
+    private static final String HK_MCCMNC = "xxx";
+xxx需要填充您咨询好的运营商的mccmnc，这个一定要沟通清楚是哪个。我本地用中部该过移动debug，无法验证，因为移动的回铃音是modem播放的。所以我加了之后，并不会从我所写的AP测播放；若强行播放，则会听到两种一种modem侧，一种我们本地AP播放的。
+    所以要把那个不能从网络端播放的mccmnc放在xxx里，进行测试才会OK。请知谢谢。
+
+另外关于wav资源的添加：您需要放在如下目录：
+vendor/sprd/plugins/packages/services/Telecomm/RingbackTone/res/raw
+
+注意这个hkringtone_v2.wav  一定要小写。大写编译不过，所以一定该小写字母。
+请知，谢谢，
+
+==== State: Opened by: cmadmin on 22 April 2019 15:22:16 ====
+
+  == Baoning.Shan@unisoc.com On 20190422T07:12:10 (xml) ==
+Hi Heng,
+
+HK tont的定制需求，之前和Hongyang修改过，只要AP关闭modem tone, 播放HK反馈给的TONE格式就好.
+
+之前都已实现过; MODEM当前版本已经支持响应AT接口.
+
+==== State: Opened by: cmadmin on 22 April 2019 15:22:13 ====
+
+  == Bruce.Jiang@unisoc.com On 20190422T06:52:20 (xml) ==
+cp侧无法修改tone音
+
+==== State: Opened by: cmadmin on 22 April 2019 15:22:10 ====
+
+  == Bruce.Jiang@unisoc.com On 20190422T06:51:35 (xml) ==
+cp侧无法修改tone音
+
+==== State: Opened by: waterworld on 22 April 2019 11:51:39 ====
+
+你好，
+客户指的是Ring back tone
+协议里指的就是对方响铃后，听到的回铃音，即嘟嘟声。
+对方通话中的那个回铃音叫busy tone.
+
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 20:09:24 ====
+
+  == liujing0428@spreadst.com On 20190419T12:06:48 (xml) ==
+Dear customer.
+
+    有几种音量提示，可让客户选择到底是哪种。
+
+是否是打电话给对方，对方响铃了，然后本端播放的嘟嘟音；
+还是对方正在通话中，提示的等待音等。
+
+目前我这边比较倾向与对方响铃，听到的嘟嘟音，还请帮忙让客户确认清楚，在进行对应修改，否则改错地方，还浪费时间，谢谢。
+(20190419T11:32:02)
+
+==== State: Opened by: waterworld on 19 April 2019 19:27:10 ====
+
+附件有要替换的铃声参考，谢谢
+
+==== State: Opened by: waterworld on 19 April 2019 18:50:39 ====
+
+请帮忙看一下connecting tone的音频文件是在哪里替换的，根据客户需求只要替换铃声资源即可，谢谢。
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 16:50:27 ====
+
+  == liujing0428@spreadst.com On 20190418T08:43:58 (xml) ==
+Dear customer.
+    这个没有log。请帮忙与客户沟通，到底是何种问题？   如果不好描述，请帮忙上传一份userdebug版本的AP+CP日志  以及对应的视频，  就是通过视频我们可以看下到底是何种问题了，谢谢。
+(20190418T02:23:45)
+
+==== State: Opened by: cmadmin on 18 April 2019 10:29:48 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576387|[SC9863A][Waterworld][FS170][SC9863A][Waterworld][FS170][6部][Hisense]播放录音文件时只显示进度条不显示时间长短|步骤：进入收音机，点击更多菜单-已保存的录音
+
+现象：播放录音文件时只显示进度条不显示时间长短
+
+分析：播放录音文件应显示时间进度
+|
+==== State: Closed by: qijia.yu on 24 April 2019 21:53:06 ====
+
+wontfix
+
+==== State: NeedInfo by: cmadmin on 24 April 2019 16:39:56 ====
+
+  == Qijia.Yu@unisoc.com On 20190424T08:37:11 (xml) ==
+张工，
+如沟通，
+FM radio播放录音本身就是个奇怪的case，现在fm radio可以播放录音，是没有时间显示的，因为fm radio主要不是做播放录音用的，原生设计如此，我们不认为这是个bug，问题请关闭
+(20190423T10:00:15)
+
+==== State: Opened by: cmadmin on 23 April 2019 17:03:18 ====
+
+  == diaomx0120@spreadst.com On 20190423T08:58:05 (xml) ==
+Hi sandy
+
+根据客户的描述这是个新的需求在18c的分支上，请提供需求文档，并联系客户让其填充完整，再流转至RAT进行评估，感谢。
+
+==== State: Opened by: cmadmin on 19 April 2019 09:14:11 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576372|[SC9832E][Waterworld][FS098][六部][遵义]进入情景模式，选择静音，状态栏上显示勿扰图标，勿扰模式开启|静音模式只是来电不响铃吧，为啥会默认打开勿扰模式呢，并且关闭勿扰模式会自动退出静音模式|
+==== State: Closed by: waterworld on 19 April 2019 17:38:41 ====
+
+好的，了解了，谢谢，先关闭
+
+==== State: Resolved by: cmadmin on 18 April 2019 10:49:28 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+原生设计如此，不做修改
+Solution:
+原生设计如此，不做修改
+
+==== State: Opened by: cmadmin on 18 April 2019 10:49:24 ====
+
+  == zhuhao0701@spreadst.com On 20190418T02:33:24 (xml) ==
+尊敬的客户，您好：
+  如电话沟通，后续贵司还有其他问题还请提新的CQ,该问题先走Fixed流程。
+谢谢.
+
+==== State: Opened by: cmadmin on 18 April 2019 10:07:37 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 18 April 2019 09:46:01 ====
+
+请问贵司的勿扰模式实际就是静音模式是吧？
+|
+# SPCSS00576358|[SC6531E][Waterworld][A320]6531E项目SIM容量更改问题|Dear 展讯：
+
+我司一个项目SIM容量是显示500，客户要求更改到300，请问这个是SIM存储容量能改吗？
+若能改，改哪里呢，谢谢|
+==== State: Closed by: cmadmin on 10 May 2019 00:36:18 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 18 April 2019 11:18:21 ====
+
+  == Stefano.Chu@unisoc.com On 20190418T03:04:44 (xml) ==
+本cq走关闭流程，后续有其它问题请再提交新cq支持，谢谢
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+SIM卡联系人数量调整
+Solution:
+调整宏 MMIPB_SIM_MAX_RECORD_NUM
+
+==== State: Opened by: waterworld on 18 April 2019 10:42:26 ====
+
+Dear 展讯：
+
+感谢支持，已解决，这笔CQ可以关闭！
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 09:46:55 ====
+
+  == Stefano.Chu@unisoc.com On 2019-04-18T01:42:58Z (json) ==
+sim卡联系人数量，请调整 MMIPB_SIM_MAX_RECORD_NUM @ mmipb_common.h 试下, 谢谢
+(2019-04-18T01:24:47Z)
+
+==== State: Opened by: cmadmin on 18 April 2019 09:27:27 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576357|[SC7731E][Waterworld][FS280][遵义][六部] 提供OTA server setup guide|步骤：客户不要内置广升FOTA，也不要使用google的GOTA，也没有任何FOTA相关的apk提供
+        客户要自己部署OTA升级，使用一个叫 Lexibook的OTA server。
+
+现象：客户以前的做的MTK手机，和瑞芯微的平板都提供过这种OTA server setup guide，
+        所以现在希望提供展讯的OTA server setup guide，
+
+分析：这边不是很理解这种内容，向客户要了一份以前 瑞芯微 提供的资料"OTA搭建说明.rar"，已经上传CQ附件；
+        请展讯帮忙处理一下，若有疑问可沟通，谢谢！|
+==== State: Closed by: waterworld on 06 May 2019 17:11:18 ====
+
+3Q
+
+==== State: Resolved by: cmadmin on 19 April 2019 10:19:37 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+我司并没有手机中客户端和服务器的产品服务，即我司只有ota本地升级的功能，无线链条没有。
+Solution:
+还请自行在手机中加入app以及与服务器交互所需配置，另自行配置服务器端软件。
+
+==== State: Opened by: cmadmin on 19 April 2019 10:19:34 ====
+
+  == Xianglu.Wu@unisoc.com On 2019-04-19T02:13:11Z (json) ==
+您好：
+
+我司并无手机客户端和服务器全套的无线ota链路。
+
+从您附的文档看，首先服务器运行的服务器程序是叫OtaUpdateServer.jar，这个应该是从代码中编译而来，且手机为了与服务器交互，须能编译出客户端以及加入属性值等配置。
+此两项我司皆没有，且无此方面操作经验，恕无法提供指导。
+
+还请贵司自行嵌入贵司客户所需手机和服务器两端软件。
+
+==== State: Opened by: cmadmin on 18 April 2019 19:07:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+
+==== State: Submitted by: waterworld on 18 April 2019 14:27:48 ====
+
+展讯您好，请问这个事情有在处理了吗？
+|
+# SPCSS00576352|[SC9863A][Waterworld][FS171M90-B10][六部][遵义] 您好！ 使用VOLTE通话是，如何让状态栏信号图标显示HD的图标？|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 23 April 2019 17:14:05 ====
+
+验证通过  问题关闭 谢谢
+
+==== State: Resolved by: cmadmin on 23 April 2019 14:13:45 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+==== State: Resolved by: cmadmin on 18 April 2019 19:34:05 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:通话时更新为HD
+
+[2.Resolution        ]:在phonelistener中监听，当状态为offhook时，更新为HD
+
+
+
+==== State: Opened by: cmadmin on 18 April 2019 17:28:16 ====
+
+  == liujing0428@spreadst.com On 20190418T09:20:20 (xml) ==
+Dear customer
+    尊敬的客户，patch已经放在附件了，其中：
++    public static final int ICON_HD = R.drawable.stat_sys_volte;
++    public static final int ICON_HD_IN_CALL = R.drawable.stat_sys_hd;
+
+
+ICON_HD是原声的VOLTE图标。
+ICON_HD_IN_CALL这个您可以根据需要自己添加。
+
+然后  如何判断是否在通话中，也可用
++    private void isInCall(int state) {
++        if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
++            Log.d(mTag, "customer requirement, that in VoLte call show HD");
++            mShowHD = true;
++        }
++    }
+
+
+通过实时监听获取是否显示HD，请debug，谢谢。
+
+==== State: Opened by: cmadmin on 18 April 2019 09:56:33 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576351|[SC9863A][Waterworld][FS171][6部][遵义]客户反馈情景模式【标准】，全部勾选提示后，重置所有情景模式的默认值未生效|步骤：
+路径：设置下，情景模式，标准模式，编辑
+操作：全部勾选提示音的选项框【提示音默认是都不勾选的】，重置所有情景模式的默认值。
+
+现象：
+重置后，情景模式下【标准】，所有提示音的选项框是不勾选，但插拔数据线依然存在提示音。
+
+分析：
+希望重置之后，所有提示音的选项框是不勾选，且插拔数据线无提示音。
+
+附件，已经提供相关的视频和LOG，请帮忙分析，谢谢！|
+==== State: Closed by: waterworld on 22 April 2019 16:38:02 ====
+
+已经关闭，谢谢
+
+==== State: Resolved by: cmadmin on 22 April 2019 15:20:06 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:客户自己修改，只是更改preference状态，并没有更新数据库，更改Global值
+
+[2.Resolution        ]:更新数据库，更改Global值
+
+
+
+==== State: Opened by: waterworld on 19 April 2019 17:55:09 ====
+
+验证生效，谢谢！
+
+==== State: Opened by: cmadmin on 19 April 2019 11:15:59 ====
+
+  == zhuhao0701@spreadst.com On 2019-04-19T03:06:36Z (json) ==
+追加，frameworks_base.diff和vendor_AudioProfile.diff是zhuhao0701_2.zip里的
+
+==== State: Opened by: cmadmin on 19 April 2019 11:15:56 ====
+
+  == zhuhao0701@spreadst.com On 2019-04-19T03:05:04Z (json) ==
+尊敬的客户，您好：
+
+   请您执行以下修改，再整编进行验证，且当第一次打开设置时使用命令adb shell settings get global charging_sounds_enabled查看返回值，并反馈给我们，请尽快验证并反馈结果，如有问题请及时联系我们：
+   1.在路径frameworks/base/packages/SettingsProvider下参考合入附件中的frameworks_base.diff。
+   2.在路径vendor/sprd/platform/packages/apps/AudioProfile下参考合入附件中的vendor_AudioProfile.diff
+   
+谢谢.
+
+==== State: Opened by: waterworld on 19 April 2019 09:20:05 ====
+
+验证是失败，重置未能生效
+
+==== State: Resolved by: cmadmin on 18 April 2019 16:14:48 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:客户自己修改，只是更改preference状态，并没有更新数据库，更改Global值
+
+[2.Resolution        ]:更新数据库，更改Global值
+
+
+
+==== State: Opened by: cmadmin on 18 April 2019 16:05:06 ====
+
+  == zhuhao0701@spreadst.com On 20190418T07:56:21 (xml) ==
+尊敬的客户，您好：
+   请您执行以下修改：
+   1.在路径frameworks/base下参考合入附件中的frameworks_base.diff。
+   2.在路径vendor/sprd/platform/packages/apps/AudioProfile下参考合入附件中的vendor_AudioProfile.diff
+   请尽快验证并反馈结果，如有问题请及时联系我们。
+谢谢.
+
+==== State: Opened by: waterworld on 18 April 2019 11:35:58 ====
+
+Audioprofile整包，已经提在附件中，请帮忙分析，谢谢！
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 11:18:15 ====
+
+Dear Customer:
+  We need more information with this Issue, please renew and reopen it.(20190418T01:37:37)
+Thank you.
+(20190418T01:37:37)
+
+==== State: Opened by: cmadmin on 18 April 2019 11:18:12 ====
+
+  == zhuhao0701@spreadst.com On 20190418T02:54:27 (xml) ==
+尊敬的客户，您好：
+  如电话沟通，因贵司修改过相关代码，请将与其相关修改过的代码打包发送过来，也请将/vendor/sprd/platform/packages/apps/AudioProfile整个包发送过来。
+谢谢.
+|
+# SPCSS00576347|[SC9820E][Waterworld][A356][1部][CF13][KAIOS][Erbium] [facebook和google应用闪退]|[Pre condition to reproduce the case]
+ 256内存
+[Test Step]
+1.进入facebook或google应用
+
+[Expect Result]
+ 1.会出现闪退现象
+[Actual Result]
+ 1.能稳定使用app，不出现闪退现象
+
+log见附件《facebook和google应用闪退的问题（LOG）.zip》|
+==== State: Closed by: cmadmin on 30 January 2020 01:03:58 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 07 January 2020 18:44:15 ====
+
+  == Selina.Wang@unisoc.com On 2020-01-07T10:38:45Z (json) ==
+KAIOS问题由Kai处理，统一关闭。
+
+==== State: Opened by: cmadmin on 26 August 2019 14:40:03 ====
+
+  == Auto@kaiostech.com On 2019-08-26T06:36:29Z (json) ==
+=============== yu.zheng@kaiostech.com ==== 2019-08-26 14:21:42 ========================
+close in KaiOS side
+
+==== State: Opened by: cmadmin on 26 August 2019 14:40:00 ====
+
+  == Auto@kaiostech.com On 2019-08-26T06:36:04Z (json) ==
+Change Status From Assigned to Root-Caused
+
+==== State: Opened by: cmadmin on 22 April 2019 15:19:57 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576344|[SC9863A][Waterworld][ww859][18部]GTS测试模块GtsTetheringTestCases|步骤：
+
+现象：
+
+分析：
+Dear Sprd,
+   GTS该模块报了下面几项错误，是否都同一个原因引起，麻烦帮忙分析如何处理
+   com.google.android.tethering.gts.ProvisioningTest#testRunSilentBluetoothTetherProvisioningAndEnable
+   com.google.android.tethering.gts.ProvisioningTest#testRunSilentWifiTetherProvisioningAndEnable
+   com.google.android.tethering.gts.ProvisioningTest#testRunUiBluetoothTetherProvisioningAndEnable
+   com.google.android.tethering.gts.ProvisioningTest#testRunUiWifiTetherProvisioningAndEnable
+   com.google.android.tethering.gts.ProvisioningTest#testSilentInvalidTetherTypeTest
+   com.google.android.tethering.gts.WifiApTest#testSetApConfiguration
+log见附件
+感谢！
+   com.google.android.tethering.gts.WifiApTest#testSetApConfiguration_invalidConfigNotSet|
+==== State: Closed by: waterworld on 18 April 2019 17:23:45 ====
+
+Dear Sprd,
+   恢复出厂设置pass,感谢支持
+
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 11:18:07 ====
+
+  == Seth.Lu@unisoc.com On 20190418T02:57:23 (xml) ==
+04-16 13:22:24 I/ModuleListener: [1/7] com.google.android.tethering.gts.ProvisioningTest#testRunSilentBluetoothTetherProvisioningAndEnable fail:
+java.lang.SecurityException: Neither user 10025 nor current process has android.permission.MANAGE_USB.
+	at android.os.Parcel.createException(Parcel.java:1950)
+	at android.os.Parcel.readException(Parcel.java:1918)
+	at android.os.Parcel.readException(Parcel.java:1868)
+	at android.net.IConnectivityManager$Stub$Proxy.stopTethering(IConnectivityManager.java:1703)
+	at android.net.ConnectivityManager.stopTethering(ConnectivityManager.java:2308)
+
+本地测试报告未出现此情形, 帮忙回复出厂设置后单测看是否出现类似现象, 如果同现象帮忙提供单测log分析. Thanks.
+(20190418T01:37:55)
+
+==== State: Opened by: cmadmin on 18 April 2019 09:40:40 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576343|[SC9863A][Waterworld][ww859][18部]GTS测试项GtsSimAppDialogTestCases|步骤：
+
+现象：
+
+分析：
+Dear Sprd，
+  GTS该项测试报了com.google.android.simappdialog.gts.InstallCarrierAppActivityTest#
+testActivityAndNotificationShown_downloadPressed
+  com.google.android.simappdialog.gts.InstallCarrierAppActivityTest#
+testActivityAndNotificationShown_notNowPressed
+  com.google.android.simappdialog.gts.InstallCarrierAppActivityTest#
+testNotificationOnlyDuringSetupWizard这三个错误，请告知如何解决。
+log见附件
+感谢！|
+==== State: Closed by: waterworld on 24 April 2019 15:26:57 ====
+
+Dear Sprd，
+   问题已解决，感谢支持
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 10:41:20 ====
+
+  == Seth.Lu@unisoc.com On 2019-04-23T02:34:53Z (json) ==
+Dear Customer
+请问是否还有其他问题, 如无问题还请帮忙关闭.
+Thanks.
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 11:42:26 ====
+
+  == Seth.Lu@unisoc.com On 20190419T03:15:23 (xml) ==
+04-16 13:22:05.383  3149  3163 I TestRunner: ----- begin exception -----
+04-16 13:22:05.384  3149  3163 I TestRunner: java.lang.SecurityException: Neither user 10025 nor current process has android.permission.MODIFY_PHONE_STATE.
+04-16 13:22:05.384  3149  3163 I TestRunner: 	at android.os.Parcel.createException(Parcel.java:1950)
+
+此种权限fail 本地测试也未出现过, 帮忙确认一下回复出厂设置后测试此项是否还有类似情形, 如果还是fail, 帮忙提供单测log 以利分析. 
+
+thanks.
+(20190419T03:02:00)
+
+==== State: Opened by: waterworld on 19 April 2019 10:32:55 ====
+
+Dear Sprd,
+    该权限代码已经有了
+感谢！
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 10:31:04 ====
+
+  == caoyang1220@spreadst.com On 2019-04-19T02:24:48Z (json) ==
+Dear customer,
+  请帮忙确认一下贵司代码packages/services/Telephony/AndroidManifest.xml中是否有
+<uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+
+谢谢！
+(2019-04-19T01:54:09Z)
+
+==== State: Opened by: cmadmin on 19 April 2019 09:58:40 ====
+
+  == caoyang1220@spreadst.com On 2019-04-19T01:54:09Z (json) ==
+Dear customer,
+
+从ｌｏｇ看，是调用refreshUiccProfile()接口的应用缺少android.permission.MODIFY_PHONE_STATE权限：
+
+java.lang.SecurityException: Neither user 10025 nor current process has android.permission.MODIFY_PHONE_STATE.
+
+代码中refreshUiccProfile是需要该权限的
+
+2803    @TestApi
+2804    @RequiresPermission(android.Manifest.permission.MODIFY_PHONE_STATE)
+2805    public void refreshUiccProfile() {
+2806        try {
+2807            ITelephony telephony = getITelephony();
+2808            telephony.refreshUiccProfile(mSubId);
+2809        } catch (RemoteException ex) {
+2810            Rlog.w(TAG, "RemoteException", ex);
+2811        }
+2812    }
+
+==== State: Opened by: cmadmin on 18 April 2019 09:44:06 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576340|[SC9863A][Waterworld][ww859][18部] GTS测试GtsSearchHostTestCases|步骤：
+
+现象：
+
+分析：
+Dear Sprd，
+   GTS测试报错com.google.android.search.gts.SearchHostTest#testHotword，google搜索小部件已经显示在桌面了。
+请告知如何解决。
+log见附件
+感谢！|
+==== State: Closed by: waterworld on 24 April 2019 15:26:23 ====
+
+Dear Sprd,
+   问题已解决，感谢支持
+
+==== State: NeedInfo by: cmadmin on 23 April 2019 15:10:09 ====
+
+  == Seth.Lu@unisoc.com On 20190423T07:00:46 (xml) ==
+04-18 16:17:24 I/ModuleListener: [1/1] com.google.android.search.gts.SearchHostTest#testHotword fail:
+java.lang.AssertionError: Unable to execute because service account is not authorized to access information for this device. Please verify device properties are set correctly and account permissions are configured to the Business Logic Api..
+
+新log 显示与 1051740 相同, 此种fail 与机器无关, 与测试环境较相关, 帮忙确认测试电脑是否有部属APE_API_KEY.
+如果部属后测试仍fail, 先确认翻墙网路是否稳定, 项目是否有加入 google APFE 白名单, 这部份需贵司询问认证中心协助.
+
+先修正此fail 再确认看是否还有其他问题.
+
+Thanks.
+
+==== State: NeedInfo by: cmadmin on 19 April 2019 18:03:13 ====
+
+  == Sam.Chiu@unisoc.com On 2019-04-19T09:58:39Z (json) ==
+sprd的版本没有报此问题，且其他的客户也无报此问题，贵司是否有改系统的权限，可否重置手机单测试是否会passed?
+如果不行可否退版本确认是否能passed?
+(2019-04-19T09:28:18Z)
+
+==== State: Opened by: cmadmin on 19 April 2019 17:37:31 ====
+
+  == renkang0609@spreadst.com On 20190419T09:28:18 (xml) ==
+请GTS同事看下，谢谢！
+
+==== State: Opened by: waterworld on 18 April 2019 17:06:04 ====
+
+Dear Sprd,
+   google搜索已经是打开了的，单项还是测不过，log见附件
+感谢！
+
+==== State: Opened by: cmadmin on 18 April 2019 09:40:35 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576335|[SC9863A][Waterworld][ww859][18部] GTS测试GtsPlacementTestCases|步骤：
+
+现象：
+
+分析：
+Dear Sprd,
+   GTS测试报错com.google.android.placement.gts.CoreGmsAppsTest#testCoreGmsAppsPreloaded
+GMSCore已经编译到了，请告知如何处理。
+log见附件
+感谢！|
+==== State: Closed by: cmadmin on 10 May 2019 00:36:20 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 18 April 2019 10:40:25 ====
+
+Dear Customer:
+  The Issue is duplicated with another: SPCSS00576288, Please Check it and Look at the processing.
+  == Seth.Lu@unisoc.com On 2019-04-18T02:28:55Z (json) ==
+同 576288 集中追踪.
+
+*** This bug has been marked as a duplicate of bug 1051740 ***
+Thank you.
+
+==== State: Opened by: cmadmin on 18 April 2019 09:40:32 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576331|[SC9863A][Waterworld][ww859][18部] GTS测试GtsNetStatsHostTestCases|步骤：
+
+现象：
+
+分析：
+Dear Sprd
+   GTS测试项报错com.google.android.gts.netstats.NetStatsHostTest#testASetThreadStatsUid提示java.lang.AssertionError: on-device tests failed:
+请告知如何解决。
+log见附件
+感谢！|
+==== State: Closed by: waterworld on 18 April 2019 17:24:31 ====
+
+Dear Sprd,
+   单项复测pass,感谢支持
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 10:40:23 ====
+
+  == Seth.Lu@unisoc.com On 2019-04-18T02:30:51Z (json) ==
+04-16 13:19:35 I/BaseHostJUnit4Test: Test com.google.android.netstats.gts.test.SetThreadStatsUidTest#testSendSocketWithoutUidTag: FAILURE
+04-16 13:19:35 W/BaseHostJUnit4Test: org.junit.runners.model.TestTimedOutException: test timed out after 600000 milliseconds
+	at java.lang.Object.wait(Native Method)
+	at java.lang.Thread.parkFor$(Thread.java:2137)
+	at sun.misc.Unsafe.park(Unsafe.java:358)
+	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2059)
+
+同常不会出现此项fail, 帮忙确认一下测试环境翻墙网路是否稳定, 回复出厂设置单测数次是否必现fail, 如果必现帮忙提供单测log 以利分析.
+Thanks.
+(2019-04-18T01:39:12Z)
+
+==== State: Opened by: cmadmin on 18 April 2019 09:44:02 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00576319|[SC9863A][Waterworld][FS168][TCL][XM]TMC生产反馈LTE APC校准误测，重置校准参数后测试OK。|帮忙看一下这个问题有没有办法优化工具解决，或者有没方式规避，碰到有偏差的工具能否自动扫描参数？
+LOG如附件，
+现在TMC做法是第一块板测试时会重置校准参数再校准，但还是有部份主板会出现不良。出现问题的频段也不确定，都有可能。
+|
+==== State: Closed by: waterworld on 28 April 2019 13:45:21 ====
+
+关闭。
+
+==== State: Resolved by: cmadmin on 28 April 2019 11:37:17 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+扫描的校准参数存在差异，导致误测产生。
+Solution:
+挑选PCBA进行扫描，全工站使用同一PCBA进行扫描。
+
+==== State: Opened by: cmadmin on 28 April 2019 11:37:06 ====
+
+  == Xiaoguang.Du@unisoc.com On 2019-04-28T03:02:32Z (json) ==
+Dear customer：
+   如电话沟通，该CQ关闭。
+
+==== State: Opened by: cmadmin on 28 April 2019 11:37:03 ====
+
+  == Xiaoguang.Du@unisoc.com On 2019-04-28T03:02:25Z (json) ==
+Dear customer：
+   如电话沟通，该CQ关闭。
+
+==== State: Opened by: cmadmin on 28 April 2019 10:20:06 ====
+
+  == Xiaoguang.Du@unisoc.com On 20190428T01:55:19 (xml) ==
+从LOG看，就是因为最初测试时候的扫描结果有问题，导致再APC Gain校准时候的值就有偏差，在APC补偿校准的时候，出问题的点第一次测试功率是2.318726E+000，正常的处理是往和期望功率偏差减小的方向去调整，但是因为之前功率校准就有问题，导致往反方向在做补偿，从几次重试LOG来看，控制字是逐渐增加，功率逐渐降低，到0x270。所以请确保做扫描测试的机器是金机
+
+==== State: Opened by: waterworld on 24 April 2019 17:00:35 ====
+
+RF不是指标不良，是物料上的误差，这个不管怎么调试都是存在的，而且现在调试都是尽量保留了余量的，如果指标有问题，重新扫描我理解也是过不了的。
+现在针对此问题，你们工具端也没有更好的优化方案，所以想有FDT的SCAN，时间先不考虑了，这个让TCL自己去评故可行性。
+
+==== State: Opened by: cmadmin on 24 April 2019 16:31:02 ====
+
+  == Able.Pei@unisoc.com On 2019-04-24T08:24:44Z (json) ==
+Dear Customer：
+    目前Simba工具就是使用如下方式运行的。
+1、勾选此模式后，工具打开首次校准默认用重置扫描参数慢校，然后保存下这次参数到工具中，后面就参考此次参数正常快校；
+
+2、勾选此模式后，全部校准都用慢校方法校准。
+如你所述其并非COMMON校准（慢校），而是FDT的SCAN，这样会增加较多的时间。
+至于同一套SCAN数据无法FDT校准所有主板 Issue，建议工厂找到1pcs SCAN ，1pcs在此scan环境中FDT校准fail的主板（反之亦然），RF可以针对此两片差异较大主板看看能否在RF方面优化。
+
+以上请知晓！
+
+==== State: Opened by: waterworld on 24 April 2019 16:14:55 ====
+
+尊敬的展讯，你好！
+
+    我们用5片主板取平均值做为校准参考参数，TCL产线验证LTE APC误测还是存在，误测率0.9%（4/449）从数据看都是LTE B3，附件是误测log，请深入分析下。
+
+==== State: Opened by: waterworld on 20 April 2019 09:49:27 ====
+
+针对此CQ问题，看工具上是否能增加两个模式校准：
+1、勾选此模式后，工具打开首次校准默认用重置扫描参数慢校，然后保存下这次参数到工具中，后面就参考此次参数正常快校；
+2、勾选此模式后，全部校准都用慢校方法校准。
+
+
+==== State: Opened by: waterworld on 19 April 2019 12:43:50 ====
+
+fail数据如附件，B28B APC不良，为什么会忽然之间数据变大那么多，重置扫描参数校准又是PASS的？如附件的563行的数据,从0.867到-1.457，中间出现个-51.759，理论上PA线性不可能这么个特性，可能还是程序计算哪里出问题了。
+563	20	0x79	7.098	6	20	0x270	-51.759	5.5	20	0x270	-51.22	5.5
+
+
+==== State: Opened by: cmadmin on 18 April 2019 13:19:53 ====
+
+  == Xiaoguang.Du@unisoc.com On 20190418T05:16:44 (xml) ==
+Dear customer：
+  如沟通，工厂先尝试将良率好的工站的校准文件copy到误测较多的工站来确认是否有改善，继续跟进。
+
+==== State: Opened by: cmadmin on 18 April 2019 10:28:46 ====
+
+  == Xiaoguang.Du@unisoc.com On 20190418T02:22:29 (xml) ==
+Dear customer：
+   如电话沟通：
+   可以取产线的PCBA扫描出来的校准参数和测试失败之后重新扫描的校准参数进行对比，这样更能说明一致性问题。
+   扫描的校准参数在：工具目录下，sys文件夹内。
+
+==== State: Opened by: cmadmin on 18 April 2019 10:04:17 ====
+
+  == Xiaoguang.Du@unisoc.com On 20190418T01:59:17 (xml) ==
+补充：
+   从数据上来进行分析，可查看Primary_PCC_Original.csv内相关参数：
+
+   测试PASS的PCBA参数如下：
+            控制字      MearPower    TargetP
+            0xa9	5.379	      5.5	
+            0xa0	5.661	      5.5
+
+
+    第一次Fail的校准测量结果：
+            0xe0	-4.963	     5.5	
+
+   测试失败时校准参数校准出来的控制字和测试pass的控制字相差巨大，导致功率偏差过大校准失败。所以有两种方法来解决：
+   1，重置校准参数，相当于找基准参考，基准如果找不好，批量测试肯定出问题；
+   2，PCBA相同控制字对应功率是否差异过大，若差异过大，就说明物料一致性差导致。
+
+==== State: Opened by: cmadmin on 18 April 2019 09:12:19 ====
+
+  == Xiaoguang.Du@unisoc.com On 2019-04-18T01:02:23Z (json) ==
+Dear customer：
+    昨天下午已经跟TCL 测试工程师（邓喜余）沟通过这个问题，而且在第一次量产跟进时已经确认过此问题，重置扫描参数之后后续无任何LTE APC的误测，这个专门跟王鹏确认过。
+    关于此次生产时出现的误测情况，如附件分布，邓工也同时做了查询，全部集中在个别工站。即选取的参考板差异大导致相关校准异常。
+    目前较优的处理方案即在每次打开平台的时候重新扫描校准参数，且需确认当时夹具接触情况是否稳定。这一点也正是产线和工程技术人员需要保证的。
+
+    碰到有偏差的工具能否自动扫描参数？
+    ----工具本身就有retry次数，若有偏差就自动扫描，效率将大大降低。
+    所有校准方案都会有局限性，若相差过大，校准时间肯定会加长，若相差较小，参数配置OK，则校准时间缩短，这是取舍平衡问题。
+    所以，最优的处理方案就是扫描参数时选取的PCBA+当前工站夹具工站保证接触性和其他环境正常。
+    如附件邓工提供的LTE 误测分布，分布跟工站相关。
+Attachments Shared Path and FTP Path:
+\\10.29.1.12\CQ\SPCSS\2019-2\SPCSS00576319
+OR in FTP Server:
+ftp://cqlog:2xf45xSm@ftp.unisoc.com/SPCSS/2019-2/SPCSS00576319
+\\10.29.1.12\CQ\SPCSS\2019-2\SPCSS00576319\PatchesForCUS\
+|
+# SPCSS00576318|[SC7731E][Waterworld][FS286][遵义][六部] 重写TEE与google key|步骤：巴西客户售后想擦除并重写TEE和Google Key信息，请问有什么方法可以实现？ 比如板子上换CPU或是换memory
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 04 May 2019 00:34:42 ====
+
+尊敬的客户，NeedInfo状态超过15个工作日贵司未有状态更新和反馈的问题，现做关闭处理。如果还有其他问题，请重新提交CR或者联系对应的TAM处理。 Thanks
+
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 13:46:36 ====
+
+  == Xiaojie.Liu@unisoc.com On 2019-04-18T05:42:06Z (json) ==
+Dear 陈信
+请通过Isupport搜索PATCH00511961_20180912_V1.zip
+谢谢！
+
+==== State: NeedInfo by: cmadmin on 18 April 2019 09:46:48 ====
+
+  == zhuxk@spreadst.com On 2019-04-18T01:43:31Z (json) ==
+Hi:
+1:该版本不支持多次部署keybox功能，如果需要重复部署keybox，请联系CPM，合入UNISOC的common PATCH。
+PTACH名字应该是部署keybox导致概率性gts测试失败。
+
+2:如果想重写ROTPK，只能更换CPU & EMMC后再次部署了。
+
+以上，请知
+(2019-04-18T01:34:28Z)
+|

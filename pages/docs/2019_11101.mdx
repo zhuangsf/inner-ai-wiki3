@@ -1,0 +1,1406 @@
+# SPCSS00551087|[SC9820A][Waterworld][FM505][XM]nand项目切换到emmc项目|我司之前有2个nand项目，对应的board分别为c110(不带GPS、BT、WLAN、WCN)和c210(带GPS、BT、WLAN、WCN)，
+现在需要切换到emmc项目过去，请问对应的board分别是哪个？要做那些修改？|
+==== State: Closed by: waterworld on 22 January 2019 14:29:05 ====
+
+Dear SPRD：
+该问题已解决，关闭该CQ
+
+==== State: Resolved by: cmadmin on 17 January 2019 12:53:03 ====
+
+  == Andy.Li@unisoc.com On 2019-01-17T04:50:53Z (json) ==
+尊敬的客户：
+
+       我会提供一个去除wcn的文档，可以按照文档去做，有问题及时联系我。
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:nand项目切换到emmc项目
+
+[2.Resolution        ]:nand项目切换到emmc项目
+
+
+
+==== State: Opened by: waterworld on 17 January 2019 11:24:43 ====
+
+Dear SPRD：
+更新打包脚本以后，WiFi、蓝牙、gps都可以打开了，麻烦帮忙提供下不带WCN的配置，谢谢。
+
+==== State: Opened by: cmadmin on 17 January 2019 10:48:23 ====
+
+  == Andy.Li@unisoc.com On 20190117T02:42:48 (xml) ==
+(In reply to waterworld from comment #6)
+尊敬的客户：
+
+        分析了slog, 发现没有wcnfdl 文件,log 如下
+
+      01-01 00:05:12.272   146   146 E DOWNLOAD: open    file /dev/block/platform/sdio_emmc/by-name/wcnfdl error = 2
+01-01 00:05:12.272   146   146 D DOWNLOAD: fdl image info : address 0x0 size 0
+
+      如电话沟通，请确认首要要有wcnfdl, wcnmodem 分区，文件路径是：
+      /dev/block/platform/sdio_emmc/by-name/wcnfdl 
+      /dev/block/platform/sdio_emmc/by-name/wcnmodem
+
+==== State: Opened by: waterworld on 17 January 2019 10:13:07 ====
+
+Dear SPRD:
+如电话沟通，将工程改成1c10，编译出来后WiFi、蓝牙无法打开，先上传WiFi无法打开的slog，请查收。
+
+==== State: Opened by: cmadmin on 16 January 2019 17:04:53 ====
+
+  == Andy.Li@unisoc.com On 20190116T08:56:02 (xml) ==
+hi 尊敬的客户
+
+   如刚才电话沟通，请编译一个版本测试，如果问题没有解决，请及时联系。
+   非常感谢你的支持
+
+==== State: Opened by: cmadmin on 16 January 2019 14:47:33 ====
+
+  == Ronghu.Zhong@unisoc.com On 20190116T06:40:58 (xml) ==
+请WCN同事确认sp9820a_refh10上的支持情况及补丁
+
+==== State: Opened by: waterworld on 16 January 2019 14:09:22 ====
+
+Dear SPRD:
+芯片用的是贵司的芯片，型号为SC2342A(UMC,LOT:KXXXXX//CXXXXX),SPREADTRUM
+
+==== State: Opened by: cmadmin on 16 January 2019 14:07:37 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-01-16T06:03:27Z (json) ==
+16c分支上可以支持emmc，用sp9820a_refh10的工程即可，但这个工程不是展讯4合一芯片2342的，如果需要用2342要自己打功能补丁并转相应的模块确认或者需求评估流程。请先确认回复贵司使用的WCN芯片是哪一家的。
+
+==== State: Opened by: waterworld on 16 January 2019 09:30:05 ====
+
+Dear SPRD:
+请问有什么进展嘛？
+
+==== State: Opened by: cmadmin on 15 January 2019 09:53:13 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551079|[SC9850K][Waterworld][FS098]【XM】后摄gc8034的摄像头，录入好指纹，然后去打开相机，直接灭屏，不退出相机，然后指纹解锁，界面弹出“相机连接错误”提示。|sc9850上天锐祥项目，后摄使用gc8034的摄像头，客户反馈：录入好指纹，然后去打开相机，直接灭屏，不退出相机，然后指纹解锁，界面弹出“相机连接错误”提示，不录入指纹的话，不会报错。附件为客户提供的log，请帮忙看看是什么原因？谢谢！|
+==== State: Closed by: waterworld on 18 January 2019 15:07:52 ====
+
+后面抓log时没有再复现，和客户确认了一下，他们那边也没有再复现，先放过了。谢谢！
+
+==== State: NeedInfo by: cmadmin on 17 January 2019 10:17:49 ====
+
+  == Chrison.Chai@unisoc.com On 2019-01-17T02:15:22Z (json) ==
+Dear Customer,
+如溝通，請上傳最新報錯的log,並確認下當前復現的概率
+Thanks.
+(2019-01-16T06:35:20Z)
+
+==== State: Opened by: waterworld on 16 January 2019 14:34:26 ====
+
+刚才测试发现：合入附件faceid_fingerprint_new.diff修改后，按power键灭屏是没有复现问题了，但自动灭屏还会相机报错，请在帮忙看看。谢谢！
+
+==== State: Resolved by: cmadmin on 16 January 2019 11:41:15 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:多应用导致
+
+[2.Resolution        ]:如comment描述
+
+
+
+==== State: Opened by: waterworld on 16 January 2019 10:21:04 ====
+
+合入附件faceid_fingerprint_new.diff验证没有复现问题了，请知悉。谢谢！
+
+==== State: NeedInfo by: cmadmin on 15 January 2019 15:39:59 ====
+
+  == Chrison.Chai@unisoc.com On 20190115T07:35:13 (xml) ==
+Dear Customer,
+指紋解鎖報錯問題請合入附件faceid_fingerprint_new.diff patch驗證測試
+Thanks.
+(20190115T06:22:58)
+
+==== State: Opened by: waterworld on 15 January 2019 14:15:55 ====
+
+又和客户沟通确认了一下，问题是在同时开启了人脸识别和指纹解锁功能的情况下，然后再进行之前的操作，基本上必然会出现相机报错的问题，客户不接受解释，要解决问题。谢谢！
+
+==== State: Resolved by: cmadmin on 14 January 2019 19:41:13 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+多应用导致
+Solution:
+如comment描述
+
+==== State: Opened by: cmadmin on 14 January 2019 19:41:11 ====
+
+  == liangshuai@spreadst.com On 2019-01-14T11:39:27Z (json) ==
+Dear Custom, 根据对log的分析，导致这个问题的根本原因是： 当指纹解锁应用进程进行解锁时，相机应用进程切换到后台并释放了所占用的camera资源，通过log看确定指纹解锁应用时请求camera资源，但由于解锁速度较快，由于录像点亮会直接检测camera是否可用，camera是否可用标志是在camera打开后才置为不可用，因为相机应用在指纹应用打开camera的过程中检查camera是否可用，此时camera打开流程海还没有结束所以状态可用，相机应用进程打开camera出现错误。 该问题不建议解决，因为解决方法会严重降低指纹解锁速度或opencamera的性能 这个问题复现场景属于非正常场景，请慎重考虑，谢谢
+
+==== State: Opened by: cmadmin on 14 January 2019 19:05:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551077|[SC9863A][Waterworld][FS168][TCL]NTP server自动|客户想修改NTP server
+默认south-america.pool.ntp.org
+请问如何修改
+
+|
+==== State: Closed by: cmadmin on 18 April 2019 00:35:12 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 27 March 2019 13:46:46 ====
+
+  == Kezeng.Kang@unisoc.com On 2019-03-27T05:44:57Z (json) ==
+dear  customer,
+    验证ok后，请关闭此cq。谢谢。
+
+==== State: Resolved by: cmadmin on 16 January 2019 15:16:48 ====
+
+Dear Customer:
+  The Issue Need you Verified with the samplecode, please check it and Reject even it's OK, No Close for the TOBEVERIFIED Issues 
+Thank you  == Kezeng.Kang@unisoc.com On 2019-01-16T07:10:20Z (json) ==
+请验证，验证ok后，请关闭。
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 16 January 2019 15:16:44 ====
+
+  == Kezeng.Kang@unisoc.com On 2019-01-16T07:09:43Z (json) ==
+Dear Customer,
+
+    如电话沟通，修改NTP服务器，如果新的服务器不稳定引入的风险非常大，首先是时间上可能不对，其次有些模块，如浏览器模块在鉴权的时候，会判断当前时间是否正常，异常则会出现无法使用浏览器的情况，其他的方面，如功耗也可能有影响。请慎重决定是否要修改。
+
+
+修改方法：
+
+
+frameworks/base/core/res/res/values/config.xml
+
+
+ <!-- Remote server that can provide NTP responses. -->
+2009    <string translatable="false" name="config_ntpServer">2.android.pool.ntp.org</string>
+
+==== State: Opened by: cmadmin on 16 January 2019 10:27:19 ====
+
+  == Kang.Wang@unisoc.com On 2019-01-16T02:22:55Z (json) ==
+Dear Customer,
+
+    如电话沟通，修改NTP服务器，如果新的服务器不稳定引入的风险非常大，首先是时间上可能不对，其次有些模块，如浏览器模块在鉴权的时候，会判断当前时间是否正常，异常则会出现无法使用浏览器的情况，其他的方面，如功耗也可能有影响。请慎重决定是否要修改。
+
+
+修改方法：
+
+
+frameworks/base/core/res/res/values/config.xml
+
+
+ <!-- Remote server that can provide NTP responses. -->
+2009    <string translatable="false" name="config_ntpServer">2.android.pool.ntp.org</string>
+
+==== State: Opened by: waterworld on 14 January 2019 19:32:10 ====
+
+ == Description Changed from == 
+客户想修改NTP server
+默认south-america.pool.ntp.org
+
+To
+客户想修改NTP server
+默认south-america.pool.ntp.org
+请问如何修改
+
+
+
+
+==== State: Opened by: cmadmin on 14 January 2019 18:38:18 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551072|[SC9863A][Waterworld][FS168][TCL][XM]RF耦合工具有两个功能需要增加，请评故可否增加？|生产中的RF耦合工具有两个功能需要增加：
+1、耦合RF综测需要要同步支持测试WIFI CW。
+2、现在项目是内置电池，工具只有关电源（power off），此功能对一体机无效，所以现在造成无法连续二次测试，必须开机后再关机才能重复测试，这样效率太低，能否解决此问题。
+请评故可否增加此功能？如果可以要多久时间？|
+==== State: Closed by: waterworld on 15 January 2019 16:38:59 ====
+
+关闭。
+
+==== State: Resolved by: cmadmin on 15 January 2019 16:02:17 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+验证ok
+Solution:
+验证ok
+
+==== State: Opened by: cmadmin on 15 January 2019 16:02:15 ====
+
+  == Zhongwen.Chen@unisoc.com On 2019-01-15T07:59:13Z (json) ==
+验证ok
+
+==== State: Opened by: waterworld on 15 January 2019 15:47:34 ====
+
+这个CQ可以先关闭，我们这环境验证PASS。
+
+==== State: Opened by: waterworld on 15 January 2019 10:04:03 ====
+
+现在给到我们的最新版本是Simba_R6.0.0005，那我们再安排验证一下，再回复你们，谢谢支持。
+
+==== State: Opened by: cmadmin on 15 January 2019 09:04:57 ====
+
+  == Zhongwen.Chen@unisoc.com On 20190115T00:52:11 (xml) ==
+尊敬的客户
+现在simba什么版本？
+simba已经支持以上两个功能的：
+1、wifi cw测试，在耦合测试的seq里新增测试项，选择wcnft、wlanFT即可
+2、内置电池项目测试完poweroff也会关机的，如果确认只会关电源的话，可以把poweroff项高级设置里option/mode改成command再确认下，默认auto可能会优先关电源
+
+请验证下，有问题及时反馈，我用样机验证OK
+
+==== State: Opened by: cmadmin on 15 January 2019 08:36:55 ====
+
+  == Fei_f.Xie@unisoc.com On 2019-01-15T00:33:16Z (json) ==
+1.第一个问题需要支持什么仪表？
+2.为什么要进行连续二次测试？
+|
+# SPCSS00551061|[SC9863A][Waterworld][FS168][XM][TCL] 关机充电的时候,屏幕亮起的情况下,按power键无作用|[XM][TCL] 关机充电的时候,屏幕亮起的情况下,按power键无作用
+
+预计结果:
+亮起的情况按power键能直接灭屏.
+
+请帮忙看下需要如何修改.谢谢.|
+==== State: Closed by: waterworld on 15 January 2019 17:59:39 ====
+
+验证有效,关闭.非常感谢.
+
+==== State: Resolved by: cmadmin on 14 January 2019 18:14:06 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+关机充电，屏幕亮时，按power键灭屏
+Solution:
+关机充电，屏幕亮时，按power键灭屏
+
+==== State: Opened by: cmadmin on 14 January 2019 18:14:04 ====
+
+  == Jihang.Yan@unisoc.com On 20190114T10:09:03 (xml) ==
+请合入附件SampleCode验证。
+
+==== State: Opened by: cmadmin on 14 January 2019 17:23:35 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551058|[SC7731E][Waterworld][AX301][1部][AX301][Memory]伯维的BWCE28J_08G概率性不能唤醒|Dear   展讯，
+         新项目用伯维的EMCP型号为BWCE28J_08G,在公司测试概率性不能唤醒，附件是不能唤醒的LOG。
+使用KMFN60012M-B214和H9TQ64A8GTCCUR-KUM两个型号测试是没问题的。
+|
+==== State: Closed by: cmadmin on 08 February 2019 00:44:41 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 17 January 2019 10:27:02 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-01-17T02:22:27Z (json) ==
+验证如还有问题请提供串口log和ylog。
+
+Analysis and Solution:
+[1.Root Cause        ]:hs400 tuning fail
+
+[2.Resolution        ]:针对特定cmd忽略data error
+
+
+
+==== State: Opened by: cmadmin on 17 January 2019 10:08:24 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-01-17T02:06:20Z (json) ==
+请及时验证反馈
+
+==== State: Opened by: cmadmin on 15 January 2019 17:48:19 ====
+
+  == Ronghu.Zhong@unisoc.com On 2019-01-15T09:37:58Z (json) ==
+请参考ftp下面的samplecode合入后验证
+
+==== State: Opened by: cmadmin on 14 January 2019 17:17:35 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551053|[SC7731E][Waterworld][ww835][18部] CTS测试CtsAnimationTestCases模块失败|步骤：
+
+现象：
+
+分析：
+Dear Sprd,
+    CTS测试出现android.animation.cts.AnimatorTest#testIsRunning；
+android.animation.cts.AnimatorTest#testIsStarted；
+android.animation.cts.ObjectAnimatorTest#testSetFloatValues等多项fail。
+项目急，麻烦帮忙加急处理
+log见附件
+感谢！|
+==== State: Closed by: cmadmin on 05 February 2019 00:33:47 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 14 January 2019 17:38:11 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+CtsAnimationTestCases fail
+Solution:
+客户在开发者模式中关闭了动画，打开可以pass，关闭
+
+==== State: Opened by: cmadmin on 14 January 2019 17:23:14 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551042|[SL8521E][Waterworld][AD119]编译工具链|1.之前看了是使用arm-linux-androideabi-4.7编译第三方应用。是否可以使用编译工具链
+MOCOR5_SFPHONE_17F_RLS1_W18.39.4/IDH/idh.code/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9？？？
+2.如果不能使用arm-linux-androideabi-4.9，有什么方法编译第三方？要求版本在4.9以上
+SL8521E是裁剪了应用层和部分中间层的，这个项目和中国移动配合做的，要合入他们的代码，
+所以他们想在arm-linux-androideabi-4.9上编译通过。|
+==== State: Closed by: cmadmin on 16 February 2019 00:49:26 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 25 January 2019 14:04:34 ====
+
+  == Gary.Gong@unisoc.com On 20190125T06:02:45 (xml) ==
+资讯类问题。关闭
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]: 咨询关于编译工具链编译的纯linux的程序在平台上运行
+
+[2.Resolution        ]:提供程序在平台上执行的步骤
+
+
+
+==== State: Opened by: waterworld on 25 January 2019 13:41:39 ====
+
+好的，谢谢！这笔先关闭
+
+==== State: Opened by: cmadmin on 24 January 2019 23:26:57 ====
+
+  == Gary.Gong@unisoc.com On 2019-01-24T15:24:20Z (json) ==
+(In reply to waterworld from comment #19)
+在编译版本的时候将system空间配置大一点，data分区配置小一点。请咨询贵公司的编译人员或者提交cq到这边，这边会有响应的人员给您解答。
+
+==== State: Opened by: waterworld on 24 January 2019 17:32:27 ====
+
+你好，当前遇到了一个很大的问题，提示空间不够，现在没法验证，请问怎么优化空间问题呢
+
+==== State: Opened by: cmadmin on 24 January 2019 15:12:12 ====
+
+  == Gary.Gong@unisoc.com On 20190124T07:04:59 (xml) ==
+(In reply to waterworld from comment #17)
+apuser@bj01976pcu1:/opt/codesourcery$ find -name "libstdc++.so.6"
+./arm-none-linux-gnueabi/libc/armv4t/usr/lib/libstdc++.so.6
+./arm-none-linux-gnueabi/libc/thumb2/usr/lib/libstdc++.so.6
+./arm-none-linux-gnueabi/libc/usr/lib/libstdc++.so.6
+apuser@bj01976pcu1:/opt/codesourcery$ 
+
+使用以上方式查找。
+
+so使用
+./arm-none-linux-gnueabi/libc/usr/lib/libstdc++.so.6
+
+==== State: Opened by: waterworld on 24 January 2019 14:52:15 ====
+
+arm-2013.11-33-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar 解压之后
+ libstdc++.so.6  文件是没有的 
+
+==== State: Opened by: waterworld on 24 January 2019 14:11:51 ====
+
+你好，刚才打通了 没有接听！
+mount -o remount,rw / 不太明白
+这个指令是在源码工程里面编译 写这个指令？
+还是 在压缩工具链里面 写这个指令 ？
+
+==== State: Opened by: cmadmin on 24 January 2019 11:28:12 ====
+
+  == Gary.Gong@unisoc.com On 2019-01-24T03:24:32Z (json) ==
+电话沟通，提供标准linux程序在平台上的执行步骤：
+1，mount -o remount,rw /
+
+2，将缺少的依赖系统依赖库及libvoipengine.so库push到/lib下，库都在编译工具链./arm-none-linux-gnueabi/libc/lib/ 下。
+推送结果详细如下：
+1|root@sp9820e_1h10:/lib # busybox ls -lh
+total 13020
+-rwxrwxrwx    1 0        0         165.6K Nov 25  2013 ld-linux.so.3
+-rwxrwxrwx    1 0        0           1.6M Nov 25  2013 libc.so.6
+-rwxrwxrwx    1 0        0          27.5K Nov 25  2013 libdl.so.2
+-rw-rw-rw-    1 0        0           1.4M Nov 25  2013 libgcc_s.so.1
+-rwxrwxrwx    1 0        0         716.6K Nov 25  2013 libm.so.6
+-rwxrwxrwx    1 0        0         147.6K Nov 25  2013 libpthread.so.0
+-rwxrwxrwx    1 0        0          42.1K Nov 25  2013 librt.so.1
+-rwxrwxrwx    1 0        0           1.2M Nov 25  2013 libstdc++.so.6
+-rw-rw-rw-    1 0        0           7.4M Nov  1  2018 libvoipengine.so
+
+3，testaudio adb push 到根目录下如下：
+root@sp9820e_1h10:/ # busybox ls -lh testaudio                                 
+-rwxrwxrwx    1 0        0          62.0K Nov  7  2018 testaudio
+
+
+4，执行demo可以执行出现了一些错误。错误如下
+127|root@sp9820e_1h10:/ # ./testaudio                                          
+begin test Formal Business Process
+[ME]STATE   (19:37:52:370 |   0)      UTILITY:     -1;  3579; Thread with name:Trace started .
+[ME]STATE   (19:37:52:372 |   2)        VOICE:  0 9999  3576; VoiceEngineWrapper().
+[ME]API     (19:37:52:372 |   0)        VOICE:  1  99;  3576; Init(external_adm=0x(nil)).
+[ME]STATE   (19:37:52:373 |   1)      UTILITY:     -1;  3580; Thread with name:ProcessThread started .
+CreateThirdpartyAudioDevice
+ThirdpartyAudioDevice(构造函数)
+[ME]STATE   (19:37:52:373 |   0) AUDIO DEVICE:  1  99;  3576; AudioDeviceBuffer::SetRecordingSampleRate(fsHz=0).
+[ME]STATE   (19:37:52:373 |   0) AUDIO DEVICE:  1  99;  3576; AudioDeviceBuffer::SetPlayoutSampleRate(fsHz=0).
+ThirdpartyAudioDevice::Init()
+
+==== State: Opened by: waterworld on 24 January 2019 11:20:19 ====
+
+
+中国移动用你们提供的arm-2013.11-33-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+
+编译工具链编译生成的testaudio  adb push到8521板子上不能执行
+
+
+==== State: NeedInfo by: cmadmin on 23 January 2019 11:23:04 ====
+
+  == Gary.Gong@unisoc.com On 20190123T03:10:51 (xml) ==
+请及时反馈，
+(20190121T03:38:44)
+
+==== State: Opened by: cmadmin on 21 January 2019 11:43:20 ====
+
+  == Gary.Gong@unisoc.com On 20190121T03:38:44 (xml) ==
+(In reply to waterworld from comment #8)
+
+合家固话合入到平台的是
+1，编译结果部分testaudioji testaudio依赖的so文件（这部分so在编译的时候存放在/lib下 二进制存在臜 system/bin下）
+2，testaudio 及依赖的自己编写的so及 前二者依赖的系统so（这部分so存放在/lib下）
+查看依赖的so办法：
+apuser@bj01976pcu1:~/Desktop/arm-2013.11/longsung_helloworld$ readelf -d helloworld_ok | grep NEEDED
+ 0x00000001 (NEEDED)                     Shared library: [libstdc++.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libgcc_s.so.1]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+
+==== State: Opened by: cmadmin on 18 January 2019 18:01:21 ====
+
+  == Gary.Gong@unisoc.com On 20190118T09:58:30 (xml) ==
+(In reply to waterworld from comment #10)
+首先 不管是android.mk 还是 makefile 编译的arm程序都应该能在android运行，只不过编译器不一样，Android.mk适用于android系统源码环境下及ndk环境下编译。
+makefile适用于第三方不使用到android相关库的工具链编译
+
+==== State: Opened by: waterworld on 18 January 2019 09:48:46 ====
+
+Dear 展讯：
+附件包含的文件.png是整个代码结构。Makefile1.png和Makefile2.png是Makefile的写法。里面有.CC文件、。h文件、。so文件、二进制文件等等。主要是Makefile里面的东西改写成Android.mk可以使用吗？有什么不一样的地方
+还有.CC文件系统也可以支持编译？
+
+==== State: Opened by: cmadmin on 18 January 2019 08:52:13 ====
+
+  == Gary.Gong@unisoc.com On 2019-01-18T00:51:29Z (json) ==
+(In reply to waterworld from comment #8)
+具体有哪些文件呢？一般二进制文件放在 system/bin  或者 /bin so 文件放在 /lib下
+
+==== State: Opened by: waterworld on 17 January 2019 11:38:55 ====
+
+Dear 展讯：
+中国移动合家固话已经编译好，请问怎么合入到SL8521E安卓裁剪版本里面去？MOCOR5_SFPHONE_17F_RLS1_W18.39.4
+
+==== State: NeedInfo by: cmadmin on 16 January 2019 11:34:56 ====
+
+  == Gary.Gong@unisoc.com On 20190116T03:25:27 (xml) ==
+请及时反馈
+(20190115T11:43:47)
+
+==== State: Opened by: cmadmin on 15 January 2019 19:44:46 ====
+
+  == Gary.Gong@unisoc.com On 2019-01-15T11:43:47Z (json) ==
+(In reply to waterworld from comment #5)
+是的。存linux的编译工具链，东西编译好之后需要通过编译打包进system.img
+
+==== State: Opened by: waterworld on 15 January 2019 13:39:17 ====
+
+Dear 展讯：
+这个编译工具链是之前提供给中国移动编译合家固话的么？
+现在是想在SL8521e-3h10mc或者SL8521e-3h10的工程上合入，请确定清楚。谢谢！
+
+==== State: Opened by: cmadmin on 15 January 2019 11:47:52 ====
+
+  == Gary.Gong@unisoc.com On 2019-01-15T03:41:42Z (json) ==
+请下载对应工具链版本：
+https://www.veryarm.com/arm-none-linux-gnueabi-gcc
+Linux解压版：arm-2013.11-33-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+进行编译。
+编译SDK的时候，在LDFLAGS中加入“-Wl,--dynamic-linker=/system/bin/linker”来强制指定android平台的dynamic linker
+
+==== State: Opened by: cmadmin on 15 January 2019 09:56:21 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551035|[SC7731E][Waterworld][7731E][18部]请在7731E平台上帮忙验证MEMROY,规格为TYC0FH121597RA|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 15 March 2019 00:35:09 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 21 February 2019 17:24:47 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 21 February 2019 17:24:44 ====
+
+  == lu.huang@unisoc.com On 2019-02-21T09:21:02Z (json) ==
+TYC0FH121597RA认证pass！
+
+==== State: Opened by: waterworld on 23 January 2019 16:53:06 ====
+
+黄工：
+TYC0FH121597RA对应版本WW835_V4.8(CQ号SPCSS00551035)
+
+==== State: Opened by: cmadmin on 18 January 2019 14:04:45 ====
+
+  == lu.huang@unisoc.com On 2019-01-18T06:00:54Z (json) ==
+开机log中查看下有没有SDF，如果没有，说明没有secureboot加密
+UUUUUERS
+ROM
+SDF  <-- 表示securedebug失败
+RBS
+
+==== State: Opened by: cmadmin on 14 January 2019 16:36:13 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551034|[SC7731E][Waterworld][7731E][18部]请在7731E平台上帮忙验证MEMROY,规格为KMQ72000SM-B316|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 26 March 2019 00:35:04 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 04 March 2019 16:20:20 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+[1.Root Cause        ]:
+NA
+[2.Resolution        ]:
+NA
+
+
+==== State: Opened by: cmadmin on 04 March 2019 16:12:38 ====
+
+  == lu.huang@unisoc.com On 20190304T08:12:06 (xml) ==
+验证pass！
+
+==== State: Opened by: cmadmin on 04 March 2019 16:12:24 ====
+
+  == lu.huang@unisoc.com On 20190304T08:11:33 (xml) ==
+1）通过install方式安装flash.apk和memtest.apk；
+2）通过push方式把1080p视频放到/sdcard目录下；
+3）通过adb shell setenforce 0关闭防火墙；
+4）flash.apk运行第8项测试，然后运行memtest.apk，注意要设置片源路径。
+
+==== State: Opened by: cmadmin on 01 March 2019 10:15:57 ====
+
+  == lu.huang@unisoc.com On 20190301T02:14:20 (xml) ==
+测试中，预计下周五完成。
+
+==== State: Opened by: cmadmin on 14 January 2019 16:36:09 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551032|[SC9863A][Waterworld][FS168][XM][TCL] 全屏设置功能会影响CTS|[XM][TCL] 全屏设置功能会影响CTS
+
+CtsActivityManagerDeviceTestCases会有两项fail,请帮忙确认下.
+之前提的全面屏相关CQ: SPCSS00538700
+
+已确认如果去掉全面屏设置,可以pass
+
+请帮忙看下需要如何修改.谢谢.|
+==== State: Closed by: cmadmin on 09 February 2019 00:44:15 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 18 January 2019 09:19:50 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:全面屏导致cts不过
+
+[2.Resolution        ]:过滤cts的包名，不让其设置cts的界面为全面屏，保持原来的界面属性配置
+
+
+
+==== State: Opened by: waterworld on 17 January 2019 22:16:17 ====
+
+单测已pass
+
+==== State: Opened by: cmadmin on 17 January 2019 17:03:12 ====
+
+  == zhangwei0328@spreadst.com On 20190117T08:57:25 (xml) ==
+尊敬的客户：
+
+  之前电话沟通过，有结果帮忙尽快回复，感谢
+
+==== State: Opened by: waterworld on 17 January 2019 15:14:20 ====
+
+你好：
+       昨天的patch我要回退？
+
+==== State: NeedInfo by: cmadmin on 17 January 2019 13:39:15 ====
+
+  == zhangwei0328@spreadst.com On 20190117T05:36:52 (xml) ==
+尊敬的客户：
+
+  log显示包名是android.server.cts.am，不是android.server.am。不好意思我之前的patch过滤的包名不对
+
+S04DF91 01-16 21:20:12.777   711   738 W PackageManager: updateFullScreenSettings start pkg.packageName is android.server.cts.am
+M04EE65 01-16 21:20:56.012 19069 19085 I ActivityTestRule: Launching activity: ComponentInfo{android.server.cts.am/android.server.am.AspectRatioTests$MetaDataMaxAspectRatioActivity}
+
+需要麻烦您修改下，再测试下，patch已经重新提供，请合入ftp patchForCUS下的packagemanagerservice1.java
+
+另外还在判断中再增加了设置为disable的代码
+        if(pkg != null && pkg.packageName.startsWith("android.server.cts.am")){
+            Slog.w(TAG, "pkg.packageName is " + pkg.packageName + ",skip!!");
+            mFullScreenSettings.addPackage(pkg.packageName,
+                        ApplicationInfo.FORCE_FULLSCREEN_DISABLE, ApplicationInfo.FULLSCREEN_UNCOMPATIBLE);
+            pkg.applicationInfo.force_fullscreen = ApplicationInfo.FORCE_FULLSCREEN_DISABLE;
+            return;
+        }
+(20190117T02:44:51)
+
+==== State: Opened by: waterworld on 17 January 2019 10:41:38 ====
+
+你好；
+    附件是log和报告。
+
+==== State: Opened by: cmadmin on 16 January 2019 15:04:04 ====
+
+  == zhangwei0328@spreadst.com On 2019-01-16T07:01:02Z (json) ==
+尊敬的客户：
+
+  cts测试时会启动两个界面，通过读取这两个界面的参数来判定是否pass
+android:name="android.server.am.AspectRatioTests$MetaDataMaxAspectRatioActivity"
+android:name="android.server.am.AspectRatioTests$MaxAspectRatioActivity"
+
+请参考ftp patchForCUS下的代码用差分工具合入，请注意添加的log也一并加上防止patch不生效后续的debug
+frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java
+
+关键代码在updateFullScreenSettings方法中，如下代码是新增的，不对包名为android.server.am进行额外的全面屏处理，直接return；
+       if(pkg != null && pkg.packageName.startsWith("android.server.am")){
+            Slog.w(TAG, "pkg.packageName is " + pkg.packageName + ",skip!!");
+            return;
+        }
+
+合入后再测试下是否可以pass，请注意debug log需要一并合入
+
+如果还有问题，帮忙提供下cts log和ylog 谢谢
+
+==== State: Opened by: waterworld on 16 January 2019 14:48:01 ====
+
+下面是我们找TCL要的禾苗提的全屏设置的cq。或许你们可以内部沟通下。请知悉！
+        SPCSS00496915 
+            Tel  :   010-57500320-8205/13552924425/陈为18610724803 
+             Email: fukp@spreadst.com
+        这个是CQ解决人
+
+==== State: Opened by: waterworld on 16 January 2019 14:12:14 ====
+
+还有一个问题也请确认下.
+facebook这个apk在参考机上是有显示在列表里面(附件截图)
+但是我们的全屏设置里没有列出来.
+是不是检测apk的规则还需要确认一下
+
+==== State: Opened by: waterworld on 16 January 2019 11:16:27 ====
+
+以下是TCL发的关于GMS认证对full screen的要求:
+29 full screen 针对屏比为18:9的项目,无论是CN/GL,N/O+,默认在16:9手机上显示的apk不可以被强制拉伸,需默认显示且有提示语提示用户,这个目前会跳过Google case检测,但是TAM收到手机会手动检测.
+在点检时可以自己安装一个apk试试看是否有提示语: 例如：touch here to fill full screen 
+
+如果不解决问题应该过不了GMS认证.
+
+==== State: Opened by: cmadmin on 15 January 2019 14:35:00 ====
+
+  == daixm0718@spreadst.com On 2019-01-15T06:32:36Z (json) ==
+目前验证可知，由于CTS跑测相关case的时候是临时拉起的界面，默认是全面显示的，由于没有入口关闭临时activity的全面屏属性，导致该问题
+
+==== State: Opened by: waterworld on 15 January 2019 13:58:37 ====
+
+ app-debug.apk  这个apk在参考机上的情况,见附件视频.
+请确认.谢谢.
+
+==== State: Opened by: cmadmin on 15 January 2019 10:59:34 ====
+
+  == daixm0718@spreadst.com On 2019-01-15T02:50:46Z (json) ==
+(In reply to waterworld from comment #6)
+请麻烦将附件app-debug.apk安装到禾苗的一个项目Curie上，打开这个apk，截图看下
+
+adb install -r app-debug.apk
+
+==== State: Opened by: waterworld on 15 January 2019 10:35:48 ====
+
+客户确认说,禾苗的一个项目Curie就是全面屏,也有全面屏设置,他们也是过了认证
+他们是展讯7731E 8.1项目.
+见附件截图
+请帮忙确认.
+
+==== State: Opened by: waterworld on 14 January 2019 20:21:07 ====
+
+回退是可以pass,但是这个全屏设置的功能不能删除,
+要正面解决这个问题.
+请帮忙看看.谢谢.
+
+==== State: Opened by: cmadmin on 14 January 2019 18:47:04 ====
+
+  == zhangfeng0502@spreadst.com On 2019-01-14T10:43:24Z (json) ==
+Dear Customer,
+   贵司提过此问题，见CQ：SPCSS00548587
+我司AMS的工程师有和贵司工程师沟通过，请确认
+
+==== State: Submitted by: waterworld on 14 January 2019 17:03:32 ====
+
+如电话沟通,把默认app全部关闭,去测试,还是会fail.请确认.
+|
+# SPCSS00551031|[SC7731E][Waterworld][7731E]][18部]请在7731E平台上帮忙验证MEMROY,规格为KMF720012M-B214|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 09 April 2019 00:35:18 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 18 March 2019 11:30:30 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 18 March 2019 11:30:18 ====
+
+  == lu.huang@unisoc.com On 2019-03-18T03:16:28Z (json) ==
+认证PASS !
+
+==== State: Opened by: cmadmin on 01 March 2019 10:15:47 ====
+
+  == lu.huang@unisoc.com On 20190301T02:13:19 (xml) ==
+测试中，预计下周五之前验证完
+
+==== State: Opened by: cmadmin on 14 January 2019 16:36:06 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551023|[SC9832E][Waterworld][9832E][18部]请在9863平台上帮忙验证MEMROY,规格为KMQ72000SM-B316|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 07 May 2019 00:42:36 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 15 April 2019 10:53:54 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 15 April 2019 10:53:51 ====
+
+  == lu.huang@unisoc.com On 20190415T02:52:16 (xml) ==
+认证pass！
+
+==== State: Opened by: cmadmin on 01 March 2019 10:15:42 ====
+
+  == lu.huang@unisoc.com On 20190301T02:11:34 (xml) ==
+排在第一顺位，预计下周可以开始测试
+
+==== State: Opened by: waterworld on 14 January 2019 18:54:40 ====
+
+黄工： 
+此KMQ72000SM-B316是在9832E平台上验证。谢谢！
+
+
+==== State: Opened by: cmadmin on 14 January 2019 16:36:01 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551020|[SC7731E][Waterworld][FS286][6部]关闭EDGE RF客户测试fail|nv修改PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs=0x0
+客户反馈RF测试失败 
+请问上层需要做什么修改，是否有patch
+|
+==== State: Closed by: cmadmin on 13 February 2019 00:47:33 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 22 January 2019 11:14:39 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+RootCause:
+软件问题
+Solution:
+NULL
+
+==== State: Opened by: cmadmin on 22 January 2019 11:14:36 ====
+
+  == Weijun.Liu@unisoc.com On 20190122T03:08:23 (xml) ==
+鉴于此问题上海那边在处理，此BUG关闭
+N2AInBug
+
+
+==== State: NeedInfo by: cmadmin on 18 January 2019 10:27:36 ====
+
+  == Weijun.Liu@unisoc.com On 2019-01-18T02:22:59Z (json) ==
+客户已经把机器寄给上海去打PATCH验证，待验证结果。
+(2019-01-17T07:51:54Z)
+
+==== State: Opened by: cmadmin on 17 January 2019 16:03:43 ====
+
+  == Weijun.Liu@unisoc.com On 2019-01-17T07:51:54Z (json) ==
+目前验证结果如何？
+
+==== State: Opened by: waterworld on 16 January 2019 10:48:51 ====
+
+同步在合入patch验证 客户样机寄到上海同步分析wfc不能使用的问题
+
+==== State: Opened by: cmadmin on 15 January 2019 11:09:09 ====
+
+  == Weijun.Liu@unisoc.com On 2019-01-15T03:02:24Z (json) ==
+辛工，
+咨询了一下我们这边当时处理这个CQ的工程师，当时那个问题分析结果是怀疑是手机校准时的线损不对，造成功率不达标，测试中断。针对此问题，请在你们客户那边确认以下几点：
+1. 手机的测试环境：是否在屏蔽盒里测试？是用8960跑脚本吗？
+   建立客户在实验用CMW500跟一下WCDMA的脚本试试会不会中断？且再手动测试一下看看。
+2. 最好是向你们的客户再明确一下是在测试哪一项的时候测试中断的？没有LOG的话可以用手机拍图片
+   也行。
+
+==== State: Opened by: waterworld on 15 January 2019 10:34:24 ====
+
+刘工,
+客户反馈Cell C运营商rf测试失败现象，与之前处理的易景w602项目一样是2100频段测试的时候会中断
+客户给到00516941是易景提的CQ号
+
+==== State: Opened by: cmadmin on 15 January 2019 09:59:10 ====
+
+  == Weijun.Liu@unisoc.com On 20190115T01:54:49 (xml) ==
+辛工，
+请明确一下客户在那边RF测试FAIL时，FAIL项是哪些？
+谢谢！
+
+==== State: Opened by: cmadmin on 14 January 2019 17:17:16 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551011|[SC9832E][Waterworld][9832E][18部]请在9863平台上帮忙验证MEMROY,规格为KMF720012M-B214|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 06 February 2019 00:38:43 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 15 January 2019 10:45:39 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+NA
+Solution:
+NA
+
+==== State: Opened by: cmadmin on 15 January 2019 10:45:36 ====
+
+  == lu.huang@unisoc.com On 2019-01-15T02:38:15Z (json) ==
+该物料已经认证pass，还请放心使用。
+
+==== State: Opened by: waterworld on 14 January 2019 18:53:51 ====
+
+黄工：
+此KMF720012M-B214是在9832E平台上验证。谢谢！
+
+==== State: Opened by: cmadmin on 14 January 2019 16:35:57 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551009|[SC9863A][Waterworld][FS170]【XM】后真双摄  s5k3l6 + gc5035 客户读到摄像头ID但是打开失败|背景：1、主摄 s5k3l6 《sensor_s5k3l6_mipi_raw_FS170.zip》的驱动是使用平台中自带的。2、副摄 gc5035《sensor_gc5035_mipi_raw_FS170_TRX.zip》 的驱动由客户提供，两份驱动均已上传附件。
+
+现象：1、合入上述描述的相应驱动。2、开机点击进入相机会有相机连接不上的描述。3、抓log初步看了下 Identify 里面匹配pid是有匹配成功的。
+
+帮忙看下是什么问题，附件有上传相应的log《20190114152306.zip》|
+==== State: Closed by: cmadmin on 14 February 2019 00:47:22 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 16 January 2019 13:42:35 ====
+
+  == Gongkai.Liu@unisoc.com On 2019-01-16T05:40:21Z (json) ==
+尊敬的客户，您好：3L6已点亮，副摄请另提CQ反馈，此问题关闭，thanks！
+
+Analysis and Solution:
+PleasePayAttentionTheFollowingRules: 
+注意事项：
+1. 此文件为展讯提供的研发调试用支持文件，可作为贵司项目研发调试的参考，建议在贵司在使用时自行开展全面测试 
+2. 在贵司未测试并确认该文件质量前，请不要将此文件合入贵司项目的量产或者入库的版本
+3. 以下情况需要请务必向展讯技术支持人员申请正式Patch或正式版本，不能使用此文件
+  A 需要解决的问题是平台问题，且贵司项目已正式量产或者即将量产
+  B 展讯工程师在回复问题解决方案时，已经注明必须要“申请正式Patch或正式版本”解决问题的
+  C 贵司内部评估风险巨大，必须要“申请正式Patch或正式版本”解决问题的
+
+[1.Root Cause        ]:驱动问题
+
+[2.Resolution        ]:提供驱动
+
+
+
+==== State: Opened by: waterworld on 16 January 2019 11:03:21 ====
+
+你好！
+使用附件 s5k3l6.zip 的驱动，单后摄的时候已经可以正常工作。但是如果配置入后副摄gc5035，打开相机应用就会闪退，附件有上传相应的log《20190116ylog.zip》。
+
+==== State: Opened by: cmadmin on 15 January 2019 17:47:49 ====
+
+  == Gongkai.Liu@unisoc.com On 2019-01-15T09:43:55Z (json) ==
+尊敬的客户，您好：请使用附件s5k3l6.zip测试下，thanks！
+
+==== State: Opened by: waterworld on 15 January 2019 13:31:48 ====
+
+你好，这个CQ有什么进展不？
+
+==== State: Opened by: waterworld on 15 January 2019 09:30:23 ====
+
+你好，boardconfig.mk  和 sensor_cfg.c文件上传一下，原理图和DTS文件 都已经上传附件。  备注：这个平台已经有点亮过其他IC的后摄像头。
+
+==== State: Opened by: cmadmin on 14 January 2019 20:14:08 ====
+
+  == Gongkai.Liu@unisoc.com On 20190114T12:12:23 (xml) ==
+麻烦把boardconfig.mk  和 sensor_cfg.c文件上传一下，原理图和DTS文件也上传一下，thanks！
+
+==== State: Opened by: waterworld on 14 January 2019 19:16:44 ====
+
+你好，合入附件的 s5k3l6_param.rar  效果参数还是没有办法打开摄像头，附件有相应的log《20190114191156.zip》。
+
+==== State: Opened by: cmadmin on 14 January 2019 17:56:02 ====
+
+  == Gongkai.Liu@unisoc.com On 2019-01-14T09:49:52Z (json) ==
+请示用附件：s5k3l6_param.rar  效果参数测试下，能否打开摄像头。
+
+==== State: Opened by: cmadmin on 14 January 2019 16:27:10 ====
+
+  == Gongkai.Liu@unisoc.com On 20190114T08:22:13 (xml) ==
+尊敬的客户，您好：请先确认下配置是否正确：
+如果是bokeh模式，可以按如下配置：
+TARGET_BOARD_BLUR_MODE_SUPPORT:= true
+TARGET_BOARD_COVERED_SENSOR_SUPPORT:= false
+TARGET_BOARD_BOKEH_MODE_SUPPORT := true
+CAMERA_SENSOR_TYPE_BACK_EXT := "ov8856_shine,ov5675_dual,ov7251_dual,s5k5e9yu05" //按实际sensor型号配置
+CAMERA_SENSOR_TYPE_FRONT_EXT :=
+TARGET_BOARD_OPTICSZOOM_SUPPORT := false
+TARGET_BOARD_3DFACE_SUPPORT := false
+persist.vendor.cam.fr.blur.version=1
+persist.vendor.cam.ba.blur.version=6
+persist.sys.cam3.type=back_bokeh
+persist.sys.cam3.multi.cam.id=2
+persist.sys.3d.calibraion=1
+
+thanks！
+
+==== State: Opened by: cmadmin on 14 January 2019 15:50:52 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551005|[SC9820E][Waterworld][FM507][6部]RF方案支持移动联通国行版RF框图|步骤：
+
+现象：
+
+分析：
+不用支持国外漫游，只支持国内移动联通，RF改成STM7910+SPM6569+SPM6424;重出RF框图！谢谢！|
+==== State: Closed by: cmadmin on 08 February 2019 00:45:01 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 17 January 2019 10:00:15 ====
+
+Dear Customer:
+  The Issue has been Fixed now, please check it
+Thank you
+
+Analysis and Solution:
+RootCause:
+请严格按照附件RF框图修改。
+考虑到TDD LTE使用LPF，需要注意与FDD LTE的隔离，故部分端口修改了下。
+RPM6569的Pin10/8 coupler port预留到地电阻位置，先NC。
+Solution:
+请严格按照附件RF框图修改。
+考虑到TDD LTE使用LPF，需要注意与FDD LTE的隔离，故部分端口修改了下。
+RPM6569的Pin10/8 coupler port预留到地电阻位置，先NC。
+
+==== State: Opened by: cmadmin on 16 January 2019 15:23:35 ====
+
+  == Ethan.Feng@unisoc.com On 20190116T07:20:44 (xml) ==
+汪工
+请严格按照附件RF框图修改。
+考虑到TDD LTE使用LPF，需要注意与FDD LTE的隔离，故部分端口修改了下。
+RPM6569的Pin10/8 coupler port预留到地电阻位置，先NC。
+
+==== State: Opened by: waterworld on 16 January 2019 15:01:25 ====
+
+冯工，有没有其它建议？
+
+==== State: Opened by: waterworld on 15 January 2019 18:12:21 ====
+
+联通GSM900/1800;WCDMA:B1,8;FDD B1,3; 以及 移动：TDS:B34,39; TDD:B39,40,41M（38）;
+
+==== State: Opened by: cmadmin on 14 January 2019 17:56:10 ====
+
+  == Yu_y.Chen@unisoc.com On 2019-01-14T09:50:59Z (json) ==
+汪工，
+
+请明确详细频段信息，谢谢。
+|
+# SPCSS00551001|[SC9863A][Waterworld][9863][18部]请在9863平台上帮忙验证MEMROY,规格为KMQN1000SM-B316|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 31 December 2019 00:50:43 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 09 December 2019 18:45:50 ====
+
+  == Ning.Zhu@unisoc.com On 2019-12-09T10:44:31Z (json) ==
+close
+
+Analysis and Solution:
+RootCause:
+close
+Solution:
+close
+
+==== State: Opened by: cmadmin on 09 December 2019 18:45:47 ====
+
+  == Ning.Zhu@unisoc.com On 2019-12-09T10:44:20Z (json) ==
+close
+
+==== State: Opened by: waterworld on 17 May 2019 16:39:14 ====
+
+此物料需要使用，请认证，并帮忙回复测试时间，谢谢！
+
+==== State: Opened by: cmadmin on 17 May 2019 16:21:35 ====
+
+  == lu.huang@unisoc.com On 20190517T08:16:23 (xml) ==
+这颗物料还会使用吗？
+
+==== State: Opened by: cmadmin on 11 February 2019 10:39:32 ====
+
+  == lu.huang@unisoc.com On 2019-02-11T02:37:54Z (json) ==
+13顺位排队中
+
+==== State: Opened by: waterworld on 15 January 2019 11:42:28 ====
+
+如附档
+
+==== State: Opened by: cmadmin on 15 January 2019 10:41:12 ====
+
+  == lu.huang@unisoc.com On 20190115T02:34:43 (xml) ==
+还请上传物料规格书。
+
+==== State: Opened by: cmadmin on 14 January 2019 16:35:51 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00551000|[SC9863A][Waterworld][9863][18部]请在9863平台上帮忙验证MEMROY,规格为KMFN10012M-B214|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: cmadmin on 31 December 2019 00:50:44 ====
+
+尊敬的客户，超过15个工作日未关闭的Resolved状态的问题，我们会定期关闭，如问题仍然存在，您还可以再次通过Reopen重新打开提交此问题。
+
+
+==== State: Resolved by: cmadmin on 09 December 2019 18:32:58 ====
+
+  == Ning.Zhu@unisoc.com On 20191209T10:31:20 (xml) ==
+之前已验证pass，邮件已回复，走流程关闭
+
+Analysis and Solution:
+RootCause:
+之前已验证pass，邮件已回复，走流程关闭
+Solution:
+之前已验证pass，邮件已回复，走流程关闭
+
+==== State: Opened by: cmadmin on 09 December 2019 18:32:55 ====
+
+  == Ning.Zhu@unisoc.com On 20191209T10:30:40 (xml) ==
+之前已验证pass，邮件已回复，走流程关闭
+
+==== State: Opened by: waterworld on 17 May 2019 16:39:03 ====
+
+此物料需要使用，请认证，并帮忙回复测试时间，谢谢！
+
+==== State: Opened by: cmadmin on 17 May 2019 16:13:14 ====
+
+  == lu.huang@unisoc.com On 2019-05-17T08:06:08Z (json) ==
+贵司是否还会使用这颗物料？
+
+==== State: Opened by: cmadmin on 11 February 2019 10:15:11 ====
+
+  == lu.huang@unisoc.com On 20190211T02:14:26 (xml) ==
+第12顺位排队中
+
+==== State: Opened by: waterworld on 15 January 2019 11:41:21 ====
+
+如附档
+
+==== State: Opened by: cmadmin on 15 January 2019 10:41:06 ====
+
+  == lu.huang@unisoc.com On 20190115T02:31:23 (xml) ==
+还请上传物料规格书
+
+==== State: Opened by: cmadmin on 14 January 2019 16:35:32 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
+# SPCSS00550993|[SC9863A][Waterworld][9863][18部]请在9863平台上帮忙验证MEMROY,规格为KMQ820013M-B419|步骤：
+
+现象：
+
+分析：
+|
+==== State: Closed by: waterworld on 02 January 2020 14:17:03 ====
+
+closed.
+
+==== State: NeedInfo by: cmadmin on 02 January 2020 14:16:34 ====
+
+  == Alfred.Yang@unisoc.com On 2020-01-02T06:15:55Z (json) ==
+该单已在 SPCSS00591867 上处理，该patch可关闭。
+(2019-06-24T10:10:50Z)
+
+==== State: Opened by: waterworld on 17 May 2019 16:38:37 ====
+
+此物料需要使用，请认证，并帮忙回复测试时间，谢谢！
+
+==== State: Opened by: cmadmin on 17 May 2019 16:13:10 ====
+
+  == lu.huang@unisoc.com On 2019-05-17T08:04:59Z (json) ==
+贵司还会使用这颗物料吗？目前还在排队。
+
+==== State: Opened by: cmadmin on 11 February 2019 10:14:22 ====
+
+  == lu.huang@unisoc.com On 2019-02-11T02:13:46Z (json) ==
+第11顺位排队中
+
+==== State: Opened by: cmadmin on 14 January 2019 16:35:28 ====
+
+Dear Customer:
+ The Issue is under processing now.
+Thank you
+
+|
