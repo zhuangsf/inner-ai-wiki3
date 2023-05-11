@@ -11,3 +11,72 @@ android.ipsec.ike.cts.IkeSessionDigitalSignatureTest#testIkeSessionSetupAndChild
 看报错个人分析是因为连接超时，怀疑是谷歌后台这两天修改了什么导致的
 请问平台是否有收到这种报错
 谢谢||
+# SPCSS00600944|[SC9820E][Waterworld][A355][1部][TCL][KAIOS][Tiger K1] [2G网络下接收到的CMAS消息无内容显示]|[Pre condition to reproduce the case]
+ 手机处于2G网络
+
+[Test Step]
+ 1.手机接收到一条带内容的CMAS（ID:4371）信息
+
+[Expect Result]
+ 1.能够显示出CMAS的内容
+[Actual Result]
+ 1.无法显示CMAS的内容，消息内容显示空白
+
+分析：3G网络下没有问题的，kaios分析称是因为3G下的数据包字符长度比2G下的数据包长度大（超过了56字符长度）,而2G下不满56字符长度
+被按照ETWS消息解析，导致异常，需要修改vendor/sprd/gecko_ril/vendor_ril/ril/ril_worker.js，给了附件的0001-Bug-52726-Distinguish-with-cell-broadcast-and-etws-a.patch，但这个patch的内容
+我看我们代码是早就已经合入的，还请帮忙提供解决方法。
+log见附件NL Alert_V2.5.rar|
+==== State: Closed by: cmadmin on 10 August 2019 00:33:47 ====
+
+尊敬的客户，NeedInfo状态超过15个工作日贵司未有状态更新和反馈的问题，现做关闭处理。如果还有其他问题，请重新提交CR或者联系对应的TAM处理。 Thanks
+
+
+==== State: NeedInfo by: cmadmin on 25 July 2019 14:50:02 ====
+
+  == Auto@kaiostech.com On 20190725T06:46:54 (xml) ==
+=============== jin.zhang@kaiostech.com ==== 2019-07-25 14:22:56 ========================
+Close this at Kai side.
+
+==== State: NeedInfo by: cmadmin on 17 July 2019 11:05:18 ====
+
+  == Licun.Cheng@unisoc.com On 2019-07-17T03:00:32Z (json) ==
+同客户确认，客户看的是dom/system/gonk下的代码，所以是patch已经合入状态。已经告知客户，需要将patch合入vendor/sprd/gecko_ril/vendor_ril/ril仓库下。待客户反馈验证结果。
+(2019-07-16T11:12:28Z)
+
+==== State: Opened by: waterworld on 15 July 2019 17:29:28 ====
+
+请问展锐什么时候可以释放patch？如果patch是指附件的0001-Bug-52726-etws-a.patch，我看代码里确实是已经合入了。
+
+==== State: Opened by: cmadmin on 12 July 2019 15:54:29 ====
+
+  == Auto@kaiostech.com On 2019-07-12T07:49:45Z (json) ==
+=============== yu.zheng@kaiostech.com ==== 2019-07-12 14:58:47 ========================
+根据 双喜查看WW提供的测试对象版本，刷机后检查code中，没有对应patch。
+该测试版本为 A355_01C_3088X_ALWE_V2.8_20190626_UNLOCK_DEBUG ，
+
+请Unisoc 为WW/TCL提供对应ril patch
+
+==== State: Opened by: cmadmin on 09 July 2019 18:06:33 ====
+
+  == Auto@kaiostech.com On 20190709T10:02:30 (xml) ==
+=============== jin.zhang@kaiostech.com ==== 2019-07-09 17:06:19 ========================
+Need UNISOC to check and merge patch in
+`0001-Bug-52726-Distinguish-with-cell-broadcast-and-etws-a.patch`
+
+to `vendor/sprd/gecko_ril` if it's not merged.
+
+==== State: Opened by: waterworld on 09 July 2019 17:56:47 ====
+
+以下是对应的软件包
+链接：https://pan.baidu.com/s/18iF5O0zrmdFDOmtCakOP-Q 提取码：1ego 复制这段内容后打开百度网盘手机App，操作更方便哦
+
+==== State: Opened by: waterworld on 08 July 2019 10:27:31 ====
+
+this.CB_GSM_MESSAGEID_ETWS_BEGIN = 0x1100;
+this.CB_GSM_MESSAGEID_ETWS_END   = 0x1107;
+log里接收到的消息是4371，但是从log中却判断却是属于ETWS，现在问题点已经定位到了，还请kaios及展锐协助我们WW解决掉这个这个问题，这个问题是影响到所有项目的。
+
+==== State: Opened by: cmadmin on 05 July 2019 20:06:00 ====
+
+  == Licun.Cheng@unisoc.com On 20190705T12:03:17 (xml) ==
+客户反馈Kai提供的patch已经合入，但仍存在问题，请Kai继续分析。
