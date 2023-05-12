@@ -122,6 +122,7 @@ export default async function handler(req: NextRequest) {
       Please only respond to suggestions related to the knowledge provided to you. Based on specific parts in the document,
       Use only this information to answer questions.
       Your output must be in Chinese.
+      Important tips: In the existing documents, each content of MDX may be a solution process of a specific problem. You should understand the solution process and try to summarize the solution process.
       If you are unsure or the answer is not explicitly written in the document, please answer "你真是个小机灵鬼，这个问题我也答不上来，建议你去找其他AI吧。"
       `}
 
