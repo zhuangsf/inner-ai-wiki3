@@ -3,3 +3,571 @@
 背景：客户工厂量产机发现基带版本不带R
 解决：试产机器是9863A1，而最终量产机是9863A，所以基带显示不一样
 结论：9863A1的机器基带版本带R，9863A的机器基带版本不带R
+
+# systrace 的抓取
+systrace 的抓取有两种方法可以抓取：
+方法一：使用命令抓取
+    环境：
+          需要python2.7和相关模块环境，运行抓取命令时候按提示安装即可，
+           需要systrace.py环境，如：android-sdk_r24.4.1-windows\android-sdk-windows\platform-tools\systrace
+    在systrace.py目录执行命令：     
+         userroot或userdebug版本，具体命令如下：xx表示问题复现运行时间秒，xx.html为systrace；
+               python systrace.py sched freq idle sync irq disk workq datebase -b 20480 -t xx -o xx.html
+         user版本，具体命令如下：
+               python systrace.py sched freq idle sync -b 20480 -t xx -o xx.html
+方法二：采用手机自带的system tracing文件抓取prefetto-trace
+        1.system -> Developer options -> System Tracing -> 在Categories勾选需要抓取的类型-> Per-CPU buffer size中勾选需要的大小-> clear saved traces （清除无关的trace）->打开 show quick settings title
+        2.下拉状态栏 ->点击Record trace ->复现问题 ->点击stop  tracing，即可保存问题的prefetto-trace
+        3.抓取完成之后，并使用如下命令导出prefetto-trace：导出prefetto-trace：adb pull data/local/traces
+        
+# A11打包udc的软件做升级差分包
+背景：SMR正式版本A发现屏有问题需要更新udc.bin,而客户很着急 时间不允许在过一次SMR 所以用A版本替换udc.bin打包pac 为B版本，需要已 B 版本作为基础版本，新编的C版本 为目标版本，做GOTA验证功能，B 和 C 都是更新了udc.bin的
+基础：A11支持UDC gota升级
+A版本到C版本的差分包：
+        正常用target包做即可，按理来说是OK的，本项目是客户配置的gota服务器，所以未进行验证，后续可以尝试验证下
+B版本到C版本的差分包：
+        因为B版本是打包的udc的pac，所以没有target包，复制A版本的target包出来，替换target包中的udc.bin和UDC_config.img为C版本中的（参照FAQ:删除zip中特定文件、zip新增文件）,
+然后在使用target包做差分包，验证升级OK
+结论：ota包中是有udc信息的，需要同pac对应才能做出OK的升级包，
+
+# android9.0 上如何在不恢复出厂设置的情况下再次启动google开机向导  android13.0也有效
+此方法在安卓13 LAVA 上 验证有效
+android9.0 上如果需要在不恢复出厂设置的情况下再次启动google开机向导，需执行以下操作。
+adb shell settings put secure user_setup_complete 0
+adb shell settings put global device_provisioned 0
+adb shell pm enable com.google.android.setupwizard/.SetupWizardActivity
+adb shell am start -n com.google.android.setupwizard/.SetupWizardActivity
+另外如果需要调试google 开机向导可打开setupwizard的调节开关
+adb shell setprop log.tag.SetupWizard VERBOSE
+如果需要在开机向导首界面直接跳过开机向导，可从左上角开始顺时针依次点击界面里四个角的空白处即可。
+
+# HDR与闪光灯为何不能同时打开？
+HDR，即高动态光照渲染，你开启HDR后，手机会识别拍照时环境的亮度，拍照时会给照片自动加强亮度。
+但如果开启了闪光灯，会影响拍照成像效果，所以一般手机都默认开启hdr的时候是不能开启闪光灯的
+
+# 音频参数合入相关注意事项
+A13 手机中的音频参数存放路径为：/odm/etc/audio_params/sprd/
+音频参数和入后，pull出手机里面的音频参数与zprj\zaudio_para\xxxxx进行对比，判断是否成功合入，如果两者对比有差异，
+去zgencode.pl中查看该平台调用zprj\zaudio_para\xxxxx的方式是否正确。
+
+A12 7731E 9832E合入音频参数：
+首先查看Config.mk指定的音频参数
+----音频参数
+ZCFG_AUDIO_PARA_CONFIG=audio_para_FS171LE_CF1_WS516S
+其次再合入音频参数文件
+zprj\zaudio_para\audio_para_FS171LE_CF1_WS516S\
+
+A12 UMS9230合入音频参数：
+根据device\sprd\mpool\module\audio\msoc\qogirl6\qogirl6.mk的路径内置
+内置生效路径为：
+device\sprd\mpool\module\audio\msoc\qogirl6\system\etc\audio_params\SmartAmp
+验证内置的参数是否生效，可以使用adb 命令将参数pull出来和内置的参数进行对比
+
+PULL参数：
+每次音频工具调试后，优先pull出data/vendor/local/media路径参数，此路径即为调试好的音频参数
+如果未调试，下载好软件之后，优先pull出/vendor/etc/audio_params路径参数
+PUSH参数：
+直接push到路径/vendor/etc/audio_params，然后重启样机即可。
+
+# windows中断与共享的连接（windows中不能连接同一服务器的两个用户）
+进入cmd
+net use * /del -删除所有用户
+net use \\192.168.50.27\workspace /del  -删除指定用户
+
+# GOTA FULL是什么意思
+GOTA FULL 就是任意版本到最新版本的差分包
+
+# A12制作差分包
+首先要保证自己编译正式软件的环境没有被清空，千万不能清空环境：
+1. 在自己编译软件的服务器的sprd.mocor12.androidS里分别放入老版本和新版本的target-file的zip（在编译后的FOTA中）。
+2. 到自己编译的服务器的该目录下sprd.mocor12.androidS：
+执行命令：
+./out/host/linux-x86/bin/ota_from_target_files -v -i A-target.zip（基础版本） B-target.zip（最新版本） A-B_update.zip（差分包名称）
+3.生成差分包即可。
+
+# CKD与SKD
+CKD:国外贴片，国外组装
+SKD:国内贴片，国外组装
+CKD(Complete Knocked Down)为全散件组装
+SKD(SemiKnocked Down)半散装件
+
+# adb 关机指令
+reboot -p
+或
+adb reboot -p
+前者系统会有10s的提醒，后者是直接执行关机。
+
+# 什么是BTS？
+简单理解：
+BTS是整个GMS认证中的一个，且只有3pl提交谷歌系统上才可以测试，
+主要是测试system.img是否有恶意应用(pha)，是否有安全补丁漏洞(CVE)
+Build Test Suite (System Image Scanning)
+
+# 为什么不能关闭volte而开启vowifi(开vowifi则必须开volte)
+1.vowifi不能直接切到2/3G 网络 (展讯平台不支持)
+2.vowifi信号差的时候可以切volte
+3.volte信号差的时候，可以回落到2G/3G -----可以继续通话(电话用2/3G，
+    4G用于网络)
+也就是说，如果volte关闭，一旦vowifi信号出现问题，通话就会中断；
+如果volte开启，vowifi信号差，还可以切到volte继续进行通话
+
+# A12怎么确认vowifi白名单是否开启
+A11闭源AP，A12已经移到CP：vowifi白名单参见如下参数：
+OPERATOR_NV_IMS\ims_over_wifi\ims_over_wifi_enable\ims_over_wifi_enable[0]
+工具查看方法:NV_tool->加载RDNV->View->Operator NV Config->选择运营商如沙特STC->选择OPERATOR_NV_IMS->ims_over_wifi->ims_over_wifi_enable
+0是关闭，1是开启
+
+# A12怎么确认volte白名单是否开启
+从log判断：
+21757-1        11:03:01.285     11:03:01.285     mnphone_volte: ImsIsEnalbe: ims_voip:1, preferDmn:3, imsVcAvl:1,isInWhitelist:0        MN_AL          0:00:19.687   
+//log中 isInWhitelist:0代表没有加vlote白名单
+
+# 通讯：软件NV配置比硬件实际频段少会有什么影响
+软件比硬件频段少是没有风险的,因为搜网是软件控制的，
+软件里没有的不会去搜的.
+注：如果是已经量产项目，需要减少频段，那就不建议这样做了
+
+# 通讯：软件NV配置比硬件实际频段多会有什么影响
+如果软件比硬件频段多，理论上是不允许的， 像这种软件有B28，
+硬件没有的，分两种情况
+1，终端所在区域没有band28信号，这个理论上风险不大，
+但是可能有不预知的问题
+2，终端所在区域有band28信号，这个风险就大了，
+因为虽然没有band28的硬件，但是在信号好的区域，
+终端是能接收到band28的基站信息的，但是发射更弱，肯定注册不上，
+如此就可能反复搜网注册，导致搜网时间长，甚至会出现死机的情况，
+同时这个还跟运营商网络的设置有关。
+
+如果出货区域有band28，建议是软件把band28关掉，
+如果后续涉及fota的话，全部fota到没有band28的配置上
+
+# 制作fota的时候，提示jdk版本不匹配
+可以根据代码Android版本，设置环境变量
+export PATH=~/newdisk/android10/sprd.mocor10.androidQ/prebuilts/jdk/jdk8/linux-x86/bin:$PATH
+
+# 从log中查看关机过程
+log中查看关机过程
+
+   手指抬起：
+Line 20693: M015739  05-17 12:03:58.261  1119  1255 D InputReader: dispatchTouches action UP now(ns): 107955181229
+
+关机过程：
+    Line 20699: M01573F  05-17 12:03:58.283  1119  1119 D ShutdownThread: Notifying thread to start shutdown longPressBehavior=1
+    Line 20700: M015740  05-17 12:03:58.285  1119  1119 D ShutdownThread: beginShutdownSequence,mReason:userrequested
+    Line 20701: M015741  05-17 12:03:58.288  1119  1119 D ShutdownThread: Attempting to use SysUI shutdown UI
+    Line 20702: M015742  05-17 12:03:58.288  1119  1119 D ShutdownThread: SysUI handling shutdown UI
+    Line 20704: S015744  05-17 12:03:58.295  1119  7428 I ShutdownThread: Logging pre-reboot information...
+    Line 20707: M015747  05-17 12:03:58.299  1119  7428 I ShutdownThread: Sending shutdown broadcast...
+    Line 21890: M015B88  05-17 12:03:58.774  1119  7428 I ShutdownThread: Shutting down Bluetooth
+    Line 21894: M015B8C  05-17 12:03:58.776  1119  7428 I ShutdownThread: Shutting down activity manager...
+    Line 23088: M01600A  05-17 12:03:59.156  1119  7428 I ShutdownThread: Shutting down package manager...
+    Line 23138: M01603C  05-17 12:03:59.185  1119  7499 I ShutdownThread: Waiting for Radio...
+    Line 23139: M01603D  05-17 12:03:59.185  1119  7499 I ShutdownThread: Radio shutdown complete.
+    Line 23144: M016042  05-17 12:03:59.186  1119  7428 I ShutdownThread: mPowerManager.goToSleep
+
+最后的安卓log：
+S0161FD  05-17 12:03:59.661  1119  1183 D AutofillManagerService: Close system dialogs
+S0161FE  05-17 12:03:59.661  1119  1611 D SSense.SRecogCollector: windowMode for  com.android.launcher3: 1
+S0161FF  05-17 12:03:59.661  1119  1119 D InputMethodManagerService: hide IME Menu by Broadcast.
+S016200  05-17 12:03:59.661  1119  1119 V InputMethodMenuController: Hide switching menu
+S016201  05-17 12:03:59.661  1119  1611 D SSense.SRecogCollector: checkSurfaceViewState:  for package:com.android.launcher3, uid:10150
+S016202  05-17 12:03:59.662  1119  1611 D SSense.SRecogCollector: checkSurfaceViewState: no App has visible SurfaceView!!
+S016203  05-17 12:03:59.662  1119  1611 D SSense.SRecogCollector: handleVisibleAppChanged: SSense.AppBehaviorInfo{packageName: com.android.launcher3, uid: 10150, mVisibleComponent:com.android.launcher3/com.android.searchlauncher.SearchLauncher, mRequestSensorType: 0, mRequestAudioType: 0, mRequestmAudioPlayerState: 0, mRequestVideoType: 0, mRe05D56 <6> [  109.256142] c0[05-17 12:03:58.256] [sprd-aud-agdsp] agdsp_access_enable out
+
+# 从log中查看开机耗时情况
+从log中查看开机耗时情况:
+
+结合前面的分析，并结合20220519-log\ylog\ap\001-0518_180028_poweron\
+中的log:
+
+//uboot启动耗时13s
+[00013264] enter mode normal, consume time: 12375ms, boot_reason: Pbint triggered,pwroff_reason: device power down
+
+//kernel启动耗时5.2s
+00A60 <14> [    5.280094] c7[05-18 18:00:17.280] init: init first stage started!
+
+//安卓阶段启动耗时73s
+E0007BE  05-18 18:00:29.749   541   541 I boot_progress_start: 16955
+E000B54  05-18 18:00:32.398   541   541 I boot_progress_preload_start: 19604
+E0017EC  05-18 18:00:36.286   541   541 I boot_progress_preload_end: 23492
+E001838  05-18 18:00:37.376  1132  1132 I boot_progress_system_run: 24582
+E001DD8  05-18 18:00:39.759  1132  1132 I boot_progress_pms_start: 26965
+E001FB7  05-18 18:00:40.097  1132  1132 I boot_progress_pms_system_scan_start: 27304
+E0023CD  05-18 18:00:46.827  1132  1132 I boot_progress_pms_data_scan_start: 34034
+E0023D1  05-18 18:00:46.838  1132  1132 I boot_progress_pms_scan_end: 34044
+E003D40  05-18 18:00:47.467  1132  1132 I boot_progress_pms_ready: 34673
+E0063AF  05-18 18:00:56.064  1132  1132 I boot_progress_ams_ready: 43271
+E0092CB  05-18 18:01:00.577  1132  1204 I boot_progress_enable_screen: 47783
+
+E00B744  05-18 18:01:26.631  1132  1204 I wm_boot_animation_done: 73837
+
+# 从log中查看psensor注册
+从log中查看psensor注册：
+
+//响铃 —— 13:36:37.617 -> 注册Psensor —— 13:36:38.648
+Line 120526: S01C45B  09-02 13:36:37.617  1100  1444 I Telecom : CallsManager: setCallState DIALING -> DIALING, call: [Call id=TC@2, state=DIALING, tpac=ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, ***, UserHandle{0}, cmgr=ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, ***, UserHandle{0}, handle=tel:***86, vidst=A, childs(0), has_parent(false), cap=[ sup_hld mut !v2a], prop=[]]: (...->CS.crCo->H.CS.crCo->H.CS.crCo.pICR)->CSW.hCCC(cap/cast)@E-E-Alc
+Line 122624: M01CBA9  09-02 13:36:38.648  1100  1199 D SensorManager: registerListenerImpl sensor = {Sensor name="Proximity Sensor", vendor="Sprd Group Ltd.", version=1, type=8, maxRange=5.0, resolution=1.0, power=0.15, minDelay=0}, delayUs = 0, latencyUs = 0, listener = com.android.server.display.DisplayPowerController$7@e6b71c0
+
+# 从log中查看app启动耗时
+从log中查看app启动耗时：
+
+此系列log代表这个activity启动花了多少时间
+M31021F  05-18 23:50:35.060  1152  1238 I ActivityTaskManager:
+Displayed com.google.android.apps.youtube.music/.activities.MusicActivity:
++1s521ms
+
+# 从log中查看log等级
+从log中查看log等级：
+
+0-phoneinfo.log：
+关键字  loglevel
+
+# 从log中查看电量百分比
+从log中查看电量百分比：
+
+关键字:healthd: battery
+kernel log中搜索，也可以搜索vbat
+
+# 从log中查看主闪的开关动作
+从log中查看主闪的开关动作：
+
+ctrl: led_index 1 status 0x11    //开主闪
+    Line 25049: 061D8 <6> [  900.880867][11-14 22:39:16.880] sprd_flash_gpio_open_highlight: idx =0x3
+    Line 25089: 06200 <6> [  901.441331][11-14 22:39:16.441] FLASH_DRV:: 10048 252 sprd_flash_ctrl : ctrl: led_index 3 status 0x10    //关主闪
+    Line 25092: 06203 <6> [  901.442359][11-14 22:39:16.442] sprd_flash_gpio_close_preflash: idx =0x3
+    Line 25093: 06204 <6> [  901.443372][11-14 22:39:16.443] sprd_flash_gpio_close_highlight: idx =0x3
+
+# 从log中查看相机的最大尺寸
+从log中查看相机的最大尺寸
+
+M00C19E  06-22 11:21:14.420   529 23109 D Cam3Setting: 1127, getLargestSensorSize: camId=0, max_width=4192, max_height=3104 //sensor最大size
+///app获取的最大size是w=4000, h=3000，导致配流size为4000，3000，12m
+>>M00C6E2  06-22 11:21:14.914   529 23109 I Cam3HWI : 1121, configureStreams: :hal3: camId=0, prev: w=960, h=720, video: w=0, h=0, callback: w=0, h=0, yuv2: w=320, h=240, cap: w=4000, h=3000 yuv3: w=0, h=0,
+
+# 从log中查看摄像头拍照的情况
+关键字：CAPTURE_PHOTO
+   Line 629220: M094CE7  06-25 11:28:44.981 21316 21548 I CAM2PORT_AndCam2AgntImp: AppFW handleMessage - action = 'CAPTURE_PHOTO_WITH_THUMB'
+    Line 630319: M095130  06-25 11:28:46.277 21316 21548 I CAM2PORT_AndCam2AgntImp: AppFw takePicture onImageAvailable
+    Line 630320: M095131  06-25 11:28:46.279 21316 21548 I CAM2PORT_SprdAndCam2Agn:  planeList.length = 3
+>>> 未返回大图时点击
+    Line 631135: M09544E  06-25 11:28:47.184 21316 21316 I CAM_AutoPhotoModule:  call handleActionDown
+>>> 返回大图
+    Line 631780: M0956D2  06-25 11:28:47.704 21316 21548 I CAM2PORT_AndCam2AgntImp: AppFw takePicture onImageAvailable
+    Line 631782: M0956D4  06-25 11:28:47.705 21316 21548 I CAM2PORT_SprdAndCam2Agn:  planeList.length = 1
+
+# 从log中查看软件是user还是debug的，fingerprint是多少
+从log中查看软件是user还是debug的，fingerprint是多少：
+
+0-phoneinfo.log：
+关键字：fingerprint，fp也包含了user和debug的区分，
+或者看ro.debuggable也可以
+
+# 从log中查看短信彩信的发送情况
+上层log：
+//卡一发送第三条短信失败
+R1BD246  08-16 12:40:19.973  1204  2758 D RILJ    : [5639]> SEND_SMS [PHONE0]
+R1BD2A6  08-16 12:40:24.986  1204  1933 D RILJ    : [5639]< SEND_SMS error 2 [PHONE0]
+R1BD2A7  08-16 12:40:24.986  1204  1933 D RilRequest: [5639]< SEND_SMS error:
+//卡二发送第四条短信成功
+R1BD40B  08-16 12:40:28.167  1204  2758 D RILJ    : [5640]> IMS_SEND_SMS [PHONE1]
+R1BD4FE  08-16 12:40:32.839  1204  1933 D RILJ    : [5640]< IMS_SEND_SMS { mMessageRef = 1, mErrorCode = 0, mAckPdu = , {x-message-id:0}} [PHONE1]
+
+# 从log中查看蓝牙耳机音量等级情况
+查看log，通话后再连时默认的音量是10，按了音量加后蓝牙通话的音量切换到了8
+M025D36  03-04 17:07:40.082   460   868 I audio_hw_voice: start_voice_call success,out:0xf2400c70
+M02AC20  03-04 17:08:19.267  2130  2342 I vol.Events: writeEvent level_changed STREAM_BLUETOOTH_SCO 10
+M02B16C  03-04 17:08:28.185  1060  8946 D MediaSessionService: dispatchVolumeKeyEvent, pkg=com.android.settings, opPkg=com.android.settings, pid=2958, uid=1000, asSystem=true, event=KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_VOLUME_UP, scanCode=115, metaState=0, flags=0x8, repeatCount=0, eventTime=209453, downTime=209453, deviceId=4, source=0x101, displayId=-1 }, stream=-2147483648, musicOnly=false
+M02B1AC  03-04 17:08:28.227  2130  2342 I vol.Events: writeEvent level_changed STREAM_BLUETOOTH_SCO 8
+
+# 从log中查看蓝牙开启和关闭以及使用的情况
+关闭蓝牙：
+BluetoothManagerService: disable()//开始关闭
+BluetoothAdapter: isLeEnabled(): OFF//成功关闭
+开启蓝牙:
+BluetoothManagerService: enable(com.android.systemui)//开始开启
+BluetoothAdapter: isLeEnabled(): ON//开启成功
+-------
+BluetoothAdapterService: startDiscovery   //开始扫描能配对的设备
+BluetoothAdapterService: cancelDiscovery //取消扫描
+BluetoothBondStateMachine: Bond address is:28:02:44:E5:5E:5B//开始配对
+BluetoothBondStateMachine: Entering PendingCommandState State
+CachedBluetoothDevice: onProfileStateChanged: profile PAN, device=28:02:44:E5:5E:5B, newProfileState 0//配对成功
+BluetoothPhonePolicy: Received unexpected intent, action=android.bluetooth.device.action.ACL_CONNECTED//收到连接消息
+BluetoothPhonePolicy: processDeviceConnected, device=28:02:44:E5:5E:5B//连接成功
+
+# 从log中查看wifi开启和关闭以及使用的情况
+关键字WifiService: 
+setWifiEnabled package=com.android.systemui uid=10166 enable=true//enable开启wifi
+
+连接wifi失败：
+WifiClientModeImpl: stopIpClient IpClientWithPreConnection: false
+
+连接wifi成功：
+ConnectivityService: [106 WIFI] validation passed
+GnssNetworkConnectivityHandler......//更新网络状态值
+
+# 从log中查看sim卡的插入状态、mccmnc等相关信息、数据流量使用个情况
+从log中查看sim卡的插入状态、mccmnc等相关信息：
+关键字：getActiveSubscriptionInfo  ，mccmnc
+
+数据流量使用个情况：
+关键字：
+SST     :
+NetworkInfoNotification
+
+# 从log中查看CPU的使用情况，几核、频率是多少
+从log中查看CPU的使用情况，几核、频率是多少：
+
+0-sysinfo.log，可以看到cat /proc/interrupts
+sgm.csv,可以分别看到CPU(综合)，CPU0,CPU1,...CPU7(单核)的使用百分百和频率
+
+# 怎样在Android log中查看屏幕亮灭屏的时间点
+关键字：
+screen_toggled    ，0是关闭1是开启
+screen off   灭屏
+screen on   亮屏
+
+# 默认：user版本默认打开ylog中的sysdump
+默认：user版本默认打开ylog中的sysdump：
+
+PRODUCT_PROPERTY_OVERRIDES += persist.vendor.sysdump=on   
+off是关闭,不同Android版本可采用adb调试，A10验证ok
+
+# 怎么从ylog里面看内存占用了多少
+怎么从ylog里面看内存占用了多少？
+0-sysinfo.log ，可以看到cat /proc/meminfo ，大概两分钟会执行一下
+参考：SPCSS01022299
+
+# 如何定位是什么引起的上层重启
+如何定位是什么引起的上层重启？
+
+查看重启原因，首先看一下0-lastlog.log，重启的原因
+1.如果是出现了dump信息，如：reason: Fatal exception, sprd_sysdump_inf...
+那么，就要抓dump log了，ylog里面要开启system dump开关复现问题，
+且要保证测试软件pac跟vmliux对的上，特别注意，带R编译的版本，
+vmlinux不匹配，分析不了dump，dump通常要给展锐看一下，
+dump的结论会给的比较快
+
+2.如果没有出现dump，多半就是上层引起的重启了，要视具体的情况分析，
+有可能是正常重启，有可能是异常重启(比如备注中的CQ，
+未写谷歌key竟然也能引起重启)
+参考：SPCSS01015946linux查看内存大小
+
+# linux查看内存大小
+linux查看内存大小：
+cat /proc/meminfo
+MemTotal: 32941268 kB //内存32G
+
+# APK如何重新签名 有些apk必须使用我们平台的签名，才能正常运行
+有些apk必须使用我们平台的签名，才能正常运行
+
+设置jdk的环境变量，然后再执行signapk.jar即可
+export PATH=~/workspaces_500g/12.0_XM/sprd.mocor12.androidS/prebuilts/jdk/jdk9/linux-x86/bin:$PATH
+
+java -Xmx2048m -Djava.library.path="out/host/linux-x86/lib64" -jar signapk.jar --min-sdk-version 23 platform.x509.pem platform.pk8 old.apk new.apk
+
+# payjoy为什么要默认imei
+payjoy：
+同时解释一下为什么需要确认默认IMEI的问题。payjoy的代码有防止用户非法更改IMEI的功能，具体逻辑：
+当手机第一次开机之后payjoy会把手机的IMEI转存到FRP分区里面，此后payjoy的代码都会去读FRP分区里面的数据，所以无论用户如何更改IMEI，
+payjoy的服务器都知道手机是受payjoy控制的。因此，这带来一个潜在的问题，假如手机有一个原始的IMEI，产线员工测试的时候一开机，
+原始的IMEI就被记录到了FRP分区类面了，而随后产线写入的正式IMEI无法被payjoy的代码认可。
+为了解决这个问题，你们可以写成一个特定的值，payjoy代码检测到之后会做擦除处理。4.做防回刷，防止机器回刷到旧版本（此功能可以在量产版本再配置）
+
+# 5G wifi 使用CMW500仪器测试连接不上信道，怎么打开信道
+5G wifi 使用CMW500仪器测试连接不上信道，怎么打开信道：
+
+手机Debug版本，WIFI打开的状态，执行如下指令：
+adb root, adb remount, adb shell
+adb shell /vendor/bin/hw/wpa_cli -g@android:wpa_wlan0 ifname=wlan0 driver country MX(这个是国家码)
+
+# EVT、DVT、PVT
+BVT是Engineer verification Test，工程样品验证测试，基本验证测试，对完成的代码进行编译和连接，产生一个构造，以检查程序的主要功能是否会像预期一样进行工作。
+
+DVT是 Design Verification Test的简称，设计验证测试，是硬件生产中不可缺少的一个检测环节，包括模具测试、电子性能、外观测试等等。
+
+PVT全称为Process Verification Test，意为小批量过程验证测试，硬件测试的一种，主要验证新机型的条功能实现状况并进行稳定性及可靠性测试。
+
+# TR报告是什么
+Technical Report---技术报告    
+展锐平台GMS失败项无修改方案，需要豁免，就需要展锐提交TR给谷歌申请豁免，豁免文档通常会包含一个豁免id(谷歌 issue id)
+
+# EMMC、EMCP、UFS、UMCP
+EMMC和UFS都是指ROM存储芯片，T606芯片支持UFS
+EMCP=EMMC+DDR   
+UMCP=UFS+DDR
+mantis上看到EMCP和UMCP那就是一体式存储芯片，看到EMMC/UFS就是分离式设计
+
+# adb reboot bootloader   和  adb reboot fastboot有啥区别
+adb reboot 到bootloader ,fastboot ,recovery三个的区别：
+
+1，adb reboot bootloader 
+是进入到引导安装界面如下 图，这时可以安装boot分区呀，system分区之类，有点像windows安装PE引导文件一样。
+
+2，adb reboot fastboot 是进入到fastboot界面
+
+3、adb reboot recovery是进入到recovery界面,
+用于恢复系统安装个补丁啥的。就像进入了windowsPE的镜像中了。
+可以删除原有系统
+
+# 导出手机属性到本地文件
+导出手机属性到本地文件：
+adb shell getprop >e:\build.prop   
+
+# adb安装apk、录像、截屏
+安装apk：
+adb install -r <apk文件路径> 
+adb push apk名称（注意不要带中文）
+
+录像：
+adb shell screenrecord --time-limit 60 /sdcard/demo.mp4
+
+截屏：
+adb shell screencap -p /sdcard/screen.png
+
+# A12和A13能在不重新编译软件的情况下重新打包wcn或者gnss吗
+不能
+从A12开始展锐陆续把原本单独一个分区的WCN和GNSS对应的bin文件移到super分区里面，A12是移到vendor/firmware，A13是移到odm/firmware
+简单理解就是以前更新WCN或者GNSS的bin文件只需要重新签名打包即可，但是现在不行了
+1、A12: 原WCN和GNSS的物理分区还是保留，但是实际里面的内容是没用的
+2、A13: 已经删除了WCN和GNSS的物理分区
+
+注意事项：
+        1、gnssmodem.bin和wcnmodem.bin我们的设计是编译的时候zgencode或者zoutput会从nvandmodem目录下拷贝到
+              vendor\sprd\release\unisoc_bin\xxxx\xxx 下面，编译的时候展锐自动会从这里拷贝到out下，所以更新WCN或者GNSSS，只需要放到nvandmodem下对应的目录即可
+        2、更新WCN或者GNSS需要重新make编译，或者解锁push验证，不能直接打包
+
+# 如何修改属性值 buildinfo.sh、 Makefile
+如何修改属性值 buildinfo.sh、 Makefile？
+
+属性值的长度不能超过91字节，
+fingerprint前三个属性值不能有空格和加号。
+
+# 量产之后还能修改system分区大小吗？
+system分区大小量产之后不能修改，
+否则ota升级不能成功
+
+# Android.mk中 +=和:=的区别
++=，是累加的意思
+:=，是重新赋值的意思
+
+如添加app:
+device_append.mk
+PRODUCT_PACKAGES += XoshPlay JinXunAppLock salestracker
+
+我们一定是用+=的方式，否则可能会引起缺失apk
+
+# 系统进入recovery，界面提示Rescueparty，是什么原因
+系统进入recovery，界面提示Rescueparty，是什么原因？
+
+其原因主要有如下两方面
+      1. system_server 在 5 分钟内重启 5 次以上。
+      2. 永久性系统应用在 30 秒内崩溃 5 次以上
+
+# 重启类问题处理经验
+1.确认现象、复现步骤、复现概率、是否是单机复现、是否有交叉验证过主板
+
+2.安排测试部，尝试抓ylog，抓ylog时注意一定要手动开启sysdump开关
+测试部应当考虑开关机、monkey、Sleep/Wakeup 以及灭屏待机的测试
+
+3.如果user版本能复现，debug版本不能复现，这种特别注意，关闭ylog，
+手动开启sysdump开关再复现
+
+4.同步要确认下，DDR和EMMC，是否有过展讯认证，对应的料是否有专用优化patch
+
+5.如果不好抓log或复现时间长的，应当跟测试部一起拉通会议，
+想尽一切办法复现
+
+6.如果从ylog看不是上层应用发起的重启，那可以直接提交展讯，转由驱动处理
+
+7.还可以验证的是，针对DDR的降频和升压，看现象是否有改善
+
+8.还可以验证的是，drive only版本是否能复现问题，用于排除上层客需
+
+9.针对dump的，需要提交展讯，dump log和软件对应的vmlinux文件，
+不能加R编译(vmlinux不匹配)
+
+10.每个项目前期应当安排稳定性测试，monkey测试的时候建议部分机器插sim卡
+和连接翻墙wifi
+
+11.一旦解决方案验证有效，需要用正式版本给测试部继续安排压测，重启类问题有可能是monkey异常，
+有可能是待机异常，有可能是反复重启过程中发生dump
+
+12.如果复现概率较大，可以考虑找项目经理同步安排换料对比测试，
+确定就是物料本身异常
+
+# 什么是真闪、假闪？
+对上层来说并没有什么感官不同，都是会闪烁发光，只是底层的区别。
+硬件上设计真闪是有外部芯片控制的，而假闪没有外部芯片控制，
+假闪是主芯片通过IO口去直接控制的。一般由驱动同事来进行修改配置。
+但展讯的真假闪的叫法和我们正好相反 跟展讯反馈的时候 这点要注意。
+
+# GMS失败项分析
+1.SMR是否符合要求---对比报告属性
+2.查看报告失败项fail信息提示
+3.了解常见失败项以及对应测试手法和环境
+4.CQ查找+gerrit(grep/gitk)搜索修改记录
+5.查看屏帧率log日志文件
+6.查看测试项源码
+7.使用jadxgui反编译测试apk,再打印日志追踪
+
+# 屏幕密度配置多少合适
+1、density相关适配和计算
+先根据lcd实际的宽高（单位mm）计算出屏幕尺寸即对角线（单位inch），这些参数请找模组厂或ic确认。
+ro.sf.lcd_width*ro.sf.lcd_width+ro.sf.lcd_height*ro.sf.lcd_height=对角线(lcd spec中有dispaly size)*25.4的平方
+
+2、根据屏幕尺寸和像素计算出密度
+density =  （横向像素^2 + 纵向像素^2 ）^（1/2） /屏幕尺寸(单位inch)
+
+注意ro.sf.lcd_density值的设置，要写成如下固定一个相近的值。
+
+ldpi (low) ~120dpi
+mdpi (medium) ~160dpi
+hdpi (high) ~240dpi
+xhdpi (extra-high) ~320dpi
+xxhdpi (extra-extra-high) ~480dpi
+~560dpi
+xxxhdpi (extra-extra-extra-high) ~640dpi
+
+3.宏配置
+如下更改查看是否可以
+PRODUCT_AAPT_CONFIG := xhdpi hdpi mdpi normal 180dpi
++PRODUCT_AAPT_PREF_CONFIG := hdpi
+
+可参考cq：SPCSS00637601
+
+# 开机logo有什么要求
+a.Power by android logo 距离屏幕底部需要至少保留Power by android logo的高度（示例中的y），go版本不包含go edition部分的高度，同常规版本，当前logo未达到此标准；
+b.Power by android logo的宽度需要在屏幕宽度的40%到50%之间，当前logo未达到此标准，
+c.请注意Power by android logo的大小不能超过OEM品牌logo 的90%，请自行在合理范围内选择（将powerby android logo的宽和高均设置为小于OEM logo宽和高的90%，方便审核）。
+d.根据b和c的要求，推出，logo的宽度>=40/0.9% = 44.444444444444444444444444444444%
+
+# 怎样在手机上验证软件是否已过认证
+判断手机是否已经过认证：
+
+1.手机连接外网
+2.打开Play store并登录google 账号
+3.在Settings->About->Play Protect Certification查看认证信息
+4.连接外网之后需要静置一段时间
+
+# 谷歌商店-设置-显示设备未认证可能的原因
+a.imei和sn号不合法
+imei-862359040005354
+sn-
+b.oem解锁了
+c.是固定fingerprint处理的，部分属性不一致，
+如安全补丁不匹配、fingprint的前三个属性不对、谷歌包不匹配
+d.没写谷歌key--这个影响很小
+e.谷歌商店缓存--恢复出厂再试试
+最大的可能性是b和c
+其中b这一条：主要是看手机开机的时候，左上角是否有unlock字样，如果有的话，就说明手机解锁了，需要重新上锁才能显示认证
+
+# 怎样手动更新mainline
+设置，about phone，安卓版本，Google play system update
+缩写：GPSU：Google Play System Update，谷歌play系统更新
+
+# 谷歌拨号卡顿，可能的原因
+1.谷歌服务正在后台更新，拨号依赖谷歌服务，但服务被冻结或杀死，ylog关键字可以搜索frozen和am_kill
+2.换展讯拨号不卡顿的话，那么对比可以得出结论，就是谷歌apk问题，可能跟谷歌包版本有关系
+3.go版本和非go版本区别。A12 4月包里面，go版本未开启gpu渲染，可反编译查看配置：application android:hardwareAccelerated="false"，而非go版是true
+
