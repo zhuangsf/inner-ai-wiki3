@@ -1,3 +1,8 @@
+# A11打包udc的软件做升级差分包
+背景：SMR正式版本A发现屏有问题需要更新udc.bin,而客户很着急 时间不允许在过一次SMR 所以用A版本替换udc.bin打包pac 为B版本，需要已 B 版本作为基础版本，新编的C版本 为目标版本，做GOTA验证功能，B 和 C 都是更新了udc.bin的 
+基础：A11支持UDC gota升级 A版本到C版本的差分包： 正常用target包做即可，按理来说是OK的，本项目是客户配置的gota服务器，所以未进行验证，后续可以尝试验证下 
+B版本到C版本的差分包： 因为B版本是打包的udc的pac，所以没有target包，复制A版本的target包出来，替换target包中的udc.bin和UDC_config.img为C版本中的（参照FAQ:删除zip中特定文件、zip新增文件）, 然后在使用target包做差分包，验证升级OK 
+结论：ota包中是有udc信息的，需要同pac对应才能做出OK的升级包，
 # SPCSS01168509|[SC9863A1][Waterworld][FS301-A13][13411][智能手机][A6][QZ]HAC:vowifi无法连接上5GwifiB3频段|HAC:vowifi无法连接上5GwifiB3频段
 A12有项目用这种方式设置之后就可以连接，
 vendor/bin/hw/wpa_cli -iwpa_wlan0 -p/dev/socket DRIVER country MX
