@@ -254,6 +254,7 @@ export function SearchDialog() {
 
               <div className="relative">
                 <Input
+                  autoFocus
                   placeholder="输入问题..."
                   name="search"
                   value={search}
