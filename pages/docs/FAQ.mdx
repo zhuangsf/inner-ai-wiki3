@@ -46,28 +46,7 @@ HDR，即高动态光照渲染，你开启HDR后，手机会识别拍照时环�
 但如果开启了闪光灯，会影响拍照成像效果，所以一般手机都默认开启hdr的时候是不能开启闪光灯的
 
 # 音频参数合入相关注意事项
-A13 手机中的音频参数存放路径为：/odm/etc/audio_params/sprd/
-音频参数和入后，pull出手机里面的音频参数与zprj\zaudio_para\xxxxx进行对比，判断是否成功合入，如果两者对比有差异，
-去zgencode.pl中查看该平台调用zprj\zaudio_para\xxxxx的方式是否正确。
-
-A12 7731E 9832E合入音频参数：
-首先查看Config.mk指定的音频参数
-----音频参数
-ZCFG_AUDIO_PARA_CONFIG=audio_para_FS171LE_CF1_WS516S
-其次再合入音频参数文件
-zprj\zaudio_para\audio_para_FS171LE_CF1_WS516S\
-
-A12 UMS9230合入音频参数：
-根据device\sprd\mpool\module\audio\msoc\qogirl6\qogirl6.mk的路径内置
-内置生效路径为：
-device\sprd\mpool\module\audio\msoc\qogirl6\system\etc\audio_params\SmartAmp
-验证内置的参数是否生效，可以使用adb 命令将参数pull出来和内置的参数进行对比
-
-PULL参数：
-每次音频工具调试后，优先pull出data/vendor/local/media路径参数，此路径即为调试好的音频参数
-如果未调试，下载好软件之后，优先pull出/vendor/etc/audio_params路径参数
-PUSH参数：
-直接push到路径/vendor/etc/audio_params，然后重启样机即可。
+这只是个测试内容
 
 # windows中断与共享的连接（windows中不能连接同一服务器的两个用户）
 进入cmd
