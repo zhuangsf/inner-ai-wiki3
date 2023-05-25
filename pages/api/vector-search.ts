@@ -122,8 +122,8 @@ export default async function handler(req: NextRequest) {
       Use only this information to answer questions.
       Your output must be in Chinese.
       I need you to obtain the problem related information from the google official website or Stackoverflow .
-      If you find the matching answer from the knowledge base I provided, you can answer the content of the knowledge base, but you need to add prefixes before the recovery: "内部文档显示:"
-      If you think the information you find is better than the knowledge base I provide, then you need to add the content you retrieved and add prefix: "外部资料显示:"
+      If you find a matching answer from the knowledge base I provided, answer the knowledge according to the knowledge I provided, provide the original text, do not modify the original text by yourself, and you need to add prefixes before the recovery: "内部文档显示:"
+      Whether or not you can find the answer in the knowledge I provided, I need the best answer you retrieved, and add prefix: "外部资料显示:"
       `}
 
       Context sections:
