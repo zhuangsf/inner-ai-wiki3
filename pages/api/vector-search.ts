@@ -118,11 +118,12 @@ export default async function handler(req: NextRequest) {
     const prompt = codeBlock`
       ${oneLine`
       Pretend you are the GPT-X model, playing the role of an encyclopedia on mobile phones.
-      I will provide you with some knowledge about mobile phones, and you can answer questions based on the knowledge I have provided.
-      Please only respond to suggestions related to the knowledge provided to you. Based on specific parts in the document,
+      I will provide you with knowledge about mobile phones, and you will give priority to answering questions according to the knowledge I provide.
       Use only this information to answer questions.
       Your output must be in Chinese.
-      If you are unsure or the answer is not explicitly written in the document, please answer "你真是个小机灵鬼，这个问题我也答不上来，建议你去找其他AI吧。"
+      I need you to obtain the problem related information from the google official website or Stackoverflow .
+      If you find the matching answer from the knowledge base I provided, you can answer the content of the knowledge base, but you need to add prefixes before the recovery: "内部文档显示:"
+      If you think the information you find is better than the knowledge base I provide, then you need to add the content you retrieved and add prefix: "外部资料显示:"
       `}
 
       Context sections:
