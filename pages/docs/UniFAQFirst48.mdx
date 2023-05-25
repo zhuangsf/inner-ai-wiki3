@@ -1,0 +1,300 @@
+### 问题: 如何测试CTS Verifier 6.0_r7中Audio Loopback Latency Test？
+解决方案: 测试步骤: 1. 进入Audio Loopback Latency Test测试 2. 如果待测手机存在耳机插孔,单击Yes按钮,Loopback Plug Ready按钮将从灰显变为可单击状态(如果待测手机不存 在耳机插孔,则单击No按钮,该测试项自动pass,以下步骤跳过) 3. 插入Loopback Plug 4. 单击Loopback Plug Ready按钮,测试项下半部分不再为灰显状态 5. 通过移动滑动块的位置,调整Audio Level到一个合适的值,单击Test按钮.该过程可能需要多次重复执行直到 Confidence的值 ≧ 0.6 该测试项Pass的实例,如下图所示:
+参考FAQ: FAQ90390
+### 问题: 如何测试CTS Verifier 6.0_r7中Audio Output Devices Notifications Test？
+解决方案: 测试步骤: 1. 进入Audio Output Devices Notifications Test测试 2. 如果待测手机存在耳机插孔,单击Yes按钮(如果待测手机不存在耳机插孔,则单击No按钮,该测试项自动pass,以下步骤跳过) 3. 单击Clear Messages按钮 4. 将有线耳机插入,验证在按钮下方是否出现适当的提示信息 5. 将有线耳机拔出,验证在按钮下方是否出现适当的提示信息 当插入有线耳机后,出现的提示信息如下图所示: 当拔出有线耳机后,出现的提示信息如下图所示: 如果符合以上测试结果,则该测试项pass.
+参考FAQ: FAQ90391
+### 问题: .dtsi作用
+解决方案: 在ARM Linux在,一个.dts文件对应一个ARM的machine,一般放置在内核的arch/arm/boot/dts/目录.由于一个SoC可能对应多个machine(一个SoC可以对应多个产品和电路板),势必这些.dts文件需包含许多共同的部分,Linux内核为了简化,把SoC公用的部分或者多个machine共同的部分一般提炼为.dtsi,类似于C语言的头文件.其他的machine对应的.dts就include这个.dtsi.
+参考FAQ: FAQ90435
+### 问题: 简述系统在启动的时候，是怎么加载dts的.
+解决方案: 1、.dts/.dtsi经过DTC的编译生成.dtb. 2、bootloader(默认是bootable/bootloader/lk)会根据机器硬件信息选择合适的devicetree装入内存,把地址等相关信息传给kernel.kernel中,会根据传入的信息创建设备.
+参考FAQ: FAQ90436
+### 问题: Android6.0如何设置“仅限优先打扰”模式？
+解决方案: 1、首先,请选择要将哪些通知设为优先通知 打开设备上的设置应用 设置. 依次选择提示音和通知 > 勿扰 > 仅允许优先打扰内容. 根据您使用的设备,您可以将以下类型的通知设为优先通知:包括闹钟(默认开启)、活动和提醒、来电和消息、重复来电者. 启用优先通知的方法,按如下: 依次打开设备的设置应用 设置 > 提示音和通知 > 应用通知. 触摸相应应用,然后启用视为优先通知. (请注意:将应用(如日历)启用"视为优先通知"项之后,来通知在仅限优先打扰下才会有提示音;否则在仅限优先打扰下没有提示音.) 2、然后,启用"仅限优先打扰"模式 您已经选择并启用了优先通知,现在只要您想限制打扰内容,就可以打开"仅限优先打扰"模式. 从屏幕顶部向下滑动两次,打开"快速设置",触摸勿扰,选择"仅限优先打扰",设置持续时间或直至您将其关闭;点击"完成". 经过如上步骤,就打开了"仅限优先打扰功能".收到优先通知会以当前铃声或振动提供;收到其他通知手机静音.
+参考FAQ: FAQ90444
+### 问题: dts内#address-cells属性作用
+解决方案: -----#address-cells这个属性是用来描述sub node中的reg属性的地址域特性的,也就是说需要用多少个u32的cell来描述该地址域.
+参考FAQ: FAQ90439
+### 问题: 什么是Hotspot2.0
+解决方案: Hotspot 2.0基于IEEE 802.11u身份识别和切换功能,相当于将各服务商的所有热点集中在一起,建立一个庞大的热点池,你的设备在某个热点所注册的信息也被整合到这里并可以为池中的各个热点共享,这样只要你的设备在各个热点服务的范围内就可以自动无缝连接切换; HotSpot 2.0支持利用客户端方面的证书或用户名/密码配对进行身份认证;不论使用哪种证书,HotSpot 2.0都无需用户对其设备进行设置;就能连接到热点; 有了HotSpot 2.0,SSID的重要性便有所减弱了.
+参考FAQ: FAQ90481
+### 问题: Marlin 是否支持Hotspot2.0
+解决方案: Marlin2是支持Hotspot2.0的,目前Android 6.0及以上版本的上层软件也是支持Hotspot2.0的,可以通过WFA认证,具体功能使用还需要配合运营商提供的服务才可以;
+参考FAQ: FAQ90487
+### 问题: Marlin2 是否支持802.11u
+解决方案: Marlin2 WIFI支持802.11u协议,802.11u定义了WLAN和外部网络的互操作协议,其部分功能是Hotspot 2.0实现的必要条件;
+参考FAQ: FAQ90496
+### 问题: Marlin2是否支持802.11p
+解决方案: Marlin2 WIFI不支持802.11p协议;
+参考FAQ: FAQ90500
+### 问题: 为何kernel panic后的异常log无法被dropbox抓取到？
+解决方案: dropbox抓取kernel panic机制: 发生kernel panic时dropbox会在重启后通过SYSTEM_LAST_KMSG TAG找到/proc/last_kmsg来获取panic时的异常log 保存到dropbox log中 . 但是展讯平台在panic时默认不会生成last_kmsg,而是在debug版本上直接通过sysdump来抓取整个内存来分析panic问题, 所以手动触发panic或机器发生panic时dropbox无法抓取到kernel panic相关的log .
+参考FAQ: FAQ90560
+### 问题: ZZ键盘是什么，为什么会弹出ZZ键盘？
+解决方案: ZZ键盘是一个不对应任何语言的qwerty键盘,在切换某些语言时,输入法也会同时备选ZZ(qwerty)键盘.从输入法应用中查看下zz键盘的布局.这里面有一个属性,EnabledWhenDefaultIsNotAsciiCapable,顾名思义,当默认键盘是非Ascii型时,会被Enable.进一步调查发现,在method.xml中每一个subtype都会定义android:isAsciiCapable属性,凡是该属性值为false的subtype,在切换到这个subtype所对应语言时,还会激活这个ZZ键盘,其意义在于有一些特殊的Text里面,比如密码,是只支持Ascii字母的.
+参考FAQ: FAQ90604
+### 问题: 新建短信输入联系人编辑栏时，安卓输入法键盘enter按键显示字符串存储位置？
+解决方案: enter按键上的字符串"Next"虽然是显示在输入法中,但是这个字符串却不是保存在输入法中,而是从Mms中传递出来的/packages/apps/Mms/res/values/strings_ex.xml 下的action_next,用来表示enter键的行为.
+参考FAQ: FAQ90605
+### 问题: 手机模式的修改方法（特殊需求）
+解决方案: sim1_ms_preferred_rat=1 Sim2_ms_preferred_rat=0 NVM_PARAM_TYPE_MS_PREFERRED_RAT =1 NVM_PARAM_TYPE_USER_PREFERRED_DUAL_RAT =1
+参考FAQ: FAQ90635
+### 问题: 判断SIM卡联系人支持添加Email信息的方法
+解决方案: 一个SIM卡联系人支持添加的email个数可以使用SimUtils.getSimContactEmailTypeOverallMax(mSubId);方法获得,此方法如果返回-1,则表示该SIM卡不支持添加email信息,其中的mSubId可以通过SubscriptionManager类的public static int[] getSubId(int slotId) {}这个方法获取, 比如卡1的mSubId为 int[] subIds = SubscriptionManager.getSubId(0); int mSubId = subIds[0]; //卡1的mSubId 卡2的mSubId为 int[] subIds = SubscriptionManager.getSubId(1); int mSubId = subIds[0]; //卡2的mSubId
+参考FAQ: FAQ90654
+### 问题: 判断SIM卡联系人支持添加号码最大个数的方法
+解决方案: 一个SIM卡联系人支持添加的号码最大个数可以使用SimUtils.getSimContactPhoneTypeOverallMax(mSubId);方法获得,其中的mSubId可以通过SubscriptionManager类的public static int[] getSubId(int slotId) {}这个方法获取, 比如卡1的mSubId为 int[] subIds = SubscriptionManager.getSubId(0); int mSubId = subIds[0]; //卡1的mSubId 卡2的mSubId为 int[] subIds = SubscriptionManager.getSubId(1); int mSubId = subIds[0]; //卡2的mSubId
+参考FAQ: FAQ90656
+### 问题: CMCC测试 宽带互联网 TestCase6默认界面下表格显示不完整这是什么原因？
+解决方案: 测试网页中,表格2框线显示不全. 原因是手机屏幕相对原始网页的尺寸较小,所以网页会缩小以适配屏幕, 而框线原本就非常细,缩小后显示的部分太小了以至看不见,这是由于手机支持缩放的原因, 对比其它小屏幕手机也有同样现象. 只要横屏,或者放大屏幕,或者设置网页以原始方式显示(修改设置/高级/以概览模式打开网页,去掉这个选项),都能正常显示,可以符合移动的case要求.
+参考FAQ: FAQ90684
+### 问题: 维基百科无法访问，如何解决?
+解决方案: 国内访问维基百科很多时候就是无法访问,这和国内对某些网站的限制有关,和www.google.com类似, 通过翻墙或VPN专线的方式,就可以正常访问这类网站了.
+参考FAQ: FAQ90685
+### 问题: 浏览器如何测试记住表单数据功能
+解决方案: 现在网页保存数据都是用cookie, cache或脚本的方式,很少用到表单, 请访问天涯社区网站(m.tianya.cn),选择"登录",在输入用户名的界面支持记住表单数据, 请用这个网页做记住表单数据,清除表单数据的测试.
+参考FAQ: FAQ90688
+### 问题: 浏览器选择文字样式，但无法改变文字样式，这是什么原因？
+解决方案: 如果网页的CSS样式中,设置了网页内容的字形和字体.那么网页内容会以此为准,浏览这类网页,修改文字样式不会变化. 如果网页内容没有设置字形和字体,才会以文字样式的设置为准. 另外,同时要保证设置的文字样式有对应的字体库.如果没有对应的字体库,设置也是不起作用的,对展讯默认发布的版本来说,在英文环境下可以看到字体样式变化,但是中文默认没有加装更多的字体库,所以中文字体看起来效果都是一样的.
+参考FAQ: FAQ90689
+### 问题: CTS com.android.cts.browser.BrowserBenchTest#testOctane测试FAIL，问题如何解决？
+解决方案: 问题原因: 如果预置了两个以上的浏览器,测试进程中就会被浏览器选择框BLOCK,需要在开机时设置一个缺省的浏览器,StartActivity时直接调缺省的浏览器. 解决方案: 测试前消除浏览器启动提示. 消除browser启动提示的方法: (1)adb shell am start -a android.intent.action.VIEW -d http://www.google.cn/ (2)之后系统启动浏览器选择对话框,从里面选择原生浏览器,并且选择Alwalys,然后开始执行测试.
+参考FAQ: FAQ90696
+### 问题: 如何修改Email附件大小限制？
+解决方案: Email附件大小的限制为5M,相关定义代码是在 1. packages\apps\UnifiedEmail\src\com\android\mail\providers\Settings.java 邮件内容界面附件大小限制的设置: private static final int DEFAULT_MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024; 2. packages\apps\Email\emailcommon\src\com\android\emailcommon\utility\AttachmentUtilities.java 邮件附件下载大小限制的设置: public static final int MAX_ATTACHMENT_DOWNLOAD_SIZE = (5 * 1024 * 1024); 客户可以根据需要修改相关设定值.
+参考FAQ: FAQ90703
+### 问题: framework中cpu温度检测阀值如何配置？
+解决方案: 可以通过下面文件进行配置,680表示68度,是cpu上限温度,超过这个阀值机器会自动关机 frameworks/base/core/res/res/values/config.xml <integer name="config_shutdownBatteryTemperature">680</integer>
+参考FAQ: FAQ90710
+### 问题: 关机充电如何直接开机而不进入关机充电界面
+解决方案: 关机充电模式判断在uboot中,如果是关机充电模式启动则进入关机充电界面,如果希望关机时候插入充电器直接开机,需要修改代码如下 uboot_64/common/cmd_cboot.c boot_mode_enum_type get_mode_from_charger(void) if (charger_connected()) { debugf("get mode from charger\n"); - return CMD_CHARGE_MODE; + return CMD_NORMAL_MODE; //这里直接把充电模式修改为normal模式即可 } else { return CMD_UNDEFINED_MODE; }
+参考FAQ: FAQ90763
+### 问题: 为什么 早期 wifi_analyzer 软件版本在android 6.0平台上有时不能扫描到网络？
+解决方案: android 6.0平台 使用第三方软件工具 wifi_analyzer 之前需要先打开"位置信息",才能够正常使用. 这一点在wifi_analyzer更高的版本(如3.9.9)中,会有提示: "Android6.0之后,某些情况下,软件无法在位置信息关闭的状态下扫描Wi-Fi". 而在早期的版本(如3.6.6)中,由于版本较早因此没有类似提示, 所以会出现"位置信息"关闭的情况下,扫描不到wifi网络的情况.
+参考FAQ: FAQ90780
+### 问题: 当前AP无法连接互联网时手机是否支持断开当前AP自动连接其他AP？
+解决方案: 测试步骤: 手机连接过AP1、AP2、AP3......有这些AP的配置信息. 此时手机连接AP1,但是AP1不能上网. 手机是否支持断开AP1自动连接其他AP? 谷歌android 原生设计不支持此功能,SPRD参考设计也不支持此功能. 不建议实现类似功能,是出于以下考虑. 1.手机连接AP1无法上网后,由于,此时手机不能保证 AP2/AP3/AP4 哪一个能访问网络. 所以只能挨个尝试,不停的扫描,连接,断开,这会增加手机的系统占用及耗电. 2.Android参考设计中,判断手机是否能够连接互联网,是通过检查能否访问谷歌的网站,来判断的. 所以,如果指定网站出现问题,或者相关网站被防火墙屏蔽的情况下, 也会造成不断循环尝试每个网络,不停的扫描,连接,断开,增加手机的系统占用及耗电. 3.举例:如过用户就是想要连接不能上网的AP1传一些文件. 若系统存在此功能,会导致连上AP1后系统发现不能上网时自动断开AP1. 导致用户不能使用AP1
+参考FAQ: FAQ90782
+### 问题: 打开百度网页提示“该网站的安全证书有问题”，这是什么原因？
+解决方案: 所谓的"网站安全证书"是通过在客户端浏览器和Web服务器之间建立一条SSL安全通道保证了双方传递信息的安全性,而且用户可以通过服务器证书验证他所访问的网站是否真实可靠. 需要检查手机本地时间,如果手机本地时间错误,超出证书有效期的范围,会与证书有效期冲突. 可以在提示"网站的安全证书有问题"界面,点击"查看证书",查看具体的原因.
+参考FAQ: FAQ90821
+### 问题: FM 后台播放，进入MP3播放音乐，退出MP3回到FM后，FM为什么没有声音？
+解决方案: 当播放音乐的时候,FM 的audioFocus会被音乐占用,而且音乐是长时间占有,FM此时会走powerDown的流程. 当退出音乐,进入FM后,audiofocus不会自动分配给FM.而此时FM是关闭状态,所以没有声音. 我们可以在界面点击FM的播放按钮,FM即可恢复播放.
+参考FAQ: FAQ90848
+### 问题: android中连接查询及限制
+解决方案: android做连接查询与普通sql查询基本一致, 1.做内连接 select * from a inner join b on a._id = b._id等价于select * from a,b where a._id = b._id 2.外连接 分为左外连接和右外连接 a left outer join b on a._id = b._id查出的条数与a表的记录数相同等价于b right outer join a on b._id = a._id 由于android的嵌入式数据库sqlite3不支持右外连接,因此碰到b right outer join a on b._id = a._id这种情况,只需要按左外连接改成a left outer join b on a._id = b._id即可
+参考FAQ: FAQ90853
+### 问题: 如何更改FM通知栏中显示的图标
+解决方案: 目前6.0版本的FM通知栏这个图片的代码是在 packages\apps\FMRadio\src\com\android\fmradio\FmService.java showPlayingNotification()方法进行的设置 具体代码: synchronized (mNotificationLock) { if (null == mNotificationBuilder) { mNotificationBuilder = new Notification.Builder(mContext); mNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);// 目前使用的就是ic_launcher图片,如需更改可以更改此处引用的图片. mNotificationBuilder.setShowWhen(false);
+参考FAQ: FAQ90854
+### 问题: Android keyboard(AOSP)输入法按键音开启，但点击键盘按键无声音？
+解决方案: 系统音效资源存放在framework/base/data/sounds目录下,编译到手机的/system/media/audio/ui目录. Android keyboard(AOSP)按键音使用的是系统按键音KeypressStandard.ogg. 若按键没有声音,请先查看"设置->语言和输入法->Android键盘(AOSP)->偏好设置 ->按键音效"是否开启. 若按键音效是开启状态,则可能是按键音ogg文件的问题.请找一个音效ok的项目的 KeypressStandard.ogg文件替换/system/media/audio/ui中文件,重启验证即可
+参考FAQ: FAQ90865
+### 问题: Android keyboard(AOSP) 横屏下，enter键盘图标显示不完整？
+解决方案: Enter键图片资源为packages\inputmethods\LatinIME\java\res\drawable-hdpi\目录下 btn_keyboard_key_active_lxx_dark.9.png、 btn_keyboard_key_active_lxx_light.9.png 、 btn_keyboard_key_active_pressed_lxx_dark.9.png 、 btn_keyboard_key_active_pressed_lxx_light.9.png 修改这四张图片的大小即可.
+参考FAQ: FAQ90869
+### 问题: 使用资源导入导出工具，为何会大量出现“&amp;aupt;”？
+解决方案: 资源导入导出工具导出后的文件只可使用microsoft excel来进行修改,使用其他打开excel的软件就可能出现此现象,还请使用microsoft excel操作表格.
+参考FAQ: FAQ90872
+### 问题: 浏览器测试网站 中国移动浏览器测试用例22：标记语言测试用例 - HTML TestCase5 有些文本显示超出界面
+解决方案: 小屏幕手机有此现象,问题与文字和屏幕大小有关. 建议"设置〉辅助功能〉文字缩放"改为80%以下,可显示正常.
+参考FAQ: FAQ91015
+### 问题: 如何设置应用可以使用系统允许的最大内存值？
+解决方案: 以Launcher3为例: 定位到Launcher3的AndroidManifest.xml,可以看到如下属性: android:largeHeap="@bool/config_largeHeap" 设置android:largeHeap="true"后, Launcher3就可以使用的手机的最大内存! 具体原因如下: 打开手机,连接usb,执行 adb shell getprop 可以看到如下两个属性: dalvik.vm.heapgrowthlimit=96m dalvik.vm.heapsize=256m heapgrowthlimit是一个普通应用的内存限制,可以用ActivityManager.getLargeMemoryClass()获得的值. heapsize是在AndroidManifest.xml中设置largeHeap=true之后,可以使用的最大内存.
+参考FAQ: FAQ90888
+### 问题: 如何调整浏览器导航图片大小
+解决方案: layout中设定的图片宽度和高度太小,需要根据分辨率自行调整,由于展讯的样机分辨率比较低,所以调整之后可能不适用贵司的机器,请按照如下方法进行修改测试 修改文件:packages\apps\Browser\res\layout\speed_dial_item.xml 修改位置: <ImageView android:id="@+id/favicon" android:layout_width="25dip" android:layout_height="25dip" android:layout_centerHorizontal="true" android:layout_centerVertical="true" android:scaleType="fitXY" /> </RelativeLayout
+参考FAQ: FAQ90922
+### 问题: 阿拉伯语下gridview中两列的图片会有重叠,如何处理?
+解决方案: 可在xml下的gridview中添加android:layoutDirection="ltr"属性 (从左向右排列)
+参考FAQ: FAQ90927
+### 问题: 当chrome与系统自带浏览器共存时，系统浏览器的书签历史记录不显示，如何解决？
+解决方案: 由于chrome要求安装BookmarkProvider, 而BookmarkProvider与系统浏览器中BrowserProvider2 authorities相同, 系统认为是相同的provider, 使用中BrowserProvider2的数据库并未创建, 导致系统浏览器一系列异常.经调研过,如果GMS与系统浏览器共存,可以不编译bookmarkprovider,不会影响CTS与GMS. 请参考如下方式修改: 如果是带GMS包的不编译bookmarkprovider,或者GMS的mk文件不要带bookmarkprovider.
+参考FAQ: FAQ90928
+### 问题: 联系人数据库Calls表如何区别是哪张卡的通话记录
+解决方案: 联系人数据库Calls表中的subscription_id区分是哪张卡的通话记录, subscription_id需要通过public static int[] getSubId(int slotId) {}这个方法获取, 比如卡1的subscription_id为 int[] subIds = SubscriptionManager.getSubId(0); int subId = subIds[0]; //卡1的subscription_id 卡2的subscription_id为 int[] subIds = SubscriptionManager.getSubId(1); int subId = subIds[0]; //卡2的subscription_id
+参考FAQ: FAQ91175
+### 问题: 设置一个关机闹钟，然后拔电池关机，再装上电池，为什么手机没有自动开机，闹钟也没有响
+解决方案: 关机闹钟是提前2分钟开机,到时间后再起闹. 提前2分钟的动作是在关机的时候做的(所谓的关机闹钟),起闹时间减去2分钟写入寄存器. 直接拔电池,上面的操作结果还来不及写入寄存器,所以发生了手机不能按时启动、闹钟不能起闹的问题.
+参考FAQ: FAQ90970
+### 问题: 设置一个单次的闹钟，然后修改系统时间，该闹钟是否会正常起闹
+解决方案: 如手机当前系统时间为2015/9/3 10:00,设置一个单次闹钟,时间为10:30,然后到设置-》日期和时间: 1.修改系统时间,只要在10:30之前,闹钟会在10:30正常起闹. 2.修改系统时间为10:30之后,则在状态栏中会显示"错过的闹钟",因为闹钟时间已经是过去时间. 3.修改系统日期为昨天,即2015/9/2,则闹钟会在2015/9/3 10:30正常起闹,因为单次闹钟仅仅在2015/9/3有效. 4.修改系统日期为明天,即2015/9/4,则闹钟关闭,因为该单次闹钟已无效.
+参考FAQ: FAQ90974
+### 问题: 设置一个重复闹钟，然后修改系统时间，该闹钟是否会正常起闹
+解决方案: 如手机当前系统时间为2015/9/3 10:00,设置一个每周四重复闹钟,时间为10:30,然后到设置-》日期和时间: 1.修改系统时间,只要在10:30之前,闹钟会在10:30正常响起. 2.修改系统时间为10:30之后,则闹钟会在下周四,即2015/9/10 10:30起闹. 3.修改系统日期为上周四,即2015/8/27,则闹钟会在2015/9/3 10:30起闹,因为闹钟设置为2015/9/3及之后的每周四,在2015/9/3之前并没有任何闹钟. 4.修改系统日期为下周四,即2015/9/10,则闹钟会在2015/9/10 10:30起闹.
+参考FAQ: FAQ90976
+### 问题: MOCOR如何设置智能输入法为默认
+解决方案: 在应用设置edit控件属性时, 添加以下接口 GUIEDIT_SetIM(), 最后一个参数赋值为GUIIM_TYPE_SMART即可.
+参考FAQ: FAQ91553
+### 问题: CSTAR 智能输入法自造词功能说明
+解决方案: 1. 当开启CSTAR输入法(IM_ENGINE = CSTAR), 且至少支持SD卡或是U盘时, 可以透过开启MMI_CSTAR_UDB_SUPPORT宏来开启CSTAR自造词文件的存储及单词记忆功能 2. 开启此功能时默认会在SD卡根目录下创建@cstardata资料夹, 其中会有两个档案: (1) udb.cache 记录存储单词 (2) compile.time: 记录当前手机编译时间, 防止使用非本机的版本文件导致死机 3. 相关功能实作可以追踪MMIIM_LoadUdbEntry()@Mmiim.c流程
+参考FAQ: FAQ91565
+### 问题: 浏览器浏览网页为什么不可以缩放？
+解决方案: 浏览器是支持网页缩放功能的. 网页能不能执行缩放操作,和网页属性user-scalable有关, 比如保存百度网页,分析网页格式,其中, <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"> 可以看到,网页属性user-scalable=no说明不能执行缩放操作.并且限定了最小缩放比例和最大缩放比例都是1.0,所以无法缩放网页是正常的. 很多移动端适配的网页都有这样的设定,这是网页的实现.
+参考FAQ: FAQ91025
+### 问题: monkey 测试后main.log 出现通篇的libEGL相关log,这是如何导致的？
+解决方案: 这个libEGL的log是由于在setting应用的[开发者选项]--[启用opengl跟踪]选择了[logcat]导致的. 打开后,会输出大量的debug log,在monkey测试环境下会加剧一些性能问题如anr的发生,建议将setting应用加入黑名单测试.
+参考FAQ: FAQ91035
+### 问题: 使用DOWNLOAD工具加载大于2G的pac包失败，报 “Bin packet's size is too small maybe it has been destructed!”的错误
+解决方案: NPI工具早期版本如ResearchDownload_9015等版本,在pac超过2G的情况时有做限制,会加载失败并报提到的错误信息.最新版本已经去掉这个限制.出现这个情况时请更新NPI工具.
+参考FAQ: FAQ91037
+### 问题: 手机连接蓝牙耳机时，为什么给某些手机播打电话，蓝牙耳机会响起手机的本地铃音？
+解决方案: 由于这类手机支持in-band ring tone功能,所以会将手机中的铃音作为语音数据传到蓝牙耳机中去,从而使蓝牙耳机响起手机的铃声.目前Iphone支持该功能.
+参考FAQ: FAQ91039
+### 问题: 蓝牙HFP中in-band ring tone功能介绍
+解决方案: 在两端蓝牙设备连接时会通过AT+BRSF命令来告知双方各支持什么Features,而in-band ring tone则是作为某些手机端支持的一项功能.支持则说明手机端有能力将本机铃声发给对端设备上去,让蓝牙耳机播放出手机的铃音,默认是支持即发送. 手机端也可以通过主动上报+BSIR命令来选择是否要将本机铃声发过去,携带参数1为发,0为不发. 由于要在来电时把手机端的铃音数据发给耳机一端,那必然要先建立起语音数据通道.所以在支持该功能时,蓝牙来电的语音通道建立是在手机端响铃时发起连接的.而正常情况下,是在接通电话后才进行的语音通路的建立.
+参考FAQ: FAQ91042
+### 问题: 蓝牙如何实现拨打分机号码？
+解决方案: 如果想实现HFP中的HF端进行拨打分机号码功能,需要先成功建立一通语音通话. 拨打分机号码功能需要调用BluetoothHeadsetClient.java中sendDTMF(BluetoothDevice device, byte code)函数.其中,device为蓝牙连接的当前device,Code为需要播出的号码,需要注意的是该Code需要以ASCII码的形式表示.
+参考FAQ: FAQ91046
+### 问题: 如何去除FM功能？
+解决方案: 需要在vendor/sprd/open-source/下的配置文件common_packages.mk中PRODUCT_PACKAGES去除掉FMPlayer,这样保证在FMPlayer不会打包到system.img中
+参考FAQ: FAQ91047
+### 问题: 第一次开机时， WIFI/BT默认关闭或者打开在哪里配置？
+解决方案: frameworks/base/packages/SettingsProvider/res/values/defaults.xml // false为默认关闭,修改成true则会默认打开 <bool name="def_wifi_on">false</bool> <bool name="def_bluetooth_on">false</bool>
+参考FAQ: FAQ91048
+### 问题: HFP框架结构说明
+解决方案: 从下图中可以看到HFP协议框架由各个独立的协议组成.底层协议为上层协议提供服务. HFP的控制命令由AT命令通过RFCOMM下发下去.语音数据需要实时性,由SCO或ESCO链路保证.
+参考FAQ: FAQ91050
+### 问题: 如何获取SIM卡管理界面中的SIM卡显示的名称？
+解决方案: 在SubscriptionInfo中有一个变量mDisplayName用来存放SIM卡名称,需要获取的时候调用getDisplayName即可. 具体使用方法如下: SubscriptionInfo subInfo = SubscriptionManager.from(context) .getActiveSubscriptionInfoForSimSlotIndex(0); //获取卡槽1的SubscriptionInfo String name = subInfo.getDisplayName().toString();
+参考FAQ: FAQ91056
+### 问题: 为什么应用申请了权限最终没有获得权限？
+解决方案: 系统的权限定义在文件frameworks/base/core/res/AndroidManifest.xml中,每个权限都有对应的protectionLevel,对于protectionLevel="signature|system"的权限,只有给apk签系统签名(LOCAL_CERTIFICATE := platform)或者预置到system/priv-app(LOCAL_PRIVILEGED_MODULE := true / LOCAL_MODULE_PATH := $(TARGET_OUT)/priv-app)目录才会给予申请的签名.
+参考FAQ: FAQ91054
+### 问题: Monkey测试中，kernel Loglevel设置多少合适？
+解决方案: 在Monkey测试中,请使用Kernel Loglevel默认值1,如果有需要针对某个问题进行专项测试,需要获取Kernel Log更多详细信息,建议设置Kernel Loglevel = 3,如果再高,会对手机系统造成很大的影响.
+参考FAQ: FAQ91073
+### 问题: “pthread_create failed: couldn't allocate 1044480-bytes mapped space: Out of memory”是什么异常，该如何解决
+解决方案: 原因:创建的线程未设置DETACHED属性导致虚拟地址空间没有来得及释放出现的Out of memory 因为ptread_create 的时候默认线程属性是非detach(分离)的,而每个线程在创建的时候都会分配将近1M的栈空间 线程在退出的时候不去释放这些空间和资源,那么就会造成泄漏 解决方案:在创建线程时添加 DETACHED属性.让创建的线程为分离状态的线程 ,这样在线程运行终止后就会立刻释放系统资源.因为线程设置了detach属性会执行pthread_detach函数 或者也可以直接调用该函数,而该函数最终会调用pthread_join函数.去释放创建时分配的虚拟地址空间
+参考FAQ: FAQ91079
+### 问题: 6.0上sysdump的路径是哪里，能够保存多少份
+解决方案: 现在6.0上的机制是: 1. 将sysdump文件生成到T卡 的slog/SYSDUMP/1目录下面. 2. 每次发生sysdump,都会存储在1下.旧的log会顺延到2,3等等. 3. 现在默认的是3次.
+参考FAQ: FAQ91082
+### 问题: 为什么有的版本setting的“恢复和重置”中没有“备份我的数据”选项？
+解决方案: "备份我的数据"是Google应用,只有GMS版本会有"备份我的数据",非GMS版本没有.
+参考FAQ: FAQ91083
+### 问题: 为什么有的版本没有“备份与恢复”应用？
+解决方案: "备份与恢复"应用是展讯定制应用,只有在CMCC版本中预制此应用.
+参考FAQ: FAQ91085
+### 问题: CPUInfo中打印的FG_MAJ_FAULT含义是什么？
+解决方案: FG_MAJ_FAULT表示3S内当前进程发生内存页错误时被挂起的次数.
+参考FAQ: FAQ91086
+### 问题: 目前长按power键会重启，请问如何改成长按power键关机？
+解决方案: 请按照类似下面的方法修改,如果发现是unkown reboot(长按重启),就进行关机操作. 注意要加宏控制,在user debug版本不要加入这个功能,不然在死机时无法dump 内存用于分析问题. boot_mode_enum_type get_mode_from_watchdog(void) { unsigned rst_mode = reboot_mode_check(); int flag; + + if (rst_mode == CMD_UNKNOW_REBOOT_MODE) { + printf(">>>> unknow reboot, power off\n"); + return CMD_POWER_DOWN_DEVICE; + } switch (rst_mode) { case CMD_RECOVERY_MODE: case CMD_FASTBOOT_MODE:
+参考FAQ: FAQ91090
+### 问题: Android6.0增大Kernel Log Buffer的方法？
+解决方案: 当客户将Kernel Loglevel调大或者自己添加Debug Log后,Kernel Log出现丢失情况,可以尝试调大Kernel Log Buffer,会有一定的优化效果. 路径:kernel\kernel\printk\printk.c CONFIG_LOG_BUF_SHIFT默认为17,可以根据需要增大,例如: -#define __LOG_BUF_LEN (1 << CONFIG_LOG_BUF_SHIFT) +#define __LOG_BUF_LEN (1 << 20)
+参考FAQ: FAQ91094
+### 问题: Android6.0如何抓取CP SleepLog？
+解决方案: SleepLog是手机休眠唤醒过程中的行为CP log,打开方式:*#*#83781#*#*->DEBUG&LOG->LogManager->Tools->save Sleeplog
+参考FAQ: FAQ91099
+### 问题: 使用一个USB端口时，OTG功能和充电功能能否同时使用
+解决方案: 1) 如果仅有一个USB端口时,可以充电与OTG功能共存; 2) 该功能需要使用Y型线,同时需要修改代码,使用Y型线需要注意: a. 当VBUS上电后已无法再检测到外接电源的插入,所以该功能需要Y型线先与供电连接再插到手机上,这时外部供电会作为VBUS及充电的供电源; b. 如果先插入OTG线再供电,并不能启动充电功能了,外接供电也只能看做是辅助供电.
+参考FAQ: FAQ91093
+### 问题: 插入USB线后，USB功能选择中的“USB-互联网PC”是什么功能
+解决方案: USB-互联网PC功能是展讯开发的USB功能,该功能依赖USB Rndis功能,通过"USB-互联网PC",手机可以通过PC实现上网;
+参考FAQ: FAQ91103
+### 问题: 6.0 CTS testGetAppInstalledProvidersForCurrentUserLegacy FAIL
+解决方案: 6.0上出现,AppWidget的测试包被安装到了外部,测试代码无法获取AppWidget的ProviderInfo导致. 此类问题只需要在Log中搜索"prefer install" 只要值为2就可以判定. 修改App默认的安装位置为内部或者由系统决定,即可解决该类问题.
+参考FAQ: FAQ91127
+### 问题: 热插拔不能识别到SD卡，重启后也是不能识别，什么原因？
+解决方案: 可能的原因如下: 1.热插拔检测GPIO配置不正确,请修改相应的配置. 2.硬件设计上sd卡插入时sd检测脚连接vddsd,由于平时vddsd没有供电,当sd卡插入时vddsd不能将sd检测脚拉高,建议改为sd卡插入时将sd检测脚拉低方案.
+参考FAQ: FAQ91098
+### 问题: 如何修改“最近”页面通话记录显示条数的限制
+解决方案: 平台上目前拨号应用"最近"页面中会显示最近两周时间内的最近20条通话记录,要去掉此界面通话记录条数的限制, 可以修改ListsFragment.java (\packages\apps\dialer\src\com\android\dialer\list)文件中MAX_RECENTS_ENTRIES的定义, - private static final int MAX_RECENTS_ENTRIES = 20; + private static final int MAX_RECENTS_ENTRIES = -1; 如果MAX_RECENTS_ENTRIES指定为-1,则最多显示1000条通话记录. (注意:MAX_RECENTS_ENTRIES的修改可能会影响拨号盘启动的速度)
+参考FAQ: FAQ91156
+### 问题: 如何判断SIM卡联系人已经加载完毕
+解决方案: 由于SIM卡联系人加载成功后,会将数据库中对应SIM账户的syncable值设置为1.所以可以获取对应SIM账户的syncable值进行判断,如果syncable为1代表对应SIM卡联系人加载成功. 如何获取syncable值: boolean syncable = ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) > 0; //account为Account类型,是要查询的SIM卡账户
+参考FAQ: FAQ91184
+### 问题: 如何更改VCard使用的版本
+解决方案: 目前平台使用的VCard版本是2.1,可以更改VCardConfig.java (\frameworks\opt\vcard\java\com\android\vcard)文件的 public static int VCARD_TYPE_DEFAULT = VCARD_TYPE_V21_GENERIC;的配置. ->VCARD_TYPE_V21_GENERIC //Vcard 2.1 ->VCARD_TYPE_V30_GENERIC //Vcard 3.0 ->VCARD_TYPE_V40_GENERIC //Vcard 4.0
+参考FAQ: FAQ91194
+### 问题: 如何去掉拨号界面中间图标下面的阴影
+解决方案: 将应用设置的button阴影去除即可. ViewUtil.java (\packages\apps\contactscommon\src\com\android\contacts\common\util) public static void setupFloatingActionButton(View view, Resources res) { view.setOutlineProvider(OVAL_OUTLINE_PROVIDER); - view.setTranslationZ( - res.getDimensionPixelSize(R.dimen.floating_action_button_translation_z)); }
+参考FAQ: FAQ91196
+### 问题: 为何不能收藏SIM卡联系人
+解决方案: 这个是正常现象.由于每次开机,都会将数据库中SIM卡相关联系人删除然后重新导入,所以每次开机,数据库中的SIM卡联系人URI会发生变化,SIM卡联系人的收藏标识无法保存,SIM卡中也没有栏位记录SIM卡联系人是否加入收藏,所以平台不支持收藏SIM卡联系人.
+参考FAQ: FAQ91197
+### 问题: 为什么联系人桌面小部件不能添加SIM卡联系人
+解决方案: 这个是正常现象.由于每次开机,都会删除数据库中的SIM卡相关联系人然后重新导入,所以每次开机,SIM卡联系人的URI会发生变化.导致重新开机后,联系人桌面小部件设置的SIM卡联系人会关联不到正确的联系人,所以联系人桌面小部件不能选择SIM卡联系人.而直接拨打电话和直接发送短信桌面小部件记录的是联系人姓名和号码,不需要关联联系人.
+参考FAQ: FAQ91198
+### 问题: 为什么中文下，联系人选项中没有设置选项
+解决方案: 设置中的选项,设置的是排序方式(First name,Last name)和名字格式(First name first, Last name first).在对应语言的Donottranslate_config.xml (\packages\apps\contacts\res\values-zh-rcn)中有如下两个标志 <bool name="config_sort_order_user_changeable">false</bool> <bool name="config_display_order_user_changeable">false</bool> 以上两个标志都设置成false时不显示设置选项.
+参考FAQ: FAQ91201
+### 问题: 如何判断机器在来电时已经存在一通电话
+解决方案: 可以通过判断call的状态来确认当前存在的通话 if (CallList.getInstance().getActiveCall() != null //存在一通电话 && CallList.getInstance().getIncomingCall() != null //此时有来电 && CallList.getInstance().getActiveCall().getState() == Call.State.ACTIVE) //存在的一通电话为active状态
+参考FAQ: FAQ91262
+### 问题: 如何将特殊符号名称联系人归属在#符号下？
+解决方案: 以符号命名的联系人显示在联系人列表中的空label下,以数字命名的归属在"#"字符下.若希望特殊符号命名的联系人也归属在"#"下,可参考如下修改: 文件:packages\providers\ContactsProvider\src\com\android\providers\contacts\ContactLocaleUtils.java 修改: public int getBucketIndex(String name) { ... ... final int bucket = mAlphabeticIndex.getBucketIndex(name); if (bucket < 0) { return -1; } + if (bucket == 0) { + return mNumberBucketIndex; + } if (bucket >= mNumberBucketIndex) { return bucket + 1; } return bucket; }
+参考FAQ: FAQ91274
+### 问题: 如何修改Email默认同步间隔？
+解决方案: 在\packages\apps\Email\res\xml\services.xml文件中几种emailservice的配置信息,根据protocol类型找到需要修改的服务器,修改: email:defaultSyncInterval="mins15" 取值范围有:push / never / mins5 / mins10 / mins15 / mins30 / mins60
+参考FAQ: FAQ91288
+### 问题: 拨号盘按键搜索，为何只显示部分匹配结果？
+解决方案: 在packages\apps\Dialer\src\com\android\dialer\database\DialerDatabaseHelper.java的getLooseMatches()方法中,通过MAX_ENTRIES变量对搜索结果进行了限制.只会显示搜索结果中前20(MAX_ENTRIES的值为20)条非重复联系人信息.所以当匹配的联系人数量多于MAX_ENTRIES设置值时,将不会显示.
+参考FAQ: FAQ91291
+### 问题: android数据库查询为何条件中的参数使用问号？
+解决方案: 这样的目的是使用参数化查询而避免sql注入(造成数据隐私泄漏甚至数据被破坏). 考虑问题中的语句 1.不用问题中的形式,sql语句为 "select * from divided_group where divided_name="+name; name是用户输入的,如果用户输入nothing; DROP TABLE *; 那么sql语句就是 "select * from divided_group where divided_name=nothing; DROP TABLE *;" 整个表会被删除 2.如果使用问题中的形式,?会被name的内容替代,与1不同的是被替代的内容都会被处理成参数,参数中的语句不会被作为sql语句执行,因此在这种情况下的sql语句应该是 "select * from divided_group where divided_name='nothing; DROP TABLE *;'"
+参考FAQ: FAQ91297
+### 问题: activity中函数moveTaskToBack(boolean nonRoot)中参数意思
+解决方案: 使用的人容易误解为true就转到后台,false是不转到后台.实际意思如下:如果是false,那么只有当前activity是这个task的root(启动一个task第一个进入的activity)才起作用,如果是true则一般的activity都可以起作用.
+参考FAQ: FAQ91302
+### 问题: 怎样自定义设置AlertDialog的宽和高
+解决方案: 代码如下,注意主要的最后四行代码必须在dialog.show(); 之后调用,否则不起作用 AlertDialog.Builder builder = new AlertDialog.Builder(mContext); builder.setTitle(params.getTitle()); ...... dialog = builder.create(); dialog.show(); //设置大小 WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes(); layoutParams.width = 200;// 自定义 layoutParams.height = 200;// 自定义 dialog.getWindow().setAttributes(layoutParams);
+参考FAQ: FAQ91313
+### 问题: 怎样设置布局、控件圆角
+解决方案: 在res/drawable下添加xml文件,定义如下: <?xml version="1.0" encoding="utf-8"?> 1 <shape xmlns:android="http://schemas.android.com/apk/res/android" > <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" android:topLeftRadius="4dp" android:topRightRadius="4dp" /> </shape> 将此drawable文件设置为某个layout或控件的背景,显示的布局或控件即为圆角. 说明:元素corners中的四个属性就是设置四个角的圆属性,如果为0则为非圆角,反之则为圆角,数值越大,圆角的半径越大,也可以设置某几个为圆角,而另外一些为非圆角.
+参考FAQ: FAQ91317
+### 问题: 联系人列表项在listView中的位置对应关系是怎样的
+解决方案: 一般情况下listview某项的点击事件(item click),传入的position值是该项在listview的位置-1(下标从0开始).但是联系人列表有时并不是这样,因为在联系人列表中除了联系人项,还有字母表头项.如果需要获取正确的position值,需要减去该联系人项以前字母项的项数,也就是做如下转换: int adjPosition = position - mListView.getHeaderViewsCount(); 这样才能获取到正确位置的联系人项.
+参考FAQ: FAQ91320
+### 问题: 版本升级后，为什么通讯录中存在的号码在通话记录中显示为陌生号码
+解决方案: 这个问题可以通过打印sql语句定位,一般情况下原因是版本升级前及版本升级后的号码匹配位数不同.号码查询时需要与phone_lookup表的min_match字段匹配相同,而在升级过程中如果没有特别操作,原先数据库的数据是不会删除的,所以phone_lookup的数据还是保持不变,由于匹配不上而查询不到记录导致存在的号码被认为是陌生号码.比如,升级前某个存储的号码是13112345678,如果升级前的匹配位数是7,那么对应min_match的字段值是8765432,升级后的匹配位数为11位,那么对应min_match字段应该是87654321131,但表中的数据没有更新仍然为8765432,查询时就查不到记录造成问题中的现象,修改的方法是在数据库升级回调方法onUpgrade()中在对应的版本处理中将upgradeViewsAndTriggers设置true,phone_lookup的数据在升级过程中被清理掉,根据新的规则生成正确的数据.
+参考FAQ: FAQ91322
+### 问题: 通话记录中有些来电显示私有号码，是如何做到的？
+解决方案: 来电时除了上报号码,还会上报一个presentation,如果通过运营商定制了不显示号码的服务,那么这个值为2(PRESENTATION_RESTRICTED)时,标识私有号码,在终端的在通话记录处理显示在如下文件中 packages/apps/Dialer/src/com/android/dialer/calllog/PhoneNumberDisplayUtil.java 如下方法中处理 if (presentation == Calls.PRESENTATION_RESTRICTED) { return mResources.getString(R.string.private_num); } 上报值为2,就显示为private number
+参考FAQ: FAQ91323
+### 问题: sim卡联系人编辑页面姓名长度为何不同语言长度限制不相同
+解决方案: 英文状态下,sim卡联系人姓名长度限制为14,而俄语下为11,这是由于不同语言编码不同,转换到sim卡使用的编码长度不同造成.处理代码可以参考 packages/providers/ContactsProvider/src/com/sprd/providers/contacts/SimUtils.java 的getSimContactNameLength方法
+参考FAQ: FAQ91324
+### 问题: 如何使用开发者模式中的＂Logger buffer sizes＂
+解决方案: 这个选项可以控制logd的缓冲区的大小,对于小内存(<512M)系统,系统３个选项:64K,256K,1M．对于512M以上的系统则有５个选项:64K,256K,1M,4M,16M. 缺省使用256k, 　在某些情况下,开机的mainlog或systemlog中出现最开始ＬＯＧ不全的情况,可以适当的将这个值变大． 　但在正常使用时,建议还是使用256K的选项．
+参考FAQ: FAQ91336
+### 问题: 如何理解monkey.java中的回调函数接appEarlyNotResponding和appNotResponding
+解决方案: 在monkey测试环境下,系统在检测到anr发生后,会在ActivityManagerService.appNotResponding函数中,回调这两个函数. appEarlyNotResponding会被先调用,然后appNotResponding会做一些anr信息的收集处理,然后再调用appNotResponding.这个两个函数如果返回-1,那么appNotResponding就会立刻kill当前的anr进程并返回. 如果有些应用的anr不是我们关心的,也就是说不需要保存对应的snapshot文件时,可以修改appEarlyNotResponding这个函数,判断是这些应用时,直接返回-1,这样这些应用就会直接被kill,不会去做anr信息的收集保存.使得monkey的测试更流畅些.当然也可以在这里针对某些应用的anr作一些特殊的处理
+参考FAQ: FAQ91337
+### 问题: 不带GPS设备是否能够导航
+解决方案: 目前了解不带GPS的设备是不能够导航的,导航不仅仅需要经度纬度,还需要海拔速度方向等信息, 这些信息通过网络定位还不能获取,只能通过卫星定位的方式获取,所以具有导航功能的设备 需要带GNSS方案的芯片. 使用地图软件能够定位但是选择源地址目标地址进行导航时虽然能够根据目标地址移动但是地图 软件会报各种异常,这是由于没有方向和速度,导航的指示箭头会出现错误,这都属于正常现象.
+参考FAQ: FAQ91347
+### 问题: supl.xml文件的配置方法
+解决方案: GE2方案SUPL配置方法 vendor/sprd/gps/gnss/supl.xml vendor/sprd/gps/greeneye2/supl.xml GE方案supl配置方法 vendor/sprd/gps/CellGuide_2351/supl.xml 仅修改下面两个字段的值即可 <PROPERTY NAME="SERVER-ADDRESS" VALUE="supl.nokia.com"/> <PROPERTY NAME="SERVER-PORT" VALUE="7275"/>
+参考FAQ: FAQ91348
+### 问题: AGPS如何设置成支持supl1.0还是支持supl2.0
+解决方案: 通过*#*#2266#*#*进入SGPS在AGPS界面有SUPL2.0选项,如果默认勾选上,说明设置的是supl2.0, 去掉勾选设置的是supl1.0 (展讯平台现在支持supl协议最高是2.0)
+参考FAQ: FAQ91349
+### 问题: AGPS如何配置supl证书
+解决方案: 在项目中如下目录替换spirentroot.cer文件,将证书的名字改成spirentroot.cer进行替换 vendor/sprd/gps/gnss/spirentroot.cer 也可以用Push的方法,push 到手机的相应目录 adb push .\spirentroot.cer data/gnss/supl/
+参考FAQ: FAQ91350
+### 问题: VAMOS关闭方法
+解决方案: (1)AT命令关闭 At+spdsp=9,0,0,0 //关vamos At+spdsp=9,1,0,0 //开vamos (2)修改nv关闭(同时将如下两项nv的值修改为0) DSP 开关:GSM_DownloadParam\system_param_dsp_use_T\control_switches\control_switches[7]=1 修改为0 MODEM开关:TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_MS_CLASS_MARK\vamos_level=1修改为0
+参考FAQ: FAQ91358
+### 问题: 如何判断当前手机是否支持蓝牙耳机功能
+解决方案: 目前默认手机端支持audio source功能,即发送语音数据给蓝牙耳机,如果想查看当前是否支持蓝牙耳机功能,蓝牙协议里面从 system/bt/include/bt_target.h中查看BTA_AV_SINK_INCLUDED定义.如果BTA_AV_SINK_INCLUDED = TRUE,则表明支持audio sink的功能,即可以支持蓝牙耳机的功能,否则,需要修改audio, 和蓝牙的代码,联系SE获取.
+参考FAQ: FAQ91370
+### 问题: 蓝牙5.0有什么新的特性
+解决方案: 蓝牙5.0从性能和功能上都有了新的改善 1.蓝牙5.0加入室内定位辅助功能,结合Wi-Fi可以实现精度小于1米的室内定位. 2.传输速度上限为2Mbps,是之前4.2LE版本的两倍. 3.有效工作距离可达300米,是之前4.2LE版本的4倍.
+参考FAQ: FAQ91386
+### 问题: 如何去掉marlin芯片蓝牙传输的限速设置
+解决方案: adb root adb shell getprop | grep debug.bt.lowspeed 查看对应的值. 默认值为110,也就是传输速率为110kb/s左右.如果去掉限速设置,则 setprop debug.bt.lowspeed -1 此时限速设置去除.
+参考FAQ: FAQ91400
+### 问题: 如何确定NMEA log中的时间和手机时间的对应关系
+解决方案: 在做GNSS测试时,常常需要抓取NMEA log和手机slog,NMEA log和手机slog时间点,如何对应起来,可参考下面的方法. 1.在抓取log时,手机时间对准当地时间. 2.NMEA log中的时间格式为UTC时间,换算成当地时间的方法,UTC时间加上所在时区的偏移量. UTC ＋时区差＝本地时间 时区差东为正,西为负.例如,东八区(北京)是 +0800,而西五区(纽约)是-0500. 这样NMEAlog中的时间就可以与手机时间对应起来了.
+参考FAQ: FAQ91406
+### 问题: 如何通过NV设置Modem侧FDN功能的开关
+解决方案: 关于Modem侧FDN功能开关在如下NV项中控制:PS_NV_PARAMS\NV_PARAM_TYPE_MN_CFG\feature_switch_2 涉及到的控制项有: bit0:PDP激活时是否检查FDN. 0:不检查 1:检查 bit1:是否对短信中心号码做FDN检查 0:不检查 1:检查 bit2:是否对目标号码做FDN检查 0:不检查 1:检查
+参考FAQ: FAQ91421
+### 问题: UE在WCDMA模式下界面显示H网与H+网切换很频繁
+解决方案: UE界面显示在H网和H+网切换的原因是因为开户数据连接后,有数据连接时会显示H+,无数据连接后会显示H,属于UE数据连接的正常切换行为.
+参考FAQ: FAQ91423

@@ -1,0 +1,300 @@
+### 问题: 测试时手机连接wifi网络后如何确认手机已经连通网络
+解决方案: 手机连接wifi后确认手机是否能够正确获取到网络端的数据,可以通过ping来向互联网上任意一个服务器发送请求,如果有应答消息返回说明当前网络连接是正常的. 1.在window环境下,以XP系统为例,手机通过USB数据线连接电脑; 在运行窗口输入cmd,进入命令输入窗口,执行adb shell; 进入手机终端命令行,假如互联网上有一台服务器的IP地址为220.181.111.85,我们需要向服务器连续发送50次请求,输入如下ping命令: ping -c 220.181.111.85 打印如下信息表示网络连接不通:
+参考FAQ: FAQ46723
+### 问题: 安全能力配置的签名问题
+解决方案: 如果你修改了系统的签名,发现安全能力配置相关的apk都不能使用,请在Android.mk加入LOCAL_CERTIFICATE :=platform在编译时自动使用platform key来对APK进行签名,这样就没有问题了.
+参考FAQ: FAQ46805
+### 问题: 为什么通话时要禁止设置usb存储
+解决方案: 因为通话中有可能启动录音功能,此功能会与u盘功能产生冲突,因此需要上层直接禁止掉u盘功能.
+参考FAQ: FAQ46810
+### 问题: 如何设置屏幕不锁屏
+解决方案: 有些时候我们希望屏幕不要锁屏,可以将下面的代码放在MainActicity 的onCreate 方法中. //获取KeyguardLock对象 KeyguardManager km = (KeyguardManager)getSystemService(KEYGUARD_SERVICE); KeyguardLock kl = km.newKeyguardLock("Lock"); //设置不锁屏 kl.disableKeyguard(); 注意:添加权限 <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+参考FAQ: FAQ46771
+### 问题: 如何设置屏幕不休眠
+解决方案: 有些时候我们希望屏幕永远亮着,可以通过代码设置不休眠,具体代码如下: getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+参考FAQ: FAQ46824
+### 问题: 什么是BSS？
+解决方案: 基本服务组合(basic service set 简称 BSS)是 802.1 一网络的基本元件(buildingblock),由一组彼此通信的工作站所构成.工作站之间的通信,在某个模糊地带进行,称为基本服务区域(basic service area),此区域受限于所使用无线介质的传播特性.只要位于基本服务区域,工作站就可以跟同一个 BSS 的其他成员通信.BSS 分为两种
+参考FAQ: FAQ47924
+### 问题: 如何查看应用需要的feature
+解决方案: 从google play store上搜索应用时,有时候会找不到某些应用,这个是由于Google Play会过滤出那些对用户可见的应用程序,因此用户只能看到和下载那些与他们的设备兼容的应用程序.过滤应用程序其中的一种方法就是通过Feature兼容性. Google Play为判断应用程序与给定的用户设备是否兼容,比较: 1.应用程序需要的Feature – 应用程序在它自己的manifest中通过<uses-feature>申明所需要的Feature; 2.在设备上有效的硬/软件Feature -- 设备用只读的系统属性报告的它所支持的Feature,这些feature放在了system/etc/permissions/目录下 只有当设备上定义的featu
+参考FAQ: FAQ46812
+### 问题: 在4.4上如何打印后台进程ANR的trace?
+解决方案: ActivityManagerService.java: ...... if (IS_USER_BUILD && /*Build.IS_LOWMEM_VERSION*/ OptConfig.LC_RAM_SUPPORT && !app.isInterestingToUserLocked()) { Slog.w(TAG, "do not dump traces: is user build and lowmem version and anr in backgroound app"); } else { tracesFile = dumpStackTraces(true, firstPids, processCpuTracker, lastPids, null); ...... 去掉以上的if部分.
+参考FAQ: FAQ46848
+### 问题: SurfaceFlinger和BufferQueue之间关系？
+解决方案: 一个UI完全显示到diplay的过程,SurfaceFlinger扮演着重要的角色但是它的职责是"Flinger",即把系统中所有应用程序的最终的"绘图结果"进行"混合",然后统一显示到物理屏幕上,而其他方面比如各个程序的绘画过程,就由其他东西来担任了.这个光荣的任务自然而然地落在了BufferQueue的肩膀上,它是每个应用程序"一对一"的辅导老师,指导着UI程序的"画板申请"、"作画流程"等一系列细节.下面的图描述了这三者的关系: 虽说是三者的关系,但是他们所属的层却只有两个,app属于java层,BufferQueue/SurfaceFlinger属于native层.也就是说BufferQueue也是隶属SurfaceFlinger,所有工作围绕SurfaceFlinger展开.
+参考FAQ: FAQ46879
+### 问题: BufferQueue中的GraphicBuffer有以下几种状态？
+解决方案: BufferQueue中的GraphicBuffer总共有以下4种状态:FREE、DEQUEUED 、QUEUED、ACQUIRED 通过dequeueBuffer releaseBuffer acquireBuffer queueBuffer cancelBuffer函数互相状态转换. 之间的转换关系如下:
+参考FAQ: FAQ46891
+### 问题: 添加小部件联系人到桌面后，修改此联系人的图像，桌面的此联系人图像未刷新
+解决方案: [分析原因]: 将联系人放置到主屏幕上,实际只是通过intent创建shortcut,而shortcut仅仅是一个链接式的快捷图标,当源数据发生改变时,shortcut不会随之更新,但点击此快捷图标,显示的数据会是当前最新的.鉴于Android的default设计,参考机三星等手机也是如此. [解决方案] N/A
+参考FAQ: FAQ46928
+### 问题: permission denial的Exception
+解决方案: 当在一个activity中去start另一个activity时,出现permission denial的Exception,或Force Close 时需要做如下确认: 1、同一个application下 2、Uid相同 3、permission匹配 4、目标Activity的属性Android:exported="true" 5、目标Activity具有相应的IntentFilter,存在Action动作或其他过滤器并且没有设置exported=false 6、启动者的Pid是一个System Server的Pid 7、启动者的Uid是一个System Uid(Android规定android.system.uid=1000,具有该Uid的application,我们称之为获得Root权限)
+参考FAQ: FAQ46990
+### 问题: 如何根据log判断手机休眠的原因？
+解决方案: 1. 手机休眠时,在system.log中搜索关键字onGoToSleepStarted reason,其后的数字分别代表手机休眠的原因. onGoToSleepStarted reason:0 //用户请求休眠,按power键请求 onGoToSleepStarted reason:1 //设备管理策略请求休眠 onGoToSleepStarted reason:2 //屏幕超时请求休眠,设置休眠时间到 2. 在输出上述log之前,还会输出一下log,根据下述log判断也比较直观 Going to sleep due to device administration policy... //设备管理策略请求休眠 Going to sleep due to screen timeout... //屏幕超时请求休眠,设置休眠时间到 Going to sleep by user request... //用户请求休眠,按power键请求
+参考FAQ: FAQ46993
+### 问题: 自定义控件，在使用的时候找不到新加的控件属性
+解决方案: 在自定义新控件的时候,通常我们在布局文件中使用自定义属性的时候会这样写 xmlns:appex="http://schemas.android.com/apk/res/包路径" 但如果你当前工程是做为lib使用,或者其他模块通过编译文件引入本模块,那么上面的这中方法 ,会出现找不到自定义属性的错误 这时候你就需要写成 xmlns:appex="http://schemas.android.com/apk/res-auto/包路径"或者xmlns:appex="http://schemas.android.com/apk/res-auto"(appex可以用其他字符串替代)
+参考FAQ: FAQ47030
+### 问题: 如何检测系统中是否含有语音搜索服务
+解决方案: 可以使用以下代码检查: TelephonyManager tm = (TelephonyManager) context .getSystemService(Context.TELEPHONY_SERVICE); tm.isSupportApplication(TelephonyManager.TYPE_VOICE_SEARCH);
+参考FAQ: FAQ47034
+### 问题: 在SC7715平台上，如果使用RGB666和RGB565 LCD，硬件电路接口如何连接？
+解决方案: 1. 对于RGB666 LCD, B0~B5接D0~D5, G0~G5接D6~D11, R0~R5接D12~D17 2. 对于RGB565 LCD, B0~B4接D0~D4, G0~G5接D5~D10, R0~R4接D11~D15
+参考FAQ: FAQ47050
+### 问题: SC2713的耳机功放classAB or class-G类的输出功率多大？
+解决方案: 25mW on 32 ohm load or 40mW on 16 ohm load @3.3V
+参考FAQ: FAQ47057
+### 问题: SC7731G UART0支持硬件流控吗
+解决方案: SC7731G UART0支持硬件流控
+参考FAQ: FAQ47064
+### 问题: SC7731G UART1支持硬件流控吗
+解决方案: SC7731G UART1不支持硬件流控
+参考FAQ: FAQ47065
+### 问题: SC7731G UART2支持硬件流控吗？
+解决方案: SC7731G UART2不支持硬件流控
+参考FAQ: FAQ47066
+### 问题: 7731G UART3支持硬件流控吗
+解决方案: 7731G UART3支持硬件流控
+参考FAQ: FAQ47067
+### 问题: 开机检测到SIM变化的时候，会弹出一个对话框，如何去掉这个对话框？
+解决方案: 将BootCompletedReceiver.java (packages\services\telephony\src\com\sprd\phone)文件onReceive方法中的如下代码注释掉. Message msg = new Message(); msg.what = EVENT_CHARCHANGED; mHandler.sendMessageDelayed(msg, 15000);
+参考FAQ: FAQ47118
+### 问题: 7715 ffos如何打开或者关闭应用动画效果？
+解决方案: 修改文件:gaia/build/config/common-settings.json 修改位置:"app-transition.enabled": false, //false表示关闭,true表示打开
+参考FAQ: FAQ47124
+### 问题: 7715 ffos如何让被杀掉的应用在近期任务中仍然显示？
+解决方案: 修改文件:gaia/build/config/common-settings.json 修改位置:"app-suspending.enabled": false, //false表示不显示,true表示显示 PS:手机中手动设置位置:Settings-Developer-Keep killed app in task manager 另外,若是user版本,需要将Settings-Device Information-More Information中的Developer Menu勾上后Settings-Developer这个菜单才会显示出来.
+参考FAQ: FAQ47125
+### 问题: GSM 频段下传导测试相位误差问题如何处理？
+解决方案: 1)调试PA输入和输出匹配; 2)关注IQ信号质量,是否在布线上被干扰; 3)收发链路隔离,TX/RX一定要良好隔离,在非信令下调试时可断开RX通路验证; 4)Trasceiver供电VDDRF和PA VBAT电源是否干净?可以考虑在供电电路输入端添加磁珠,在PA的供电输入端并接大的电容(100uF),或者换一个精密电源验证.
+参考FAQ: FAQ47147
+### 问题: GSM 频段下出现接收不通问题如何处理？
+解决方案: 1)确认RF接收部分逻辑控制是否正确 2)确认板子上所贴滤波器是否正确
+参考FAQ: FAQ47148
+### 问题: GSM 900M频段辐射下出现 5CH RX很差问题如何处理？
+解决方案: 1)确认4CH,6CH 是否有问题?如临近信道都有问题,需要调试接收匹配; 2)如4CH、6CH下RX 性能很好,请确认是否是有26M时钟布线靠近天线导致干扰.
+参考FAQ: FAQ47149
+### 问题: settings-accessibility-services菜单的用途
+解决方案: settings>accessibility>services菜单中一般都是针对特殊人群的服务,如google的Talkback,如果安装了Talkback,则在accessibility>services会有相应的开关设置
+参考FAQ: FAQ47155
+### 问题: 7731自带的播放器是否支持rmvb格式的影片
+解决方案: rmvb牵扯到版权问题,所以不支持
+参考FAQ: FAQ47156
+### 问题: "emulated"这个文件夹是做什么的
+解决方案: emulated是原生存储方案下的一个中间路径,一开始是用来作为data和内卡共享空间的存储方案中间路径. 后续sprd将内卡做真实的内卡,即不再和data共享存储空间.这时就将这个路径和internalsd做一个链接.故两个文件夹下的内容是一致的.
+参考FAQ: FAQ47157
+### 问题: 对于有锁网功能的项目，如何修改输入解锁密码的限制次数
+解决方案: 修改解锁尝试次数请修改NV: BaseParam.nvm SIM_LOCK_CUSTOMIZE_DATA下的max_num_trials的值
+参考FAQ: FAQ47163
+### 问题: 如何查看系统内存碎片情况？
+解决方案: 1、使用adb shell命令进入手机shell模式 2、cat proc/buddyinfo 3、显示结果: Node 0, zone Normal 3757 615 99 11 1 0 0 0 0 0 0 上述数据以4kb,8,16,32,64,128,256,512,1024,2048,4096kb为单位的所有可分配内存之和,当前可分配连续内存为3757*4kb,615*8kb,99*16kb,11*32kb,1*64kb. 如果出现类似下面的数据,则说明当前内存碎片比较严重: Node 0, zone Normal 4482 1 0 0 0 0 0 0 0 0 0
+参考FAQ: FAQ47152
+### 问题: 7715是否支持USB热点功能？如何打开？
+解决方案: 插入USB有"USB共享网络"选项,即USB热点,选中即可打开.
+参考FAQ: FAQ47164
+### 问题: 为什么找不到video call的功能选项？
+解决方案: 在工程模式中,第一层菜单倒数第二个(视频电话开关,具体见下图),有一个视频通话开关,打开后就支持video call了
+参考FAQ: FAQ47166
+### 问题: 如何添加紧急号码?
+解决方案: 以添加130为例:(+ 为添加,- 为删除) PhoneNumberUtils.java (frameworks\base\telephony\java\android\telephony) 1. isSimEmergencyNumber()方法做如下修改 - return (number.equals("112") || number.equals("911")); + return (number.equals("112") || number.equals("911")||number.equals("130")); 2.数组CUSTOM_EMERGENCY_NUMBER中添加130
+参考FAQ: FAQ47167
+### 问题: 出国外的手机，插联通3G卡，设置--更多--移动网络--首选网络类型--选择仅限WCDMA，手机为什么搜不到网？
+解决方案: WCDMA共分成四个频段 Band 1: 2100MHz Band 2: 1900MHz Band 5: 850MHz Band 8: 900MHz 几乎没有国家将4个频段全部使用起来.联通用的是Band1,如果是出南美的手机,一般用band2,可能就将band1(联通的频段)去掉了,所以在国内测试,就无法驻留到WCDMA上
+参考FAQ: FAQ47168
+### 问题: 如何将Udisk下的默认文件夹名称由英语修改为其他语言？
+解决方案: 目前默认的文件夹名称以数组形式存在且只包含英语(比如"Audio"对应的MMIMULTIM_DIR_MUSIC),如果需要修改为其他语言,比如西班牙语,可参考如下方法: 在现有的初始化流程中(MMIAPIFMM_InitFolders@mmifmm.c),仿照目前的流程,增加文件夹对应的西班牙语字符串,在初始化时,判断当前显示语言如果是西班牙语,取对应的西班牙语字符串.
+参考FAQ: FAQ47281
+### 问题: shark和trout fm 无声问题分析
+解决方案: 在shark FM和trout FM中,FM驱动中都不支持音量的调节,也就是FM模块只能决定音频数据是否输出,不能控制音量. FM在shark和trout中稍有不同的是,shark虽然不能控制音量,但是当音量调为0的时候,驱动会将Fm应将设置成静音,禁止音频数据输出,而trout FM驱动的音量调节函数为空,上层的音量调节不会影响到FM的数据输出,即使将音量调为0.
+参考FAQ: FAQ47282
+### 问题: FM有哪几种工作模式
+解决方案: 1.收听模式(normal mode):MODEM 不会判断当前频点是否有效,直接解调并播放声音,如果当前并非有效台,则输出噪音. 2.设台模式(tune mode):MODEM 会完成频点的设置,设置完成后会向相应的状态寄存器写标志,软件可以获取该标志,并且可以获取当前台的信息. 3.搜台模式(seek mode):MODEM 会从当前台向前或向后自动搜索第一个有效台,搜索到之后会向相应的状态寄存器写标志,软件可以获取该标志,并且可以把搜索到的频点信息读取出来.
+参考FAQ: FAQ47292
+### 问题: shark fm驱动支持哪些操作
+解决方案: shark fm驱动在内核中被注册为一个misc设备,操作也比较简单. open函数提供了一些FM寄存器的初始化操作,由于还需要对SR2351的寄存器进行一些初始化,他们之间是通过SPI通信的,所有还需要初始化SPI接口. FM的控制全部ioctl实现,包括使能FM,获取当前FM使能状态,设台,搜台,停止搜台,获取当前播放频率,音量控制. shark fm驱动中的音量控制函数实际对音频数据是否输出进行了控制,并不能控制音量. fm界面还提供了自动搜台和从当前频率搜台的功能,可以通过以上驱动函数接口的灵活组合来实现.
+参考FAQ: FAQ47299
+### 问题: 插入带有麦克风的耳机后，Camera2录像时无法使用耳机上面的麦克风采集声音
+解决方案: Android原生设计对录像时的声音输入设备做了限制,只有BACK_MIC、BUILTIN_MIC两个设 备可选;这个设计在函数getDeviceForInputSource(AudioPolicyManagerBase.cpp)中实现. 估计Google考虑到录像中如果有耳机插拔会导致音视频不同步的可能,所以限定为使用手机自带的mic; 可以参考如下进行修改:
+参考FAQ: FAQ47307
+### 问题: monkey测试时前有什么注意事项？
+解决方案: 建议规范monkey测试前的准备工作,再进行测试 1:设置-安全-屏幕锁定:选择无 2:显示-休眠:30分钟 3:开发者选项:点选"不锁定屏幕"
+参考FAQ: FAQ47319
+### 问题: 如何通过按键log确定屏幕亮灭和锁屏状态？
+解决方案: 按键时都会在main.log 中打印出按键消息,这里面包含了屏幕亮灭和锁屏状态信息. 可以搜索关键字"interceptKeyTq "如下 WindowManager: interceptKeyTq keycode=3 screenIsOn=true keyguardActive=false screenIsOn 表示屏幕的亮灭,true代表屏幕处于亮屏状态.false代表屏幕处于灭屏状态. keyguardActive 表示锁屏的状态,true代表处于锁屏状态,false代表屏幕没有锁屏. 这些信息对于定位黑屏,锁屏问题,很有帮助.
+参考FAQ: FAQ47324
+### 问题: 什么是SEAndroid？
+解决方案: SEAndroid是Google在Android 4.4上正式推出的一套以SELinux为基础核心的系统安全机制,这主要是针对传统的安全机制设计. 传统的Android系统的安全机制分为应用程序和内核两个级别,应用程序级别的安全机制就是我们通常说的Permission机制,内核级别的安全机制就是传统的Linux UID/GID机制,所采用的安全模型叫DAC(Discretionary Access Control)译为自主访问控制.而SEAndroid 则采用一种新的安全模型叫MAC(Mandatory Access Control)译为强制访问控制. MAC的核心思想是:当一个进程进程想在SELinux系统中干任何事情,都必须先在安全策略配置文件中赋予权限.凡是没有出现在安全策略配置文件中的权限,进程就没有该权限(最小权限原则).因此在SELinux中,安全策略文件是关键.这种安全策略称Type Enforcement,简称TE.在android中以*.te文件为定制的策略文件.
+参考FAQ: FAQ47325
+### 问题: 7715 vt audio是否支持WB
+解决方案: 目前只支持NB,不支持WB.
+参考FAQ: FAQ47357
+### 问题: 如何使UiAutomator脚本脱离电脑仍执行测试用例?
+解决方案: 在成功push UiAutomatorPower.jar包到手机/data/local/tmp路径后,只需在运行命令后加入--nohup参数即可拔掉USB线运行,如以下命令: adb shell uiautomator runtest UiAutomatorPower.jar -c XXX(所需测试的包名.类名) --nohup
+参考FAQ: FAQ48639
+### 问题: 彩信支持哪些文字图片排版方式？
+解决方案: 目前彩信支持两种文字图片排版方式:Text above和Text down.不支持Text left和Text right. 在编辑彩信界面通过Options->Text layout可以设置文字图片排版方式.默认的排版方式为Text above.
+参考FAQ: FAQ47389
+### 问题: SC7731平台如何通过adb命令查看当前测试机电池剩余电量百分比？
+解决方案: 1.进入命令行提示符窗口 2.输入adb shell进入手机shell命令窗口 3.输入cat /sys/devices/sprd_battery.3/power_supply/battery/capacity //命令提示符窗口即会显示电池当前剩余电量百分比
+参考FAQ: FAQ47404
+### 问题: 如何通过adb命令向EditText文本框输入字符？
+解决方案: 1.将手机输入法切换成Android键盘 2.手机触点停留在需要输入文本的EditText文本框上 2.在命令提示符窗口输入命令adb shell input text "abcd" //双引号内为需要输入的文本
+参考FAQ: FAQ47434
+### 问题: android4.4 Launcher中如何隐藏主界面应用图标的应用名称？
+解决方案: 以sprdLauncher2举例: 请定位到vendor/sprd/UniverseUI/SprdLauncher2/src/com/android/sprdlauncher2/CellLayout.java文件: 然后定位到addViewToCellLayout方法: if (child instanceof BubbleTextView) { BubbleTextView bubbleChild = (BubbleTextView) child; bubbleChild.setTextVisibility(!mIsHotseat); } 修改为: if (child instanceof BubbleTextView) { BubbleTextView bubbleChild = (BubbleTextView) child; bubbleChild.setTextVisibility(false); }
+参考FAQ: FAQ47458
+### 问题: 如何修改sprdLauncher1中主界面hotseat图标的个数？
+解决方案: 请定位到vendor/sprd/UniverseUI/SprdLauncher1/res/values/config.xml <integer name="config_hotseat_cols">4</integer>修改此数值即可
+参考FAQ: FAQ47459
+### 问题: 自动重拨电话的时间间隔是多少？
+解决方案: 开启自动重拨后,用户在对方或网络挂断电话后可自动重拨10次,其中: 第一次重拨间隔时间为5秒 #define CC_REDIAL_TIMER_DUR1 5000 第二、三、四次的重拨间隔时间为1分钟 #define CC_REDIAL_TIMER_DUR2 60000 第五次之后重拨间隔时间为3分钟 #define CC_REDIAL_TIMER_DUR3 180000
+参考FAQ: FAQ47462
+### 问题: MIPI协议中EoT和EoTp有何区别？
+解决方案: EoT,即End of Transmission,是MIPI物理层规定的传输结束时的标志,每次传输都有EoT. EoTp,即End of Transmission packet,是MIPI协议层规定的,为了增加HS模式下传输健壮性而额外增加的一个packet,不是强制性要求,所以具体的mipi LCD驱动代码中会根据具体外设使能或禁止etop,其函数接口是mipi_eotp_set.
+参考FAQ: FAQ47467
+### 问题: softap时不能被其他设备连接上
+解决方案: 做sta时,lna一开始是打开的,后续是自动控制的. 做softap时,lna是默认关闭的. 可能影响收包性能,比如收不到sta的auth帧. 此时可以通过以下命令临时修改: iwnpi wlan0 lna_on 问题最终需要修改天线,或者重新调试ini配置文件.
+参考FAQ: FAQ47481
+### 问题: 如何判断视频播放卡顿与SD卡性能有关
+解决方案: 判断视频卡顿是否与SD卡性能有关,可以做如下两个测试进行验证. 1.可以把视频文件拷贝到手机内存中进行播放,如果播放流畅,则说明从SD卡进行播放时出现卡顿和SD卡性能不足有关; 2.如果从SD卡进行播放视频,关闭slog后进行复测验证,如果播放流畅,则说明从SD卡进行播放时出现卡顿和SD卡性能不足有关;
+参考FAQ: FAQ47816
+### 问题: 单独屏蔽EDGE上行，下行正常工作不关闭
+解决方案: EGPRS_SUPPORTED=0
+参考FAQ: FAQ90634
+### 问题: 音频调试时如何dump codec寄存器内容？
+解决方案: (1)利用lookat -l nword addr_in_hex读取寄存器内容,寄存器地址可以从芯片spec上查找. (2)adb shell cat proc/asound/sprdphone/vbc
+参考FAQ: FAQ47474
+### 问题: 同一块板子在成功打开一颗摄像头后再换另一颗代码中已兼容的摄像头，打开失败的可能原因？
+解决方案: 软件下载后,首次开机会枚举软件兼容列表中的每颗摄像头做匹配,如果匹配成功后,会记录到/data/misc/media/sensor.file中,以后再次开机就不会再做枚举;因此如果换了另外一颗列表中已兼容的摄像头,那软件必须重新下载,或者通过adb shell删除上述sensor.file文件.
+参考FAQ: FAQ47477
+### 问题: 7715 做T卡升级时是否会删除客户数据？如果有删除，哪些数据会被删除掉？
+解决方案: SPRD的MocorDroid 4.4系统,在进行T卡升级或者OTA升级时,只要不选择恢复出厂设置的功能,用户的数据,包括电话本,短消息,已安装的应用等data分区的数据都是不会去删除的,升级成功后都会保留. 默认情况下,应该是不会选择恢复出厂设置,因此客户数据都会得到保存.
+参考FAQ: FAQ53634
+### 问题: 工程模式下camera显示不通过，但不会报panic
+解决方案: 这种情况一般是因为camera identify没成功所导致,因为在sensor_cfg.c中有两个支持的sensor列表,工程模式下的测试是但独的表,因为开机后camera都是好的,在工程模式下出错,这种情况一边是在工程模式下的支持列表没有添加机器上的camera.
+参考FAQ: FAQ53625
+### 问题: 图库中编辑图片拉直效果的文字显示问题
+解决方案: 图库中编辑图片,使用的拉直效果其实是由剪裁和旋转两种效果合成的,而且可以分别进行调整,所以选择显示已应用效果之后,拉直效果显示的是剪裁和旋转.
+参考FAQ: FAQ46964
+### 问题: 不带GPS，软件是是否需要做相应的修改
+解决方案: 如果要去掉gps 功能,请按下面屏蔽gps的相应地方 屏蔽GPS的地方: 1:.mk中$(call inherit-product, vendor/sprd/gps/CellGuide_2351/device-sprd-gps.mk) 2:init.board.rc中gps相关设置 3:device.mk中 PRODUCT_PACKAGES += SGPS 4:BoardConfig.mk中BOARD_USE_SPRD_4IN1_GPS := true 5.device/sprd/scx35/device.mk: -frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \ 6、去掉上层相关的GPS菜单.
+参考FAQ: FAQ50243
+### 问题: 7731G平台手机开机init进程主要做了哪些工作
+解决方案: 1). 建立内核空间和用户空间进行交互的文件目录,例如/sys、/dev、/proc等 2). klog初始化,修改kernel日志级别为6 3). 初始化属性ro.boot.serialno、ro.boot.mode、ro.boot.baseband、ro.boot.bootloader 4). 处理配置文件的命令,主要是init.rc文件,包括处理各种Action 5). Selinux初始化 6). 添加闹钟模式和recovery校准模式的判断 7). 使用bootchart工具进行性能分析,搜集硬件和系统的信息并写入磁盘供其他程序使用 8). 无限循环执行command(启动其他的进程)
+参考FAQ: FAQ47492
+### 问题: 如何彻底修改init.rc文件中的内容
+解决方案: android启动后,会将init.rc文件装载到内存.修改init.rc文件的内容实际上只是修改内存中的init.rc文件的内容.一旦重启android,init.rc文件的内容又会恢复到最初的装载. 若要彻底修改init.rc文件内容,需要修改Android的ROM中的内核镜像(boot.img).boot.img文件包含完整的Linux内核文件(zImage),还包括ramdisk.img镜像文件.ramdisk.img就包含了init.rc文件和init命令.所以只有修改ramdisk.img文件中的init.rc文件,并且重新打包boot.img文件,并刷机,才能彻底修改init.rc文件.
+参考FAQ: FAQ47497
+### 问题: 1080P录像的分辨率为1920X1088
+解决方案: 编码器在高度方向上需16对齐,1080不满足,故调整到1088,即当录像设置分辨率1080P时,实际录制的为1920X1088
+参考FAQ: FAQ47566
+### 问题: System空间大小问题
+解决方案: System空间在正常的user模式下是只读的,可以剩余空间为0,不影响性能.但要注意下面情况 1. debug模式下Sytem是可以读写的.空间太小会写不下去 2. 改变内置应用或代码,经常要调空间 3. 如果中间有升级等操作,空间要重新调整
+参考FAQ: FAQ47568
+### 问题: SC7731 将联系人的快捷方式添加到桌面，再将此联系人删除后，此快捷图标不会一起被删除
+解决方案: 联系人的快捷方式仅仅是一个链接式的快捷图标,当源数据被删除时,shortcut不会随之删除,鉴于Android的原生default设计,参考机三星小米等手机也是如此.
+参考FAQ: FAQ47579
+### 问题: 什么是PNN？
+解决方案: 这是SIM卡上的一个文件, EFPNN (PLMN Network Name),其中包含了一些网络名称(长名/短名)的记录. 手机应当使用其中的网络名称去取代手机存储的网络名称,或者网络侧下发的网络名称. 当Operator PLMN List文件(EFOPL)不存在时,使用第一条记录作为缺省网络名称. 展讯平台支持卡中PNN.
+参考FAQ: FAQ47580
+### 问题: 什么是NITZ？
+解决方案: NITZ(Network Identity and Time Zone),网络标识和时区,是一种用于自动配置本地的时间和日期的机制,同时也通过无线网向移动设备提供运营商信息. 展讯平台支持NITZ.
+参考FAQ: FAQ47581
+### 问题: 网络运营商名称显示顺序问题
+解决方案: 在手机运行中,网络运营商名有三种来源: 1. 手机存储的PLMN(名称)列表; 2. 网络通过NITZ下发的网络运营商名; 3. SIM卡上的PNN文件; 手机上运营商名显示的顺序如下: SIM卡上的PNN文件 -> 网络通过NITZ下发的网络运营商名 ->手机存储的PLMN(名称)列表
+参考FAQ: FAQ47582
+### 问题: 如何通过Logel工具查看SIM卡相关信息
+解决方案: 在MESSAGE窗口中,查找带如下关键字的消息: 1. SIM_READY_IND: 卡准备好 2. SIM_REMOVE_IND: 掉卡
+参考FAQ: FAQ47583
+### 问题: 如何通过Logel工具查看当前注册网络相关信息
+解决方案: 在MESSAGE窗口中,查找带如下关键字的消息: 1. MSG_ID_CURRENT_RAT_INFO_IND: 显示手机当前所在网络类型,GSM,或者W/TD. 2. APP_MN_NETWORK_STATUS_IND: 在消息解析窗口中包括当前注册网络的信息,例如: cs_attach_state; ps_attach_state; mcc/mnc; lac/cellid; spn:运营商名; net_name_info: NITZ网络名信息; net_time_info: NITZ网络时间信息; 其中,cs_attach_state/ps_attach_state取值如下: 0: invaild state 1: attached 2: detached 3: no service
+参考FAQ: FAQ47584
+### 问题: 如何通过Logel工具查看手机PLMN选择请求
+解决方案: 在MESSAGE窗口中,查找带如下关键字的消息: 1. MSG_ID_PLM_AS_3G_PLMN_SEL_REQ: PLMN选择请求, 在消息解析窗口中包括: plmn_sel_mode: 选择模式; plmn_id: 选择的plmn; rat_type: 接入技术; 2. MSG_ID_PLM_AS_GPRS_PLMN_SEARCH_REQ: 一般与以上消息同时出现,结构相同; 3. MSG_ID_MM_PLM_SYS_INFO_IND
+参考FAQ: FAQ47585
+### 问题: 如何通过Logel工具查看手机当前的服务小区和临小区
+解决方案: 当手机工作在WCDMA模式时,在MESSAGE窗口中,查找WRCC_WRRC_CELL_LIST_INFO_PRINT消息,对应消息解析窗口中,SrvCellInfo,WNgbCellInfo和GNgbCellInfo结构,分别表示服务小区、W邻小区和G邻小区的信息. 当手机工作在GSM模式时,在MESSAGE窗口中,查找MPH_RR_CELLS_INFO_REQ消息,对应消息解析窗口中,scell和ncells结构分别表示服务小区和GSM临小区.
+参考FAQ: FAQ47587
+### 问题: 如何通过AT命令修改手机的网络模式
+解决方案: 使用如下AT命令: AT^SYSCONFIG=<mode>,<acqorder>,<roam>,<srvdomain> mode 描述 2 自动选择 13 GSM ONLY 14 WCDMA ONLY 15 TDSCDMA ONLY 16 无变化 acqorder 描述 0 自动 1 先GSM后UTRAN 2 先UTRAN后GSM 3 无变化 roam 描述 0 不支持 1 可以漫游 2 无变化 srvdomain 描述 0 CS_ONLY 1 PS_ONLY 2 CS_PS 3 ANY 4 无变化 例如: 设置"GSM only": at^sysconfig=13,3,2,4 设置"WCDMA only": at^sysconfig=14,3,2,4 设置"首选WCDMA": at^sysconfig=2,2,2,4
+参考FAQ: FAQ47589
+### 问题: 无线打印机有哪几种？
+解决方案: 而无线打印机目前有两种,一种是433MHZ的无线打印机,另一种是WIFI无线打印机. 433MHZ无线打印机的优势主要体现在:1、通讯距离上,433要达WIFI的数倍距离;2、在实用环境中,信号的穿透性,即穿墙性能,433要优于WIFI,可穿透10面左右墙壁.而WIFI无线打印机则穿墙性能很差.很多使用WIFI上网的朋友经常会碰到WIFI信号时断时续,隔一堵墙就传输不了的情况.3、稳定性上,433更加稳定,成功率高,所以WIFI因信号缘故,无法实现高可靠性. 当然,WIFI信号也有自身的优点:1、信息数据量大,WIFI的特性是传输数据量大;2、设备常见,现在大多数移动终端都配置了WIFI,所以它的整体应用大环境更普遍.
+参考FAQ: FAQ47595
+### 问题: 什么是无线打印？
+解决方案: 无线打印,通俗的说就是数据终端通过无线网络将信息数据传输给打印机并打印出来. 目前市场上的无线打印基本都是基于wifi来实现无线传输,也称网络打印或者wifi打印. 无线打印一般都是将打印机加入无线局域网,然后各终端在无线局域内搜到此打印机实现打印. 也有支持无线的打印机直接与笔记本电脑等连接,笔记本可以直接无线打印了.
+参考FAQ: FAQ47599
+### 问题: 如何修改录制彩信视频的时间
+解决方案: 1. 文件packages/apps/Mms/src/com/android/mms/ui/MessageUtils.java public static int getVideoCaptureDurationLimit(long bytesAvailable) { CamcorderProfile camcorder = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW); if (camcorder == null) { return 0; } bytesAvailable *= 8; // convert to bits long seconds = bytesAvailable / (camcorder.audioBitRate + camcorder.videoBitRate);//可以直接修改这个值为相应的时 //间,如20s,30s等 2. 需要注意的是,彩信大小有300K的限制,因此到了这个限制后就会自动停止录制视频
+参考FAQ: FAQ47604
+### 问题: 如何隐藏 设置->语言和输入法->语言中的“[Developer]Accented english”菜单
+解决方案: 文件frameworks/base/core/java/com/android/internal/app/LocalePicker.java if (isInDeveloperMode) { if (!localeList.contains("zz_ZZ")) { -- localeList.add("zz_ZZ"); ++ // localeList.add("zz_ZZ");//注释此句 } /** - TODO: Enable when zz_ZY Pseudolocale is complete * if (!localeList.contains("zz_ZY")) { * localeList.add("zz_ZY"); * } */ }
+参考FAQ: FAQ47606
+### 问题: 如何架设无线打印？
+解决方案: 无线打印的架设目前有两种方式: 1.无线打印机 + 数据终端(手机或笔记本)+路由器(路由器也可以不要) 这种方式需要打印机支持无线功能,无线打印机可以通过wps与无线路由连接,然后无线终端均可搜到无线打印机了; 也可以直接与笔记本电脑连接,装好驱动后笔记本上直接能搜到无线打印机. 2.普通打印机+无线打印服务器+无线路由器+ 终端(笔记本或者手机) 这种方式是为了将老式普通打印机加入无线网络,增加了一个无线打印服务器. 从而各终端可以在无线局域网内通过无线打印服务器搜索到每个打印机.
+参考FAQ: FAQ47601
+### 问题: 蓝牙 eut无法测试,工程模式中 BT eut是灰的，无法点击打开，如何修改
+解决方案: 修改文件Packages/apps/EngineerMode/res/xml/pref_connectivitytab.xml -- android:enabled="false" > ++ android:enabled="true" > </com.sprd.engineermode.EMSwitchPreference>
+参考FAQ: FAQ47611
+### 问题: 7701项目如何在LOGEL工具中使用diag命令
+解决方案: 调试时候有时为了方便,在使用diag命令的时候还想看Log,使用Logel工具即可达到要求,方法如下: 1. 使用logel工具连上终端输出Log后,选择Tool -> Send Diag command 2. Command方框有三项 Type/SubType/Buffer Diag命令见FAQ29010,这里也简单罗列一下: 包头 1byte 0x7E 数据序号 4bytes 包长度不含头尾 2bytes cmd 1byte 0x5F subtype 1byte data 数据内容 CRC校验位 2bytes 包尾 1byte 0x7E 此工具中Type为cmd, SubType为subtype, Buffer为data,其它项工具会自动封装. 举例说明: Diag设置usb自动模式: Type为13 , SubType为7, data为具体设置值,此处设置自动模式为1,即可
+参考FAQ: FAQ47631
+### 问题: 为何在泰语中，日历年份显示为2557
+解决方案: 由于泰国使用的是佛历纪年,与公元纪年差543年,所以公元2014年即佛历2557年
+参考FAQ: FAQ47647
+### 问题: 为什么有些flv视频无法快进快退？
+解决方案: 由于该部分文件无关键帧头信息,无法在解析文件头的时候获取到关键帧,从而在快进快退时无关键帧信息导致不能快进快退.对于无关键帧的文件需要解析视频文件时去遍历每一帧,这个改动较大,短期内没有相应的支持计划.
+参考FAQ: FAQ47696
+### 问题: 在播放音乐时打开视频，当视频被关后，为什么之前的音乐不能自动恢复播放
+解决方案: 这是由firefox的界面设计所决定的(参考ios也是这样设计的),需要用户手动点击原来处于悬浮状态的music界面,将其切到前台,原先的播放的music才会恢复播放.
+参考FAQ: FAQ47679
+### 问题: SC7701是否支持截屏功能？
+解决方案: SC7701支持截屏功能,打开宏TAKESCREENPHOTO_SUPPORT即可.默认通过camera键截屏,如果更换其他按键,可根据项目修改DefaultTakeScreenPhoto(@mmidefault.c)处理逻辑,前提是该按键消息未被其他应用或窗口/控件处理,同时需要考虑特定界面的对该按键响应的修改. 注意: 截屏功能只能抓取LCD和层上的数据,因此无法抓取DC/DV预览的数据以及视频播放器播放的内容.
+参考FAQ: FAQ49156
+### 问题: SC7701 Camera应用如何切换前置镜头和后置镜头？
+解决方案: SC7701 Camera应用可支持前置镜头和后置镜头切换,软件上默认采用1键切换镜头,详见函数MMIDC_ShortcutForSwitchSensor@mmidc_main_wintable.c.
+参考FAQ: FAQ47709
+### 问题: 如何获取系统的api level？
+解决方案: 如何获取系统的api level? int version = android.os.Build.VERSION. SDK_INT; String version = android.os.Build.VERSION. SDK;
+参考FAQ: FAQ47745
+### 问题: [AndroidL] 升级AndroidL后主要APP应用有哪些影响？
+解决方案: AndroidL的系统框架有一定的变化,如下图所示: 从功能上看,有一定的新增功能:
+参考FAQ: FAQ47716
+### 问题: 使用纯gps定位制约条件
+解决方案: GPS 的搜星定位的条件就是室外,并且搜星的数目,信号的强度与当时的环境有关,比如:天气情况,附近是否有高楼,树木包围.如果天气比较差,下雨或云层较厚都会影响gps搜星,导致定位不准甚至无法定位.
+参考FAQ: FAQ47765
+### 问题: [AndroidL] AndroidL如何处理屏幕碎片化的问题？
+解决方案: 目前我们在市面上常见的分辨率方案主要有以下几种: HVGA (320*480)2:3 WVGA (480*800)3:5 HWVGA (480*854)9:16 QHD (540*960)9:16 HD (720*1280)9:16 FULL HD (1080*1920)9:16 2k (1440*2560) 9:16 4k (2160*3840) 9:16 其他(多见于功能机以及小众品牌手机): QVGA(240*320) 3:4 WQVGA(240*400) 3:5 在之前的设计方案中,第三方的应用程序适配让开发者非常头疼. 在AndroidL的设计中,将目前的基础分辨率更新为了360*640 ,这样做的目的有二,其一可以将基础分辨率的屏幕比例固化为16:9的黄金比例.其二将目前主流分辨率化成简单的倍数关系,对后续屏幕适配打好基础.
+参考FAQ: FAQ47768
+### 问题: LBS的底层实现有哪些方式
+解决方案: LBS 的底层实现实现由两种: 1. control plane 使用信令网部署服务,依赖以移动设备所处的ss7网络,搭建这种服务的代价高昂,需要升级底层ss7网络,但是这种方式提供了高可靠高安全高速率的LBS 服务,特别是紧急服务. 2. user plane 使用上层tcp/ip进行与 MPC/GMLC 通信,不需要对底层网络进行升级.可以使用OMA和3GPP的相应协议与MPC/GMLC 进行交互,如:SUPL, RRLP. 所传输的数据需要进行ASN PER编码ssl加密.在速率和安全性可靠性方面不如control plane.
+参考FAQ: FAQ47773
+### 问题: 7715校准时跑的是哪个IMG?
+解决方案: 7715校准时跑的是recovery.img.
+参考FAQ: FAQ47796
+### 问题: 恢复出厂设置时跑的是哪个IMG？
+解决方案: 恢复出厂设置时跑的是recovery.img,所以当修改了恢复出厂设置相关的内容时要重新编译和下载recovery.img
+参考FAQ: FAQ47787
+### 问题: 7715是否支持双屏显示?
+解决方案: 7715默认不支持双屏显示.
+参考FAQ: FAQ47799
+### 问题: [SC7731G] 当用SC7731G内部的Class-D，芯片SPK输出1%时， 6ohm喇叭的功率是多少？
+解决方案: 6ohm喇叭3.6V以上0.66W,VBAT=3.4V时略有下降,为0.55W.
+参考FAQ: FAQ47829
+### 问题: 开机第一次自动睡眠后，唤醒时屏闪，在睡眠唤醒后就不闪了
+解决方案: uboot 和kernel的lcd驱动timing要一致,去掉屏驱动里写命令多余操作
+参考FAQ: FAQ47830
+### 问题: [SC7731G] 当用SC7731G内部的Class-D，芯片SPK输出1%时， 6ohm喇叭的电压Vrms是多少？
+解决方案: Voutrms=2V.
+参考FAQ: FAQ47832
+### 问题: [SC7731G] SC7731G判断充电器拔出的条件是什么？
+解决方案: Ichg<70mA&VCHG<4.3V,即充电电流和VCHG电压两者都要判断,具体数据软件可调.
+参考FAQ: FAQ47834
+### 问题: [SC7731G] SC7731G充电过压保护电压是多少？
+解决方案: VBAT过压保护:可软件设置在4.25V～4.625之间,默认4.25V.
+参考FAQ: FAQ47835

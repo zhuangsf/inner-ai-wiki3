@@ -1,0 +1,300 @@
+### 问题: 如何通过工具命令查看发生库异常的信息
+解决方案: 在对应的ubuntu的工程环境下,进入该项目,输入如下命令就可以查看对应库异常的行数信息. $ arm-linux-androideabi-addr2line -f -e ~/project/symbols/system/bin/phoneserver 000041bd 命令红色是命令, 蓝色是symbols路径, 紫色是crash地址
+参考FAQ: FAQ79039
+### 问题: 蓝牙的逻辑信道
+解决方案: 链路控制信道:LinkControl LC 链路管理信道:Link Manage LM 用户异步数据信道:User AsynchronizationUA 用户同步数据信道:UserSynchronization US 用户等时数据信道:UserIsochronous UI UI
+参考FAQ: FAQ79159
+### 问题: 蓝牙HCI信息指令参数
+解决方案: Read Local Version Information 0x0001 读取本地蓝牙版本信息 Read Local Supported Features 0x0003 读取本地蓝牙设备特征表 Read Local Extended Features 0x0004 Read Buffer Size 0x0005 返回HCI缓冲容量.缓冲容量用于传输缓冲数据 Read Country Code [Deprecated] 0x0007 读取国家代码状态参数值 Read BD ADDR 0x0009 读取BD_ADDR的参数值
+参考FAQ: FAQ79163
+### 问题: 蓝牙HCI状态指令参数
+解决方案: Read Local Version Information 0x0001 读取本地蓝牙版本信息 Read Local Supported Features 0x0003 读取本地蓝牙设备特征表 Read Local Extended Features 0x0004 Read Buffer Size 0x0005 返回HCI缓冲容量.缓冲容量用于传输缓冲数据 Read Country Code [Deprecated] 0x0007 读取国家代码状态参数值 Read BD ADDR 0x0009 读取BD_ADDR的参数值
+参考FAQ: FAQ79164
+### 问题: 80211(wifi) Beacon管理帧的作用？
+解决方案: Beacon帧定时广播发送,主要用来通知网络AP的存在.Station和AP建立Association的时候,也需要用到Beacon.Station可以通过Scan来扫描到Beacon,从而得知AP的存在,也可以在扫描的时候通过主动发送Probe来探寻AP是否存在.也就是说,建立Association的时候有主动的扫描或者被动的扫描两种方式.另外,Beacon还包含了关于Power Save、以及地区等信息.
+参考FAQ: FAQ79170
+### 问题: linux系统下，lsusb命令查看手机信息，显示厂商的信息是哪里定义的？
+解决方案: linux lsusb命令打印信息的格式是 Bus XXX Device XXX: ID VID:PID XXXXXXXX Bus XXX 表示第几条总线 Device XXX 表示总线上的第几个设备 ID VID:PID 表示设备的VID和PID XXXXX 表示VID对应的厂商信息, linux系统上的lsusb命令是安装usbutils包后,才能使用的. 厂商的信息在/var/lib/usbutils/usb.ids中定义, 当执行lsusb命令时,会依据识别到VID,到usb.ids文件中查找对应的厂商信息并打印出来.
+参考FAQ: FAQ79172
+### 问题: 蓝牙低功耗链路的加密方式？
+解决方案: 蓝牙低耗能技术采用AES-CCM密码技术进行加密.与BR/EDR相似的是,蓝牙低耗能也是通过低耗能控制器内进行加密.加密过程将使用 FIPS-1971所定义的AES-128位分组密码,利用128位密钥和128位未加密文件数据生成128位加密数据.
+参考FAQ: FAQ79175
+### 问题: 怎样判断ListView或ScrollView滑动到底了
+解决方案: frameworks/base/core/java/android/widget/AbsListView.java frameworks/base/core/java/android/widget/ScrollView.java 在onOverScrolled方法中 protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) 参数clampedY为true时,表示滑动到底了 所以只要重写onOverScrolled进行判断
+参考FAQ: FAQ79189
+### 问题: 展讯平台adb修改寄存器值的方法。
+解决方案: 使用adb命令:lookat -s (寄存器值) (寄存器地址)来修改: 举例: 7731FM寄存器修改:比如想要修改FM_REG_MONO_PWR的值,使用lookat -s (寄存器值) 0x4027009c 命令完成修改. 此种方式简便快捷,在开机状态连接电脑就可以完成.当然对于不能直接用adb修改的寄存器则需要出包修改对应代码.
+参考FAQ: FAQ79197
+### 问题: 如何修改默认搜索为google search？
+解决方案: 做如下修改: 在packages/apps/SprdQuickSearchBox的Android.mk中去掉如下: LOCAL_OVERRIDES_PACKAGES := QuickSearchBox 在device/sprd/scx35/features/oversea/config.mk中中去掉如下: .... \ //反斜杠也要去掉 SprdQuickSearchBox 即不编译SprdQuickSearchBox即可.
+参考FAQ: FAQ79207
+### 问题: 如何修改Launcher默认页面？
+解决方案: 请到Launcher3/res/values/config.xml中修改如下值: <integer name="config_workspaceDefaultScreen">1</integer> 需要注意的是该值从0开始,0代表第一页.
+参考FAQ: FAQ79211
+### 问题: 7731c和7731g在android 6.0平台蓝牙是否支持ble
+解决方案: 7731c和7731g蓝牙芯片使用的是2351外设芯片,2351芯片不支持ble功能,所以7731c和7731g在android 6.0平台蓝牙不支持ble
+参考FAQ: FAQ93728
+### 问题: Google search小部件有哪些显示样式？
+解决方案: Android5.1开始,支持Google search显示为4*1、3*1、2*1三个样式,之前仅可4*1显示.
+参考FAQ: FAQ79214
+### 问题: 7715如何上电自动开机？
+解决方案: 系统编译后会产生u-boot_autopoweron.bin,软件上用这个uboot即可上电自动开机. 注意硬件上PBINT2接地才能上电自动开机.
+参考FAQ: FAQ79283
+### 问题: PIN MAP部分带参数配置项的意义
+解决方案: 在做驱动移植的时候一定会涉及到PIN MAP的配置,简介带参数的PIN配置项如下: BITS_PIN_DS(0~3)驱动能力设置,2/6/12/24mA对应驱动能力0/1/2/3,一般选择1便可. BITS_PIN_AF(0~3)功能选择,针对不同PIN其复用的功能是不一样的,但是3是gpio功能.具体引脚对应的其它复用功能需要去查看芯片资料. 例如: {REG_PIN_KEYOUT1, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(3)|BIT_PIN_NUL|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE},//BT/WIFI_RST
+参考FAQ: FAQ79278
+### 问题: WIFI在弱信号下无法进行b/g/n协议切换
+解决方案: 802.11协议上没有速率差了要切换11b/g/n mode一说,信号弱就用当前mode低速率发送,再差,达到某些阈值就会断开连接;而sta与ap具体是以那种mode进行assoc是以两边mode支持情况取最优mode来连接的.
+参考FAQ: FAQ79296
+### 问题: WIFI cfg80211/nl80211接口介绍
+解决方案: cfg80211是Linux 802.11配置API,用于取代Wireless-Extensions. nl80211用来配置一个cfg80211设备,用于内核与用户空间之间的通信. Wireless extensions 现在处于维护模式,只修复bug,将不会添加新的功到它上面;cfg80211现在与wireless-extensions是完全特性兼容的,它实际上有更多的功能,这些功能wireless extension根本是没有的,而且以后也不会有.当实现一个cfg80211驱动时,仍然会通过CONFIG_CFG80211_WEXT为你自动提供wireless extensions的支持,而不再需要无线扩展的发行版. cfg80211还提供了完整的regulator支持,这是通过wireless-regdb和CRDA的使用来实现的.
+参考FAQ: FAQ79297
+### 问题: WIFI 热点模式是否支持隐藏SSID
+解决方案: 目前2341A/2341B/2342芯片支持WIFI 热点隐藏ssid,其中2341A底层直接支持;2341B/2342芯片需要在对应工程的defconfig文件中打开CONFIG_WCN_EXTENSION宏.
+参考FAQ: FAQ79301
+### 问题: WIFI 热点默认工作信道是多少，如何修改
+解决方案: WIFI热点默认工作在6信道; 热点默认信道修改: /vendor/sprd/wcn/platform/wcnd/wcnd_eng_wifi_priv.c中: ... ptr_chanmode = strstr(resp, "CHANMODE"); if(!ptr_chanmode) wcnd_send_back_cmd_result(client_fd, "CHANMODE=auto CHAN=6", 1); else wcnd_send_back_cmd_result(client_fd, ptr_chanmode, 1); ...
+参考FAQ: FAQ79303
+### 问题: 2341B/2342(marlin) 热点支持最大下挂设备个数
+解决方案: 目前marlin做热点时支持的最下下挂设备数为8个.
+参考FAQ: FAQ79304
+### 问题: Locale类的getLanguage()和getDisplayLauguage()的区别
+解决方案: getLanguage():获取语言对应的语言码,如en、zh等 getDisplayLauguage():获取语言的名字,如English、中文、法语等 所以平常需要语言码的需要使用getLanguage(),而需要知道系统是什么语言的使用getDisplayLauguage()方法
+参考FAQ: FAQ79337
+### 问题: 获取基站的CellInfo的方法有哪些
+解决方案: 获取基站CellInfo的方法有如下: 1. TelephonyManager对外标准接口getCellLocation() : public CellLocation getCellLocation () 通过instanceof GsmCellLocation获取相关信息 2. TelephontManager对外标准接口getAllCellInfo (): public List<CellInfo> getAllCellInfo () 通过for循环以及instanceof GsmCellLocation获取相关信息
+参考FAQ: FAQ81511
+### 问题: 如何设置状态栏（StatusBar）半透明
+解决方案: android 5.1版本 如果手机的 /system/build.prop文件中 ro.config.low_ram=true. 会发现系统不少自带的app(例如MMS,note等),其状态栏是半透明状态(状态栏的背景色和actionBar的背景色很接近). 这个是android5.1新增加的特性. 在activity的theme中,添加如下属性,就会让状态栏(StatusBar)半透明. <item name="windowDrawsSystemBarBackgrounds">true</item> 或者activity使用了android5.1中的 Theme.Material,这个主题(theme)默认是状态栏半透明的.
+参考FAQ: FAQ80760
+### 问题: android主要makefile文件释义
+解决方案: main.mk 整个编译系统的主导文件 config.mk 产品配置的主导文件 evensetup.mk配置编译时候的环境变量,注意与envsetup.sh区别开来 product_config.mk产品级别的配置,属于config的一部分. version_defaults.mk负责生成版本信息
+参考FAQ: FAQ79375
+### 问题: 为什么联系人桌面小部件无法添加SIM卡联系人
+解决方案: 这个是正常现象.由于每次开机,都会删除数据库中的SIM卡相关联系人然后重新导入,所以每次开机,SIM卡联系人的URI会发生变化.导致重新开机后,联系人桌面小部件设置的SIM卡联系人会关联不到正确的联系人,所以联系人桌面小部件不能选择SIM卡联系人.而直接拨打电话和直接发送短信桌面小部件记录的是联系人姓名和号码,不需要关联联系人.
+参考FAQ: FAQ79437
+### 问题: 如何利用Photoshop自定义Gamma并导入ISP参数中？
+解决方案: 1.使用Photoshop打开一张图片,选择[图像]/[调整]/[曲线]或使用快捷键[Ctrl+M]打开曲线窗口. 2.选择[编辑点以修改曲线],单击曲线增加点,并拖动点改变曲线的形状. 3.选择[通过绘制来修改曲线],按图示选择[存储预设],弹出存储对话框. 4.选择存储格式为映射设置*.AMP后,[保存]. 5.打开ISP Tool,导入参数后,选择Gamma/RGB Gamma,如下图窗口,然后选择[Open Gamma].接着导入刚刚保存的Gamma曲线. 6.下图即为导入自定义Gamma曲线后的效果. Note:目前ISP Tool暂支持扩展名为*.AMP的gamma曲线.
+参考FAQ: FAQ79483
+### 问题: 5.1版本如何通过adb shell获取SIMLOCK状态
+解决方案: 在cmd里输入: adb shell getprop gsm.sim.state 可以获得SIM卡状态,其中包括SIMLOCK状态.例如:
+参考FAQ: FAQ79505
+### 问题: 展讯Tshark/SharkL/Pike系列芯片与ISP 版本的对应关系
+解决方案: SC7731G(Tshark)和SC9830(SharkL) ISP 硬件版本为1.0, 使用ISP1.0软件算法; SC7731C(Pike),SC7732(Tshark),SC9832(SharkLS)和SC9838(SharkLT8) ISP硬件版本为2.0, 使用ISP2.0软件算法.
+参考FAQ: FAQ79526
+### 问题: 如何正确添加CONFIG_CAMERA_IMAGE_180宏定义
+解决方案: 一些支持sensor做mirror和flip的sensor一般都会有CONFIG_CAMERA_IMAGE_180控制是否对图像进行旋转.这个宏其实不应该在sensor驱动中打开,而应该在对应平台的BoardConfig.mk文件中进行配置,只需将 TARGET_BOARD_CAMERA_ADAPTER_IMAGE := 180 改成 TARGET_BOARD_CAMERA_ADAPTER_IMAGE := 0 或反之就可产生翻转或不翻转的效果. 不宜在sensor驱动文件中直接定义这个宏,否则会影响其他被编译到的sensor,导致问题不易排查.
+参考FAQ: FAQ79537
+### 问题: 如何调整Gif 的播放间隔
+解决方案: 展讯在设置相关gif timer 的相关代码为 : 7701@ctrlanim_display.c / 6531@Guianim_display.c : GUIANIM_StartGifTimer time_out = anim_ctrl_ptr->delay_time; if (anim_ctrl_ptr->theme.period > time_out) { time_out = anim_ctrl_ptr->theme.period; } theme.period 默认值为100 @ mmitheme_anim.c 中 MMITHEME_ANIM_PERIOD time_out 为gif 解码后取出的值 若gif 解码出来的数值小于100 的话 , 会被更改为100 在此可以试著把默认的值调小些 , 或者是在应用中用GUIANIM_SetPeriod(ms, ctrl_id); 动态将最小播放间隔的ms 调小
+参考FAQ: FAQ79539
+### 问题: 如何正确添加CONFIG_CAMERA_AUTOFOCUS_NOT_SUPPORT宏定义
+解决方案: 对于有AF功能的Camera,不应该定义CONFIG_CAMERA_AUTOFOCUS_NOT_SUPPORT宏;而对于没有AF 功能的Camera则需要定义该宏. 正确的定义或不定义该宏的方法是在对应平台的BoardConfig.mk文件中定义 TARGET_BOARD_CAMERA_NO_AUTOFOCUS_DEV编译选项的值. 对于带AF的camera应该这样定义 TARGET_BOARD_CAMERA_NO_AUTOFOCUS_DEV := false 对于不带AF的camera,应该如下定义 TARGET_BOARD_CAMERA_NO_AUTOFOCUS_DEV := true 不应再具体sensor的驱动文件中通过宏定义的方式添加这个宏,否则可能引起其他sensor的问题.
+参考FAQ: FAQ79547
+### 问题: 第一次打开沃门户m.wo.cn时，会显示乱码，如何解决？
+解决方案: 访问沃门户,会跳转到m.wo.cn, 网页内容如下: <script language="javascript"> ... </script> (对android手机,会跳转到http://m.wo.cn/androidPage.html), 但是实际显示之后的内容 <body> ... 出现此页面说明您的浏览器未启用对JavaScript的支持,请您点击如下链接继续访问: ... </body> 这部分文字是GB编码,但是网页内容中没有指定charset=GBK,导致显示乱码, 这是跳转网页m.wo.cn编码的问题. 浏览器设置中关闭javascript开关,问题可以必现. 只要浏览器设置〉高级〉文字编码设为"GBK"就可以显示正常.
+参考FAQ: FAQ79556
+### 问题: 如何修改AF Timeout 时间？
+解决方案: 文件:libcamera\oem2v0\src\cmr_focus.c 修改点: #define ISP_PROCESS_SEC_TIMEOUT (1) /*单位:s*/ #define ISP_PROCESS_NSEC_TIMEOUT (800000000) /*单位:ns*/ AF timeout 时间为以上两个时间的总和;
+参考FAQ: FAQ79590
+### 问题: 支持BAND4的手机，在国内出现找网慢，以及不能拨打紧急电话问题。
+解决方案: 如果客户的手机支持的是2,4,5BAND.那么如果使用国内联通卡,就会出现搜网慢,以及开机后不能拨打紧急电话的问题,是因为国内的BAND1与海外某些国家的BAND4物理频点是复用的.手机刚开机找到BAND1就会多次尝试驻留,但会被联通拒绝,也就是假小区,这就导致找网慢,此时你在拨打紧急电话,那么就无法打通. 此类问题如果一定测试各个BAND的手机测试的话,需要协调仪表环境及出货地测试.
+参考FAQ: FAQ79595
+### 问题: 展讯平台是否支持DLNA
+解决方案: DLNA是基于WIFI P2P的协议的应用,可以将手机上的内容投放到p2p另一端电视上等.展讯平台目前不支持.
+参考FAQ: FAQ79675
+### 问题: 展讯平台是否支持wlan airplay
+解决方案: wlan airplay是基于wifi p2p协议的上层应用功能,与芯片无关. 类似于wifi miracast ,将内容投放到另一端,但可以双向操作.目前展讯平台不支持.
+参考FAQ: FAQ79676
+### 问题: marlin是否支持80211h
+解决方案: 不支持,80211h是基于80211a的补充,针对5G的,目前不支持
+参考FAQ: FAQ79677
+### 问题: 什么是qos
+解决方案: QoS(Quality of Service,服务质量)指一个网络能够利用各种基础技术,为指定的网络通信提供更好的服务能力, 是网络的一种安全机制, 是用来解决网络延迟和阻塞等问题的一种技术. 在正常情况下,如果网络只用于特定的无时间限制的应用系统,并不需要QoS.但是对关键应用和多媒体应用就十分必要.当网络过载或拥塞时,QoS 能确保重要业务量不受延迟或丢弃,同时保证网络的高效运行.
+参考FAQ: FAQ79678
+### 问题: 目前malin支持的power等级
+解决方案: 目前marlin支持的power等级为class 2
+参考FAQ: FAQ79681
+### 问题: 什么是SPP
+解决方案: SPP(Serial Port Profile)定义了如何设置虚拟串行端口及如何连接两个蓝牙设备.SPP基于ETSI TS 07.10规格,使用RFCOMM协议提供串行商品仿真.SPP提供了以无线方式替代现有的RS-232串行通信应用程序和控制信号的方法.SPP为DUN,FAX,HSP和LAN配置文件提供了基础.此配置文件可以支持最高128kb/s的数据率.SPP依赖于GAP.
+参考FAQ: FAQ79682
+### 问题: 什么是GOEP
+解决方案: GOEP(Generic Object Exchange Profile)可用于将对象从一个设备传输到另一个设备.对象可以是任意的.如:图片,文档,名片等.此配置文件定义了两个角色:提供拉提或推送对象位置的服务器及启动操作的客户端.使用GOEP的应用程序假定链路和信道已按GAP的定义建立.GOEP依赖于串行端口配置文件.
+参考FAQ: FAQ79683
+### 问题: Marlin支持的传输文件最大距离
+解决方案: Marlin支持的传输文件最大距离为10M.
+参考FAQ: FAQ79684
+### 问题: 如何通过adb控制蓝牙文件传输限速
+解决方案: adb shell进入后输入 setprop debug.bt.lowspeed -1 即可解除限速
+参考FAQ: FAQ79685
+### 问题: GTS测试Fail： com.google.android.xts.afw.AfwSupportTest - testAfwPackageInstalledInLollipopOnly
+解决方案: 此测项fail需检查三个地方. 1. adb shell pm list features是否有包含android.software.device_admin, 如果无包含请修改添加. 2. 是否有内置google play store, 检查一下gms包内 google/products/gms.mk内 PRODUCT_PACKAGES 是否有包含Phonesky , 缺少请添加. 3. 是否有内置android for work, 检查一下gms包内 google/products/gms.mk内 PRODUCT_PACKAGES 是否有包含AndroidForWork, 缺少请添加. 注意:以上内置的app都需在system分区.
+参考FAQ: FAQ79735
+### 问题: CTS测试case：android.media.cts.MediaCodecCapabilitiesTest-- testAvcBaseline12失败怎么办？
+解决方案: 该条CASE测试时会访问国外网站播一段视频介绍android 2.3,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ79740
+### 问题: 为什么FM、Bluetooth和Wifi模块中重命名到最大值时中文和英文的字符个数各不相同？
+解决方案: 因为FM、Bluetooth和Wifi模块在重命名时会有长度限制,限制方法使用了UTF8字符编码方式进行过滤, 然而UTF-8属于变长编码,一个中文占用3个字节,一个英文占用1个字节.
+参考FAQ: FAQ79747
+### 问题: 创建Bluetooth SPP Server端的代码流程是什么?
+解决方案: 1.显示已配对设备列表 通过BluetoAdapter.java中的getBondedDevices获取 2.选择指定设备进行连接 通过Android 提供的Socket接口进行连接 BluetoothSocket.java中createRfcommSocketToServiceRecord 其中SPP(UUID:00001101-0000-1000-8000-00805F9B34FB) 3.进行命令传输 通过BluetoothSocket.java中的getInputStream()和getOutputStream方法进行数据传输.
+参考FAQ: FAQ79751
+### 问题: 如何将FM录音格式修改成3GPP格式?
+解决方案: FM录音默认格式是amr,如需要将录音格式调整为3gpp,按以下修改方式即可: packages/apps/FMPlayer/src/com/thunderst/radio/FMplayService.java public class FMplayService extends Service { … - private String mRecordType = "audio/amr"; + private String mRecordType = "audio/3gpp"; … }
+参考FAQ: FAQ79752
+### 问题: CTS测试提示GPSenseEngine are shown in root process
+解决方案: 1.在项目版级init.rc中如sp9830aea_5m_volte: device/sprd/sp9830aea_5m_volte/init.board.rc 中找到如下服务: service GPSenseEngine /system/bin/GPSenseEngine class main user root // root改为system group root // root改为system disabled 2.在平台recovery 中init.rc中尝试如下修改验证 device/sprd/scx35l/recovery/init.rc 中找到如下服务: service GPSenseEngine /system/bin/GPSenseEngine class main user root // root改为system group root // root改为system disabled
+参考FAQ: FAQ79756
+### 问题: 打开gps，然后进入摄像头，再退出，待机功耗下不来
+解决方案: 此问题是在退出相机时,没有去掉对位置信息的监听,修改如下: packages/apps/Camera2/src/com/android/camera/app/LegacyLocationProvider.java public class LegacyLocationProvider implements LocationProvider { Log.d(TAG, "disconnect"); // The onPause() call to stopReceivingLocationUpdates is sufficient to unregister the // Network/GPS listener. recordLocation(false);//添加此句即可 }
+参考FAQ: FAQ79757
+### 问题: 如何通过修NV来关闭SR3131 REF3OUT/REF1OUT的输出
+解决方案: 在NV中,修改WCDMA_DownloadParam\tranceiver_initial_registers\init_tbl_arrary中的 ini_tbl_array[37]的值,具体如下: 0x7AC407:全部打开 0x7AC403:关闭REF3_OUT; 0x7AC405:关闭REF2_OUT; 0x7AC406:关闭REF1_OUT
+参考FAQ: FAQ79758
+### 问题: 7731C与7731G no gps版本在时钟使用上的区别
+解决方案: 主要区别如下: 7731C的时钟方案是纯硬件电路控制,去除gps时不需要修改软件,NV需要修改 7731G的时钟方案需要软件修改通道sine的控制,去除gps时需要修改软件,NV不用修改
+参考FAQ: FAQ79759
+### 问题: 如何准确同步slog的main log与nmea log的时间
+解决方案: 可以根据EPH sow 周内秒同步时间,即分别搜索slog的main log和nmea log中的关键字EPH sow,对应后面值相同即可认为同一时刻
+参考FAQ: FAQ79760
+### 问题: 如何确认GE2启动下载成功
+解决方案: 在开机main log中搜索有如下关键字即可认为GNSS 固件download成功: 11-25 10:20:36.467 176 176 D GNSS_DOWNLOAD: send exec message ok 11-25 10:20:36.467 176 176 D GNSS_DOWNLOAD: >>>>>>>ACK EXEC
+参考FAQ: FAQ79761
+### 问题: 如何修改USB虚拟光驱中的文件内容？
+解决方案: 修改USB虚拟光驱中的内容,其方法如下: 用ISO编辑工具,如winiso, poweriso打开vendor/sprd/open-source/res/CDROM/adb.iso,在其加入自己需要的文件,保存并替换adb.iso(注意文件名称不要变),然后编译system即可(编译时是直接将adb.iso拷贝到了system/etc/下面).
+参考FAQ: FAQ79770
+### 问题: CTS 测试时出现蓝牙进程监听端口失败现象的原因.
+解决方案: 其具体错误表现如下: android.security.cts.ListeningPortsTest#testNoListeningLoopbackTcpPorts FAIL android.security.cts.ListeningPortsTest$ListeningPortsAssertionError: Found port listening on addr=127.0.0.1, port=8872, UID=1002 [com.android.bluetooth] in /proc/net/tcp 造成CTS测试Fail的原因是BT协议栈占用8872端口来捕捉BT的协议包Log, 因此在测试前关闭BT LOG即可.
+参考FAQ: FAQ79776
+### 问题: 收音机主界面按钮功能介绍
+解决方案: /ishare/uploadeditor/file/20160129/20160129104422_321.docx
+参考FAQ: FAQ79789
+### 问题: GCF 27.22.4.15.1/1 PROVIDE LOCAL INFORMATION
+解决方案: SC7701 分支 external cell id 功能不支持,需要修改仪器侧设置: 修改仪器侧下面设置: 这个设置项additional Test Parameters下面的: 14 Terminal accesses UTRAN when performing tests with network access(default setting for 3GPP TS 31.134) 15 implementation of location information TLV according to Rel-4 and onwards(to verify presence of Extended cell identity value bytes)
+参考FAQ: FAQ79856
+### 问题: 如何在高分辨率LCD上模拟较低分辨率的项目？
+解决方案: 有时出于调试或者验证问题的目的,会在高分辨率LCD的机器上模拟较低分辨率. 平台已提供该功能,在该LCD能正常显示的情况下,做如下操作即可: 1. 在对应工程的kernel config中打开CONFIG_FB_LOW_RES_SIMU. 2. 在对应工程的kernel dts中配置模拟分辨率大小. fb0: fb@20800000 { compatible = "sprd,sprdfb"; ... sprd,fb_display_size = <480 854>; /*模拟分辨率大小(宽 高)*/ }; 3. 必要时更改system.prop中ro.sf.lcd_density的属性值,以得到合适的UI显示效果(例如720x1280的屏该值一般配置为320,如果在该屏上模拟480x854,则配置该值为240比较合适).详情可参考FAQ53873,FAQ73749.
+参考FAQ: FAQ79835
+### 问题: 发送广播到指定package
+解决方案: 在发送广播前设置 intent.setClassName(mPackage, mClass); 发送广播到指定package,其他package无法接收到
+参考FAQ: FAQ79862
+### 问题: 第三方浏览器的OMA下载
+解决方案: 如果第三方浏览器用我们的download模块进行下载,那么我们可以修改定制download模块,达到下载dd文件和目标文件的效果;如果第三方浏览器不用我们的download,则无法实现下载目标文件
+参考FAQ: FAQ79866
+### 问题: android5.1不显示H+
+解决方案: android5.1原生设计默认只显示3G,且不支持H+的显示. 目前sprd已经有PATCH00214266解决该问题.
+参考FAQ: FAQ79868
+### 问题: 如何获取字符串导入导出工具？
+解决方案: 1.请查看vendor/sprd/open-source/tools/MUI_ResExport目录获取 2.若未在1中地址找到对应工具,还请提交CQ
+参考FAQ: FAQ79877
+### 问题: 在statusBarNotifier.java中如何获取sim卡id
+解决方案: 在StatusBarNotifier.java(packages/apps/InCallUi/src/com/android/incallui)中加入如下方法,其返回值即是SIM ID,即1或者2: private int getIncomingSimId(Call originalCall){ int comingSimId=SubscriptionManager.getPhoneId(Integer.parseInt( originalCall.getAccountHandle().getId())); return ++comingSimId; }
+参考FAQ: FAQ79935
+### 问题: System.currentTimeMillis() 和SystemClock.uptimeMillis()的区别
+解决方案: System.currentTimeMillis()和SystemClock.uptimeMillis()都是毫秒的单位,区别在于: 1. SystemClock.uptimeMillis() // 从开机到现在的毫秒数(手机睡眠的时间不包括在内) 2. System.currentTimeMillis() // 从1970年1月1日 UTC到现在的毫秒数,
+参考FAQ: FAQ79936
+### 问题: 5.1平台，如何更改来电小窗口忽略和接听键图标
+解决方案: 直接找到\packages\apps\InCallUI\res下名为ic_call_white_24dp.png和ic_close_dk.png文件,即是小窗口来电接听和忽略两个按钮的显示图标,同名替换即可
+参考FAQ: FAQ79941
+### 问题: 目前BLE的版本有哪些
+解决方案: 目前BLE版本有4.0,4.1和4.2
+参考FAQ: FAQ80014
+### 问题: marlin支持的BLE版本
+解决方案: marlin支持的BLE4.0
+参考FAQ: FAQ80015
+### 问题: wifi amc地址相关基础知识整理
+解决方案: 1、开发调试阶段 使用随机生成的mac地址,其存放在/data/misc/wifi/wifimac.txt,刷机或者删除此mac地址文件,会导致mac地址的更改. 2、生产阶段 客户要用Imei工具生成mac地址,存放到productinfo目录下,开机后wcnd进程会判断此目录下的mac地址是否有效,有效则将用其替换data目录下的mac地址,保持两个地址一致.会一直使用productinfo下的mac地址. 生产阶段注意事项: 若手机的mac地址写入的是组播地址则会导致手机无法连接AP,这点需要注意.
+参考FAQ: FAQ80021
+### 问题: 什么是CTS
+解决方案: 为了保证开发的应用在所有兼容Android的设备上正常运行,并保证一致的用户体验,Google制定了CTS(Compatibility Test Suite)来确保设备运行的Android系统全面兼容Android规范.CTS测试集包含大约24,000个在Android设备上运行的测试用例,这些用例分别针对电话、图形、相机、GPS、触摸屏、无线网等功能.Google针对每个主要Android版本公布了CDD文档,其中指出了对CTS中每类测试的具体要求.
+参考FAQ: FAQ80016
+### 问题: 如何修改slog android log文件大小？
+解决方案: 如下变量表示android log 单个文件的大小,默认是256M,可以根据需要修改 #define DEFAULT_LOG_SIZE_AP 256 /* MB */
+参考FAQ: FAQ80042
+### 问题: 如何修改slog android log文件个数？
+解决方案: 如下变量表示android log 文件个数,默认值是9,最多可以保存10份(有sdcard的情况下),可以根据需要修改 #define MAXROLLLOGS_FOR_AP 9 如若没有sdcard,slog则会将log信息保存到data/slog/目录下,这个时候的 android log 文件个数是通过如下变量控制的,默认值是1,最多可以保存2个,可根据需要修改 #define INTERNAL_ROLLLOGS 1
+参考FAQ: FAQ80044
+### 问题: 默认情况下slog保存的cp log的文件大小是多少，可以保存多少份，该如何按需更改其值？
+解决方案: 如下变量分别代表cp log文件大小和cp log文件个数,可按需修改. #define DEFAULT_LOG_SIZE_CP 512 /* MB */ #define MAXROLLLOGS_FOR_CP 100
+参考FAQ: FAQ80045
+### 问题: CTS测试过程中，如何保存完整的log信息？
+解决方案: CTS工具在PC端通过adb logcat抓取log,但是只保留最后20M,跑完之后,前面FAIL的log就看不到了,那么如何保存从开始到结束的所有log信息呢? CTS工具已经提供了这样功能,保存CTS完整log,增加参数--max-tmp-logcat-file 2000000000 2000000000表示最大2GB,在android-cts\repository\logs目录下 命令: run cts –plan CTS --max-tmp-logcat-file 2000000000
+参考FAQ: FAQ80046
+### 问题: 在设置应用通知界面为什么显示两个“*”？
+解决方案: 原因: 列表中的所有应用程序采用的是首字母排序: 当应用首字母属于"a-z"时,会被统计到各个字母分类, 当应用程序首字母为非"a-z"时,例如"汉字"则会被统计到"**"这一栏.
+参考FAQ: FAQ80074
+### 问题: 如何去掉设置-显示-触摸按键灯持续时间 这一项？
+解决方案: 解决方案: packages/apps/Settings/src/com/android/settings/DisplaySettings.java 中有个方法 private boolean fileIsExists(){ /*会读取这个设备节点,如果此节点不存在,则自动去掉触摸按键灯选项,但是往往有些时候此节点在驱动层被创建, 导致触摸按键灯选项会显示出来,请将此方法强制返回false*/ File file = new File("/sys/class/leds/keyboard-backlight/brightness"); } 将此方法强制返回false,即可去掉触摸按键灯持续时间这项.
+参考FAQ: FAQ80080
+### 问题: 如何默认关闭 设置-显示中的互动屏保？
+解决方案: 解决方案: 请修改frameworks/base/core/res/res/values/config.xml下的 <bool name="config_dreamsEnabledByDefault">false</bool> 将值改为false
+参考FAQ: FAQ80088
+### 问题: 如何使用power monitor预估测试机在GSM模式下的待机时长？
+解决方案: 1.手机端设置: a.手机刚下载完版本或恢复出厂化设置; b.手机连接power monitor开机后,网络模式设置为GSM Only,确保BT/WIFI/GPS/数据流量都关闭; 2.仪器端设置: 使用powermonitor,先设置set batt size,下图红色方框中的参数,即电池容量.可从测试电池的标识中读取.灭屏待测试机睡下去之后开始测试10～30分钟,测试结束后查看Expected Battery Life即为待机时间.
+参考FAQ: FAQ80091,含图片
+### 问题: marlin是否支持Multi-advertiser Support
+解决方案: Multi-advertiser Support是ble 4.1,marlin不支持
+参考FAQ: FAQ80115
+### 问题: 如何获取cts测试脚本
+解决方案: http://source.android.com/compatibility/downloads.html 包含所有android版本的cts测试脚本
+参考FAQ: FAQ80119
+### 问题: 如何抓取蓝牙串口log
+解决方案: 前提打开蓝牙 adb进入后进入sys/devices/70000000.uart 然后echo 2 > uart_conf chmod 440 uart_conf 此时uart的log在kernel log中会打印
+参考FAQ: FAQ80110
+### 问题: CTS测试case：android.media.cts.MediaCodecCapabilitiesTest--testAvcBaseline30失败怎么办？
+解决方案: 该条CASE测试时会访问国外网站播一段视频介绍android 2.3,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80132
+### 问题: 如何使用精密电流源预估测试机在GSM模式下的待机时长？
+解决方案: 1.手机端设置: a.手机刚下载完版本或恢复出厂化设置; b.手机连接精密电流源开机后,网络模式设置为GSM Only,确保BT/WIFI/GPS/数据流量都关闭; 2.仪器端设置: 将精密电流源的测试时长设置为1小时(如下图红线圈中的项),灭屏待测试机睡下去之后开始测试1个小时.读取测试一个小时的平均电流,待机时长=电池容量/一个小时的平均电流.
+参考FAQ: FAQ80123,含图片
+### 问题: CTS android.media.cts.MediaCodecCapabilitiesTest--testAvcHigh31测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频介绍android 2.3,所以测试的时候必须翻墙才能pass 错误信息为:Test failed to run to completion. Reason: 'Instrumentation run failed due to 'junit.framework.AssertionFailedError''. Check device logcat for details
+参考FAQ: FAQ80133
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHLS测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass 如果没翻墙测试的话可能会出现如下的报错信息: Test failed to run to completion. Reason: 'Failed to receive adb shell test output within 600000 ms. Test may have timed out, or adb connection to device became unresponsive'. Check device logcat for details
+参考FAQ: FAQ80137
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHTTP_H263_AMR_Video1测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频介绍android 2.3,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80138
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHTTP_H263_AMR_Video2测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80139
+### 问题: 如何通过adb shell获取SPN
+解决方案: 当SIM卡的SPN读取正确,telephony会把读取的SPN存入到property里.因此我们可以通过查看property来查询SPN. 在cmd里输入:adb shell getprop gsm.sim.operator.alpha 就可以获取SPN,双卡会有两个,前面是卡1的SPN,后面是卡2的SPN.具体如下图:
+参考FAQ: FAQ80143
+### 问题: 蓝牙HCI测试指令
+解决方案: Read Loopback Mode 0x0001 读取主机端控制器会送模式的设置值.回送模式设置可以确定信息发送路径 Write Loopback Mode 0x0002 写入主机控制器会送模式的设置值.回送模式设置可以确定信息发送路径 Enable Device Under Test Mode 0x0003 允许本地蓝牙设备模块通过LMP测试指令接入测试模式.当主机要求本地设备作为待测试设备,实现蓝牙测试模式文件中规定测试场景,则发送该指令
+参考FAQ: FAQ80159
+### 问题: 蓝牙L2CAP层信令指令码
+解决方案: Code Description 0x00 RESERVED 保留 0x01 Command reject 拒绝命令 0x02 Connection request 连接请求 0x03 Connection response 连接响应 0x04 Configure request 配置请求 0x05 Configure response 配置响应 0x06 Disconnection request 断开请求 0x07 Disconnection response 断开响应 0x08 Echo request 0x09 Echo response 0x0A Information request 信息请求 0x0B Information response 信息响应
+参考FAQ: FAQ80162
+### 问题: 蓝牙SDP协议中PDU ID的功能种类
+解决方案: Value Parameter Descirption 0x00 Reserved 保留 0x01 SDP_ErrorResponse 错误响应 0x02 SDP_ServiceSearchRequest 服务搜索请求 0x03 SDP_ServiceSearchResponse 服务搜索响应 0x04 SDP_ServiceAttributeRequest 服务属性请求 0x05 SDP_ServiceAttributeResponse 服务属性响应 0x06 SDP_ServiceSearchAttributeRequest 服务搜索属性请求 0x07 SDP_ServiceSearchAttributeResponse 服务搜索属性响应 0x08-0xff Reserved 保留
+参考FAQ: FAQ80163
+### 问题: 蓝牙RFCOMM帧类型
+解决方案: SABM 异步平衡模式设置指令 UA 未加编号的确认响应 DM 断开连接模式响应 DISC 断开连接指令 UIH 带头校验的未编号信息命令和响应
+参考FAQ: FAQ80168
+### 问题: 蓝牙AVDTP信令
+解决方案: 命令 信令标识符 描述 AVDTP_DISCOVER 0x01 发现设备中的流端点 AVDTP_GET_CAPABILITIES 0x02 获得流端点的信息能力 AVDTP_SET_CONFIGURATION 0x03 对SEP进行配置 AVDTP_GET_CONFIGURATION 0x04 获取SEP当前配置 AVDTP_RECONFIGURE 0x05 对SEP重新配置 AVDTP_OPEN 0x06 成功的配置SEP后,打开流 AVDTP_START 0x07 流被打开:用于开始形成流;流暂停时:用于重新形成流. AVDTP_CLOSE 0x08 对SEP关闭 AVDTP_SUSPEND 0x09 请求SEP暂停 AVDTP_SECURITY_CONTROL 0x0A 设置设备内容保护、或者请求设备状况信息 AVDTP_ABORT 0x0B 中断正在建立或者传输的过程 AVDTP_GET_ALL_CAPABILITIES AVDTP_DELAYREPORT
+参考FAQ: FAQ80172
+### 问题: 展讯平台如何开启暗码控制解锁界面
+解决方案: 实现暗码控制解锁界面功能,需要修改功能开关的值,修改\device\sprd\scx35\device.mk PRODUCT_PROPERTY_OVERRIDES += \ ro.simlock.unlock.autoshow=0\ ro.simlock.unlock.bynv=0 \ ro.simlock.onekey.lock=0 .
+参考FAQ: FAQ80204
+### 问题: 怎么在user版本中打开debugfs文件系统
+解决方案: 请修改文件device\sprd\scx35\user_diff_config,去掉如下内容即可: DEF:CONFIG_DEBUG_FS
+参考FAQ: FAQ82498
+### 问题: 展讯平台如何开启一键加解锁功能
+解决方案: 实现一键加解锁功能,需要修改功能开关的值,修改device\sprd\scx35\device.mk PRODUCT_PROPERTY_OVERRIDES += \ ro.simlock.unlock.autoshow=0 \ ro.simlock.unlock.bynv=0 \ ro.simlock.onekey.lock=1 .
+参考FAQ: FAQ80205
+### 问题: 如何获取SIM的类型（USIM/SIM）?
+解决方案: 上层应用可以根据TelephonyManagerSprd对象的hasUsimCard接口,具体实现是根据IccPolicy的优先级,如果priority==HIGH_USIM或者LOW_USIM时返回true.如成立,则为USIM卡.如需确认是否为SIM卡.需要借助另一个接口hasIccCard,组合判断,就可以区分无卡及SIM卡.
+参考FAQ: FAQ83515
+### 问题: SIMLOCK-NV如何配置卡槽1为主解锁卡槽的锁卡逻辑？
+解决方案: 主解锁卡槽:双卡平台,有卡槽依赖的锁卡逻辑,通常默认卡槽一为主解锁卡槽.卡槽二的行为依赖于卡槽一的具体的状态. 具体锁卡行为: 卡槽一插入合法卡,卡槽二任意卡可用.若卡槽一无卡或者插入黑名单卡,卡槽二任意卡不可用,报LOCKED. 首先确认Modem是否支持此功能.如是在配置基本内容基础上,只需配置SIM_LOCK_CUSTOMIZE_DATA---->dummy2=2. 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ83514
+### 问题: android6.0中如何开启sysdump
+解决方案: 原来在android5.1中,在工程模式的配置中,可以通过sysdump on/off开关sysdump功能 但是在android6.0中,此功能已经去掉了 android6.0中,user版本,可以修改u-boot中的sysdump.c,在文件头加上一行 #define DEBUG 从而开启sysdump
+参考FAQ: FAQ92156
+### 问题: android5.1中通话录音的文件名为何不能包含“:”
+解决方案: ":"为非法的文件名字符,所以不采用":"作为录音文件名. 文件名中非法字符,如 \ / : * ? " < > |
+参考FAQ: FAQ80263

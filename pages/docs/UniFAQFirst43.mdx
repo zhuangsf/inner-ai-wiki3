@@ -1,0 +1,300 @@
+### 问题: 如何查看已经配对蓝牙设备的信息（包括linkkey，搜索到设备的名字(names)，类型(classes)等） ？
+解决方案: 1.进入adb shell ; 2.cd /data/misc/bluedroid 路径下; 3. cat bt_config.conf 4.查看配对设备的相应信息;
+参考FAQ: FAQ81675
+### 问题: 如何排除蓝牙由于设定了低速率而导致的蓝牙耳机播放卡顿问题？
+解决方案: 通过检查/device/sprd/scx15_xxxx/system.prop文件下的限速开关 debug.bt.lowspeed=true
+参考FAQ: FAQ81679
+### 问题: 如何判断两台测试机进行蓝牙配对时出现 pagetimeout 问题？
+解决方案: 通过判断main log中的如下关键字 I bt-btm : btm_sec_rmt_name_request_complete, status=4 I bt-btm : btm_sec_rmt_name_request_complete() continue bonding sm4: 0x0000, status:0x4 如果status=4 表示配对过程中出现了pagetimeout ,对应代码中的宏定义如下: #define HCI_ERR_PAGE_TIMEOUT x04
+参考FAQ: FAQ81680
+### 问题: 如何通过xml查看每个分区的实际物理地址?
+解决方案: 查看pac包中的xml分区表,其中splloader和uboot分别放在EMMC的BOOT1和BOOT2分区中,其它分区放在EMMC的USER分区中. 在USER分区中,第一个分区(如:prodnv)的物理起始地址为1M,后面各分区的物理起始地址为前面所有物理分区大小的和+1M.
+参考FAQ: FAQ81710
+### 问题: 互动屏保--如何将“何时启动”中的默认设置为“充电时”
+解决方案: 需要修改 frameworks/base/core/res/res/values/config.xml文件中config_dreamsActivatedOnDockByDefault和config_dreamsActivatedOnSleepByDefault的值,将config_dreamsActivatedOnDockByDefault(表示默认是否插入基座时启动)修改为false,将config_dreamsActivatedOnSleepByDefault(表示默认是否充电时启动)修改为true即可.
+参考FAQ: FAQ81753
+### 问题: USSD主动上报的消息中，第一位表示什么意思
+解决方案: 以如下主动上报消息为例: AT< +CUSD: 2,"6f6b",15 第一位表示ussd mode,如下: 当值为2表示:USSD mode terminated,即USSD请求结束. 当值为1表示:USSD mode request,即需要用户输入选项的值,并发送.
+参考FAQ: FAQ81754
+### 问题: 互动屏保支持哪些类型？
+解决方案: 目前平台互动屏保模块主要包含:万花筒、时钟、相框、照片桌面主题,注意:不支持嵌入视频播放主题.
+参考FAQ: FAQ81755
+### 问题: 蓝牙网络共享对蓝牙的地址要求
+解决方案: 在BNEP1.0协议中要求如下: A unicast address is one which has the least significant bit of the first octet of the address set to 0. 即第一个字节的低有效位为0
+参考FAQ: FAQ81784
+### 问题: BT4.2的改进点
+解决方案: 低功耗数据包长度延展 低功耗安全连接 链路层隐私权限 链路层延展的扫描过滤策略 Bluetooth Smart设备可通过网络协议支持配置文件(Internet Protocol Support Profile,简称IPSP)实现IP 连接. IPSP为Bluetooth Smart添加了一个IPv6连接选项,是互联家庭和物联网应用的理想选择. 蓝牙4.2通过提高Bluetooth Smart的封包容量,让数据传输更快速. 业界领先的隐私设置让Bluetooth Smart更智能,不仅功耗降低了,窃听者将难以通过蓝牙联机追踪设备. 消费者可以更放心不会被Beacon和其他设备追踪.
+参考FAQ: FAQ81785
+### 问题: 蓝牙2.1+EDR中的EDR指的什么
+解决方案: EDR是蓝牙增强速率(Enhanced Data Rate)的英文缩写,其特色是大大提高了蓝牙技术的数据传输速率,达到了2.1Mbps.
+参考FAQ: FAQ81822
+### 问题: wifi中关联操作的三种服务
+解决方案: 1、关联(Association) AP之所以能够将帧传递给工作站,是因为工作站向AP产生了关联. 2、重新关联(Reassociation) 工作站根据信号的强度,切换热点时候使用. 3、取消关联(Disassociation) 结束现有的关联,工作站可以利用取消关联服务.
+参考FAQ: FAQ81826
+### 问题: wifi中身份认证的两种服务
+解决方案: 1、身份认证(Authentication) 身份认证是关联操作的必要前提,唯有经过身份认证的用户才允许使用网络. 工作站与无线网络连接的过程中可能经过多次身份认证.关联前,工作站会先以本身的MAC地址来跟接入点进行基本的身份认证. 此时的身份认证通常称为802.11身份认证,有别与后续的加密用户身份认证. 2、解除身份认证(Deauthentication) 因为获准使用网络之前必须经过身份认证,解除身份认证的副作用就是终止当前的关联.在强健的安全网络中,解除身份认证也会解除密钥信息.
+参考FAQ: FAQ81829
+### 问题: ARP是什么
+解决方案: 最近在解决wifi相关问题中,涉及到wifi无法上网的问题,有时候需要查看一下抓的tcp报文. 在此简介下报文中的ARP是什么及其作用. 1、ARP即地址解析协议(Address Resolution Protocol),是根据IP地址获取物理地址的一个TCP/IP协议. 2、主机发送信息时将包含目标IP地址的ARP请求广播到网络上的所有主机,并接收返回消息,以此确定目标的物理地址;收到返回消息后将该IP地址和物理地址存入本机ARP缓存中并保留一定时间,下次请求时直接查询ARP缓存以节约资源.
+参考FAQ: FAQ81835
+### 问题: DNS是什么
+解决方案: 涉及到wifi建链流程正确,但是wifi无法上网的情况,需要查看抓取的tcp报文,其中会有较多的DNS报文,在此简介下什么是DNS. DNS是一套分布式的域名服务系统.每个DNS服务器上都存放着大量的机器名和IP地址的映射,并且是动态更新的.众多网络客户端程序都使用DNS协议来向DNS服务器查询目标主机的IP地址.
+参考FAQ: FAQ81838
+### 问题: http是什么
+解决方案: 在遇到wifi建链流程正确,但是还是无法上网的问题时候,我们需要看抓取的tcp报文.报文中就会有http报文,在此简介一下. http是超文本传输协议. HTTP协议用于在Internet上发送和接收消息.HTTP协议是一种请求-应答式的协议——客户端发送一个请求,服务器返回该请求的应答,所有的请求与应答都是HTTP包.HTTP协议使用可靠的TCP连接,默认端口是80.在HTTP中,Client/Server之间的会话总是由客户端通过建立连接和发送HTTP请求包初始化,服务器不会主动联系客户端或要求与客户端建立连接.浏览器和服务器都可以随时中断连接,例如,在浏览网页时你可以随时点击"停止"按钮中断当前的文件下载过程,关闭与Web服务器的HTTP连接.
+参考FAQ: FAQ81843
+### 问题: 7731  5.1系统下手机softap打开后，能否弹出窗体显示连接该手机热点的设备名称及数目？
+解决方案: 这个功能android源生是不支持的,现在7731 5.1系统下的手机暂不支持该功能.
+参考FAQ: FAQ81844
+### 问题: 如何设置存在手机data目录下Modem Log的大小？
+解决方案: 进入工程模式:*#*#83781#*#*---Debug & Log---Slog 勾选Modem Log,会进一步弹出Modem Log Setting界面 下面有个Log 存储容量设置,进入可以设置单个log文件大小,data分区log存储总量等 注意:设置完成后需重启手机此设置才生效
+参考FAQ: FAQ81864
+### 问题: WCN的INI文件分几种，都做什么用的？
+解决方案: /vendor/sprd/open-source/res/productinfo 下很多ini文件,但分类也就两种,也就是最终手机里会用到两个: connectivity_configure.ini connectivity_calibration.ini 分别是给谁用呢? ini文件是给WCN射频使用的硬件相关配置参数表 connectivity_configure.ini 这是BT和WIFI都使用. connectivity_calibration.ini 这个文件只是WIFI专用,BT不涉及大功率不用这个文件.
+参考FAQ: FAQ81892
+### 问题: 为什么计算器三角函数sin30、sin90的计算结果是-0.988031624/0.8939966636？
+解决方案: 目前平台计算器三角函数使用的是弧度计算,所以是这个计算结果,没有问题,Android原生设计也是如此.
+参考FAQ: FAQ81952
+### 问题: 如何扩大计算器按钮的触摸响应区域？
+解决方案: 部分手机屏幕较小,导致计算器按钮的触摸范围较小,为了优化客户体验,可以将可触摸范围调大,计算器按钮的sytle是PadButtonStyle.Operator,所以需要修改packages\apps\calculator\res\values-port\Styles.xml文件中"PadButtonStyle.Operator"的android:layout_margin为1,修改如下: <style name="PadButtonStyle.Operator"> <item name="android:layout_margin">1dip</item> <item name="android:textSize">23sp</item> </style> 修改后,按钮的触摸响应范围变大,触摸感觉灵敏,按下按钮后有个圆形的按下按钮的效果,修改后这个圆形的效果不是完整的圆形,但这个效果可以接受.
+参考FAQ: FAQ81953
+### 问题: 如何修改日历月视图当前日期的背景色
+解决方案: 将Calendar包下res/values/colors.xml中的month_today_bgcolor的值设置为所需要的颜色即可.
+参考FAQ: FAQ90829
+### 问题: android 6.0系统显示，字库使用顺序？
+解决方案: 字符显示时,字库会按照framework/base/data/fonts/fonts.xml中从上到下顺序被查找,即第一个存在此字符的就会用此字库去显示. 如果想要某种语言下使用特定的字库,可以在fonts.xml中对应字库加入lang标签,这样系统在lang标签标注的语言下,此字库会优先被选择使用. 例如, <family lang="ja"> <font weight="400" style="normal">NotoSansJP-Regular.otf</font> </family> <family lang="ko"> <font weight="400" style="normal">NotoSansKR-Regular.otf</font> </family>
+参考FAQ: FAQ90859
+### 问题: 如何修改关机充电亮屏时间
+解决方案: 关机充电背光延时可以通过设置如下宏修改,单位MS vender/sprd/open-source/apps/charge/ui.c #define BACKLIGHT_ON_MS 3000
+参考FAQ: FAQ82048
+### 问题: SC7701是否支持cd-rom功能
+解决方案: 支持 1.工程打开宏USB_VCOM_AUTORUN_SUPPORT 2.需合入相关patch(请向展讯TAM或FAE获取) 制作镜像说明: 1.通过光盘镜像工具制作iso格式的镜像文件 2.将镜像文件(xxx.iso)重命名至romdisk.bin 3.将romdisk.bin放置在路径MS_Ref\source\ucom\src下
+参考FAQ: FAQ82083
+### 问题: 为什么usb连接电脑端口出不来或者经常掉端口
+解决方案: 出现问题时(端口掉的时候),量一下vbus的电压,电压必须符合usb协议范围4.75-5.25V.如果不符合,有可能是usb线压降太大或者电脑的供电电压不足.建议更换usb线或电脑验证.
+参考FAQ: FAQ82076
+### 问题: 阿拉伯语下界面未靠右问题
+解决方案: 方法一: 可以在res目录下增加layout-ldrtl目录,把布局文件重新放在这个目录下修改.切换阿拉伯语时,会自动调用这里的布局文件. 方法二: 如果不采用方法一,可以在原来的布局文件中修改以下内容: layout_marginLeft 修改为 layout_marginStart layout_marginRight 修改为 layout_marginEnd layout_alignParentLeft 修改为 layout_alignParentStart layout_alignParentRight 修改为 layout_alignParentEnd android:layout_toLeftOf 修改为 android:layout_toStartOf android:layout_toRigntOf 修改为 android:layout_toEndOf
+参考FAQ: FAQ82127
+### 问题: 平台原生浏览器目前支持html5吗？
+解决方案: Android4.4版本就支持大部分的HTML5特性, Android5.0(Chromium 37)版本开始WebView默认支持WebAudio,WebGL,WebRTC等标准.
+参考FAQ: FAQ88116
+### 问题: 为什么一键清理清除应用无法清除应用的notification
+解决方案: 一键清理清除应用使用的是removetask方式,此方式会清除系统中运行的应用的进程以及启动记录,但是不会对应用的状态做任何的改变, 而notification与应用进程存在与否无关,仅与应用的状态有关,如果应用在设置中被强行停止,会设置应用的状态为stop,则会清除应用的notification
+参考FAQ: FAQ82301
+### 问题: 如何获取藏语字库？及各android版本字库合入方法？
+解决方案: 目前藏语字库android6.0原生已支持,字库位置:external/noto-fonts/other/NotoSansTibetan-Regular.ttf 由于各android版本字库合入方法不同,请联系我司TAM同事获取《MocorDroid多国语言概述》文档,此文档中有详细描述各版本如何合入字库. Ps:字库修改与合入,可能会引起CTS fail,若项目需要过CTS测试,还请在字库修改合入后重新测试CTS确认对CTS无影响.
+参考FAQ: FAQ82307
+### 问题: Zawgyi缅甸语GMS包中应用字符串显示错乱？
+解决方案: 问题出现原因:我司支持是缅甸Zawgyi显示,字库为Zawgyi字库.而google原生的支持的是符合unicode标准的缅甸语.GMS包中应用为google原生,其缅甸语翻译资源都为unicode标准,在系统中使用Zawgyi字库显示就会出现显示错乱的问题. 目前修改方案为系统语言为缅甸语时,GMS包中应用显示为英文. 修改方法如下, A.修改项目的xxx.mk文件中(例如:device/sprd/scx35_sp7731gea/sp7731geaplus_dt_multi.mk)的PRODUCT_LOCALES 把其中的my_MM改为my_ZG. B.在framework/base/core/res/res/中新建values-my-rZG文件夹,并从values-my-rMM文件夹中复制strings.xml到values-my-rZG中. C.把所有模块下的values-my-rMM文件夹都重命名为values-my-rZG.
+参考FAQ: FAQ82308
+### 问题: 如何才算支持一门语言？
+解决方案: 支持一门语言需要包括如下3部分, 1.显示:字符及文字段落都可正常显示.可自己新建个apk,用textview及edittext显示此语言特定字符、字符段落,与pc对比是否是相同显示. A)字符若显示空白或"口口"则需字库支持,要把字库加入到系统中.具体添加方法请我司TAM同事获取《MocorDroid多国语言概述》文档,此文档中有详细描述各版本如何合入字库. B)文字段落显示异常,此部分涉及变形引擎支持,请提出CQ,我司会尽快给予回复. 2.翻译资源:需要把此种语言下所有模块中的字符串资源补全,相关导入导出资源工具获取详见FAQ79877 3.输入法:需要支持输入此种语言.
+参考FAQ: FAQ82311
+### 问题: 如何去除关机确认对话框
+解决方案: 长按power 键,会弹出选项框,包括"关机""重启""飞行模式"等选项. 点击"关机"之后会弹出一个关机确认的对话框,那么如何直接跳过这个确认对话框,直接关机呢? 修改: "关机"这个功能菜单的代码逻辑存在于 frameworks/base/policy/src/com/android/internal/policy/impl/GlobalActions.java 点击关机之后会直接调用 mWindowManagerFuncs.shutdown(true,"power_shutdown"); 可直接修改参数true为false ,即可以关闭关机确认对话框. shutdown()方法的的具体实现可参见ShutdownThread.java 中shutdown()方法.
+参考FAQ: FAQ82326
+### 问题: SD卡空间足够，长时间录像之后的视频文件，为什么播放时提示无法播放？
+解决方案: 当一直录像到SD卡剩余空间只剩5%时,底层会提示上层空间满而停止录制,但由于slog打开会有大量信息写入SD卡,因此会导致录像的mp4文件头信息无法写入SD卡中对应的文件,从而无法播放,针对这个问题,请将slog关闭后复测验证即可.
+参考FAQ: FAQ82358
+### 问题: 如何令应用内字体不随系统字体的缩放而改变？
+解决方案: 如果应用本身不对字体缩放进行控制,那么应用的字体会随着系统字体设置变化而变化.而系统提供给用户的缩放功能,实际就是通过设置Configuration中的fontScale.要控制某个页面的字体大小,只需要重写Activity的getResources()方法,如果要全局控制,则在基类Activity里重写这个方法即可.fontScale的值决定了sp值缩放的倍数,通过改变这个值的大小就可以实现字号设置的功能 public Resources getResources() { Resources res = super.getResources(); Configuration config=new Configuration(); config.fontScale = 1; res.updateConfiguration(config,res.getDisplayMetrics()); return res; }
+参考FAQ: FAQ90602
+### 问题: RF部分Duplexer器件布线上要注意什么？
+解决方案: Duplexer下面应该尽量多打地孔,且TX-RX-ANT三个端口需要用地隔离
+参考FAQ: FAQ82385
+### 问题: SC7731 GPIO是否都可配置为deep sleep模式下的唤醒源？
+解决方案: 都可以 但是需要GPIO在唤醒系统时维持触发状态1s以上,以便系统进行去抖检测.推荐采用具备硬件去抖功能的EXTINT[0:1]信号作为外部中断唤醒信号.
+参考FAQ: FAQ82391
+### 问题: CTS SensorTest测试中出现的采样率错误如何解决？
+解决方案: (1)常见错误log形式: Frequency out of range: Requested "ST LIS3DH 3-axis Accelerometer" at 50.00Hz (expecting between 45.00Hz and 2200.00Hz, measured 18.71Hz) 预期45Hz~2200Hz,实测18.71Hz; (2)原因分析 Sensor的采样频率设置太小 (3)解决方法 按照厂商提供的文档配置采样率到CTS要求的区间,CTS的最低要求是100Hz; 对于最高工作频率无法达到CTS要求的情况,联系传感器厂商把sensor的频率提高,有的厂商在HAL层通过插值处理;
+参考FAQ: FAQ82408
+### 问题: android.location.cts.GeocoderTest#testGetFromLocation FAIL
+解决方案: (1)错误log形式为: android.location.cts.GeocoderTest#testGetFromLocation FAIL junit.framework.AssertionFailedError: Failed to geocode location 5 times. at junit.framework.Assert.fail(Assert.java:64) at android.location.cts.GeocoderTest.testGetFromLocation(GeocoderTest.java:64) (2)分析:这个CASE需要google GMS包中Geocoder 的服务完成地理位置解析,所以需要预置GMS包并且有良好的翻墙网络环境.
+参考FAQ: FAQ82410
+### 问题: android 5.1 是否支持WMV视频播放？
+解决方案: WMV(Windows Media Video)是微软推出的一种媒体格式,目前我们平台不支持WMV视频播放,android 4.4和android 5.1的版本都不支持.
+参考FAQ: FAQ82458
+### 问题: 进入视频播放器，按home操作之后，再次进入视频播放器时，为什么显示launch界面？
+解决方案: 进入视频播放器,按home操作之后,再次进入视频播放器时,显示launch界面是因为activity之间切换有动画效果,如果用户需要在视频播放器中去掉这个动画效果,请做如下修改即可. 修改文件请参见如下信息:/packages/apps/Gallery2 --- a/src/com/android/gallery3d/app/MovieActivity.java +++ b/src/com/android/gallery3d/app/MovieActivity.java @@ -735,6 +735,7 @@ public class MovieActivity extends Activity { sendShareUri(mMenu, mUri); } super.onResume(); + overridePendingTransition(0,0); } @Override
+参考FAQ: FAQ82465
+### 问题: 禁用或启用SIM卡时，数据流量卡与主卡如何改变
+解决方案: 主卡支持3g/2g, 副卡仅支持2g协议栈. 所以哪个个卡设置为主卡决定了哪个卡使用3g/2g网络.主卡设置支持的协议栈不因为禁用sim卡而变化.比如关闭主卡后,副卡依旧仅支持2g网络访问. 数据流量卡和主副卡不同,数据流量卡表示缺省访问网络的卡,既可以是主卡,也可以是副卡.当之前设定的数据流量卡缺失或禁用,会将数据流量卡更改为为其他sim卡. 所以,禁用和开启sim卡,并不会更改主副卡,主副卡的切换只有通过"主卡选择"的菜单进行设置.但是禁用和开启当前的数据流量卡,却会引起数据流量卡的切换.
+参考FAQ: FAQ82476
+### 问题: 注网规则
+解决方案: 选网的优先级就是从高到低:4g、3g、2g,集合就是sim卡所支持的所有网络类型; 当4g信号强度低于限定阈值会进行重选,如果达到3g限定阀值之上则选择3g.选择2g的原理类似.
+参考FAQ: FAQ82477
+### 问题: android5.1充电电量允许下降
+解决方案: android5.1的充电修改了电量显示趋势,充电过程中如果发现电量入不敷出,充电电流小于功耗的情况下电量允许下降.
+参考FAQ: FAQ82554
+### 问题: Android原生输入法是否支持表情输入功能？如何切换？
+解决方案: 原生输入法支持表情输入功能,可以通过长按回车键进行 字符/表情 键盘切换.该表情的显示是通过输入法传递统一编码在ttf字库文件中查找对应表情,所以如果需要修改表情,可以通过更新表情字库文件来完成(external\noto-fonts\NotoColorEmoji.ttf).
+参考FAQ: FAQ82560
+### 问题: 7731 5.1平台如何实现锁屏来电, 接通挂断后仍处于锁屏界面
+解决方案: 只需要在inCallPresenter.java中的dismissKeyguard(boolean dismiss)方法中适当修改即可,可直接注释掉如下黄色背景的代码,参考修改如下: public void dismissKeyguard(boolean dismiss) { if (mDismissKeyguard == dismiss) { return; } mDismissKeyguard = dismiss; if (dismiss) { getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); } else { getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); } }
+参考FAQ: FAQ82578
+### 问题: 7731 5.1平台如何获取sim卡中的紧急号码
+解决方案: 卡内紧急号码存放到ril.sim.ecclist系统属性中. SystemProperties.set("ril.sim.ecclist" + mCi.getPhoneId(), eccList); 所以需要将其添加时候只需去读取该属性内容即可.参考示例如下: emergencyNumbers= SystemProperties.get("ril.sim.ecclist"+phoneId); 要注意的是,该属性的key值是ril.sim.ecclist加上phoneId
+参考FAQ: FAQ82582
+### 问题: android6.0 FM Radio录音格式如何修改为默认为3gpp？
+解决方案: android6.0平台版本默认FM Radio录音格式为amr.把录音格式格式从默认amr改为默认为3gpp需要修改如下代码路径文件的一个地方. 把\packages\apps\FMRadio\src\com\android\fmradio\FmRecorder.java文件中的 public static int GLOBAL_RECORD_FORMAT_FLAG = 0; 修改为 public static int GLOBAL_RECORD_FORMAT_FLAG = 1; 即GLOBAL_RECORD_FORMAT_FLAG对应的值0为amr,1为3gpp
+参考FAQ: FAQ87171
+### 问题: Researchdownloadtool 可以备份手机中的 WCN connectivity_configure.ini 参数吗
+解决方案: 可以备份,Researchdownloadtool 的backup页面勾选ProdNV,就可以备份手机中的connectivity_configure.ini,不勾选,就不备份.
+参考FAQ: FAQ82616
+### 问题: 为什么设置--显示--壁纸--查看选择壁纸来源界面会有多个壁纸选项？
+解决方案: 解答: 设置--显示--壁纸--查看选择壁纸来源界面, 这个界面的内容是在设置中动态生成的, 此界面会去遍历所有安装的应用中可以设置壁纸的activity. 将含有Intent.ACTION_SET_WALLPAPER的所有界activity列并显示出来. 一般含有此action的activity为Launcher中的界面. 如果安装有多个Launcher将会显示多个壁纸选项. 且是否显示"壁纸"这个名称也是由对应apk决定的.
+参考FAQ: FAQ82688
+### 问题: 手机开启wifi并连接，关于手机中IP地址显示处显示一串码
+解决方案: 问题解答: 进入设置-关于手机-状态信息-其他-查看IP地址 IP地址显示: fe80:4245:daff:feff:9876 //这行为IPv6的ip地址 192.168.1.110 //这行为IPv4的ip地址 所以上面的第一行并不是乱码,而是IPv6的ip地址.
+参考FAQ: FAQ82691
+### 问题: 设置 -> 无障碍->无障碍快捷方式  此选项不能点击
+解决方案: 问题解答: 无障碍快捷方式,需要安装Google的"TalkBack(话语提示)"服务,才可启用. 因此,如果使用该功能,建议自行在网络上下载TalkBack安装或者用GMS版本验证.
+参考FAQ: FAQ82692
+### 问题: 情景模式设置手机铃声，选择铃声时任意一项选中“始终”，无法清除默认操作
+解决方案: 解答: 情景模式设置手机铃声: 选择文件管理器为默认值,需要在应用中查看文件管理器清除文件管理器的默认值, 选择媒体存储、自定义铃声为默认值,需要在应用中查看媒体存储并清除其默认值. 不需要清除情景模式的默认值.
+参考FAQ: FAQ82697
+### 问题: 设置菜单中开发者选项消失，且再也无法打开问题
+解决方案: 问题解答: 一般这种情况发生是因为开启了多用户模式, 如果当前用户为Guest用户或者新建的用户,开发者选项会消失 请确认当前用户是否在机主用户下.
+参考FAQ: FAQ82698
+### 问题: WITH_DEXPREOPT_PIC的作用
+解决方案: WITH_DEXPREOPT_PIC 是控制 art 对 apk文件编译处理方式的编译控制选项,其使用前提是WITH_DEXPREOPT=true . WITH_DEXPREOPT_PIC = true 时,第一次开机时不会再执行patchoat生成oat文件到/data/dalvik-cache/目录中,可以解决/data区空间并缩短第一次开机时间,但会稍微影响运行时速度. 下面是本地测试的结果(根据应用的多少结果会不同): 开启PIC后会有如下的影响: 1. art跑分降低了2.2% (1940---->1897) 2. 下载后/恢复出厂设置后 开机快了200% (150s---->56s) 3. data分区占用减少了450M(GMS最小包,如果是整包或者内置更多应用并开启odex,则会省更多)
+参考FAQ: FAQ82712
+### 问题: data区空间不足时，将app移动到sd卡为何不成功？
+解决方案: 5.1上移动应用实际上是换个位置重新安装这个应用,在重新安装应用成功前不会删除原来的应用的文件(源文件和oat文件),从手机存储中移动到sd卡中,在安装应用到sd时会在/data/dalvik-cache/目录中生成新的oat文件,如果这个oat文件大于/data区剩余空间,则安装失败.移动的过程中需要有一个oat大小的中转空间.
+参考FAQ: FAQ82713
+### 问题: 如何在显示setupwizard前显示一个界面？
+解决方案: setupwizard 和 launcher实际上都是一个 home activity , 只不过他们intentfilter的priority 等级不一样,pms查询activity时会根据等级选择需要启动的activity,等级高的将被选中.所以要在setupwizard前面显示一个activity,需要将priority值设的比setupwizard高.具体修改可以参照/packages/apps/Provision进行.
+参考FAQ: FAQ82714
+### 问题: 5.1平台添加第二通电话时，为何会自动mute
+解决方案: 5.1平台在进行多方通话时,添加通话会先进行mute的操作,这样做的目的是不让对方听到无关紧要的声音.如果不需要该设计可参考如下修改: 在callButtonPresenter.java(packages/apps/incallui/src/com/android/incallui)中的addCallClicked()方法中做如下修改: mAutomaticallyMuted = true;//注释掉 mAutomaticallyMuted = false;//添加 mPreviousMuteState = AudioModeProvider.getInstance().getMute(); // Simulate a click on the mute button muteClicked(true); //注释掉
+参考FAQ: FAQ82721
+### 问题: 5.1平台，如何去掉numberlabel(手机号码类型，如工作、手机)的显示
+解决方案: 在CallCardFragment.java中(packages/apps/incallui/src/com/android/incallui) 有setPrimaryLabel(String label)的方法,该方法最终决定,numberLabel是否要显示,所以如果不需要其显示,可参考如下配置: @Override public void setPrimaryLabel(String label) { --- if (!TextUtils.isEmpty(label)) {//注释掉 --- mNumberLabel.setText(label); //注释掉 --- mNumberLabel.setVisibility(View.VISIBLE); //注释掉 --- } else {//注释掉 mNumberLabel.setVisibility(View.GONE); --- }//注释掉 }
+参考FAQ: FAQ82722
+### 问题: 如何判断SIM卡联系人已经加载完成
+解决方案: 由于SIM卡联系人加载成功后,会将数据库中对应SIM账户的syncable值设置为1.所以可以获取对应SIM账户的syncable值进行判断,如果syncable为1代表对应SIM卡联系人加载成功. 如何获取syncable值: boolean syncable = ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) > 0; //account为Account类型,是要查询的SIM卡账户
+参考FAQ: FAQ82736
+### 问题: 为什么联系人以主机,分机方式保存后，在拨打电话时，不能匹配联系人
+解决方案: 这个现象是正常的,android原生如此.带有分机号的号码存储在phone_lookup表带有分机号,而拨号查询的号码不带有分机号,联系人匹配是在phone_looup表中按照号码从右向左匹配,所以无法匹配上带有分机号的号码.
+参考FAQ: FAQ82737
+### 问题: 为什么将优先选择连接的网络选择为移动网络时，进入WLAN设置界面会显示正在搜索WLAN网络？
+解决方案: 此现象出现的步骤及原因: 设置->网络管理 步骤及功能如下: 1. 如果此时选择的是WLAN,且wifi 未连接任何AP,然后切换选择为移动网络,则wifi不会有任何改变. 2. 如果此时选择的是WLAN,且wifi 连接上AP,然后切换选择为移动网络,则wifi会调用到WifiStateTracker.teardown.wifi interface down,表现就是此前连接的热点断开,扫描命令下发后无法得到扫描结果.这时候如果,重新将选择切WLAN,wifi 可以扫描出列表,并连接上此前连接的热点. 3. 如果此时选择的是移动网络,此时wifi之前没有连接任何AP,wifi将不受影响;如果此时又手动去连接ap,则还是会出现teardown wifi,出现情况2的表现. 符合[CUCC][分册第十一分册连接管理] case 5.1.1.1,联通定制的case要求,不算是问题.
+参考FAQ: FAQ82738
+### 问题: ro.wcn.gpschip的作用是什么？
+解决方案: 现有平台中使用的gps芯片包括两种:greeneye和greeneye2.平台通过ro.wcn.gpschip的值来区分当前版本使用的是哪款GPS芯片.ro.wcn.gpschip=ge,表示使用此版本的手机硬件中gps用的是greeneye芯片;ro.wcn.gpschip=ge2 则表示使用的是greeneye2芯片.
+参考FAQ: FAQ82739
+### 问题: 如何修改wpa_supplicant和hostapd的输出log级别？
+解决方案: wpa_supplicant和hostapd的默认log级别都使用如下变量: wpa_debug.c int wpa_debug_level = MSG_INFO; 一般wpa_supplicant或者hostapd 打印log level设置都为MSG_INFO.wpa_supplicant启动的时候,通过默认参数配置会将log级别往前调整2个级别,调整后的值为:MSG_MSGDUMP.而hostapd启动时则没有设置调节log级别的参数,所以只能通过修改代码中wpa_debug_level的值来调整级别.注意:因为wpa_supplicant和hostapd的log 级别变量使用的是同一个变量,当修改了wpa_debug_level的值后,wpa_supplicant的log 级别也将在修改后的基础上往前调整2个级别.
+参考FAQ: FAQ82740
+### 问题: frameworks/base/core/values/config.xml 中变量config_wifi_framework_enable_associated_network_selection的作用是什么？
+解决方案: android5.1自动重连和android4.4的区别可以查询FAQ79775.从中可知,android5.1的自动重连是通过上层来控制的,而config_wifi_framework_enable_associated_network_selection的作用就是设置是否由上层来控制自动重连,其值默认为true,表示由上层控制自动重连,如果改为false,则不通过上层来控制自动重连. 注意:即使将值改为false,也不会将自动重连的判断逻辑改为由wpa_supplicant判断.如果需要在android5.1上将自动重连判断改为有wpa_supplicant控制,除了将此值修改为false外,还需要设置scan type为SCAN_WITH_CONNECTION_SETUP.
+参考FAQ: FAQ82742
+### 问题: 如何修改连接AP时提示“未检测到到任何互联网连接，因此不会自动重新连接”的问题？
+解决方案: 如上图所示,android原生功能中会判断当前AP是否能连接上互联网,如果不能则如上图所示,不会自动连接此AP.判断的条件:手机端会访问网址"connectivitycheck.android.com",根据返回的htto response,判断是否能连接互联网.从这可以看出来, 实际上如果处于无法直接访问google的地区或国家,理论上任何AP都会有此提示.所以,平台版本中通过属性值reset_default_http_response来控制此功能的开关.当属性值为true时,此功能关闭;属性值为false时,此功能开启.目前,平台默认此功能关闭.
+参考FAQ: FAQ82743
+### 问题: 5.1如何设置Activity的状态栏或导航栏为全透明
+解决方案: <resources> <style name="AppTheme" parent="android:Theme.Holo"> <item name="android:windowNoTitle">true</item> <item name="android:statusBarColor">@android:color/transparent</item>//状态栏透明 <item name="android:navigationBarColor">@android:color/transparent</item>//导航栏透明 <item name="android:windowDrawsSystemBarBackgrounds">true</item> </style> </resources> 对应的Activity只要使用这个主题就可以,其中android:Theme.Holo可以修改,主要是这四个属性
+参考FAQ: FAQ82755
+### 问题: 如何通过log查看cp2版本
+解决方案: 在main log里面搜索platform version.后面会显示版本信息以及版本日期.
+参考FAQ: FAQ82758
+### 问题: 如何通过log确定用的外设芯片是marilin还是2351
+解决方案: 在main log里面搜索关键字WCN_LOOP_IFACE,如果显示/proc/mdbg/loopcheck则表示是marlin,如果是/dev/spipe_wcn0则表明是2351
+参考FAQ: FAQ82760
+### 问题: 如何设置日历默认显示界面
+解决方案: 日历默认显示界面是由GeneralPreferences.java中DEFAULT_START_VIEW决定的,其可以设定的值有如下四种: CalendarController.ViewType.MONTH(月显示) CalendarController.ViewType.AGENDA(日程显示) CalendarController.ViewType.DAY(日显示) CalendarController.ViewType.WEEK(周显示)
+参考FAQ: FAQ82777
+### 问题: 5.1平台HOLD和RECORD按钮在什么时候可点击
+解决方案: 其实,在代码中是有条件设置的,具体代码路径为: CallButtonPresenter.java(packages/apps/incallui/srd/com/android/incallui/) 代码如下: public boolean enableRecorderOrAddCall(Call call) { int state = call.getState(); return (state == Call.State.ACTIVE || state == Call.State.ONHOLD || state == Call.State.CONFERENCED); } 从以上代码可以看出,只有当call状态为ACTIVE/ONHOLD/CONFERENCED的时候才能够更新按键的可点击状态.
+参考FAQ: FAQ82803
+### 问题: 5.1平台语音信箱从联系人导入之后如何将编辑框的光标设置为字符串尾部
+解决方案: 在CallForwardEditPreference.java(packages/services/Telephony/src/com/android /phone/ )中的onPickActivityResult(String pickedValue)作如下修改: public void onPickActivityResult(String pickedValue) { EditText editText = getEditText(); if (editText != null) { editText.setText(pickedValue); if (pickedValue!= null) {//添加 editText.setSelection(pickedValue.length());//添加 }//添加 } }
+参考FAQ: FAQ82804
+### 问题: 为什么5.1版本中STK Reset功能没有重启手机
+解决方案: 要修改可以直接把StkAppService.java里面的//stkReboot();注释代码打开. 但是这里之前注释这句代码是为了过协议测试 'USAT '27.22.4.7.1 REFRESH SEQ 1.5 测试协议中在不关机,通过at+sfun关卡关协议栈来实现sim_reset类型的refresh.'而去掉的. 建议还是不要去除,否则会导致此协议测试无法通过的风险!
+参考FAQ: FAQ82810
+### 问题: Andriod6.0 自动背光响应时间调节
+解决方案: 1.变暗相应时间调节 /frameworks/base/core/res/res/values/config.xml <integer name="config_autoBrightnessDarkeningLightDebounce">8000</integer> 2.变亮相应时间调节 /frameworks/base/core/res/res/values/config.xml<integer name="config_autoBrightnessBrighteningLightDebounce">4000</integer>
+参考FAQ: FAQ82819
+### 问题: 浏览器浏览网页不可以缩放，这是什么原因？
+解决方案: 浏览器是支持网页缩放功能的. 网页能不能执行缩放操作,和网页属性user-scalable有关, 比如保存百度网页,分析网页格式,其中, <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"> 可以看到,网页属性user-scalable=no说明不能执行缩放操作.并且限定了最小缩放比例和最大缩放比例都是1.0,所以无法缩放网页是正常的. 很多移动端适配的网页都有这样的设定,这是网页的实现.
+参考FAQ: FAQ82821
+### 问题: 闹钟的默认铃声在哪里定义的
+解决方案: 闹钟的默认铃声是定义在build\target\product\core_base.mk中的: ro.config.alarm_alert=Alarm_Classic.ogg
+参考FAQ: FAQ82824
+### 问题: 怎么查看闹钟铃声中的媒体存储的铃声列表
+解决方案: 请做如下操作: adb root --> adb remount --> adb shell --> cd system/media/audio/alarms --> ls
+参考FAQ: FAQ82825
+### 问题: 如何修改屏幕默认亮度？
+解决方案: 解答: 修改屏幕默认亮度请在下面文件中: frameworks\base\packages\SettingsProvider\res\values\defaults.xml <!-- Default screen brightness, from 0 to 255. 102 is 40%. --> <integer name="def_screen_brightness">102</integer> 这个值的取值范围为0~255,请按照实际需求修改"def_screen_brightness"的值. 备注:很多项目会在/device/sprd/对应工程/overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml overlay 这个xml文件,所以会导致只修改fw中的值并不会起作用.因此,需要优先检查是否存在overlay的情况.
+参考FAQ: FAQ82835
+### 问题: 如何修改闹钟的默认铃声为Krypton
+解决方案: 请做如下修改: diff --git a/target/product/core_base.mk b/target/product/core_base.mk --- a/target/product/core_base.mk +++ b/target/product/core_base.mk @@ -18,7 +18,7 @@ PRODUCT_PROPERTY_OVERRIDES := \ ro.config.notification_sound=OnTheHunt.ogg \ - ro.config.alarm_alert=Alarm_Classic.ogg + ro.config.alarm_alert=Krypton.ogg PRODUCT_PACKAGES += \ ContactsProvider \
+参考FAQ: FAQ82830
+### 问题: 如何测试关机闹钟
+解决方案: 关机闹钟的实现是提前2分钟开机的. 在测试关机闹钟的时候,请设置闹钟时间距离当前时间至少相差3分钟以上. 因为关机闹钟的响铃,实际上还需要启动安卓系统的,这个过程是需要时间的.
+参考FAQ: FAQ82852
+### 问题: 闹钟响铃时，关机，重启手机，闹钟为什么还会继续响铃
+解决方案: 原生设计如此,在闹钟响铃时,手机关机,再次重启手机,会判断这个闹钟响铃是否超时,如果未超时,还会继续响铃. 具体请参见packages\apps\DeskClock\src\com\android\deskclock\alarms\AlarmStateManager.java中registerInstance()方法的如下代码: else if (instance.mAlarmState == AlarmInstance.FIRED_STATE) { // Keep alarm firing, unless it should be timed out boolean hasTimeout = timeoutTime != null && currentTime.after(timeoutTime); if (!hasTimeout) { setFiredState(context, instance); return; } }
+参考FAQ: FAQ82854
+### 问题: 怎样判断开机模式
+解决方案: 可以在kernel驱动文件中加入以下code: (比如在kernel/drivers/rtc/rtc-sprd.c文件的static int __init sprd_rtc_init(void)函数中添加) static int __init early_parse_charge_cmdline(char * p) { if(p){ if(!strcmp(p,"charger")) pd_charge_flag = 1; else pd_charge_flag = 0; return 0; } return 0; } early_param("androidboot.mode",early_parse_charge_cmdline); 若p为null表示normal开机. 当p不为null时, 红色字体charger便表示charger开机,可以换成其他字符,如下: factorytest:工厂测试模式 cali:校准模式 alarm:闹钟开机
+参考FAQ: FAQ94336
+### 问题: 如何修改使得阿拉伯语下时钟界面右对齐
+解决方案: 请做如下修改: diff --git a/AndroidManifest.xml b/AndroidManifest.xml --- a/AndroidManifest.xml +++ b/AndroidManifest.xml @@ -18,7 +18,7 @@ <application android:label="@string/app_label" android:icon="@mipmap/ic_launcher_alarmclock" android:requiredForAllUsers="true" - android:supportsRtl="false"> + android:supportsRtl="true"> <provider android:name=".provider.ClockProvider" android:authorities="com.android.deskclock"
+参考FAQ: FAQ82881
+### 问题: android5.1A呼叫B并接通，C呼叫A并接通，B呼叫保持状态，C挂断与A的通话，B处于呼叫保持是否正常
+解决方案: android5.1A呼叫B并接通,C呼叫A并接通,B呼叫保持状态,C挂断与A的通话,对A来说是被动挂断,所以B处于呼叫保持是正常现象.android5.1平台设计如此. 如果A主动挂断,则B会由呼叫保持转到激活状态,例如: A呼叫B并接通,C呼叫A并接通,B呼叫保持状态,A挂断与C的通话,B由呼叫保持转到激活状态.
+参考FAQ: FAQ82898
+### 问题: 编译时ro.build.fingerprint超过92个字符如何解决
+解决方案: 1.在build\core\Makefile文件中: 将 BUILD_FINGERPRINT := $(PRODUCT_BRAND)/$(TARGET_PRODUCT)/$(TARGET_DEVICE):$(PLATFORM_VERSION)/$(BUILD_ID)/$(BF_BUILD_NUMBER):$(TARGET_BUILD_VARIANT)/$(BUILD_VERSION_TAGS) 改为 BUILD_FINGERPRINT := $(PRODUCT_BRAND)/$(TARGET_PRODUCT)/$(TARGET_DEVICE):$(PLATFORM_VERSION)/$(BUILD_ID)/$(BF_BUILD_NUMBER):$(TARGET_BUILD_VARIANT) 2.删除掉out\target\product\XXXXX\system\build.prop文件并重新编译即可.
+参考FAQ: FAQ82933
+### 问题: 阿拉伯语下，如何使三方通话界面号码从左往右显示
+解决方案: 阿拉伯语言下修改布局 /packages/apps/InCallUI/res/layout/conference_list_item_sprd.xml <TextView android:id="@+id/conferenceCallerNumber" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="8dp" android:ellipsize="marquee" android:singleLine="true" android:textColor="@color/incall_call_banner_subtext_color" android:textSize="@dimen/call_label_text_size" + android:textDirection="ltr" />
+参考FAQ: FAQ82935
+### 问题: 什么是手机屏幕分辨率？
+解决方案: 屏幕分辨率是指屏幕上显示的像素个数,单位尺寸内像素点越多,显示的图像就越清楚.单位是px, 1px=1个像素点.分辨率720*1280表示手机水平方向的像素为720,垂直方向为1280.
+参考FAQ: FAQ82958
+### 问题: 如何去掉状态栏信号条带有感叹号
+解决方案: 分析:状态栏信号条带有感叹号,这个是原生设计. 是因为关闭数据业务,给用户的一个提示(如下图所示). 该感叹号的标志 是矢量图,是由一系列坐标画出来的.在代码中的位置 --- a/packages/SystemUI/res/drawable/stat_sys_signal_4.xml 这里的android:pathData 里面的坐标最后表现出来的就是感叹号标志,所以这里如果要删除感叹号,就要重新计算了 可参考packages/SystemUI/res/drawable/stat_sys_signal_4_fully.xml中的android:pathData修改 但是要同步在数据信号stat_sys_signal_0.xml stat_sys_signal_2.xml stat_sys_signal_3.xml中都要修改. 建议保持原始不修改
+参考FAQ: FAQ82883
+### 问题: Hotmail无法接收邮件问题原因分析
+解决方案: 首先经cap包分析是接收服务器(imap,pop )直接返回fin ack,可检查Email ssl 版本,如果是3.0,需要向我司申请email patch,更新到tls1.0 配置即可. 如果还无法接收,需要根据arm log文件搜索下ssl read data 的数据内容是否是由于服务器拒绝还是由于设置的账号等参数有错误导致的需要仔细排查. Hotmail 接收具体配置请参考如下: pop 方式:pop3.live.com ,端口995,安全方式选择ssl/tls; imap 方式:imap-mail.outlook.com,端口: 993,安全方式选择ssl/tls; 注意:选择pop或者imap ,要与账号设置中的server type 相对应. 如果imap方式下接收不对,还要看下log中是否已经走到eme_fsm_imap.c ,否则有可能是由于上层改动等原因导致走的还是pop3方式.
+参考FAQ: FAQ84126
+### 问题: 如何获得插入的sim/usim卡是否被禁掉
+解决方案: 首先,可以获取TelephonyManagerSprd对象, TelephonyManagerSprd mTelephonyManager = (TelephonyManagerSprd) TelephonyManager.from(mContext); mContext:表示应用上下文环境 然后调用如下方法: public boolean isSimStandby(int phoneId); 参数phonId, 值0表示卡1, 1表示卡2 ,返回值true表示禁卡.
+参考FAQ: FAQ83072
+### 问题: 如何获取飞行模式的状态接口函数
+解决方案: 通过获取TelephonyManagerSprd对象,然后调用如下接口: public boolean isAirplaneModeOn(); 返回值:true表示飞行模式打开,false表示飞行模式关闭.
+参考FAQ: FAQ83077
+### 问题: 如何在bootimage中使用klog
+解决方案: klog一般用于bootimage ko文件的log打印,用法如下: klog_set_level(7); klog_write(3,"error :%s",strerror(errno));
+参考FAQ: FAQ83086
+### 问题: 如何禁掉uboot中串口log
+解决方案: 修改board对应的头文件,类似以下文件: uboot64/include/configs/sp7731gea_hdr.h:217: #define CONFIG_SPRD_UART_PORTS { (void *) (CONFIG_SYS_SERIAL1), (void *) (CONFIG_SYS_SERIAL1) } CONFIG_SYS_SERIAL0 用于BT传输 CONFIG_SYS_SERIAL1 用于串口log输出,若想将串口log禁掉,修改或去掉这个值,
+参考FAQ: FAQ83088
+### 问题: 为什么开启HDR拍照取景屏幕卡死，如何解决？
+解决方案: 查看LOG,在HDR库里发生了Crash: DEBUG : #00 pc 000596b0 /system/lib/libmorpho_easy_hdr.so 使用命令:adb pull /system/build.prop ~/build.prop 从手机导出proplist,检查发现:ro.board.platform=SC7731,原始版本里应该为:ro.board.platform=sc8830. HDR是第三方提供的库文件,有厂商限制,ro.board.platform这一项必须为sc8830. 将ro.board.platform改回成sc8830,问题解决.
+参考FAQ: FAQ83187
+### 问题: SC7731G平台是否可以输出一个12M的时钟
+解决方案: 可以使用 aux clk,软件配置方法如下: wlan_clk = clk_get(NULL, "clk_aux0"); if (IS_ERR(wlan_clk)) { printk("clock: failed to get clk_aux0\n"); } clk_parent = clk_get(NULL, "ext_48m"); if (IS_ERR(clk_parent)) { printk("failed to get parent ext_48m\n"); } clk_set_parent(wlan_clk, clk_parent); clk_set_rate(wlan_clk, 12000000);/12M clk_prepare_enable(wlan_clk);
+参考FAQ: FAQ83228
+### 问题: SC6531 SC7701如何关闭T卡功能
+解决方案: 不需要去修改主mk的宏定义,修改主mk需要重新release lib 如下修改: 文件@gpio_cfg.c 1. GPIO_CustomizeInit 函数去掉中断注册 /* GPIO_PROD_RegGpio( GPIO_PROD_SDCARD_DETECT_ID, SCI_FALSE, SCI_FALSE, SCI_TRUE, SDCARD_DETECT_SHAKING_TIME, (GPIO_PROD_CALLBACK)GPIO_SdcardDetectIntHandler ); */ 2. GPIO_CheckSDCardStatus 函数直接返回false
+参考FAQ: FAQ83302
+### 问题: 持续按power键  屏幕唤醒时 有闪白屏现象
+解决方案: 可以修改背光驱动的lateresume方法稍微延迟打开背光. kernel/drivers/video/backlight/sprd_backlight.c static void sprd_backlight_lateresume(struct early_suspend *h) { msleep(100); //sleep for a while ... ... }
+参考FAQ: FAQ83325
+### 问题: adb命令如何设置wifi 国家码
+解决方案: 打开wifi后,adb shell进去,敲下面命令: wpa_cli IFNAME=wlan0 DRIVER COUNTRY CN //CN即为设置的国家
+参考FAQ: FAQ83352
+### 问题: 如何在android5.1 user版本上通过工程模式开启sysdump？
+解决方案: 在拨号盘输入暗码*#*#83781#*#*--->DEBUG&LOG下的System Settings--->打开sysdump选项,这样就可以在系统发生重启时抓取到sysdump. 抓取sysdump时需要插入4G SD卡,剩余空间大于2G,发生重启后将生成的sysdump和对应的vmlinux及slog一同打包上传展讯ftp,供展讯分析. sysdump默认生成路径:sdcard/sysdump目录 vmlinux路径:/out/target/product/xxxxxx/obj/KERNEL/vmlinux 重启后手机连接pc,开启adb调试,可以使用Log4Android2PC工具导出完整log
+参考FAQ: FAQ83380
+### 问题: oem  persist  sysinfo三个分区的作用是什么？
+解决方案: 1. oem分区是为全球定制功能而增设的一个分区,里面增加了对应不同国家的各种配置参数,如某些功能开关,有些区域要求打开,其它的则要求关闭,此时就需要用到oem.img,否则就需要出两个版本; 2. systeminfo是专门为了添加system分区检查而设立的分区,system分区检查是指检查system分区的资源是否被更改,比如apk被删减或者某些权限被更改,目的是为了防止system被更改导致手机被监控.而systeminfo分区存放一个check.bin文件,此文件里面存储所有system文件和其对应的sha1值. 3. persist分区是用于保存FRP(factory reset protcect)功能用到帐号、密码等受保护的信息,避免在恢复出厂设置后被清空. 这三个分区不建议删除.
+参考FAQ: FAQ84370
+### 问题: 通话中手电筒（flashlight）自动关闭
+解决方案: 接电话的时候,手电筒一般用不上,并且通话和手电筒都比较耗电,容易导致手机温度过高,所以有了这个通话中手电筒(flashlight)自动关闭功能. 如果不希望使用这个功能,可以按如下修改. 文件:FlashlightTile.java (frameworks\base\packages\systemui\src\com\android\systemui\qs\tiles): 类:class MobilePhoneStateListener extends PhoneStateListener 把如下函数置为空函数,不做任何操作即可. public void onCallStateChanged(int state, String incomingNumber) { }
+参考FAQ: FAQ83445

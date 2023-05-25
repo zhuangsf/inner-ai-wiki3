@@ -1,0 +1,306 @@
+### 问题: SC7731平台工程模式phone loopback test中Speaker loopback没有回音，如何解决？
+解决方案: 由于展讯参考设计使用的是双mic,免提时使用的是back mic,如果硬件设计没有back mic,则需要更改对应模式的path set配置使用主mic.对于工程模式下的speaker loopback无声问题,使用audiotester修改LoopBHandfree下的Path Set由0a18改为0618即可.
+参考FAQ: FAQ59980
+### 问题: Android浏览器浏览网页时设置新的字体为何没有变化？
+解决方案: 为了保证排版效果,绝大部分网页的CSS样式中,设置了网页内容的字形和字体,所以通过修改字体文字没有改变
+参考FAQ: FAQ59988
+### 问题: 为什么sc7715平台编译生成的InCallUI.apk push到手机中无效果？
+解决方案: 这是因为在Android 4.4 平台上做了相关调整,InCallUI虽然能够独立编译,但其代码是编译打包到Dialer.apk中. 所以要编译InCallUI部分的代码,需要编译Dialer 模块,并把Dialer.apk push 到/system/priv-app/ 中.
+参考FAQ: FAQ60070
+### 问题: android关机温度如何设置
+解决方案: /frameworks/base$/core/res/res/values/config.xml <integer name="config_shutdownBatteryTemperature">680</integer>
+参考FAQ: FAQ60096
+### 问题: SC7731如何实现单卡版本？
+解决方案: 在展讯默认的工程中都是双卡的版本,带有plus关键字,如要实现单卡,在device\sprd\scx35_sp7731gea_lm目录下,修改对应的mk,将 ro.msms.phone_count=2、persist.msms.phone_count=2、ro.modem.w.count=2修改为:ro.msms.phone_count=1、persist.msms.phone_count=1、ro.modem.w.count=1即可.
+参考FAQ: FAQ60104
+### 问题: 如何自定义title的高度呢
+解决方案: 在某个应用代码目录下面 \res\values\style.xml 增加一个主题 <?xml version="1.0" encoding="utf-8"?> <resources> <style name="CustomWindowTitleBackground"> <item name="android:windowTitleSize">50dip</item> </style> </resources> AndroidManifest.xml <activity android:theme="@style/MyTheme" //增加 </activity>
+参考FAQ: FAQ60169
+### 问题: 出现you cannot combine custom titles with other title features 解决办法
+解决方案: android自定义修改标题栏的时候,出现了一个问题 you cannot combine custom titles with other title features接着程序变崩了. 在manifest文件中,修改android:theme="@style/android:Theme.Light" 这样便能正常运行了
+参考FAQ: FAQ60180
+### 问题: 7715平台为什么修改默认亮度值def_screen_brightness无效？
+解决方案: 导致此问题的原因是frameworks/base/packages/SettingsProvider/res/values/defaults.xml 被overlay文件覆盖,需要修改overlay下的配置文件 idh.code/device/sprd/××/overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml
+参考FAQ: FAQ60348
+### 问题: SC7715 编译时报u-boot-spl-16k.bin size is(23724) over 23552 , error!如何解决？
+解决方案: 从报错日志来看是因为u-boot-spl-16k.bin超过了23552造成的. 解决方法: 在u-boot\arch\arm\cpu\armv7\sc8830\dram_cfg.c文件中, 将DRAM_INFO_ARRAY[]列表中用不到的DDR配置项屏蔽掉,留下当前工程所用到的DDR配置. 该问题可解决.
+参考FAQ: FAQ60364
+### 问题: 视频暂停后恢复播放时间差异问题说明
+解决方案: 在播放视频途中,如果有插拔耳机/拨打电话/option menu等操作, 为了节省内存,视频播放器应用在后台会在暂停状态把底层资源都释放掉(相当于关闭播放); 等其他操作完成,恢复到视频播放器界面时,再把底层资源重新加载(相当于重新启动播放), 此时会seek到之前记录的播放时间点, 但是由于视频压缩的特性,seek后只能从关键帧(I-Frame)开始播放, 所以实际的播放时间点与之前记录的时间点会有差异.
+参考FAQ: FAQ92059
+### 问题: 阿拉伯语下，联系人编辑页面号码从左往右是怎么处理的
+解决方案: 从右往左显示的文字语言中,要求数字输入框是从左往右显示的,在联系人编辑电话号码时做了处理,代码如下: packages/apps/Contacts/src/com/android/contacts/editor/TextFieldsEditorView.java ... public void setValues(DataKind kind, ValuesDelta entry, RawContactDelta state, boolean readOnly, ViewIdGenerator vig) { ... if (inputType == InputType.TYPE_CLASS_PHONE) { ... fieldView.setTextDirection(View.TEXT_DIRECTION_LTR);// 此处做处理 } ...
+参考FAQ: FAQ60434
+### 问题: 770X DDR扫描时进度条跑完第一段后停止，且串口没有log?
+解决方案: 操作顺序不对 1、去掉ResearchDownload-->DownloadSettings-->Options-->NandFlash-->Repartition 的勾 2、先打开串口工具占用着com口,再打开ResearchDownload并点击三角使之Waiting,再给机器上电
+参考FAQ: FAQ60482
+### 问题: 相机里进行视频播放，回放模式选择“全部回放”，但只播放一个视频
+解决方案: 从录像界面去查看录像文件时,播放list是null,只有当播放list不是null的时候才会去循环播放该list下面的多个视频,否则就只会循环播放当前这个视频,该测试现象不是问题.
+参考FAQ: FAQ60536
+### 问题: 浏览器如何修改默认页
+解决方案: 修改默认页是在 BrowserSettings.java public String getDefaultPage4CMCC() { return mPrefs.getString(PREF_DEFAULTPAGE4CMCC, "http://wap.monternet.com"); } 修改wap.monternet.com改成客户需要的网页就可以了.
+参考FAQ: FAQ60718
+### 问题: 怎么增加浏览器导航页
+解决方案: 展讯CMCC版本支持导航页,非CMCC版本不支持导航页, 所以只要打开浏览器代码中的CMCC开关就可以支持导航页.
+参考FAQ: FAQ60719
+### 问题: 腾讯网页上文字只显示在左边，右边空白，如何修改
+解决方案: Android默认文本宽度是400, 对大屏幕手机,文本宽度相对屏幕较小,所以会出现右边空白的现象,横屏时比较明显. 只要加大默认文本宽度就可以了.
+参考FAQ: FAQ60721
+### 问题: 如何修改照片文件名的前缀？
+解决方案: 照片名称的格式是在CameraUtil.initialize方法中初始化的 sImageFileNamer = new ImageFileNamer( context.getString(R.string.image_file_name_format)); 因此只要修改\packages\apps\Camera2\res\values\strings.xml中的image_file_name_format字符串. <string name="image_file_name_format" translatable="false">"'IMG'_yyyyMMdd_HHmmss"</string> 把其中的"IMG"改成需要的名称即可.
+参考FAQ: FAQ60882
+### 问题: 如何修改相机中“对焦方式”默认为“连续对焦”？
+解决方案: 修改\packages\apps\Camera2\res\values\arrays.xml中的<string-array name="pref_camera_focusmode_default_array"/> <!-- Default focus mode setting.--> <string-array name="pref_camera_focusmode_default_array" translatable="false"> <item>auto</item> <item>continuous-picture</item> </string-array> 去掉其中的<item>auto</item>即可
+参考FAQ: FAQ60894
+### 问题: 如何把截图底下虚拟按键最右边的截屏功能更换为menu键
+解决方案: 只有对应的window设置了FLAG_NEEDS_MENU_KEY才会显示menu,如果需要设置为一直都显示的话就得把NavigationBarView.java中setMenuVisibility()这个方法传进来的参数写死为true即可
+参考FAQ: FAQ60950
+### 问题: device tree (sprd-scx35_sp7731gea.dts）中地址（如gpio@f5200000）如何得到
+解决方案: In Android L d_eic_gpio: gpio@f5200000{ compatible = "sprd,d-eic-gpio"; reg = <0Xf5200000 0x1000>; gpio-controller; interrupt-controller; #interrupt-cells = <2>; #gpio-cells = <2>; gpiobase = <288>; ngpios = <16>; interrupts = <0 37 0x0>; }; 在android L中,f5200000是虚拟地址在io-sc8830.c文件中建立映射关系,在__hardware-sc8830.h文件中定义,即 SPRD_GPIO_BASE = f5200000.
+参考FAQ: FAQ61055
+### 问题: 背景播放音乐时，进入文件管理以Photos（Google+中自带的）方式打开视频，为什么视频声音与背景音乐同时播放？
+解决方案: 后台在播放背景音乐,此时用Photos进行视频播放,如果需要暂停音乐,则需要Photos应用里面去做暂停操作,即get audio focus使得背景音乐lose audio focus而暂停背景音乐播放,因Photos应用是第三方的,我们没法控制,如果Photos应用不去做这个暂停操作,则会出现视频声音和背景音乐同时播放的情况.
+参考FAQ: FAQ61097
+### 问题: [android 4.4]是否支持WMV视频？
+解决方案: WMV(Windows Media Video)是微软推出的一种流媒体格式,它是在"同门"的ASF(AdvancedStreamFormat)格式升级延伸来得.在同等视频质量下,WMV格式的文件可以边下载边播放,因此很适合在网上播放和传输.目前我们平台不支持WMV视频播放.
+参考FAQ: FAQ61099
+### 问题: 如何支持 IMEI 不可覆写的功能
+解决方案: 1. 1. 使用 SIM_LOCK_SUPPORT = TRUE 需要請 TAM 提供更换库文件 将 IMEI 值寫入 NVRAM 中,任何其他合法软体可以将此值改写,但开机后会將 IMEI 值恢复 2. 使用IMEI_OTP_SUPPORT = EFUSE 请注意此功能一旦写入后无法再复写!即使用 IMEI 工具亦如此. 需要請 TAM 提供 patch 方能使用 將 IMEI 值寫入 EFUSE 区域,发生写错的情形下时分以下两种情形: (1) 还没有开始写 efuse 还可以复写 (2) 写 efuse 写到一半错误了,就没法复写了
+参考FAQ: FAQ106019
+### 问题: [andorid 4.4]是否支持MOV格式的视频？
+解决方案: MOV格式,是美国Apple公司开发的一种视频格式,默认的播放器是苹果的QuickTimePlayer.在所有视频格式当中,也许MOV格式是最不知名的.MOV,是MOVIE的简写,具有较高的压缩比率和较完美的视频清晰度等特点,但是其最大的特点还是跨平台性,即不仅能支持MacOS,同样也能支持Windows系列,还具有存储空间要求小的技术特点,而采用了有损压缩方式的MOV格式文件,画面效果较AVI格式要稍微好一些.MOV 格式的视频目前我们平台不支持.
+参考FAQ: FAQ61100
+### 问题: Android8.1含有GMS的Launcher中应用图标行数和列数如何调整？
+解决方案: 在Android8.1版本中,Launcher预置了不同分辨率的Device Profiles[详见/packages/apps/Launcher3/res/xml/device_profiles],Launcher会根据设备参数找到合适的device profile, 若第三方定制应用的行数和列数,Launcher通过applyPartnerDeviceProfileOverrides加载第三方的定制参数. 预装了GMS应用的系统中GmsSampleIntegration布局参数会更新Launcher中相关布局参数.其中GmsSampleIntegration\res\values\grid.xml中grid_aa_short_edge_count和grid_aa_long_edge_count会更新布局参数.
+参考FAQ: FAQ106013
+### 问题: 如显示android中的所有线程？
+解决方案: busybox ps -T
+参考FAQ: FAQ105333
+### 问题: [android 4.4]在什么情况下，视频播放器中的上一个/下一个按钮是灰化？
+解决方案: 如果使用自带的视频播放器进行播放视频,打开视频播放器,当某一文件夹下面有两个或者两个以上的视频时,播放控制按钮中的上一个/下一个按钮是使能的,即可以进行上一个/下一个视频切换,只有当视频文件夹下面仅有一个视频文件时,此时视频播放器控制按钮中的上一个/下一个播放按钮才是灰化的.
+参考FAQ: FAQ61102
+### 问题: 2713上dcdcwrf如何打开？
+解决方案: 在uboot路径下,ldo_sleep文件中,将 BIT_DCDC_WRF_XTL0_EN打开. 除了以上修改,由于某种历史原因,2713与后续adie芯片控制方法有些不同. dcdc_wrf打开需要通过adi接口配置两个bit: 0x40038810[13]=0 0x40038814[13]=1 在ldo_sleep.c文件中修改如下: BIT_DCDC_WRF_PD_RTCCLR //BIT_DCDC_WRF_PD_RTCSET
+参考FAQ: FAQ61577
+### 问题: c语言工厂模式，msg2238 TP测试，eng版本可以用，usr版本不能用，正常开机TP都是可以用的。
+解决方案: 驱动中将static DEVICE_ATTR(header, SYSFS_AUTHORITY, 改成static DEVICE_ATTR(header, S_IRUGO | S_IWUSR就可以了.SYSFS_AUTHORITY是驱动定义的权限0777
+参考FAQ: FAQ61496
+### 问题: 将ap/cp 所有内部PLL source切换到clk26m_sine0，硬件断开CLK26M_SINE1,软件怎样修改？
+解决方案: 1、chipram 下 sp7731gea文件中,将以下语句注释掉 #define TDPLL_SELECT_SWITCH #define WPLL_SELECT_SWITCH 2、uboot下 ldo_sleep文件中,将以下语句注释掉 BIT_MPLL_REF_SEL BIT_DPLL_REF_SEL BIT_CPLL_REF_SEL BIT_WIFIPLL1_REF_SEL BIT_WIFIPLL2_REF_SEL
+参考FAQ: FAQ61497
+### 问题: 怎样打开DCDC WRF电压，并且休眠时关闭？
+解决方案: 在uboot路径下,ldo_sleep文件中,将 BIT_DCDC_WRF_XTL0_EN和BIT_SLP_DCDCWRF_PD_EN打开
+参考FAQ: FAQ61498
+### 问题: 如何调节当前应用的亮度而不影响系统亮度？
+解决方案: int  brightness = 100;   //要设置的亮度值.范围0---255
+Window window = getWindow(); WindowManager.LayoutParams lp = window.getAttributes(); if (brightness == -1) {
+    lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+} else {
+    lp.screenBrightness = (brightness <= 0 ? 1 : brightness) / 255f;  ///这里范围为0--1
+}
+window.setAttributes(lp);
+参考FAQ: FAQ61541
+### 问题: 为什么开启Talkback功能后不能正常听到语音声音反馈
+解决方案: TalkBack为google应用,可以提供为盲人服务的语音功能. 在设置 ＞ 辅助功能> 文字转语音(TTS)输出 ＞ Pico TTS 点击右手旁图示 > 语言 设定若是为未知语言,或者不被Pico TTS支持的语言,则只能发出dot异常提示音,无法听到正常语音反馈. 故开启TalkBack功能后,需确认Pico TTS语言是否已有设定支持语言,才可正常发出手点击画面文字及输入字母声音
+参考FAQ: FAQ61635
+### 问题: 什么是h.264中的IDR帧
+解决方案: 与I帧的不同是, 在IDR帧之后的所有帧, 都不能引用任何IDR帧之前帧的内容, 因此可以确保random seek与立即刷新画面, 播放器永远可以从一个IDR帧开始正常播放. 如果只有单纯的I帧, 因为有可能参考到更之前的I帧, 导致解码资讯遗漏, 需要等到重新算一个新的编解码序列才恢复正常. 最后, IDR帧一定是一个I帧, 但I帧不一定是一个IDR帧.
+参考FAQ: FAQ61648
+### 问题: TS码流中的Null Packet意义与安卓TS解析判断
+解决方案: TS码流中的Null Packet基本上就是填充射频频宽的无用Packet. 维持streaming media 的特性以及维持RF modulation的constant bit rate. 在Android frameworks中, 解析TS时会设定一个最大的判断量, 每188 byte TS packet会累计1, 当超出这个判断量, 还是没有看到视频流或音频流, 就会被认为此TS片源是没有视频会音频的. 但解析时会连同Null Packet都计算进去, 理论上, 应该滤掉此类的无用packet, 不予以解析与计算.
+参考FAQ: FAQ62057
+### 问题: device tree (sprd-scx35_sp7731gea.dts）中地址如何得到
+解决方案: In Android L d_eic_gpio: gpio@f5200000{ compatible = "sprd,d-eic-gpio"; reg = <0Xf5200000 0x1000>; gpio-controller; interrupt-controller; #interrupt-cells = <2>; #gpio-cells = <2>; gpiobase = <288>; ngpios = <16>; interrupts = <0 37 0x0>; }; 在android L中,f5200000是虚拟地址在io-sc8830.c文件中建立映射关系,在__hardware-sc8830.h文件中定义,即 SPRD_GPIO_BASE = f5200000.
+参考FAQ: FAQ66709
+### 问题: 2713上dcdcwrf如何打开？
+解决方案: 在uboot路径下,ldo_sleep文件中,将 BIT_DCDC_WRF_XTL0_EN打开. 除了以上修改,由于某种历史原因,2713与后续adie芯片控制方法有些不同. dcdc_wrf打开需要通过adi接口配置两个bit: 0x40038810[13]=0 0x40038814[13]=1 在ldo_sleep.c文件中修改如下: BIT_DCDC_WRF_PD_RTCCLR //BIT_DCDC_WRF_PD_RTCSET
+参考FAQ: FAQ66703
+### 问题: 怎样打开DCDC WRF电压？
+解决方案: 在uboot路径下,ldo_sleep文件中,将 BIT_DCDC_WRF_XTL0_EN和BIT_SLP_DCDCWRF_PD_EN打开
+参考FAQ: FAQ66706
+### 问题: [SC7731]平台是否可以做PIP/VIV功能?
+解决方案: 目前平台并不支持 前后摄像头 同时打开的功能,实现不了 PIP/VIV功能.
+参考FAQ: FAQ62478
+### 问题: 如何修改虚拟按键振感？
+解决方案: 修改frameworks/base/core/res/res/values/config.xml文件中如下数组: <integer-array name="config_virtualKeyVibePattern"> <item>0</item> sleep时间 <item>10</item> 振动时间 <item>20</item> sleep时间 <item>30</item> 振动时间 </integer-array> 此数组为虚拟按键的振动模式,奇数位置表示暂停时间,偶数位置表示振动时间,单位为 ms,模式为off/on/off/on.
+参考FAQ: FAQ65941
+### 问题: 开机启动后，会不知原因自动开始下载语音数据包，该如何取消呢？
+解决方案: 安裝Google Text-to-speech Engine 或 手机所安装的AP需要Google Text-to-speech Engine, 则android 系统会不断尝试著去下载其它语言语音数据包, 直到语音数据包下载完成为止. 可试著以下步骤关闭: 1. 至设置 -> 语言和输入法 -> 文字转语音(TTS)输出 2. 点击 Google 文字转语音引擎 旁图示 3. 点击 安装语音数据包 4. 点击 目前正在下载的语言(如西班牙) 5. 点击 出现画面的"X" 图示,便可取消下载.
+参考FAQ: FAQ62639
+### 问题: 为何开机后，连接网络，主菜单中的Google的Play Movies &TV 及 Play Books这2个应用图标自动消失或是这2个应用被disabled无法使用呢？
+解决方案: GMS中部分应用有地域有使用限制,pPlay Movies &TV 及 Play Books目前不支持在中国大陆国内使用,所以联网后应用会自己屏蔽掉,此为正常现象.
+参考FAQ: FAQ62641
+### 问题: 为何烧录包含GMS包的pac档时会出现出现Failed:Download size is over its partition错误讯息?
+解决方案: 下载烧录包含GMS包的pac时,需确认 ReseachDownload 里Download Settings -> Main Page里放置System image folder里的 xml文件里头定义system 分区大小,需修改为 BoardConfig.mk 一样大小 比如: system image个人预设路径在C:\Users\KATRIN~1.TSE\AppData\Local\Temp\_DownloadFiles87473005\ (KATRIN~1.TSE 是个人登入帐户名称,可在C:\Users\　找到个人自已帐户资料夹) 可找到SC77XX.xml 文件 在SC77XX.xml 可看到<Partition id="system" size="1000"/> 需确认里头的值与BoardConfig.mk 所设定的值是一致的.
+参考FAQ: FAQ62646
+### 问题: 为何使用一些第三方文件管理器(Ex.ES档案管理器)点选某张照片，选择相簿(Google Photos)打开后，按下方编辑按钮却是无反应，不能进行编辑功能呢？
+解决方案: 因为Google Photos只接受图片以uri(比如:content://media/external/images/medis/xxxx)方式传送过来的intent,才允许编辑.Google Photos无法对文件路径方式传送的intent(比如:file:///storage/internalsd/DCIM/XXXX)提供图片编辑功能.此为Google Photos原生设计.
+参考FAQ: FAQ62789
+### 问题: 录制视频在手机上播放正常，但在电脑上却无法播放
+解决方案: 若发生展讯平台录制的视频, 在电脑上无法播放的情形时, 1. 有时是因为电脑上所安装的软体设定问题, 需要切换尝试. 2. 有时是电脑没有安装上对应的解码包, 如目前普遍使用的K-Lite Codec Pack.
+参考FAQ: FAQ62920
+### 问题: 为何从Google play商店成功下载安装应用后,点击此第三方应用却出现报错无法使用的状况？
+解决方案: 分析报错Log,Log中若看到"GooglePlayServices not available due to error 2"此错误讯息,此错误为安装的Google play services版本较旧,致此第三方软件无法正常执行,可至Google play商店将Google play services更新版本后,便可正常使用.
+参考FAQ: FAQ62972
+### 问题: [andorid 4.4]如何把“图库”应用和“视频播放器”应用的名称分别修改为“照片”和“视频”？
+解决方案: 这两个名称都是在packages\apps\Gallery2\res\目录下面,不同的语言对应于不同的values文件夹,用户可以在简体中文对应的strings.xml中,搜索关键字"图库"或者"视频播放器",根据自己的需要在对应的字符串ID中做对应的修改. 例如 简体中文: packages\apps\Gallery2\res\values-zh-rCN\strings.xml 英文: packages\apps\Gallery2\res\values\strings.xml
+参考FAQ: FAQ62926
+### 问题: 浏览器访问WIKI百科ANR
+解决方案: Petrus_Christus_-_Portrait_of_a_Young_Woman_-_Google_Art_Project.jpg这是一张30M的图片,尺寸7603 X 9902,打开这张图片需要分配巨量内存, Skia显示图片需要分配内存,由于内存不足,连续LMK大量应用, 而在LMK应用期间,此时操作按键就导致了超时. PC上用Chrome浏览器打开, 浏览器现象直接挂了,原因还是内存不足.
+参考FAQ: FAQ63226
+### 问题: Gmail内容总是显示在左边半个屏幕
+解决方案: Android WebView原生设定文本显示宽度是400,需要加大,具体合适的数值取决于屏幕大小. 请修改 platform/external/chromium_org/third_party/WebKit/Source/core/platform/Widget.cpp b/Source/core/platform/Widget.cpp - , m_textWrapWidth(400) - , m_orginalWidth(400) 改成 + , m_textWrapWidth(1000) + , m_orginalWidth(1000) 如果客户是大屏幕PAD,这个值还可以再增加.
+参考FAQ: FAQ63227
+### 问题: 浏览器去除记住表单数据以及点击清除表单数据功能无效
+解决方案: 现在网页保存数据都是用cookie, cache或脚本的方式,很少用到表单, 请访问天涯社区网站(m.tianya.cn),选择"登录",在输入用户名的界面支持记住表单数据, 请用这个网页做记住表单数据,清除表单数据的测试.
+参考FAQ: FAQ63228
+### 问题: 浏览器不显示当前下载页面的流量
+解决方案: 关于这个问题,有以下几点: 1. 此功能是O项,不应想CMCC 入库 2. 据我所知,目前市面上好像没有支持此功能的手机 3. 这个功能在处理JS的情况下,可能会引起不必要的错误信息,导致无法进行正常处理! 如果要修改,请修改Tab.java,恢复以下内容, // @Override // public void setReceivedSize(WebView view, long mLatestReceivedSize){ // if(Util.RECEIVE_SIZE_SUPPORT && Util.SUPPORT_CMCC){ // if (mInForeground) { // mWebViewController.setReceivedSize(view, mLatestReceivedSize); // } // } // } 但我们不建议添加此功能.
+参考FAQ: FAQ63229
+### 问题: 维基百科无法访问
+解决方案: 国内访问维基百科很多时候就是无法访问,这和国内对某些网站的限制有关,和www.google.com类似, 通过翻墙或VPN专线的方式,就可以正常访问这类网站了.
+参考FAQ: FAQ63303
+### 问题: 阿拉伯语下 gridview中两列的图片会有重叠,如何处理?
+解决方案: 可在xml下的gridview中添加android:layoutDirection="ltr"属性 (从左向右排列)
+参考FAQ: FAQ63583
+### 问题: 时钟设置里的样式设置在哪里生效
+解决方案: 进入时钟->闹钟->点击右上角菜单进入设置->样式,有指针和数字两个选项,选择之后要到闹钟界面,选择菜单项中设置上边的夜间模式, 即可看到不同的效果.
+参考FAQ: FAQ63631
+### 问题: 时钟设置中勾选自动显示家中时间，家中时间在哪里显示
+解决方案: 进入时钟->闹钟->设置,勾选自动显示家中时间,当闹钟设置中的家中时区和手机设置中日期和时间里的时区不一样时,添加数字时钟小部件到桌面,然后长按该小部件,会出现一个边框,拉大该边框,就可以看到有家的时间显示.
+参考FAQ: FAQ63632
+### 问题: USB绑定网络共享抓取log
+解决方案: USB绑定网络共享抓取log 1、安装USB驱动 2、打开arm log和dsp log等,确保log可以正常运行 3、选择USB绑定设置,卸载android USB Ethernet 网卡驱动 4、点击"扫描检测硬件驱动",刷新出手机端口,后重新安装驱动 5、安装完成后,重新配置端口即可
+参考FAQ: FAQ63763
+### 问题: 如何查看视频帧率？
+解决方案: 1.将手机拍摄的视频copy到电脑上,选中视频; 2.点击右键-》属性-》详细信息,帧速率所显示的数值,即为视频帧率.如下图红色方框中的帧速率,即为视频帧率.
+参考FAQ: FAQ63947,含图片
+### 问题: 如何修改Google开机向导中的默认语言?
+解决方案: 开机向导会根据SIM卡中的MCC值(SIM卡IMSI号中)去自动设置当前的语言/时区/国家,但设置时会先去判断 device\sprd\product_model\system.prop文件的persist.sys.language及persist.sys.country属性值. 比如:Google开机向导要默认语言为中文/中国 device\sprd\product_model\system.prop中添加 persist.sys.language=zh persist.sys.country=CN
+参考FAQ: FAQ63953
+### 问题: 插上国内SIM卡后，进入google开机向导里，在连接Wifi页面上，选择"跳过"后，为何显示“请稍候"画面很久后仍 无法跳到下个设定画面？
+解决方案: 在Google开机向导过程中,会不断尝试连接google服务器,因插上SIM上会有数据连接,但国内无法直接连接google服务器下,即使在连接wifi页面上,选择"跳过",还是会因不断尝试连接google服务器,而使得界面会有2分钟超时显示"请稍候"画面而无法跳到下个设定画面.此并非手机问题. 若插入可直接连接Google伺服器的SIM卡或关闭国内SIM卡数据连接,选择"跳过".就可快速至下个设定画面.
+参考FAQ: FAQ63954
+### 问题: 同一台手机，在测试完一轮CTS后，全部PASS，进行第二轮测试时，出现不少notExecuted项？
+解决方案: (1)从CTS提供的logcat中,我们可以看到大量的free_cache: 04-20 19:31:42.736 169 169 I installd: free_cache(395755711) avail 377618432 这里的log显示/data分区不足; (2)从CTS提供的host_log中,我们可以看到INSTALL_FAILED_INSUFFICIENT_STORAGE: 04-21 14:56:10 E/CtsTest: Failed to install CtsTestStubs.apk. Reason: INSTALL_FAILED_INSUFFICIENT_STORAGE 说明adb install失败,/data分区空闲不足,请增加/data分区,CTS测试过程中在/data生成大量的测试数据,必须超过2.1GB保证测试用例正常执行.
+参考FAQ: FAQ63983
+### 问题: 多媒体档案容器格式 VOB/MPG 是否支持?
+解决方案: 展讯平台目前不支持VOB/MPG此两种格式, 此两种格式为旧时代VCD/DVD内容的媒体格式, 现在已经没有被广泛使用.
+参考FAQ: FAQ64132
+### 问题: 为什么YouTube上无720p选项
+解决方案: YouTube会依据屏的解析度来决定要不要秀出720p,如果屏的解析度不到720p这个选项就不会出现, 本地可以修改DisplayInfo.java中的getMetricsWithSize函数做验证, 举例如下: 修改widthPixels与heightPixels outMetrics.noncompatWidthPixels = outMetrics.widthPixels = 720; outMetrics.noncompatHeightPixels = outMetrics.heightPixels = 1280; 但实际上不能做此修改,因为此修改也会影响到手机其它的UI呈现
+参考FAQ: FAQ64225
+### 问题: 怎么得到浏览器的每个网页的文字编码格式
+解决方案: Android4.4编码识别是在external\chromium_org\third_party\WebKit\Source\core\loader\TextResourceDecoder.cpp String TextResourceDecoder::decode(const char* data, size_t len)中, 会从CSS或xml中的charset字段中解析出编码, 如果没有解析出,再自动检测或从http的头部内容获取, 解析出编码后,调用 void TextResourceDecoder::setEncoding(const WTF::TextEncoding& encoding, EncodingSource source) 设置网页的文字编码格式,最后调用decode()做编码转换.
+参考FAQ: FAQ64304
+### 问题: 用系统默认的浏览器无法播放youtube上的视频，怎样解决？
+解决方案: 如果浏览器的UserAgent包含"Chrome"字串,服务器会识别为Chrome浏览器,从而收到的网页的脚本是使用YouTube的播放器,而没有使用平台的视频播放引擎.YouTube播放引擎和系统默认的浏览器有兼容性问题,导致视频播放问题. 建议客户修改UserAgent,去掉"Chrome"相关字段,这样播放视频就会使用平台的流媒体框架.
+参考FAQ: FAQ64306
+### 问题: 浏览器下载文件默认是内部T卡，如何改为外部？
+解决方案: 浏览器下载默认设置是保存到内部存储, 相关初始设置代码在\packages\apps\Browser\src\com\android\browser\provider\BrowserProvider2.java public void onCreate(SQLiteDatabase db)中, path = Environment.getInternalStoragePath() + "/Download"; 可以修改这句话,改为 path = Environment.getExternalStoragePath() + "/Download"; 在\packages\apps\Browser\src\com\android\browser\Controller.java public String getDownloadPath()中, 会判断如果无外部存储卡,下载路径设为内部.
+参考FAQ: FAQ64311
+### 问题: 浏览器保存百度链接，下载完成选择HTMLViewer无法打开，这是什么原因？
+解决方案: 百度,长按如图片、视频、贴吧等链接保存, 保存的网页文件中,没有html文本,只有script脚本,内容都是通过执行Javascript脚本显示的. 而HTMLViewer的功能是显示html文本, 在HTMLViewerActivity.java中,s.setJavaScriptEnabled(false); Javascript脚本开关默认是关闭的, 所以打开后会显示空白. 如果要执行Javascript脚本,可以选择用浏览器打开.
+参考FAQ: FAQ64314
+### 问题: CTS测试前，已将所有媒体文件全部拷贝到T卡，为什么还是报大量FAIL？
+解决方案: CTS测试CASE通过$EXTERNAL_STORAGE环境变量获取media文件路径,手机存储方案不同,这个路径也不同: (1)外置T卡主卡,$EXTERNAL_STORAGE=/storage/sdcard0,那么将媒体文件拷至T卡是正确的; (2)模拟卡主卡,$EXTERNAL_STORAGE=/storage/emulated/legacy,媒体文件拷至手机内部存储才是是正确的; 不管1还是2,通过拷贝到/mnt/sdcard总是正确的,/mnt/sdcard总是指向$EXTERNAL_STORAGE 或者通过android-cts-media-1.1提供的安装脚本copy_media.sh进行拷贝,这里面是直接push到/mnt/sdcard,不会出错.
+参考FAQ: FAQ64382
+### 问题: btmac.txt的默认用户和组
+解决方案: data/misc/bluedroid/btmac.txt的默认用户是system,默认组为system.
+参考FAQ: FAQ64658
+### 问题: 如何修改btmac.txt的权限
+解决方案: 在vendor/sprd/open-source/apps/wcnd/wcnd.c中 force_replace_file函数用户创建data/misc下的文件,将函数中 sprintf(buf, "chmod 664 %s", dst_file_path); 修改为 sprintf(buf, "chmod 660 %s", dst_file_path); 即可
+参考FAQ: FAQ64664
+### 问题: SC9830/SC7731 PCB 布线中VBAT为什么要星形走线？
+解决方案: VBAT不仅要给PMU DCDC供电,还要给PMU LDO供电,BB内部模拟部分/RF收发器供电是来自PMU LDO供电,对电源稳定性要求高,而DCDC在工作的时候要吸收大量电流产生严重的电源噪声及纹波,为了保证给PMU LDO供电的VBAT电源质量,VBAT就必须星型布线,在SC7731/SC9830平台中,给DCDC供电的是VBATDRV,所以VBATDRV的布线一定要非常注意
+参考FAQ: FAQ64667
+### 问题: Chrome浏览器如何预置书签
+解决方案: 可以在PartnerBookmarksProvider中的string.xml新增,例如新增一个Facebook当书签 <string-array name="bookmarks"> <item>Facebook</item> <item>https://www.facebook.com/</item> </string-array>
+参考FAQ: FAQ64790
+### 问题: 7731+3131是否可以支持WCDMA BAND4
+解决方案: 可以支持,没有限制
+参考FAQ: FAQ64815
+### 问题: SC7731 DCXO 旁边的NTC电阻可以省掉吗
+解决方案: 不能去掉,去掉后会影响手机在高低温情况下的使用性能.
+参考FAQ: FAQ64826
+### 问题: 展讯平台原理设计及PCB设计中有哪几个地方是考虑了EOS的影响？
+解决方案: CHARGE/VBAT/USB等.例如充电USB电路,接口裸露在外,充电时特别容易产生EOS,需重点防护.
+参考FAQ: FAQ74925
+### 问题: SR3592芯片有几个TX和RX通路？
+解决方案: SR3592有8个RX主通道,4个RX分集通道,12个TX通道.
+参考FAQ: FAQ64834
+### 问题: 测试GSM灵敏度中Rx Level指标的含义？
+解决方案: A: 首先在校准OK的前提下, Rx Level:手机上报给基站手机自身解调到的接收功率,是衡量PCB上是否有噪声的指标,也是进行辐射测试时重点关注的一个指标.Rx Level是由6bit的2进制表示,其范围为63到0. Rx Level与实际接收功率之间的换算公式为: Radiation Sensitivity= -110 + Rx Level.
+参考FAQ: FAQ64840
+### 问题: 测试GSM灵敏度中Rx Quality指标的含义？
+解决方案: A: Rx Quality表示手机在当前接收功率下的一个BER情况,由3bit 2进制数表示,共有8个等级.
+参考FAQ: FAQ64841
+### 问题: Mobile Tester的两种模式（WCDMA Cal Mode 与 WCDMA Cal Post Mode）的区别？
+解决方案: A:WCDMA Cal Mode 为校准模式,用于Tx/Rx的强制收发操作,主要用于手动调试,在此模式下UE无需和综测仪之间建立连接; WCDMA Cal Post Mode 为信令模式,用于UE和综测仪之间建立连接操作.
+参考FAQ: FAQ64842
+### 问题: 如何通过代码重启手机
+解决方案: 1.前提条件:app需要具有system权限,也即sharedUserId="android.uid.system" 2.导入属性包:import android.os.SystemProperties; 3.设置重启属性:SystemProperties.set("sys.powerctl", "reboot"); 即可立即快速完成手机重启,类似于adb reboot效果
+参考FAQ: FAQ65014
+### 问题: USB OTG管脚的作用
+解决方案: CPU检测ID管脚状态的高低,从而判断OTG时是主设备还是从设备.ID脚为低时,是master,为高时是slave.
+参考FAQ: FAQ65027
+### 问题: USB眼图是怎么形成的
+解决方案: USB眼图是利用串联的信号流中,每三个逻辑单元,即3个bit位为一个图片,不断的重复堆叠而成.
+参考FAQ: FAQ65029
+### 问题: GPS指标有哪些测试项
+解决方案: 1、TTFF(首次定位时间);2灵敏度,包括捕获灵敏度和跟踪灵敏度;3、定位精确度;4、C/N0测试(载噪比测试);5、3D搜索与定位
+参考FAQ: FAQ65030
+### 问题: 展讯32K 晶振高低温频率偏差计算公式
+解决方案: f_tem=B[(T-Ti)∧2].B:二次温度系数;T:任意温度;Ti:转折点温度.
+参考FAQ: FAQ65031
+### 问题: SC7715联通WCDMA的SIM卡接到哪个SIM接口？
+解决方案: 默认是SIM0,软件可以配置为SIM1
+参考FAQ: FAQ65061
+### 问题: SC7715的EXTRSTN信号（G31）是否要上拉？
+解决方案: 内部上拉到VBAT, 不需要再加上拉.
+参考FAQ: FAQ65064
+### 问题: SC7715管脚ADCI如果不用，如何处理？
+解决方案: ADCI不用的管脚可以悬空
+参考FAQ: FAQ65066
+### 问题: SC7715 JTAG接口是否一定要引出?
+解决方案: 正式量产的时候可以不引出,调试阶段建议引出.
+参考FAQ: FAQ65067
+### 问题: Google 语音搜索是否支持A2DP蓝牙耳机语音呼叫与识别？
+解决方案: 目前Google 语音搜索是(Voice Search)原生设计并不支持识别A2DP蓝牙耳机发出的任何语音,也就是说不能透过A2DP蓝牙耳机来调起Google 语音搜索应用及语音识别功能.
+参考FAQ: FAQ65081
+### 问题: 展讯7731平台要支持大于1A的充电电流，如何设计
+解决方案: 要加一块独立的IC,这个IC要带过放电池的激活功能
+参考FAQ: FAQ65092
+### 问题: Q:SC7731对32K晶体的占空比要求是多少？
+解决方案: A:占空比要求是35%-65%
+参考FAQ: FAQ65098
+### 问题: Q:耳机插入和拔出时的POP音是怎么产生的？
+解决方案: A:是由于耳机插入检测信号上的上拉电压给左右声道上并的电容充电导致.
+参考FAQ: FAQ65099
+### 问题: SC7731支持几路PWM信号输出？
+解决方案: SC7731支持4路PWM.
+参考FAQ: FAQ65100
+### 问题: adb shell screenrecord 录制的视频是花/绿屏?
+解决方案: 在Android 4.4平台上, 因为对于屏幕大小有不同定制化的修改. 导致单纯只下adb shell screenrecord的指令, 使用默认的屏幕大小, 宽或高的信息可能不被16整除. 在宽高信息不为16的倍数之下, 可能发生录制下来的视频出现绿屏或花屏现象. 只要透过该指令后面多下达--size的参数, 宽高信息指定为最接近的16倍数数值, 就不会有花屏的现象. 例如: 屏幕的默认分辨率为540x960, 因为540无法被16整除. 可以透过 --size 更改为528x960 或是 544x960, 让截屏分辨率的宽高信息为16的倍数. adb shell screenrecord --size 528x960 adb shell screenrecord --size 544x960
+参考FAQ: FAQ65256
+### 问题: [SC7715]如何处理切换语言后，来电界面一些语言显示仍未切换之前的语言
+解决方案: 切换语言之后,来电界面的上Speaker,send sms,mute三个选项仍为切换之前的语言,请做以下修改: 在相应的控件布局中加入属性android:saveEnabled="false"即可.
+参考FAQ: FAQ82528
+### 问题: 音量调节框(volumeDialog)如何打开提示字符串
+解决方案: 些情况,希望音量调节界面如下图一样,有提示字符串,如红色标记出来部分. 而默认版本是没有的. 按如下方法可以打开字符串提示. 文件:VolumeDialogComponent.java (frameworks\base\packages\systemui\src\com\android\systemui\volume): 函数:private void applyConfiguration() { 修改前代码: mDialog.setShowHeaders(false); 修改后代码: mDialog.setShowHeaders(true); 注意事项: 只适合android6.0版本.
+参考FAQ: FAQ92214
+### 问题: 如何查看应用Apk的UID？
+解决方案: 可以在设备的目录下: cat /data/system/packages.list packages.list: 这是一个文本文件,包含了包名、用户id(UID)、flag和数据目录 在Log分析或者调试时使用.
+参考FAQ: FAQ66039
+### 问题: 解释CTS测试报告中的ROOT PROCESS
+解决方案: refnotify:手机PAC包自动下载功能需要通过__reboot系统调用完成 nvitemd:采用NAND存储方案的AP写NV要通过ioctl系统调用完成,ioctl在kernel中要检查nvitemd进程是否有这个CAP_SYS_RESOURCE; sprd_res_monito:user版本缺省关闭,随着slog打开一起打开 slog:user版本缺省关闭,*#*383781#*#*工程模式打开slog后,slog进程存在; healthd:android原生root进程; engpc:user版本,通过工程模式"*#*#83781#*#*"进入debug & log页面,在log settings\pc log中engpc service缺省是关闭的;
+参考FAQ: FAQ65474
+### 问题: 为什么登陆POP3账户没有搜索菜单，登陆IMAP账户有搜索菜单
+解决方案: Email搜索功能是通过向服务器发送命令搜索邮件,POP3协议不支持搜索,IMAP协议可以使用UID SEARCH/SEARH命令搜索. 因此在初始化选项菜单时,会根据登陆账户的类型(IMAP/POP3)显示或隐藏搜索选项菜单.
+参考FAQ: FAQ67549
+### 问题: CTS用例 android.provider.cts.Settings_SecureTest testUnknownSourcesOffByDefault测试项如何通过？
+解决方案: 需要注意: 设置 -> 安全 -> "允许安装未知来源"选项,不能勾选
+参考FAQ: FAQ90820
+### 问题: 5.1如何测试关机闹钟
+解决方案: 5.1关机闹钟的实现是提前2分钟开机的. 在测试关机闹钟的时候,请设置闹钟时间距离当前时间至少相差3分钟以上. 因为关机闹钟的响铃,实际上还需要启动安卓系统的,这个过程是需要时间的.
+参考FAQ: FAQ65529

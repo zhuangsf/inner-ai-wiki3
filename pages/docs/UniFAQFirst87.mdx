@@ -1,0 +1,329 @@
+### 问题: 工程模式默认密码
+解决方案: 客户可以修改工程模式密码,如果不一样,需要找软件工程师确认 以下为展锐默认的工程模式密码, 1.智能机的工程模式密码 *#*#83781#*#* 2.GPS的工程模式SGPS *#*#2266#*#* 3.功能机的工程模式密码 #*8378#1#
+参考FAQ: FAQ202172883
+### 问题: 平台的Camera MIPI Lane数多于需要的lane数该怎么接？
+解决方案: 平台的camera MIPI,一般CS0有两组CLK对应的是每组CLK有2Lane data,如果只需要1lane的data时候参考接法如下(如下2组可以任选一组): CS0_CLKP0/CLKN0这一组只能接DP0/DN0这一条lane,不能接DP1/DN1这一条; CS0_CLKP1/CLKN1这一组只能接DP2/DN2这一条lane,不能接DP3/DN3这一条; CS1这组MIPI有4条lane,如果4组不需要全部使用参考接法如下: CS1_CLKP/CLKN这一组只能从DP0/DN0、DP1/DN1、DP2/DN2、DP3/DN3这个按照顺序选择,不能跳过前面的lane选择后面的lane. 针对每个平台的具体设计细节,可以参考专门的 camera design guide 文档.
+参考FAQ: FAQ202172884
+### 问题: LTE最大功率如何修改，能否修改为小数
+解决方案: 1、LTE的最大功率可在NV中进行微调修改,需要修改地方包括PA 切换点和APT电压: 2、最大功率值的修改只能为整数,不能修改为小数(如0x235),且APT_used的值应对应修改,不然会导致相对/绝对功率控制容限测试fail.
+参考FAQ: FAQ202172885,含图片
+### 问题: SC2721G的CC1和CC2用作ADC功能有哪些注意事项
+解决方案: SC2721G的CC1和CC2可以用作ADC功能,但是需要注意如下: 1.如果使用了ADC功能,就不能用于TYPE C座子识别正反插,也就是说使用了ADC功能,就不能使用Type C座子了; 2.软件上要把CC功能关闭,并且把CC管脚上的上拉电流源关闭,否则会有4V左右的电压倒流出来; 3.CC管脚有个5.1K_10%精度的下拉电阻,如果输入的电压上有上拉电阻注意分压比例; 4.该ADC也是有区分大小量程,软件上可以进行合理的配置.
+参考FAQ: FAQ202172886
+### 问题: WIFI 5G的2路内置、外置的原理图设计
+解决方案: 展锐的UMW2651、UWE5623支持2路的WIFI 5G设计,即WIFI 5G MIMO. 1.WIFI 5G原理图设计 a.2路只能同时是内置PA/LNA,或同时是外置PA/LNA b.不能一路为内置PA/LNA,另一路为外置PA/LNA 如图 c.P3和T8为内置PA/LNA的管脚,组成内置组 d.T3/U3/N1和T10/U10/T6为外置的PA/LNA管脚,组成外置组
+参考FAQ: FAQ202172887,含图片
+### 问题: LTE B66校准提示无NV spec
+解决方案: LTE B66校准fail,错误提示NV文件中无AGC SPEC,需要将B66校准的AGC SPEC填入NV. NV2.0具体位置如下,数据可参考B4: NV 1.0修改位置如下:
+参考FAQ: FAQ202172892,含图片
+### 问题: 如何解决FDR夜景模式下人脸肤色苍白问题？
+解决方案: 分析:人脸肤色惨白主要是饱和度低导致的,需要增加肤色块的饱和度; 解决方法: 步骤1:首先查看问题图片EXIF的bv,然后根据该bv,对应smart模块里的cmc,gamma的档位 (假设问题图片的bv为300,smart里对应matrix0,gamma1); 步骤2:选择A光,重新标定CMC,标定完成后,选择第2个色块(light skin块),加大该肤色的饱和度(由0改为1),点save ;如下图红框所示; 注:(1).第1个色块为dark skin块;若dark skin人脸惨白,调试步骤如上; (2)FDR模式下的cmc与nomal是分离的,互不影响;
+参考FAQ: FAQ202172893,含图片
+### 问题: 高动态范围场景 暗处如何提亮
+解决方案: 问题图片:暗处过暗,需提亮 思路:可以利用ATM4gamma模块来提亮,ATM4gamma根据直方图动态调试亮度及对比度,起到改善场景下过曝、欠曝、暗物问题 方法: 1将问题图片拖到ispTool工具里 来查看问题图片的EXIF,可得到bv,evd值分别为1261,4048,如下图所示: 2.点击ATM4GAMMA模块,先从问题图片bv1261,evd4048找到BASE里对应的档位靠近bv5, evd1; 3. POINT_TABLE里找到bv5, evd1 4.调试方法:leftThd由0改为10,PT由25改为30,由下图所示; 方法解析:调整区间的取值范围[PT-left Thd, PT+right Thd],Bin点往pt点进行调整; 左边界:30-10=20,[20,30]-->30 暗处提亮 右边界:30+0=30,[30,30]->30 亮处未压暗 5.优化后图片暗处会被提亮;
+参考FAQ: FAQ202172894,含图片
+### 问题: 逆光人脸亮度的冲突场景，如何调试
+解决方案: 分析:逆光冲突场景:在同一BV下,图1人脸需提亮,图2人脸需压暗,若仅调试Face AE 的up offset无法解决,此时可通过ABL来解决; ABL可以在FaceAE的基础上,再次提亮人脸,根据不同的逆光偏移offset,输出不同的AE target. 答案:若BV为600,对于图2可稍稍降低Face AE 的up offset来压暗,对于有冲突的图1(同一BV600),不能再提高up offset,此时可增大abl face offset的值来提高人脸亮度. 注:下图为调试界面,需要调试的参数已经框红.
+参考FAQ: FAQ202172895,含图片
+### 问题: IRR校准幅度失败
+解决方案: Simba校准,LTE报IRR校准幅度失败,请检查射频通路. IRR校准目的是为了解决因mixer/LO/VCO等各种trace/inductor的差异带来的IQ幅度相位不平衡问题而导致的镜像; IRR较差时会影响SNR,与吞吐量密切相关,尤其是对于具有高阶调制的配置. 若项目不支持CA的话, IRR可以不用校准.NV或SIMBA中都可以关闭IRR校准功能. ①在NV上按照如下路径修改为0x0: LTE_optimize\LTE_download_dsp_compensation_cc0_optimize\LTE_Flag_config\reserved[3]=0x0 ②SIMBA关闭IRR:
+参考FAQ: FAQ202172896,含图片
+### 问题: LTE Band19校准异常
+解决方案: 当项目LTE只包含B19,不包含B5(B19是B5子集)时,simba不能正常校准B19或用pandora强发B19时,软件会assert. CP0需要升级版本:4G_MODEM_20A_W21.15.3或之后版本,该版本已经合入B19 only修改(支持单独校准band19). 另外如下CP0版本也已经合入修改: FM_BASE_19A_W20.30.5 FM_BASE_19A_W20.20.4_P1 FM_BASE_19C_W20.42.4 FM_BASE_18A_RLS2_SL8563_W20.42.3 FM_BASE_18B_W20.42.3或W20.42.5 FM_BASE_18A_W20.46.2 FM_BASE_19A_W20.47.5 FM_BASE_18B_ITELQ_W20.48.3 FM_BASE_18A_ITELQ_W20.48.3 FM_BASE_18B_ITELQ_W21.01.5
+参考FAQ: FAQ202172898
+### 问题: 安卓系统功耗测试时候，当系统进入深度睡眠后30min后待机底电流为什么会增大？
+解决方案: 安卓系统功耗测试时候,当系统进入深度睡眠后30min后待机底电流为什么会增大?测试时候当手机处于移动状态为什么待机底电流就不会增大? android原生逻辑,在进doze的过程中会启动sensorhub (大概在灭屏待机30min之后)用于检查手机是否在移动,如果手机在移动就不会进入doze.目的是为了避免手机在处于使用过程中进入doze,影响用户的体验.由于doze功能的打开,所以在静态测试30分钟后,sensor hub的开启检测导致待机的底电流会增加,这个是正常的现象. DCC文档中心 高级搜索--文档名称 关键字(因为不同的安卓版本文档名字有差异) "省电管理介绍及配置指" 这篇文档有详细的针对doze功能的描述.
+参考FAQ: FAQ202172900
+### 问题: UMS9117-L吞吐量
+解决方案: UMS9117-L spec中的modem features Support TDD/FDD LTE Category 1 i.e., DL 10 Mbps/UL 5 Mbps UMS9117 spec中的modem features Support TDD/FDD LTE Category 4 i.e., DL 150 Mbps/UL 50 Mbps
+参考FAQ: FAQ202172901
+### 问题: 什么时候会用到内部32K RC振荡电路
+解决方案: 32K时钟方案有2种,一种是带外置32K晶体方案,一种是省32K晶体方案. 32Khz时钟有以下3种方式提供: 1、外置32K晶体 2、26Mhz时钟分配出来32Khz 3、内部32K RC振荡器 32K less方案: 1、当上电第一次开机,32Khz时钟先是内部RC振荡提供,待26M晶体起振后由26MHz分频出来32Khz. 2、软关机后,VDDDCXO不掉电,26M时钟常在,由26Mhz分配出来32Khz维持RTC模块工作. 2、无主电池情况下,RTC时钟源切回内部RC振荡电路,直到VBATBK电压下降至1.1V左右,RTC停振,降至0.6V左右,RTC寄存器复位清零.
+参考FAQ: FAQ202172903
+### 问题: 咨询skyhook的相关问题
+解决方案: 1、如何确认skyhook已经生效? ----调用skyhook的接口,是会有返回值的,skyhook生效与否可以看相关调用接口返回值的打印确认,如果是我们发布的UMS9117的Mocor_20A版本,您可以接收log,然后搜索关键字SKY查看相关skyhook的打印信息. 2、当前的skyhook方案是Skyhook公司正式授权的吗? ---skyhook方案作为第三方支持的功能,应该会有商务上的合作问题,存在收费的问题,具体您可以通过联系我们的CPM得到负责商务同事的联系方式,然后再咨询我们的商务同事. 3、改skyhoo方案能否移植到不带GPS的分支上使用? ----skyhook方案是可以放到不带GPS功能的分支上的,应该有三种定位方式,wifi,gps和小区信息. 当没有wifi和gps的情况下,会使用小区信息来定位.
+参考FAQ: FAQ202172905
+### 问题: 如何去掉前摄ZOOM变焦缩放效果？
+解决方案: 可以把前摄的放大倍数改成1.这样前摄就不会有放大效果. 找到HAL层SprdCamera3Setting.cpp(2V6)文件 initStaticMetadata 这个函数 s_setting[cameraId].scalerInfo.max_digital_zoom = MAX_DIGITAL_ZOOM_RATIO; 改成 if(cameraId==1){ s_setting[cameraId].scalerInfo.max_digital_zoom = 1; else { s_setting[cameraId].scalerInfo.max_digital_zoom = MAX_DIGITAL_ZOOM_RATIO; }
+参考FAQ: FAQ202172909
+### 问题: 平台DreamCamera2的API接口使用
+解决方案: 在安卓 8.1 上的录像模式和全景模式使用的是 API 1,在安卓9、10、11之后的所有模式都是用的 API2
+参考FAQ: FAQ202172912
+### 问题: 拔插电池且插入充电器上电系统会自动重启一次
+解决方案: 这个是软件主动引入的重启机制,目的是为了得到准确的POCV参数,即电池的初始电量参 数.POCV的采样过程是在上电时序的最前端,这个时刻系统大部分电源都未上电,电池耗电极低, 所以POCV采样的电池电压数据最为精准.但是有些极端情况,会导致POCV参数有偏差,如下: 1、拔插电池后,不插充电器按power key 走开机流程,同时立马插入充电器.此时会因为插入充电器造成 POCV 电压不准 2、没有插电池,插充电器走开机流程,同时立马插入电池,此时也会因为这种操作导致POCV电压不准; 因此软件上针对上述情况在插拔电池且插充电器第一次开机时会重走一次开机流程,这样POCV会重新来一次, 以获得更精准的数据.
+参考FAQ: FAQ202172916
+### 问题: DreamCamera2 app层能否修改录像角度？
+解决方案: DreamCamera2 app 层无法修改录像角度,DreamCamera中录像角度由camera hal的camera sensor出图角度决定.camera sensor出图角度决定了拍照预览、录像预览等角度,不可随意修改.
+参考FAQ: FAQ202172917
+### 问题: NV如何补偿WCDMA的 RSCP 值
+解决方案: 以NV2.0 WCDMA B1 为例,NV中RSCP补偿位置如下图,按温度分段补偿,step为1/8dBm,负数取补码,例如补偿2dB,则comp[]值为16,即0x10:
+参考FAQ: FAQ202172921,含图片
+### 问题: OTA升级时升级fixnv
+解决方案: 需要修改vendor/sprd/tools/ota/releasetools.py: 大概475行定义了default_updaters_config 将其下的 M,/fixnv,nvitem.bin,/fixnv1,/fixnv2,,default, 修改为 M,/fixnv,nvitem.bin,/fixnv1,/fixnv2,,1, 即default修改为1
+参考FAQ: FAQ202172922
+### 问题: UMP510G/G5是否支持PD3.0 pps协议
+解决方案: UMP510G/G5支持PD3.0 pps协议
+参考FAQ: FAQ202172923
+### 问题: 展讯平台DreamCamera2各模式的前后摄支持情况
+解决方案: 只支持后摄的:全景,大光圈,专业,连拍,延时,滤镜,慢录,二维码,夜景拍照,夜景录像
+
+只支持前摄的:间隔拍照
+
+前后摄都支持的:人像,拍照,视频,有声照片,超清拍照
+参考FAQ: FAQ202172924
+### 问题: 客观调试awb模块，debug图片的落点都落在灰区，如何解决
+解决方案: 问题图片: 问题分析:从图可以看出,大部分点都落在灰区,包括绿植,说明AWB灰卡标定有问题. 答案:利用AWB golden模组重新拍各个光源下的灰卡RAW图进行标定,以下是重新标定后拍的图,从图中可见:绿植落在了绿区,落点恢复正常.
+参考FAQ: FAQ202172927,含图片
+### 问题: Camera的I2C数据传输时候SCL信号为什么会被拉低
+解决方案: Camera的I2C数据传输时候SCL信号为什么会被拉低? 如下图所示的区域有一段时间SCL被拉低. 这是因为I2C在数据传输时候如果是多位的连续数据传输(N＞2)时候只有在数据最终传输完成后才会有停止信号,在数据传输期间没有stop信号, 这时候由于软件的任务调度机制问题,i2c在处理完中断后会将CPU让出来,这个时候CPU在执行其他任务,i2c就会处于被hold的状态.因此一直保持SCL为低,一直到下一个数据的传输开始. 所以这种拉低是一种正常的行为,我们可以不用关心.具体可以参考如下的波形时序图:
+参考FAQ: FAQ202172934,含图片
+### 问题: wifi如何添加物联网设备
+解决方案: WiFi中有两个扫描二维码的功能,一个是wifi主界面的"添加网络",是将手机添加到wifi网络中;另一个是"添加设备"选项,是将物联网设备添加到wifi网络中 "添加设备"使用说明: 当手机连接到WiFixxx后,点击右侧的设置进入"网络详情"界面,进入"高级"选项,选择"添加设备"选项,会出现扫描二维码的界面,使用此功能扫描物联网设备上的二维码,即可将此物联网设备添加到手机此时连接的WiFi网络中
+参考FAQ: FAQ202172937
+### 问题: GSM APC 校准提升带内发射功率平坦度
+解决方案: GSM校准APC,带内平坦度因子是基于高功率区间做的补偿, 但有些前端放大器高功率输出和低功率输出带内平坦度因子是有所区别的. 另外,高功率输出时Factor VS POWER的步进较大,小功率输出步进较小,补偿factor的因子是会有所变化. 针对以上问题,Simba校准工具开放了开关,勾选后会利用多个功率区段去计算平坦度因子,能够让小功率输出各信道输出功率更加平坦. 开关即rescan选项,位置附图如下:
+参考FAQ: FAQ202172939,含图片
+### 问题: T117是否支持检察SIM卡配置？
+解决方案: T117平台当前不支持根据插入设备中的SIM卡检察是否加载了正确的配置(modem、IMS等).当前非客制化的此类相关配置仅能通过客户方面提CQ的方式找MMI侧以及底层同事确认.
+参考FAQ: FAQ202172943
+### 问题: 设备开机后会激活PDP然后去激活PDP，Android机器无此现象，原因是什么？
+解决方案: T117 功能机平台与智能机不同,PDP 激活是按需触发的,仅在用户发起附加业务请求、更新时间、进入浏览器应用发起上网、开始接收彩信等数据业务应用准备使用时才发起激活 PDP 操作,在业务处理完毕后发起去激活 PDP 操作. 第一次开机时,后台需要针对插入设备中的卡查询呼叫转移状态以及更新系统时间,因此会触发激活 PDP 操作,呼叫转移状态查询完毕并且系统时间更新完毕后,设备会发起去激活 PDP 操作释放数据链路.重启手机之后无数据相关业务操作,因此不发起激活 PDP 操作.
+参考FAQ: FAQ202172945
+### 问题: 上网与通话什么情况下可以并存？
+解决方案: 在网络支持的情况下,3/4G 网络是可以上网与通话并存的. 2G 情况下如果出发了通话或者 3/4G 网络下通话过程中回落到了2G,上网对应的数据连接会断开.
+参考FAQ: FAQ202172946
+### 问题: 是否有接口可以获取到SIM卡手机号？
+解决方案: 是否有接口可以获取到 SIM 卡手机号? T117平台可通过接口 MMIAPIPB_ReadMsisdnContact 获取 SIM 卡中存储的本机号码,当 SIM 卡中没有本机号码时,该接口返回 FALSE .
+参考FAQ: FAQ202172947
+### 问题: 在设置呼叫限制功能时未弹出密码输入框
+解决方案: T117 平台当前设计如此,做呼叫限制业务时,仅当运营商网络向手机终端索要密码时,手机会弹出密码输入框提示用户输入密码,网络不要求输入呼叫限制业务密码时,默认不弹出密码框.当前走UT的情况下不需要输入密码,如果走UT做呼叫限制业务失败需要回落做业务,并且网络要求输入密码,设备会弹出密码输入框用于输入密码.
+参考FAQ: FAQ202172950
+### 问题: 缺少IMS APN参数对VoLTE功能的影响
+解决方案: 缺少对应的 IMS APN 配置,终端可能无法驻上运营商 VoLTE 网络,导致终端无法发起 VoLTE 业务. 那么后续终端拨打电话和发短信的时候会自动切换到其他域(2/3G),请知. 相关问题: 针对贵司已经内置过IMS配置的运营商,贵司是否已经包含了所有这些运营商的APN参数呢? 我司提供的预置APN是我司平台经过海外测试验证的预置 APN,客户方面需要针对支持的运营商确认该运营商对应的预置 APN 的准确信息并核对,如核对后有差异则需要按照运营商提供的数据自行配置. 请问贵司会经常更新 APN 参数并预制吗? 我司预置 APN 仅在海外测试并有问题时,由海外测试方面提出问题并核对相关参数给研发方面更新,频率很低,并且预置 APN 相关参数仅 CPM 方面有权限 release 给客户.
+参考FAQ: FAQ202172952
+### 问题: T117平台是否有统计流量的接口
+解决方案: MMI 侧通过接口 ChangeFlowRate 统计数据业务使用的流量并存储至 NV (MMINV_PDP_GPRS_FLOW_RATE) 中,可通过搜索如下接口查看相关逻辑: 统计数据流量接口:ChangeFlowRate 获取已统计的数据流量接口:MMIAPIPDP_GetFlowrate 流量都是实时统计的么?以及统计的是否准确? 当前流量统计功能并非实时的,统计结果为每一次上网结束时使用流量的累加(包括彩信、更新时间等),属于当前SIM卡下使用的所有流量. 在上网过程中,如何取获取这个流量值(当前流量)? MMI 侧通过调用接口 MMIPDP_PsGetFlowRate 获取每次上网的当前流量,流量统计功能是在每次上网结束后通过调用接口 MMIPDP_PsGetFlowRate 获取本次上网的流量与之前 NV 中保存的上网流量累加统计设备上网使用的总流量.用户使用的流量是 total_recv + total_send 的结果.
+参考FAQ: FAQ202172954
+### 问题: 通过暗码设置呼叫限制
+解决方案: 通过暗码设置呼叫限制可参考如下说明: 禁止所有拨入、拨出电话: 开启:**330*网络密码# 关闭:##330*网络密码# 查询:*#330# 禁止所有拨出电话 开启:*33*网络密码# 关闭:#33*网络密码# 查询:*#33# 禁拨国际长途: 开启:*331*网络密码# 关闭:#331*网络密码# 查询:*#331# 禁止所有拨入电话: 开启:**35*网络密码#或**353*网络密码# 关闭:##35*网络密码#或##353*网络密码# 查询:*#35#或*#353# 国际漫游时禁止所有拨入 开启:**351*网络密码# 关闭:##351*网络密码#
+参考FAQ: FAQ202172955
+### 问题: [GSI] 刷入未签名的GSI，bootloader上锁状态下会导致设备不断重启
+解决方案: 1.[现象分析] Android 10.0及之后的版本上,若刷入未签名的GSI,上锁状态下会导致设备不断重启.此现象是因为avb会去校验system的公钥是否正确,上锁状态下若校验错误则无法开机. 2. [排查方式] 此场景发生在上锁状态下,在解锁状态下可以正常开机.为确定原因,需要进一步抓取串口log,定位到关键log,示例如下: init: [libfs_avb]Found unknown public key used to sign /system init: [libfs_avb]Unknown public key is not allowed reboot: Restarting system with command 'dm-verity device corrupted' 3. [解决方案] 针对此场景,下载已签名(signed)的GSI再进行调试,或者解锁设备后再烧入未签名的GSI.
+参考FAQ: FAQ202172957
+### 问题: 若device的中断信号输出是推挽模式，是否无需配置（或外加）上下拉？
+解决方案: OD门输出的中断大家都知道需要配置配置上下拉,以保证中断的稳定.那么推挽输出模式是否也需要配置上下拉?答案是需要. 原因: Device正常工作时推挽结构可以保证中断信号的稳定状态.但在device不工作时(off状态),中断pin脚一般情况下是高阻态,倘若此时没有外部上下拉设计,中断pin脚就非常容易出现不稳定,引起系统端(中断受理端)异常响应,发生故障. 推挽上下拉配置原则同OD门输出类型:若中断高有效则配置下拉,中断低有效则配置上拉. Note:不推荐使用off状态为下拉且中断低有效的设备.
+参考FAQ: FAQ202172961
+### 问题: MMI sensor校准
+解决方案: cmd由calib_cmd,sensor_type和flag组成,其中: calib_cmd enum calib_cmd { CALIB_EN, CALIB_CHECK_STATUS, CALIB_DATA_WRITE, CALIB_DATA_READ, CALIB_FLASH_WRITE, CALIB_FLASH_READ, }; sensor_type 1:acc 4:gryo 8:proximity flag 1:acc校准, gyro校准, proximity自动校准 5:proximity手动3cm校准 6:proximity手动5cm校准 各类sensor校准可参考文档:SensorHub各类型Sensor校准介绍V3.0.pdf
+参考FAQ: FAQ202172962
+### 问题: 温补功能ini配置
+解决方案: 温补参数在connectivity_calibration.ini文件section6, 配置说明如下:
+
+txpower_gain_mapping_table1  = 2, 2, 1, 1, 0, 0, 0, -1, -1, -2, -2 , ...
+
+1、支持温度范围-30～80℃,每10℃为一个控制字,例如:-30～-20℃,-20～-10℃,-10℃～0℃,依次类推;
+2、功率调整step是－0.5db,控制字每增加1,表示功率降低0.5db;
+3、table1～table14代表CH1～ch14信道.
+参考FAQ: FAQ202172964
+### 问题: 射频传导测试6.3.5.2_Power Control Relative Power Tolerance 测试Fail解决方法
+解决方案: 如遇到射频传导测试项6.3.5.2_Power Control Relative Power Tolerance Fail问题应先检查如下NV配置情况: APT used:H\M\L增益对应的APT功率个数是否与apt_voltage_array中配置的电压个数相同.需要注意不同功率对应的apt_voltage设置正确,同时修改后需重新校准. 具体修改点见下图:
+参考FAQ: FAQ202172971,含图片
+### 问题: DreamCamera2 app中，点击视频防抖后，预览画面放大是正常现象吗？
+解决方案: 答:是正常现象. 首先DreamCamera2 app中使用的视频防抖是eis(属于后处理防抖),为了补偿帧间的运动,要进行裁剪,所以预览画面会有一个放大的动作;其次,市面上所有使用eis进行防抖功能的camera app都会有此现象,ois(电子防抖)则不存在此现象,eis和ois的原理可网上自行了解.
+参考FAQ: FAQ202172973
+### 问题: CMW500信令模式测试2.4G WiFi 11N灵敏度问题
+解决方案: CMW500信令测试2.4G WiFi时需要设置平滑处理,设置位置Connection/HT Smoothing,需要将Not Recommended修改为Recommended
+参考FAQ: FAQ202172974
+### 问题: CMW500 3.5版本使用Simba测试注意事项
+解决方案: CMW500 3.5版本使用的是WIN XP系统,与win 7/10系统存在冲突,导致CMW500测试异常,建议升级CMW500版本到3.7,即可正常测试
+参考FAQ: FAQ202172975
+### 问题: UMS9230相关咨询（CA、HPUE等）
+解决方案: 1、UMS9230该平台支持CA吗? 》》》》UMS9230支持CA. 2、LTE CA能否配置和单BAND不同的tuner状态? 》》》》UMS9230不支持. 3、UMS9230支持HPUE吗? 》》》》UMS9230不支持HPUE.
+参考FAQ: FAQ202172977
+### 问题: 产线综测WCDMA band4 ILPC fail问题
+解决方案: 假若产线综测报WCDMA band4 ILPC 误测问题的话. Simba版本需要升级到R8.21.2102或之后版本,该版本合入了对ILPC算法优化,包含powerdelta 1的设置,对ILPC有改善.
+参考FAQ: FAQ202172978
+### 问题: AndroidR  YLog 默认关闭Modem SaveDump
+解决方案: 默认关闭Modem SaveDump /device/sprd/mpool/module/modem/msoc/XXX/mrelease/userdebug/userdebug.mk - persist.vendor.sys.modem.save_dump=1 + persist.vendor.sys.modem.save_dump=0
+参考FAQ: FAQ202172983
+### 问题: CTSV Instant Apps Notification test fail
+解决方案: 若在CTS Verifier测试项目 Instant Apps Notification 发生fail 先请客户提供测试过程视频,很可能是指令没有下达正确导致 正确步骤: 1.进入 Instant Apps Notification Test 测试
+2.按照以下命令行安装 InstantApp(此 apk 在 CTS Verifier 测试包中)
+adb install -r --instant CtsVerifierInstantApp.apk
+3.单击 START TEST 按钮,出现界面"Hello Word!"
+4.在此界面下,下拉菜单栏,Instant app 已安装成功.
+5.确认两个信息存在.
+
+注意:安装apk时要严格执行adb install -r --instant CtsVerifierInstantApp.apk命令
+参考FAQ: FAQ202172984
+### 问题: nvtool没有对应的lte diag口
+解决方案: yocto平台sl8521e,sl8541e芯片在正常开机端口枚举时无lte diag,仅有sprd diag,所以连接NVTOOL工具时可直接sprd diag口.
+参考FAQ: FAQ202172987
+### 问题: 安卓user版本使用logel工具抓取armlog
+解决方案: 请按下面的步骤操作:
+①*#*#83781#*#*TELEPHONY——>APP Settings——>关闭Modem Reset
+
+②*#*#83781#*#*进入DEBUG&LOG——>log setting——>PC log——>开启ENGPC service
+③进入系统设置——>关于手机——>点击5次版本号——>返回上一级菜单——>开发者选项——>开启并勾选USB调试
+
+步骤①可使得modem assert时不自动重启,步骤②③可使设备联机时像userdebug版本一样枚举包括SPRD_LTE_DIAG在内的8个端口,log工具可连接SPRD_LTE_DIAG以及SPRD_LTE_LOG抓取cp log,注意连接上后需要下发at+armlog=1.
+参考FAQ: FAQ202172988
+### 问题: WIFI 2.4G SAW两边匹配电路能否删减
+解决方案: WIFI 2.4G SAW两边匹配物料不能删减. 有些客户在设计原理图时,会删减WIFI SAW两边的参考匹配电路. 由于WIFI 2.4G参数调试,需要用到SAW两边的匹配进行调试,才能调试到最优. 有些板子删减后,没有调试足够调试位,参数难以调试达标,需要再次改板才能优化. 所以,在原理图设计时,参照参考设计,保留WIFI 2.4G SAW两边的匹配物料,预防调试和改板风险.
+参考FAQ: FAQ202172989
+### 问题: SC7731E校准报AFC失败（报错原因：获取温度异常）
+解决方案: SC7731E校准时报AFC失败(报错原因:获取温度异常): 1、先在工程模式中(*#*#2266#*#*)确认GPS是否能正常开启,若不能开启的话,需要检查GPS相关软件代码; 2、若能开启GPS的话,可以尝试PATCH00869523(GNSS补丁)后,再验证下AFC校准.请通过Uni-support获取:PATCH00869523.
+参考FAQ: FAQ202172991
+### 问题: 打开IQ Mode之后发现不响铃声
+解决方案: 场测的时候使用SD卡抓log的时候发现,闹钟和来电铃声不响. 原因是在打开工厂模式打开IQ Mode时,会创建一个虚拟的Audio handle: MMISRVAUD_ReqVirtualHandle("IQ mode",MMISRVAUD_PRI_HIGH_N10) 由于目前Audio Service只支持同时存在一个Audio Handle,虚拟handle的存在会导致播放铃声时创建handle失败,从而无法播放铃声. IQ Mode创建Audio Handle的原因是,在抓armlog的同时还会抓取Audio DSP的数据. 这个问题是无法避免的,由于这个是仅在工程模式中存在,我们把这个当成一个已知的Won't Fix 的问题保留现状.
+参考FAQ: FAQ202172994
+### 问题: FM传导测试点
+解决方案: FM射频走线单独走,不和WIFI/BT/GPS共用天线,测试点不共用 FM传导测试点分2种: 1.外置天线 a.外置使用耳机作为FM天线 b.测试点为FM_ANT走线靠近耳机测的串联1nF c.取下1nF,射频铜管的信号线焊接在靠近芯片的一侧焊盘 2.内置天线 a.内置一般加上外置LNA,共用GSM天线,或单独1根内置天线 b.测试点为LNA靠近天线一侧的串联物料.不同LNA厂家的参考物料有所差异,可能是47nF、47nH、0R c.铜管信号线焊接在靠近LNA一侧的焊盘 d.LNA的EN脚需要强制拉高,确保LNA使能工作才能测试
+参考FAQ: FAQ202172995
+### 问题: DreamCamera2 app，开启动态照片卡死原因
+解决方案: 答:该问题的一般原因是:用户设置了过大的预览尺寸,导致用于动态照片的callback size(取的是当前模式的预览尺寸)超出了动态照片编码的尺寸范围,从而引发了EncoderVideoAsync 的 FATAL EXCEPTION. 相关异常log: M00EA95 07-22 21:35:26.192 3700 6293 E SPRDAVCEncoder: [2048,1152] is out of range [1920, 3840], failed to support this format. //动态照片编码的尺寸超出Encoder范围 解决方案:建议使用DreamCamera2 app默认预览尺寸,或设置满足编码尺寸范围的预览尺寸.
+参考FAQ: FAQ202172997
+### 问题: PB联系人名字长度
+解决方案: alpha数组是用于存储PB联系人名字的, 目前平台定义的大小为 MMIPB_NAME_MAX_LEN+1 #defined MMIPB_NAME_MAX_LEN 30 根据3GPP协议31.102 或GSM11.11 定义,在EFADN (Abbreviated dialling numbers)中 Bytes Description M/O Length 1 to X Alpha Identifier O X bytes The value of X may be from zero to 241 因此alpha数组大小可以为0-241, 但是如果该数组增大,那么一个联系人所占内存也会增加,整个电话本所占内存会增加.
+参考FAQ: FAQ202173000
+### 问题: NV2.0结构中如何打开自动接听
+解决方案: PS_NV_PARAMS\ATC_CONFIG_NV\spauto_flag=0X1 设为1就是自动接听,设为0就是手动接听.
+参考FAQ: FAQ202173002
+### 问题: 短信设置中回复路径功能
+解决方案: 回复路径也称经相同信息中心回复,在手机收到短信进行回复时,使用与当前收到的短信相同的短信中心号码. 该功能需要网络支持. 该功能可通过两张不同的短信中心号码的卡互相回复短信进行测试.
+参考FAQ: FAQ202173003
+### 问题: VOLTE/VOWIFI/VOIP的区别
+解决方案: VOLTE/VOWIFI/VOIP均可服务于语音通话,主要差异如下:
+参考FAQ: FAQ202173005,含图片
+### 问题: UMS512/512T平台关于 H.265 Video encoder和decoder，是否支持2k@30fps ？
+解决方案: UMS512/512T平台关于 H.265 Video encoder和decoder均可以支持720p@120fps,1080p@60fps ; UMS512/512T平台最大支持1080p@60fps,不支持2k@30fps.
+参考FAQ: FAQ202173008
+### 问题: 窗口进行按键绘制时覆盖视频画面
+解决方案: 该问题应该是OSD层覆盖了视频层导致,OSD层和视频层混层显示需要调用函数GUIBLOCK_SetType. PUBLIC BOOLEAN GUIBLOCK_SetType( uint32 alpha, //in: GUI_COLOR_T color_key, //in: GUIBLOCK_TYPE_E block_type, //in: GUI_LCD_DEV_INFO *lcd_dev_ptr//in: ) alpha值为整个图层的不透明度,全不透为255,比如要显示半透明按钮,可以设为255*0.6 = 153或其他百分比值. color_key 为透明色,通常设为黑色.即ui 图层上的黑色在和视频图层做混合时为全透,其他颜色部分可视. 该函数可认为是允许osd图层和视频层混合. GUIBLOCK_SetType的调用可参考MMIDC_SetBlock
+参考FAQ: FAQ202173011
+### 问题: UIS8910FF/UIS8910FF-S平台IO使用注意事项
+解决方案: 为了方便设计者灵活使用IO口,UIS8910FF/UIS8910FF-S平台很多IO口被定义了相同的功能编组,比如PAD Y2/PAD AC2都分配了SPI1D1功能,PAD L25/PAD N25都分配了GPIO22功能. 那么这些PAD是否可以同时使用一个功能编组呢? 答案是不可以的,比如PAD Y2被配置为SPI1D1,那么PAD AC2就不可以作为SPI1D1用了,同样若PAD L25配置为GPIO22,那么N25也不能再用作GPIO22. 但当不同IO配置为不同功能时是可以同时使用的,如PAD Y2用作SPI1D1,PAD AC2用作GPIO10.
+参考FAQ: FAQ202173013
+### 问题: 如何实现高于PMU规格书定义的OVP电压？
+解决方案: PMU规格书中描述的VCHG OVP最高可设置到9.7V,如果要使用外部OVP器件实现更高的OVP电压,可以通过软件修改来实现. 在kernel 4.4上 可通过如下两种方式实现: 方法一 修改kernel/drivers/power/sprd_battery.c文件 sprdbat_chg_ovp_monitor();这个调用去掉 方法二: dts中如下配置修改为需要的值 ovp-stop = <6500>; ovp-restart = <5800>; 在kernel 4.14上,可以把dts中如下配置修改为需要的值 cm-charge-voltage-max = <6500000>; cm-charge-voltage-drop = <700000>;
+参考FAQ: FAQ202173019
+### 问题: 打电话时音乐播放器如何实现自动暂停、自动恢复
+解决方案: 来电时,电话应用首先会通过MMICC_ConstructAudioHandle创建一个虚拟handle,该handle的作用就是暂停、继续当前正在播放的音频. 具体过程为,MMICC_ConstructAudioHandle会调用到srvcreate创建audio handle,因为电话应用创建的audio handle其优先级(MMISRVAUD_PRI_HIGH)高于音乐播放器(MMISRVAUD_PRI_NORMAL),MMI srv audio会通过PauseAudioAndNotify暂停音乐播放器,并且会将暂停的handle保存. 电话结束后,会调用MMICC_DestroyAudioHandle销毁虚拟handle,在调用到srvFree时,会获取之前暂停的audio handle调用ResumeAduioAndNotify进行播放.
+参考FAQ: FAQ202173020
+### 问题: Mocor平台开启电信自注册后，手机开机后放置一会手机会重启
+解决方案: 客制化短信自注册的上报参数超过128字节,需要修改sfr_sms.c 中以下接口 LOCAL int MMISFR_SmsBuildData(MN_DUAL_SYS_E dual_sys, uint8* msg_ptr) 中版本等客制化参数,保证上报参数不超过128字节. 分析前提: 1.使用电信卡测试 2.抓取下载版本后首次开机的开机log. 问题定位: 1. 在log中搜索关键词"Self Reg SMS",在搜索结果中出现 [Self Reg SMS]: MMISFR_SmsBuildData temp_len=150 temp_len的长度超过128,需要修改客制化参数.
+参考FAQ: FAQ202173023
+### 问题: 关于先开机再关机后的漏电流(TSX+32k less时钟方案)问题说明
+解决方案: 目前针对TSX +32k less时钟方案,发现先开机再关机后的漏电流(TSX+32k less时钟方案)比DCC文档中心中power test report 偏大50uA左右.这是因为实际使用中发现有些26M的 TSX晶体ESR偏大,开机再关机后26M的时钟幅值偏低(时钟幅值偏低会引起关机后系统的32K时钟消失),这样会造成无法开机的现象. 为了解决个别26M TSX 晶体的ESR偏大引起的开机后再关机后不开机问题,软件上增加了关机后的26M时钟驱动能力,这样就引起了关机再开机后的漏电流会增加大约50uA左右.虽然增加了关机漏电流,但是并不会影响产线上Simba工具针对关机漏电流的测试.
+参考FAQ: FAQ202173027
+### 问题: 移动数据始终在线功能
+解决方案: [功能介绍]该Feature为Unisoc添加.关闭该选项时,非充电状态下灭屏30分钟后会断开数据连接,亮屏再重新建立数据连接;开启该选项时,不会自动断开数据连接 [功能目的]降低灭屏状态下的功耗 [功能路径]设置->网络与互联网->移动网络->移动数据始终在线
+参考FAQ: FAQ202173029
+### 问题: bokeh和hdr同时打开。
+解决方案: device/sprd/sharkl3/s9863a1h10/module/camera/md.mk 打开TARGET_BOARD_BOKEH_HDR_MODE_SUPPORT := true 这个宏是支持大光圈模式下的HDR 注:人像模式和hdr同时打开,也需要配置.
+参考FAQ: FAQ202173030
+### 问题: TYPE-C耳机是否可以支持FM?
+解决方案: TYPE-C耳机支持FM,可以使用一个支持FM的开关芯片来接FM功能,例如:SGM3798YTD,相关电路如下图所示:
+参考FAQ: FAQ202173032,含图片
+### 问题: 高温测试LTE发射功率异常
+解决方案: 高温环境下测试LTE发射功率异常问题: 1、高温下测试功率,若在NV中对apc_temp和pdet补偿后,功率还无法达到期望结果的话,可以尝试在工程模式中关闭Thermal PA Switch的功能. 2、若不关闭Thermal PA Switch的话也可以提交软件CQ修改PA sensor的温度判断门限. 3、工模中关闭Thermal PA Switch:工程模式暗码*#*#83781#*#---DEBUG&LOG---Thermal---Thermal PA Switch(默认打开,选择关闭).
+参考FAQ: FAQ202173034
+### 问题: ByerNR里提到0类（平坦区）/1类（次平坦区）/2 类（弱纹理区）/3类（强纹理区），如何区分？
+解决方案: 答: 区域的划分由参数中的flat_thresh决定. Gray(0)代表 最高频区域 flat3 ∈( flat2_thresh , 9207] Gray(155)代表次高频区域 flat2 ∈( flat1_thresh , flat2_thresh] Gray(205)代表次平坦区域 flat1 ∈( flat0_thresh , flat1_thresh] Gray(255)代表最平坦区域 flat0 ∈(0, flat0_thresh] gray灰度值最大为255,map图中只有Gray 0、155、205、255四种灰度区域
+参考FAQ: FAQ202173036
+### 问题: B17如何进行NV配置和非信令验证
+解决方案: RF在coband情况下,例如B12,B17,则NV配置,校准综测均只需要B12即可,B17共用B12的RF逻辑与校准参数. pandora强发非信令时,也是选择B12验证即可. B17只需在B12调试OK后信令验证射频指标即可.
+参考FAQ: FAQ202173037
+### 问题: SDIO/EMMC总线接口host端下发命令后response响应超时的常见原因？
+解决方案: 常见原因如下: 1. device端在解析host下发的命令时发现CRC错误,对当前命令则不会回应RSP信息. 2. device端收到host端下发的非法命令时,对当前命令则不会回应RSP信息. 3. device端在收到有效命令后NCR(2-64个Clock cycles)时间内没能响应,则会超时. Note:SC9832E/SC9820E平台NCR时间有所不同,遇到此类问题可与我司联系确认. 4. device端异常(如焊接不良,外围供电&控制信号异常,WCN模块时钟没有等)则不能回应RSP. tks
+参考FAQ: FAQ202173039
+### 问题: 使用暗码启动呼叫限制后，无法发送和接收短信
+解决方案: 关于短信遵循呼叫限制这部分,查找协议未见明确规定. 部分运营商根据服务类型区分对短信和通话的限制:当服务类型为TELE SERVICE时,仅对电话进行限制,而当服务类型为ALL SERVICE时,对电话和短信均有限制. 该平台从菜单发起呼叫限制业务时,是区分服务类型的,而通过暗码无法区分服务类型,因此通过暗码设置下发的是ALL SERVICE,即对该运营商的处理为短信和电话同时限制. 如需要暗码设置呼叫限制后仅拦截通话,请在接口 SendReqToSs 中根据 g_mmiset_ss_status.ss_code 仿照接口 SetSsParam 中呼叫限制操作对 service_type 以及 service_code的设置进行拦截篡改.
+参考FAQ: FAQ202173041
+### 问题: 用Dorado浏览器打开百度贴吧为空白页
+解决方案: 访问特定网站显示空白页的问题,曾经过几次,原因均是平台现在的浏览器的js引擎版本太过陈旧,而现在的网站使用编辑的HTML语法等是较新的,旧版本的js引擎无法辨识新的HTML语法格式,所以在正常下载了服务器的响应后,也不能正常的渲染网页的内容. 以百度贴吧"http://tieba.baidu.com/"这个URL为例,查看收到的response数据,在返回的HTML 的body中使用到了HTML4及以上版本才支持的"svg"格式的语法,但是这类语法我们的手机是无法解析的,而且如果要更新js引擎并调整适配我们的HTTP接口,将花费巨大工时,且有一定难度,因此暂无法支持.
+参考FAQ: FAQ202173045,含图片
+### 问题: hdr和3dnr的互斥
+解决方案: 在最新版本上,hdr和3dnr已经不互斥了,可查看以下的平台DreamCamera2的代码判断 /vendor/sprd/platform/packages/apps/DreamCamera2/src/com/dream/camera/settings/DataModulePhoto.java protected void setMutex(String key, Object newValue, Set<String> keyList) {
+50          String entryValue = getString(key);
+51  
+52          switch (key) { 
+59          case Keys.KEY_AUTO_3DNR_PARAMETER:
+60              //setMutexAuto3Dnr(key, entryValue, keyList);
+61              break;
+参考FAQ: FAQ202173047
+### 问题: 如何验证UA信息配置
+解决方案: 可以参考下述方式验证: 1. 用浏览器登录:http://ua.yeswap.com, 查看信息是否正确 若是使用opera mini浏览器,请查看"x_operamini_phone_ua"中信息 2. 在工模里面也可以看到目前UA设置: #*8378#1# -> APP Set -> UA SETTING -> User Agent -> Show #*8378#1# -> APP Set -> UA SETTING -> UA Profile -> Show
+参考FAQ: FAQ202173048
+### 问题: case14.16.2 GPRS同信道抑制测试
+解决方案: case14.16.2Co-Channel Rejection for Packet Channel(GPRS同信道抑制测试). 测试方法:在仪器端引入一个干扰源,若误码率在10-50%之间判定为pass,反之超过50%判定为fail. 若case14.16.2测试fail的话,modem(CP0)可以尝试升级到如下版本测试: 4g_modem_20a_w21.17.7 (含此版本或之后版本); 4G_MODEM_20A_W21.15.3_P11(含此版本或之后版本).
+参考FAQ: FAQ202173051
+### 问题: 当BV处于MFNR开启与关闭的阈值范围时，ISP噪声表现跳变问题，如何解决?
+解决方案: 答: 是否走MFNR是根据BV来判断的,BV上下限为thrd_up,thrd_down; 1.当BV大于thrd_up时,关闭3DNR; 2.当BV小于thrd_down时,开启3DNR; 3.当BV在thrd_up,thrd_down之间时,相当于处于一个缓冲区间,从暗慢慢变亮,当达到thrd_up时,MFNR关闭;同理,当从亮慢慢变暗,暗过thrd_down,运行MFNR;例如缓冲区域太小为10,即thrd_up为700,thrd_down为690,此时自动曝光检测出来的BV值有可能会出现波动,就会出现连着拍几张图,isp噪点表现不一样,有的图走MFNR,有的未走MFNR.为了防止波动出缓冲区域,需要把缓冲区间写大,比如80(此时thrd_up可设为740,thrd_down为660),具体值以实际场景的效果为准; 注:缓冲区间不是越大越好,只是一个稳定程度,太大了就不易触发MFNR了
+参考FAQ: FAQ202173052
+### 问题: 如何实现把字库.lib文件放在T卡或内置U盘里面
+解决方案: 平台目前没有现成方案可使用.不过可以参考动态切换字库 FILE_FONT_SUPPORT 宏的作法开发实作,在手机编绎版本时先使用比较精简的字库档,在开机流程适当地方通过 MMIRES_UnloadFileFont()/MMIRES_LoadFileFont() 切换T卡或udisk完整的字库.lib档. 相关函式: MMIRES_LoadFileFont(font_name) 入参为字库.lib档路径,用来导入字库.lib档. MMIRES_UnloadFileFont() 用来卸载字库.lib档. 注: 如果加载的字库档有缺字,则会使用样机原先预置的字库显示.
+参考FAQ: FAQ202173054
+### 问题: 512T平台是否支持摄像头的PIP功能（画中画 ）？即前后摄同时工作，实现画中画功能，如果支持，硬件应该怎么设计?
+解决方案: 512T平台是支持前后设同时工作功能的,硬件上的设计与前后摄不同时工作时一致,同时工作则需要软件进行相关配置.
+参考FAQ: FAQ202173055
+### 问题: UMS512平台DMIC应该怎么接？
+解决方案: 1,DMIC芯片的数字逻辑与VDD保持一致,单个DMIC耗电约1mA.SC2721/UMP510G的MIC_BIAS电压2.2V~2.8V,2mA,我司BB芯片的DMIC接口是1.8V逻辑.因此从电压和电流的角度来看MIC_BIAS都不能用,只能用VDD1V85或其他1.8V电源供电. 2,如果是两个DMIC,直接并联接BB的DMIC0,MIC芯片的L/R选择一个上拉一个下拉. 3,如果是四个DMIC,那么DMIC0和DMIC1分别接两个.单独使用DMIC1会有缺陷,因为DSP根据DMIC0的中断来同时来处理DMIC1.
+参考FAQ: FAQ202173056
+### 问题: T卡供电是否有快速下电功能？
+解决方案: 我司SC9863A及之前的芯片平台(如SC9832E/SC9820E/SC7731E),不支持T卡电源快速下电,因此如果用那种T卡槽在外侧的二合一/三选二卡座,拔出时由于T卡供电还在,存在烧SIM卡风险,此时需要增加快速下电电路. 我司UMS312及之后的芯片平台(如UMS512/UMS9230/UDX710),支持T卡电源快速下电,不需要新增快速下电电路.注意下,插拔识别需要用T卡插拔检测专用脚.
+参考FAQ: FAQ202173057
+### 问题: 使用fastboot刷写分区时报错：'write img fail'
+解决方案: [问题现象] 使用fastboot刷写分区时报错:'write img fail'. [原因分析] 一般是执行flash命令时发生的错误,原因是fastboot无法识别到分区.常见的2种情况如下: 1. Android 11及之后的版本上,在bootloader模式下刷写物理分区时,没加后缀_a,不加后缀fastboot认为没有该分区; 2. 在bootloader模式下刷写了逻辑分区,bootloader模式下fastboot是无法访问到用户空间的逻辑分区的,因此fastboot无法识别到该分区. [解决方案] 针对情况1,加上后缀_a; 针对情况2,逻辑分区在fastbootd模式下刷写,非bootloader模式.
+参考FAQ: FAQ202173058
+### 问题: 使用fastboot刷写分区时报错：'partition not found'或'Could not open partition'
+解决方案: [问题现象] 使用fastboot刷写分区时报错:'partition not found'或'Could not open partition'. [原因分析] fastbootd模式下执行"getvar"命令获取partition-size、is-logical等信息时报错,是因为分区名后缀问题,不加后缀_a无法识别到分区. [解决方案] Android11之前,分区名后无需加后缀;Android11及以后,分区名后需要加后缀.
+参考FAQ: FAQ202173059
+### 问题: fastboot执行getvar获取is-logical、has-slot等信息时返回为空
+解决方案: [问题现象] fastboot执行getvar获取is-logical、has-slot等信息时返回为空. [原因分析] getvar获取is-logical、has-slot信息的命令属于fastbootd的命令,在bootloader模式下输入这些命令,fastboot不识别. [解决方案] 与逻辑分区的命令都在fastbootd模式下进行.
+参考FAQ: FAQ202173060
+### 问题: 使用fastboot刷写分区时报错：'Not enough space to resize partition'
+解决方案: [问题现象] 使用fastboot刷写分区时报错:' Not enough space to resize partition'. [原因分析] flash逻辑分区时,由于镜像文件太大,super空间不足,导致刷入失败,从而报空间不足的错. [解决方案] 不影响正常开机及其其他功能的情况下,可删除逻辑分区以释放空间.比如,GSI版本上就可以删除system_ext和product分区(因为GSI版本上不挂载这两个分区).删除命令如下: $ fastboot delete-logical-partition system_ext_a(product_a).
+参考FAQ: FAQ202173062
+### 问题: 展锐有哪些平台支持USB HUB，硬件上如何连接？
+解决方案: 支持USB HUB的平台包含UMS512/UMS512T/UMS9230/UDS70/UDX710. USB HUB的接法:PMU芯片出来的USB2.0数据线处加一个模拟开关,用来切换下载口和Host;这个开关默认在下载口上,此处可以用来BB芯片的下载、抓log、做USB slave模式,可采用micro B或者TYPEC接口;开机后,软件把开关切到hub上,此时USB只能在hub上,只做host,可采用TYPEA或者TYPEC接口.具体可参考下图.
+参考FAQ: FAQ202173063,含图片
+### 问题: SL8521E是否支持MIPI屏？
+解决方案: SL8521E支持4lane MIPI屏,如果使用了SC9820E封装一定要注意给CPU的AB7管脚(AVDD1V8_DSI)供电,否则DSI接口无法使用.
+参考FAQ: FAQ202173064
+### 问题: UMS9230/9230T/9230H可以做兼容设计吗？
+解决方案: 这三颗芯片是pin to pin兼容的,可以做兼容设计,CPU几路大电源供电方式需要按照UMS9230T的参考设计,不要省掉外置DCDC而做兼容.由于涉及到多个重要大电源 ,兼容设计引入的跳线电阻及走线会导致电源质量变差,产品可靠性很难保证. 1,DBB给出的VDDARM1_EN信号要接到外置DCDC芯片的EN管脚,给CPU的VDDCPU1供电. 2,UMP510G的DCDC GPU给CPU的VDDMM供电. 3,UMP510G的DCDC MODEM给CPU的VDDMODEM供电. 4,CPU的AP14管脚(XTL_EN2)接到UMP510G的D8管脚(DCDC_GPU_EN)
+参考FAQ: FAQ202173065
+### 问题: UMS312/UMS512/UMS512T是否能做兼容设计
+解决方案: 这三颗芯片是pin to pin兼容的,理论上可以做兼容设计,但实际使用上需要分为两组兼容,即UMS312/512兼容,或者UMS512/512T兼容,不建议三颗芯片全兼容. 由于涉及到多个重要大电源 ,三芯片全兼容设计引入的跳线电阻及走线会导致电源质量变差,产品可靠性很难保证,风险非常高. 第一类,UMS312/512兼容,主要注意两点: 1,UMS312比UMS512少12个GPIO,原理图封装上能区分出来. 2,几路大电源的接法按照UMS312参考设计接,注意CPU的AJ12管脚(DCDCARM1_EN)接到UMP510G的D8管脚(DCDC_GPU_EN) 第二类,UMS512/512T兼容,主要注意一点: 1,几路大电源的接法按照UMS512T参考设计接,注意CPU的AJ12管脚(DCDCARM1_EN)接到外置DCDC芯片的EN管脚,并且IIC6给DCDC专用,不要接其他外设.
+参考FAQ: FAQ202173066
+### 问题: LPDDR线序可以根据走线方便自行调整吗？
+解决方案: 理论上来说,LPDDR大部分线序都可以调整,比如数据信号BYTE内部可以调整,BYTE成组可以调整.CLK信号不能调整. 实际项目上,由于LPDDR速率很高,随意调整走线很能满足SI信号完整性仿真,因此我司会针对常见的LPDDR类型推出参考PCB设计,叫做SPM模块.客户直接参考SPM的线序和走线,很容易做出高质量的DDR走线. 如下图,我司CPU封装上针对三种LPDDR类型安排了不同的线序,分别做好了SPM模块并且已经仿真pass,供客户使用. 第一列pinname是eMCP式LPDDR4/4X,第二列是分离式LPDDR4/4X,第三列是eMCP式LPDDR3. 使用时注意根据自己所用的DDR类型选定线序,打开元件特性窗口,"门封装"栏目可以选择相应的封装线序.
+参考FAQ: FAQ202173067,含图片
+### 问题: case14.18.4 Intermodulation rejection in EGPRS测试
+解决方案: case14.18.4 Intermodulation rejection in EGPRS测试(EDGE互调抑制). 互调抑制是接收机接收所需调制信号能力的度量; 测试方法:在手机端引入两个或多个干扰源,若BLER在10%以内判定为pass,反之超过10%判定为fail. 若case14.18.4测试fail的话,modem(CP0)可以尝试升级到如下版本测试: 4g_modem_20a_w21.17.7 (含此版本或之后版本).
+参考FAQ: FAQ202173068
+### 问题: WIFI传导参数调试方法
+解决方案: 展锐内置WIFI 2.4G的传导调试方法如下 一、WIFI发射 1.先调试ini里的14个信道功率,把WIFI 11N MCS7的功率调试到13dBm 2.再调试WIFI 匹配,把11N MCS7的EVM整体调到-29dB 3.调试过程中,WIFI比13dBm偏差大于2dB,需要调试ini,再接着调试EVM 4.以WIFI 11N MCS7参考功率13dBm、EVM -29dB进行调试 5.最后,通过ini对11 B/G/N进行调整 二、WIFI接收灵敏度 1.在TX调试好后,测试RX是否达标 2.如果Fail,检查WIFI走线是否被干扰 3.通过WIFI走线分段测试,进行定位具体的问题点
+参考FAQ: FAQ202173070
+### 问题: 调试WIFI ini，WIFI功率不变
+解决方案: 修改ini的WIFI功率值,WIFI功率不变,主要有 一.ini不生效 1.修改后,ini不生效,最常见情况为软件是否解锁 ini修改生效,软件需要为Debug版本,且解锁 2.解锁是否成功方法: 输入 adb root adb remount 只返回提示成功,中间没有其他代码,才表示解锁成功 3.不会Debug版本或解锁:找软件工程师帮忙 二.ini导入位置错误 1.不同芯片,不同的软件版本,位置会不一样 2.Isupport上的ini Debug Guide有对应的位置 3.如果不确定,提CQ问展锐对应芯片、软件版本的ini位置 三、ini修改错误 1.不同芯片,在Isupport上对应的Debug Guide,先查看文档,再修改
+参考FAQ: FAQ202173071
+### 问题: WIFI、BT射频参数测试环境要求
+解决方案: 一、WIFI、BT发射参数 1.可以在开放环境下测试,不需要在屏蔽罩 二、WIFI、BT接收灵敏度 1.接收灵敏度需要在屏蔽房环境下测试,避免外部干扰引起的误差 2.同时,关闭其他可能引起干扰的仪器或手机 三、WIFI、BT吞吐量 1.近距离满载吞吐量,在屏蔽房环境下测试 2.远距离吞吐量,需要在室外、地下车库、屋顶等空旷环境下测试
+参考FAQ: FAQ202173072
+### 问题: LTE  timing error调试位置 for NV2.0
+解决方案: 调试位置开放在RD NV中,以B28A/B为例,分别打开LTE_tool_comp\LTE_download_dsp_compensation_cc0_tool_comp\LTE_timing_delay\TX_PCC_Timing_delay\Band_no13\Timing_Reserved\ LTE_tool_comp\LTE_download_dsp_compensation_cc0_tool_comp\LTE_timing_delay\TX_PCC_Timing_delay\Band_no14\Timing_Reserved\ reserved[0]~reserved[5]分别代表带宽1.4M,3M,5M,10M,15M跟20M下的调试位置
+参考FAQ: FAQ202173075,含图片
+### 问题: GSM  WCDMA分集强开方式
+解决方案: 展锐平台默认GSM与WCDMA分集是动态开启,原因参考FAQ202072180. 1.若要单独测量GSM,WCDMA和LTE单主单分灵敏度,可在工程模式里面进行设置,步骤如下: *#*#83781#*#*-HARDWARE-天线设置,选择相应的制式,将其改成Primary only或者Diversity only 2.若要测量主加分灵敏度,可将GSM与WCDMA分集设置为强开模式. 1)GSM可以在工程模式里选择Force Diversity open 注:工程模式里面的修改掉电失效 2) WCDMA强开分集需在NV中设置,位置如下: Div 常开: Setting3: dch_div_off_ecno_thr|dch_div_on_ecno_thr = 0xFFFE Setting4: dch_div_off_rscp_thr|dch_div_on_rscp_thr = 0xDADE 注:临时验证方案,不能导入量产,修改后需要重新上电,并且掉电不会失效
+参考FAQ: FAQ202173076,含图片
+### 问题: 屏幕分辨率480*960的机器， Camera预览size能否支持720*960？
+解决方案: 答:能,只要SprdCamera3Setting.cpp对应的cam_stream_info_t尺寸数组支持即可以.
+参考FAQ: FAQ202173077
+### 问题: WCDMA测试HSPA如何进行功率补偿
+解决方案: 以NV 2.0为例,打开CustNV,比如对WBAND1的HSPA进行补偿,NV修改位置如下: NV 1.0的HSPA补偿位置略有区别,如下
+参考FAQ: FAQ202173079,含图片
+### 问题: 清晰度不好如何排查
+解决方案: 答:调试过程中,如果清晰度一直较差,可通过以下方法来排查: 1. 首先排查raw的输出:看下RAW图的清晰度是否ok来排除硬件模组能力.如果是模组差异可以检查Golden数据是否正确. 2. 然后排查 isp处理能力:把NR相关模块都关了,EE打开,看下清晰度最佳的图片效果,若原来清晰度差的地方细节出来了,可以逐个把NR的各模块baypass,比如bayerNR,YNR,YNRS等,看下是哪个模块去噪参数设置不合理导致的,再根据实际情况调整去噪参数来提高清晰度;
+参考FAQ: FAQ202173080

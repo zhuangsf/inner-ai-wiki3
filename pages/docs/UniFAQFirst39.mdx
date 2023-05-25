@@ -1,0 +1,302 @@
+### 问题: 如何在APP里重启手机
+解决方案: 重启手机的JAVA调用方法: PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+pm.reboot("reboot_reason");
+参考FAQ: FAQ74672
+### 问题: MCP处的VREF网络上的两个10K的1%精度的电阻是否可以用0201封装的？
+解决方案: 可以使用0201,精度一定要求1%.
+参考FAQ: FAQ74772
+### 问题: 耳机通路上的电阻是否可以用0201封装的？如不能用，原因是什么？
+解决方案: 请使用0402的,防止峰值超过0201的最大功率,长时间可能会有问题.
+参考FAQ: FAQ74778
+### 问题: SIM卡的文件结构介绍以及EF文件表
+解决方案: SIM卡数据的一般构成为: 树根总是由主卡MF(Master File)组成,MF可以包括子卡EF(Elementary File)或专用卡DF(Dedicated File).DF卡就是目录索引,它本身可以包括其他的DF卡或EF卡. 具体结构可见下图: EF文件表
+参考FAQ: FAQ74795
+### 问题: SC7731G开机电池电压门限
+解决方案: 充电器不在位时为3.5V,充电器在位时3.3V.另外要考虑ADC电压校准精度范围.
+参考FAQ: FAQ74821
+### 问题: SC7731G是否支持4.4V电池
+解决方案: 不支持.
+参考FAQ: FAQ74823
+### 问题: SC7731G 充电过压保护门限值是多少？
+解决方案: 充电过压中断门限值是可以配置的,默认配置过压点电压为6.5V,最高可以设置到9.4V
+参考FAQ: FAQ74824
+### 问题: GPS开始定位时显示在位的卫星忽然丢失是否正常现象？
+解决方案: 正常.刚开始定位时,显示的是上一次定位保留在手机中的历书信息,所显示的卫星信息是虚假的.当重新定位会重新搜星,所以会表现为卫星忽然丢失.
+参考FAQ: FAQ74832
+### 问题: SC7731G平台射频3G支持双载波传输吗？
+解决方案: 不支持.
+参考FAQ: FAQ74787
+### 问题: android6.0 如何配置实网sim/usim卡语音信箱
+解决方案: 示例:中国联通46001的卡,voicemail需要配置为1234: packages/apps/CarrierConfig/assets/carrier_config_46001.xml(如果不存在则自行创建) <carrier_config> <string name="vmnumber">1234</string> </carrier_config>
+参考FAQ: FAQ85078
+### 问题: android6.0 如何配置虚拟运营商sim/usim卡语音信箱
+解决方案: 配置文件路径:此处mccmnc表示当前卡的mccmnc号. Carrier_config_mccmnc.xml (\packages\apps\carrierconfig\assets) 例如: 虚拟运营商 阿里通信,mccmnc是46001,voicemail需要配置为4321: Carrier_config_46001.xml (\packages\apps\carrierconfig\assets) //这里的属性spn="阿里通信"是虚拟运营商判定条件,表示这条carrier_config属于虚拟运营商阿里通信的配置数据,与不加属性的 carrier_config区分. <carrier_config spn="阿里通信"> <string name="vmnumber">4321</string> </carrier_config>
+参考FAQ: FAQ85959
+### 问题: android5.1如何关闭背光渐变过程,加速灭屏速度
+解决方案: frameworks/base/services/core/java/com/android/server/display/DisplayPowerController.java private void updatePowerState() { ....... if (!mPendingScreenOff) { if (state == Display.STATE_ON || state == Display.STATE_DOZE) { - animateScreenBrightness(brightness,slowChange ? BRIGHTNESS_RAMP_RATE_SLOW : BRIGHTNESS_RAMP_RATE_FAST); //改为 + animateScreenBrightness(brightness,0); } else { animateScreenBrightness(brightness, 0); } } ........ }
+参考FAQ: FAQ77287
+### 问题: 服务提供商名称指示(Service Provider Name indication) 具体内容是什么
+解决方案: (1) 当所驻网络plmn是HPLMN或者SPDI列表中之一时: [1] SPN必须显示 [2] PLMN名称的显示由USIM卡里的字段决定. (2) 当所驻网络plmn既不是HPLMN又不是SPDI列表中之一时: [1] PLMN 名称必须显示 [2] SPN 的显示由USIM卡里的字段决定.
+参考FAQ: FAQ74905
+### 问题: SC7731C摄像头是否支持5M ISP？
+解决方案: 支持
+参考FAQ: FAQ74921
+### 问题: SC7731C所搭配的RF Transceiver是什么？
+解决方案: SC7731C所搭配的RF Transceiver是SR3533.
+参考FAQ: FAQ74922
+### 问题: SC7731G平台电池BAT_TEMP_ADC网络上面串联的510R的电阻，目的是什么？
+解决方案: 为了防止EOS.
+参考FAQ: FAQ74924
+### 问题: android5.1 ntp的变化
+解决方案: android4.4展讯设计增加更新时间的备选服务器机制,当默认服务器无法连接时会依次尝试其他备选服务器. android5.1和原生版本一致,只有默认服务器,没有备选服务器机制.但是可以按照4.4的设计进行添加.
+参考FAQ: FAQ74946
+### 问题: 开启多用户功能，为什么切换用户后自定义的悬浮窗口不显示了？
+解决方案: 自定义窗口一般通过WindowManager的addView方法加入到WMS中 要保持自定义窗口在切换用户后仍然显示,需要在自定义窗口的WindowManager.LayoutParams中增加PRIVATE_FLAG_SHOW_FOR_ALL_USERS属性,如下代码: private WindowManager.LayoutParams mLp; private WindowManager mWm; ... mLp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS; ... mWm.addView(this, mLp);
+参考FAQ: FAQ75941
+### 问题: Android RIL中的RILJ和RILC，及两者间的通信方式
+解决方案: RILJ与RILC简介: Android Frameworks框架层中RIL的java代码,简称为RILJ; Android Hal层中RIL的C/C++代码,简称为RILC. RILJ与RILC间通信方式: RILJ和RILC之间通过socket的方式进行通信,RILC作为通信服务端,RILJ作为通信客户端.
+参考FAQ: FAQ74988
+### 问题: Android 5.0的sim卡信息存储及代码文件
+解决方案: Android 5.0将所有卡信息通过数据库进行保存. 数据库表URL:content://telephony/simfo,对应到的数据库为telephony.db中的siminfo表, telephony.db在手机中位置为:data/data/com.android.providers.telephony/databases/telephony.db 代码文件在TelephonyProvider.java,在此代码中可以看到createTable的详情.
+参考FAQ: FAQ75004
+### 问题: 如何透过arm log查找接收的USSD内容资讯
+解决方案: 將arm log通过logel 开启后,使用 CTRL+f 来搜寻查找 Find What: 输入APP_MN_USSD_IND Select match column or window: 选择 MESSAGE 将搜寻结果点击进入查看,Structure中会有APP_MN_USSD_IND_T的资料结构 查看栏位 APP_MN_USSD_IND_T -> ussd_data -> ussd_str 内容即为收到的内容资讯 可将此内容资讯储存后分析是否显示正常
+参考FAQ: FAQ81764
+### 问题: 如果在AUDIOTESTER解决失真问题？
+解决方案: 如果确认是小信号失真的话,SNR较低,底噪较大,适当提高增益,抬高信号; 如果确认是大信号失真的话,调节EQ,ALC,PGA和dgain.
+参考FAQ: FAQ75021
+### 问题: 如何在AUDIOTESTER解决IDLE NOISE问题？
+解决方案: 1)可增大ALC中的ALC expand threshold和ALC expand threshold来进行抑制 (2)增大dl_ns_limit的值
+参考FAQ: FAQ75026
+### 问题: android如何在java文件中设置TextView字体大小
+解决方案: 在java文件中,设置TextView字体大小: 1.setTextSize(float size)默认的单位是sp; 2.setTextSize(int unit, int size),第一个参数可设置如下静态变量: TypedValue.COMPLEX_UNIT_PX : Pixels TypedValue.COMPLEX_UNIT_SP : Scaled Pixels TypedValue.COMPLEX_UNIT_DIP : Device Independent Pixels
+参考FAQ: FAQ75029
+### 问题: 如何手动更新GE的GPS库版本
+解决方案: 具体方法如下: adb push GPSenseEngine system/bin/ adb shell chmod 777 system/bin/GPSenseEngine adb push GPSenseEngine.xml system/etc/ adb push supl.xml system/etc/ adb push gps.default.so system/lib/hw/ adb push libsupl.so system/lib/ ------ AGPS相关可选 adb push liblcscp.so system/lib/ ------ AGPS相关可选 adb push liblcsagent.so system/lib/ ------ AGPS相关可选 adb shell 进入data/cg/目录下,将该目录下的东西全部删除 adb reboot
+参考FAQ: FAQ75964
+### 问题: 蓝牙基带分组
+解决方案: 基带分组至少包括:接入码、分组头、有效载荷. (1)接入码用于同步、直流、载频泄漏偏置补偿标识; (2)分组头包含链路信息,确保纠正较多的错误; (3)有效载荷分为语言有效载荷、数据有效载荷.
+参考FAQ: FAQ75820
+### 问题: 浏览器中以概览模式打开网页此功能无作用，这是什么原因？
+解决方案: 原因分析: "以概览模式打开网页",可以用以下移动的用例页面测试 http://218.206.177.209:8080/waptest/browser15/ -> 文字段落宽度适配 展讯版本添加了双击自适应重排的功能,目前我们的双击重排文字自适应屏幕大小的逻辑主要如下: 1.重排的文字按照node来算,双击的节点所对应的必须是文字节点. 2.该节点的文字宽于目前屏幕 如果"以概览模式打开网页"选中,那么文字不会宽于屏幕,也就不会重排. 关闭"以概览模式打开网页"后,重新访问测试网页,文字显示会超出屏幕,此时双击文字,网页会自适应重排. 因为网上大多网页内容会设定文字显示宽度,如果限定了就看不出"以概览模式打开网页"开关的对比效果了.
+参考FAQ: FAQ75830
+### 问题: 如何实现卡1卡2之间卡槽互换
+解决方案: 可以通过配置modem nv来解决. TD_TIANJI2_NV_TYPE/NV_PARAM_TYPE_MN_CFG/sim_slot_cfg=0x00010203 该 NV 值共有 4byte, 其中每个byte对应一个卡槽,正常情况下该NV的值为0x00010203; ==》 配置 NV 的值为0x01000203 即可实现卡槽1与卡槽2互换 TD_TIANJI2_NV_TYPE/NV_PARAM_TYPE_MN_CFG/sim_slot_cfg=0x01000203
+参考FAQ: FAQ75052
+### 问题: POP3/IMAP/SMTP登录时“接受所有证书”有什么作用
+解决方案: 通常包含两个方面的验证: 1 验证服务器的证书是由被信任的CA所颁发 2 验证服务器的名称和服务器证书中的名称一致. 这三个协议在建立SSL连接时,直接使用了SSLSocket,SSLSocket在实现时仅验证证书是否由可信CA颁发.验证服务器名称是否和证书一致时,需要额外的操作.当用户选择接受所有证书时则只验证第一项,否则需要验证全部两项.
+参考FAQ: FAQ75282
+### 问题: 5.1平台如何使得语音信箱号码编辑框不可点击
+解决方案: 可对EditPhoneNumberPreference.java(packages/services/telephony/src/com/android/phone/)的onBindDialogView方法做如下修改 EditText editText = getEditText(); //get the contact pick button within the number field mContactPickButton = (ImageButton) view.findViewById(R.id.select_contact); editText.setEnabled(false);//添加该句代码,使得编辑框不可编辑
+参考FAQ: FAQ77062
+### 问题: 如何使用adb shell杀死进程
+解决方案: 不想重启手机又想杀死一个进程时使用如下方法:
+参考FAQ: FAQ75099
+### 问题: 蓝牙CTP协议介绍
+解决方案: 蓝牙CTP为蓝牙无绳电话应用框架,CTP给出了无绳电话基站发起呼叫和两个无绳电话之间直接对讲呼叫的操作规范.利用CTP,无绳电话还可以享受公共交换电话网提供的增值业务.
+参考FAQ: FAQ75116
+### 问题: 蓝牙CTP应用说明
+解决方案: 蓝牙CTP包含下列应用情况: 1. 网关设备将呼入转接到对应终端设备,并将终端设备的呼出转接到外部网络. 2. 终端设备呼叫与网关设备相连的网络中的用户. 3. 终端设备接收来自于网关设备相连网络的呼叫. 4. 在两个终端之间直接进行呼叫,即对讲呼叫. 5. 通过双音多频信令和注册重呼来使用外部网络提供的补充业务.
+参考FAQ: FAQ75117
+### 问题: 蓝牙IntP协议介绍
+解决方案: 蓝牙对讲机框架(IntP)也是实现蓝牙"三合一电话"应用模型的一个应用框架.利用IntP,蓝牙设备之间可以在给定的距离内实现对讲功能,同时也增强了通信保密性.
+参考FAQ: FAQ75118
+### 问题: 蓝牙对讲机应用框架IntP协议模型
+解决方案: IntP协议堆栈如下图所示,共有A、B和C三个层间接口. A接口:呼叫控制实体使用这个接口进行语音同步控制. B接口:该接口用于在一个面向连接(点对点)的L2CAP信道中传输所有TCS信息. C接口:网关设备使用这个接口直接控制链路管理来建立和释放SCO链路.
+参考FAQ: FAQ75119
+### 问题: 蓝牙HSP介绍
+解决方案: 蓝牙头戴式设备应用框架(Head Set Profile,HSP)与蓝牙无绳电话框架(CTP)和对讲机框架(IntP)不同,他继承了蓝牙串口框架(SPP),与电话控制二级制(TCS-Binary)协议无关.
+参考FAQ: FAQ75125
+### 问题: MocrDroid 4.4 CTS FAIL ---- testNoRemotelyAccessibleListeningUdpPorts
+解决方案: 测试FAIL描述: android.security.cts.ListeningPortsTest$ListeningPortsAssertionError: Found port listening on addr=0.0.0.0, port=68, UID=1014 [unknown] in /proc/net/udp 解决方法: 主要是MocorDroid最新版本的dhcp 模块的版本升级导致,本ptch主要是版本回退和一些ipv6的修改的patch,由于改动较多,此处无法贴出.见附件 patch
+参考FAQ: FAQ75132
+### 问题: 蓝牙的测试模式包括几种？
+解决方案: 蓝牙的测试模式包括发送端测试(连续比特模式分组)和回送测试.主要用于进行无线和基带层的验证/兼容性测试,也可用于质检,或生产中和售后测试.
+参考FAQ: FAQ75128
+### 问题: wifi中wpa_supplicant 的 eloop 循环退出条件是什么？
+解决方案: 在wifi的wpa_supplicant 中 external\wpa_supplicant_8\src\utils\Eloop.c 的 eloop_run 函数中的 while循环退出条件主要是两部分 代码可见 while (!eloop.terminate && (!dl_list_empty(&eloop.timeout) || eloop.readers.count > 0 || eloop.writers.count > 0 || eloop.exceptions.count > 0) ) { 其中: 退出条件一:!eloop.terminate 表示,如果eloop.terminate变为非零值,就会退出循环.这是为了提供一种从外部结束循环的方法. 退出条件二: 当条件一为零的情况下,即eloop.terminate为零时, 此时,只要timeout链表或者任一个Socket不为空,都会继续循环.
+参考FAQ: FAQ75144
+### 问题: 如何动态打开USB模块调试接口
+解决方案: 对于DWC-OTG模块动态打开LOG需要做如下的操作: 1)首先需要在产品的config文件中打开配置项 CONFIG_USB_GADGET_DEBUG,将编译出的dwc_otg目录删掉后重新编译bootimage,以使新的BOOT能支持USB动态调试功能; 2)命令行动态控制DEBUG是由/sys/bus/platform/drviers/dwc_otg/debuglevel来控制的,debuglevel使用16进制数,比如 echo 0xff > debuglevel; 3)DEBUG的控制位是定义在dwc_otg_dbg.h文件中,请阅读代码查看详细的控制位: #define DBG_CIL (0x2) #define DBG_CILV (0x20) #define DBG_PCD (0x4) #define DBG_PCDV (0x40) #define DBG_HCD (0x8) #define DBG_HCDV (0x80) #define DBG_HCD_URB (0x800)
+参考FAQ: FAQ75167
+### 问题: sim卡联系人pbr文件是做什么的？
+解决方案: 联系人PBR文件是指,描述联系人的文件结构的文件(相当于联系人的目录,必须先读取pbr文件才能够知道联系人存储在什么地址下面)在这里指定联系人相关文件的FID(File Identifiers)和SFI(Short File Identifiers). PBR文件有一个固定的FID:0x4F30.一个sim卡中可能会有多个pbr文件.
+参考FAQ: FAQ75198
+### 问题: wifi p2p在listen时，是在1、6、11信道上轮询listen吗？
+解决方案: wifi p2p在search时会在1 、6、11信道上轮流发送probe request帧,但是在listen时,是不会在1、6、11信道上轮流监听的. listen在wifi 打开时就随机生成为一个固定值,每次wifi p2p进入listen状态时,都选择这个固定值进行监听: static void p2p_listen_in_find(struct p2p_data *p2p, int dev_disc) { unsigned int r, tu; int freq; struct wpabuf *ies; freq = p2p_channel_to_freq(p2p->cfg->reg_class, p2p->cfg->channel); //这个p2p->cfg->channel即是初始化wifi时生成固定值 }
+参考FAQ: FAQ75207
+### 问题: 怎么默认关闭widget 中的Sync（自动同步）功能？
+解决方案: 解决方案: frameworks\base\core\res\res\values\config.xml 将下面的值改为false <bool name="config_syncstorageengine_masterSyncAutomatically">false</bool>
+参考FAQ: FAQ80029
+### 问题: 如何获取单张卡槽是否处于锁卡状态
+解决方案: 确认sim是否处于锁卡状态,有两种方式: 1.请根据TelephonyManager的getSimState来获取状态,跟SIM的五种simlock状态确认. 2.请根据TelephonyManager的checkSimLocked()接口的返回值判定.
+参考FAQ: FAQ80736
+### 问题: hall开关导致系统不休眠，待机电流为170ma的原因分析
+解决方案: 加入hall开关后,需要中断唤醒系统,需要对hall开关的中断,pinmap进行配置,如果不配置,会导致系统不休眠,使得待机电流大. 即在pinmap中,将BIT_PIN_SLP_Z改为BIT_PIN_SLP_IE.
+参考FAQ: FAQ75270
+### 问题: Android5.0 sim卡数据库siminfo表几个id字段含义
+解决方案: (1)_id: android里的每个db都有的,是数据库里的数据主key,这里的_id值也是以后代码里看到的subId,是在数据库中保存时所在的条目的唯一标识. (2)icc_id: 从卡上读取得到,是卡的唯一身份标识,每个sim卡都有不同的iccid. (3)sim_id:分配给卡的id序号,android设计从0开始,如果是双卡终端,那么值只有可能为0或者1. 如图:
+参考FAQ: FAQ81761
+### 问题: 如何解决EAP-SIM-WIFI提示“未检测到任何互联网连接，因此不会自动重新连接”的问题？
+解决方案: 定义: EAP-SIM是运营商定制的一种wifi加密方式,它为提高无线局域网安全性能提供了有力的实践证明. 解决方法: 需要翻墙网络进行自动连接测试. 问题分析: EAP-SIM-WIFI热点网络检测是在NetworkMonitor的isCaptivePortal上进行,会与http://connectivitycheck.android.com/generate_204连接并根据httpResponseCode来判定是否检测pass. 由于国内网络与该http连接时会出现SocketTimeoutException,并使用默认的httpResponseCode = 599,出现此问题后会进入offlinestate检测失败,所以验证此问题需要连接翻墙网络.
+参考FAQ: FAQ75318
+### 问题: android:exported的默认值
+解决方案: 在AndroidManifest.xml文件中,四大组件都有android:exported属性且为可选项,是个boolean值,可以为true或false;如果在AndroidManifest.xml显式指定此属性,那exported就是指定的值;如果没有显式指定,它的默认值有如下两种情况: 1.有intent-filter,此属性值默认就是true; 2.没有intent-filter,此属性值默认就是false;
+参考FAQ: FAQ91772
+### 问题: ramdisk.img功能认知
+解决方案: ramdisk.img是编译Android生成的一个镜像文件,最后和kernel一起打包生成boot.img镜像.ramdisk.img中主要是存放android启动后第一个用户进程init可执行文件和init.*.rc等相关启动脚本以及sbin目录下的adbd工具(root根目录的镜像). ramdisk通过直面意思就大概能理解意思,ram disk虚拟内存盘,将ram模拟成硬盘来使用的文件系统.对于传统的磁盘文件系统来说,这样做的好处是可以极大提高文件访问速度;但由于是ram,所以在掉电后,这部分内容不能保存.ramdisk文件系统是在系统上电后直接从磁盘一次性加载到内存,在整个运行期间都不会有写回操作,所以,任何修改都掉电后丢失.
+参考FAQ: FAQ75404
+### 问题: 产线上如何进行simlock测试
+解决方案: 在不能通过恢复出厂设置恢复simlock的背景下,产线上如何进行simlock测试: 一般建议配置simlock的白名单来实现,默认加入白名单移动或者联通SIM卡来测试验证即可.
+参考FAQ: FAQ75389
+### 问题: GCF case44.2.2.1.7测试注意事项
+解决方案: 这个case测试中,以下步骤时,按要求操作. 当仪器提示NON GPRS DETATH时,发AT+SATT=0,1. 当要求attach manually for non-gprs services 时,发AT+SATT=1,1
+参考FAQ: FAQ75437
+### 问题: GCF case44.2.10测试注意事项
+解决方案: 这个case是检查PICS与手机能力是否一致的,出现问题,先需要检查仪器的PIXIT与手机能力匹配. 测试过程中需要发送两个PDP 业务时 激活第二个PDP 时 id 为2 AT+CGDCONT=2,"IP","%S","%A",0,0 AT+CGEQREQ=2,3,128,128,0,0,1,1500,"1E6","IE5",0,0,0 AT+CGEQMIN=2,3,128,128,0,0,1,1500,"1E6","IE5",0,0,0
+参考FAQ: FAQ75439
+### 问题: GCF case45.2.5.1.2.2测试注意事项
+解决方案: 测试中,需要注意 当仪表提示PDP3 时AT+CGEQMIN改为: AT+CGEQMIN=2,3,256,256,256,256,1,1500,"1E3","4E3",1,0,0" 当仪表提示Please initiate a Secondary PDP Context Activation 发送:AT+CGDSCONT=2,1 AT+CGTFT=2,1,1,"2.2.2.2.255.255.0.0",48,"65435.65535","65235.65335" AT+CGACT=1,2 当仪表提示please initiate pdp context modification with new qos. AT+CGCMOD=cid发起modify QOS的请求 AT+CGACT=1,2
+参考FAQ: FAQ75440
+### 问题: GCF 测试与上行8psk相关case
+解决方案: 需要注意 终端需要和PM确认清楚,是否支持上行8psk,同时,提前检查nvitem - td_tianji2_nv_type - nv_para_type_prev_umts_ms_ra_cap - up 8psk的支持情况,如果不支持,请和实验室说明. 53.1.1.6、53.1.1.9、53.1.1.13--53.1.1.22这些都是需要支持8PSK uplink ,手机不支持可以NA
+参考FAQ: FAQ75441
+### 问题: GCF case9.4.3.5/9.4.3.6/12.2.1.10测试注意事项
+解决方案: 测试这几个case时: 需要提前关闭完整性保护,因为这些case需要测试完整性保护,测试之前需要输入AT+SPTEST=1,1开启完整性保护,测试完毕后输入AT+SPTEST=1,0关闭.
+参考FAQ: FAQ75442
+### 问题: GCF 27系列要求STK显示case
+解决方案: 在gcf测试中,测试27系列要求STK显示case前,需要在mmi里设置STK – set idle mode 勾选. 如果没有这个选项,这部分case均无法通过,请联系pm,合入stk显示的patch.
+参考FAQ: FAQ75443
+### 问题: boot.img的文件结构
+解决方案: Android编译时候生成了boot.img文件. boot.img的文件结构组成是: boot header 1 page kernel n pages ramdisk m pages second stage o pages n pages=(kernel_size + page_size -1)/page_size m pages=(ramdisk_size + page_size -1)/page_size o pages=(second_size + page_size -1)/page_size 其实上面说明,这些模块都是需要页对齐的.
+参考FAQ: FAQ75486
+### 问题: 如何获取应用进程当前的堆栈信息？
+解决方案: 1.adb shell 2.ps | grep "应用进程名" // 获取应用进程的pid 3.kill -3 pid //此方法为打印pid对应的进程的java堆栈,打印的内容在data/anr/traces.txt文件中 4.debuggerd -b pid //此方法为打印pid对应的进程的native堆栈
+参考FAQ: FAQ75506
+### 问题: 蓝牙配对时，在什么场景下会弹出配对的提示框而不是通知消息？
+解决方案: 屏幕是点亮时,在以下几种情况会弹出配对提示框: (1).蓝牙设置界面是可见状态 (2).蓝牙可见性关闭时间在60S内 (3).当前蓝牙正在进行搜索或者蓝牙搜索模式在60S内发生了变化,即打开或者关闭搜索模式的60S内 (4).当前配对设备是被选中的设备,而且选中操作要在60S内
+参考FAQ: FAQ90850
+### 问题: 如何判定modem版本是否支持六位MCCMNC的simlock
+解决方案: 如果simlock白名单有六位MCCMNC,需要升级modem版本来支持,如何确认modem版本是否支持 只需对比当前版本是否是MOCORTM_14A_OC_W15.32及以后版本即可.
+参考FAQ: FAQ75580
+### 问题: 拉丁输入法下如何将输入的单词快捷加入个人词典
+解决方案: 系统自带的拉丁输入法,包含了一个名为个人词典的功能, 它允许用户定义自己的词典,比如你可以将一些个人常用的 而系统不包含的词加入其中,添加方法有如下两种. 通常情况下是通过 设置-》语言和输入法-》Android键盘(AOSP) -》文字更正-》个人词典进行添加. 但也有一种快捷添加方式,在任意输入界面,输入您想添加到 个人词典的单词,按空格或双击该单词后将出现一个"替换"浮窗, 点击该浮窗后将出现添加到词典的选项.
+参考FAQ: FAQ75600
+### 问题: wifi P2P 应用中 removeGroup 与 deletePersistentGroup 有什么区别？
+解决方案: 在 WifiP2pSettings.java (所在路径:packages\apps\settings\src\com\android\settings\wifi\p2p) 中: 有窗口调用 WifiP2pManager 的函数: mWifiP2pManager.removeGroup mWifiP2pManager.deletePersistentGroup 这两个调用,都提到了对组的删除,那么这连个调用是在什么时候调用?有什么区别呢? 其中 removeGroup 用在 DIALOG_DISCONNECT 窗口中,用于链接成功之后,需要将连接断开时. 所以 removeGroup 用于控制连接 其中 deletePersistentGroup 用在 DIALOG_DELETE_GROUP 窗口中,从"已保存的群组"列表中删除指定群组. 所以 deletePersistentGroup 用于操作列表
+参考FAQ: FAQ75604
+### 问题: 是否可以将输入法安装到T卡（外置SD卡）上
+解决方案: 输入法是可以安装到T卡上的,不过将面临每次开机后,之前设置好的默认输入法将会丢失,仍需重新设置的后果. 因而不推荐安装到T卡上.(尝试过搜狗输入法和触宝都有这个问题). 主要原因是任何安装在外部存储设备中的正在运行的程序当存储器卸载或移除时,程序将会被迫关闭,可能造成数 据的丢失,或程序的损坏.当存储器可用时,系统会无法识别应用程序. 因而输入法类的程序作为重要的系统应用,为了避免发生手机内无输入法的情况,原生设计为,设备重启后,用户 的输入法将被系统默认输入法取代,当外部存储设备重新加载后,用户需要通过系统设置重新启用自己的输入法.
+参考FAQ: FAQ75607
+### 问题: MOCOR 非蓝牙拨号器该如何判断目前已经连接上其他蓝芽装置
+解决方案: MOCOR 非蓝牙拨号器只能连接蓝牙耳机, 与其他装置不进行连接, 与其他装置只能进行文件传输(传输完成后连接直接断开, 过程中智能机与MOCOR端蓝牙图标皆显示未连接) 在MMIBT_CallBackFunc()中 当收到ID_STATUS_HFAG_SLC_CONNECTED表示已连接上其他蓝芽耳机, 当收到ID_STATUS_HFAG_SLC_DISCONNECTED表示连接装置已断开 若是要利用函式判断的话, 可调用BT_GetConnStatus()就可以判断连接状态, 有两个参数,一个地址,一个service type,service type这边传0值就可以了, 这个函数回传BT_SUCCESS = 0时表示有连接, BT_ERROR = 1表示没有连接
+参考FAQ: FAQ75627
+### 问题: 在AP侧如何打开热插拔开关
+解决方案: 将frameworks\base\core\res\res\values\config.xml配置文件中的config_hotswapCapable 设置为true即为打开热插拔开关. 注意:此修改需要建立在device和cp都支持热插拔的前提下.     <!-- Is the device capable of hot swapping an UICC Card -->
+    <bool name="config_hotswapCapable">true</bool>
+参考FAQ: FAQ75637
+### 问题: SC2342A支不支持BT4.0？
+解决方案: 支持
+参考FAQ: FAQ75685
+### 问题: Linux内核--make mrproper与make clean的区别
+解决方案: 自己在服务器上下载源码后,编译一次后,修改后又重新编译提示编译不过,查看原因是没有make mrproper.平时使用最多的是make clean命令,此命令没有使用过,所以简单介绍下其命令的区别,方便以后使用. 首先,这两个命令都是用于删除编译内核时产生的相关文件的. 两者的区别如下: make mrproper命令会删除所有的编译生成文件、内核配置文件(.config文件)和各种备份文件,所以几乎只在第一次执行内核编译前才用这条命令. make clean命令则是用于删除大多数的编译生成文件,但是会保留内核的配置文件.config,还有足够的编译支持来建立扩展模块.所以你若只想删除前一次编译过程的残留数据,只需执行make clean命令. 总而言之,make mrproper删除的范围比make clean大,实际上,make mrproper在具体执行时第一步就是调用make clean.
+参考FAQ: FAQ75687
+### 问题: 7701开关机铃音在audiotester那个模式下调试
+解决方案: 用audiotester,在music模式下调试
+参考FAQ: FAQ75699
+### 问题: 7715平台音频支持采样率是多少？
+解决方案: speech支持8K和16K采样率,music支持44.1K采样率
+参考FAQ: FAQ75703
+### 问题: 如何获取cphs里的长短名称
+解决方案: 在load sim卡数据的时候, SIM中的CPHS ONS的长格式和CPHS ONS的短格式名称的获取:代码是通过filehandler这二个消息去下发给modem,先读长的,如果失败,就用短的. READ_SPN_CPHS, READ_SPN_SHORT_CPHS 参见获取的方法getCPHSSpnFsm里如下语句: case READ_SPN_CPHS: case READ_SPN_SHORT_CPHS: 里面就会得到对应的值的数据信息.
+参考FAQ: FAQ86124
+### 问题: [SC7731]软件如何设置开机电压和关机电压
+解决方案: [开机电压] 1)软件中开机电压设置是在u-boot里做的,能过宏LOW_BAT_LOW(未插充电器) 和LOW_BAT_LOW_CHG(插充电器)来设置的,其值定义在UBOOT里的config文件中,比如include/configs/sp7731gea.h,开机过程中会将其与VBAT相比较,低于设置值是不能开机的; 2)这个值不要设置太低,不然可能出现开机中大电流手机功能不稳定的情况,其值一般设置>=3300 [关机电压] 在软件中设置关机电压是在kernel/arch/arm/boot/dts/sprd-battery.dtsi中涉及两个方面: 1)一个是电量0对应的OCV值,这个是在ocv-tab-vol中设置的,当电量为0时软件会走关机流程; 2)soft-vbat-uvlo,当VBAT电压<=soft-vbat-uvlo,会强制电量为0%,然后走关机流程,这个值默认为3100,项目中一般是不需要修改这个值的;
+参考FAQ: FAQ75724
+### 问题: 如何选择NTC电阻硬件连接
+解决方案: NTC电阻的选择以及NTC电阻的硬件连接方式会在一定程度上影响温度读取的准确性.这里推荐使用常温10K,精度±1%的NTC电阻,并推荐使用如下两种硬件连接方式:
+参考FAQ: FAQ75752
+### 问题: 邮件应用添加Exchange账户后删除帐户，之后会异常停止，如何修改
+解决方案: 原因分析: 设置accountPolicy时,email账户已经从数据库删除,因此得到了空的account 对象,从而导致空指针异常. 需要修改packages\apps\Email\src\com\android\email\SecurityPolicy.java public void setAccountPolicy() 添加 if (account == null) { return; }
+参考FAQ: FAQ75833
+### 问题: 如何设置语音信箱号码默认一固定号码，并不随sim卡改变而改变
+解决方案: 可直接给GSMPhone.java中getVoiceMailNumber()的返回值number赋值即可. 例如,将语音信箱号码默认为*80,则可进行如下修改: number="*80";//添加该代码 return number; GSMPhone.java的路径如下:frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/ 如有疑问,可直接咨询展讯FAE.
+参考FAQ: FAQ75874
+### 问题: sprdbat_cccv_cal_from_chip这个值在什么时候是1，在什么时候是0？
+解决方案: 如果CONFIG_OTP_SPRD配置打开,在FGU初始化的时候,会通过sci_efuse_cccv_cal_get()函数从efuse读取CV值,如果值不为空,会根据chg_end_vol_pure进行调整CV值,并将sprdbat_cccv_cal_from_chip设置为1,如果sci_efuse_cccv_cal_get()读取值为空就会使用软件设置的cccv_default值,并在第一次充电过程中对其进行调整,sprdbat_cccv_cal_from_chip的值为0.
+参考FAQ: FAQ75880
+### 问题: 充电过程中为什么充电电流会越来越小
+解决方案: 对于锂电池充电是会经过恒流充电->恒压充电的转变过程的,这个转化点是CCCV点,为了保护锂电池不会过充,当达到CCCV点后,充电电压会保持不变,随着电池内部电压(OCV)升高,充电电流会变越来越小,当小到一定程度达到停充条件后就停止充电了.
+参考FAQ: FAQ75882
+### 问题: 7731平台是否支持电池厂商提供的ZCV曲线表
+解决方案: 电池厂商提供的电池ZCV曲线一般包括下面的信息: 1)不同温度下电池OCV对应的电量及总容量; 2)不同温度下电池电量百分比对应的内阻值; 展讯7731平台目前并不支持原始的ZCV表格: 1)支持根据温度及当前电量来调整电池内阻(电池内阻可使用展讯提供的自动化内阻测试工具进行计算);由于电芯特性在大电流充电时电池电压会有虚高的现象,为了规避这个虚高引起的电量计算不准确,展讯在代码为电池内阻做了充放电的区分,厂商提供的电池内阻是放电过程中的内阻,所以厂商提供的ZCV表在内阻上也只是一个参考; 2)对于各电量对应的电压值,虽然厂商提供的ZCV表中包括这一信息,但从实际情况看来,各设备厂商都会重新测量这个对应关系表; 3)目前也不支持根据电池使用次数来调整总容量的功能;
+参考FAQ: FAQ75883
+### 问题: 7731平台充电时是否允许电量下降
+解决方案: 1)对于7731平台,在android 4.4中,默认代码是不充许充电时电量下降的,所以也会产生充电入不敷出时,电量显示不为0,但是关机了,关机后量电池电压为过放状态; 2)在7731 5.1平台上,当充电时会判断是否充电入不敷出,如果电入不敷出是请允许电量显示下降的; 3)在4.4中客户若想充电时允许电量下降,可以修改时sprdbat_update_capacty()中的充电态的逻辑;
+参考FAQ: FAQ75886
+### 问题: 7731平台是否支持随CPU温度升高而降低充电电流功能
+解决方案: 1)在7731 Anroid 5.1中代码是支持随CPU温度升高而降低充电电流的功能的,其功能代码是由CHG_CUR_ADJUST宏来控制的,默认该功能是关闭的,客户若想使能此功能,只需在sprd_2713_power.c中定义宏CHG_CUR_ADJUST即可; 2)功能代码是针对于内置充电芯片的,若客户使用的是外置充电芯片可仿照sprd_2713_power.c中的代码来添加;
+参考FAQ: FAQ75887
+### 问题: android5.1 ntp更新时间的机制
+解决方案: android5.1 ntp更新时间的机制是:连接ntp服务器发出请求,如果20秒没有得到ntp服务器回应,那么此次更新失败,会在20秒后再次尝试.最多尝试三次,如果三次都失败了,那么会再10天之后再进行更新尝试. 其中timeout时间和尝试次数可以在frameworks\base\core\res\res\values\config.xml中配置.
+参考FAQ: FAQ75889
+### 问题: android5.1如何限制与启用Guest访客或来宾用户拨打电话
+解决方案: android5.1可以限制与启用Guest访客或来宾用户拨打电话: 设置->用户->(设置)访客模式->允许接打电话
+参考FAQ: FAQ75902
+### 问题: SR2351 的 QDID、  Product ID 、 Manufacturer  分别是什么？
+解决方案: SR2351: QDID :56164 Product ID:SR2351 (Controller Subsystem) Manufacturer:Spreadtrum Communications Shanghai Ltd
+参考FAQ: FAQ78982
+### 问题: SC7731平台 android5.1版本，如何修改进校准模式时的等待时间？
+解决方案: 当遇到高概率无法进校准模式的情况时,可检查是否是uboot代码中,等待U2S口时间过短的原因.如果是,可修改项目中的uboot/include/sp7731gea.h 文件(这里要确认下,不同项目可能文件不一样). 找到#define CALIBRATE_ENUM_MS 3000 #define CALIBRATE_IO_MS 2000 CALIBRATE_ENUM_MS是等待PC下发set configuration的时间.CALIBRATE_IO_MS 是手机等待与PC tools交互的时间.单位都为ms,可根据情况适当增加延时时间.
+参考FAQ: FAQ75898
+### 问题: 如何确定项目中存储相关的配置脚本是哪一个
+解决方案: 在/device/sprd/scx35/ 目录下,有4个与存储设备配置相关的脚本,分别是init.storage1.rc,init.storage2.rc,init.storage3.rc,init.storage4.rc, 在项目编译时,会选择一个脚本. 这些文件的选择是在storage_device.mk中确定的,打开该文件可看到和脚本中的两个环境变量 STORAGE_INTERNAL和STORAGE_PRIMARY相关.而这两个变量设置,与存储设备类型相关,如果是EMMC的,对应/emmc/emmc_device.mk设置 如果是nand,对应/nand/nand_device.mk中设置. STORAGE_INTERNAL 的值是physical或emulated,emulated代表不支持内置UMS,Physical代表支持内置UMS. STORAGE_PRIMARY 为internal或external,internal 表示内卡为主卡,exernal表示外卡为主卡.
+参考FAQ: FAQ75930
+### 问题: SS和USSD有什么区别
+解决方案: SS(Supplementary Service):补充服务; USSD(Unstructured Supplementary Service Data):非结构化的补充字串. 二者之间的区别在于: 1. USSD基本都是运营商根据自己的服务定制的,而SS是每个手机固有的; 2. SS在发送给网络前,手机会先做处理,而USSD是完全透明的传送给网络.
+参考FAQ: FAQ75999
+### 问题: SGPS中星空图不同颜色代表什么意思
+解决方案: 星空图上,绿色是定位用到的星,黄色是跟踪上但没参与定位的星,红色是历书推算的可见卫星
+参考FAQ: FAQ75966
+### 问题: 为什么手机中在中国区和德国区需使用WLAN标识热点，而其他国家使用Wi-Fi？
+解决方案: Wi-Fi做为WLAN中的一种标准协议,并被国际标准化组织(ISO)所承认以及绝大多数国家所使用的,但究其根本只是WLAN(Wireless Local Area Network 无线局域网)的其中一个子集.实际上在中国使用的无线局域网标准中,还有中国独立研发的标准:WAPI(Wireless LAN Authentication and Privacy Infrastructure).所以,按照中国工信部的要求,在中国大陆入网的手机产品,必须支持Wi-Fi以及WAPI,也因为这中国区标识热点功能,需要使用WLAN字样,德国区亦然.
+参考FAQ: FAQ75967
+### 问题: 常见丢星有哪几种
+解决方案: 1.信号太弱,卫星颗数少无法定位,导致丢星 1)经过城市峡谷(道路两边都是建筑物和树木)这种GPS弱信号环境下,由于可见卫星少卫星信号弱,导致无法跟踪住卫星,导致短暂丢星. 2)手机位置摆放不正确导致卫星接受困难 2. 已经定位,但是没有显示已使用的卫星 在这种GPS信号不好以及卫星之间分布不好的条件下,我们的算法是把根据当前捕获到的卫星信息以及上次定位使用的卫星信息综合起来定位,提高精度,这时并没有输出使用的卫星其实是使用了卫星定位.
+参考FAQ: FAQ75968
+### 问题: 如何通过代码查到软件的工程暗码是多少？
+解决方案: 1,MMIAPIENG_StartEngineerMenu()为开启工程模式主窗口的函数, 2,mmieng_main.c文件中s_mmieng_idle_dial_num_app_tab[]结构体中 MMIAPIENG_StartEngineerMenu 所在的数组项中所对应的"num_str_ptr"值就是该工程的工程暗码. 这样在拿到客户代码后就不需要每次问客户工程暗码的值了. 例如:IDH包中默认 MMIAPIENG_StartEngineerMenu在s_mmieng_idle_dial_num_app_tab[]对应的项为 { "#*8378#1#", MMIENG_IDLE_DIAL_NUM_MENU, PARS_ENGINEER_MENU, MMIAPIENG_StartEngineerMenu } 其中,"#*8378#1#"就是该工程的工程暗码.
+参考FAQ: FAQ75959
+### 问题: CTS verifier 中测试wifi direct的需要注意哪些方面？
+解决方案: CTS verifier 中wifi相关case 如上图示: 其中 GO Negotiation responder Test Group Owner Test Service Discovery Responder Test 这三个都是配合测试case使用,并不是具体的测试case. 另外三个才是测试的具体case: GO Negotiation Requester Test Group Client Test Service Discovery Requester Test 当测试此三个case时,需要辅助机进入相对应case的界面,并保持到此三个case测试完成,才可退出.例如: 测试机测试case:GO Negotiation Requester Test 时,辅助机需进入GO Negotiation responder Test界面,如下图所示: 并保持测试机的case测试完成.
+参考FAQ: FAQ75969
+### 问题: 为什么手机中的便携式热点一般不支持WEP加密方式？
+解决方案: 通常来说,一般手机中的便携式热点功能里面的安全认证方式不支持WEP,其原因除了是WEP加密方式容易被破解之外,还有原因就是手机Wi-Fi以便携式热点模式启动设置了网卡支持11n网络,以便于提供更高的速率,而11n不支持WEP加密方式,如使用则会回落到11 b/g,使得速率下降到54Mbps以下.所以,一般手机的便携式热点也不使用WEP的加密方式.
+参考FAQ: FAQ75972
+### 问题: wifi direct和wifi ad-hoc 模式的区别在哪？
+解决方案: ad-hoc 模式也即点对点模式,和以前的直连双绞线概念一样,所以也就无法与其它网络沟通.它和wifi direct的区别在于: 1. ad-hoc模式的加密方式为WEP,而wifi direct为wpa2,后者比前者会更安全些. 2. wifi direct可以同时连接其他无线网络,而ad-hoc如前所述,不可以连接. 3. wifi direct相对于ad-hoc模式有更好的设备发现机制以及其他更多的精细控制,例如:耗电控制等.
+参考FAQ: FAQ75974
+### 问题: UMTS、UTRAN分别代表什么
+解决方案: UMTS:Universial Mobile Telecommucation System,即通用移动通信系统; UTRAN:UMTS Terrestrial Radio Access Network,即UMTS陆地无线接入网.
+参考FAQ: FAQ75982
+### 问题: OTP不生效原因
+解决方案: 首先确认好模组有没有烧录OTP数据进去: 1,跟模组厂确认. 2,添加log信息查看. 如果模组确实已经烧录,log信息显示正常,那么就需要考虑如下原因:OTP数据加载过程中被初始化寄存器覆盖. 具体见如下code: sns_open(){ ********** sensor_set_mode(sensor_cxt, SENSOR_MODE_COMMON_INIT, is_inited); sensor_cfg_otp_update_isparam(sensor_cxt, sensor_id); sensor_set_mode(sensor_cxt, SENSOR_MODE_PREVIEW_ONE, is_inited); ********** } 上面是正常流程,我们主要需要保证Sensor的寄存器初始化要放在写OTP参数之前. 因为不少sensor在初始化过程中,会对之前写入的OTP数据进行复位或者覆盖操作,导致OTP不生效.
+参考FAQ: FAQ78177
+### 问题: 如何用简单的测试方法确认GPS硬件天线性能问题
+解决方案: 首先需要确认GPS能正常工作可以搜到星,在此基础上具体确认方法如下: 1.在空旷地方 2.输入*#*#2266#*#*进入SGPS测试工具 3.在INFORMATION页进行cold start开始搜索 4.搜索15分钟左右 5.切换到SATELLITES页 6. 确认搜索卫星值不低于3台且cn0不低于40db 如果条件6不满足可初步认为硬件或天线存在性能问题
+参考FAQ: FAQ75970
+### 问题: 自动模式下,Flash开启的条件是否可更改？
+解决方案: SC7731G和SC9830都默认设置BV<=0(即曝光时间和增益都达到最大)时打闪,无法更改.
+参考FAQ: FAQ78184
+### 问题: GPS性能正常情况下热启动时间不达标
+解决方案: GPS热启动需要满足如下条件: 1.手机中保存一定颗数的卫星星历历书数据; 2.已知大概的时间位置信息. 建议首次定位需要满足搜索5颗星以上并保持跟踪一段时间后(如15min)再进行热启动测试
+参考FAQ: FAQ75997
+### 问题: SC2342A WIFI 支持硬解码还是软解码？
+解决方案: SC2342A集成了WIFI/BT/GNSS/ baseband core,是硬解码的.
+参考FAQ: FAQ76017
+### 问题: GPS GE方案中hot Start 的TTFF标准
+解决方案: 在满足GPS冷启动能捕获跟踪到至少5颗以上的卫星则热启动TTFF时间在3秒左右
+参考FAQ: FAQ76011
+### 问题: SC2342A BT TX power class 支持class 0还是class1
+解决方案: SC2342A BT TX power 支持class1
+参考FAQ: FAQ76029

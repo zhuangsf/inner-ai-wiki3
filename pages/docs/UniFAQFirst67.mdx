@@ -1,0 +1,325 @@
+### 问题: 7731E平台 安卓9.0 连接Audio Tester录音调试无NR模块?
+解决方案: 在安卓9.0系统上平台版本的nr属性相比之前都要加"vendor",比如: ro.vendor.audio_tunning.nr,所以需要查看平台基线版本,MOCORDROID9.0_Trunk_18C分支7731E平台的代码上, 是否是ro.vendor.audio_tunning.nr,如果18C分支 77131E平台没有同步,会出现此问题,代码加上"vendor"即可解决.
+参考FAQ: FAQ118894
+### 问题: 6531E如何调试三合一喇叭的振动设置
+解决方案: 三合一喇叭振动可以在audiotester工具中设置频率和幅度,见下图.
+参考FAQ: FAQ118898
+### 问题: Sidetone开关可以用吗
+解决方案: Audiotester中的Sidetone开关可以用的,打开和关闭以及sidetone gain都是有效的,不过手机项目不建议单独为了过sidetone而开,要看主观感受的.
+参考FAQ: FAQ118901
+### 问题: SC9820E/SC9832E 是否支持ESIM功能？
+解决方案: SC9820E/SC9832E平台,不支持内部ESIM,支持外接ESIM芯片,SIM卡信号使用SIM0/1均可.
+参考FAQ: FAQ118909
+### 问题: 排帧的单位是多少？
+解决方案: 排帧的单位和制式有关,制式指的是GSM.wCDMA, TD, lte等,不同的制式排帧单位肯定不同,排帧的最小单位基本和制式的最小单位基本相同. 但是如果制式的最小单位较大,也有排帧单位比制式单位小的,比如GSM. 广义上讲,一个不能被打断的排帧长度,也可以说是排帧的单位,比如一次接收寻呼数据,多频点的连续测量.
+参考FAQ: FAQ118924
+### 问题: 排帧问题如何排查？
+解决方案: 排帧本身没有问题,有问题的是影响正常排帧的条件. 有这个大前提下,先找出问题点,可以是出问题的现场,不一定要原因,在问题的上下文中,反推那些条件会影响排帧, 例如,上层消息触发,定时器超时触发,mips不够触发,上次相同排帧数据残留,排帧依赖的底层数据异常都会导致问题. 把原因细分,基本就能查到原因了,接下来就是如何解决问题了.
+参考FAQ: FAQ118925
+### 问题: SL8521E/SL8541E 是否支持ESIM功能？
+解决方案: SL8521E/SL8541E平台,不支持内部ESIM,支持外接ESIM芯片,SIM卡信号使用SIM0/1均可.
+参考FAQ: FAQ119023
+### 问题: WCDMA，通过log快速查看激活小区和目前测量到的同频邻区。
+解决方案: 通过下列关键字可以快速查看当前的激活小区和测量到的同频邻区: 查看激活小区的个数和PGC: prepare active multi 查看同频邻区的个数和PGC: prepare intra multi
+参考FAQ: FAQ118951
+### 问题: 功能机中支持外部FM LNA的EZ-FM方案的天线形态有哪些
+解决方案: 功能机中支持外部FM LNA的EZ-FM方案的天线形态有四种: 1. 与GSM单极天线复用 2. 与GSM PIFA天线馈点复用 3. 与GSM PIFA天线地点复用 4. 内置短天线 选用不同的天线方案,FM LNA前端需注意选择适用的匹配网络
+参考FAQ: FAQ118955
+### 问题: DDR4的原理图什么时候需要连接ZQ2，ZQ1, CKE1_A, CKE1_B, CS1_A, and CS1_B
+解决方案: JEDEC协议中定义3个rank的LPDDR4才会使用ZQ2, CKE2_A, CKE2_B, CS2_A, and CS2_B,我司的SC9863A不支持3 rank的LPDDR4,目前客户也没有提交过3 rank的LPDDR4; 如果物料只有2个rank,它的ZQ2, CKE2_A, CKE2_B, CS2_A, and CS2_B是NC的;如果这个物料只有1个rank,无需连接ZQ2, CKE2_A, CKE2_B, CS2_A, and CS2_B,ZQ1, CKE1_A, CKE1_B, CS1_A, and CS1_B,这种物料没有这些信号. 我司的SC9863_B_CS_A_SCH_V0.0.2_SC2721G_SC2703L_SR3595D_5M_eMMC_LPDDR4参考设计兼容1个rank和2个rank的LPDDR4.
+参考FAQ: FAQ118957
+### 问题: user版本如何使用armlog工具抓取debug级别的armlog？
+解决方案: 在armlog工具的AT命令窗口输入at+sploglevel=1,3,"","" 设置成功后会在窗口中返回"ok".
+参考FAQ: FAQ118980
+### 问题: 手机天线灵敏度差，如何分析
+解决方案: 1.等效全向灵敏度EIS为无线测试条件下某一接收方向上的灵敏度: S是传导灵敏度,NFa是等效噪声系数,G是天线的增益 2.如果手机天线灵敏度比较差,可以通过以下方法确认是否由于天线性能差引起的: a.可以通过天线的无源指标,VSWR,Gain,effenciency来判断.如果以上数据还好,基本可以判断天线性能良好,排除天线的这个因素 b.可以通过RX level来判断.如果回报值比较高,但是EIS比较差,那就是手机系统存在干扰.从公式上看的话,就是等效噪声系数太大.
+参考FAQ: FAQ118996,含图片
+### 问题: C417M-D/C417M-Q 是否支持ESIM功能？
+解决方案: C417M-D/C417M-Q平台是支持内部ESIM功能的,ESIM需连接至SIM0. 具体设计可参考Release原理图.
+参考FAQ: FAQ119024
+### 问题: 如何获取NPI的USB驱动和开机状态的USB驱动？
+解决方案: 展锐平台常用的USB驱动有两个: 1、NPI的USB驱动(SPRD_NPI_USBDriver_1.4);会随着NPI Tools工具包发布. 其安装后,DUT在关机状态连接电脑,电脑上虚拟出U2S daig 口用于下载和校准综测等工厂操作. 安装后,虚拟出的端口如下图: 2、开机工具(DirverCoding);会随项目软件大版本发布;一般放置于Modem软件的DEBUG_TOOL文件夹内. 其安装后,DUT正常开始后,连接电脑,电脑上会虚拟出来一系列虚拟端口; 可使用相应Tools调用其对应端口操作做相关动作,以及ADB操作等; 安装后,虚拟出的端口如下图:
+参考FAQ: FAQ119009
+### 问题: MIC回路测试中，麦克到喇叭的延时较大，如何修改？
+解决方案: 在HandsetLoopB 选项里,将DL delay time值修改减小即可(最小为0). 注意:HandsetLoopB 模式的延时,对麦克到喇叭,麦克到听筒,麦克到耳机(包括三段式和四段式)三种回路模式都有效;如果延时异常,修改此处延时参数即可.
+参考FAQ: FAQ119030
+### 问题: SC9820E是否支持ESIM卡？
+解决方案: 硬件上可以支持,需要外接ESIM IC,信号连接和普通SIM卡一致.
+参考FAQ: FAQ119054
+### 问题: GSM 弱场下通话电流为什么比强场下通话电流高
+解决方案: GSM 上行发射功率是网侧小区根据当前网络环境配置给UE,弱场下上行发射功率会升高,不然会上行发送失败,导致通话失败.弱场下功率变高自然导致通话电流上升.
+参考FAQ: FAQ119067
+### 问题: S/N在手机内的存储位置？
+解决方案: S/N存放位置:S/N和站位信息均放置在手机的Phasecheck区域. S/N信息获取:可通过测试工具等发DIAG命令给手机,手机侧会读取flash中s/n信息,并返回给PC 侧的工具(WriteIMEI/Pandora/Simba等工具均可完成读写SN).
+参考FAQ: FAQ119189
+### 问题: Android P-Go版本是否支持Widget
+解决方案: Android P-Go,android原生已经禁止Widget. 在google文档《Android P-Go Device Configuration Guide.pdf》中,相关Widget描述如下: ● Launcher: Widgets should not be supported in both custom launchers and AOSP Launcher3Go.
+参考FAQ: FAQ119111
+### 问题: 录音NR降噪算法使用
+解决方案: 智能机平台录音是可以使用NR降噪算法的. 音频调试时,可以先通过Audiotester工具调取读取NR参数值,确认算法是否合入 当NR参数全0时,算法是没有合入的,有值时,如需使用,在record_clarity_switch中置1即为开启. record_ns_limit(dB)可以用来调试噪声抑制大小,越大抑制越强. 不建议设置过大的值,会影响到正常语音. 注意,当打开录音NR时,录音时功耗会增大约10~20mA.
+参考FAQ: FAQ119145
+### 问题: FPC的FM走线设计
+解决方案: FPC的FM走线设计 有些手机采用大小板的设计,主板在结构上方,小板在下方,中间通过FPC线连接起来. 耳机座在小板上时,FM射频信号线经过FPC. 1.如果FPC上的FM走线不注意,容易出现以下问题: ①.主板上测试FM灵敏度正常,在主板上接天线测试FM搜台正常 ②.小板上测试FM灵敏度差,搜台少,或杂音多. 2.这时检查FPC的FM走线,是否满足以下条件: ①.FM_ANT两边的地线宽度≥2mm,且地线打连续的地孔 ②.FM_ANT及起两边地线对应的下面,有完整连续的地平面 ③.FM_ANT远离USB的电源线、信号线 如果FM出现上述问题,同时FPC的FM_ANT不满足条件,请优化FPC后再验证FM性能.
+参考FAQ: FAQ119171
+### 问题: 软件版本号的具体路径与位置？
+解决方案: 软件的版本信息在:MS_Code/version/SC6531**_version.c中的s_version_info中
+参考FAQ: FAQ119191
+### 问题: 如何调试SC6531/SC6531E平台外放来电铃声的效果，调试工具中MIDI/AMR/MP3选项的作用是什么？
+解决方案: SC6531/SC6531E平台,和展锐其他平台一样,在Audio tester中外放来电铃声和外放music的调试模块是共用的,调试效果相同; 和其他平台不同之处,是在于Audio tester中还可以选择MIDI/AMR/MP3选项来调试不同格式下铃声的效果,即多了一个细分类别.
+参考FAQ: FAQ119198
+### 问题: 如何查看LTE小区的cell identity
+解决方案: cell identity是32位的一个数,其中前24位是代表ENODEB id,后8位是小区在这个ENODEB上的识别号,也就是Cell ID; 而E-NodeB ID 与 Cell ID 这两项可以直接通过查看手机工程模式获取到,具体如下:
+EngineerMode->Netinfo->SIM0->nw cap->Serving cell->E-NodeB ID EngineerMode->Netinfo->SIM0->nw cap->Serving cell->Cell ID
+参考FAQ: FAQ119250
+### 问题: 6531E平台是否支持4sim卡？
+解决方案: 目前6531E软件最多支持3 SIM ,不支持4 SIM.如果要支持4SIM卡,需要软件和硬件同时修改.
+参考FAQ: FAQ119269
+### 问题: SC6531e modem 版本如何打开飞行模式
+解决方案: modem版本可以用AT命令开关协议栈. 1. 同时开启关闭SIM和PS协议栈 AT+CFUN=0 关闭PS协议栈和SIM卡 AT+CFUN=1 开启SIM卡和PS协议栈 2. 只开启或关闭PS协议栈(即MMI中的开启关闭飞行模式) AT+SFUN=5 关闭协议栈 AT+SFUN=4 开启协议栈
+参考FAQ: FAQ119271
+### 问题: SC6531E/F平台如何编译三卡工程
+解决方案: 请按下列步骤修改: 1)将工程make file中的宏修改成三卡 MMI_MULTI_SIM_SYS = TRI MULTI_SIM_SYS = TRI 2)l4.a、ps.a、layer1.a、layer1_dsp.a这4个库文件使用IDH包中sc6531efm_32X32_320X240BAR_AB_TRI(release版本)或者sc6531efm_32X32_320X240BAR_AB_TRI_trace(debug版本)目录下的同名库文件替换 3)重新new编译
+参考FAQ: FAQ119807
+### 问题: GD9D4M4EYKM-A6型号memory的Vccq信号连接
+解决方案: 我司参考原理图V0.2.0版本选取的物料是金士顿的04EMCP04-NL2DM627,eMMC为5.0版本,查看pin list可知道C2脚为NC,Vccq为B8脚,是有连接1V85电源的.而客户物料C2脚和B8脚都定义为vccq.从厂商的规格书中可以看出,两个脚均需要连接1V85电源.所以在AVL列表中备注有"芯片C2不能NC,需同B8一致外接VDD1V85网络". 客户C4脚定义为data strobe信号,根据eMMC协议规定:data strobe信号只能在HS400模式下配置启用,启用后可以提高数据传输的稳定性.而GD这颗物料规格书中描述emmc器件支持SDR和DDR,也就是最高支持HS400模式.而我司给到的参考原理图上的物料:04EMCP04-NL2DM627只支持HS200,所以没有用到RCLK信号.是否需要接C4,是需要看host配给eMMC的频率以及物料支持的模式来决定的.
+参考FAQ: FAQ119351
+### 问题: 为什么打开数据WCDMA模式下通话电流会增加40mA左右？
+解决方案: 1. WCDMA模式下通话,据业务打开后同时也开启了副天线及相关模块,所以,带来了将近40mA的电流增量; 2. GSM/CDMA 1x模式下通话,无论UI是否打开"数据连接"副天线都不会打开,所以不会有这个问题; 3. VOLTE通话场景,无论UI是否打开"数据连接" 副天线都会打开,所以不存在开/关数据流量电流的差距.
+参考FAQ: FAQ119392
+### 问题: 如何分析休眠下底电流大的问题？
+解决方案: Step1:首先,根据展锐发布的《UNISOC 电流分解方法 V1.0》对休眠场景下各个电压域进行电流分解; Step2:对照isupport《XXXXXX Power Test Report V1.0》文档未页的参考数据,确认是那个电压域异常; Step3:各电压域异常可能性及处理方法: 3.1. VDDCORE异常,需要软件同事进行分析,确认未关闭子系统; 3.2. DCDCGEN/VDDMEM异常,最大可能是Memory引起的,请更换Memory颗粒进行对比测试. 3.3. VDDDCXO异常,与时钟方案配置有关,请确认TSX+32KLess 或 TCXO+32K 时钟BOM是否正确; 3.4. VDD1V85异常,与Memory 和 外设有关,与PinMap有关.可以通过更换Memory、拆外设,检查pinmap.c文件Debug; 3.5. VDD2V8异常极有可能与TP LCM有关,极小可能与其它外设有关.
+参考FAQ: FAQ119394
+### 问题: 客户项目FM性能调试注意事项
+解决方案: 一、单独耳机天线 SC6531E:硬件通路物料齐全,FM APP可搜台,耳机播放FM有声音 其它平台:自行验证搜台性能,有具体问题再提CQ处理 二、单独短天线 硬件:FM通路物料齐全 软件:不插耳机即可打开FM APP,短天线LNA的EN信号为高电平,FM APP可搜台,喇叭播放有声音 三、FM_LANT一分二双天线 硬件:FM通路物料齐全 软件:FM APP可搜台,播放FM有声音(耳机和喇叭),且满足以下条件 1)不插耳机即可打开FM APP; 2)插耳机时,短天线LNA的EN信号为低电平; 3)不插耳机时,短天线LNA的EN信号为高电平 四、FM_LANT和FM_SANT两个Pin脚分别接长短天线 硬件:FM通路物料齐全 软件:FM APP可搜台,播放FM有声音(耳机和喇叭).且满足以下条件 1)不插耳机即可打开FM APP; 2)插耳机时,短天线LNA的EN信号为低电平,切至FM_LANT工作; 3)不插耳机时,短天线LNA的EN信号为高电平,切至FM_SANT工作
+参考FAQ: FAQ119393
+### 问题: SC9863A平台TYPE-C接口可以支持哪些功能？
+解决方案: 1. SuperSpeed USB(USB3.0) 不支持; 2. USB2.0 支持; 3. eMaker 识别Type-C 线材中的电子标签 不支持; 4. BC1.2 充电协议 支持; 5. CC Source/Sink ability,只能实现500mA的Default值; 5.1. CC Source 通过CC脚报告自身电流提供能力 只能报告500mA, 不支持报告1.5A 3A能力; 5.2. CC Sink 通过CC脚获取充电器供电能力 只能到500mA,不支持获取1.5A 3A能力; 6. CC UFP DFP DRP 主从关系识别,支持; 7. USB HUB不支持; 8. 数字耳机, 支持MP3听歌,但不支持通话(不通过AP处理的音频均无法使用type-c).
+参考FAQ: FAQ122740
+### 问题: 为什么有些DCDC的反馈需要走差分，有些不需要？
+解决方案: 1. 有些电源的电流比较大,在PCB走线上会形成压降,实际Device端的输入电压低于电源输出电压,这对于存在DVFS(电压随频率变化)的CPU很敏感.所以,反馈要从Device端拉. 2. 为什么要走差分: 电源从PWR走线流到Device,再从GND流回源端.所以,无论电源还是地 都存在压差.而差分走线(开尔文)可以消除电源走线 和 地线的压差;另外,差分走线还可以消除共模干扰. 3. 综上,电流大、精度要求高的电源均采取这种方法.
+参考FAQ: FAQ119401
+### 问题: SC9863A平台使用LPDDR4时VDDMEMQ供电为何要使用外置的0.9V LDO?
+解决方案: 1. 平台LPDDR4(1.1V)和LPDDR4X(0.6V) IO做了兼容设计,IO结构比较特殊,在LPDDR4模式下必须使用0.9V,而不能使用1.1V.
+参考FAQ: FAQ119402
+### 问题: 手动选网2G后为何会自动回到3G/4G？
+解决方案: 手动选网指定的RAT只用于初始注册,不影响后续不同RAT间小区重选.所以手动选择 2G,后面保持手动模式下主要重选条件满足, 那么重选到3G/4G是正常的. 3GPP 具体协议描述如下,谢谢.
+23.122
+4.4.3.1.2 Manual Network Selection Mode Procedure
+...
+NOTE 1: It is an MS implementation option whether to indicate access technologies to the user. If the MS does display access technologies, then the access technology selected by the user is only used for initial registration on the selected PLMN.
+参考FAQ: FAQ119411
+### 问题: 手机FAST RETURN TO LTE功能是否需要特殊配置？
+解决方案: 手机FAST RETURN TO LTE功能是默认开启的,无需特殊设置.当手机发生CSFB或SRVCC从LTE到2/3G时,电话结束后就会自动触发FAST RETURN TO LTE流程.
+参考FAQ: FAQ119415
+### 问题: 没有主射频的项目能否删除transceiver？
+解决方案: 没有主射频的项目,这些平台的transceiver可以直接删除:9820E/9832E/SL8521E/SC9863A,平台已经有sample code.时钟方案需要采用TCXO+32K.其他平台如果想要删除transceiver,需要提CQ确认.
+参考FAQ: FAQ119428
+### 问题: 怎样才能知道系统复位后的GPIO默认状态
+解决方案: 有两个方法可以获取: 1,展锐提供的原理图参考设计,CPU封装上标注有(H)的IO口,表示系统复位后默认呈现高电平. 2,在各平台的GPIO SPEC中查找GPIO状态,其中"after reset"那一列就是系统复位后GPIO的默认状态. 默认呈现高电平的GPIO,在代码跑起来之前不可控,不能作为闪光灯、SPK、受控马达之类器件的使能PIN.
+参考FAQ: FAQ119430
+### 问题: 硬件原理图中boardID的作用是什么
+解决方案: 为了实现一套软件自动适配多种硬件主板,展锐设置了boardID的识别机制,几个典型平台配置如下: 1,SC9863A的ADC用来区分rf band;ID0区分时钟方案;ID1/2区分DDR类型,LP3/LP4/LP4X/是否分离式 2,SC9832E的ADC用来区分rf band;ID0区分时钟方案;ID1/2区分DDR类型,LP2/LP3/是否分离式. 3,SC9820E的ADC用来区分rf band;ID0区分时钟方案;ID1/2区分DDR类型,LP2/LP3/是否分离式. 上述几个平台,展锐提供的默认版本是开启boardID识别机制的,客户应该按照自己的硬件板子配置好boardID.如果想要取消部分或者全部boardID,请提前与软件驱动联系配置好代码,否则可能出现无法下载无法开机等情况.
+参考FAQ: FAQ119436
+### 问题: 7731E是否支持双3G 待机？
+解决方案: 支持
+参考FAQ: FAQ119442
+### 问题: GSM 中rxlev和rxqual是什么意思
+解决方案: 1. rxlev 表示平均接收电平 范围 (0 ~ 63) rxlev 0 -> -110dbm rxlev 20 -> 90dbm ~ rxlev 63 -> -48dbm 一般认为rxlev < 20 的时候说明现在GSM处于弱场环境下. 2. rxqual 信号接收质量 范围 (0～7) rxqual 反应了通话质量的好坏,0的时候最好, 7的时候最差. 一般认为小于3的时候通话质量尚可.大于6的时候基本无法维持通话. 3. 在分析问题的时候,掉话会出现 rxlev 很高,rxqual = 6/7的情况. 这种情况一般是网络中存在干扰,虽然接收电平较高,但是信号被干扰严重,同样会导致掉话发生.
+参考FAQ: FAQ119440
+### 问题: 合并通话失败的主要原因是什么?
+解决方案: 1. 一般来讲, 要想合并通话成功, 需要先向运营商开通该项服务, 在确保SIM卡已经签约该项业务的情况下再进行测试,在实际中遇到最多的情况就是SIM卡未开通会议电话功能导致合并通话失败 2.如果无法从运营商获取到签约信息,那么最好是将这张卡放入该运营商已经商用的终端上对比测试,看看参考终端的行为 3.若出现参考终端可以合并成功而测试终端无法合并的情况, 需要两份log对比分析以快速定位问题
+参考FAQ: FAQ119448
+### 问题: 请问google的trust face功能平台是否支持？
+解决方案: google的trust face需要在vendor\partner_gms\products\gms.mk or gms_go.mk 中加入FaceLock,例如:
+
+-----# GMS optional application packages
+PRODUCT_PACKAGES += \
+    CalendarGoogle \
+    FilesGoogle \
++   FaceLock \
+    LatinImeGoogle \
+    TagGoogle \
+    talkback \
+    Keep \
+    CalculatorGoogle
+
+验证时需要连接可以访问google的wifi,设置安全锁后,进入Settings-Security&Location-Smart Lock-Trusted face查看此功能.
+参考FAQ: FAQ119488
+### 问题: 如何确定reference finger?
+解决方案: 首先根据search位置确认最早finger,然后判断此finger能量是否大于门限值,如果满足,确认为 Ref finger
+参考FAQ: FAQ119518
+### 问题: 什么是EIC_LATCH中断，与其它中断方式有什么区别？
+解决方案: 1. 具备记忆功能的电路通常有:锁存器(LATCH) 和 触发器(flip-flop); 2. 锁存器,是一种异步时序电路,不需要时钟输入,当输入发生变化时,电路状态既发生变化; 3. 触发器,是一种同步时序电路,输入发生变化后,还需要时钟边沿触发,电路状态才能发生变化; 4. 由上,可知LATCH方式实现时,不需要CLK,只要输入存在小的脉冲即可被捕捉.而触发器方式则既需要输入保持足够时间,又需要CLK触发.
+参考FAQ: FAQ122733
+### 问题: SC9863A使用LPDDR3时DDR侧ZQ电阻注意事项
+解决方案: SC9863A平台在使用LPDDR3物料的时候,需要关注LPDDR3物料是否是"双16bit位宽"的. 例如,KMRX1000BM-B614是"双16 bit位宽"的LPDDR3,该物料有4个die,所以这颗物料需要使用两颗外置的ZQ电阻(ZQ0和ZQ1,240ohm,1%精度),如果只贴了1颗ZQ电阻(ZQ0),会导致有2个die无法做ZQC,最终这2个die的"下拉电阻"和"上拉电平"偏差很大,默认是±30%精度,正常ZQC后可以达到±10%精度.上述问题对933MHZ及以上频率的信号有致命性影响. 建议无论是否双16bit位宽物料,LPDDR3侧默认ZQ0和ZQ1都贴.
+参考FAQ: FAQ119527
+### 问题: SC9832E/SC9820E/SL8541E/SL8521E电池过流保护和短路保护参数如何选择？
+解决方案: 1.过流保护电流不小于5.5A,过流保护延迟时间不小于5ms. 2.短路保护电流不小于6.5A, 短路保护延迟时间不小于50us.
+参考FAQ: FAQ119537
+### 问题: SC9863A电池过流保护和短路保护参数如何选择？
+解决方案: 1.过流保护电流不小于6.5A,过流保护延迟时间不小于5ms. 2.短路保护电流不小于7.5A, 短路保护延迟时间不小于50us.
+参考FAQ: FAQ119542
+### 问题: SC7731E/SC7731EF电池过流保护和短路保护参数如何选择？
+解决方案: 1.过流保护电流不小于4A,过流保护延迟时间不小于5ms. 2.短路保护电流不小于5A, 短路保护延迟时间不小于50us.
+参考FAQ: FAQ119540
+### 问题: SC2721G 搭配高压电池注意事项
+解决方案: 1. SC2721G搭配外置开关充电电路时,可搭配4.5V/4.4V/4.35高压电池. 2. SC2721G搭配内置线性充电电路时,可搭配4.4V/4.35高压电池.此时需将CHGR_DPM配置成11(4.5V),其他设置可通过DTS配置文件修改: 4.35V 电池 4.4V chg-end-vol = <4350>; chg-end-vol = <4400>; chg-end-vol-check = <4330>; chg-end-vol-check = <4380>; chg-bat-safety-vol = <4430>; chg-bat-safety-vol = <4450>; rechg-vol = <4270>; rechg-vol = <4320>;
+参考FAQ: FAQ119544
+### 问题: NVtool导入音频nv参数 fail
+解决方案: 基线版本升级后,音频参数需要使用NVtool导出xml文件合入软件. 音频参数如果是老版本nveditor的.nv文件,需要通过音频调试工具Audiotester做NV转换. 转换方法,用文本文档打开.nv文件: 1、在第六行中加入注释 // New NV 2、搜索Handsfree\AudioStructure\reserve\reserve[60] 将配置值由0x0改为0x1 3、修改后的nv通过最新音频调试工具Audiotester做转换. 将修改后的nv导入Audiotester,再通过Audiotester导出,此时的nv就是NVtool结构的.nv文件.
+参考FAQ: FAQ119651
+### 问题: SC2721G的LDO快速泄放功能是否可以关闭？
+解决方案: 1.快速泄放也叫自动泄放(Auto-Discharge),用于LDO关闭时,将被关闭电源的残留电荷快速释放. 2.快速泄放功能通常在LDO打开时关闭,在LDO关闭时打开,不能独立关闭或打开.
+参考FAQ: FAQ119561
+### 问题: SC9863A引脚VCAM(M27)供电选择
+解决方案: 1.模组和SOC通常相距较远,若都使用VDDCAMIO供电,电源走线既要到SOC端又要到模组端,模组端和soc端分别使用VDDCAMIO和VDD1V85供电,有利于简化电源走线,优化电源质量. 2.camera控制相关的信号CMPD,CMRST,I2C等,其SOC端的pad电源是VDD1V85(VCAM).其模组端的pad电源是VDDCAMIO(DOVDD),这两个电源一个是1.85V,一个是1.8V,不会相互漏电. 3.理论上VCAM电源可以选择由VDDCAMIO供电,但此电路方案目前未验证.如需使用此方案,请做电路兼容并验证.
+参考FAQ: FAQ119563
+### 问题: SC9863A是否支持高温和低温电池参数合入辅助电量更精确显示？
+解决方案: SC9863A支持高温和低温电池参数合入辅助电量更精确显示的机制,具体机制实现细节请咨询我司软件同事. 关于高温和低温电池参数测试获取,有如下注意事项: 1.高温和低温电池参数获取方法与常温参数获取方法类似,可参考常温电池参数获取方法,文档请参考Isupport文档:The Test Method of Battery Parameters for CT-3008_V2.0.rar 2.高温和低温电池参数测试与常温测试相同之处是,充电均在常温环境中进行.不同之处是,高温和低温电池参数测试放电过程需在温箱中相应的高温和低温环境中进行.
+参考FAQ: FAQ119564
+### 问题: SC2721G 使用线性充电电路时 VCHG 过压保护电压最大可设置为多少？
+解决方案: VCHG的OVP设置 请参考SC2721G SPEC 中的VCHG_OVP_V的相关描述. VCHG_OVP_V最高可设置为9.2V.
+参考FAQ: FAQ119567
+### 问题: SC2721G VBAT_SENSE 建议从哪里引出，是从VSYS,还是电池连接器正极？
+解决方案: 1.当搭配线性充电电路时,建议尽量将采样电阻靠近连接器,且VBAT_SENSE与ISENSE差分形式走线. 2.当搭配开关充电电路时,建议VBAT_SENSE从电池连接器引出.
+参考FAQ: FAQ119570
+### 问题: 9850平台支持的LTE/WCDMA/2G协议版本是多少？
+解决方案: 客户你好,支持的协议版本依赖于具体软件分支,其中LTE可以支持Release 10以及Release 12,WCDMA支持Release 9,2G支持Release 6
+参考FAQ: FAQ119601
+### 问题: GSM下丢paging的常见原因
+解决方案: 1、制式间/制式内重选未完成期间无法接收paging. 2、LU期间无法接收paging. 3、双卡时,另一张卡有优先级更高的任务时会cancel掉有冲突的paging. 4、下行收坏导致丢paging.
+参考FAQ: FAQ119613
+### 问题: GPRS radio priority
+解决方案: 优先等级指的是在异常情况下,保持业务承诺的相对重要性,如果出现资源缺乏或者网络拥塞的情况下,哪些数据包应该被丢弃.GPRS优先级分为4级: Radio priority =1 priority level 1 (highest) Radio priority=2 priority level 2 Radio priority=3 priority level 3 Radio priority=4 priority level 4 (lowest) Radio priority为其它值时,也被认为是priority level 4. 展讯支持所有priority level,具体使用哪个level取决于PDP激活过程中网络确认的值.
+参考FAQ: FAQ119618
+### 问题: SC9863A平台最大支持多大的LPDDR3,LPDDR4,LPDDR4X?
+解决方案: SC9863A平台最大支持6GB LPDDR3,LPDDR4,LPDDR4X.
+参考FAQ: FAQ119627
+### 问题: SC9863A平台支持USB HUB功能吗?
+解决方案: SC9863A平台不支持扩展USB HUB.
+参考FAQ: FAQ119646
+### 问题: SC9820E平台AP侧有几个UART controler,其他常用平台如SC9863A，SC9850K AP侧有多少UART controler?
+解决方案: SC9820E(SL8521E)/32E(SL8541E)平台只有一个AP UART controler,如果客户需要两个UART,可借用CM4侧的UART给AP侧使用,软件已经开发借用CM4 Controller 给外设使用. SC9850K平台AP侧共有5个UART controler. SC9863A平台AP侧共有5个UART controler.
+参考FAQ: FAQ119668
+### 问题: 帮忙确认下8521E平台SIM如果要支持热插拔，检测pin一定要选用BUA_SIM_DET吗？可以选用其它GPIO吗？
+解决方案: GPIO检测是在比较老的平台上实现,理论上可行,但是如果使用GPIO口检测,需要通过软件来检测拔卡中断,然后软件再通知PMU下电,该过程比较慢,在拔卡的瞬间可能存在卡座上的VDD未下电完全而作用在SIM卡上造成烧卡,BUA_SIM_DET检测到拔卡中断,会由硬件直接通过ADI接口通知PMU对VDDSIM下电,相对于GPIO检测来说安全些.
+参考FAQ: FAQ119669
+### 问题: 客户产品认证测试Fail，提CQ时需要提供的信息
+解决方案: 客户产品认证测试Fail,提CQ时需要提供的信息 客户产品在认证测试中,会遇到一些测试Fail项目,提交CQ给展锐处理时,需要提供完整的信息,方便展锐工程师快速定位和解决问题,减少认证测试的时间 一、样机信息 1.测试样机的软件版本 2.硬件设计资料 二、认证信息 1.测试的是哪个标准 例如:CE/FCC/无委 2.认证机构的名称、地址信息 如果需要现场支持,地址信息需要提供 3.测试Fail的报告 报告需要有Fail测试项的名称、数据 如果认证机构暂时不能提供报告,让认证机构对Fail项的数据拍照,再把照片提供给展锐 4.负责认证测试的工程师姓名、联系方式 和负责认证测试的工程师直接沟通,能最准确、快速了解到认证Fail的具体测试内容,省去经过多人转述后的信息变化而造成的麻烦
+参考FAQ: FAQ119670
+### 问题: SC9832和SC9863A VDDMEM电源设计
+解决方案: Y14、Y16、Y18、Y20、Y22 这几个管脚VDDMEM电源仅用于SC9832E 平台. AC12、 AC14、 AC18、 AC20、AB18、AB20、AC13、 AC15、 AC17、 AC19、 AC21管脚VDDMEM电源仅用于SC9863A平台. 注意做SC9863A 兼容SC9832E共板,所有上述管脚都需要连上.
+参考FAQ: FAQ119825
+### 问题: 某些移动SIM在国内测试2G feature phone，为什么在某些地方会出现设置呼叫转移不成功的现象？
+解决方案: 这种卡开通了VOLTE功能,在某些网络中,需要通过PS域才能成功设置呼叫转移(IMS相关协议,如智能机平台),通过CS域设置不成功. 2G only平台不支持IMS,所以呼叫转移只能通过CS域设置,因此不成功.
+参考FAQ: FAQ119840
+### 问题: LTE加密设置、UMTS（3G）加密设置、GMS加密设置
+解决方案: 有部分参数可能和问题描述中的期望值有出入,如:
+UEA1默认OFF.
+目前暂不支持修改LTE加密设置.
+暂不推荐修改这些加密设置,因为这样可能带来一些风险,如:将UE不支持的加密算法能力设置为支持给网络,网络若支持该算法,造成UE和网络加密算法不一致,可能产生一些预期之外的风险.
+
+若需要修改相关的加密设置,建议先明确真实的需求,再确定下一步方案.
+参考FAQ: FAQ119844
+### 问题: UE是否支持2->4 fast return功能
+解决方案: UE支持2->4 fast return,即在CSFB回落到2G下打电话,电话结束之后,如果"channel release"信令未携带任何重定向信息,那么UE需要fast return回4G.
+参考FAQ: FAQ119855
+### 问题: SL8541E芯片管脚D29（IIS1CLK）管脚是不是BCLK？平台是否有能输出12.288MHZ时钟的管脚？
+解决方案: 芯片的D29管脚就是IIS协议里面提到的BCLK,也就是位时钟,非帧时钟,SL8541E平台及SL8521E平台无法输出12,288MHZ频率供后端音频芯片使用,如果需要此频率时钟,需要客户额外增加晶振.
+参考FAQ: FAQ119921
+### 问题: android 9.0如何在锁屏界面上添加多用户功能
+解决方案: 如果需要在锁屏界面添加多用户功能,需要修改frameworks\base\packages\SystemUI\res\values\config.xml里config_keyguardUserSwitcher的值,此值默认是false,改为true即可. 请注意此属性是否有做overlay
+参考FAQ: FAQ119859
+### 问题: 什么是“包络跟踪”技术?
+解决方案: 包络跟踪,即Envelope Tracking,简称ET. 射频功放PA是通信场景消耗电流的主要来源之一.包络跟踪技术可以有效降低PA的功耗. 当UE以高速率传输数据时,射频输出所需的电压会快速波动,现有的PA始终将电压维持在较高水平,以应对电压峰值的到来,然而如此一来是相当耗电的.比较合理的方法是根据实际的射频信号"包络"适时调节电压水平. 有厂商表示,此技术能将手机功耗降低20%,散热降低30%. 如下图,左图为PA供电电压保持在某个高位,浪费了大量的功耗.右图为实现包络跟踪的PA供电电压. 很明显,包络跟踪技术有效的节省了功耗.
+参考FAQ: FAQ119958
+### 问题: SC2721G的M3管脚TSX_MODE硬件接法
+解决方案: SC2721G的M3管脚TSX_MODE和整个平台的TCXO/TSX晶体方案无关. 此管脚是指PMU工作在外部时钟输入方式,还是PMU外接TSX或DCXO晶体. SC2721G spec描述(搜索TSX_MODE): The Ball_Option TSX_MODE is used to select external clock solution(TSX_MODE=0) or TSX clock solution(TSX_MODE=1). When using external 26MHz and 32KHz clock input, DCXO should be turned off by set TSX_MODE=0. SC2721G都是使用外部时钟输入(L2管脚CLK26M),PMU上外接TSX管脚(比如K1、K2、K4等)都悬空,所以TSX_MODE固定接GND.
+参考FAQ: FAQ119962
+### 问题: movistar运营商有关volte DSCP问题咨询
+解决方案: 发送SIP信令消息时,设置有DSCP,优先级是26,不是使用的默认值. IMS所有的优先级如下: 也就是语音数据46,视频数据40,sip信令消息26 优先级从高到低. When the device send the SIP messaging,our devices indicate the type of priority (DSCP), SIP messaging priority is 26,not keep default value (CS0). All IMS priority as following: audio data 46,video data 40,sip messaging 26, priority from high to low.
+参考FAQ: FAQ119971
+### 问题: CP侧VOLTE白名单的配置方法
+解决方案: 请您参照展锐发布的文档"运营商动态NV的使用"的第8页,添加对应运营商的plmn,具体操作方法如下: 使用NVEDITOR工具,打开NV工程"xxx.prj", 例如:sharkle_pubcp_customer_Smart_Phone_nvitem.prj 打开NV工程后直接Ctrl+F搜索plmn_white_list,填写对应网络的plmn即可(plmn填写6位,如果是5位最后一位填充F). 重新烧写NV. PS: Operator_Cfg里面的Index.xml表示给哪些网络配置过deltaNV,不代表打开了这个网络的VOLTE白名单. VOLTE白名单的打开以NV中配置的为准,NV的plmn_white_list项目下中有哪些网络的plmn,就代表了打开了哪些网络的VOLTE白名单.
+参考FAQ: FAQ119972
+### 问题: XCAP协议相关的协议有哪些？
+解决方案: AT 命令: 3GPP 27.007 跟补充业务相关的SPEC: 24.604:呼叫转移类 24.610:呼叫保持 24.615:呼叫等待 24.607:显示类 24.608:显示类 24.611:BAIC/BAOC/BOIC/BOIC-exHC/BIC-Roam 呼叫限制类 //XCAP 相关 4825:XCAP 24.623:XCAP over Ut //HTTP 2616:HTTP 1.1 2396:URI //安全鉴权相关 33.220:GBA/GAA 2617:HTTP Basic/Digest Authentication 3310:HTTP AKA 24.109:Ua/Ub interface 另外, 三大运营商中CMCC的UT 规范比较完善,其他的运营商跟其实现差不多,也可以参考 <<中国移动Ut接口规范 >>
+参考FAQ: FAQ119975
+### 问题: 如何查看WCDMA制式是否开了双天线？
+解决方案: WCDMA目前只支持在链接态开通双天线,不支持搜网IDLE态下开通双天线,一般当ECNO小于-15db,RSCP小于-105dbm时,会在链接态开辅天线,辅天线开通后将上报两者天线较好的一路测量值给网测,这样会提高UE下行信号测量性能,一般在log中可以搜下面的trace进行判断是否已经开了双天线: HAL_RF_WCDMA_Get_RX_DIV_Enable,RX_Div_Enable = 1 //表示双天线已开 HAL_RF_WCDMA_Get_RX_DIV_Enable,RX_Div_Enable = 0 //没开
+参考FAQ: FAQ119978
+### 问题: 什么是同频干扰和带内干扰？
+解决方案: 1)当前存在和服务小区相同频点的其他小区,且小区RSCP和服务小区相差-8db以上,即可认为存在同频干扰;如果在-3db以上,即是较强的同频干扰. 2)WCDMA的频点带宽通常是5M,如果当前存在和服务小区频点4.6M带宽之内(除去保护带宽)的其他频点的强信号,一般可认为存在带内干扰.
+参考FAQ: FAQ119988
+### 问题: 哪些录音文件会显示在SoundRecorder的录音列表中？
+解决方案: 录音文件也是音频文件,平台为了区分普通音频文件和录音文件,在多媒体数据库信息中新增了composer属性来鉴别.当在SoundRecorder中进行录音时,保存录音文件插入数据库信息的composer属性是FMSoundRecorder.当在通话中录音时,保存录音文件插入数据库信息的composer属性是Call Record.SoundRecorder在查询录音文件列表时,通过该音频文件的数据库信息composer属性是否为FMSoundRecorder(本地录音文件)或Call Record(电话录音文件)来决定是否为录音文件.当composer属性值是FMSoundRecorder时,则会显示在SoundRecorder的本地录音列表中,当composer属性值是Call Record时,则会显示在SoundRecorder的通话录音列表中. 录音文件的composer属性值请参考如下图所示:
+参考FAQ: FAQ120042
+### 问题: WCDMA Phase Discontinuity FAIL补偿方法
+解决方案: /ishare/uploadeditor/file/20190716/20190716101001_873.docx
+参考FAQ: FAQ120001
+### 问题: Android 9.0，原生是否提供实现动态壁纸的应用
+解决方案: Android7.0、Android8.1以及Android9.0,Android原生不提供实现动态壁纸的应用.
+参考FAQ: FAQ120032
+### 问题: 为什么6531E/F平台不推荐硬件上abort键跟red键共用？
+解决方案: 因为STK有专门的GCF case 27.22.4.1.1.8来测试用户按abort键和按red键的行为.该case要求用户按abort键跟red键返回值不一样的,按abort键要求返回值是SIMAT_TR_BACK_MOVE(0x11),按red键返回值是SIMAT_TR_TERMINATED_BY_USER(0x10).如果abort键跟red键共用,那么就会无法区分用户按了哪个键,最终导致case失败.
+参考FAQ: FAQ120054
+### 问题: 在录音机播放录音界面， LAST TAG和NEXT TAG两按钮起什么作用？
+解决方案: 在录制带有标记的录音文件后,进入录音列表去播放该文件时,播放界面上会显示LAST TAG 和 NEXT TAG两个按钮,分别表示上一个标记和下一个标记,通过点击这两个按钮,用户可以查看之前录音过程中做的标记.
+参考FAQ: FAQ120040
+### 问题: 工规车规产品的判断依据是什么？工规车规的memory相对普通memory有什么不一样？
+解决方案: 我司的memory物料验证的环境温度在-20~65℃.通过验证的物料只能确保该器件在-20~65℃范围内的性能.而工规或者车规的温度要求在AEC-Q100标准里至少是grade3及以上.温度范围大于-20~65℃.超出的温度区间因我司无法验证,所以不能确保超出温度区间的器件工作性能,实际上我司验证的每颗物料均不能保证超出我司验证温度的memory性能.目前大部分的memory厂商只能做到-40~85℃的工规产品.当然因为除了温度差异,车规级器件比工规级器件要求有着更好的性能、更强的温度适应能力和抗干扰能力.此部分需要与memory供应商确认清楚.
+参考FAQ: FAQ120087
+### 问题: 在设置了屏锁图案的情况下，重启手机时会出现两次开机动画的解决方案
+解决方案: 1.1 修改原理 是此现象与锁屏密码的相关设置有关. 设置锁屏密码时,会首先弹出提示界面"Secure start-up",此界面上,如果选择Yes,则解锁界面会在设备启动前弹出,此种情况下,解锁界面是黑色背景,解锁后继续播放开机动画;如果选择No,则解锁界面会在设备启动完成后再弹出,此种情况下,解锁界面是壁纸为背景,解锁后进入Launcher菜单.
+参考FAQ: FAQ120159
+### 问题: SC9863A平台是否支持数字MIC？
+解决方案: 只支持模拟MIC,不支持数字MIC.
+参考FAQ: FAQ120196
+### 问题: SC9820E平台， Receiver底噪是多少？
+解决方案: Receiver 的输出底噪在10uV左右.
+参考FAQ: FAQ120201
+### 问题: CFT工具LTE综测如何配置主辅通道？
+解决方案: 答:可以配置; 在在Cali Param.ini中 增加如下配置(其中1代表打开;0代表关闭): [LTE Non-signal Final Test] LTE NSFT Main Enable = 1 LTE NSFT DIV Enable = 1
+参考FAQ: FAQ120208
+### 问题: 是否需要写入MEID？
+解决方案: 答:MEID 移动设备识别码(Mobile Equipment Identifier)是CDMA手机的身份识别码,也是每台CDMA手机或通讯平板唯一的识别码.用于CDMA制式的手机. 因此项目是否需要写入MEID,需要看项目是否支持CDMA制式: 1、若项目支持CDMA,则需要写入MEID; 2、若项目不支持CDMA,即使是制作电信定制机器,也无需写入MEID.
+参考FAQ: FAQ120209
+### 问题: UE支持自主FR回LTE吗？
+解决方案: 支持!
+参考FAQ: FAQ120214
+### 问题: 使用HP8960仪器校准WCDMA返回值为19代表什么意思？
+解决方案: HP8960仪器需要自校准. 从SIMBA工具内Trace log查看返回值: 8960仪器返回19表示仪器本身需要校准,以下是仪器手册中的说明:
+19
+ Uncalibrated Due To Temperature: Indicates that the ambient temperature changes more than 10 degrees C since latest calibration, when attempting a Channel Power Measurement.
+参考FAQ: FAQ120216
+### 问题: 如何快速确定被测手机待机功耗是否正常?
+解决方案: A: 采用被测手机,使用射频cable连接仪表,通常GSM/WCDMA推荐8960仪表,LTE推荐8820/8430/UCM等仪表, 配置合理的DRX 参数,比如一般配置称为DRX = 7(1.28Ss), 不要配置仪表上的邻区,包括同频、异频和异系统邻区都不要配置 如果担心射频cable会引入实网信号,可以采用屏蔽箱. 连接完成后,采用power monitor测试,待机持续10min,观察待机功耗电流波形 波形如果是干净的DRX周期唤醒,并且每个paging唤醒宽度在15～25ms宽度以内,就说明整机待机功耗是好的,
+参考FAQ: FAQ120264
+### 问题: 手机待机过程中从待机功耗角度讲，哪些唤醒为正常?
+解决方案: A: 通信的正常待机paging.根据信号覆盖强度高低,可能会存在paging宽度的差异,大体上信号越高,宽度越小; 大约每26～27s SIM卡同步 GSM 模式,大约每30s 一段不大于3s的BCCH同步 APK的周期性同步或心跳另外专题描述
+参考FAQ: FAQ120265
+### 问题: 如何快速界定实网待机功耗问题是否由射频器件或射频配置不当引起？
+解决方案: A: 采用射频cable方式,先确定手机待机功耗的基本能力;判断手机待机功耗是好的. 采用射频辐射方式,在大体相同信号环境下,待机10min以上,观察待机功耗波形(power monitor最好) 如果待机paging宽度明显变宽,或者出现打断的连续唤醒,则大体判断手机射频器件或射频配置不是很好,可向此方向检查.
+参考FAQ: FAQ120267
+### 问题: 如何选择展锐平台的下载工具？
+解决方案: 展锐常用的下载工具包括:ResearchDownload、FactoryDownload、UpgradeDownload,适用于不同场景. ResearchDownload工具主要用于研发开发测试,支持读写Flash分区,支持NV参数、PhaseCheck、ProdNV分区的备份(回读再写入到手机),支持对下载文件打包.但此工具不能初始化PhaseCheck、ProdNV分区,此工具不建议作为生产测试工具. FactoryDownload工具一般用于PCBA阶段生产下载,该工具会初始化PhaseCheck、ProdNV分区,擦除NV参数,预写SN号.该工具强制擦除Runnning NV,并写入Fix NV.使用该工具下载前,根据需要备份NV. UpgradeDownload工具适用于PCBA阶段或者整机阶段软件升级,该工具的主要特点是对NV参数进行强制备份,不会操作PhaseCheck、ProdNV分区,升级前工具会检查校准标志位,如果未校准pass则无法进行升级.
+参考FAQ: FAQ120268
+### 问题: 展锐平台USB Download采用Keyin0和U1TXD接地有什么区别？
+解决方案: Keyin0接地进入USB Download模式后,系统会进入等待接收命令状态,16秒后会超时退出. U1TXD接地进入USB Download模式后,不会超时退出,必须等待电池耗电至2.75V以下.U1TXD和NBOOT间串1K电阻,下载时功能相同.
+参考FAQ: FAQ120275
+### 问题: 设置中“允许屏幕处于锁定状态时添加用户”菜单的功能如何使用
+解决方案: 在设置-系统-多用户中存在菜单开关"允许屏幕处于锁定状态时添加用户", 这个开关是针对安全锁的.打开该开关后,设置安全锁, 下拉状态栏,点击多用户按钮,弹出的界面中会有"添加用户"的按钮,即在安全锁界面可以添加新用户.如果关闭该菜单,则在安全锁界面,不会出现"添加用户"的按钮. 另外:在状态栏显示多用户的按钮首先要在设置-系统-多用户,切换一次用户或者添加一个新用户后才会显示
+参考FAQ: FAQ120277
+### 问题: 开启Fast Dormancy功能一定能节省功耗吗?
+解决方案: 不一定. 1. 某些网络下,没有数据一段时间后,网络会主动给UE发送重配到PCH的消息,如果这个过程时间小于fast dormancy timer,那么开启FD功能并不会更快进入休眠态,因而达不到节省功耗的目的 2. 若UE发送SCRI消息后,网络侧并不响应,不下发状态重配到PCH/IDLE的消息,开启FD功能也不会更快休眠,同样无法节省功耗;
+参考FAQ: FAQ120330
+### 问题: 数据业务打开和关闭对WCDMA call的功耗影响
+解决方案: WCDMA call场景: 1)关闭数据业务 关闭数据业务,会导致副天线的关闭,只开了主天线以节省功耗. 2)打开数据业务 考虑到数据业务的性能问题,默认会开启主副天线,从而增加了功耗, 功耗的增量主要体现在基带域和射频域,增量分别为13mA和21mA. 打开数据业务后,WCDMA的加速器HU3GE_A中的HARQ/TDEC/VDEC1/EQ都会工作, 且工作在双天线模式下.因此增量体现在基带域是合理的. 双天线模式下,射频域的VDDRF1V25会比单天线多耗21mA的电流. 3)其他家的方案类似.
+参考FAQ: FAQ120329
+### 问题: Fast Dormancy功能可节省功耗的原因是什么？
+解决方案: 开启Fast Dormancy功能后,UE判断在一段时间内无数据传输后,可主动向网络发送SCRI消息,网络侧一般会及时响应,向UE发送状态切换消息; 在这种情况下,相比于关闭Fast Dormancy功能被动等待网络下发状态切换消息,可更快进入PCH/IDLE态; 在以上Fast Dormancy生效的情况下,UE处于DCH/FACH状态的时间更短,待机平均电流更低,可明显降低功耗;
+参考FAQ: FAQ120331
+### 问题: 如何查看手机UE能力
+解决方案: 两个方法: 1)arm log工具,internalMessages窗口,下发有消息的解析,点击其中uecapabilityinfomation-r8右键选择parse deeply即可解析. 2)或者使用其他仪表的解码工具,将ue能力的码流拷进去解析.
+参考FAQ: FAQ120362

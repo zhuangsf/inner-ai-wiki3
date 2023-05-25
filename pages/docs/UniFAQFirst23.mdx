@@ -1,0 +1,305 @@
+### 问题: 如何删除浏览器中的optionmenu项？
+解决方案: 浏览器的option menu是通过xml文件来进行管理的,具体路径如下: packages\apps\Browser\res\menu\browser.xml 如果想要删除一项的话可以将该xml文件中的相应键值删除,这样在菜单中就不会显示该项了.
+参考FAQ: FAQ48763
+### 问题: 浏览器中option菜单项的各个功能是在哪里管理的？
+解决方案: 浏览器是严格的按照mvc模式来管理代码的,因此ui的功能实现都在Controller.java中. 而option菜单各项的功能在onOptionsItemSelected方法中实现. onOptionsItemSelected方法中各个menu id一一对应各个菜单项,修改或增加功能都可以在这些代码中.
+参考FAQ: FAQ48772
+### 问题: win7操作系统PC环境下，如何查看android设备的vid号？
+解决方案: 1、右击计算机,进入设备管理器,点击android调试驱动(Android Composite ADB Interface) 2、右击该Android Composite ADB Interface驱动,点击属性 截图如下: 3、点击详细信息,点击属性(P),选择设备描述改为硬件Id 截图如下(红框即为手机VID号)
+参考FAQ: FAQ48776
+### 问题: 7731如何启动sprd_res_monitor?
+解决方案: 此服务具有 root 权限,用来管理配置文件"sprd_monitor-user.conf",这个文件中包含systemdump,coredump 等控制项的值. 目前userdebug版本默认开启此服务;user版本默认开机不启动此服务,用户可以进工程模式"DEBUG&LOG"->Log settings->Slog UI->点击"START" 按钮h后,此服务就被启动了.
+参考FAQ: FAQ48751
+### 问题: 如何设置 Slog 中的log等级？
+解决方案: *#*#83781#*#*-> DEBUG&LOG->Log setting->Slog UI->Settings->Android Loglevel 下列三个级别: 2-VERBOSE; 3-DEBUG; 5-ERROR. 各种日志级别的输出介绍: 　 Log.v 输出大于或等于VERBOSE日志级别的信息 　 Log.d 输出大于或等于DEBUG日志级别的信息 　 Log.i 输出大于或等于INFO日志级别的信息 　 Log.w 输出大于或等于WARN日志级别的信息 　 Log.e 仅输出ERROR日志级别的信息. 用户可以根据需要设置级别.
+参考FAQ: FAQ48786
+### 问题: 工程模式中如何更改slog的存储路径？
+解决方案: *#*#83781#*#*-> DEBUG&LOG->Log setting->Slog UI->Settings->General Log path 单选择框: Data directory //保存在手机内部/data下 External directory //保存在sd 卡
+参考FAQ: FAQ48787
+### 问题: 搜索如何修改默认引擎为google
+解决方案: 修改默认搜索为GOOGLE,以前默认是百度 如下路径:\packages\apps\SprdQuickSearchBox\src\com\android\quicksearchbox\preferences\SearchEngineFragment.java 把 mSelectedEngineKey = com.android.quicksearchbox.util.Util.ENGINES[0]; 修改为 mSelectedEngineKey = com.android.quicksearchbox.util.Util.ENGINES[1];
+参考FAQ: FAQ48789
+### 问题: 如何在工程模式中获得CP2的版本信息？
+解决方案: *#*#83781#*#*-> DEBUG&LOG-> System info->Version Info CP2 Version: Project Version: CP2_WCN_14D_W14.41_P1_Release 实现方案: String cp2Version = SocketUtils.sendCmdAndRecResult("wcnd", LocalSocketAddress.Namespace.ABSTRACT, "wcn at+spatgetcp2info"); 说明: 此条at命令发送给CP2,获取CP2的版本信息.
+参考FAQ: FAQ48790
+### 问题: 如何在工程模式中获取CP0的版本信息？
+解决方案: *#*#83781#*#*-> DEBUG&LOG-> System info->Version Info Project Version: sc7730g_CP0_modem BASE Version: TM_BASE_MP_W14.43 实现方案: AT+CGMR
+参考FAQ: FAQ48792
+### 问题: 如何在工程模式中获得手机Android的版本信息？
+解决方案: *#*#83781#*#*-> DEBUG&LOG-> System info->Version Info Platform Version: MOCORTM_14B_TSHARK28_W14.43_Debug 实现方案: AT+CGMR
+参考FAQ: FAQ48793
+### 问题: 工程模式中EngPC service 选项有什么作用？
+解决方案: 如果同时开启logel和slog工具抓取modem log,会造成两者的log都不全. 为了避免这种情况的发生,设计了"EngPC service",在PC和slog这两个出口二选一,默认关闭一个出口. 在上层EngineerMode APP 会设置系统属性 "persist.sys.engpc.disable" . Userdebug版本,persist.sys.engpc.disable==0,默认开启engpcclientt; User版本,persist.sys.engpc.disable==1,关闭 engpcclientt. 用Slog 抓取modem log时,就需要关闭EngPC service.
+参考FAQ: FAQ48795
+### 问题: native ui如何去掉安全实用工具，安全能力配置，远程数据控制等三方应用
+解决方案: "安全能力配置"(Permission), "应用自启管理"(ASA),"远程数据管理"(RDC),"安全实用工具"(PracticalTools) 修改vendor/sprd/open-source/security_support.mk里 PRODUCT_PACKAGES += \ Permission.apk \ framework-se-res.apk \ ASA.apk \ RDC.apk \ PracticalTools.apk 去掉不想要的
+参考FAQ: FAQ48796
+### 问题: 浏览器中长按弹出菜单在哪里创建的？
+解决方案: 在浏览器中长按弹出菜单是在Controller.java中创建的 在onCreateContextMenu方法中按照不同的HitTestResult type来创建的. 具体的菜单项在webview_context_menu.xml文件中设置.
+参考FAQ: FAQ48799
+### 问题: MOCOR 是否支持EMS？
+解决方案: 展讯MOCOR平台不支持EMS(Enhanced Message Service)增强型短消息服务.
+参考FAQ: FAQ48801
+### 问题: 使用Eclipse时，如何快速的将由小写字母组成的常量或变量名变成相应的大写字母？
+解决方案: 例如:private String key_test; 如何快速将key_test变成KEY_TEST? 方法: 选中需要改变的变量名,然后按组合键Shift+Ctrl+X即可. 注意:由大小写字母混合组成的常量或变量名按上述方法也可变成相应的大写字母,由大写字母组成的常量或变量名按上述方法不能变成相应的小写.
+参考FAQ: FAQ48804
+### 问题: 使用Eclipse时，如何快速修改某个类中的某个变量名，使得该类中其他地方引用的该变量名也要做相应修改？
+解决方案: 例如:private String test; 在此类中其他多处地方引用了test,现要将test改为mTest,而此类中其他地方引用的test也要改为mTest. 方法: 选中要修改的变量名,然后按组合键Shift+Alt+R,则要修改的变量名会被实线框框起来,并在变量名末尾有光标显示,此时移动光标至要修改的位置修改后按Enter键(此时如果所在的类中原来就有错误提示信息,按Enter键后会弹出一个Rename Field提示框,然后按Continue键即可,如果所在的类中没有任何错误提示信息,按Enter键后即可修改),此时其他地方所引用的该变量名也被修改. 注意:选中修改的变量名,按Shift+Alt+R后要退出修改按Esc键即可退出修改.
+参考FAQ: FAQ48806
+### 问题: 在Android strings.xml文件如何使用xliff:g标签？
+解决方案: <xliff:g>标签主要用于程序中动态的插入内容时使用,例如: <string name="time">当前时间:<xliff:g id="prefix">%1$s</xliff:g>时 <xliff:g id="time">%2$s</xliff:g>分</string> 然后通过程序context.getString(R.string.time,"10","05"); 将会输出——当前时间:10时05分 <xliff:g>标签介绍: 1.属性id可以随便命名 2.属性example表示举例说明,可以省略 3.%n$ms:代表输出的是字符串,n代表是第几个参数,设置m的值可在输出之前放置空格 4.%n$md:代表输出的是整数,n代表是第几个参数,设置m的值可在输出之前放置空格,也可设为0m,在输出之前放置m个0 5.%n$mf:代表输出的是浮点数,n代表是第几个参数,设置m的值可以控制小数位数,如m=2.2时,输出格式为00.00
+参考FAQ: FAQ48816
+### 问题: git 提交代码解决行尾红色空格问题
+解决方案: 对提交的代码的文件用UE打开,然后选择"格式",在选择"删除行尾空白字符",然后重新提交就可以了.
+参考FAQ: FAQ48823
+### 问题: Webkit编码选择优先级是怎样的
+解决方案: webkit编码选择的优先级顺序由高到低依次是: 1. BOM标记 2. 用户选择编码 3. HTTP响应头返回编码 4. 页面内编码 5. 编码检测器 6. 父Frmae的编码 7. 默认编码
+参考FAQ: FAQ48827
+### 问题: 每个dropbox 日志的存活时间是否有限制？
+解决方案: 每个日志文件的存活时间默认是3天,大于3天的日志文件就会被删除以节省空间.该变量最终会被写入settings数据库的Secure表中. public final class DropBoxManagerService extends IDropBoxManagerService.Stub { ...... private static final int DEFAULT_AGE_SECONDS = 3 * 86400;
+参考FAQ: FAQ48834
+### 问题: 系统默认能够保存多少个dropbox日志文件
+解决方案: 系统默认能够保存的最大日志文件个数是1000个,通过如下变量来控制,该变量最终会被写入settings数据库的Secure表中. public final class DropBoxManagerService extends IDropBoxManagerService.Stub { ...... private static final int DEFAULT_MAX_FILES = 1000;
+参考FAQ: FAQ48835
+### 问题: 系统对于dropbox日志文件使用的空间限制是多少
+解决方案: 这里有两个值,如下,DEFAULT_QUOTA_KB表示dropbox日志文件最大能够使用的空间大小是5M,而DEFAULT_QUOTA_PERCENT于控制dropbox最多占存储空间容量的比例,默认10%, 具体使用最大值取二者的最小值,这两个变量最终也会被写入settings数据库的Secure表中 public final class DropBoxManagerService extends IDropBoxManagerService.Stub { ...... private static final int DEFAULT_QUOTA_KB = 5 * 1024; private static final int DEFAULT_QUOTA_PERCENT = 10; }
+参考FAQ: FAQ48837
+### 问题: VDD regulator在开机的时候应该在那里配置
+解决方案: 在linux kernel有了dts之后,SC7731的kerne开机的时候配置regulator已经在dts目录下的scx30g-regulators.dtsi文件中进行配置.
+参考FAQ: FAQ48832
+### 问题: vpn中用ipsec有哪几个阶段？
+解决方案: 分两个阶段,分别是第一阶段和第二阶段,其中第一阶段用到的是主模式和积极模式,主要是在对等体之间建立一条安全通道; 第二阶段用到的是快速模式,主要是在安全通道中传输加密数据流;
+参考FAQ: FAQ48831
+### 问题: 使用ttyS1接收数据，有时会收到系统的一些数据
+解决方案: 将uboot下的idh.code\u-boot\include\configs的文件sp7715ea.h(注意项目使用了哪个文件)中的loglevel=1修改为loglevel=0,这个是关闭了kernel log,ttS1就不会有未知数据发出来.
+参考FAQ: FAQ48847
+### 问题: TP中断唤醒pin脚配置在suspend中的注意事项
+解决方案: TP有手势唤醒功能,需要可以唤醒系统,在suspend里面进行配置的时候,总产生一个中断: 可以用示波器进行测量,在suspend里面做一些拉高拉底GPIO的动作,从而定位是哪一行出来问题. 主要找出来的问题是:gpio_direction_input(ts->pdata->irq_gpio);语句,因为这个语句会导致GPIO就换档一样, 出现一个上拉的上升沿,从而导致产生一次中断,而系统并没睡下去,会响应这次中断,从而导致系统睡不下去.
+参考FAQ: FAQ48850
+### 问题: ipsec中经常用到的术语
+解决方案: 经常用到或者听到的有: SPD:Security policy database(安全策略数据库); SA: Security association(安全关联); SPI:Security parameter index(安全参数索引); IKE:Key exchange(密钥交换); RSA:RSA protocol(RSA协议); DH:Diffie-Hellman protocol(Diffie-Hellman协议); ISAKMP:Internet Security Association and Key Management Protocol(Internet安全关联和密钥管理协议); ESP:封装安全载荷,端口协议50; AH:封装安全载荷,端口协议51;
+参考FAQ: FAQ48853
+### 问题: HAL层获取input通道不正确造成某些终端的Gsensor工作不正常
+解决方案: 通过抓取log,发现代码运行时,适配input通道时出错了,造成gsensor无法enable,从而无法使用. 解决的办法是修改适配input通道的方法. 老的适配方法是通过/dev/input/event(n)获取name字段,再和传进来的name进行比较,如果相同则适配成功,并把对应的event通道值赋给input通道值.如果一个设备的event通道和input通道不一致,此方法则失效. 新的适配方法是直接获取/sys/class/input/input(n)/name的值,再和传进来的name进行比较,如果相同则适配成功,则保存此input通道值.省去了event转换到input的过程.
+参考FAQ: FAQ48856
+### 问题: DTS中通过of_property_read_u8获取的参数不正确
+解决方案: 使用dts机制配制板级参数后,通过of_property_read_u8获取的参数为零.解决的办法是将参数的类型改为unsigned int类型,再使用of_property_read_u32函数获取即可解决此问题.
+参考FAQ: FAQ48862
+### 问题: ipsec中log开关
+解决方案: 在代码external/ipsec-tools中的log默认是打印从LLV_ERROR(0)到LLV_INFO(3)之间的信息,也就是比较严重的信息或者错误才会有打印输出,对于debug开关默认是关闭的.下述代码是log等级定义: #define LLV_ERROR 0 #define LLV_WARNING 1 #define LLV_NOTIFY 2 #define LLV_INFO 3 #define LLV_DEBUG 4 #define LLV_DEBUG2 5 log输出代码为: #define plog(level, location, address, ...) \ do { \ if ((level) >= LLV_ERROR && (level) <= LLV_INFO) { \ do_plog((level), __VA_ARGS__); \ } \ } while (0) 所以要想输出所有的log,要把plog定义中的LLV_INFO修改为LLV_DEBUG2就可以了.
+参考FAQ: FAQ48861
+### 问题: 为何在启动屏保点击立即启动屏保之后退出屏保，手机进入待机状态时没有进入屏保状态
+解决方案: 手机自动进入屏保状态只有在以下两种状态: 1.插入基座时 2.充电时 其他状态,手机均不会自动进入屏保状态
+参考FAQ: FAQ48869
+### 问题: 使用0805版本的GMS包，为什么第一次进入google map时点击设置进不去且会自动退出map？
+解决方案: 很多客户在配置GMS时,为了节省开机进入桌面的时间,没有将 SetupWizard.apk 配置进去,就会导致此问题;如果正确的配置此apk,此问题不复现.
+参考FAQ: FAQ48878
+### 问题: SC9620、SC7731平台，进入应用时状态栏闪烁的问题
+解决方案: 问题原因:状态栏透明引入的 解决方案:关掉状态栏透明即可 如使用SprdLauncher1,修改如下 Vendor/sprd/UniverseUI/SprdLauncher1/res/values/styles.xml <style name="Theme" parent="@android:style/Theme.Holo.Light"> -- <item name="android:windowTranslucentStatus">true</item> ++ <item name="android:windowTranslucentStatus">false</item>
+参考FAQ: FAQ48860
+### 问题: 7731项目为什么ES文件系统中多一个temp_sd文件夹问题？
+解决方案: 客户海外项目,一般都需要将内置存储区和data区和并,且SD卡作为主卡. 这样就会出现:ES文件系统中对显示一个或多个:temp_sd文件夹, temp_sd链接到/storage/emulated/temp_sd目录的. 该目录的作用:用来指向到手机内部存储,目的用来保证当用户不插入SD卡的情况,之前安装在SD卡上的需要使用存储空间的应用仍可正常使用.
+参考FAQ: FAQ48895
+### 问题: 7731海外项目，google play中无法下载ETERNITY WARRIORS 3应用问题。
+解决方案: 海外项目,在GMS包应用Play Store中无法正常下载:ETERNITY WARRIORS 3应用. 该应用需要客户硬件支持StepDetector sensor导致,StepDetector 是4.4上google新添加的的sensor硬件之一,目前N5上有,使得开发者无需自己写计步器的实现算法.
+参考FAQ: FAQ48902
+### 问题: SC7701平台T卡热插拔
+解决方案: 目前SC7701平台不支持T卡热插拔,稳定性有问题.
+参考FAQ: FAQ48924
+### 问题: 手机为什么会出现wifi无法激活？
+解决方案: 此问题原因是wifi_cali_file_check,Unable to Creat '/productinfo/connectivity_calibration.ini 导致的问题 需要对nvm的读写机制进一步加强完善,当productinfo分区出现问题时,从system分区获取.
+参考FAQ: FAQ48916
+### 问题: 海外版本浏览器下载文件后查看会CRASH，这是什么原因？
+解决方案: 一些海外版本比如西班牙语,印度语会出现这种情况,原因是Android代码中,如下的字符串格式问题, \packages\apps\Browser\res\values-es\strings.xml <string name="file_size">...<xliff:g id="SIZE">%2$s</xliff:g>"</string> "%2$s"的定义不正确,会导致String Format时产生Exception. 解决方法是做如下修改: <string name="file_size">...<xliff:g id="SIZE">%s</xliff:g>"</string> %2$s改为%s
+参考FAQ: FAQ48930
+### 问题: google play 服务升级后，运行google setting会报错。
+解决方案: 请做如下修改: \idh.code\frameworks\native\libs\binder\ processState.cpp 中的 BINDER_VM_SIZE 修改为((2*1024*1024) - (4096 *2))
+参考FAQ: FAQ48931
+### 问题: 类似 wcn_modem.bin 文件该怎样升级
+解决方案: 这个文件在源文件中没有,也不会编译生成;它只需要在ResearchDownload工具烧录pac包时或者生成pac时在Modem_WCN选项框中 用这个Patch中的 SC8800G_sc7715_wcn_modem_zerocopy.bin文件替换掉原来那个bin文件.
+参考FAQ: FAQ48934
+### 问题: 飞行模式打开后关闭或者关闭后再打开为什么会延时？
+解决方案: 开关飞行模式后,需要等待底层telephony两张卡的状态都切换正确后,才能进行再一次设置,不然会导致底层telephony状态混乱.0延时无法做到,需要一定的延时.
+参考FAQ: FAQ48951
+### 问题: SC7715是否支持 语音读短信、语音报号、语音菜单、语音拨号等功能。
+解决方案: SC7715 自身无此功能,但安装第三方应用是否支持此功能要具体试.
+参考FAQ: FAQ48956
+### 问题: SC7715是否支持网络摄像头功能？
+解决方案: 这个平台是可以的,只要从注册相关的回调,就可以得到预览数据,再通过网络传给对方就可以了.平台有相关接口可以把摄像头的预览数据传给应用层.平台的相机应用是没有这个功能的,需要其他应用去实现这个功能.
+参考FAQ: FAQ48957
+### 问题: 请问SC7715平台HSPA的上行及下行速率（Uplink/Downlink）分别是多少Mbps?
+解决方案: HSPA的上行及下行速率(Uplink/Downlink)分别是 5.76Mbps 和 21.1Mbps.
+参考FAQ: FAQ48960
+### 问题: CTS测试中BLUETOOTH BLE测试为什么不通过？
+解决方案: 只有蓝牙芯片4.0才能支持BLE功能,一般要先确认下蓝牙芯片版本.我们2351是不支持BLE的.
+参考FAQ: FAQ48979
+### 问题: 为什么SC7731项目的默认蓝牙名称是7730A？
+解决方案: 这是为了过运营商的一项测试case,该case里面需要手机发送PRODUCT_MODEL给运营商服务器,而该服务器只能识别SP7730A,因此就将该值用SP7730A.目前展讯所有过CUCC的项目都是如此处理的.
+参考FAQ: FAQ48986
+### 问题: 在使用蓝牙分享时会弹出设备选择界面，为什么有时点击搜索按钮会不起作用？
+解决方案: 在打开蓝牙时,若之前有配过对的蓝牙耳机,该耳机便会自动进行连接. 在连接过程中,是不能再同时进行搜索操作的,所以点击搜索按钮会不起作用. 解决方案是:在分享过程中打开蓝牙,改成enableNoAutoConnect方法,该方法不会让耳机进行自动连接,从而也就避免了该情况.
+参考FAQ: FAQ48987
+### 问题: 屏幕亮度默认值修改
+解决方案: 显示设置里,屏幕亮度默认值 可以在\frameworks\base\packages\settingsprovider\res\values\Defaults.xml文件中 修改def_screen_brightness变量即可. Default screen brightness, from 0 to 255
+参考FAQ: FAQ49048
+### 问题: 如何修改搜索引擎的链接地址
+解决方案: 搜索引擎的网址设置是在 \packages\apps\SprdQuickSearchBox\res\values\arrays.xml 修改如下字段: <string-array name="search_engine_values" translatable="false"> <!-- Do not translate. --> <item>www.baidu.com</item> <!-- Do not translate. --> <item>www.google.com.hk</item> <!-- Do not translate. --> <item>s.139.com</item> <!-- Do not translate. --> <item>search.cn.yahoo.com</item> <!-- Do not translate. --> <item>www.bing.com</item> </string-array>
+参考FAQ: FAQ49009
+### 问题: sim lock剩余上锁次数和剩余解锁次数是否一致
+解决方案: 目前是一致的. sim lock上锁/解锁的次数都是通过以下AT命令来查询的: AT+ SPSMPN =<fac>,<ck_type> fac有5种值,分别对应5种锁; ck_type对应查询上锁/解锁的剩余次数,目前只支持为1,故上锁和解锁的剩余次数是一致的.
+参考FAQ: FAQ49016
+### 问题: 为什么会造成蓝牙传输卡住的现象，有什么统一的解决方法吗？
+解决方案: 造成蓝牙传输卡住的其中一种情况是,CRC校验有误,放进来了错误的包导致.出现这种情况的概率极低. 统一的解决方法是: 在opp中的发包处设定一个5s的timeout.如果相邻两个数据包的时间间隔大于5s,我们便主动断开此次传输.
+参考FAQ: FAQ49010
+### 问题: 如何修改浏览器的默认搜索引擎
+解决方案: 浏览器的默认搜索引擎是在如下位置设置 \packages\apps\Browser\res\xml\advanced_preferences.xml <com.android.browser.search.SearchEnginePreference android:key="search_engine" android:title="@string/pref_content_search_engine" android:defaultValue="baidu" android:summary="@string/pref_content_search_engine_summary" android:dialogTitle="@string/pref_content_search_engine" /> 修改defaultValue="baidu",改为其它搜索引擎就可以了,(搜索引擎需要在donottranslate-search_engines.xml定义).
+参考FAQ: FAQ49036
+### 问题: 为什么打开后摄像头，但实际打开的是前摄像头
+解决方案: 平台设计PWD0控制的是前摄像头,PWD1控制的是后摄像头,而有的camera模组(前后用的同一颗sensor)刚好相反, 导致打开后摄像头时实际打开的是前摄像头. 可以软件将PWD0,PWD1对应的gpio口对换.但是在兼容其他摄像头时,会有问题. kernel/arch/arm/mach-sc/include/mach/__board-sp7715ga.h #define GPIO_MAIN_SENSOR_PWN 164 #define GPIO_SUB_SENSOR_PWN 163
+参考FAQ: FAQ49037
+### 问题: Android中kill命令怎么使用？
+解决方案: 1. kill命令是用来给某个进程发送信号的,其实现在system/core/toolbox/kill.c中 2. 其发送的默认信号为15(SIGTERM或TERM)信号,例如直接输入如下命令,就表示给进程发送了15信号: kill <pid> 3. 另外每种信号都有以下三种发送方式:以9(SIGKILL或者KILL)信号为例 1)kill -9 <pid> 2) kill -SIGKILL <pid> 3) kill -KILL <pid> 上述三种方式的效果都是一样的,都是将进程<pid>杀死.
+参考FAQ: FAQ49035
+### 问题: 什么是蓝牙ATT
+解决方案: ATT,ATTRIBUTE PROTOCOL,属性协议.属性协议中要设置一个服务端,并将携带一组属性的设备设为客户端.这些服务端的属性可以被客户端发现,读和写,并由服务端进行通知. 低功耗蓝牙技术并不试图传输多样化的数据类型,考虑到不会用用传输大量的数据或流媒体音乐,为其开发一种能够处理有限的几种数据类型的协议就可以.这种协议被称作属性协议.是整个蓝牙技术的基石和构造组建.
+参考FAQ: FAQ49063
+### 问题: 如何抓取SIM和协议开机log？
+解决方案: 通常出现通信网络相关问题时,分析需要提供完整的SIM和协议开机log,抓取方法可按如下步骤: 1、 设置开机密码 2、 关机 3、 重新开机至手机出现密码输入界面 4、 插好USB log线,确认PC上log已经正常输出 5、 输入正确的开机密码,继续开机流程.这时抓到的log即为SIM和协议栈的开机log.
+参考FAQ: FAQ49088
+### 问题: 申请展讯海外测试、EVT测试准备材料
+解决方案: 1. 至少4部功能完好的机器? 2. 要有一份自测报告 3. 至少2块电池,2个耳机,2个充电器,2根充电线 4. 需要上传原理图,PCB文件以及debug和Release版本的软件 5. 提交CQ
+参考FAQ: FAQ49089
+### 问题: 什么是蓝牙SMP
+解决方案: SMP,SECURITY MANAGER SPECIFICATION,安全管理器协议.安全管理器协议定义了一个简单的配对和密钥分发协议.配对是一个获取对方设备信任的过程,通常采取认证的方式实现.配对之后,接着是链路加密和密钥分发过程.在密钥分发过程中从设备把秘密共享给主设备,当这两台设备在未来的某个时候重连时,他们可以使用先前分开的共享秘密进行加密,从而迅速认证彼此的身份.
+参考FAQ: FAQ49114
+### 问题: Android4.4中/system/priv-app路径说明
+解决方案: Android4.4中增加了/system/priv-app系统目录,其中包括Launcher,SystemUI, SettingsProvider等均是系统的核心应用,这些应用能使用系统级的权限,而在4.4之前的所有/system/app下的软件都能使用系统级的权限. 另外只有在/system/priv-app目录下的应用程序以及和这个目录中已有应用相同签名的,才可以配置使用'android:protectionLevel=signature|System'权限. 如果要设置apk模块编译集成到此目录,需要在Android.mk中增加如下配置: LOCAL_PRIVILEGED_MODULE := true
+参考FAQ: FAQ49118
+### 问题: native下如何调用震动接口
+解决方案: 在java层下,震动函数有标准接口,在native下可以使用写文件形式调用震动 char const *const vibrator_path = "/sys/class/timed_output/vibrator/enable"; static int write_vibrator(int value) { int fd; fd = open(vibrator_path, O_RDWR); if (fd >= 0) { char buffer[20]; int bytes = sprintf(buffer, "%d\n", value); int amt = write(fd, buffer, bytes); close(fd); return amt == -1 ? -1 : 0; } else { return -1; } }
+参考FAQ: FAQ49134
+### 问题: 为什么播放视频时熄屏再亮屏继续播放视频时会闪一下黑屏
+解决方案: 视频播放器再锁屏时,当前的播放器会停止,当解锁之后再次播放时,会重新开启一个播放器,所以解锁后继续播放视频时会黑一下屏,因画面解码出来需要一点时间,属于正常现象.
+参考FAQ: FAQ49141
+### 问题: SC7731平台为什么进入手电筒会先闪白
+解决方案: 由于刚进入手电筒应用的style背景色为白色,而后一个界面的背景色为黑色,导致有色差切换 可将AndroidManifest.xml中的android:theme="@style/AppTheme"注释,进入手电筒的初始 背景色为黑色,再进入应用不会产生色差的变化,提高用户体验感
+参考FAQ: FAQ49146
+### 问题: 滑动列表距离如何调整
+解决方案: 可在Viewconfiguration.java中,调小OVERSCROLL_DISTANCE的值进行验证 * Max distance in dips to overscroll for edge effects */ private static final int OVERSCROLL_DISTANCE = 300;//original value is 300
+参考FAQ: FAQ49164
+### 问题: SC7731 gps中的nmea log怎么抓取？
+解决方案: 输入*#*#2266#*#*暗码后进入gps测试项,进入INFORMA选项,选择cold/hot方式启动,点 击"Restart"选项,然后进入NMEA选项,勾选上"Save in BG",点击"start"; 等待cold/hot提示启动完成后,将T卡中根目录下对应的Nmealog2014xxxx导出即可.
+参考FAQ: FAQ49171
+### 问题: 如何获取gps测试中的drift.xml文件？
+解决方案: -----# adb root # adb shell # cd productinfo 将此目录下的drift.xml文件导出,需要使用GPS定位超过3分钟,此文件中的内容才有效.
+参考FAQ: FAQ49172
+### 问题: SC7715开启互动屏保功能，立即启动后，待机后为什么没有显示屏保效果？
+解决方案: 在互动屏保页面选择万花筒后,选择立即启用后,手机进入待机后,没有看到屏保效果;是因为, 选项"何时启动"中默认的选项为"插入基座时",意思时需要使用充电器充电时,才会有此屏保效果 ,当然可以选择"以上任一情况"选项时,使用充电器充电或者USB充电,待机后都可以看到屏保效果了.
+参考FAQ: FAQ49174
+### 问题: SC7715中如何查看手机实时的电池电量和电压？
+解决方案: 在拨号盘中输入*#*#4636#*#* -> 电池信息 ,可以显示实时的电池相关信息,包括电池电量和电压.
+参考FAQ: FAQ49175
+### 问题: SC7715浏览器中允许使用多标签页功能是什么？
+解决方案: 其他应用调用浏览器去显示网页时,浏览器会识别是哪个应用去调用的,如果一个应用已经调用浏览器 去显示网页,之后又去调用浏览器显示其他网页,那么浏览器可能会重复使用同一个tab(窗口)去显示 新网页, 如果勾选了"允许使用多标签页",那么即便是同一个应用,tab(窗口)则不再复用.即每次打开一个 新tab(窗口)去加载新的网页内容
+参考FAQ: FAQ49176
+### 问题: sar值怎么获取
+解决方案: SAR值一般指手机产品中电磁波所产生的热能,它是对人体产生影响的衡量数据,单位是W/Kg(瓦/公斤),可以通过天线厂测量获得
+参考FAQ: FAQ49199
+### 问题: 如何获得射频校准标志
+解决方案: 有两个校准相关的在工程模式中都可以看到 一个在nv中,在debug&log下面有一个CFT result可以看到 还有一个是站位检查的 在*#*#83789#*#*里面测试信息里面都有
+参考FAQ: FAQ49202
+### 问题: SC7715生成的蓝牙地址为不可用地址怎么修改？
+解决方案: 有时候通过WriteIMEI工具写入的蓝牙地址为无效地址,需要在将riteIMEI中的设置选项"自动生成 蓝牙"取消勾选,然后在首页中写入正确的蓝牙地址,仅验证是否蓝牙地址本身问题的话,可通过写入验证的蓝牙地址如"00f56519efef",再重新写入到手机,开机验证是否蓝牙 可用、验证"蓝牙互联网功能"是否可正常使用
+参考FAQ: FAQ49211
+### 问题: SC7715要修改关机充电界面，修改哪个文件？
+解决方案: 在ui.c中修改,路径:\vendor\sprd\open-source\apps\charge\ui.c
+参考FAQ: FAQ49216
+### 问题: lmp发射功率控制
+解决方案: 1.如果接收信号强度指示(RSSI)与蓝牙设备设定值相差太大,它可以请求另一方设备的发射功率增加或减少; 2.功率因而调整请求可以再成功地完成一次基带寻呼过程后的任何时刻进行; 3.如果设备不支持功率控制请求,会在其特征列表中注明,因而,在所支持的特征请求得到响应后,就不会再向它发出该请求.
+参考FAQ: FAQ49259
+### 问题: SC7701是否支持SDN功能？
+解决方案: SC7701支持SDN(Service Dialing Number)功能,且此功能默认开启(对应宏:MMIPB_SIMDN_SUPPORT). 默认软件版本SDN功能菜单如下: phonebook的options->others->Service Number.
+参考FAQ: FAQ49281
+### 问题: lmp对ACL链路的质量管理
+解决方案: 1.服务质量由主设备通知从设备 主设备使用LMP_Quality_of_Service PDU强制从设备使用新的轮询间隔和Nbc,从设备不能拒绝该通知.轮询间隔用于控制带宽的分配和等待时间.除了寻呼、寻呼扫描、查询、查询扫描时可能发生冲突以外,在正常的激活模式下轮询间隔都可以得到保证. 2.请求的新的服务质量 主设备或从设备可以使用LMP_Quality_of_Service_Req PDU请求新的轮询间隔和Nbc
+参考FAQ: FAQ49266
+### 问题: SC7701添加世界时钟worldclock后，如何实现按上下键循环显示添加的时间？
+解决方案: 世界时钟列表界面实现按上下键循环显示可参考如下修改: 在函数接口SetWCFormParam(@mmiwclk_main.c)中增加下列代码: CTRLFROM_SetCircularHandleUpDown(MMIWT_FORM_CTRL_ID,TRUE);
+参考FAQ: FAQ49282
+### 问题: luncher里面应用程序的图标替换
+解决方案: 需要在对应的主题里查找替换 比如 vendor\sprd\UniverseUI\ThemeRes\SimpleStyle\Icons
+参考FAQ: FAQ49297
+### 问题: 怎么将bmp图片转换为Drawable
+解决方案: 可以使用BitmapDrawable类, 在sdk中描述如下 A Drawable that wraps a bitmap and can be tiled, stretched, or aligned. You can create a BitmapDrawable from a file path, an input stream, through XML inflation, or from a Bitmap object.
+参考FAQ: FAQ49311
+### 问题: 如何获取手机的方向
+解决方案: 可以通过下面方法获得手机是 Landscape还是 Portrait getResources().getConfiguration().orientation http://developer.android.com/reference/android/content/res/Configuration.html#orientation
+参考FAQ: FAQ49313
+### 问题: 如何开启锁屏界面横竖屏切换功能
+解决方案: 锁屏界面能否横竖屏切换是在xml中进行配置的: 路径:\frameworks\base\core\res\res\目录下的values目录及其他分辨率目录下的config.xml文件: <!-- Disable lockscreen rotation by default --> <bool name="config_enableLockScreenRotation">false</bool> 注:不同分辨率下,配置的默认值是不同的,比如:大分辨率下默认配置为true,参考values-sw600dp目录下config文件.
+参考FAQ: FAQ49201
+### 问题: corefile的存储路径在哪里
+解决方案: 根据我们的定义,在未插入sdcard的情况下,corefile文件会生成到/data/corefile目录下,由于data分区的空间较宝贵,因此,我们限制了这个时候最多生成的corefile文件的数量为4个;当插入sdcard的情况下,corefile文件会生成到/sdcard/slog/corefile目录下,这个时候最多能够生成的corefile文件的数量为10个.
+参考FAQ: FAQ49337
+### 问题: lmp链路控制管理
+解决方案: 链路控制管理包括设备寻呼、主从角色的转换、时钟和计时器设置、信息交换、连接的建立和链路释放等功能的管理.
+参考FAQ: FAQ49274
+### 问题: lmp链路控制管理之设备寻呼
+解决方案: 蓝牙有强制和可选两种寻呼方式.链路管理协议提供了一个协商寻呼方式的方式,协商的结果可以保留到下次寻呼时使用. 1)寻呼模式(Page Mode) 两个蓝牙设备可以相互协商下一次寻呼的模式.设备A向设备B发送LMP_Page_Mode_Req PDU,用来说明设备A下一次所希望的寻呼模式,设备B可以接受也可以拒绝,若拒绝,则维持原来的寻呼模式不变. 2)寻呼扫描模式(Page Scan Mode) 与协商寻呼模式类似,两个蓝牙设备可以相互协商下一次寻呼扫描的模式.设备A向设备B发送LMP_Page_Scan_Mode_Req PDU,用来说明设备A下一次所希望的寻呼扫描模式,设备B可以接受也可以拒绝,若拒绝,则维持原来的寻呼扫描模式不变.
+参考FAQ: FAQ49341
+### 问题: 如何对launcher中文件夹的名称长度增加限制
+解决方案: 在res/layout/user_folder.xml文件中的FolderEditText控件增加一条android:maxLength属性即可: <com.android.launcher3.FolderEditText ... android:maxLength="20" /> 其中,20表示最大字符长度.
+参考FAQ: FAQ49346
+### 问题: 如何修改sprdLauncher1中主界面应用图标的行数和列数？
+解决方案: 在sprdLauncher1中对主界面图标的行数和列数做了单独处理,修改如下: 请定位到vendor/sprd/UniverseUI/SprdLauncher1/res/values/config.xml: <integer name="config_workspace_cols">4</integer>//修改列数 <integer name="config_workspace_rows">4</integer>//修改行数
+参考FAQ: FAQ49352
+### 问题: lmp链路控制管理之主从角色转换
+解决方案: 发起寻呼的设备通常为微微网的主设备,但是为了完成某些特定的功能,有时需要主从角色转换. 如果从设备发起主从转换,它将首先结束带有L2CAP信息的当前ACL分组的传送并终止L2CAP传输,在发送LMP_Slot_Offset PDU之后,立即发送LMP_Switch_Req PDU.若从设备接受该请求,它将结束带有L2CAP信息的当前ACL分组的传送并终止L2CAP传输,以LMP_Accepted PDU相应.主从角色转换完成后,不论成功与否,主从双方将恢复L2CAP传输. 如果主设备发起主从转换,它将首先结束带有L2CAP信息的当前ACL分组的传送,终止L2CAP的传输,并发送LMP_Switch_Req PDU.如果从设备接受该请求,他将结束带有L2CAP信息的当前ACL分组的传送并终止L2CAP传输,在LMP_Accepted PDU之后立即以LMP_Slot_Offset PDU相应.主从角色转换完成后,无论成功与否,双方将恢复L2CAP传输.
+参考FAQ: FAQ49347
+### 问题: 如何在sprdLauncher2中隐藏一个应用图标？
+解决方案: 以隐藏百度地图为例,修改如下: 请定位到/vendor/sprd/UniverseUI/SprdLauncher2/src/com/android/sprdlauncher2/LauncherModel.java文件, 查找verifyApplications方法: if (tmpInfos.isEmpty()) { added.add(app); } 修改为: if (tmpInfos.isEmpty()) { ComponentName cn = app.componentName; Log.e(TAG,"cn = "+cn); if(cn != null && !cn.equals("")){ if(!cn.toString().equals("ComponentInfo{com.baidu.BaiduMap/com.baidu.BaiduMap.BaiduMap}")){ added.add(app); } } }
+参考FAQ: FAQ49359
+### 问题: 拨打存储在FDN和SDN里面的号码，是否支持显示联系人名称？
+解决方案: 不支持. 拨打电话时目前只会匹配手机中的联系人数据库,FDN和SDN都是存储在卡中的号码,不会导入手机中的联系人数据库,因此不在数据库中的号码无法显示其名字.
+参考FAQ: FAQ49360
+### 问题: lmp链路控制管理之时钟和计时器设置（一）
+解决方案: 主设备通过发送LMP_Clock_Offset_Req PDU可以得到从设备返回的当前偏移量,这个偏移量是从设备本地时钟预期记录的主设备时钟之间的差值.主设备可以在随后的寻呼过程中使用这个偏移量来优化寻呼时间.主从设备必须支持该功能.
+参考FAQ: FAQ49361
+### 问题: lmp链路控制管理之时钟和计时器设置（二）
+解决方案: 主从角色转换的过程中,一方设备通过发送LMP_Slot_Offset PDU来通知对方自己的时隙偏移信息.时隙偏移等于主设备发送时隙的开始时刻和从设备相应的发送时隙的开始时刻之间的差值,单位为us.
+参考FAQ: FAQ49366
+### 问题: procrank中vss,rss等的含义
+解决方案: VSS - Virtual Set Size 虚拟耗用内存(包含共享库占用的内存) RSS - Resident Set Size 实际使用物理内存(包含共享库占用的内存) PSS - Proportional Set Size 实际使用的物理内存(比例分配共享库占用的内存) USS - Unique Set Size 进程独自占用的物理内存(不包含共享库占用的内存 一般来说内存占用大小有如下规律:VSS >= RSS >= PSS >= USS
+参考FAQ: FAQ49369
+### 问题: 如何默认显示开发者选项
+解决方案: 修改packages\apps\Settings\src\com\android\settings\Settings.java private void updateHeaderList(List<Header> target) /*final boolean showDev = mDevelopmentPreferences.getBoolean( DevelopmentSettings.PREF_SHOW, android.os.Build.TYPE.equals("eng"));*/ 修改为 boolean showDev=true;
+参考FAQ: FAQ49377
+### 问题: MIPI接口屏显示花屏
+解决方案: 这个问题主要是由于屏的timing设置到我们主控制器的如下参数有问题,比如: .hfp = 80, /* unit: pixel */ .hbp = 80, .hsync = 10, .vfp = 20, /*unit: line*/ .vbp = 14, .vsync = 6, 这几个参数设置不对,所以导致问题,这几个参数是行等待,帧等待等,这个是严格和屏的timing匹配的,需要屏厂给出正确的参数.
+参考FAQ: FAQ49368
+### 问题: 如何实现一个可旋转的TextView
+解决方案: 写一个RotateableTextView类,让它继承自TextView.重写onDraw方法,通过canvas.rotate(角度)即可,如下所示: @Override protected void onDraw(Canvas canvas) { // TODO Auto-generated method stub canvas.rotate(mRotation); super.onDraw(canvas); }
+参考FAQ: FAQ49387
+### 问题: git repo sync代码出错
+解决方案: 主要原因是git配置错误所导致的,如执行如下命令 git config --global core.autocrlf true 这样是错误的,会出现文件回车换行符的windows到linux的转换问题 所以,深圳员工在下载代码之前,最好执行: git config --global core.autocrlf false git config --global core.safecrlf true 然后下载代码 repo init -u gitsz@10.0.128.68:android/platform/manifest -b sprdroid4.4_14b_14.37.6_2341A repo sync -d -c -q -j8
+参考FAQ: FAQ49458
+### 问题: 什么是GAP
+解决方案: 通用访问配置文件(Generic Access Profile, GAP),该Profile保证不同的Bluetooth产品可以互相发现对方并建立连接. (GAP)定义了蓝牙设备如何发现和建立与其他设备的安全(或不安全)连接.它处理一些一般模式的业务(如询问、命 名和搜索)和一些安全性问题(如担保),同时还处理一些有关连接的业务(如链路建立、信道和连接建立).GAP规定的是一些一般性的运行任务.因此,它具 有强制性,并作为所有其它蓝牙应用规范的基础.
+参考FAQ: FAQ49460
+### 问题: 什么是信令测试
+解决方案: signaling mode:信令模式,就是用CMU200或8960模拟基站,和手机建立起链接,仪表发出各种信令,手机此时相当于联上了网络.
+1)手机此时既要发射信号,又要接收来自仪表的各种信令,这种方式一般用于Final TEST.
+2)信令模式某种程度上可以说完全模拟了手机和基站注册、寻呼、以及MOC、MOT的呼叫过程以及通话过程.
+3)当然,这种和仪器建立的通信还是和真正的通信是有区别的,为了测试的需要,比如测试BER,有时需要手机环回(loop back)基站发出的数据,这在实际通信中是没有的.
+参考FAQ: FAQ49443
+### 问题: 什么是非信令测试
+解决方案: Non Signaling test mode:非信令模式,仪表此时并不发出信令去控制手机,或者仪表只是发射,手机接收;或者仪表只是接收,手机发射.
+当然为了支持这个模式,手机需要进入一种特殊的模式,能够支持只发,或只收.
+非信令模式主要用来手机校准(Calibration)或手机研发中故障定位等.比如排除接收的故障,单独看发射是不是好的.
+参考FAQ: FAQ49450
+### 问题: 什么是GATT
+解决方案: GATT的全名是Generic Attribute Profile,通过BLE连接,读写属性类小数据的Profile通用规范. 现在所有的BLE应用Profile都是基于GATT来实现的.
+参考FAQ: FAQ49455
+### 问题: sc7731g VDDSIM2的配置问题
+解决方案: 主要原因是:我们的平台的LDO(比如:VDDSIM2)可以给其他很多的设备使用,但是每一个 设备所使用的电压可能不一样,在实例中,可以在整个kernel中搜索vddsim2看有哪些设备在使用, 如果有其他设备在使用,而且电压设置更低的话,为了保护硬件,会使用电压最低的,比如这个例子中 TP也在使用,设置的电压是1.8V,所以VDDSIM2只会是1.8V,而不会设置为2.8V.
+参考FAQ: FAQ49451

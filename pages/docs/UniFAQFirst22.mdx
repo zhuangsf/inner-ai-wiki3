@@ -1,0 +1,300 @@
+### 问题: [SC7731G] SC7731G对充电器的保护电压是多少？
+解决方案: 根据可设置的充电器保护电压范围为5.6V ～ 9.7V(默认6.5V),步进为0.1V,当充电超过门限值会停止充电.
+参考FAQ: FAQ47837
+### 问题: [SC7731G] SC7731G充电时长多少会停止充电？
+解决方案: 时间超长停止充电,默认6小时.
+参考FAQ: FAQ47838
+### 问题: 更新了nand驱动后反而无法下载，可能什么原因？
+解决方案: 更新了nand驱动,如果nand的数据ecc有变化,则不能兼容,烧录了旧数据的nand需要用特殊的fdl2全擦后才能正常下载.
+参考FAQ: FAQ47831
+### 问题: Factorydownload工具无法识别Com2的下载端口
+解决方案: 修改工具Bin目录下的 FACTORYDOWNLOAD.ini中的[PortSetting]下的 EnableFilter置为0,或者设置FilterPort=1
+参考FAQ: FAQ47880
+### 问题: SC7731如何安装MTP驱动？
+解决方案: 对于MTP驱动,WIN7系统不需要手动安装,系统会自动安装,但对XP系统,系统不会自动安装,因此,只要安装了Media Player11以后的版本就可以使用MTP了.
+参考FAQ: FAQ47883
+### 问题: Qos数据帧确认策略
+解决方案: Qos数据帧的Qos control 字段里有一个子字段:ack ,即确认策略,有下面四种取值 [bit5][bit6] 00 正常确认或隐式块确认请求.非A-MPDU中的Qos数据;指定接收端返回一个ACK或Qos+CF-Ack帧;A-MPDU中的Qos数据,制定接收端返回一个BA 10 不确认.指定接收端不返回ACK.当发送端对发送的单播帧不要求确认或发送的帧为广播或多播帧时使用 01 非显示确认或在PSMP下的调度确认.对接收到的帧可能有一个响应帧,但这个响应帧既不是ACK也不是任何子类型+CF-ACK的数据帧.Qos CF—poll与Qos CF-Ack+CF-Poll 帧总是使用此值. 在PSMP下,此值标示一个在下一PSMP-DTT或PSMP-DTT中调度的确认 11 块确认.指定的接收端收到帧后不采取措施,而只是记录状态.接收端可以期望在以后收到一个BAR帧或包含具有正常确认策略的Qos数据帧的A-MPDU.
+参考FAQ: FAQ47886
+### 问题: 什么是EDCA？
+解决方案: EDCA : enhanced distributed channel access, 是增强分布式信道接入是802.11e修订中引进的对基本DCF的一个扩展,用以支持带优先级的服务质量(Qos),EDCA机制定义了4种接入类别.
+参考FAQ: FAQ47900
+### 问题: EDCA接入类别有哪几种？
+解决方案: 在EDCA下,外向通信(离开系统的通信)被逻辑排序成4个人队列,每个队列对应一个AC.有如下四种: 优先级 AC_BK 背景 | (低) AC_BE 尽力而为 | AC_VI 视频 | AC_VO 话音 \|/ (高)
+参考FAQ: FAQ47908
+### 问题: shark FM搜台模式的设置方法
+解决方案: SHARK FM 搜台过程是 MODEM 自己完成, 软件需要做的是设置 MODEM 相应的寄存器.主要如下: 1, 把搜台的起始频点设置下去,同设台模式下的设置频点,把频点写道 0x4027000c 寄存器中. 2, 搜台分为向前搜索和向后搜索,通过设置寄存器 0x40270000 的 bit19 来实现,该 bit 为1 代表向上搜索,反之为向下搜索. 3,设置 MODEM 进入 seek mode, 通过向寄存器 0x40240018 bit0 置 1 完成. 4,通过以上 3 步,MODEM 自己会完成搜台动作,驱动程序可以通过查询状态寄存器(0x40270038)来得知 MODEM 是否搜索到台,如果搜索到台则驱动程序可以通过读取寄存器把搜索到的频点读出来,对应的寄存器为 0x402700b8.
+参考FAQ: FAQ47926
+### 问题: shark FM设台模式的设置方法
+解决方案: 在此模式下软件需要使能 MODEM 为 tune mode,然后把需要设置的频点写到相应的寄存器,MODEM 会完成频点的锁定等工作.具体如下: 1, 软件设置 MODEM 为 tune mode, 0x40270018 的 bit2 置 1. 2, 把要设置的频点设置下去,需要主要的是写下去的频点具有(freq-1)*2 的对应关系.比如设置频点为 87.5M,则需要向 0x4027000c 写(875-1)*2. 3,设置完成频点后,MODEM 会自动进行频点的处理,驱动程序可以通过查询状态寄存器(0x40270038)来得知 MODEM 是否处理完毕.
+参考FAQ: FAQ47928
+### 问题: shark FM是否支持RDS
+解决方案: shark Fm不支持RDS功能,2341A和2341B支持RDS功能. 所谓RDS是英国BBC广播公司开发的一种特殊无线电广播.即"无线数据广播系统"(Radio Data System). 它是在调频广播发射信号中利用副载波把电台名称,节目类型,节目内容及其它信息以数字形式发送出去. 通过具有RDS功能的调谐器可以识别这些数字信号,并做响应处理,RDS广播精髓在于其AF和TA功能,AF既自动频率调整,当信号低于某个水平时,AF功能会自动搜索当前电台的其他发射频率串. RDS收音系统还独有"交流信息"功能(TA功能,也称交通公告),若有紧急事件,电台就会发送特殊信号,令收音机强行播放,另外,还有时间基准发射,自动调准收音机时间等功能,RDS在汽车,手机等移动设备上使用很方便.
+参考FAQ: FAQ47929
+### 问题: 7715中为何关闭gsp(graphic signal processor)
+解决方案: 由于7715性能问题,不能打开. 打开会影响到手机视觉稳定性问题如黑线、短线等问题.
+参考FAQ: FAQ47962
+### 问题: 蓝牙串口协议 (SPP)
+解决方案: 1、SPP( SERIAL PORT PROFILE)定义了如何设置虚拟串口并连接两个蓝牙设备.在智能家居方面有相关应用; 2、SPP定义了设备A和设备B两种角色: • 设备A– 该设备主动与另一设备建立连接(启动器). • 设备B– 该设备等待另一设备启动连接(接收器). 基带、LMP和L2CAP均为OSI层级1和2蓝牙协议.RFCOMM是蓝牙对GSM TS 07.10的采纳,为串口模拟提供了传输协议. 3、虚拟串口使用场景: 模拟RX、TX数据通过无线传输,设备也可以直接解析成UART数据;
+参考FAQ: FAQ47965
+### 问题: 如何去掉设置-添加账户中的CalDAV和CardDAV
+解决方案: 去掉的方法如下: vendor/sprd/open-source/common_packages.mk中,去掉如下两行 Carddav-Sync \ Caldav-Sync.apk\
+参考FAQ: FAQ48008
+### 问题: 互动屏保，如何默认使用“时钟”
+解决方案: 默认屏保可以通过如下修改来指定: /frameworks/base/core/res/res/values/config.xml 修改config_dreamsDefaultComponent项的默认值. 比如 <string name="config_dreamsDefaultComponent">com.google.android.deskclock/com.android.deskclock.Screensaver</string> 修改为 <string name="config_dreamsDefaultComponent">com.android.deskclock/com.android.deskclock.Screensaver</string> 即可指定"时钟"为默认屏保.
+参考FAQ: FAQ48009
+### 问题: 蓝牙BR模式 BLE模式
+解决方案: 1、传统的蓝牙为BR/EDR模式; 2、BLE蓝牙和BR/DER模式共存为双模, 3、不同模式下协议栈结构如下:
+参考FAQ: FAQ48007
+### 问题: 设置-位置信息，如何默认使用“准确度高”
+解决方案: "准确度高"表示同时使用GPS和网络的定位, 如要默认使用"准确度高",做如下修改即可: frameworks/base/packages/SettingsProvider/res/values/defaults.xml <string name="def_location_providers_allowed" translatable="false"></string> 修改为 <string name="def_location_providers_allowed" translatable="false">gps,network</string>
+参考FAQ: FAQ48010
+### 问题: 进入设置-应用，如何默认显示在“下载”这个TAB
+解决方案: 做如下修改即可: packages/apps/Settings/src/com/android/settings/applications/ManageApplications.java onCreate接口中, } else { defaultListType = LIST_TYPE_ALL; } 修改为 } else { defaultListType = LIST_TYPE_DOWNLOADED; }
+参考FAQ: FAQ48012
+### 问题: 7731项目上如何打开双SIM卡铃声支持
+解决方案: /frameworks/base/core/java/android/provider/Settings.java public static final boolean IS_MULTI_CARD_RINGTONE_SUPPORT = false; 改为true即可.
+参考FAQ: FAQ48015
+### 问题: 设置->安全->“未知来源”，如何默认开启
+解决方案: \frameworks\base\packages\settingsprovider\res\values\Defaults.xml 中, def_install_non_market_apps改为true即可.
+参考FAQ: FAQ48017
+### 问题: 海外智利紧急号码添加
+解决方案: 确认该紧急号码是否存在于SIM 卡 ecc列表中,如果存在,在 mmicc_app.c文件中如下table中添加"133"即可 static const char* const s_emergency_call[] = { "112", "911" };
+参考FAQ: FAQ48172
+### 问题: SC7701平台上支持的wifi芯片有哪些
+解决方案: SC7701平台调试过的wifi芯片有realtek8189.
+参考FAQ: FAQ48053
+### 问题: Android APK中androidManifest.xml关于android:presistent字段描述说明
+解决方案: android:persistent=["true" | "false"] 表示该应用程序是否在任何时候都保持运行状态.默认为false,应用程序通常不应该设置本标识,持续模式仅仅应该设置给某些需要在后台一直保持运行状态的系统应用程序.
+参考FAQ: FAQ48094
+### 问题: OTA升级过程中，如何保护NV中项目，不能被改写?
+解决方案: 修改\bootable\recovery\nvmerge\nvmerge.cfg,在该文件中增加要保护NV项的ID值.
+参考FAQ: FAQ48113
+### 问题: 没有点击触屏，触屏自己上报点击事件，可能的原因是什么？
+解决方案: 触屏工作时,部分TP的内部固件工作时可能会依赖于LCD的TE信号.当检测不到该信号时,TP的抗噪性能下降, 就会误报点击事件.此时需要检查液晶屏初始化设置中,是否使能了TE信号.
+参考FAQ: FAQ48119
+### 问题: HCI流量控制指什么？
+解决方案: HCI流量控制是为了管理主机和主机控制中的有限资源并控制数据流量而设计的,流量控制是由主机管理主机控制器的数据缓冲区,并能过动态调整每个连接句柄的数据流量来实现的.流量控制在主机和主机控制器之间,避免了传送到未应答远程设备的ACL数据溢出主机控制器数据缓冲区.
+参考FAQ: FAQ48138
+### 问题: STK Setup Call主动命令
+解决方案: 1)+ SPUSATSETUPCALL •作用:指示SIM卡上报一个SETUPCALL命令给应用 •返回:+ SPUSATSETUPCALL:<string> •参数: <string> SETUP CALL命令的二进制原始数据结构.ETSI: 102.223中定义了这个数据的详细结构. 2)AT+SPUSATCALLSETUP •作用:设置是否接收STK呼叫,是对SETUP CALL的响应 •设置命令:AT+SPUSATCALLSETUP=<n> •返回:OK 或 +CME ERROR:<err> •参数: 0: 拒绝. 1: 接收 [RIL Log] Unsol: AT< +SPUSATSETUPCALL:D00F8103061000820281838604812135F0 AT> AT+SPUSATCALLSETUP=1
+参考FAQ: FAQ48153
+### 问题: 使用kmalloc分配空间时的要点有哪些
+解决方案: 1、用kmalloc分配的空间没有清零,所以在使用前,一定要执行清零操作. 2、kmalloc的原型是*kmalloc(size_t size, int flags);第一个参数是分配的块的大小,第二个参数是分配标志(flags). 3、常用的标志是GFP_KERNEL,表示分配的是内核空间,用于在内核空间运行的进程执行,有可能会休眠,不能用于中断处理例程、tasklet及内核定时器. 4、用GFP_ATOMIC标志不会休眠,可以用于中断处理例程、tasklet及内核定时器.
+参考FAQ: FAQ48152
+### 问题: 7715入网测试adb命令不能识别
+解决方案: 原因是为了降功耗,使用了user版本的去测试,导致有些adb命令无法识别.可以先使用userdebug版本先测试,功耗测试另用user版本.
+参考FAQ: FAQ48163
+### 问题: 智利本地的SIM卡上锁解除
+解决方案: 在对应的工程NV中设置对应的sim卡即可,路径如下:NV->nv_type->NV_PLMN_SELECT_MODE
+参考FAQ: FAQ48135
+### 问题: 新建board时，chipram编译不过的问题
+解决方案: chipram文件夹里面的代码和u-boot文件夹里面的代码类似,在新建board时,没有在chipram/Makefile里面添加相应board的config选项,就会编译报错,而且不容易发现.可以参考chipram/Makefile已有的board添加即可.
+参考FAQ: FAQ48164
+### 问题: 7715 LED并联背光亮度太强，机器发热，如何调整
+解决方案: 将sprd_bl_whiteled_update_status函数中将计算出来的Led level背光亮度值进行缩小,乘以小于1的系数可解决该问题
+参考FAQ: FAQ48178
+### 问题: 7715 如何将前摄像头30W插值到130W？
+解决方案: 如果要30W插值到130W,可以设置下面的参数为: vendor/sprd/open-source/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h struct config_element sprd_front_camera_hardware_config[] = { ... {"picture-size-values", "1280x960,640x480"} ... };
+参考FAQ: FAQ48180
+### 问题: ACL数据通信流程？
+解决方案: 最简单的ACL数据通信流程有6个步骤: 1. 蓝牙模块自身初始化; 2.HCI流控设置; 3.查询; 4.建立连接; 5.进行数据通信; 6.断开连接.
+参考FAQ: FAQ48155
+### 问题: Android4.4平台中字体文件路径都有哪些？
+解决方案: Android4.4的字体文件存放位置主要有如下(附相应说明): frameworks/base/data/fonts #中英繁日俄法意德、希伯来、阿拉伯、梵文等 external/sil-fonts #缅文字体 external/naver-fonts #韩国字体 external/noto-fonts #孟加拉、梵文、坎那达语(印)、高棉(柬埔寨)、老挝、马来、泰米尔、泰卢固、泰语 device/sprd/common/res/user_fonts #settings模块中设置字体所在位置
+参考FAQ: FAQ48351
+### 问题: 如何打开gecko层代码的log
+解决方案: 打开gonk-misc/default-gecko-config 将 if [ "${B2G_DEBUG:-0}" != "0" ]; then ac_add_options --enable-debug fi 改为 #if [ "${B2G_DEBUG:-0}" != "0" ]; then ac_add_options --enable-debug #fi
+参考FAQ: FAQ48236
+### 问题: 在FFOS中如何使用gdb
+解决方案: FFOS中有运行gdb的脚本 :run-gdb.sh , 脚本中已经配置好了相应的gdb运行环境,所以直接执行就行了,但是该脚本目前只能在本地使用,即当前插调试手机的电脑.
+参考FAQ: FAQ48239
+### 问题: 如何在intirc中创建守护进程并且能开机启动？
+解决方案: init.rc(device/sprd/XXX)中创建一个进程例如: service bootanim /system/bin/bootanimation (service <name> <pathname> ) class main (为service指定一个类别名.同样类名的所有的服务可以一起启动或停止.如果没有指定类别的服务默认为"default"类) user graphics (在执行服务前改变用户名) group graphics system (在执行服务前改变组.在第一个组后的组将设为进程附加组) disabled (这个服务的级别将不会自动启动,它必须被依照服务名指定启动才可以启动) oneshot (在服务退出后不重启) 要使该service能开机启动需要指定class为main即可.
+参考FAQ: FAQ48223
+### 问题: 使用gdb脚本如何调试某个进程
+解决方案: 使用如下命令: ./run-gdb.sh attach pid 其中pid是要调试进程的进程id,使用 adb shell ps 获得
+参考FAQ: FAQ48250
+### 问题: 如何将activity的窗口背景设置成透明的？
+解决方案: 方法1: 步骤1:在AndroidManifest.xml里为activity增加theme;如: <activity android:name="InCallActivity" android:theme="@style/ThemeTransparent" ... > </activity> 步骤2: theme文件style.xml里为ThemeTransparent添加android:windowIsTranslucent属性.如: <style name="ThemeTransparent"> <item name="android:windowIsTranslucent">true</item> ... </style> 方法2: 在activity的onResume()里调用如下方法: this.convertToTranslucent();
+参考FAQ: FAQ48273
+### 问题: pc与手机进行，连接usb存储，蓝牙连接断开
+解决方案: 该问题的原因是: 1.vold服务在挂载外部T卡失败时,它会扫描open外部T卡文件的进程,然后将这些进程kill或hangup; 2.打开bluetooth log时,bluetooth进程会在发送和接收数据时,将数据写入到btsnoop_hci_xxxxxxxx.log中; 3.vold服务扫描到bluetooth进程有open外部T卡文件行为后,就会把bluetooth进程中止(hangup). 这是android的原生设计,无需修改!
+参考FAQ: FAQ48260
+### 问题: L2CAP主要功能有哪些？
+解决方案: 1. 协议复用; 2.分段与重组; 3.服务质量信息的交换; 4.组抽象;
+参考FAQ: FAQ48266
+### 问题: L2CAP信道类型有哪些？
+解决方案: 1. 面向连接信道,用于两个连接设备之间的双向通信;; 2. 无连接信道,用于向一组设备进行广播的数据传输,为单向信道; 3. 信令信道,用于创建CO信道,并可以通过协商过程改变CO信道的待发.
+参考FAQ: FAQ48288
+### 问题: 如何修改android 4.4Launcher主界面应用图标名称显示为两行？
+解决方案: 以sprdLauncher1为例: 请定位到/vendor/sprd/UniverseUI/SprdLauncher1/res/values/styles.xml: <style name="WorkspaceIcon"> <item name="android:layout_width">match_parent</item> <item name="android:layout_height">match_parent</item> <item name="android:layout_gravity">center</item> <item name="android:gravity">center_horizontal</item> <item name="android:singleLine">true</item>//修改为false即可
+参考FAQ: FAQ48290
+### 问题: L2CAP数据分组类型有哪些？
+解决方案: 1. 用于CO信道的分组类型; 2. 用于CL信道的分组类型;
+参考FAQ: FAQ48289
+### 问题: firefox os支持AGPS 吗
+解决方案: firefox os 在系统层面上是支持AGPS接口的, 具体某个手机是否支持AGPS功能取决与该手机是否具有gps模块以及底层所具备的agps能力值(MSA/MSB).如果以上条件都满足的话,上层界面只需要打开移动网络,agps会在定位过程中起作用.
+参考FAQ: FAQ48269
+### 问题: 4.4平台通话时怎样防止脸部误触发界面按钮的？
+解决方案: InCallActivity类的onCreate()里面为window参数添加WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES这个标志来防止按钮被误触发. protected void onCreate(Bundle icicle) { ... int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES;// 添加FLAG_IGNORE_CHEEK_PRESSES防止误触发 getWindow().addFlags(flags); ... }
+参考FAQ: FAQ48294
+### 问题: L2CAP信道配置过程？
+解决方案: 1. 本地设备将期望值不是默认值的参数包含在配置请求指令中通知远端设备,未包含在配置请求指令中的参数则表明期望值为默认值; 2. 远端设备返回配置响应指令,通知请求方是否同意配置请求指令中的参数值和未包含在配置请求指令中的默认值.如果不同意,则可以重复步骤1和2对配置参数进行协商,直到达成一致; 3. 请求方和响应方互换角色,在相反的方向上重复步骤1和2.
+参考FAQ: FAQ48291
+### 问题: BlueDroid adb 蓝牙调试命令
+解决方案: Bluez是有作蓝牙adb调试功能,可以通过相应的命令打开或关闭蓝牙,但是bluedroid 没有作adb调试功能的,不能通过adb 对蓝牙进行相关操作.
+参考FAQ: FAQ48301
+### 问题: imageButton按键背景图片如何自适应控件尺寸？
+解决方案: 如果定义一个图片按钮时,背景图片的原始尺寸与按钮的不一致,将导致按钮有留白,效果不美观. 解决方法除了重新做图片以外,还可以通过如下方式,让背景图片填充完按钮区域: 将imageButton定义的图片源属性 android:src="@drawable/btn_background" 改为 android:background="@drawable/btn_background" ps:以上方法会将图片拉伸,不影响效果的情况下可以使用.
+参考FAQ: FAQ48297
+### 问题: SC7701 SIM LOCK是否支持多卡，如何配置？
+解决方案: SIM LOCK功能支持多卡.在开启SIM_LOCK_SUPPORT的版本中,可以通过修改NV实现单卡或者多卡的Lock状态.配置说明如下: TD_TIANJI2_NV_TYPE -> NV_PARAM_TYPE_SIM_CFG1 -> is_support_gsm_only 该域的低4位用来表示开关,每张卡占用一位,最多控制4张卡,分配方式是:第0位:卡1;第1位:卡2;第2位:卡3;第3位,卡4.各卡的开关相互独立,没有依赖关系. 各位域值的意义:0:关闭对应SIM的功能;1:开启对应SIM的功能
+参考FAQ: FAQ48311
+### 问题: SC7701不插sim卡有时候不能拨打紧急号码
+解决方案: 不插sim卡呼叫紧急拨号,会驻留临近的信号较好的小区,有些小区不支持紧急拨号,如上海联通拨112不会直接接通,会提示"尊敬的用户..."
+参考FAQ: FAQ48307
+### 问题: SC7731平台默认双mic，软件上如何改成单mic
+解决方案: 用audiotest工具,将通话下所有模式中的path_set都改成618,把voip也从A18也修改成618
+参考FAQ: FAQ48318
+### 问题: 手机重启条件有哪些
+解决方案: 手机重启条件有硬件重启和软件重启两种,主要指以下五种条件:开机键(powerbutton),闹钟(alarm),充电(charge),诊断(assert),软件(software). 硬件条件重启条件主要包括(powerbutton),(charge),(alarm) 软件重启条件有正常模式重启和非正常模式重启两种;其中,非正常模式重启分为assert重启和其他非正常模式下软件重启(software)像,calibration_mode,calibration_post_mode,boot_reset_mode,pin_test_mode,iqc_test_mode, calibration_post_no_lcm_mode.
+参考FAQ: FAQ53782
+### 问题: 音效如何实现混响效果
+解决方案: 混响指的是模拟出房间,大厅等的效果.其实平台已存在此功能,只是未将该选项显示. 按如下修改即可显示该功能. --- a packages/apps/MusicFX/res/layout/music_main.xml +++ b packages/apps/MusicFX/res/layout/music_main.xml @@ -136,7 +136,6 @@ <Spinner android:id="@+id/prSpinner" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="?android:attr/listPreferredItemHeight" android:drawSelectorOnTop="true" - android:visibility="gone" /> </LinearLayout>
+参考FAQ: FAQ48328
+### 问题: 如何判断异步socket是否连接成功？
+解决方案: 异步socket连接请求完成后,创建该socket时注册的消息处理函数会收到SOCKET_CONNECT_EVENT_IND消息,该消息携带的参数sig_ptr->error_code表明了连接请求的结果,0表示连接成功,其他表示失败,对应的失败类型有如下两种: error_code = 2//ETIMEDOUT socket连接超时 error_code = 7//ECONNREFUSED socket连接请求被拒绝
+参考FAQ: FAQ48334
+### 问题: Android平台在EditText编辑时怎样阻止界面上移？
+解决方案: 如果出于某种需要,不想让界面上移,可以使用 getWindow().setSoftInputMode 方法将输入法模式设为 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE,代码如下: getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+参考FAQ: FAQ48210
+### 问题: 如何检查资源中使用了哪些字体颜色定义？
+解决方案: 如果需要检查在资源中具体使用了哪些字体颜色定义,可以打开编译目录\build\***_builddir\tmp中的文件mmi_res_***_color.txt,查看ID对应的值.
+参考FAQ: FAQ48570
+### 问题: 7715 ffos V1.4如何编译hvga工程
+解决方案: 法一: 1、./config.sh sp7715ga_gonk4.4_hvga 2、./build.sh 法二: 1、修改B2G/.config文件中的LUNCH=scx15_sp7715gaplushvga-userdebug 2、./build.sh PS:法一中的./config.sh sp7715ga_gonk4.4_hvga命令除了配置编译参数外,还会repo sync代码,若是不希望sync代码,建议使用方法二.
+参考FAQ: FAQ48384
+### 问题: 怎样让自定义的EditTextPreference默认不弹出soft input method？
+解决方案: 重写EditTextPreference的needInputMethod()方法,使其返回false.这样自定义的EditTextPreference显示时默认不弹出软件盘,点击其EditText时才会弹出. @Override protected boolean needInputMethod() { return false; }
+参考FAQ: FAQ48386
+### 问题: 如何判断系统是否打开了coredump功能？
+解决方案: SC7731平台中为便于进行发生native异常的问题分析,在系统配置中可以打开coredump功能,即当进程发生native异常时会自动导出corefile文件以用于问题的推导和分析,判断当前是否打开此功能的确认方法如下: 1.打开device/sprd/scx35/init.sc8830.rc文件,检查是否配置了'on property:ro.debuggable=1' property trigger项. 2.在1中的action动作中是否包含'write /proc/sys/kernel/core_pattern /data/corefile/core-%e-%p'过程.
+参考FAQ: FAQ48385
+### 问题: 设置-日期和时间-“自动确定时区”，如何设置默认开启？
+解决方案: \frameworks\base\packages\settingsprovider\res\values\Defaults.xml 中, 将def_auto_time改为true即可.
+参考FAQ: FAQ48420
+### 问题: 设置-日期和时间-“自动确定日期和时间”，如何设置默认开启？
+解决方案: \frameworks\base\packages\settingsprovider\res\values\Defaults.xml 中, 将def_auto_time_zone改为true即可.
+参考FAQ: FAQ48422
+### 问题: 7731 平台是否支持DIAG命令恢复出厂设置
+解决方案: 通过工具发送AT+SPDIAG="AT+ETSRESET"即可
+参考FAQ: FAQ48435
+### 问题: 如何解决电话会议点击分离无效，再返回通话界面点击挂断无效的问题
+解决方案: 原因: 更新CallList的事件被move掉,导致calllist没有正确更新. 解决方案: 按如下修改验证: 1、 去掉CallHandlerService.java文件的onUpdate()方法中的如下语句 mMainHandler.removeMessages(ON_UPDATE_MULTI_CALL); 2、 去掉CallNotifier.java文件的startRinger()方法中的如下语句: if(PhoneGlobals.UNIVERSE_UI_SUPPORT){ mCallModeler.forceToUpdate(); }
+参考FAQ: FAQ48456
+### 问题: 如何解决通话中反复息屏亮屏出现唤醒慢问题
+解决方案: 原因: 通话中phone会调用了唤醒流程,如果中间前后有按键的话,就会导致连续两次按键均是睡眠 解决: 去除phone中相应的唤醒操作,来电时,由google原生代码唤醒屏幕,具体修改如下 /services/Telephony/src/com/android/phone/CallNotifier.java 去除下面代码: final PowerManager pm = (PowerManager)mApplication .getSystemService(Context.POWER_SERVICE); if (!pm.isScreenOn()) { Log.d(LOG_TAG, "wake up screen."); pm.wakeUp(SystemClock.uptimeMillis()); }
+参考FAQ: FAQ48459
+### 问题: 如何使能SIM卡的数据连接功能
+解决方案: 解答: 例如要是能SIM卡1的数据连接功能,可以做下面操作:设置--更多--移动网络--卡1--启用数据网络
+参考FAQ: FAQ48463
+### 问题: 如何解决待机界面文件夹图标与其他菜单不在同一水平线的问题
+解决方案: 原因分析: 桌面文件夹名字与图标间距不对 解决方案: 适当调整间距即可,具体修改如下: 通过修改/packages/apps/Launcher2/res/values/dimens.xml文件中<dimen name="folder_icon_padding_top">2dp</dimen>//这个值即可
+参考FAQ: FAQ48464
+### 问题: 在init.rc中如何控制一个service的启动和关闭
+解决方案: on property:persist.storage.type=1 start legacy_tempsd 当persist.storage.type=1的时候就会启动legacy_tempsd这个service on property:sys.internal.emulated=0 stop legacy_tempsd 当sys.internal.emulated=0的时候就会关闭legacy_tempsd这个service
+参考FAQ: FAQ48471
+### 问题: 如何编写一个init.rc中的service
+解决方案: 一个简单的service例子如下: service fuse_internalsd /system/bin/sdcard -u 1023 -g 1023 -w 1051 -d /mnt/media_rw/internalsd /storage/internalsd class late_start disabled service->表明这是一个service;fuse_internalsd->这个service的名字;/system/bin/sdcard->这个service的执行的命令(可以是一个可执行文件,也可以是一个shell脚本);后面的就是这个命令的参数. class late_start->class表示的是这个service所属的分类,不同的分类启动优先级不一样,这里的late_start表示启动的优先级比较低 disabled-》表示这个service默认是不启动的.
+参考FAQ: FAQ48472
+### 问题: 如何查询外置T卡的真实状态
+解决方案: 通过Environment.java中的getExternalStoragePathState()函数可以获取到外置T卡的状态
+参考FAQ: FAQ48473
+### 问题: 如何判断此时内卡是否是模拟的
+解决方案: 通过Environment.java中的internalIsEmulated()函数可以判断此时内卡是否是模拟的
+参考FAQ: FAQ48474
+### 问题: 如何获取内部存储空间的路径
+解决方案: 通过Environment.java中的getInternalStoragePath()函数可以获取手机内部存储空间的路径.
+参考FAQ: FAQ48475
+### 问题: 如何获取内部存储空间的状态
+解决方案: 通过Environment.java中的getInternalStoragePathState()函数可以获取手机内部存储空间的状态
+参考FAQ: FAQ48476
+### 问题: 如何查看当前版本是user还是userdebug
+解决方案: 通过log中的[ro.build.type]这个属性就可以知道了,如果是:[user]就是user版本,如果是[userdebug]就是userdebug版本.
+参考FAQ: FAQ48477
+### 问题: Gravity默认显示位置
+解决方案: 在Toast.makeText的时候,如果不在代码中手动指定setGravity,那它的默认显示位置代码为: frameworks/base/core/java/res/res/values/config.xml <integer name="config_toastDefaultGravity">0x00000051</integer> 0x00000051的值等同于Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM,这两个参数的具体值可以参考 frameworks/base/core/java/android/view/Gravity.java,所以要修改Toast默认显示位置就有两个办法: 1.修改config.xml中的config_toastDefaultGravity值,但这样修改会影响到整个系统的toast显示; 2.toast.show之前,先setGravity,这样就可以修改toast的显示位置了,而且不会影响到整个系统的toast显示;
+参考FAQ: FAQ48469
+### 问题: 预置APK到preloadapp，为何move to sdcard功能被禁止
+解决方案: 首先要确认sd卡是否支持安装应用.然后再检查user版本对不能对apk进行了odex优化.只有这两个条件都满足的情况下,预置的apk才能支持move to sdcard功能.
+参考FAQ: FAQ48478
+### 问题: 测试wifi吞吐率时，如何使用DU Meter绘画wifi吞吐率波形图？
+解决方案: 使用iperf软件测试吞吐率时,只能输出一段时间的平均吞吐率,显示数据不是很直观, 此时需要使用DU Meter工具记录一段时间的wifi吞吐率波形图,操作步骤如下: 1、打开DU Meter,右击DU Meter显示如下截图 2、点击Options,选择Filter by network adapters,选择连接"本地连接",其余勾选框均取消 3、点击OK后,即开始过滤显示对应"本地连接"的数据流,显示Wifi吞吐率的数据波形图如下:
+参考FAQ: FAQ48462
+### 问题: 如何通过adb命令修改测试机serial number？
+解决方案: 1.测试机连接电脑,进入cmd命令提示符窗口,确认当前存在测试机设备 2.adb root 3.adb remount 4.adb shell 5.echo 123456(设备号) > /sys/class/android_usb/android0/iSerial //将新的设备号写入手机文件里 6.exit //退出Shell模式 7.adb kill-server 8.adb start-server 9.adb devices //命令提示窗口显示新的设备号即为123456
+参考FAQ: FAQ48515
+### 问题: 如何检查资源中所使用的动画资源的大小？
+解决方案: 如果需要检查资源中所使用的动画资源的大小,可以打开编译目录\build\***_builddir\tmp中的文件mmi_res_***_anim.txt,查看其中的每个动画资源对应的dst_size值.
+参考FAQ: FAQ48571
+### 问题: 如何查看系统中的默认字号定义？
+解决方案: 在文件mmi_custom_define.h中,根据屏幕尺寸,分别定义了对应的默认字体大小,包含big字体(MMI_DEFAULT_BIG_FONT)、normal字体(MMI_DEFAULT_NORMAL_FONT)、small字体(MMI_DEFAULT_SMALL_FONT),也可以根据需要调整每种字体对应的字号.
+参考FAQ: FAQ48576
+### 问题: SC7715平台如何通过adb命令查看当前测试机电池剩余电量百分比？
+解决方案: 1.进入命令行提示符窗口 2.输入adb shell进入手机shell命令窗口 3.输入cat /sys/devices/platform/sprd-battery.0/power_supply/battery/capacity //命令提示符窗口即会显示当前电池剩余电量百分比
+参考FAQ: FAQ48565
+### 问题: 为何使用HTMLViewer打开大于10M的文件时，提示“文件太大，不能被打开”
+解决方案: 由于HTMLViewer主要是查看HTML网页形式的简易应用,在HTMLViewerActivity.java中对文件大小作了8M的限制,被打开文件超过8M则提示"文件太大,不能被打开"
+参考FAQ: FAQ48578
+### 问题: SC7701 PC端如何查看隐藏分区内容？
+解决方案: SC7701 默认PC端无法查看隐藏分区内容,需要通过工程模式开启,设置如下: 通过暗码(IDH默认为#*8378#1#)进入工程模式->App Set->Hidden Partition Visable->Open 设置为Open后,通过USB线连接PC即可查看隐藏分区内容.
+参考FAQ: FAQ48575
+### 问题: 如何使用DU Meter得到WIFI吞吐数据总量？
+解决方案: 1、使用DU Meter时,右击DU Meter,出现如下界面: 2、点击 New Stopwatch,开始记录数据总量、平均数据及耗时,截图如下:
+参考FAQ: FAQ48596
+### 问题: SC6531,SC7701能否获取到JPG图片exif里的数据？
+解决方案: Exif就是在JPEG格式头部插入了数码照片的信息,包括拍摄时的光圈、快门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、色彩编码、拍摄时录制的声音以及全球定位系统(GPS)、缩略图等. android机器有获取jpg图片exif数据接口,是由需要底层解码算法来实现,目前SC6531,SC7701还没有实现该功能.
+参考FAQ: FAQ48592
+### 问题: BLE大致框架是怎样的？
+解决方案: 
+参考FAQ: FAQ49046
+### 问题: MOCOR虚拟键盘支持哪些键盘类型？
+解决方案: MOCOR虚拟键盘支持虚拟全键盘和虚拟九键,可以通过函数SlidingPanel@mmiim_touch_commom.c控制全键盘和九键之间的切换.
+参考FAQ: FAQ48622
+### 问题: SC7701平台网页中标签width属性长度
+解决方案: 网页中有标签的width属性为 width=33.3333333333333336%,而当前版本代码定义width的最大长度是15,所以越界导致死机,在新版本parse 库中完善.
+参考FAQ: FAQ48670
+### 问题: 输入法是否支持Emoji表情
+解决方案: Emoji everywhere google 原生支持,多语情况下切Latin输入法
+参考FAQ: FAQ48684
+### 问题: systemui最多显示多少通知？
+解决方案: 是有最大限制的,默认为999,这个值的配置代码为: frameworks/base/core/res/res/values/config.xml <integer name="status_bar_notification_info_maxnum">999</integer>
+参考FAQ: FAQ48681
+### 问题: 关于第三方应用中默认开启使用硬件加速绘制过程的处理方法？
+解决方案: 在第三方应用(如Antutu评测)中,在默认开启了硬件加速配置情况下,一些自绘界面在创建新的画布(Canvas)并进行drawText绘制过程,在某些情况下根据实际需求需要对绘制的字符串信息进行自定义,如果直接修改'frameworks/base/graphics/java/android/graphics/Canvas.java'中的drawText过程(中传入的text字符串参数)会发现最终在真实设备样机中验证是无效的,由于在开启硬件加速情况下,实际绘制是引用的GLES20Canvas画布中的drawText过程,所以修改'frameworks/base/core/java/android/view/GLES20Canvas.java'中drawText对应的text字符串参数可以达到自定义绘制字符串信息的目的.
+参考FAQ: FAQ48703
+### 问题: 什么是LCD的点翻转和列翻转？
+解决方案: 我们能看到图像,是因为背光从底部经过液晶的过滤后显示出现的颜色.这里的液晶颗粒都有不同程序的翻转,正转或反转都是可以的. 列翻转:某一列为正电压,第二列是负电压,依次下去. 点翻转:某一点的R色液晶正转,G色液晶反转,B色液晶再正转,称为１dot. 每两个点按这个形式翻转的,称为2dot.. 点翻转有最好的显示效果,但对应的正负压差也最大,功耗也比较高. 列翻转效果次点,但压差也比较小,所以功耗就低. 对功耗要求较高的,可以选择列翻转,或折中点选择2dot , 4dot 具体的参数可以去问厂商的FAE.
+参考FAQ: FAQ48698
+### 问题: 为什么 MCU lcd有时会出现白屏，休眠唤醒才能恢复
+解决方案: mcu正常显示时,突然出现了低概率的白屏或黑屏,且只能休眠唤醒才能恢复.这种现象很像是屏被静电打死了.所以我们也可以从这个方向上去想.可以去做打静电的实验来验证机器是否是防静电性能过低. 由于MCU很少出现静电的问题,目前我们的平台还没有集成ESD的代码.如果有需要可以联系我们取得这些代码.
+参考FAQ: FAQ48729
+### 问题: 在浏览器中如何在特定网站上屏蔽号码匹配更能？
+解决方案: 该方案只会在指定的网站上生效,作用是会使此网站上的电话号码匹配功能失效,其它网站无影响,仅提供此方案以供参考.请在UrlHandler.java中加入如下代码 boolean startActivityForUrl(Tab tab, String url) { boolean isPhoneUrl = url.startsWith("tel:"); String currentTabUrl = mController.getCurrentTab().getOriginalUrl(); if (isPhoneUrl && !currentTabUrl.isEmpty() && currentTabUrl.startsWith("http://XXX")) { return false; } 将http://XXX 这个网址替换为指定网站地址即可.
+参考FAQ: FAQ48746
+### 问题: 如何用tcpdump抓cap包
+解决方案: 1.手机要有root权限 2.下载tcpdump(http://www.strazzere.com/android/tcpdump可以下载) 3.adb push (下载路径)\tcpdump /data/local/tcpdump 4.adb shell chmod 6755 /data/local/tcpdump 5.adb shell 6.#cd /data/local 7.#./tcpdump -i any -p -s 0 -w /sdcard/capture.pcap 8.adb pull /sdcard/capture.pcap d:/
+参考FAQ: FAQ48446
+### 问题: 在横竖屏切换时如何禁止调用onCreat()方法？
+解决方案: 横竖屏切换后Activity会重新执行onCreat函数. 但是只要在Android工程的Mainfest.xml中加入android:screenOrientation="user" android:configChanges="orientation|keyboardHidden"之后横竖屏切换之后就不会去执行OnCreat函数了,而是会去调用onConfigurationChanged()这样就能控制横竖屏的切换了.
+参考FAQ: FAQ48753
+### 问题: 如何调整浏览器双击网页放大的比例？
+解决方案: 该值在如下文件中设置: external/chromium_org/third_party/WebKit/Source/core/platform/Widget.cpp 代码中 Widget::Widget() : m_parent(0) , m_selfVisible(false) , m_parentVisible(false) , m_textWrapWidth(800) , m_orginalWidth(800) m_textWrapWidth是指双击放大时将字符按照多少像素的值来显示 m_orginalWidth是指将页面按照多少像素来显示 将这两个值改小会使双击放大的比例变大.
+参考FAQ: FAQ48750
+### 问题: 怎么知道系统prop属性的name和value长度限制
+解决方案: 代码位置:/bionic/libc/include/sys/system_properties.h #define PROP_NAME_MAX 32 //name长度 #define PROP_VALUE_MAX 92 //value长度
+参考FAQ: FAQ48752
+### 问题: HTML中的ol、li标签复制时如何去掉序号
+解决方案: 只需要在OL的LI中写上如下语句即可: list-style-type:none;
+参考FAQ: FAQ48754

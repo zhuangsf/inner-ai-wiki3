@@ -1,0 +1,300 @@
+### 问题: 什么是ATT
+解决方案: GATT是基于ATT Protocol的缩写.ATT针对BLE设备做了专门的优化,具体就是在传输过程中使用尽量少的数据.每个属性都有一个唯一的UUID,属性将以characteristics and services的形式传输.
+参考FAQ: FAQ49457
+### 问题: 工程如何修改为eng模式，并具有root权限?
+解决方案: 在\device\sprd\scx15_sp7715xx\vendorsetup.sh中增加个需要的工程即可, 如:add_lunch_combo scx15_sp7715gacuccspecAplus_UUI-eng 注意:给客户不能发布eng的版本,这样安全性太低,易导致售后问题.
+参考FAQ: FAQ49479
+### 问题: eng模式下如何关闭PC LOG功能？
+解决方案: 请将\device\sprd\scx15\device.mk中 persist.sys.engpc.disable=0 修改为: persist.sys.engpc.disable=1
+参考FAQ: FAQ49486
+### 问题: 如何修改slog的默认配置？
+解决方案: slog的配置文件位于vendor\sprd\open-source\tools\slog目录下,修改slog.conf或slog.conf.user即可.
+参考FAQ: FAQ49490
+### 问题: 用DDR扫描工具扫描后， 解析txt结果失败
+解决方案: 请确认是否为工具文档介绍的使用SSCOM工具保存扫描结果,比如用CRT工具保存时,格式会不一样,数据中间会有空格,目前的解析工具MemoryAnalyzer_R1.0.0.17.1解析不了. 解决办法:使用SSCOM保存扫描结果
+参考FAQ: FAQ49491
+### 问题: 在external目录加了一个功能，怎么在全编译或编译systemimage时编译到out/target/product/XXX/system/xbin目录?
+解决方案: 比如 在external目录加了一个功能目录,里面的Android.mk里有 LOCAL_MODULE:=abc 在device/sprd/XXX/XXX.mk找到PRODUCT_PACKAGES,在后面追加一个 PRODUCT_PACKAGES+=abc
+参考FAQ: FAQ49512
+### 问题: 第一次开机提示加密失败,什么原因？
+解决方案: 一般是由于修改分区配置引起的,修改分区要注意以下要求: 1.xml文件中配置的是文件系统的实际物理分区大小. 2.Boardconfig.mk中配置的是文件系统逻辑镜像大小,逻辑镜像大小必须小于物理分区大小.
+参考FAQ: FAQ49493
+### 问题: Android.mk里include $(BUILD_EXECUTABLE)表示什么
+解决方案: [答]: BUILD_EXECUTABLE表示要编译的是可执行程序 会把编译好的可执行文件放到/system/bin或者/system/xbin
+参考FAQ: FAQ49513
+### 问题: 如何修改密码解锁最大连续错误输入的密码次数
+解决方案: 使用密码解锁时,连续输入5次错误密码就会弹出警告并锁定输入框不能继续输入密码,并且等待一定的时间之后才能继续输入密码. 下面的修改就可以让用户连续输入10次错误密码之后才弹出警告并锁定输入框而不能输入密码 修改文件frameworks/base/core/java/com/android/internal/widget/LockPatternUtils.java 修改前: public static final int FAILED_ATTEMPTS_BEFORE_TIMEOUT = 5; 修改后: public static final int FAILED_ATTEMPTS_BEFORE_TIMEOUT = 10; 值得注意的是,如果修改后测试时使用模块编译进行验证,不仅需要编译该文件所在的模块frameworks/base,还需要编译frameworks/base/packages/Keyguard模块并将这个两个模块编译生成的文件push到对应的目录中去.
+参考FAQ: FAQ49511
+### 问题: 把一个可执行文件编译到/system/xbin目录，Android.mk要注意怎么写
+解决方案: [答]: 在Android.mk加如下一句 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES) TARGET_OUT_OPTIONAL_EXECUTABLES在build/core/envsetup.mk里定义
+参考FAQ: FAQ49516
+### 问题: sprdlauncher1中如何让搜索在小部件中出现？
+解决方案: 在AndroidManifest.java中将 <!--<receiver android:name=".SearchWidgetProvider" android:label="@string/app_name"> <intent-filter> <action android:name="android.appwidget.action.APPWIDGET_UPDATE" /> </intent-filter> <meta-data android:name="android.appwidget.provider" android:resource="@xml/search_widget_info" /> </receiver> --> 注释放开即可.
+参考FAQ: FAQ49428
+### 问题: 同一个函数，用C编译器编译和C++编译器编译有什么不一样
+解决方案: [答:] 假设某个函数的原型为: void foo( int x, int y ); 该函数被C编译器编译后在符号库中的名字为_foo,而C++编译器则会产生像_foo_int_int之类的名字. _foo_int_int这样的名字包含了函数名、函数参数数量及类型信息,C++就是靠这种机制来实现函数重载的.
+参考FAQ: FAQ49518
+### 问题: 7731 项目usb充电进行测试如何判定正常充电问题。
+解决方案: 可通过分析客户出问题中的slog: 01-12 05:59:17.451 <6>[72824.167170] c0 sprdbat: bat_log:time:72982,vbat:3369,ocv:3413,current:-214,cap:0,state:2,auxbat:3352 log关键信息如下: vbat:3369 当前电压 current:-214 正数表示充电 负数表示放电 state:2 这个表示没有充电; 1 表示正常充电
+参考FAQ: FAQ49515
+### 问题: 如何修改密码解锁输入错误密码次数超过限制之后限制输入的时间
+解决方案: 在使用密码解锁的前提下,解锁时输入错误密码次数超过限制时就会限制一段时间不能输入密码 下面的修改就可以让用户连续输入错误密码超时限制之后等待60s后才能再次输入密码 修改文件frameworks/base/core/java/com/android/internal/widget/LockPatternUtils.java 修改前: public static final long FAILED_ATTEMPT_TIMEOUT_MS = 30000L; 修改后: public static final long FAILED_ATTEMPT_TIMEOUT_MS = 60000L; 值得注意的是,如果修改后测试时使用模块编译进行验证,不仅需要编译该文件所在的模块frameworks/base,还需要编译frameworks/base/packages/Keyguard模块并将这个两个模块编译生成的文件push到对应的目录中去
+参考FAQ: FAQ49519
+### 问题: 如何修改图案解锁最小有效连接点个数
+解决方案: 在切换到图案解锁时创建图案解锁密码时至少需要连接的节点个数及进行解锁时输入的有效密码至少需要连接的节点个数默认都为4. 下面的修改就修改图案解锁在创建密码和解锁输入密码时最小连接节点个数,该修改会将最小连接节点个数从4设置为2. 修改文件frameworks/base/core/java/com/android/internal/widget/LockPatternUtils.java 修改前: public static final int MIN_LOCK_PATTERN_SIZE = 4; 修改后: public static final int MIN_LOCK_PATTERN_SIZE = 2; 值得注意的是,如果修改后测试时使用模块编译进行验证,不仅需要编译该文件所在的模块frameworks/base,还需要编译frameworks/base/packages/Keyguard模块并将这个两个模块编译生成的文件push到对应的目录中去
+参考FAQ: FAQ49540
+### 问题: 为什么视频壁纸预览时拖动进度条会跳变
+解决方案: 原因: 拖动进度条进行快进快退操作,视频壁纸能否快进快退和视频源有关. 默认的视频壁纸视频在frameworks/base/data/videos/下面的Cloud.mp4,Rain.mp4和Sunny.mp4,都是只有开头处一个关键帧,不支持seek操作,所以快进时会退到起点处进行播放.
+参考FAQ: FAQ49552
+### 问题: 怎样调整7731的侧键去抖动时间
+解决方案: 目录kernel/drivers/input/keypad/下的文件sc_keypad.c中修改 __raw_writel(0x5, KPD_DEBOUNCE_CNT); 一般如果太灵敏就将上面红色字体的值改大,如果不灵敏就可以改小点.
+参考FAQ: FAQ53638
+### 问题: 2341A芯片支持P2P功能吗？
+解决方案: P2P可以实现wifi设备(如两台手机)之间连接、交换数据而无需通过路由器,2341A从芯片到固件都是支持P2P功能的
+参考FAQ: FAQ53642
+### 问题: 2341A芯片支持Wi-Fi Display功能吗？
+解决方案: 支持.Wi-Fi Display是一种实现智能手机/笔记本和电视/显示器可以无线连接的技术.该标准由WiFi无线产业联盟制定.
+参考FAQ: FAQ53644
+### 问题: 如何修改使Launcher2中文件夹图标名称与应用名称保持水平
+解决方案: 请定为到/packages/apps/Launcher2/res/values/dimens.xml文件中 调整下面的值即可: <dimen name="folder_icon_padding_top">2dp</dimen>
+参考FAQ: FAQ49579
+### 问题: 如何修改Launcher中文件夹中图标的行数和列数以及总数
+解决方案: 默认情况下在res\values\config.xml进行配置: <integer name="folder_max_count_x">4</integer>//列数 <integer name="folder_max_count_y">4</integer>//行数 <integer name="folder_max_num_items">16</integer>//总数 或者在Folder.java中的构造函数中查看确认一下配置是否被修改: mMaxCountX = res.getInteger(R.integer.folder_max_count_x); mMaxCountY = Integer.MAX_VALUE; mMaxNumItems = Integer.MAX_VALUE;
+参考FAQ: FAQ49583
+### 问题: Linux驱动移植注意事项
+解决方案: A:主要有以下几点: 1、 数据类型,推荐使用标准C语言类型. 2、 时间间隔,如果使用jiffies计算时间间隔的话,建议使用宏HZ来衡量. 3、 页大小,一定要用PAGE_SIZE字节,而不是4KB、8KB等等. 4、 字节序,小心不要做字节序的假设,每个平台的字节序是不一样的. 5、 数据对齐,如果访问未对齐的数据,则应该使用宏get_unaligned(ptr)和put_unaligned(val, ptr),这两个宏与类型无关,对各种数据项都有效.
+参考FAQ: FAQ49604
+### 问题: HAL层有哪些方法可以控制驱动模块的操作
+解决方案: 目前,主要有两种方法: (1) ioctl的方式,这需要在/dev节点下面建立一个字符设备.这种方法比较直观,驱动层的所有的命令都集中在一个ioctl函数里面,方便管理.缺点就是为了实现ioctl方式,需要单独创建一个字符设备节点,并且需要分配特定的ioctl命令编号(注意它的唯一性). (2) 访问设备属性的方式,这需要在相应的设备里面建立需要的属性(如sensor的enable、delay、cali等等),通过访问设备属性的节点实现设备的控制.此方法的代码比较独产,不需要专门的命令编号,也方便扩展.缺点是需要具备一定的Linux设备模型的基础知识,否则很容易出错.
+参考FAQ: FAQ49612
+### 问题: 如何通过监视来调试代码
+解决方案: 可通过strace实现应用程序的运行情况,可以捕捉到一些小问题,有助于确认驱动程序工作是否正常.Strace可以显示由用户空间程序所发出的所有系统调用.它不仅可以显示调用关系,而且还能显示调用参数以及用符号形式表示的返回值.当系统调用失败时,错误的符号值(如ENOMEM)和对应的字符串(如"Out of memeory,内在溢出")都能被显示出来.Strace从内核中接收信息,这意味着一个程序无论是否以支持调试的方式编译(用gcc的-g选项)或是否被去掉了符号信息,都可以被跟踪.调试器可以连接到一个正在运行的进程并控制该进程,而strace也可以跟踪一个正在运行的进程.
+参考FAQ: FAQ49613
+### 问题: 如何调整launcher中拖拽图标时outline显示的alpha值
+解决方案: 请定位到\res\values\config.xml文件,调节下面的值即可: <!-- The alpha value at which to show the most recent drop visualization outline. --> <integer name="config_dragOutlineMaxAlpha">128</integer> 注:最大值为255
+参考FAQ: FAQ49608
+### 问题: 关于定制UI项目模块需求制定的方法思考
+解决方案: A:定制UI项目,经常会碰到要对比公司UI或Android原生UI和客户要求UI的情况,关于UI需求的描述繁琐而且 不容易准确,通过讨论的方式讨论很容易产生遗漏. 目前我们商量出一个方式就是每个模块都出一个源头UI和目标UI的主要页面对比图,然后在对比图的下面标注开发功能点、难点和计划,这样不但有利于需求双方沟通,而且这个文档给到测试方,则测试验收时也可以得到充分的理解,尽量减少因为功能设计理解误差导致的功能验收失败问题,不失为一种高效的方案;
+参考FAQ: FAQ49634
+### 问题: 手机重置，把电量控制小控件拉到桌面，这时候账户同步开关显示为开，如何要修改默认为关
+解决方案: 需要修改 frameworks/base/core/res/res/values/config.xml中的config_syncstorageengine_masterSyncAutomatically变量,将默认值改为false
+参考FAQ: FAQ49655
+### 问题: 如何更改Binder transaction buffer的大小
+解决方案: TransactionTooLargeException产生了,如何更改Binder transaction buffer的大小来解决 修改frameworks/native/libs/binder/ProcessState.cpp 里的#define BINDER_VM_SIZE ((1*1024*1024) - (4096 *2)) 可以更改为#define BINDER_VM_SIZE ((2*1024*1024) - (4096 *2))
+参考FAQ: FAQ49755
+### 问题: 测试待机电流时，为什么要分析人工网络下的而不用实网下？
+解决方案: 在研发的过程中,比较注重人工网络下的待机电流,因为人工网络下可以排除一些实网中的复杂干扰,便于分析. 在实网下,随着网络信号的强弱,待机电流会不断的变化,当信号比较弱的时候,可能会出现小区测量或者小区重选的现象.
+参考FAQ: FAQ49708
+### 问题: 什么是待机电流？它有什么组成？
+解决方案: 待机电流对于手机平台来说,是一个重要的功耗指标,它主要由deep sleep(底电流),paging和各种timer组成.
+参考FAQ: FAQ49710
+### 问题: 如何修改默认定时开关机时间
+解决方案: 默认定时开关机时间是在创建timerpowers表时,写入数据库的. AlarmProvider.java中oncreate()方法 String insertMe = "INSERT INTO timerpowers " + "(hour, minutes, daysofweek, alarmtime, enabled, vibrate, message, alert) " + "VALUES "; db.execSQL(insertMe + "(8, 30, 31, 0, 0, 0, 'on', '');"); db.execSQL(insertMe + "(9, 00, 96, 0, 0, 0, 'off', '');"); 修改以上两处时间即可.
+参考FAQ: FAQ49709
+### 问题: Android include引用layout时能否设置相对布局属性
+解决方案: Android项目中使用include引用layout时不能设置RelativeLayout的属性,因不起作用.如下述设置的android:layout_marginTop属性就是无效的. <include android:id="@+id/btn_apply" layout="@layout/apply_layout" android:layout_marginTop="12dp" /> 同时include内设置id属性后,其引用layout内的id也不会起作用.
+参考FAQ: FAQ51862
+### 问题: SC7731G HEADMIC_IN为什么要串1K电阻？
+解决方案: 这个1K电阻是为了提高抗ESD性能
+参考FAQ: FAQ51874
+### 问题: 什么是paging，如何对其进行优化？
+解决方案: 移动终端在进入sleep模式的时候,会以一个固定的周期不连续的接收基站发来的paging消息.Paging是有一个固定的周期的,这个周期是由基站配的,人工网络测试时,在终测仪器上也是可以设 置的,这个周期称为DRX cycle. 对paging的优化,主要可以从paging的高度和宽度两个方面入手.高度优化主要是电流的分解;宽度优化主要是通过抓paging的电流图,然后软硬件工程师一起评估.
+参考FAQ: FAQ49741
+### 问题: 什么是Deep sleep电流？
+解决方案: Deep sleep 电流是指手机在睡眠时的底电流,在展讯平台上,这个时候只有VDDCORE, VDDMEM, VDDLDO, VDD18, VDD28, VBATBK是开着的.
+参考FAQ: FAQ49742
+### 问题: 如何进行Deep sleep电流分解？
+解决方案: 首先要用万用表量出在deep sleep状态下的各个LDO和DCDC的电压,然后用电源给待测的LDO或者DCDDC灌所测电压值+0.1V的电压.由于存在效率转换问题,一般LDO和DCDC的测试方法有些不同.
+参考FAQ: FAQ49743
+### 问题: Deep sleep电流分解时，对LDO和DCDC的测试有什么不同？
+解决方案: 对于DCDC,为了直接测到VBAT上的耗电,我们一般采用减法的分解方法:用精密电源的第一路给整机供电,用第二路给待测的DCDC外灌电压.不外灌时,先用第一路测一个2min的平均电流;外灌时,再用第一路测一个2min的平均电流,然后两个平均值相减,所得的值就是该DCDC在VBAT上耗得电流. 对于LDO,因为电流守恒,输入和输出的电流是一样大的,所以不需要转到VBAT上,因此可以用第一路外灌,直接测出该LDO所耗的电流.
+参考FAQ: FAQ49744
+### 问题: 测试展讯智能机平台功耗前，对于Debug版本需要关闭哪些log？
+解决方案: 必须要确认所有log关闭,开机输入"*#*#83781#*#*",进入log settings模块关闭包括slog,ARM log,dsp log, cap log和kernel log.
+参考FAQ: FAQ49745
+### 问题: 当进行测试手机MP3功耗时，几点注意事项？
+解决方案: 1)要确保LCD关闭. 2)同时要用同一首音乐区测试,不同的音乐会导致电流不同.
+参考FAQ: FAQ49746
+### 问题: 当进行测试手机MP4功耗时，几点注意事项？
+解决方案: 1)要确保LCD亮度相同. 2)同时要用同一个视频区测试,不同的视频会导致电流不同.
+参考FAQ: FAQ49747
+### 问题: 为何7715关机充电长按powerkey开不了机
+解决方案: 为何7715关机充电长按powerkey开不了机, android4.4 系统唤醒时会报一个按键up消息,导致长按检查失效. /kernel/drivers/input/input.c static int input_dev_resume(struct device *dev) { struct input_dev *input_dev = to_input_dev(dev); if(!(in_chargemode()) //关机充电模式 就不需要走input_reset_device(input_dev); input_reset_device(input_dev); return 0; }
+参考FAQ: FAQ49760
+### 问题: 如何解决android.view.WindowLeaked
+解决方案: activity 和dialog同时显示 要先dialog.cancel();后activity.finish() 如果直接finish() 会出错android.view.WindowLeaked 比如 @Override public void finish() { + if (mResultDialog != null) { + mResultDialog.cancel(); ////要先dialog.cancel(); +} super.finish(); }
+参考FAQ: FAQ49773
+### 问题: MOCOR 如何获取SIM卡IMSI信息？
+解决方案: 获取SIM卡IMSI信息,可通过如下接口获取: MN_IMSI_T MNSIM_GetImsiEx( MN_DUAL_SYS_E dual_sys ); 1、此接口返回的是BCD码,调用接口MMIAPICOM_BcdToStr将其转为字串 2、此接口必须在收到APP_MN_SIM_READY_IND之后调用
+参考FAQ: FAQ49787
+### 问题: 如何对图片进行镜像处理？
+解决方案: 可以通过以下方式来处理 Matrix m = new Matrix(); //m.postScale(-1, 1); //水平镜像 m.postScale(1, -1); //垂直镜像 通过下面方法创建一个新的Bitmap newBitmap = Bitmap.createBitmap(oldBitmap, 0, 0, width, height, m, true);
+参考FAQ: FAQ49817
+### 问题: 如何关闭gsensor功能？
+解决方案: 部分客户不需要g sensor的功能,如何关闭? 1 在kernel的config配置文件中把g sensor的宏注掉 2 在BoardConfig.mk 文件中把g sensor注掉 这样就可以关闭g sensor功能
+参考FAQ: FAQ49867
+### 问题: [性能测试]如何对比测试视频播放从点击播放到视频画面出现的时间
+解决方案: 如果从SD卡播放视频,则播放视频时需要从SD卡读取视频文件,所以播放视频和SD卡的性能有关,因此在性能测试时,如果需要和对比机做对比测试,则需要使用同一张SD卡播放同一个视频文件进行对比测试,这样对比测试才准确有效.
+参考FAQ: FAQ49888
+### 问题: 如何判断手机当前是否联网
+解决方案: 判断是否联网可以通过 ConnectivityManager 类的isAvailable()方法判断,首先获取网络通讯类的实例 ConnectivityManager cwjManager=(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE); ,使用cwjManager.getActiveNetworkInfo().isAvailable(); 来返回是否有效, 如果为True则表示当前Android手机已经联网,可能是WiFi或GPRS、HSDPA等等,具体的可以通过ConnectivityManager 类的getActiveNetworkInfo() 方法判断详细的接入方式,需要注意的是有关调用需要加入 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission> 这个权限
+参考FAQ: FAQ49912
+### 问题: Framework的Camera.java中新增加的接口及注释
+解决方案: 新增加的接口及注释如下:
+参考FAQ: FAQ49940
+### 问题: 为什么4.4平台手机编辑图片界面始终竖屏显示？
+解决方案: 本现象是Google2013年4月调整4.4代码UI的时候添加的改动,针对android设备屏幕大小,将图片编辑界面的横竖屏显示做了分别处理. 具体可以见FilterShowActivity.java的onCreate方法: boolean onlyUsePortrait = getResources().getBoolean(R.bool.only_use_portrait); if (onlyUsePortrait) { setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); } only_use_portrait属性在values/filtershow_values.xml 中为true, 在values-large/filtershow_values.xml和values-xlarge/filtershow_values.xml里为false. 屏幕太小的时候,编辑图片横屏显示,体验不好.
+参考FAQ: FAQ49957
+### 问题: 终端多次打开关闭WLAN开关下拉菜单出现无法打开WLAN现象
+解决方案: kernel/drivers/misc/sprd_cproc/sprd_cproc.c中 去除while循环如下: 方法一: static int sprd_cproc_native_cp2_stop(void *arg) { ... #if 0 while(1) { state = sci_glb_read(WCN_SLEEP_STATUS,-1UL); if (!(state & (0xf<<12))) break; msleep(1); } #endif printk("%s cp2 enter sleep\n",__func__); ... } 方法二: 升级版本到MocorDroid4.4_TShark28_MP_W14.43.3之后版本
+参考FAQ: FAQ49958
+### 问题: 如何取认DVFS功能有无打开
+解决方案: DVFS默认是开启的,可以通过adb shell ls查看是否有如下路径check: sys/devices/system/cpu/cpufreq/sprdemand 也可以在config里面check如下宏: CONFIG_CPU_FREQ_DEFAULT_GOV_SPRDEMAND=y
+参考FAQ: FAQ49961
+### 问题: 如果将wifi固定在某一信道上
+解决方案: 使用user debug版本同adb下执行如下命令实现: iwnpi wlan0 set_channel X(需要设置的信道1～14)
+参考FAQ: FAQ49962
+### 问题: 如何确认CP2是否休眠
+解决方案: 通过adb查看CP2总的状态SLEEP_STATUS寄存器0X402B00D4的BIT 5:12 : 具体:0101对应 CP2工作状态,0000对应 CP2休眠状态
+参考FAQ: FAQ49963
+### 问题: EMC测试WLAN需要保持频段稳定，需要实现B、G、N锁频的功能
+解决方案: 可以通过设置对应B、G、N的传输速率实现B、G、N锁频控制,具体设置方法通过adb执行: iwnpi wlan0 set_rate X (通过查表获得B,G,N模式对应的速率表)
+参考FAQ: FAQ49964
+### 问题: 待机灭屏时LCD驱动为何没有走panel_enter_sleep流程
+解决方案: 这是因为屏驱动的panel_spec结构中没有配置suspend_mode为SEND_SLEEP_CMD,要配置后才会走panel_enter_sleep.例如: struct panel_spec lcd_xxxx_mcu_spec = { .width = 480, .height = 800, .fps = 60, .suspend_mode = SEND_SLEEP_CMD, ... ... };
+参考FAQ: FAQ50020
+### 问题: 录像时如何获取原始yuv数据？
+解决方案: 从CameraSource中获取的数据是Metadata,并非真正的yuv数据,此元数据里会包含图像的宽高,yuv数据的y分量指针及uv分量指针等,具体获取y分量及uv分量地址可参考如下: 在CameraSource.cpp文件中dataCallbackTimestamp回调函数里传出的指针为data uint8_t *_ptr = (uint8_t *)data->pointer(); //获取元数据指针 uint8_t* py = (uint8_t*)(*((int *)_ptr + 2)); //获取一帧图片的y分量首地址 uint8_t* uv = py + ((width+15)&(~15)) * ((height+15)&(~15)); //获取一帧图片的uv分量首地址 具体也可参照SPRDAVCEncoder.cpp文件中onQueueFilled函数里获取yuv数据的方法
+参考FAQ: FAQ49969
+### 问题: 为什么USE_SPRD_WCN宏会错配
+解决方案: USE_SPRD_WCN在AndroidProducts.mk里面定义了,如果有很多board,则会在很多个AndroidProducts.mk文件里面定义.在执行环境变量的初始化时,脚本会遍历整个目录下的AndroidProducts.mk,所以USE_SPRD_WCN会以最后定义它的地方的值为准,从而引起错配的问题. 解决的办法是不要在AndroidProducts.mk文件里面定义,而是在具体的工程的makefile文件里面定义,就可避免出现宏错配的问题.
+参考FAQ: FAQ49973
+### 问题: android.net.cts.ConnectivityManagerTest#testStartUsingNetworkFeature_enableHipri测试FAIL？
+解决方案: testStartUsingNetworkFeature_enableHipri测试APN设置为hipri类型能否正常连接. 从main.log中可以看到,数据链接没有开启: 10-26 19:28:06.376 548 867 D ConnectivityService: getMobileDataEnabled returning false 检查系统设置,开启数据连接:无线和网络 -> 移动网络 -> 启用数据网络
+参考FAQ: FAQ50057
+### 问题: FOTA升级失败，怎样导出last_log
+解决方案: 在FOTA升级时,可能会遇到类似如下情况: 该怎样抓取last_log呢? 首先点击"reboot system now"重启,过程中不能拔电池. 第一种情况:可以开机. 开机后进adb shell,导出/cache/recovery/last_log 文件. 第二种情况:不能开机. 复现升级问题,插上USB线,下载工具reset选项勾上,并且不备份cache分区,点击"start downloading"开始下载. 按住下载音量键,点击"reboot system now",会进入下载模式,开始下载. 下载完成后会自动开机,这个过程中不能拔电池. 开机后进adb shell,导出/cache/recovery/last_log 文件.
+参考FAQ: FAQ50037
+### 问题: 联系人里怎么把同步app的默认选项关闭？
+解决方案: 修改内容: frameworks/base/core/res/res/values/config.xml中的config_syncstorageengine_masterSyncAutomatically变量,将默认值改为false
+参考FAQ: FAQ50087
+### 问题: 为何framework-res.apk中的资源可以被其他任何应用使用
+解决方案: 在Android源码中,frameworks/base/core/res下的文件是被编译成apk文件的,此apk文件搭载着frameworks的所有资源文件,所以在编译的Android.mk文件中必须加入: LOCAL_AAPT_FLAGS := -x //创建可扩展的资源ID LOCAL_EXPORT_PACKAGE_RESOURCES := true //创建可被"外用"的资源apk和一些资源类型 这样apk中的所有资源则能被其他应用使用 res中的文件最后会生成R.java文件,包名是com.android.internal,所以在其他应用中通过: Context.getResources().getText(com.android.internal.R.string.xxx); 来得到的
+参考FAQ: FAQ50113
+### 问题: 基于7715平台延长7S reset机制 时间
+解决方案: 7715平台默认是 7S触发硬件狗重启,以15S 触发重启为例子. u-boot/include/configs/sp7715/sp7715ga.h-----sp7715xx.h #define CONFIG_PBINT_7S_RESET_V1 +++#define CONFIG_PBINT_7S_RST_HW_LONG 1 /* rang:2-16 unit: s */ +++#define CONFIG_PBINT_7S_RST_THRESHOLD 15 ---// #define CONFIG_PBINT_7S_RST_SW_SHORT 1
+参考FAQ: FAQ50372
+### 问题: 如何解决由于设定了蓝牙低速率而导致的蓝牙耳机播放卡顿问题？
+解决方案: 如果遇到连接蓝牙耳机播放音乐出现卡顿的现象,可以尝试将限速系统属性关闭来验证一下,如以scx15_sp7715ea为例,修改如下: --- a/device/sprd/scx15_sp7715ea/system.prop +++ b/device/sprd/scx15_sp7715ea/system.prop @@ -8,7 +8,7 @@ ro.product.hardware=SP7715EA_V1.0.0 debug.hwui.render_dirty_regions=false # Bluetooth OPP low speed for save power -debug.bt.lowspeed=true +debug.bt.lowspeed=false persist.ttydev=ttyVUART0
+参考FAQ: FAQ50180
+### 问题: 功能机Vcard标准
+解决方案: Vcard支持2.1标准,该版本信息在scf文件头中可以查看到,用UE打开一个Vcard文件可以看到: BEGIN:VCARD VERSION:2.1 // 表示支持2.1标准 N;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:Yg;;; TEL;CELL:1233333333 END:VCARD
+参考FAQ: FAQ50216
+### 问题: 如何修改为平板模式？
+解决方案: 需要修改的地方有两处: \device\sprd\scx35_[project]\scx35_[project]_dt.mk PRODUCT_AAPT_CONFIG := hdpi + PRODUCT_CHARACTERISTICS := tablet \device\sprd\scx35_[project]\system.prop -ro.sf.lcd_density=240 +ro.sf.lcd_density=160
+参考FAQ: FAQ50221
+### 问题: 如何判断当前模式是否为平板模式？
+解决方案: 读取ro.build.characteristics属性值,如果值为tablet,则说明当前模式为平板模式
+参考FAQ: FAQ50215
+### 问题: 有一通Active Call和一通Ringing Call存在的情况下，Active Call被远端挂断,Ringing Call的来电铃声为何不会再响起
+解决方案: 这是4.4KK上的默认行为,此行为设计原因如下: 1. 当有一通Active Call 时,此时再有来电,已经有"嘟嘟"声给用户提示; 2. 当Activie Call被远端挂断的时候,手机可能还在用户耳边,此时铃声突然想起,用户体验会很差
+参考FAQ: FAQ50222
+### 问题: 如何做到多块TP进行兼容？
+解决方案: 部分客户在一台机子上有同时兼容二块TP的需求,最简单的方式就是在config配置文件,把二块TP的驱动控制宏全部打开,让驱动自己通过i2c读取地址的方法去适配,比如,同时适配focaltech与msg的tp屏,那么 在对应工程里面kernel/arch/arm/configs/sp8825ea-vlx_defconfig CONFIG_TOUCHSCREEN_FOCALTECH=y CONFIG_TOUCHSCREEN_MSG2133=y 这样的话,两个TP都可以使用了.
+参考FAQ: FAQ50260
+### 问题: 如何开机默认打开android4.4的hwcomposer的log开关
+解决方案: 原本采用adb命令的方式打开hwc的log开关后,手机重启后就需要重新打开比较麻烦,现在新添加了接口能够让客户重启后也能默认打开hwc的log开关,请按如下步骤操作: 1.adb shell touch /data/hwc.cfg 2.adb shell echo enable > /data/hwc.cfg note:当需要关掉hwc的log时只需要adb shell rm /data/hwc.cfg就行了
+参考FAQ: FAQ50291
+### 问题: SD卡是如何上电初始化的？
+解决方案: 1)配置时钟,慢速一般为400K,设置工作模式; 2)发送CMD0,进入空闲态; 3)发送CMD55+ACMD41,判断SD卡的上电是否正确; 4)发送CMD2,验证SD卡是否接入; 5)发送CMD3,读取SD卡的RCA(地址); 6)发送CMD7,使能SD卡; 7)配置高速时钟,准备数据传输,一般20M～25M 8)发送CMD55+ACMD6配置为4bit数据传输模式;
+参考FAQ: FAQ50303
+### 问题: 手机使用蓝牙共享网络时，默认最多可以供几个蓝牙设备使用？
+解决方案: 默认情况下,最多可以供5个设备上网. 该配置在文件frameworks/base/core/res/res/values/config.xml中定义. 定义如下: <integer translateable="false" name="config_max_pan_devices">5</integer>
+参考FAQ: FAQ50319
+### 问题: 如何临时切换手机模式与平板模式？
+解决方案: 临时修改手机system/build.prop文件(先pull),同时修改以下两个值: ro.build.characteristics=tablet # =tablet(平板) # =default(手机) ro.sf.lcd_density=160 # =160(平板) # =240(手机) 注意:push后需要恢复权限,命令为:chmod 644 build.prop
+参考FAQ: FAQ50683
+### 问题: 手机使用蓝牙共享网络时，接入端可以使用多播地址吗？
+解决方案: 不可以. 代码位于./external/bluetooth/bluedroid/btif/include/btif_pan_internal.h 通过蓝牙收到的数据路由给手机时,会调用如下方法判断蓝牙地址: static inline int is_valid_bt_eth_addr(const BD_ADDR addr) { if(is_empty_eth_addr(addr)) return 0; return addr[0] & 1 ? 0 : 1; /* Cannot be multicasting address */ }
+参考FAQ: FAQ50312
+### 问题: 添加带product类型的字符资源需要注意什么？
+解决方案: 需要把product="default"的字符串放在最后,如: <string name="user_confirm_remove_message" product="tablet">"某些应用需要使用此帐户.…… <string name="user_confirm_remove_message" product="default">"某些应用需要使用此帐户.…… 否则编译product为非default的版本时会导致编译不通过,报错类似如下: packages/apps/Settings/res/values-bn/strings.xml:2345: error: Resource entry user_confirm_remove_message is already defined.
+参考FAQ: FAQ50335
+### 问题: 7715支持双W卡槽切换的版本如何设置默认W卡槽
+解决方案: system.prop文件中设置persist.radio.wsim.number为0表示默认卡1为W,为1表示默认卡2为w卡
+参考FAQ: FAQ50433
+### 问题: 4.4平台上各ini文件是什么意思
+解决方案: /system/etc 目录下会有4个config文件,分别是什么意思呢? connectivity_configure.ini default connectivity_configure_hw100.ini 内置PA connectivity_configure_hw102.ini 2in1 connectivity_configure_hw104.ini 3in1 但是手机系统里最终只使用其中一个,为了一套code兼容不同硬件board,所以四个文件全放过来了.
+参考FAQ: FAQ50439
+### 问题: 如何自适应来匹配ini文件
+解决方案: 4.4平台里目前有四个ini文件,手机最终只选择其中一个ini来真正使用.是如何自适应选择的呢 关键的是通过硬件方面区分,然后驱动来读取差异来辨别,有两种方式: 1.ADC 通过读取ADC的值来区分不同版本 2.两个GPIO 两个GPIO即有四种组合,从而可以区分
+参考FAQ: FAQ50440
+### 问题: 为什么手机里四个ini文件内容一模一样
+解决方案: 4.4平台里2351的配置ini文件有四个,但是仔细看会发现四个ini文件的内容是一样的. 因为之所以弄4个文件,是为了用一套code兼容2合一、三合一及内置PA的不同2351配置. 但是实际使用时肯定只使用其中一个. 原因有二: 1.如果四个文件不同,则不同的具体产品形态需要识别来选择使用哪个ini文件,对应硬件也就需要额外的贴电阻相关,从而增高成本. 2.四个文件如果不同那么维护时则需要小心管理,这里为了维护简单,干脆四个文件弄一模一样
+参考FAQ: FAQ50449
+### 问题: 如何实现动态取地址？
+解决方案: 当路径动态变化时,如何实现动态获取路径: 例如: cust/mcc/mnc/xml 路径中mcc 与mnc需要动态变化,在代码中如何定义呢? 可以使用%代替变化的字符串,进行构造完整路径,如下: String mcc = ***; String mnc = ***; String szNodePath ="cust/%/%/xml" String nodePath = String.format(szNodePath, mcc,mnc);
+参考FAQ: FAQ50457
+### 问题: 2341A芯片上wifi各固件是什么意思
+解决方案: 三个固件功能如下: fw_bcmdhd4343s.RC49.bin wifi做sta时使用的固件 fw_bcmdhd4343s_apsta.RC49.bin wifi做ap时使用的固件 fw_bcmdhd4343s_mfg.RC49.bin wifi做射频测试时使用的固件
+参考FAQ: FAQ50459
+### 问题: 如何获取运营商相关信息？
+解决方案: 使用TelephonyManager获取运营商相关信息: TelephonyManager tm = (TelephonyManager)mContext.getSystemService(PhoneFactory.getServiceName(Context.TELEPHONY_SERVICE,phoneId)); 1.获取运营商代号mccmnc tm.getNetworkOperator(); 2.获取运营商名称 tm.getNetworkOperatorName(); 3.获取运营商国别 tm.getSimCountryIso()
+参考FAQ: FAQ50461
+### 问题: 如何判断双卡槽中是否有SIM卡？
+解决方案: 判断双卡槽中是否存在sim卡,可使用如下democode: boolean hasSimCard = false; int phoneCount = TelephonyManager.getPhoneCount(); for (int j = 0; j < phoneCount; j++ ) { hasSimCard = hasSimCard || TelephonyManager.getDefault(j).hasIccCard(); if (hasSimCard) { break; } }
+参考FAQ: FAQ50468
+### 问题: 如何获取SIM卡上所有信息？
+解决方案: 获取SIM卡上所有短信: SmsManager smsManager = SmsManager.getDefault(nPhoneID); ArrayList<SmsMessage> messages = smsManager.getAllMessagesFromIcc(); //sim卡信息集合 int nRecordCount = messages.size(); for (int i = 0; i < nRecordCount; i++) { SmsMessage message = messages.get(i); // 获取sim卡上的每一条信息 }
+参考FAQ: FAQ50469
+### 问题: modem 不检测transceiver id如何修改？
+解决方案: modem在正常起来的时候会去读取transceiver的id,如果读取错误,会导致协议栈的assert.通过修改nv值可以解决该问题: Downloadparam_sc7731g_sr3130_wcdma_band128.nvm中的w_rfic_id,ITEM_CONTENT = 0x0201(该值的具体含义参考nv中的注释{type Range from 0~X: means;0:SR3130AA;1:SR3130BA;2:SR3131;3:SR3530;}} {bit[7:0]:to decide use which init table; init table range:from 0~3}).
+参考FAQ: FAQ50471
+### 问题: 工厂测试中，如何将系统版本测试、RF CALL测试、RTC测试添加到系统测试
+解决方案: 1. 文件/packages/apps/ValidationTools/src/com/sprd/validationtools/Const.java public static final Class[] DEFAULT_AUTO_TEST_ITEMS 里面添加 SystemVersionTest.class, //版本测试 RFCALITest.class,//校准测试 RTCTest.class,//RTC测试项 2. DEFAULT_AUTO_TEST_ITEMS对应系统测试的全部测试,可以自行添加和删除测试项
+参考FAQ: FAQ50493
+### 问题: 为何光感传感器会概率性无法唤醒系统？
+解决方案: 我们的客户在调试光感传感器时候,会出现概率性无法唤醒系统的现象, 比如:打电话时手机贴近脸部10秒后,拿开手机屏亮不起来,是源于接触传感器无法正常工作 这个时候部分系统功能进入了休眠状态,如果在驱动中加个wakelock那么没有问题. sensor的驱动中,request_irq 标志位添加: IRQF_TRIGGER_LOW |IRQF_NO_SUSPEND 该标志会使irq进入nosuspend状态,光感传感器有二种模式,一种是不使用的standby模式,一种是工作模式, 在standby模式中,进入irq时需要加入IRQF_NO_SUSPEND标志.
+参考FAQ: FAQ50606
+### 问题: 如何修改照片详情中的制造商信息？
+解决方案: 修改项目编译mk文件中的以下字段: PRODUCT_MANUFACTURER := Spreadtrum 以scx15_sp7715eaplus为例,修改位置在/device/sprd/scx15_sp7715ea/scx15_sp7715eaplus.mk 文件中
+参考FAQ: FAQ50626
+### 问题: SC7715 如何删除所有与联通定制有关的应用和功能？
+解决方案: 在mk文件scx15_sp7715eacuccspecAplus_UUI中 include vendor/sprd/operator/cucc/specA.mk 把以上的信息注释掉,这个mk中定义的都是联通定制相关的内容,除了预置的apk,还包括一些属性和资源. 开关机资源相关在下面mk中,有需要可同时修改 -include vendor/sprd/operator/cucc/specA/res/boot/boot_res_fwvga.mk
+参考FAQ: FAQ50636
+### 问题: 如何判断当前是否为锁屏(Keyguard)界面？
+解决方案: 开发应用时,有时需要判断手机是否处于锁屏的状态,通常可以通过如下代码判断是否锁屏: KeyguardManager mKeyguardManager = (KeyguardManager)context.getSystemService(Context.KEYGUARD_SERVICE); booleanflag = mKeyguardManager.isKeyguardLocked(); 如果flag为true,表示处于解锁状态. 同时在AndroidManifest文件中加入: <uses-permission android:name="android.permission.DISABLE_KEYGUARD"></uses-permission> <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+参考FAQ: FAQ50639
+### 问题: 如何修改Email默认签名
+解决方案: 平台默认Email签名为空,如需修改默认签名, 将packages\apps\Email\emailcommon\src\com\android\emailcommon\provider\Account.java 中mSignature定义修改为 public String mSignature = "****"; 修改完成后,删除data/data/com.android.email下的EmailProvider.db,重启手机即可.
+参考FAQ: FAQ50691
+### 问题: 工厂反馈摄像头概率打不开，重写软件或恢复出厂测试后就正常。
+解决方案: 从log中看出: Sensor_load_sensor_type: _Sensor_load_sensor_type: file /data/misc/media/sensor.file open error:Permission denied 是文件夹/data/misc/media/权限不够导致,需要修改文件夹的权限,或者移到另一个有权限的文件夹中创建文件. 快捷的解决方法是后者: 将展讯原生代码创建"/data/misc/media/sensor.file" 文件的路径修改为 /data/local/media/sensor.file.
+参考FAQ: FAQ50700
+### 问题: 使用band25的nv，擦除校准参数，开机后modem assert。
+解决方案: 这个问题原因是default nv修改不正确. 在default nv中,支持band2和band5,但是band2的校准信息有一些还是属于band1的.而校准标志位:ul_cal_mode又被置上了1,表示校准过,所以开机后AP就默认从nv中读取信息.当在开band2的rf的时候,检查到nv中信息是band1的,assert就上报了. 避免assert方法有2个: 1)修改nv中:ul_cal_mode 为=0,这个assert就不会上报了. 2)或者把手机做个校准,这样band2位置的信息会因为校准而被更新成对的信息.
+参考FAQ: FAQ50713
+### 问题: 如何判断应用获取的锁有没有释放？
+解决方案: 1、查看PowerManagerService.java打印出来的slog,搜索相同包acquireWakeLockInternal和releaseWakeLockInternal的次数是否配对,否则就是有锁没有释放. 2、通过命令查看唤醒锁是否释放: Java and native level wake_locks: adb shell cat /sys/power/wake_lock Kenrel level wakelocks status: adb shell cat /proc/wakelocks 如果第四字段wake_count 字段不为0的话,那么意味着该wake_lock没有被释放掉.
+参考FAQ: FAQ50714
+### 问题: 如何知道系统知道当前所用的是哪块屏?
+解决方案: 除了在kernel log或uboot log里获得LCD ID的信息之外,还可以通过cmdline知道. cmdline是uboot传给kernel的启动参数,包括常用的nand分区,lcd相关参数,以及当前的启动模式. 通过 #adb shell cat /proc/cmdline loglevel=7 console=ttyS1,115200n8 init=/init root=/dev/ram0 rw lcd_id=ID70ab lcd_base=8fec4000 androidboot.serialno=7731G11034A170302 adc_cal=221253736,189599248 fgu_cal=187633768,160501264,8191 mem_cs=1, mem_cs0_sz=20000000 可以知道lcd id,也就知道当前的LCD.
+参考FAQ: FAQ50840
+### 问题: 如何避免rtsp流媒体由于无数据自动退出？
+解决方案: Android对于RTSP流媒体播放,在底层会有一个超时退出机制,当kAccessUnitTimeoutUs时间内无数据到达终端则底层走自动退出流程,如果希望改为一直缓冲,则可在MyHandler.h文件中onMessageReceived函数里chek分支将发送abor消息的流程屏蔽,但不建议修改. --- a/media/libstagefright/rtsp/MyHandler.h +++ b/media/libstagefright/rtsp/MyHandler.h @@ -1068,7 +1068,7 @@ struct MyHandler : public AHandler { } if (mNumAccessUnitsReceived == 0) { -#if 1 +#if 0 ALOGI("stream ended? aborting."); (new AMessage('abor', id()))->post(); break;
+参考FAQ: FAQ50806
+### 问题: 如何修改录像时预留的存储空间大小？
+解决方案: Camera录像时会预留一定的存储空间,这个值设置在com.android.camera.Storage类中 public static final long LOW_STORAGE_THRESHOLD_BYTES = 20 * 1024 *1024; 平台默认为20M
+参考FAQ: FAQ50813
+### 问题: MOCOR如何修改工程模式中版本信息中编译时间为指定的时间？
+解决方案: MOCOR平台工程模式中版本信息中的编译时间是版本编译的时候通过脚本生成的,如果需要修改为指定的时间,可通过如下方式修改: 替换数组s_version_info(@\MS_CODE\version\*_version.c)中宏PROJECT_BUILD_TIME. 例如新增一个宏PROJECT_SHOW_TIME "11-17-2014 12:00:00" 将PROJECT_SHOW_TIME替换数组s_version_info中宏PROJECT_BUILD_TIME.
+参考FAQ: FAQ51739
+### 问题: 开机动画放完之后，直接黑进入主界面，如何留在最后一帧上而不是直接黑屏
+解决方案: 原因分析: desc格式不正确,导致bootanimation读取到有效的part只有一个,无限循环的part没有读取到. pngfiles里有thumbnail 解决方案: decs.txt最后加上一个回车. 资源文件里的thumbnal.db删掉 验证: 1.adb shell 2.执行bootanimation查看效果
+参考FAQ: FAQ51609
+### 问题: [日历]不勾选本地账户可以新建日程吗？
+解决方案: 不能新建日程,必须有一个账户才可以新建日程.
+参考FAQ: FAQ50920
+### 问题: [日历]日历设置中的CalDAV菜单可以删除吗？
+解决方案: CalDAV是为了实现 gmail 日历同步做的,不能删除.如果删除将不能通过谷歌账户同步日历.
+参考FAQ: FAQ50926

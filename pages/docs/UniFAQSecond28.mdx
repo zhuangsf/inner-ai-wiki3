@@ -1,0 +1,339 @@
+### 问题: 如何使用gdb在线调试？
+解决方案: 需要先通过手机中的gdbserver对目标进程进行监听,后面再用过端口号和手机进行关联. 关联后,便可以使用gdb进行调试,详细步骤如下: [终端1] $ adb shell # gdbserver :1234 --attach <pid> [终端2] $ adb forward tcp:1234 tcp:1234 $ ./arm-eabi-gdb (gdb) target remote :1234 #连接本地的:1234端口,此端口已经和手机的1234端口做好映射. (gdb) file symbols/system/bin/mediaserver (gdb) set solib-search-path symbols/system/lib:symbols/system/lib/hw (gdb) b 100 #在文件的第100行打断点 (gdb) c #继续执行程序 (gdb) n #单
+完整回答请参考FAQ: FAQ100753
+### 问题: 如何响应按键的双击事件（Double Click）？
+解决方案: Mocor支持Click Event 和 Double Click Event,可以通过MMK_NeedKbdClkNotifyOnce设定当前窗口是否响应Click Event 和 Double Click Event. 以Red key的Double Click为例: //Red Key Down,标识需要识别Double Click case MSG_APP_RED: MMK_NeedKbdClkNotifyOnce(); break; //Click Event case MSG_KEY_CLICK: { uint8 key_code = *(uint8*)param; SCI_TRACE_LOW("@MSG_KEY_CLICK, key = 0x%x", key_code); if( KEY_RED == key_code) //这里的键值根据需要调整 { //Double Cl
+完整回答请参考FAQ: FAQ100797
+### 问题: 如何修改图片的最大放大比例？
+解决方案: 双指滑动放大的当前值是根据当前双指滑动的scale值,图片尺寸和屏幕尺寸比例共同决定的,而缩放的最大值是由SCALE_LIMIT*SCALE_MAX_EXTRA,由这两个值相乘即可决定的,可根据需要调整SCALE_LIMIT和SCALE_MAX_EXTRA即可.比如需要将图片最大放大倍数修改为2倍,可参考下面方式修改: diff --git a/src/com/android/gallery3d/ui/PositionController.java b/src/com/android/gallery3d/ui/PositionController.java index 511c78b..7211b66 100644 --- a/src/com/android/gallery3d/ui/PositionController.java +++ b/src/com/android/gallery
+完整回答请参考FAQ: FAQ100808
+### 问题: 亮屏待机功耗：亮屏待机功耗偏高如何逐步排查？
+解决方案: 1、首先排查lightsleep功耗是否正常(预置条件:飞行模式) echo test > /sys/power/wake_lock之后,灭屏测试功耗.和参考样机做对比,如果功耗异常则按照如下步骤继续排查: 是否有异常进程运行,如果检查到有进程占用CPU资源,请负责该进程的模块继续排查原因(命令: top –m 5). 如果没有异常进程,仍然偏高则需要硬件做电流分解进一步确认具体耗电模块.确保先解决掉lightsleep功耗问题. 2、背光功耗:检查关闭背光前后功耗差值是否合理(预置条件:飞行模式,设置30分钟灭屏) adb root adb remount adb shell echo 0 > /sys/class/backlight/sprd_backlight/brightness 移除USB,待电流稳定后,测试功耗. 对比关闭背光前后功耗差值是否合理,如果是第三方芯片,需要找第三方
+完整回答请参考FAQ: FAQ100830
+### 问题: 长按power键/7S reset系统重启功能
+解决方案: 默认版本,长按电源键7秒,系统自动重启,7S时间可配置 u-boot64\include\configs\贵司工程头文件.h中 #define CONFIG_7S_RST_THRESHOLD 7 关机和重启有两种方式: 1、长按power键,出现弹框后选择重启或者关机(这个需要INPUT模块检测power键,然后上报消息到FW层做相应处理) 2、长按power键7S,硬件重启(芯片行为,可选择关闭,但是会影响debug kernel panic时需要的sysdump功能,请慎重) 重启功能可以直接通过关闭u-boot64中如下宏来关闭 #define CONFIG_7S_RST_MODULE_EN 1 //0:disable module; 1:enable module 改成:#define CONFIG_7S_RST_MODULE_EN 0 注:1、userdebug版本长按power
+完整回答请参考FAQ: FAQ100846
+### 问题: 马达震动功耗高
+解决方案: 不同的平台马达控制方式不同(分为电压控制和电流控制),可通过降低工作电压(电压控制)和减小电流等级(电流控制)来降低功耗.修改工作电压还是电流需要确认项目所用的PMU IC是电压控制的还是电流控制 SC7731C和SC9832A+SC2723G平台,马达都是LDO电压源模式.SC7731G马达使用电流源. 1、修改工作电压 默认配置的工作电压是3.0V kernel/drivers/platform/sprd/sprd_vibrator_2731.c #define LDO_VIBR_V (0xB4) 0:1.2V; 0xB4:3.0V; 10mV/Step 查看马达spec,在额定电压范围内修改电压值. 注:降低工作电压,震动强度会减小. 可以adb先修改电压值,如果功耗和震动强度都达到标准再修改代码 2、修改电流方式 kernel/drivers/platform/sprd/vibra
+完整回答请参考FAQ: FAQ100849
+### 问题: 如何将预置联系人置顶？
+解决方案: 具体置顶的方法介绍如下: 分别修改Contacts和ContactsProvider下的文件. 1.Contacts中修改一个文件: 文件路径为/packages/apps/Contacts/src/com/android/contacts/util/PreDefineContactsService.java 修改内容如下: @@ -85,21 +101,33 @@ public class PreDefineContactsService extends IntentService { for (int i = 0; i < INSERT_PRESET_NUMBER_COUNT; i++) { int photoId = getResources().getIdentifier( INSERT_PRESET_PHOTO[i], "drawable", "plugin.sprd.conta
+完整回答请参考FAQ: FAQ100877
+### 问题: 在预置联系人实现置顶的条件下，备份恢复后如何保证预置联系人置顶？
+解决方案: 解决方案如下: 不"备份"预置联系人,只"备份"新建联系人,"恢复"联系人时选择"消除冗余"不会影响预置联系人,只会把重复的新建联系人删除. Contacts中修改一个文件: 修改AppBackupService.java文件,该文件是选择"备份与恢复"后启动的服务,修改"备份"选项中查询数据库的条件,只去查询RAW_CONTACT_IS_READ_ONLY=0的联系人,文件路径为/src/com/sprd/contacts/appbackup/AppBackupService.java 修改内容如下: @@ -211,11 +211,15 @@ public class AppBackupService extends Service { selection.append(" OR "); } init = false; + selection.append("(" + RawConta
+完整回答请参考FAQ: FAQ100880
+### 问题: SC7701高亮框直接叠放画在图标之上，高亮框上不再画图标
+解决方案: MS_Code\MS_MMI_Main\source\mmi_app\app\mainmenu\c\mmi_mainmenu_matrix.c (1) LOCAL void MatrixMenuDraw() { ...... //display icon item if (UILAYER_IsLayerActive(&s_item_layer_handle)) { if (menu_ctrl_ptr->is_move_state || (menu_ctrl_ptr->main_menu_theme.is_hl_disappear && MMITHEME_TRIGGER_MODE_TP == MMITHEME_GetTiggerMode())) { MatrixMenuSetBltIconMenuDispLayer(menu_ctrl_ptr, s_item_layer_handle.blo
+完整回答请参考FAQ: FAQ101011
+### 问题: android7.0 中，如何在非机主模式下隐藏一级菜单？
+解决方案: packages/apps/Settings /src/com/android/settings/SettingsActivity.java文件的SETTINGS_FOR_RESTRICTED数组中,注释掉想要隐藏的一级菜单即可,以存储菜单为例: private String[] SETTINGS_FOR_RESTRICTED = { //wireless_section Settings.AirplaneModeActivity.class.getName(), WifiSettingsActivity.class.getName(), Settings.BluetoothSettingsActivity.class.getName(), Settings.DataUsageSummaryActivity.class.getName(), Settings.SimSettingsActi
+完整回答请参考FAQ: FAQ101053
+### 问题: 如何配置DataConnection中PDP Recovery Action机制
+解决方案: 数据连接建立成功之后,由于某些原因导致数据收发包异常,出现有上行数据无下行数据的情况,当下行数据累计到门限值时,会触发Data Connection的recovery机制,默认逻辑下, 第一次: GET_DATA_CALL_LIST(action=0) 触发DoRecovery机制会做一个GET_DATA_CALL_LIST查询 第二次: CLEANUP(action=1) 会去激活数据连接再重新激活 第三次: REREGISTER(action=2) 会PS重新驻网 第四次: RADIO_RESTART(action=3) 会重启协议栈 第五次: RADIO_RESTART_WITH_PROP(action=4) 会做modem reset 在7.0与8.0是版本中平台支持board中可配置DoRecovery的Action,如果在board中配置了某个Action,那么DoRecove
+完整回答请参考FAQ: FAQ101033
+### 问题: android7.0中，设置一种语言后，如何让时区列表显示本国城市名称而不是时间字符串？
+解决方案: 当手机语言设置为繁体中文时,时区列表中,中国的时区显示为上海 当语言设置为简体中文时,时区列表中,中国的时区显示为中国标准时间 这是android原生的一种设计,但是通常客户希望直接显示城市名称,而不是时间字符串,下面以墨西哥城作为示例: 当语言设置为简体中文时,时区列表中,墨西哥的时区显示为墨西哥城 当语言设置为墨西哥官方语言西班牙语(墨西哥)时,时区列表中,墨西哥的时区显示为墨西哥太平洋标准时间(hora estandar del pacifico de mexico) 要让墨西哥的时区在设置为墨西哥官方语言西班牙语(墨西哥)时显示城市名称,可以进行如下修改 packages/SettingsLib/src/com/android/settingslib/datetime/ZoneGetter.java文件的getZonesList方法中: // Create a lookup of 
+完整回答请参考FAQ: FAQ101056
+### 问题: 为何默认时区设置后不生效
+解决方案: 默认时区的设置只要配置persist.sys.timezone的值即可,但经常有客户反馈默认时区不生效 现列举一下可能出现的情况: 1,自动更新时区默认开启,插卡开机,有网络连接,开机后自动更新了时区,导致默认时区不生效 2,自动更新时区默认开启,不插卡开机,不连接网络,开机后自动更新了时区,导致默认时区不生效 3,手机带有Google开机向导,google开机向导中有时区设置界面,其维护了独立的时区列表,如果我们设置的默认时区在其列表中不存在,开机向导就会显示其他时区,这时如果点击下一步,会将开机向导界面显示的时区设置到系统中,导致默认时区不生效. 修改方法: 1,自动更新时区默认开启情况下,有网络连接,更新时区是正常的,所以如果要让其不更新时区,可以默认关闭自动更新时区开关,具体修改: frameworks/base/packages/SettingsProvider/res/valu
+完整回答请参考FAQ: FAQ101059
+### 问题: android7.0中，如何默认显示开发者选项菜单？
+解决方案: 在packages/apps/Settings/src/com/android/settings/SettingsActivity.java文件 doUpdateTilesList方法中,将 final boolean showDev = mDevelopmentPreferences.getBoolean( DevelopmentSettings.PREF_SHOW, android.os.Build.TYPE.equals("eng")) && !um.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES); 修改为: final boolean showDev = mDevelopmentPreferences.getBoolean( DevelopmentSettings.PREF_SHOW, true) && !um
+完整回答请参考FAQ: FAQ101061
+### 问题: Android7.0中，如何修改默认显示大小？
+解决方案: 要修改默认显示大小,需要两个步骤: 1,在packages/apps/Settings/src/com/android/settings/display/ScreenZoomSettings.java文件中做如下修改: import java.util.ArrayList; import java.util.List; +import java.util.Arrays; +import android.util.Log; /** * Preference fragment used to control screen zoom. @@ -86,6 +87,7 @@ public class ScreenZoomSettings extends PreviewSeekBarPreferenceFragment impleme @Override protected void commit()
+完整回答请参考FAQ: FAQ101068
+### 问题: 设置-日期和时间-选择时区，怎样将显示的上海GMT+8:00改为北京GMT+8:00？
+解决方案: 城市名称是在ICU中定义,需要修改ICU文件,可参考如下修改: external/icu/icu4c/source/data/zone下定义了各个语言下时区名称显示,以修改中文和英文为例: 中文下external/icu/icu4c/source/data/zone/zh.txt zoneStrings{ ... "Asia:Shanghai"{ - ec{"上海"} + ec{"北京"} } 英文下external/icu/icu4c/source/data/zone/en.txt中添加 zoneStrings{ ... "Asia:Saigon"{ ec{"Ho Chi Minh City"} } + "Asia:Shanghai"{ + ec{"Beijing"} + } 其他语言下也要修改,请贵司自行修改即可(请注意如果没找到Asia:Shanghai,需要按字母顺序添加,参考en
+完整回答请参考FAQ: FAQ101069
+### 问题: 7731E lcd dpi clock phy_freq配置相关
+解决方案: 7731e dpi clock 和mipi freq 配置相关 目前新的平台uboot和kernel应该都是adf架构. 以lcd_ili9881c_3lane_mipi_hd.c为例: static struct panel_info ili9881c_info = { /* common parameters */ .lcd_name = "lcd_ili9881c_3lane_mipi_fhd", .type = SPRD_PANEL_TYPE_MIPI, .bpp = 24, .width = 720, .height = 1280, /* DPI specific parameters */ .pixel_clk = 64000000, .rgb_timing = { .hfp = 52, .hbp = 26, .hsync = 25, .vfp = 5, .vbp = 9, .
+完整回答请参考FAQ: FAQ112533
+### 问题: 手机-通话设置-功能-账号-语音信箱功能答疑
+解决方案: 1.这个功能就类似一个留言信箱功能,需要和来电转接等功能配合使用,这个功能是运营商的增值服务功能,都是要额外收费的,现在以中国移动为例, 2.这个功能只有全球通用户才能默认打开,其它用户类型需要申请开通或者移动会要求你直接升级到全球通用户才能用, 3.全球通用户已经默认开启"占线时""无法接通时"将来电转到号码"12599"(这个只能是运营商指定号码,输入其它号码无效),同时全球通用户也可以自行将所有来电/漫游来电等设置成这个留言信箱, 4.当一个移动号码给一个全球通号码呼出电话,若此时该号码关机或者飞行模式等,呼出方就会转到语音信箱, 具体提示就是: 您所拨打的电话暂时无法接通,如需留言请按"1",留言将收取正常通话费用,无需留言请挂断, 如果呼出方选择留言,按"1",待被呼端正常通信(开机或者不是飞行模式等)后,就会有短信提醒发到被呼端,它可以拨打留言信箱接听留言 5.现在中国移动这个
+完整回答请参考FAQ: FAQ101996
+### 问题: android 7.0 关于768M的内存能不能送GMS认证
+解决方案: 1、满足CDD的要求应该就可以,最小Memory需要根据Density和Screen Size来评估 Density and screen size 32-bit device 64-bit device Android Watch devices (due to smaller screens) 416MB Not applicable 280dpi or lower on small/normal screens mdpi or lower on large screens ldpi or lower on extra large screens 512MB 816MB xhdpi or higher on small/normal screens hdpi or higher on large screens mdpi or higher on extra large screens
+完整回答请参考FAQ: FAQ102101
+### 问题: Android 中如何添加暗码功能？
+解决方案: 目前在Android中添加暗码功能有两种方式: 1,SECRET_CODE SECRET_CODE方式定义暗码是Android原生提供的一种方式,这种方式定义的暗码格式统一为 *#*#<code>#*#* 其中<code>为定义的暗码.具体添加步骤如下: (1)、在应用的AndroidManifest.xml文件中定义一个BroadcastReceiver,在其中添加暗码 <receiver android:name="TestingSettingsBroadcastReceiver"> <intent-filter> <action android:name="android.provider.Telephony.SECRET_CODE" /> <data android:scheme="android_secret_code" android:host="4636" /> </inte
+完整回答请参考FAQ: FAQ102100
+### 问题: Android 7.0，如何添加默认语言列表？
+解决方案: android7.0之前配置默认语言列表是通过PRODUCT_LOCALES进行配置,android7.0之后配置方式有所改变,如果不做其他修改,PRODUCT_LOCALES第一个选项会作为默认语言被选中,但不会有默认语言列表. 如果要添加默认语言列表,需要如下修改: 1、PRODUCT_LOCALES 只控制编译的语言资源项,建议加入所有需要支持翻译的语言,这样才可以在settings中切换对应语言时有其翻译资源. 2、settings中用户语言列表(setting->语言&输入法->语言)修改其默认语言列表方法如下 frameworks/base/packages/SettingsProvider/res/values/defaults.xml <string name="config_default_input_method" translatable="false">com.if
+完整回答请参考FAQ: FAQ102102
+### 问题: GMS开机向导未执行结束，重启手机后灭屏睡眠时间自动改变为2分钟
+解决方案: 由於开机向导应用在执行时会将灭屏时间改为2分钟,同时在执行完时会重设回原默认灭屏睡眠时间,google原始设定灭屏睡眠时间为1分钟. 如果开机向导设定中直接拔电池,开机向导应用设定中断时, 没有重设回原默认睡眠时间1分钟. 重启手机后,开机向导不会再重新设置回原灭屏眠时间,故灭屏睡眠时间时为2分锺,此为开机向导程试代码中的错误,原始设计没有想到此情况. 如下为开机向导应用反编代码:     private static final boolean LOGV = BaseActivity.LOGV;
+
+    public void onSessionStart(Context context) {
+        LocalPrefs.get(context).edit().putInt("screenTimeout", System.getInt(context.getConten
+完整回答请参考FAQ: FAQ102128
+### 问题: 号码归属地字典修改
+解决方案: 修改步骤: 1.从github下载libphonenumbe的code(注意请不要使用火狐,请使用chome,否则下载按钮不响应) https://github.com/googlei18n/libphonenumber 2.下载ant http://ant.apache.org/bindownload.cgi 3.配置环境ant变量 进入终端: 3.1 解压ant压缩包: tar -xf apache-ant-1.8.2-bin.tar.gz 3.2 ant目录移到opt中:sudo mv apache-ant-1.8.2 /opt/ 3.3 加入ant环境:sudo gedit /etc/profile 内容如下: export ANT_HOME=/opt/apache-ant-1.8.2 export JAVA_HOME=/usr/lib/jvm/java-6-openjdk exp
+完整回答请参考FAQ: FAQ102268
+### 问题: 打电话呼叫失败的原因值
+解决方案: 在LOG中查找message"APP_MN_CALL_DISCONNECTED_IND",disconected_cause的值可以通过如下速查: Cause Cause num. 1. Unassigned (unallocated) number 3. No route to destination 6. Channel unacceptable 8. Operator determined barring 16. Normal call clearing 17. User busy 18. No user responding 19. User alerting, no answer 21. Call rejected 22. Number changed 25. Pre-emption 26. Non selected user clearing 27. Destination o
+完整回答请参考FAQ: FAQ102783
+### 问题: 如何知道手机当前驻留的WCDMA服务小区及邻小区情况
+解决方案: 空闲模式下的邻小区列表来自于SIB11(系统消息11),连接模式下的邻小区列表来自于SIB11(系统消息11),SIB12(系统消息12)和测量控制消息的合作用. 在LOG中搜索message"MSG_ID_RRC_FREQ_CELL_INFO_PRINT",其中(serv_freq,serv_cell)可以看到WCDMA服务小区及WCDMA同频、异频临小区信息. 若网络在RB reconfiguration、physical channel reconfiguration等消息中携带了frequency info IE,则message"MSG_ID_RRC_FREQ_CELL_INFO_PRINT"中,serv_freq,serv_cell,sec_serv_freq,sec_serv_cell都会变成有效值(主频点、辅助频点信息),此时查看UE当前工作频点,需要参考message"M
+完整回答请参考FAQ: FAQ102784
+### 问题: WCDMA模式下通话如何查询当前UE使用的AMR类型和速率
+解决方案: 对PS而言,通过trace搜索查询是最直接准确的方法;下面提供相关的key trace参考: 在trace栏中搜索 "CheckRate",搜出来的trace会显示当前PS根据网络配置得到的AMR type和speech rate; AMR type分为AMR NB和AMR WB; 而speech rate则代表的是上行速率,PS选出后会通知audio dsp使用该速率编码上行数据; 如果是AMR NB类型的,速率范围为0到7,0代表最低速率4.25k/s,7代表最高速率12.2k/s; 如果是AMR WB, 速率范围为0到8,0代表最低速率6.6k/s,8代表最高速率23.85k/s;具体可以参考协议26.101和26.201. 而要查看下行速率的话: 如果是AMR NB,搜索是"Current SpeechRate of NB is", 出来的数字代表当前的下行速率; 如果是AMR W
+完整回答请参考FAQ: FAQ102792
+### 问题: 如何去掉平台原生的浏览器模块
+解决方案: l 对于Android4.4平台: 如果贵司有很多项目,有些项目需要Browser模块,有些项目不需要,这种情况下建议的修改方案是: 1. 将core.mk文件中Browser模块去掉: xref: /sprdroid4.4_sfphone/build/target/product/core.mk PRODUCT_PACKAGES += \ ApplicationsProvider \ BasicDreams \ Browser \ Contacts \ DocumentsUI \ DownloadProviderUi \ ExternalStorageProvider \ KeyChain \ PacProcessor \ ProxyHandler \ SharedStorageBackup \ VpnDialogs \ PicoTts \ Stk \ OmacpManager 2.找到
+完整回答请参考FAQ: FAQ102813
+### 问题: Telecom服务是如何启动的？
+解决方案: Telecom在SystemServer的startOtherServices中进行添加和启动,在ams服务Ready时(PHASE_ACTIVITY_MANAGER_READY),启动并连接connectToTelecom,最后把telcom加入到系统服务. framework/base/services/java/com/android/server/SystemServer.java // Start services. try { traceBeginAndSlog("StartServices"); startBootstrapServices(); startCoreServices(); startOtherServices(); SystemServerInitThreadPool.shutdown(); } catch (Throwable ex) { Slog.e("S
+完整回答请参考FAQ: FAQ116809
+### 问题: LTE系统ETWS简介
+解决方案: ETWS :Earthquake and Tsunami Warning System ,地震和海啸预警系统,用于向公众及时发布地震、海啸等紧急信息,指导公众避险和自救. ETWS消息分为主要告警(ETWS primary notification)和次要告警(ETWS secondary notification),网络可能在任何时间点发送该消息.ETWS 主要告警由SystemInformationBlockType10 承载,而 ETWS次要告警由SystemInformationBlockType11承载. 根据协议TS 36.331,终端收到包含etws-Indication的paging后,应立即获取SystemInformationBlockType1,若其中包含有SystemInformationBlockType10/11的调度,则开始获取SystemInformatio
+完整回答请参考FAQ: FAQ116849
+### 问题: android9.0 上如何在不恢复出厂设置的情况下再次启动google开机向导
+解决方案: android9.0 上如果需要在不恢复出厂设置的情况下再次启动google开机向导,需执行以下操作. adb shell settings put secure user_setup_complete 0 adb shell settings put global device_provisioned 0 adb shell pm enable com.google.android.setupwizard/.SetupWizardActivity adb shell am start -n com.google.android.setupwizard/.SetupWizardActivity 另外如果需要调试google 开机向导可打开setupwizard的调节开关 adb shell setprop log.tag.SetupWizard VERBOSE 如果需要在开机向导首界面直接
+完整回答请参考FAQ: FAQ120814
+### 问题: 测试常用AT命令解读
+解决方案: 测试中经常会遇到通过Logel_for_TD工具的"AT"功能下发命令的操作,今天我们解读下常用基础AT命令的含义. 首先,通过"AT"窗口下发"at": 如反馈"OK",说明AT通道正常工作,可以执行AT命令下发操作. 若返回"error"或无响应,则说明AT通道不通,初步可做端口识别、工具连接、modem to PC是否开启等方面的检查确认. 常用AT命令: at+armlog=1 开启armlog PC端输出 at+spdspop=2 开启dsplog PC端输出 at+spactcard=0 双卡测试时,指定对卡槽1生效 at+spactcard=1 双卡测试时,指定对卡槽2生效 atd112 主叫(112是举例,可为任意电话号码) ath 挂断电话 at+cimi 获取测试卡的IMIS(国际运营商识别码) at+spdsp=65535,0,0,4096 语音通话测试场景,开启au
+完整回答请参考FAQ: FAQ102899
+### 问题: 7701/6531E W trace有效性确认
+解决方案: 回答: 首先,由于7701/6531E平台功能机抓log工具本身的兼容性问题,请在测试抓log前,确保工具为当前手机软件对应的modem版本里的DEBUG_TOOL,通过验证发现不匹配的工具会导致log丢失和解析不出 其次,在输出log后回放和查看关键信息来进一步确认,测试并通过Armlog抓log时如何判断 Trace log正常输出 第一: 观察,抓log时(或回放)观察Trace窗口不会出现一下类似异常信息或者error信息等,没有为正常, 179277-90:TRANSLATION ERROR: FILE: 47171 LINE: 1149 CAN'T FIND IN TREANSLATION FILE! TRACE TIME: 147792 179277-91:TRANSLATION ERROR: FILE: 47171 LINE: 1149 CAN'T FIND IN TREA
+完整回答请参考FAQ: FAQ103232
+### 问题: 丢网问题分析
+解决方案: LTE支持的band信息存储在NV中,开机后NAS会通过消息MSG_ID_CMD_ASM_STORE_INFO将支持的band发送给AS. 如果开机后,UE一直未发送Attach请求,需要首先确认测试点的小区的频点以及band信息,建议使用同一张USIM卡在同一地点使用对比机进行对比测试,确认能否正常注册;得到该测试点的band信息后,确认UE是否在NV中配置了支持该band. UE正常注册后,可以通过如下trace获得小区频点以及PCI(Physical Cell Id)的信息. 可以通过在trace中搜索如下内容,得到服务小区的RSRP/RSRQ以及SINR等信息,其中RSRP/RSRQ为实际打印值除以100.例如,rsrp=-10237,则实际的RSRP为-102.37. 一般的,在实网信号下,RSRP的值应该在[-60,-125]的范围内; 1)如果低于-60,有可能是手机没有校准
+完整回答请参考FAQ: FAQ103177
+### 问题: clock中hometimezone默认值是如何设置的？
+解决方案: 根据persist.sys.timezone的属性值获取,且会随该值变化.只有第一次才会读取该值,后面都是从prefs读写,所以要看到变化,必须清除clock的数据才看到. 下面是如何根据persist.sys.timezone属性得到值相关代码: SettingsDao.java static TimeZone getHomeTimeZone(Context context) { final SharedPreferences prefs = getSharedPreferences(context); final String defaultTimeZoneId = TimeZone.getDefault().getID();//得到id,即persist.sys.timezone属性值 final String timeZoneId = prefs.getString(Setting
+完整回答请参考FAQ: FAQ103245
+### 问题: 来电和闹钟并发时，闹钟和电话的声音如何处理？
+解决方案: 原生方案是两个声音同时响起,电话声音大,闹钟声音小.展讯目前默认方案为这种情况下在状态栏弹出通知,然后震动100ms;还有一种方案为在展讯方案的基础上,即如果电话已经挂断但闹钟还在继续,这时可以让继续响铃,方案为: diff --git a/src/com/android/deskclock/alarms/AlarmService.java b/src/com/android/deskclock/alarms/AlarmService.java index cc5c16c..32ae1c1 100755 --- a/src/com/android/deskclock/alarms/AlarmService.java +++ b/src/com/android/deskclock/alarms/AlarmService.java @@ -156,7 +156,8 @@ public clas
+完整回答请参考FAQ: FAQ103271
+### 问题: 在支持sensorhub的平台上如何抓取sensor 的相关log？
+解决方案: 在sensorhub的平台上,sensor的log包括ap侧和cp侧的log,方法如下: 首先采用debug版本复现sensor的问题: 1, ap侧的log: 通过导出log工具 Log4Android2PC2.3.12\ LogAndroid2PC.bat 点击该文件,会弹出窗口,log导出完毕后该窗口会自行关闭 通过命令导出log: adb pull /storage/emulated/0/ylog/ d:\ylog //未插sd卡 adb pull /storage/sdcard0/ylog/ d:\ylog //插sd卡 2, CP侧的log: 导出的ylog中sensorhub下面有cp侧的部分log,为了获取更多的cp侧log 可以做如下操作: 复现问题时,连接adb echo log on > /dev/sctl_pm cat /dev/slog_pm > /data/se
+完整回答请参考FAQ: FAQ113502
+### 问题: 中移入库srvcc测量时延问题分析方法
+解决方案: 中移规定的srvcc测量时延涵义如下: 指标 定义 eSRVCC测量时延 SRVCC测量时延定义为网络下发配置的B1/B2 事件RRC Connection Reconfiguration(MeasConfig)B1/B2事件与测量到满足B1/B2门限值的第一个2G BSIC间隔. 中移要求测量时延<3s,统计这个时延的依据是log中的相关message和trace.目前,外场报的这类问题绝大部分都是自动化测出来的,且最终原因普遍是"自动化测试文件配置错误",这会引起message解析错误从而导致自动化工具统计错误. 因此,这类问题首先要排查是否有"自动化文件配置错误"问题,具体步骤如下 1,自动化测试文件配置错误 1)取出测试前按照《展讯平台中移入库自动化测试环境搭建》拷贝到测试机Apk安装目录CDS\下的sprdMsgID.txt配置文件 2)在展讯提供的Modem包中(\Logel_
+完整回答请参考FAQ: FAQ103559
+### 问题: 如何修改Email导航页面显示？
+解决方案: 是否开启/显示 Email 的导航页面是在 vendor/sprd/platform/packages/apps/SprdEmail/Email/src/com/android/email/activity/UiUtilities.java 中通过GUIDE_SUPPORT来进行控制的,true即开启,反之则关闭. 显示的导航页上的域名信息,则可参见 vendor/sprd/platform/packages/apps/SprdEmail/Email/res/values/arrays_guide.xml 文件: 1、显示域名的名称,如:网易163 <string-array name="account_type_display_names" translatable="false"> <!-- TYPE_163 = 0 --> <item>@string/account_type_dis
+完整回答请参考FAQ: FAQ103619
+### 问题: Android7.0 如何加粗设置里的category分割线？
+解决方案: Android7.0中Settings的Category分割线是一张点九图片,可以通过调整高度对其进行加粗,具体修改如下: packages/src/com/android/settings/dashboard/DashboardDecorator.java中 --- a/src/com/android/settings/dashboard/DashboardDecorator.java +++ b/src/com/android/settings/dashboard/DashboardDecorator.java @@ -54,7 +54,7 @@ public class DashboardDecorator extends RecyclerView.ItemDecoration { int top = getChildTop(child); mDivider.setBounds(ch
+完整回答请参考FAQ: FAQ103649
+### 问题: 如何开启VoWiFi测试白名单
+解决方案: 方法一: *#*#83781#*#*进入工程模式--TELEPHONY,下划屏幕找到"VoWiFi White List Enable"选项,打开此选项即可. 方法二:如果客户版本不支持在工程模式中打开VoWiFi白名单,如SC9820 MOCOR5平台,可通过adb命令的方式开启,命令如下: adb root adb shell setprop persist.sys.vowifi.lab.sim true 查看开启是否有效:adb shell getprop persist.sys.vowifi.lab.sim adb reboot 关于VoWiFi白名单:VoWiFi有两个白名单,一个测试白名单,用来支持各个运营商的VoWiFi不同配置;一个量产白名单,达到量产要求的,可进入此白名单.如果一个运营商PLMN已经加入了VoWiFi测试白名单,但未达到量产要求,就必须进入工程模式或者通过
+完整回答请参考FAQ: FAQ103664
+### 问题: 如何使状态栏不可以下拉
+解决方案: diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/DragDownHelper.java b/packages/SystemUI/src/com/android/systemui/statusbar/DragDownHelper.java
+index 2dabf5d..32e5881 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/DragDownHelper.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/DragDownHelper.java
+@@ -68,7 +68,7 @@ public class DragDownHelper i
+完整回答请参考FAQ: FAQ103814
+### 问题: 如何解决泰语输入法中出现的母音向上或向下叠加问题？
+解决方案: 解决方案: 当连续输入多个泰语母音时,向上或向下的母音由并排的虚线圈来替代. 修改方式: 修改platform/external/harfbuzz_ng路径下的Android.bp文件,将"src/hb-ot-shape-complex-thai.cc"修改为"src/hb-ot-sprd-shape-complex-thai.cc",具体修改如下: diff --git a/Android.bp b/Android.bp index ff6b430..7ca2c57 100644 --- a/Android.bp +++ b/Android.bp @@ -84,7 +84,7 @@ cc_library_shared { "src/hb-ot-shape-complex-indic.cc", "src/hb-ot-shape-complex-indic-table.cc", "src/h
+完整回答请参考FAQ: FAQ103847
+### 问题: 俄罗斯项目第一次打开Chrome, Chrome必须提供3个搜索选项（Yandex，Google，@Mail.RU）
+解决方案: 该需求必需确认下面两点: 1. 需要在系统添加一项Google指定的feature, 添加方式如下: a. 建立一个名为services.ru.google.xml的档案 b. 档案内容如下: <permissions> <!-- Starting from Android O and above, this system feature is required for getting Google chrome play store updates. --> <feature name="com.google.android.feature.RU" /> </permissions> c. 将services.ru.google.xml复制到资料夹frameworks/native/data/etc下面 d. 在项目配置/device/sprd/xxxxx/common/device.m
+完整回答请参考FAQ: FAQ103854
+### 问题: GLONASS和北斗的卫星编号错误
+解决方案: 原因:平台底层上报的卫星编号以prn为依据.Android6.0以及之前的版本软件也是使用prn来表示卫星编号,但从7.0版本以后开始支持多星座系统除gps外添加了对GLONASS、BDS等的支持,将prn的概念改为使用svid和GnssConstellationType的方式.Framework获取svid后通过GnssConstellationType的识别添加对应的svid偏移量得到卫星的prn. 展讯平台对各个星座的卫星编号区分如下(源于Spreadtrum GNSS 客户操作手册): 卫星系统 卫星号 GPS 1 ~ 32 WAAS 33 ~ 64 GLONASS 65 ~ 88,89~96 reserved GALILEO 51~104 QZSS 183 ~ 187,193 ~ 197 reserved BDS(Beidou) 201~230(自定义,NMEA 0183尚未制定
+完整回答请参考FAQ: FAQ103963
+### 问题: 如何支持otg TV棒
+解决方案: 该配置需要基于OTG功能正常的情况下(U盘等外设可以正常识别),采用如下的配置: 1.Kernel Config配置: diff --git a/sp7731ceb_dt_defconfig b/sp7731ceb_dt_defconfig index 9aa9873..500b146 100755 --- a/sp7731ceb_dt_defconfig +++ b/sp7731ceb_dt_defconfig @@ -1879,11 +1879,11 @@ CONFIG_VIDEO_GSP_SPRD=y CONFIG_VIDEO_DCAM_SPRD=y CONFIG_CAMERA_FLASH_PARALLEL_BG=y CONFIG_MEDIA_CAMERA_SUPPORT=y -# CONFIG_MEDIA_ANALOG_TV_SUPPORT is not set -# CONFIG
+完整回答请参考FAQ: FAQ104018
+### 问题: Mock locations选项没有打开导致CTS测试失败（4.4，5.1版本）
+解决方案: A．android.location.cts.LocationManagerTest testAddProximityAlert、testEnterProximity等若干项 log:junit.framework.AssertionFailedError: Mock locations are currently disabled in Settings - this test requires mock locations at junit.framework.Assert.fail(Assert.java:72) android.location.cts.LocationProviderTest testGetName testMeetsCriteria testAndroidTestCaseSetupProperly log:java.lang.SecurityException:
+完整回答请参考FAQ: FAQ104130
+### 问题: 第一次开机或恢复出厂设置之后，GPS定位搜不到星（GSM版本）
+解决方案: 现象:组装发现第一次开机或恢复出厂设置之后,GPS工厂测试模式以及工程模式都搜不到星,概率10% 原因:此问题为原生问题,在GMS版本国家码检测流程中出现死锁问题,导致请求定位的消息没有被执行. 具体问题点是 thread one -> ComprehensiveCountryDetector#[synchronized]stopLocationBasedDetector locked ComprehensiveCountryDetector.this -> mLocationBasedCountryDetector.stop() -> LocationBasedCountryDectector#[synchronzied]stop wait to LocationBasedCountryDectector.this release thread two-> LocationBasedCo
+完整回答请参考FAQ: FAQ104132
+### 问题: Android 6.0 如何打开user版本的root权限
+解决方案: 请参考如下3步修改: 1. 去除secure属性限制 jonas.yang@bjandroid01:~/code/5-9860-16d-android6/device/sprd/whale2$ git diff diff --git a/common/DeviceCommon.mk b/common/DeviceCommon.mk index ef80897..8f61493 100644 --- a/common/DeviceCommon.mk +++ b/common/DeviceCommon.mk @@ -88,7 +88,7 @@ PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.apr.enabled=0 \ persist.sys.engpc.disable=1 \ persist.sys.sprd.wcnreset=1 \ - ro.ad
+完整回答请参考FAQ: FAQ104392
+### 问题: android7.0 如何固定adb devices读出的S/N号
+解决方案: 背景: 有些客户在产线上手机开机后,还有部分工位需要通过adb与手机通讯做进一步的操作. 就需要固定adb devices读出来的S/N号,以防止所有手机插入同一个pc端口不断提示重新安装驱动,造成产线效率低下. 需求:固定adb devices读出来的S/N号. 修改: 可以参考如下修改:(如下S/N号以11223344556677举例) jonas.yang@bjandroid01:~/code/7-sprdroid7.0_trunk_k44_17b/system/core/rootdir$ git diff
+diff --git a/rootdir/init.usb.configfs.rc b/rootdir/init.usb.configfs.rc
+index 54564ba..6b2b152 100644
+--- a/rootdir/init.usb.configfs.rc
+完整回答请参考FAQ: FAQ104393
+### 问题: android8.x camera settings UI中去除zsl 菜单项的说明
+解决方案: . 背景:android8.0之前的项目camera settings UI中都是有下图中zsl 菜单项的(红色框标记),包括老的android6.0 7731C等项目都是有该菜单项的. 终端用户可以操作该菜单项打开或关闭camera zsl 拍照功能; 2. 变更说明:从android8.0/8.1及之后的项目,camera settings UI中都不会再有该菜单项,但是平台客户可以基于自己的board,通过配置 persist.sys.cam.zsl=true or false开关 来决定终端用户使用camera时默认是zsl拍照还是no-zsl拍照,终端用户不会再有zsl/no-zsl选择权限. 3. 变更原因: 1)该菜单项是SPRD平台一直以来遗留下来的,但是目前市面上手机camera UI基本上都不会有该菜单项, 且终端使用者可能也并不清楚zsl/no-zsl的差异,后续在平
+完整回答请参考FAQ: FAQ104845
+### 问题: SC9832E不使用SIM卡热插拔功能时的PINMAP配置
+解决方案: SC9832E不使用SIM卡热插能拔功能时,PINMAP中的SIM卡热插拔检测管脚需要对应修改为GPIO功能,否则会造成无法识别SIM卡的问题.不使用SIM卡热插能拔功能时正确的配置如下: {REG_PIN_GPIO31,                        BITS_PIN_AF(3)},
+{REG_MISC_PIN_GPIO31,                   BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_WPD|BIT_PIN_SLP_NONE|BIT_PIN_SLP_WPD|BIT_PIN_SLP_Z},//SIM0_DETSIM0
+
+{REG_PIN_GPIO9,                         BITS_PIN_AF(3)},
+{REG_MISC_PIN_GPIO9,                    BIT
+完整回答请参考FAQ: FAQ104401
+### 问题: SC9832E/SC9820E T卡支持的速率
+解决方案: SC9832E/SC9820E T卡支持的模式: 模式 理论最大速率 理论最大时钟 实测最大速率 实测最大时钟 DefaultSpeed 12.5MB/s 25MHz 12MB/s左右 24MHz左右 HighSpeed 25MB/s 50MHz 24MB/s左右 48MHz左右 SDR12 12.5MB/s 25MHz 12MB/s左右 24MHz左右 SDR25 25MB/s 50MHz 24MB/s左右 48MHz左右 SDR50 50MB/s 100MHz 48MB/s左右 96MHz左右 DDR50 50MB/s 50MHz 48MB/s左右 48MHz左右 SDR104 104MB/s 208MHz 98MB/s左右 196Hz左右 T卡的速率和T卡的Class等级没有直接关联,初始化阶段,T卡会告诉Host自身支持的模式,然后HOST会按照T卡支持的最大速率工作. 如果使用平
+完整回答请参考FAQ: FAQ104403
+### 问题: 如何dump system_server进程中native线程的trace
+解决方案: 可以通过两种方式实现. (1)通过adb dump,参考下面的例子 adb root adb remount remount succeeded adb shell ps |grep system_se system 768 269 1169844 110308 SyS_epoll_ a60484d8 S system_server kill -3 768 exit adb shell debuggerd -b 745 > D:\system_sever_native.txt 这样通过debuggerd -b 命令就可以抓取到system_server进程中native线程的trace (2)通过代码实现 我们可以调用Debug.java的如下dumpNativeBacktraceToFileTimeout接口,传入system_server 的pid,dump trace的路径,超时时间
+完整回答请参考FAQ: FAQ106529
+### 问题: WriteIMEI工具端如何配置不同平台secureboot写入？
+解决方案: 1、Old secureboot 适用项目:SC7731G(6.0)、SC7731C(6.0)、SC9832A(7.0) 写入方式:校准模式 适用工具:只能用WriteIMEI_R19.0.0001之前的版本,工具勾选"Old secureboot"、"Enable old secure",下拉菜单选择"Enter Charge mode" 2、New Secure 适用项目:SC7731G(7.0)、SC9820A(4.4)、SC9820W(4.4)、KaiOS 写入方式:Uboot模式下写入后切换到校准模式 适用工具:WriteIMEI_R19.0.0001之前的版本勾选"New Secure boot",下拉菜单选择"Enter Para mode";WriteIMEI_R19.0.0001及之后工具勾选"SecureBoot(Write efuse under uboot) 3、S
+完整回答请参考FAQ: FAQ104477
+### 问题: 如何单纯从规格书判断LPDDR2/3是否满足平台性能要求？
+解决方案: 对照平台BB "External Memory interface" 章节Feature: 1. 确认Clock Rate: 所选LPDDR2/3的CLK Rate 要大于平台的最高频率;特别注意,Mbps和MHz的区别:400MHz = 800Mbps; 2. 确认Channel(P-Bank)数量: 平台支持的P-Bank数量要与Memory的P-Bank数量相同;这里说的多通道是指不共用任何信号线的组织形式. 3. 确认CS数量:LPDDR2/3的CS脚数量不大于平台支持的CS脚数量; 4. 确认位宽、确认容量. 5. 比如,当平台有以下要求时: 5.1. Support 16-bit and 32-bit devices; LPDDR2/3位宽必须满足要求; 5.2. Support up to 2 chip select (2CS); LPDDR2/3的CS管脚不能大于2,可以是
+完整回答请参考FAQ: FAQ104695
+### 问题: Android8.1中，如何默认关闭打印服务？
+解决方案: 1、frameworks/base/packages/SettingsProvider/res/values/defaults.xml添加: <string name="def_disabled_print_service">com.android.bips/com.android.bips.BuiltInPrintService</string> 2、frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java的 loadSecureSettings方法中添加: loadStringSetting(stmt, Settings.Secure.DISABLED_PRINT_SERVICES, R.string.def_disabled_print_servic
+完整回答请参考FAQ: FAQ104650
+### 问题: Android8.1中，CTS测试testExternalStorageReadDefaultUris失败的原因？
+解决方案: 1,testExternalStorageReadDefaultUris这条case测试的是SD卡拔除后设置的SD卡铃声文件能继续播放,机制是设置铃声文件时会拷贝一份铃声文件到缓存中,SD卡拔除后会播放缓存中的铃声文件. 2,测试失败,则说明缓存中没有对应的铃声文件,缓存铃声文件的代码在 frameworks/base/media/java/android/media/RingtoneManager.java中的setActualDefaultRingtoneUri方法中,具体代码段如下,如果注释掉了这段代码,则CTS测试中的testExternalStorageReadDefaultUris会测试失败. if (ringtoneUri != null) { final Uri cacheUri = getCacheForType(type, context.getUserId()); t
+完整回答请参考FAQ: FAQ104652
+### 问题: Android8.1中，自动更新时区的时区来源优先级？
+解决方案: 1,SystemServer进程 SystemServer启动时,如果persist.sys.timezone没有设置默认时区,会将其设置为"GMT" 2,NITZ NITZ即网络上报的时区 3,网络上报的MCC 当网络没有上报时区,比如:运营商不支持NITZ,或者没有插入SIM卡,此时会根据设备当前驻留的紧急网络 上报的MCC国家码来确认一个时区 4,默认时区属性persist.sys.timezone 如果设备开机后没有驻留上紧急网络,则无法通过网络上报MCC国家码确认时区,此时设备会检查 persist.sys.timezone是否有设置默认时区,如果有就使用该属性设置的时区 5,SIM卡自带的MCC国家码 如果persist.sys.timezone没有设置时区或者设置的值是GMT,则使用SIM自带的MCC国家码来确认一个时区. 6,GMT 如果设备没有插入SIM卡,也没有驻留上网
+完整回答请参考FAQ: FAQ104672
+### 问题: Android8.1中，桌面长按应用图标弹出界面中菜单如何添加？
+解决方案: 1,在应用的AndroidManifest.xml文件中找到首界面Activity,然后添加如下配置内容: <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" /> 要找首界面Activity,只需要找有如下配置的Activity <action android:name="android.intent.action.MAIN" /> <category android:name="android.intent.category.LAUNCHER" /> 2,在应用的res/xml目录下新增一个shortcuts.xml,在其中配置要新增的菜单的显示内容以及点击后要跳转的界面, 其中categories 的配置是固定的,其他的内容如跳转的界面,跳转使用的action,菜单的名称,
+完整回答请参考FAQ: FAQ104674
+### 问题: 使用ResearchDownload怎么导出手机中的NV？
+解决方案: 首先需要注意: 此种方法只能导出手机内的校准参数以及IMEI/BT/WLAN Mac地址信息.但无法导出SN和手机的Phase check信息(即站位信息) 具体步骤如下: 1、打开Research Download工具,加载手机的pac包 2、在设置中的Main Page界面将Select All Files复选框去掉,只保留fdl1和fdl2 3、查看RESEARCHDOWNLOAD工具存放中如下路径内..\ESEARCHDOWNLOAD_R20.0.0001\Bin\ImageFiles文件夹下的nvitem.bin文件的大小,并记录下来.(例如:164KB=164×1024=167936B,167936B换算成16进制为29000并记录下.) 4、点击设置弹框的Flash operations界面,勾选上Active Read Flash选项,再按如下图对应Main page界面设
+完整回答请参考FAQ: FAQ104787
+### 问题: 抓取WCDMA log方法步骤
+解决方案: 1、 打开CFT界面,点击左上角的System菜单,在下拉菜单中选择seup选项,会弹出设置对话框. 2、 在弹出的设置对话框中点击左侧中间位置的"Modify Calibration Configuration File"按钮,会弹出如图1-2所示的输入密码的对话框,默认密码为小写sprd四个英文字母. 3、 输入密码之后按下回车键,弹出如图1-3所示的校准配置文件. 4、 在校准配置文件中找到WCDMA参数的地方,把LogDataToFile由默认的0改为1,并保存配置文件. 5、 关闭配置文件回到setup对话框,然后点击右下角的"Advance Setting"按钮,弹出设置对话框,勾选"Enable Instrument Gpib Log"复选框,并把PhoneCommand Log改为"Log Everything". 6、 以上设置完成之后点击下方的OK按钮,然后点击setu
+完整回答请参考FAQ: FAQ104729
+### 问题: 展讯平台抓取LTE log方法步骤
+解决方案: 1、打开CFT界面,点击左上角的System菜单,在下拉菜单中选择seup选项,会弹出设置对话框. 2、在弹出的设置对话框中点击左侧中间位置的"Modify Calibration Configuration File"按钮,会弹出如图3-2所示的输入密码的对话框,默认密码为小写sprd四个英文字母. 3、输入密码之后按下回车键,弹出如图3-3所示的校准配置文件. 4、在校准配置文件中找到LTE参数的地方,把Full_Log由默认的0改为1(如果是1就不用更改了),并保存配置文件. 5、关闭配置文件回到setup对话框,然后点击右下角的"Advance Setting"按钮,弹出设置对话框,勾选"Enable Instrument Gpib Log"复选框,并把PhoneCommand Log改为"Log Everything". 6、以上设置完成之后点击下方的OK按钮,然后点击setup
+完整回答请参考FAQ: FAQ104736
+### 问题: 展讯平台抓取TD log方法步骤
+解决方案: 1、打开CFT界面,点击左上角的System菜单,在下拉菜单中选择seup选项,会弹出设置对话框. 2、 在弹出的设置对话框中点击左侧中间位置的"Modify Calibration Configuration File"按钮,会弹出如图2-2所示的输入密码的对话框,默认密码为小写sprd四个英文字母. 3、 输入密码之后按下回车键,弹出如图2-3所示的校准配置文件. 4、 在校准配置文件中找到TD参数的地方,把Full_Log由默认的0改为1,并保存配置文件. 5、关闭配置文件回到setup对话框,然后点击右下角的"Advance Setting"按钮,弹出设置对话框,勾选"Enable Instrument Gpib Log"复选框,并把PhoneCommand Log改为"Log Everything". 6、以上设置完成之后点击下方的OK按钮,然后点击setup页面的OK按钮,关闭
+完整回答请参考FAQ: FAQ104732
+### 问题: Android8.1中，如何默认开启来电振动？
+解决方案: 1,打开文件vendor/sprd/platform/packages/apps/AudioProfile/src/com/sprd/audioprofile/AudioProfileProvider.java, 在createProfileTable方法中进行如下修改: + AudioProfileColumns.IS_VIBRATE + " INTEGER DEFAULT " + AudioProfile.NOT_VIBRATE + ", " 修改为: + AudioProfileColumns.IS_VIBRATE + " INTEGER DEFAULT " + AudioProfile.IS_VIBRATE + ", " 2,打开文件frameworks/base/packages/SettingsProvider/src/com/android/providers/setting
+完整回答请参考FAQ: FAQ104794
+### 问题: Android8.1中，如何默认开启短信振动？
+解决方案: 1,打开文件vendor/sprd/platform/packages/apps/AudioProfile/src/com/sprd/audioprofile/AudioProfileProvider.java, 在createProfileTable方法中进行如下修改: + AudioProfileColumns.IS_VIBRATE_MSG + " INTEGER DEFAULT " + AudioProfile.NOT_VIBRATE_MSG + ", " 修改为: + AudioProfileColumns.IS_VIBRATE_MSG + " INTEGER DEFAULT " + AudioProfile.IS_VIBRATE_MSG + ", " 2,打开文件frameworks/base/packages/SettingsProvider/src/com/android/p
+完整回答请参考FAQ: FAQ104796
+### 问题: Android8.1中，为什么连接wifi后，数据流量图标不消失？
+解决方案: 数据流量图标不消失的原因是如下开关处于默认打开状态 设置—>系统—>开发者选项—>始终开启移动数据网络 如果要默认关闭这个开关,可以进行如下修改: 打开framework/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java文件, 在 loadGlobalSettings方法中添加如下代码: loadIntegerSetting(stmt, Settings.Global.WIFI_SLEEP_POLICY, R.integer.def_wifi_sleep_policy); + loadSetting(stmt, Settings.Global.MOBILE_DATA_ALWAYS_ON, 0); loadSetting(stmt, Settings.Global.MOD
+完整回答请参考FAQ: FAQ113388
+### 问题: MMI测试项中Camera verification Test有什么用？为何总测试不通过
+解决方案: 这个测试是展讯双摄景深Pro方案中对于双摄像头功能的一个产线测试项目,属于必须测试的选项.这个测试项需要在特定的环境下进行测试,普通测试环境下无法测试通过. 测试的意义:双摄功能要能良好体现必须要有一个硬件前提,即两个摄像头的光轴中心偏移必须在容许的范围内:理想状态是光轴中心线完全平行且无X,Y,Z轴偏移和旋转,具体标准在此不赘述. 为了保证产品达到这个要求,模组厂在组装双摄模组的制程中会尽量加工精度,确保其在容许范围内,同时再对于加工的公差进行了校准补偿,补偿参数写入OTP用与后面调用. 当模组厂出货组装到手机以后,在加工过程中施加外力以及受到手机结构应力等影响,模组可能会改变出厂的原始状态出现偏差,这个时候可能会出现模组光轴不再在要求范围内,就会引起双摄效果恶化.而MMI中ValidationTools中Camera verification test就是在手机产线去做一个测试,确保手
+完整回答请参考FAQ: FAQ104857
+### 问题: UA导致的下载失败
+解决方案: 问题分析: 遇到下载失败,如果没有明显失败原因,那么将失败的log和下载成功相对比,验证是否UA缺失导致的下载失败. 解决方法: 增加默认UA.8.1原生对默认UA的处理有误.可以参照以下修改. 如果默认UA错误,也可参照正确的log修改UA. src/com/android/providers/downloads/DownloadThread.java - if (conn.getRequestProperty("User-Agent") == null) { - conn.addRequestProperty("User-Agent", mInfo.getUserAgent()); + if ((conn.getRequestProperty("User-Agent") == null) + || (conn.getRequestProperty("User-Agent").lengt
+完整回答请参考FAQ: FAQ104883
+### 问题: android8.1,屏幕小于sw600dp，点击到虚拟按键button附近时，响应button事件是否正常
+解决方案: android8.1,屏幕小于sw600dp,点击到虚拟按键button附近时,响应button事件是正常现象. 此为android原生设计,屏幕<sw600dp,虚拟按键开启Nearest Touch机制.当有点击事件时,找到Nearest button,然后offset event location,如果偏移后在button范围时,主动分发响应button点击事件. 关闭Nearest Touch机制方案如下: frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/NearestTouchFrame.java ... ... @VisibleForTesting NearestTouchFrame(Context context, AttributeSet attrs, Configurat
+完整回答请参考FAQ: FAQ105203
+### 问题: vowifi功能支持的运营商名单---量产名单
+解决方案: 以下运营商是已经量产的,经过运营商验收的. 如版本(8.1)支持vowifi功能,即可支持如下运营商. <!-- numeric: mcc + mnc --> <!-- name: operator name --> <!-- TRUE --> <operator numeric="520000" name="true" /> <operator numeric="520004" name="true" /> <!-- DTAC --> <operator numeric="520005" name="dtac" /> <operator numeric="520018" name="dtac" /> <!-- AIS --> <operator numeric="520003" name="ais"/> <!-- SMARTFREN --> <operator numeric="5100
+完整回答请参考FAQ: FAQ104974
+### 问题: vowifi功能支持的运营商名单---测试名单
+解决方案: 测试白名单中运营商为平台准备支持的运营商信息,需要在工程模式中打开vowifi测试白名单才能使用vowifi功能,仅供测试使用,当测试完成达到量产要求,即可加入量产白名单. <!-- numeric: mcc + mnc --> <!-- name: operator name --> <!-- Reliance --> <operator numeric="405840" name="reliance"/> <operator numeric="405854" name="reliance"/> <operator numeric="405855" name="reliance"/> <operator numeric="405856" name="reliance"/> <operator numeric="405857" name="reliance"/> <operator num
+完整回答请参考FAQ: FAQ104980
+### 问题: VoLTE/ViLTE客制化说明
+解决方案: 1 需求描述 语音电话(VoLTE) 支持基于LTE的高清语音通话 支持在通话过程中升级至视频通话 支持mid-call SRVCC 视频电话(ViLTE) 支持基于LTE的高清视频通话; 支持VGA(640*480@30fps),并向下兼容QVGA、CIF、QCIF低分辨率格式; 支持在通话过程中降级成语音通话; 支持mid-call SRVCC; 支持CVO、码率自适应; 2 feature开关 2.1 board.mk 通过配置对应的board PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.support.vt=true \ persist.sys.volte.enable=true 其中,persist.sys.support.vt用于控制ViLTE是否启用 persist.sys.volte.enable用于控制VoLTE是否启用. 另外
+完整回答请参考FAQ: FAQ105108
+### 问题: Android 8.1 FilesGo app 无法看到拷贝到内存或SD卡内的apk 档案
+解决方案: 需在frameworks/base/media/java/android/media/MediaFile.java内添加application/application属性才可以被FilesGo检索出来, 因FilesGo是透过检索mimetype的方式来找出apk档案, 而不是透过副档名来检索apk档案.
+
+.
+.
+.
+    public static final int FILE_TYPE_MS_POWERPOINT = 106;
+    public static final int FILE_TYPE_ZIP           = 107;
++	public static final int FILE_TYPE_APK           = 108;
+.
+.
+.
+        addFileType("MPEG", FILE_TYPE_MP2PS, "v
+完整回答请参考FAQ: FAQ105130
+### 问题: 客户创建新的文件接口，selinux权限问题。
+解决方案: 遇到权限问题,在logcat或者kernel的log中一定会打印avc denied提示缺少什么权限. 解决原则是:缺什么补什么,一步一步补到没有avc denied为止. 判断是不是权限导致问题最简单方法就是: setenforce 0 设置SELinux 成为permissive模式 临时关闭selinux,查看问题是否还在,如不存在了则确定是权限问题. 例如: 150[01-01 08:27:54.219] <36>[ 21.374581] c2 type=1400 audit(1420072067.719:52): avc: denied { read } for pid=99 comm="kworker/3:1" name="status" dev="sysfs" ino=20703 scontext=u:r:kernel:s0 tcontext=u:object_r:sysfs
+完整回答请参考FAQ: FAQ105150
+### 问题: 指纹识别震动强度(基于android8.1)
+解决方案: 代码位置:frameworks/base/services/core/java/com/android/server/fingerprint/ClientMonitor.java 识别成功时: vibrateSuccess 调用函数getSuccessVibrationEffect, 首先判断 config_longPressVibePattern中是否有定义,如果没有定义在去直接使用
+ DEFAULT_SUCCESS_VIBRATION_PATTERN定义,如果该参数异常则直接使用默认的
+ VibrationEffect.DEFAULT_AMPLITUDE 
+ 
+ 识别失败时: vibrateError 直接使用 VibrationEffect.get(VibrationEffect.EFFECT_DOUBLE_CLICK) 另: 类 VibrationEffect 详见:fra
+完整回答请参考FAQ: FAQ105158
+### 问题: Android8.1 user版本默认打开root权限的方法
+解决方案: 增加如下修改,编译user版本,即可实现默认具有root权限 tianyuan.zhang@bjand01:/home/tianyuan.zhang/sprdroid8.1_trunk_18a_rls2/build/core$ git diff . diff --git a/core/main.mk b/core/main.mk index 44ad271..c81672b 100644 --- a/core/main.mk +++ b/core/main.mk @@ -239,11 +239,11 @@ enable_target_debugging := true tags_to_install := ifneq (,$(user_variant)) # Target is secure in user builds. - ADDITIONAL_DEFAULT_PROPERTIES +
+完整回答请参考FAQ: FAQ105183
+### 问题: 如何调整AndroidO平台mtp模式下在PC端资源管理器中映射的图标
+解决方案: 手机作为device设备链接到PC,mtp模式下,会在PC端的资源管理器中映射出相应的图标,如下图所示: mtp完成枚举后,PC端的资源管理器中至少会映射出上图所示的其中一种图标显示. 要显示哪种图标,可以通过如下的方式来实现,举例要显示的是MTP audio/video player图标 tianyuan.zhang@bjand01:/home/tianyuan.zhang/sprdroid8.1/system/core$ git diff . diff --git a/rootdir/init.usb.rc b/rootdir/init.usb.rc index 642e644..f3f5751 100644 --- a/rootdir/init.usb.rc +++ b/rootdir/init.usb.rc @@ -67,6 +67,7 @@ on init on boot set
+完整回答请参考FAQ: FAQ105184
+### 问题: Android 8.1 media codec XML 在手机内的配置文件路径
+解决方案: android 8.1 后,将原本手机内 system/etc/ 底下的几个 media codec XML 相关配置文件路径搬移到 vendor/etc/ 如下示例: $ adb shell ls /vendor/etc/media* /vendor/etc/media_codecs.xml /vendor/etc/media_codecs_google_audio.xml /vendor/etc/media_codecs_google_telephony.xml /vendor/etc/media_codecs_google_video.xml /vendor/etc/media_codecs_performance.xml /vendor/etc/media_profiles_V1_0.xml /vendor/etc/media_profiles_turnkey.xml 注1: 配置
+完整回答请参考FAQ: FAQ105351
+### 问题: 查看手机keypad对应使用的kl文件
+解决方案: 在配置按键的过程中,经常会遇到按键不生效问题,尤其是当底层的键值没有上报的情况下,需要去查找对应的kl文件中的映射关系配置是否正确,但是版本中根据不同的按键硬件方式会有不同的kl文件,从代码中检索使用的对应文件比较麻烦,可以使用以下方法在手机中直接读取出来: 1.连接adb 2.adb shell dumpsys input > dumpsys.txt 3.dumpsys.txt文件信息如下,则该手机使用的是文件Generic.kl INPUT MANAGER (dumpsys input) Input Manager State: Interactive: false System UI Visibility: 0x608 Pointer Speed: 0 Pointer Gestures Enabled: true Show Touches: false Event Hub State
+完整回答请参考FAQ: FAQ105304
+### 问题: 如何在不重烧版本的情况下，通过researchdownload工具设置手机kernel loglevel=7
+解决方案: 打开loglevel方法: 1:打开researchdownload工具,加载与手机中相同版本的pac包. 2:在Main Page中只勾选FDL1和FDL2. 3:在Options中,不勾选Repartition选项,同时勾选Debug Mode后点击ok. 4:手机按下载键,然后插入usb线,点击start downloading按钮下载. 然后重新开机,kernel 中的loglevel 就会修改为7. 注:如果工具界面没有Debug Mode选项,请更新下载工具. 此方法供debug使用,完成debug后需要清除开loglevel=7的标志,否则loglevel 7会影响开机后的性能. 清除loglevel标志有以下两种方法: 1.不勾选debug mode选项,重新全down版本. 2.不勾选debug mode选项,单独勾选FDL1,FDL2,PhaseCheck,勾选opti
+完整回答请参考FAQ: FAQ105325
+### 问题: uboot dts 中各内存块说明
+解决方案: uboot dts 功能是指在uboot malloc分配的内存之外的分配内存,以前都是通过宏定义内存地址与长度,但这样不方便管理与维护,时常会导致相互踩内存,现在利用dts,把要用到的内存都统一放在跟board相对应的dts文件里,方便分配与维护. 以9850ka来举例说明: /* * Spreadtrum SC9833 FPGA board DTS file * * Copyright (C) 2015-2016, Spreadtrum Communications Inc. * * This file is licensed under a dual GPLv2 or X11 license. */ /dts-v1/; / { model = "Spreadtrum SP9850KA Board"; compatible = "sprd,sp9850ka-1h10-native", 
+完整回答请参考FAQ: FAQ105297
+### 问题: 如何更新7.0平台编解码库文件
+解决方案: 1. 如何更新平台编解码库文件进行临时测试: Example-1: 替换avc decoder"开源库文件" - libstagefright_h264dec_sprd.so adb root adb remount adb push libstagefright_sprd_h264dec.so system/lib/ adb reboot(重启样机后做验证) Example-2: 替换avc decoder"闭源库文件" - libomx_avcdec_hw_sprd.so adb root adb remount adb push libomx_avcdec_hw_sprd.so system/lib/ adb reboot(重启样机后做验证) 2. 如何更新平台"非开源"的编解码库文件至工程中做编译: 查看工程包root目录下是否有 proprietories-<board name
+完整回答请参考FAQ: FAQ106000
+### 问题: 待机功耗：如何找到所有可唤醒中断源？
+解决方案: 通过添加以下Patch,可以将中断控制器名和中断号全部打印出来 kernel/kernel/irq/manage.c void __disable_irq(struct irq_desc *desc, unsigned int irq, bool suspend) { if (suspend) { if (!desc->action || (desc->action->flags & IRQF_NO_SUSPEND)) { + if (desc->action && (desc->action->flags & IRQF_NO_SUSPEND)) { + printk(KERN_ERR "Wake Up IRQ: desc->name=%s, irq_data.irq=%d, irq_data.hwirq=%d irq_chip->name=%s, \n", + desc->name, +
+完整回答请参考FAQ: FAQ105404
+### 问题: 如何在modem侧关闭AGPS
+解决方案: 2G:控制GPS用的nv路径及取值: GSM_nv_classmark/FIXED_NVITEM_T/ms_pos_method_supported + ms_pos_method ms_pos_method_supported 需要变为0,才能关闭.1为开启 ms_pos_method 需要变为0,才能关闭.7为开启 ---------------------------------------------------------------- 3G WCDMA控制GPS用的nv路径及取值: PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY/ ms_pos_method_supported 需要变为0,才能关闭. 1为开启 PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILIT
+完整回答请参考FAQ: FAQ105427
+### 问题: Android Browser访问HTTPS网站时安全警告中数字证书错误类型说明
+解决方案: 访问HTTPS网站时,弹出安全警告"Security warning",选择"查看证书"后,可以看到数字证书错误类型. 在Android Browser模块对应文件pagedialogshandler.java中方法createSslCertificateDialog,可以看到有7种安全错误类型,错误类型分别是SslError.SSL_UNTRUSTED(该安全证书并非来自可信的授权中心)、SslError.SSL_IDMISMATCH(网站的名称与安全证书的名称不一致)、SslError.SSL_EXPIRED(安全证书已过期)、SslError.SSL_NOTYETVALID(该证书尚未生效)、SslError.SSL_DATE_INVALID(安全证书的日期无效)、SslError.SSL_INVALID(安全证书无效)、 SslError.SSL_UNKNOWN(未知证书错误). 
+完整回答请参考FAQ: FAQ105421
+### 问题: android8.1 go 版本如何开启videoplayer应用
+解决方案: GMS认证版本不能预装超过7个应用.但不包括以下唯一应用的情况Calculator,Calendar,Camera,Clock,Contacts,Dialer,Files,FM Radio,Gallery,SMS,MusicPlayer,Launcher,Settings,SIM Toolkit,Sound Recorder; 在launcher界面上看不到videoplayer应用,是因为videoplayer并没有预装,如果用户要求开启VideoPlayer也可以,但必须满足GMS认证版本不能预装超过7个应用的要求,否则com.google.android.placement.gts.PreloadHeadedApps#testNumberOfHeadedApplications测试项会失败, NewVideoActivity 是videoplayer的入口activity,如果在an
+完整回答请参考FAQ: FAQ105518
+### 问题: SC9820E LCD接口定义上的SPI支持哪种模式？
+解决方案: SPI支持的模式如下: 3线9bit I型:SPI0/SPI2不支持(fps<30,24Mbps),SPI1不支持(软件CD打包性能不够) 3线9bit II型:SPI0/SPI2不支持(fps<30,24Mbps),SPI1不支持(软件CD打包性能不够) 4线8bit I型:SPI0/SP2I不支持(fps<30,24Mbps),SPI1支持(qVGA,30fps,48Mbps) 4线8bit II型:SPI0/SPI2不支持(fps<30,24Mbps),SPI1支持(qVGA,30fps,48Mbps) 3线9bit 2 data lane:SPI0/SPI2支持(qVGA,30fps,24Mbps),SPI1不支持2 data lane模式 各模式下的信号定义: 3线9bit I型 接口信号:SCL/CSX/SDA 3线9bit II型接口信号:SCL/CSX /SDO/SDI 4
+完整回答请参考FAQ: FAQ105551
+### 问题: 低内存版本如何打开动态导航栏功能
+解决方案: 目前在go版本因为内存原因未加入此功能,低内存如果打开会导致systemui占用内存增加,从而影响整体性能,  
+ 请慎重评估是否开启 
+SettingsForDynaNavigationBar.apk 和 SystemUIDynaNavigationBar.apk 这两个apk是实现动态导航栏功能的,需要在以下地方添加
+在vendor/sprd/feature_configs / base/config.mk 中
+ifeq ($(strip $(PRODUCT_GO_DEVICE)),true)
+FEATURES.PRODUCT_PACKAGES += \
+    OtaUpdate \
+    AntitheftPlugin \
+    SystemUITelephonyAddon \
+    SupportCPVersionDisplay \
+    LimitO
+完整回答请参考FAQ: FAQ105883
+### 问题: Android8.1,如何强制显示右上方圆方形关机界面
+解决方案: Android8.1,原生有两套关机界面,低内存版本显示屏幕中间方形关机界面,高内存版本显示屏幕右上方圆方形关机界面. 如果强制使用高内存右上方圆方形关机界面,可以参照以下方案 frameworks/base/services/core/java/com/android/server/policy/GlobalActions.java ... ... - private final Boolean mLowMemoryVersion = ActivityManager.isLowRamDeviceStatic(); + private final Boolean mLowMemoryVersion = false;//ActivityManager.isLowRamDeviceStatic(); PS:由于屏幕右上方圆方形关机界面在systemui线程中,如果长按电源键需要显示关机界面时,
+完整回答请参考FAQ: FAQ105572
+### 问题: android 7.0 8.1 audio hal pcm dump 方法
+解决方案: audio调试过程中,经常会有杂音问题,需要dump pcm 数据, 针对MP3播放、录音、voip通话场景下的dump pcm数据, 需要执行如下指令,再复现问题,复现问题后再将 data/local/media 下的对应的如下文件pull出来分析. dump_music_before_express.pcm dump_music_before_vbc.pcm (MP3播放 非offload mode) dump_offload_vbc.pcm dump_primary_vbc.pcm (MP3播放 offload mode) dump_record_after_vbc.pcm dump_record_after_express (录音) dump_record_after_vbc.pcm dump_record_after_express dump_voip_write.pcm (vo
+完整回答请参考FAQ: FAQ105579
+### 问题: audio 双mic改为单mic nv配置
+解决方案: 平台默认配置是双mic,如果客户硬件改为单mic,会出现免提通话、voip免提通话无声等问题, 需按如下修改nv audio_dsp_codec/dsp_codec_config/Handsfree/AudioStructure/path_set 0xa18 修改为:0x618 audio_dsp_codec/dsp_codec_config/HandsfreeWB/AudioStructure/path_set 0xa18 修改为:0x618 audio_dsp_codec/dsp_codec_config/HandsfreeLTENB/AudioStructure/path_set 0xa18 修改为:0x618 audio_dsp_codec/dsp_codec_config/HandsfreeLTEWB/AudioStructure/path_set 0xa18 修改为:0x618
+完整回答请参考FAQ: FAQ105594
+### 问题: 如何更新8.1平台编解码库文件
+解决方案: 1. 如何更新平台编解码库文件进行临时测试: 注意: 8.1平台编解码库文件放在手机中路径在vendor/lib/下 Example-1: 替换avc decoder"开源库文件" - libstagefright_h264dec_sprd.so adb root adb remount adb push libstagefright_sprd_h264dec.so vendor/lib/ adb reboot(重启样机后做验证) Example-2: 替换avc decoder"闭源库文件" - libomx_avcdec_hw_sprd.so adb root adb remount adb push libomx_avcdec_hw_sprd.so vendor/lib/ adb reboot(重启样机后做验证) 2. 如何更新平台"非开源"的编解码库文件至工程中做编译: 查看工程包
+完整回答请参考FAQ: FAQ106005
+### 问题: GTS-5.1_r4 GtsMemoryHostTestCases - com.google.android.memory.gts.AllAppsMemoryHostTest#testPeakPssOfAllApps fail
+解决方案: 此测项主要会启动项目内置的各个app, 并计算memory 的使用量, app 使用的memory 量不符规范即fail. 如单测此项发现fail, 建议多测数次确定fail 的原因皆相同. 常见的fail 有以下 1. 某app memory 使用量超过规范导致fail. D/ModuleListener: ModuleListener.testFailed(com.google.android.memory.gts.AllAppsMemoryHostTest#testPeakPssOfAllApps, java.lang.AssertionError: com.aa.bbb/.MainActivity 99548, failed to keep to the max pss of 76800 2. 每次执行此测项总是在启动某app 后出现断开现象. D/ModuleListener: 
+完整回答请参考FAQ: FAQ105677
+### 问题: android 8.1 GMS Express Plus Device for GO版本是否规定将Google的 Feed apk显示在负屏幕上?
+解决方案: Google feed apk 使用说明: 借助 Google 应用中的资讯馈送,您可以适时获得所需信息, 甚至完全不必费心搜索.例如,您可以在上班前了解路况、查找附近的热门地点,或查看钟爱球队的目前得分. 依google文档规定,GMS Express Plus Device有要求此功能, 但是在GMS Express Plus Device for Go"没有此要求. 如下为google文档说明 "GMS Express Plus Device" means a device which meets the following conditions: Uses the baseline GMS Express Build; and Default intents in core app categories from the baseline GMS Express build are
+完整回答请参考FAQ: FAQ105687
+### 问题: MTBF测试中modem assert后，一段时间手机重启问题分析
+解决方案: DEBUG版本MTBF测试modem assert后系统发生重启原因分析 下面kernellog可以看到系统重启原因是设置了sys.powerctl reboot 属性 816[06-02 03:57:03.788] <14>[39928.015787] c1 1 init: Clear action queue and start shutdown trigger 817[06-02 03:57:03.792] <14>[39928.015925] c1 1 init: processing action (shutdown_done) from (<Builtin Action>:0) 818[06-02 03:57:03.792] <14>[39928.015976] c1 1 init: Reboot start, reason: reboot,, rebootTarget: 81
+完整回答请参考FAQ: FAQ105713
+### 问题: GTS-5.1_r4 GtsPermissionTestCases - com.google.android.permission.gts.PreloadAppsTargetSdkVersionTest#testPreloadedAppsTargetSdkVersion fail
+解决方案: 此项主要是测试内置的app AndroidManifest.xml 内 targetSdkVersion 是否都有设置到26以上. 范例fail log 如下, 由fail log 可发现com.aaa.bbbb, com.android.deskclock, com.android.vending 三个app 不符合此项规范. java.lang.AssertionError: All preloaded apps must target SDK 26 or higher: com.aaa.bbbb targets 24,com.android.deskclock targets 24,com.android.vending targets 25, 1. 如果是第三方app (ex:com.aaa.bbbb)不符合此项规范, 需由第三方修改或协调取消内置. 2. 如果是Android 原
+完整回答请参考FAQ: FAQ105746
+### 问题: GTS-5.1_r4 GtsBackupHostTestCases - com.google.android.gts.backup.SettingsProviderBackupHostTest#testSoftApE2EBR fail
+解决方案: 此项fail 并且host log 有以下打印, 则需确定Settings 内Buckup 开关是否有打开. 根据gts user guide 预置条件, backup 需打开. Turn on the device backup (? Settings > System > Backup > "on"? ). 如打开后测试仍fail, 则提交问题单请相关模块追踪. I/CompatibilityHostTestBase: Test com.google.android.gts.backup.testscontainerapp.SettingsProviderBackupTest#testSoftApE2EBR: FAILURE W/CompatibilityHostTestBase: java.lang.AssertionError: Backup was unsuccessful, e
+完整回答请参考FAQ: FAQ105750
+### 问题: GTS-5.1_r4 GtsPlacementTestCases - com.google.android.placement.gts.PreloadHeadedAppsTest#testNumberOfHeadedApplications fail
+解决方案: 此项会检验预置的app 个数是否已超过规范, 分析流程如下. host log 先找到类似以下log ,fail log 显示 Number of total preloaded apps exceeded: actual 9 > max 7 , 即此項目预置了9个app, 最多只能预置7个. D/ModuleListener: ModuleListener.testFailed(com.google.android.placement.gts.PreloadHeadedAppsTest#testNumberOfHeadedApplications, java.lang.AssertionError: Number of total preloaded apps exceeded: actual 9 > max 7 再由device log 找到以下log, 确认哪9个app, 将9个缩减
+完整回答请参考FAQ: FAQ105760
+### 问题: Wireshark实例分析TCP握手过程
+解决方案: Wireshark实例分析TCP握手过程 我们的手机在做数据业务或VoLTE通话中,也偶尔碰到TCP握手失败的情况.为了弄清这个问题,我将这个握手过程做个详细分析. (1)TCP握手过程大致是这样的: (2)以一个VoLTE注册前发起的一个TCP握手为例分析 第一次握手:(方向:手机端->网络端) 手机发送一个TCP包: Sequence Number:0///序列号为0 Acknowledge number:0 (这个序号跟其他参数无关联) Flags:SYN///标志位 第二次握手:(方向:手机端<-网络端) 网络端回确认包: Sequence Number:0///序列号为0(这个序号跟其他参数无关联) Acknowledge number:1 (将手机端的SN加1,即:0+1 = 1) Flags:(SYN,ACK)///标志位 第三次握手:(方向:手机端->网络端) 手机端再次发
+完整回答请参考FAQ: FAQ109426
+### 问题: Google chrome UA(User Agent Strings)是否能修改?
+解决方案: User Agent Strings 说明: A browser's user agent string (UA) helps identify which browser is being used, what version, and on which operating system. When feature detection APIs are not available, use the UA to customize behavior or content to specific browser versions. Like all other browsers, Chrome for Android sends this information in the User-Agent HTTP header every time it makes a request to an
+完整回答请参考FAQ: FAQ105799

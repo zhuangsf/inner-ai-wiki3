@@ -1,0 +1,314 @@
+### 问题: SC9850K的ISP是单pipeline还是多级pipeline？
+解决方案: SC9850K的ISP是单pipeline,谢谢
+参考FAQ: FAQ114130
+### 问题: 请教一下26M的TCXO/TSX/DCXO晶振的外壳金属本体是否需要接地，不接地是否有影响？
+解决方案: 26M的TCXO/TSX/DCXO器件的外壳金属本体一般没有做规定,除非器件有明确要求必须接地.在26M晶振以及信号线做好了包地保护的情况下,外壳金属本地是否接地一般影响不是很大,但是如果保护不好的时候,外壳金属本地接地,表现出来抗干扰会好一些,当然了我们都是会要求26M晶振以及信号线必须做好保护的.
+参考FAQ: FAQ114131
+### 问题: 请教一下SR3595A的天线是利用的MIMO技术吗？如果是 MIMO主要有两种模式，分别是分集模式和复用模式，这个两个模式都有使用吗？
+解决方案: SR3595A 支持MIMO分集和复用模式,会根据基站信号的质量自行调整分集天线的使用模式. 采用分集模式,提高接收灵敏度; 采用复用模式,提高传输速率.
+参考FAQ: FAQ114132
+### 问题: SL8521E平台用辛巴simba工具是否支持耦合综测
+解决方案: SL8521E用Simba工具支持耦合综测,勾选\Bin\Project\Antenna里的seq即可
+参考FAQ: FAQ114138
+### 问题: 如何在手机中打开ftrace？
+解决方案: ftrace可以帮助研发了解内核发生的行为,对调试内核函数很有帮助. 该调试功能默认关闭,通过如下方法,可以直接在手机中将ftrace功能打开: /sys/kernel/debug/tracing # echo 1 > tracing_on /sys/kernel/debug/tracing # echo function > current_tracer /sys/kernel/debug/tracing # cat trace
+参考FAQ: FAQ114097
+### 问题: "/data/tombstones"中默认文件数量是多少？
+解决方案: 在调试版本中,进程发生发生nativecrash时,会在"/data/tombstones"目录中生成tombstones文件, 而这里的文件数量总数是50个,达到数量上限后将最老的文件进行覆盖. 该数量定义的地方在: ./make/target/product/core_minimal.mk: # On userdebug builds, collect more tombstones by default. ifneq (,$(filter userdebug eng,$(TARGET_BUILD_VARIANT))) PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \ tombstoned.max_tombstone_count=50 endif
+参考FAQ: FAQ114144
+### 问题: Simba工具SEQ文件如何加密？
+解决方案: 加密操作如下: Step1: 使用 Simba UI修改和配置参数,确认SEQ所有配置修改完毕; Step2:将需要加密的SEQ文件拷贝到 Bin\Tools\Encrypt\SEQ目录; Step3:运行Bin\Tools\Encrypt\encrypt.bat 文件,加密后的SEQ 文件保存在Bin\Tools\Encrypt\EncryptSEQ文件夹; Step4:将加密后的SEQ文件和Simba工具发布给产线,要求产线选择加载指定加密后的SEQ 文件.
+参考FAQ: FAQ114151
+### 问题: EDGE设置关闭后检查是否生效
+解决方案: 非纯2G产品关闭EDGE后,网络图标还是显示EDGE图标,表示驻留的小区是EDGE小区,如果驻留的是GPRS小区,才会显示G图标.因此关闭EDGE是否生效,不能通过网络图标来判断,需要检查log才能确定. 首先检查UE是否发的是GPRS rach还是EDGE rach.检查消息MAC_GRR_RACH_IND中的is_egprs_channel_request,如果为0,表示发的是GPRS rach,设置正确.否则需要检查关闭EDGE设置步骤是否正确. 然后检查网络指派的是否是GPRS类型的TBF.检查消息PH_MAC_TBF_CONNECT_REQ消息中的tbf_mode字段,如果为0,表示网络指派的是GPRS TBF.如果为1,表示网络指派的是EDGE TBF,MAC将不会处理.
+参考FAQ: FAQ114157
+### 问题: SIMBA4.0工具校准AFC注意事项
+解决方案: SIMBA4.0以前的版本在校准AFC时一定要勾选SaveToFlash选项,否则可能会导致校准参数不能保存. SIMBA5.0之后的版本对此问题做了规避,不需要再额外勾选SaveToFlash选项.
+参考FAQ: FAQ114444
+### 问题: MM_RR_INFO_LIST_REQ
+解决方案: MM_RR_INFO_LIST_REQ消息由NAS发给RR模块,将SIM卡保存的信息发给RR模块 包含的内容如下: 1.tmsi 上次lu或attach成功的临时标识 2.imsi SIM卡中保存的,唯一的标识 3.kc 用于鉴权的参数 4.cksn 用于鉴权的参数 5.flai_list_r 禁止的位置区标识列表 6.acc_class 用户接入等级 7.rr_hplmn home plmn 8.fplmn_list 禁止的PLMN列表 9.rai_info 路由区标识信息 10.flai_list_s 禁止的位置去标识列表
+参考FAQ: FAQ114241
+### 问题: Clock的notificationid是固定的吗？
+解决方案: clock模块是由四个小tab子模块组合而成,分别是alarm\worldclock\stopwatch\timer;worldclock不会涉及到notification相关. 1.alarm的id是一个自动增长的数值,所以每次在notification看到的值都是不一样的,从1开始; 2.stopwatch的id是固定的,即Integer.MAX_VALUE - 1; 3.timer的id也是固定的,只不过分为过期和非过期两种,值分别为:Integer.MAX_VALUE - 2和Integer.MAX_VALUE - 3
+参考FAQ: FAQ114254
+### 问题: SIMBA工具测试充电电流的流程逻辑？
+解决方案: SIMBA工具测试充电电流的流程逻辑: 控制电源1通道设置3.8V,2通道设置5V-->控制DUT进入Testmode-->控制DUT Charge On-->连续读取1s内电源2通道电流值-->求平均值.得出充电电流.
+参考FAQ: FAQ114294
+### 问题: GNSS TSX方案的项目TSX校准文件存放路径
+解决方案: GNSS TSX方案的项目TSX校准文件(txdata.txt)存放路径: 1.在android4.0,android5.0,android6.0,android7.0,android8.0 TSX校准文件存放路径: 手机根目录 /product info/ 2.在android9.0 TSX校准文件存放路径: 手机根目录下 /mnt/vendor/
+参考FAQ: FAQ114279
+### 问题: WIFI only的情况下是否也可以通过SUPL下载星历等辅助数据
+解决方案: 在android8.0和android9.0平台的9850K,7731E,9832E,9863A都是支持WIFI only的情况下通过SUPL下载星历等辅助数据
+参考FAQ: FAQ114309
+### 问题: SC9863A平台平台支持哪些仿真类型？
+解决方案: SC9863A平台支持的仿真有:PI、SI、RF、emmc、MIPI、LVDS、SDIO、IP. PI:仿真VDDCORE\VDDARM\VDDMEM@cpu\VDDMEM@MEM直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; RF:仿真LVDS走线与DRX走线之间的隔离度; EMMC:仿真EMMC走线的近场串扰; SDIO:仿真SD走线的近场串扰; MIPI:仿真走线的差分阻抗并检查走线长度控制; LVDS:仿真走线的差分阻抗并检查走线长度控制; IP:仿真AVDD1V8_BB\CSI\DSI\USB、AVDD18_DPLL\MDPLL、VDDSDIO、VDDWIFIPA、VEMMCIO、VIO1V8、VIO_NAND直流阻抗.
+参考FAQ: FAQ114311
+### 问题: Modem DDR 0x89600000开始128K内存作用
+解决方案: Modem DDR 0x89600000~0x89620000 128K内存空间包含DSP与GL1共享的DDR Sharemem,NV,以及DSP的片外Log等内容. 是用来作数据交互及数据备份使用的.
+参考FAQ: FAQ114414
+### 问题: SC7731E平台支持哪些仿真类型？
+解决方案: SC7731E平台支持仿真类型为:PI、SI、EMMC、IP. PI:仿真VDDCORE\VDDMEM@cpu\VDDMEM@MEM\VBAT_DRV直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; EMMC:仿真EMMC走线的近场串扰; IP:仿真AVDD1V8_BB\CLK\MIPI\RF\USB、AVDD3V3、VEMMCIO、VIO1V8、VIO_NAND、VSD0直流阻抗.
+参考FAQ: FAQ114316
+### 问题: SC9820E平台支持哪些仿真类型？
+解决方案: SC9820E平台支持的仿真有:PI、SI、RF、emmc、MIPI、LVDS、SDIO、IP. PI:仿真VDDCORE\VDDARM\VDDMEM@cpu\VDDMEM@MEM\VBAT_DRV直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; RF:仿真LVDS走线与DRX走线之间的隔离度; EMMC:仿真EMMC走线的近场串扰; SDIO:仿真SD走线的近场串扰; MIPI:仿真走线的差分阻抗并检查走线长度控制; LVDS:检查走线长度控制; IP:仿真AVDD1V8_BB \USB\DPLL\MDPLL、VEMMCIO、VIO1V8、VSD0、VSD2直流阻抗.
+参考FAQ: FAQ114317
+### 问题: SL8521E平台支持哪些仿真类型？
+解决方案: SL8521E平台支持的仿真有:PI、SI、RF、emmc、MIPI、LVDS、SDIO、IP. PI:仿真VDDCORE\VDDARM\VDDMEM@cpu\VDDMEM@MEM\VBAT_DRV直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; RF:仿真LVDS走线与DRX走线之间的隔离度; EMMC:仿真EMMC走线的近场串扰; SDIO:仿真SD走线的近场串扰; MIPI:仿真走线的差分阻抗并检查走线长度控制; LVDS:检查走线长度控制; IP:仿真AVDD1V8_BB \USB\DPLL\MDPLL、VEMMCIO、VIO1V8、VSD0、VSD2直流阻抗.
+参考FAQ: FAQ114318
+### 问题: SC9832E平台支持哪些仿真类型？
+解决方案: SC9832e平台支持的仿真有:PI、SI、RF、emmc、MIPI、LVDS、SDIO、IP. PI:仿真VDDCORE\VDDARM\VDDMEM@cpu\VDDMEM@MEM\VBAT_DRV直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; RF:仿真LVDS走线与DRX走线之间的隔离度; EMMC:仿真EMMC走线的近场串扰; SDIO:仿真SD走线的近场串扰; MIPI:仿真走线的差分阻抗并检查走线长度控制; LVDS:检查走线长度控制; IP:仿真AVDD1V8_CSI \DSI\LVDS_RF\USB\DPLL_NC\MDPLL、VDDSDIO、VIO1V8、VEMMCIO直流阻抗.
+参考FAQ: FAQ114321
+### 问题: SC9863A平台双摄设计评审需要提供哪些资料？
+解决方案: SC9863A平台双摄设计评审需要提供以下资料: 1、主板原理图 2、主板PCB 3、双摄方案类型(单\双\三摄) 4、摆放方式(后双横放\后双竖放\前双横放,可手机ID截图说明,或画图示意) 5、单模组SCH图PDF版本 6、双模组完整规格书PDF版本 7、模组PCB Layout文件(最好是原文件) 8、双模组3D图纸 9、非双摄部分其他camera sensor和EEPROM型号
+参考FAQ: FAQ114327
+### 问题: SC9850K平台支持哪些仿真类型？
+解决方案: SC9850K平台支持的仿真有:PI、SI、emmc、MIPI、LVDS、SDIO、IP. PI:仿真VDDCORE\VDDARM\VDDMEM@cpu\VDDMEM@MEM\VBAT_DRV直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; EMMC:仿真EMMC走线的近场串扰; SDIO:仿真SD走线的近场串扰; MIPI:仿真走线的差分阻抗并检查走线长度控制; LVDS:仿真走线的差分阻抗并检查走线长度控制; IP:仿真AVDD1V8_ CSI\DSI\USB\LVDSRF\MDPLL\MDPLL_NC、VEMMCIO、VIO1V8直流阻抗.
+参考FAQ: FAQ114333
+### 问题: SC9863A平台热设计布局必须满足的条件是什么？
+解决方案: SC9863A平台热设计布局必须满足的条件为: 1、热源距板边1/ PCB面积小于2500mm^2有很大的热风险,推荐PCB面积≥3000mm^2; 2、 热源距离板边≥3mm,热源与热源之间距离≥5mm,热源需要错开放, 2个热源不能背对背摆放; 3、 热敏器件不能靠近热源摆放.
+参考FAQ: FAQ114334
+### 问题: SC9863A平台的NTC电路如何布局？
+解决方案: SC9863A平台的NTC电路布局要求为: 1、 Board_Temp_ADC板温传感器NTC必须放置,手机的温控策略是根据这个NTC运行的,禁止随便接个电阻,ADC通道必须按照附图连接; 2、 CHG_TEMP_ADC充电温度传感器NTC对应线性Charger是必须的,靠近线性充电IC摆放(1.5mm以内), 对于开关充电建议放置; 3、4G PA温度传感器NTC对应4G PA功率回退的温控是必须的,靠近4G PA摆放(1.5mm以内),如果不需要4G PA功率回退这个功能, 可以不需要.
+参考FAQ: FAQ114335
+### 问题: SC9863A平台PDN布局要求是什么？
+解决方案: SC9863A平台PDN布局要求为: 1、 SC9863A只适用双面摆件; 2、SC9863A的输入电源VDDCORE, VDDARM0, VDDARM1 and VDDMEM 的decoupling电容强烈建议参考SPM摆件,具体以PI仿真为准.
+参考FAQ: FAQ114336
+### 问题: SC9863A分离式memory的Flash和DRAM是否每种组合都需要验证？
+解决方案: 分离式memory不需要每种组合都验证,只需要单颗物料验证Pass,可自由组合使用.
+参考FAQ: FAQ114339
+### 问题: SC9832E分离式memory的Flash和DRAM是否每种组合都需要验证？
+解决方案: 分离式memory的Flash和DRAM不需要每种组合都验证,单独验证每个DRAM和Flash后,可自由组合使用.
+参考FAQ: FAQ114340
+### 问题: SC7731E分离式memory的Flash和DRAM是否每种组合都需要验证？
+解决方案: 分离式memory的Flash和DRAM不需要每种组合都验证,单独验证每个DRAM和Flash后,可自由组合使用.
+参考FAQ: FAQ114341
+### 问题: SC9863平台32K外加晶体方案和32k-less方案如何兼容？
+解决方案: SC2721G 芯片RTC-MODE脚通过10K上拉到VBATBK时32k-less方案,10k下拉到地是选择外加32k晶体方案.注意:32K-less 需要用 TSX 方案.外加32K晶体 需要用 TCXO方案.
+参考FAQ: FAQ114356
+### 问题: VBATBK 外接电容至少要求多大？
+解决方案: VBATBK外接电容,至少1uF以上.
+参考FAQ: FAQ114357
+### 问题: 指纹中断需要接什么类型的GPIO？
+解决方案: 指纹中断需要接带EIC功能的管脚,如EXINT13.
+参考FAQ: FAQ114358
+### 问题: LED灯，闪光灯的驱动控制IO需要选择什么类型的GPIO?
+解决方案: LED灯,闪光灯的驱动控制IO应该使用at reset,after reset都为低电压或者input状态并下拉的GPIO,防止开机时闪一下.
+参考FAQ: FAQ114359
+### 问题: 低功耗待机条件下SC2721/SC2720 RGB_IB0/RGB_IB1/RGB_IB2能否实现呼吸灯功能
+解决方案: 可以.
+参考FAQ: FAQ114467
+### 问题: 如何关闭CPU热插拔(ONline/OFFLine)功能？
+解决方案: 1、可以adb shell命令直接关闭: echo 1 > /sys/devices/system/cpu/cpuhotplug/dynamic_load_disable 2、注意点:该修改可能会被powerhint机制重新覆盖: 请查阅powerhint对应配置文件,是否包含dynamic_load_disable关键字即可 vendor/sprd/modules/power/config_files/[工程名]/power_scene_config.xml 示例:<set path="/sys/devices/system/cpu/cpuhotplug" file="dynamic_load_disable" value="0" /> //请统一修改为1即可
+参考FAQ: FAQ114466
+### 问题: 什么是VoLTE？以及与2G/3G网络传统语音和OTT VoIP的区别？优势？
+解决方案: 1,VoLTE即Voice over LTE,是LTE网络承载的语音业务,或者可以更简单的理解为:4G网络的语音业务. 2,VoLTE与2G/3G网络传统语音业务的最大区别 传统语音是电路交换,产生的是话务量,而VoLTE是IP包交换,产生的是数据流量. 3,VoLTE与OTT VoIP的区别 OTT VoIP(Over The Top)是互联网企业开发的语音通话的软件,依托于互联网,无法保障通话的时延、质量等;VoLTE是基于IMS(IP多媒体子系统)的语音业务,能够提供更高水准的QoS(服务质量保证),确保通话的时延、音质等. 4,VoLTE的优势 接通更快,大概在4秒内接通,2G/3G为5-8秒 音质更清晰,声音的立体感更强 视频通话清晰度更高 打电话与上网可以同时进行 比OTT VoIP更省电,大概节省40%
+参考FAQ: FAQ114576
+### 问题: cta测试，IPv6与IPv4地址表示方式及IPSec支持
+解决方案: IPv6与IPv4地址: IPv4:32位的地址分成4个8位分组,每个8位以10进制数显式,中间用点号分隔(172.22.1.201) IPv6:128位地址是以16位为1分组,共8组,每个16位分组写成4个16进制数,中间用冒号分16进制格式(FF80:0:0:0:FF:3BA:891:67C1) IPSec支持: IPv4:可选支持 IPv6:必须支持
+参考FAQ: FAQ114506
+### 问题: cta ipv4&6测试case及具体操作
+解决方案: cta ipv4&6测试case: 各模式下对应的地址及域名访问,例如: GSM网络下IPv4和IPv6 PDP上下文 同时激活并通过地址访问双栈业务 http://192.168.0.1 http://[3000:0:0:2::1] GSM网络下IPv4和IPv6 PDP上下文 同时激活并通过域名访问双栈业务 www.asdf.com www.aipv6.com 测试步骤: 1) 设置被测终端 APN为IPv4和IPv6双栈; 2) 激活数据业务连接; 3) 打开终端网页浏览器; 4) 输入IPv4网址访问业务服务器(Web或FTP); 5) 输入IPv6网址访问业务服务器(Web或FTP). 预期结果: a) 从测试分析仪表检查GSM终端通过两次PDP上下文激活过程分别完成IPv4和IPv6的地址分配; b) 检查被测GSM终端设置,确认终端已获取IPv4和IPv6地址; c) 被测GSM终端可通过IPv4和IPv6地址访问业务服务器内容.
+参考FAQ: FAQ114507
+### 问题: IPv4&6cta测试常见问题的解释
+解决方案: IPv4&6cta测试常见问题的解释: 1) 测试时被测终端插的SIM卡是测试白卡,支持对应检测项目支持模式; 2) 测试时被测终端注册到小区可以通过天线耦合,也可以通过射频线连接到被测终端的射频接口; 3) IP协议栈的设置在设置-SIM-APN,注意代理服务器,端口均不设置,如果非要有值,那么写0; 4) 测试时被测终端访问的网页的IP地址也是在网络端预置好的固定地址,包括IPv4和IPv6的地址;域名是DNS服务器设置的固定域名,不同域名分别指向IPv4和IPv6地址; 5) 被测终端使用浏览器以IPv6地址访问时,须在地址外加[],如[FF80:0:0:0:FF:3BA:891:67C1]; 6) 被测终端使用浏览器进行域名访问时,将浏览器设置为桌面模式会避免一些bug; 7) 对于不能打开网页的终端,可以在使用ping地址功能进行鉴别;
+参考FAQ: FAQ114508
+### 问题: cta ipv4&6自测试方法
+解决方案: cta ipv4&6自测试方法: 无泰尔实验室测试环境时,可以通过模拟测试环境,按照以下方式,接入商用网初步检查被测终端对IPv4/IPv6的支持情况 1) 被测终端插入商用卡,一般用移动或是联通卡,注册到网络 2) 设置APN中的IP协议类型为IPv4/IPv6 3) 打开数据业务开关 4) 在状态信息处查看获取的IP地址(一般正常情况下应该有ipv4&6的两个地址) 5) 打开浏览器,在地址栏输入IPv4&6地址 6) 查看是否可以正常访问 7) 在浏览器地址栏输入指向IPv4&6地址的域名 8) 查看是否可以正常访问
+参考FAQ: FAQ114509
+### 问题: 不使用耳机，AMP VCOM怎么处理
+解决方案: 不能不接,需要接ohm电阻到地,或直接接地.
+参考FAQ: FAQ114545
+### 问题: 项目没有音频,AMP VCOM怎么处理
+解决方案: AMP VCOM作为公共地的一部分,需要接地.
+参考FAQ: FAQ114546
+### 问题: 使用二合一喇叭是否需要加模拟开关切换喇叭和听筒的通道
+解决方案: 需要加.
+参考FAQ: FAQ114547
+### 问题: 什么是4G+？
+解决方案: 我们经常在手机界面上,看到"4G+"这一图标,那么这是什么含义呢? 4G+表示该4G手机支持载波聚合(CA:Carrier Aggregation)这一技术. CA技术可以将2～5个LTE成员载波(Component Carrier,CC)聚合在一起,实现最大100MHz的传输带宽,有效的提高上下行传输速率.手机根据自己的能力大小决定最多可以同时利用几个载波进行上下行传输. 经过CA后最直观的好处就是传输速度的大幅度提升,以及延迟的降低.同时,CA还能有效改善网络质量,提升吞吐量,使网络负载更加均衡,尤其是在负载较重的时候效果会更明显. 目前CMCC已经在一些主要城市的闹事区和高校区域部署了载波聚合,现主要采用的是频段内两载波聚合.TDD两个20M的载波聚合,下载速率理论上将达到200Mbps.
+参考FAQ: FAQ114578
+### 问题: 若是用带HAC线圈的听筒的话，软件和硬件电路上是否还需要做什么特定的修改
+解决方案: 自带HAC线圈的听筒,硬件上设计和普通的手持电路设计是一样的.一般音频参数上为了让HAC满足T4的信噪比要求,可能需要加大手持接收方向的增益.
+参考FAQ: FAQ114608
+### 问题: VOLTE终端如何知道自己在会议电话中？
+解决方案: 当一个VOLTE终端以普通多方的方式合并入会议电话时,网络会发送一个re-INVITE消息,其中的Contact头域中携带"isfocus"参数,告知这个终端已进入会议.终端的CP解析到"isfocus"参数上报AP,界面即会显示"会议电话". 当一个VOLTE终端以一键多方的方式被直接邀请进入会议电话时,网络会发送一个INVITE消息,其中的Contact头域中携带"isfocus"参数,告知这个终端被邀请进入会议.终端CP解析到"isfocus"参数上报AP,界面即会显示"会议电话".
+参考FAQ: FAQ114676
+### 问题: 什么是VAD功能？终端是否支持？
+解决方案: VAD(Voice Activity Detection)语音活动检测. 终端支持.
+参考FAQ: FAQ114988
+### 问题: 【BBAT】自动测试工具在“部分Windows10系统”上无法运行SP_BBAutoTester
+解决方案: 现象: BBAT工具SP_BBAutoTester.exe无法打开,直接弹框提示"Debug Assertion Failed". 原因: 工具包在Windows上的目录层级太多便会导致无法运行,减少工具目录层级可以解决此问题,同时工具目录层级太多也会概率存在以下的问题的出现: --> 工具点击"连接控制板",会出现下载逻辑失败,原因是找不到工具目录下的rbf控制板逻辑文件; -->测试项fail,原因是未找到工具目录下的dll库文件; -->工具的相关测试log没有保存. 注意: 为避免以上的问题出现,建议工具包的目录层级不要存的过多,目前发布的SP_BBAutoTester_R22.0.0001版本在Windows10上可能会存在此问题,后面发布的版本会优化解决.
+参考FAQ: FAQ114789
+### 问题: AndroidP 版本如何开启treble
+解决方案: Androidp 版本treble是强制开启的,unisoc提供的base版本中已经开启.请不要关闭. 具体开启方法: 检查文件 device/sprd/project/common/DeviceCommon.mk 确认PRODUCT_SHIPPING_API_LEVEL := 28
+参考FAQ: FAQ114753
+### 问题: 设置了WCDMA Prefer，什么情况下会切换到GSM网络？和W_Only有什么不同
+解决方案: 如果设置了WCDMA prefer,W小区比较弱G小区比较好的时候就会去GSM小区,这时候W小区也还是正常驻留打电话的,但是语音质量不大好;如果设置了W only,手机会在W小区驻留直至丢网
+参考FAQ: FAQ114799
+### 问题: 如何修改WCDMA中NV参数中的band info
+解决方案: 相关项在NV结构中: TD_TIANJI12_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\rf_cap NumBand---该值表示UE当前支持的band的个数,需要和下面的BandInfo保持一致 BandInfo ---BandInfo[0][0] ITEM_CONTENT = 1,该值表示UE支持的第一个fdd band,1表示band I,以此类推 BandInfo[0][1] ITEM_CONTENT = 3,该值表示UE支持的第一个fdd band的power class,一般都是3
+参考FAQ: FAQ114810
+### 问题: 不使用SC2703L芯片自带背光模块，相关管脚怎么连接？
+解决方案: Pin.No Pin Name 不使用背光 K5 WLED_LX Floating K6 WLED_SNS Floating H1 WLED_COMP Floating K7 WLED_IDAC Floating J8 WLED_PWM Floating H5 WLED_PGND GND J5 WLED_PGND GND
+参考FAQ: FAQ114817
+### 问题: 全景拍摄的成像图片左部分会丢失掉部分画面
+解决方案: 算法局限性,全景库是判断运动趋势后再开始合成的,目前设定的是0.1× preview width的threshold. 因此开始这一部分内容,全景图是没有的
+参考FAQ: FAQ114848
+### 问题: 全景库在纯色环境下, 进度条箭头会自动前进
+解决方案: 在纯色的环境下, 使用者拍摄全景照, 因为算法限制, 会发生进度条停住不会前进的现象. 展锐测试团队访查市面上的其它参考机行为, 在此情况下, 进度条默认会自动前进, 增进使用者体验效果. 若客户有特殊要求, 希望在纯色环境下, 默认不要自动前进, 也可依照客户要求做修改.
+参考FAQ: FAQ114852
+### 问题: SC7731E对于LTE和WCDMA特性支持情况
+解决方案: 7731E是WG双模RELEASE7版本的产品,不支持任何LTE相关的feature;对于下列特性支持情况如下: DB-DC不支持
+PS HO TO LTE 不支持
+AMR NB 支持
+LTE RESELECION FROM FACH 不支持
+MULTE CARRIER 不支持
+A-GPS 支持
+参考FAQ: FAQ114882
+### 问题: WCDMA产品加密和完整性保护算法UEA/UIA支持情况
+解决方案: SC7701, SC7731, SHARKL: 支持uea0/uea1, uia1; SC7731E, SHARKL2/SHARKLE/SHARKL3: 支持uea0/uea1/uea2, uia1/uia2
+参考FAQ: FAQ114883
+### 问题: androidP Go版本，长按待机界面，弹出框中有快捷方式菜单，没有微件菜单是否正常
+解决方案: androidP Go版本,出于内存优化的需要,默认已经禁止widgets,androidP O版本,默认支持widgets,此为android原生设计. 所以在Go版本中,长按待机界面,弹出框中有快捷方式菜单,没有微件菜单是正常的.
+参考FAQ: FAQ114888
+### 问题: 如何使用AT命令查询当前驻留网络制式？
+解决方案: Read Command: AT+CREG? +CREG: <mode>, <state> [, <lac>, <ci> [, <AcT>]] <AcT>: access technology of the registered network 0 GSM 1 GSM Compact 2 UTRAN 3 GSM w/EGPRS (see NOTE 1) 4 UTRAN w/HSDPA (see NOTE 2) 5 UTRAN w/HSUPA (see NOTE 2) 6 UTRAN w/HSDPA and HSUPA (see NOTE 2) 7 EUTRAN 15 HSPA+
+参考FAQ: FAQ114933
+### 问题: TCH LOOP  CLOSE信令过程
+解决方案: TCH LOOP CLOSE信令过程 1.NAS收到LOOP类型的信令后,转发给RR模块的SCT子模块 信令为0xf,0x0,0x0,根据04.014查表,0xf,表示loop test(MM层的消息类型), 0x0表示CLOSE_TCH_LOOP_CMD(TCH LOOP信令类型,表示闭合环路) 0x0 表示TCH A 类型的环路,类型从A~H. 2.SCT模块将收到的信令进行解析,发送给GL1, 3.GL1通过SCT/NAS返回一个ACK给网络端,表示LOOP CLOSE,可以收发数据了 信令为0xf,0x1,根据04.014查表,0xf,表示loop test(MM层的消息类型), 0x1表示CLOSE_TCH_LOOP_ACK(TCH LOOP信令类型,表示闭合环路确认) 至此TCH LOOP 闭合了,可以进行LOOP 数据传输了.
+参考FAQ: FAQ114934,含图片
+### 问题: Simba5.0以上版本工具 8960仪器上BER(SingleEndedBER)测试fail
+解决方案: simba5.0以上版本工具默认GSM BER测试是SingleEndedBER(单端BER,对应loopback BER),8960仪器不支持SingleEndedBER测试,所以如果使用8960仪器需要把SingleEndedBER勾勾去掉再测试.
+参考FAQ: FAQ114956
+### 问题: 哪些平台支持GLONASS和BDS卫星系统
+解决方案: 1.使用2342/2393芯片的平台都支持GLONASS和BDS卫星系统 例如:sc9832,sc9850K,sc9850KH,sc9850KL,SC9863A 2.集成方案支持GLONASS和BDS卫星系统 例如:SC7731E,SC9820E,SC9832E,SL8521E,SL8541C,SL8541E, 备注: 以上平台只有搭载Marlin3芯片可以同时支持GPS+GLONASS+BDS模式, 其他平台支持GPS+GLONASS 或GPS+BDS.
+参考FAQ: FAQ114973
+### 问题: SC7701的2G和3G的语音声码器问题
+解决方案: 3G mode下,协议侧均支持 AMR NB 和 AMR WB 2G只支持AMR NB
+参考FAQ: FAQ115041
+### 问题: 使用TCXO，TSX相关3个管脚能否悬空？transceiver时钟XO_N管脚能否悬空
+解决方案: 使用TCXO,可以按照CS图纸上说明,选择TCXO+32K晶体的配置BOM贴片. 主芯片 或WCN芯片 TSEN_VREFP/TSEN_IN/TSEN_VREFN 管脚可以悬空; Transceiver的XO_N管脚可以悬空.
+参考FAQ: FAQ114983
+### 问题: SC9820E平台支持哪些仿真类型？
+解决方案: SC9820E平台支持的仿真有:PI、SI、RF、emmc、MIPI、LVDS、SDIO、IP. PI:仿真VDDCORE\VDDARM\VDDMEM@cpu\VDDMEM@MEM\VBAT_DRV直流阻抗; SI:仿真DQ\DQS\CA走线的近场串扰,并检查这些线及clock线的长度控制; RF:仿真LVDS走线与DRX走线之间的隔离度; EMMC:仿真EMMC走线的近场串扰; SDIO:仿真SD走线的近场串扰; MIPI:仿真走线的差分阻抗并检查走线长度控制; LVDS:检查走线长度控制; IP:仿真AVDD1V8_BB \USB\DPLL\MDPLL、VEMMCIO、VIO1V8、VSD0、VSD2直流阻抗.
+参考FAQ: FAQ115088
+### 问题: 第一次在漫游地区开机驻网慢的原因是什么
+解决方案: 第一次在漫游地区开机驻网,由于这张卡未在此地区驻留过,没有RPLMN,开机会先选hplmn,这将花费一段时间.在hplmn(UE支持的各制式下)选网失败后,将从网络中的可选网络按优先级进行选网.注册过程中有时还会出现被网络拒绝的过程.直到驻留到能注册成功的网络,注册成功之后,SIM卡将记录RPLMN,下一次开机找网就会优先尝试RPLMN,驻网时间就会大大缩短.
+参考FAQ: FAQ114999
+### 问题: TCH LOOP  OPEN信令过程
+解决方案: TCH LOOP OPEN信令过程 1.NAS收到LOOP类型的信令后,转发给RR模块的SCT子模块 信令为0xf,0x6,根据44.014查表,0xf,表示loop test(MM层的消息类型), 0x6表示OPEN_LOOP_CMD(TCH LOOP信令类型,表示断开环路) 2.SCT模块将收到的信令进行解析,发送给GL1, Loop_on_off=0x1表示断开LOOP,Loop_on_off=0x0表示闭合LOOP 3. GL1返回一个OPEN_LOOP_CMD_ACK给网络端 从GL1返回同样的消息给SCT再发出去 但是消息内容有所变化 Length=0x3 内容为: [0]=0xf [0]=0x6 [0]=0x81 OPEN_LOOP_CMD和OPEN_LOOP_CMD_ACK共用同一个消息类型,但是内容会不一样 OPEN_LOOP_CMD_ACK可以发给仪器端,也可以不发,属于可选的消息 至此,LOOP环路被断开了,测试结束.
+参考FAQ: FAQ115027,含图片
+### 问题: 推荐使用AGPS(user plane)服务器地址supl.qxwz.com
+解决方案: 1.推荐使用AGPS(user plane)服务器地址:supl.qxwz.com;端口号:7275 2.客户也可以自行选择配置贵司拥有license的AGPS服务器地址.但是有些AGPS服务器地址由于在国内访问受限制而使AGPS不生效,例如Google的AGPS服务.AGPS不生效会影响AGPS定位性能.
+参考FAQ: FAQ115034
+### 问题: SC7701哪些3GP Features是支持的
+解决方案: 1.SRBoHS not support 2.F-DPCH not support 3.e_DRX not support 4.DL LAYER 2 ENHANCEMENTS not support 5.E-FACH / E-RACH not support 6.RECEIVER TYPE 3i not support 7.DC-HSDPA not support 8.CPC UL DTX (Propietary / Enable or Disable) not support 9.DC-HSUPA not support 10.CPC DL DRX (Propietary / Enable or Disable) not support 7701 is release5 feature phone.not supportnot supportnot support
+参考FAQ: FAQ115048
+### 问题: 不使用平台自带线性充电，能否删除Isense网络及充电电流检测电阻？
+解决方案: 可以删除线性充电管(PNP+NMOS),可以删除VDRV和Isense网络. VBATsense接到电池连接器,检测电池电压. 如果外部充电芯片不需要外部电流检测电阻,可以删除(一般是68mohm). 保留VCHG_D RC电路(一般是100ohm+1uf)用于VCHG插入检测.
+参考FAQ: FAQ115042
+### 问题: W2L reselecion in Cell_Fach
+解决方案: We don't support "W2L reselection in Cell_Fach" in any solution. we just support "W2L reselection in idle and PCH".
+参考FAQ: FAQ115061
+### 问题: 插3G卡为什么没有直接在3G下驻网
+解决方案: 由于是4G手机,但手机无法得知当前的卡不支持4G,开机后会优先尝试在4G上发起选网注册等,若4G尝试失败后才会尝试去3G.
+参考FAQ: FAQ115067
+### 问题: 云卡的确定
+解决方案: 以下三种方法可用来确定云卡: 1. 在log中搜索AT命令:AT+RSIMRSP="VSIM"; Trace中,该AT命令同一行中,若有sim 0, 则卡1是云卡;若有sim 1, 则卡2是云卡; 2. 在log中搜索getvsim: TRACE中,若sim_simu_driver_switch_g[1]=1,则卡2是云卡;若sim_simu_driver_switch_g[0]=1,则卡1是云卡; 3. 理解云卡的鉴权流程, 通过空口消息大致可确定云卡和实体卡: 若网络向卡1发送鉴权请求,此时卡2发SR或激活一路PDP,卡2和网络进行鉴权流程,然后卡1才给网络回复鉴权响应,则可确定卡1为云卡,卡2为实体卡. 注:在log中搜索 get_cloud_sim_feature_switch,若为1说明云卡产品特性已开,该变量为0说明虽然是云卡,但云卡产品特性未开启,比如:当前云卡还会发起lu流程,这属于异常情况.
+参考FAQ: FAQ115069
+### 问题: [GCF&PTCRB测试]2G协议3GPP TS 51.010-1中case 34.2.5.3测试注意事项
+解决方案: case 34.2.5.3:Test of class 2 short messages,此条case测试当手机SIM卡短信存储空间已满后,再接收到第二条class 2短信后可以正确返回92 40. 测试前手机除了需要关闭数据开关和工程模式中CFU设置为永不查询,还需要: 1. 网络模式设置为GSM only; 2. 手机短信设置中不需要打开"短信存储到SIM卡"设置项,如果打开,AP侧会有写短信的操作会导致IT3侧fail. 3. 检查网络侧仪表Anite端的PICS设置,TSPC_Serv_TS21、TSPC_AddInfo_StoreRcvSMSSIM和TSPC_AddInfo_StoreRcvSMSME这三条和case相关的PICS需要设置正确.
+参考FAQ: FAQ115097
+### 问题: VSIM项目，终端硬件支持四模，TDD LTE/FDD LTE/WCDMA/GSM，请问WCDMA/GSM是否都可以支持？
+解决方案: 对于VSIM项目: 实体卡可以配置为L/W/G都支持 虚拟卡不能配置为包含GSM的工作模式,即虚拟卡只能工作在L,L/W,W这几种模式下
+参考FAQ: FAQ115126
+### 问题: 如何通过空口信令查看当前终端支持的GEA算法能力？
+解决方案: 根据3GPP协议24.008,终端支持的GEA算法能力是携带在MS Network Capability IE中的,该IE在空口消息attach request/rau request中携带,具体在modem log的查看位置如下 比如, ms_nw_cap = { 
+ 		[0] = 0x75;//0111 0101
+		[1] = 0x60;//0110 0000
+	};
+//GEA1:第一个字节从左到右的第1 bit(为0表示不支持GEA1)
+//GEA2 ～ GEA7:第二个字节从左到右的第2 bit到第7 bit(GEA2和GEA3为1,表示这两个算法支持) 即上述举例中,终端支持GEA2/GEA3这两个加密算法
+参考FAQ: FAQ115128
+### 问题: PLMN选择优先级顺序
+解决方案: PLMN选择优先级从大到小依次是: RPLMN-->EPLMN-->EHPLMN(HPLMN)-->UPLMN-->OPLMN-->High Quality PLMN-->Low Quality PLMN-->FPLMN
+参考FAQ: FAQ115133
+### 问题: 影响音频MOS值的因素有哪些？调试哪些指标可以提升MOS值？
+解决方案: 影响MOS值的因素有很多,主要有以下: 1.响度.RLR,SLR应满足Spec,适当调整模拟增益和数字增益的配比,数字增益不要太大,适当提高模拟增益,有利于提高TMOS分 2.频响.RFR,SFR应满足Spec,调试RFR,SFR形状会影响TMOS分. 3.Noise.过多的噪声抑制会损伤音质,降低噪声抑制有利提高MOS. 4.Echo.过强echo抑制会损伤Tx语音,降低echo抑制有利提高S-TMOS 5.MIC,RCV,SPK器件及手机结构性能. 6.PS & RF性能.测试TMOS前先要进行RF校准,PS、RF需确保不出现丢包,杂音等问题.
+参考FAQ: FAQ115153
+### 问题: WCDMA  +CESQ查询RSCP为何没有实时更新？
+解决方案: 根据WCDMA需要支持的RSCP范围,按照支持-120到-25dBm,转换对应为0-96的. 可以搜索下面这条打印,其中new rxlev是实时更新的转换过后的RSCP(对应范围0-96的). 但是需要到了上报周期或者是如您咨询的变化阈值要大于等于3dB才会立即更新,否则需要等到上报周期到了才会更新.所以在RSCP变化很快但变化范围小于3dB的环境中,更新不会立即体现. meas: g_LastRptRxlev = 53, new rxlev = 53, rscp = -547
+参考FAQ: FAQ115190
+### 问题: 2g smart paging功能是什么？
+解决方案: 该功能的目的是为了省功耗,由于手机在静止放置时在周期性接收paging,paging的接收会产生功耗,为了节省手机的功耗,将周期性接收paging的周期拉长,这就是smart paging.
+参考FAQ: FAQ115247
+### 问题: UE在2G下支持CSFB FR功能吗？
+解决方案: FR就是fast return的缩写,即UE在2G下打完CSFB电话,若网络没有在channel release消息中配置重定向信息,那么UE需要立即自主返回LTE,这个过程就是FR;
+参考FAQ: FAQ115248
+### 问题: WCDMA rach fail，可以通过配置消息确认是否是网侧配置导致。
+解决方案: RACH fail时,可以通过fach 配置消息中来看一下preamble的最大允许发送次数,也可以抽取打印retrans_count=,比如retrans_count=7(之前遇到过类似问题),这个时候preamble发送功率可能还没有达到网侧需求就结束了,这种情况下一般跟网侧配置有关系,可以换个测试地点复测.
+参考FAQ: FAQ115246
+### 问题: 联通卡打电话网络会有时自动从4g切换为3g
+解决方案: 这个主要看网络和手机是否支持VOLTE,如果不支持,4G网络只支持数据业务,不支持语音业务.打电话的时候,会从4G回落到3G或2G网络上,并且如果回落到2G后,不能同时上网.挂电话后,重新回到4G网络
+参考FAQ: FAQ115223
+### 问题: 双卡双待单通
+解决方案: 双卡双待单通即两张手机卡通过手机底层软件与控制芯片,不断在两张卡的两个网络间切换,切换时间非常快速,保证两卡同时待机联网.但只能单卡通话
+参考FAQ: FAQ115227
+### 问题: com.sprd.gmssetup是什么应用？
+解决方案: com.sprd.gmssetup是在做Ctest测试前脚本自动装入到手机的应用,主要是用来跳过开机向导,语言设置,wifi设置等选项,保证手机主动进入launcher界面.
+参考FAQ: FAQ115260
+### 问题: 强信号下手机不能驻网常见的原因
+解决方案: 强信号下出现手机无法驻网或者很难驻网的常见原因: 1.如果出现无法驻网或者很难驻网现象的为个体手机,只有个别手机有这个现象,那么可以确认是手机硬件问题,很大的原因是PA器件烧坏了,那么更换PA器件就可以解决.或者可以把问题手机邮寄给我司硬件工程师,检查一下哪个硬件出了问题. 2.如果出现无法驻网或者很难驻网现象的为批量手机,那么可以考虑是否软件版本和手机不匹配,尤其是NV不匹配,更换软件版本或者NV就可以了.
+参考FAQ: FAQ115270
+### 问题: DDR的power ramp up时间是50ms，远大于JEDEC standard里面tINIT0要小于20ms的要求
+解决方案: 1)选择EMVREF为VREFCA和VREFDQ供电的话, t INT0确实会达到40ms,不满足JESD209-3B协议. 影响:我们和memory供应商确认过,memory厂商反馈对memory没有影响,对我们基带芯片也没有影响,这种供电方案的好处是在deep Mode可以节省60uA的功耗; 该供电方案的上电时间无法通过软件修改,平台方案已经定死了. 2)选择VDDMEM通过外部电阻网络分压的方式为VREFCA和VREFDQ供电的话,t INT0可以满足小于20ms.
+参考FAQ: FAQ115289
+### 问题: 如何通过空口信令查看当前终端使用的nas安全算法
+解决方案: 根据3GPP协议24.301,终端采用的加密和完整性保护算法是携带在信元nas_security_algor中的,该IE在空口消息SECURITY_MODE_COMMAND中携带,对应层间消息为MSG_ID_EMM_SECURITY_MODE_COMMAND. 点击该层间消息,根据字段nas_security_algor,查询对应协议即可获得UE采用的加密和安全算法,比如 nas_security_algor =0x11//00010001 根据协议24301的9.9.3.23.1节,从右到左第1bit-3bit(001),对应EPS Integrity algorithm:128-EIA1,第5bit-7bit(001)对应EPS Encryption algorithm:128-EEA1.
+参考FAQ: FAQ115319
+### 问题: SC2721G上的EXTRSTN(K12) External Pin reset功能说明
+解决方案: 1.EXT_RSTN 的External Pin reset功能,对应SC2721G 5.17.3.1 章节内容. 2.External Pin reset 功能由POWER ON/OFF/RESET电路模块实现,当软件配置好相应寄存器后,触发过程不需要软件参与. 3.External Pin reset 功能是软复位(SC2721G仅输出EXT_RST_B信号),不是硬复位(SC2721G输出EXT_RST_B信号且各电源掉电).
+参考FAQ: FAQ115387
+### 问题: [GCF&PTCRB测试]3GPP TS 51.010-1 2G协议case 26.8.1.4.1.1测试方法
+解决方案: case 26.8.1.4.1.1:In-call functions / DTMF information transfer / basic procedures 此条case测试DTMF tone,需要测试数字0~9、#、*和字母A~D,测试方法: 数字0~9可以通过长按机器拨号盘键盘对应数字按键来测试; #、*和字母A~D可以通过AT命令来测试:根据仪表提示,先发"at+evts=1,字符" start DTMF tone,再发"at+evts=0,字符" stop DTMF tone,例如测试字母A,先发"at+evts=1,A" start DTMF tone,再发"at+evts=0,A" stop DTMF tone.(数字0~9同样也可以使用AT来测试)
+参考FAQ: FAQ115324
+### 问题: 如何设置8960测试3G高清语音通话
+解决方案: 1. 测试前需要确认手机版本打开了3G高清语音通话功能,大部分版本这个功能都是关闭的,只有某些特殊分支版本才会打开. 2. 测试前把8960仪表恢复默认设置,先设置需要测试的band,再设置amr_wb,方法:选择Call Setup Screen第3页的Voice Call--AMR Setup,把AMR Radio Access Bearer这一项设置为WB(选择下拉菜单中内置的任意速率的WB项都可以),再把仪表的Paging Service设置为AMR Voice,激活小区并注网后使手机和仪表进行通话,手机顶部状态栏显示HD图标,表示当前通话为3G高清语音通话.
+参考FAQ: FAQ115325
+### 问题: 如何理解双Volte的注册机制？
+解决方案: VOLTE icon means support voice call over LTE, not means data transmission. Dual VOLTE icon means two SIM cards both support voice call over LTE; Besides, VOLTE and data transmission are not conflict in LTE, they can exist simultaneous, but using different bearer. So, two SIM cards support the VOLTE function should show two "Volte" icons.
+参考FAQ: FAQ115342
+### 问题: 什么是ECT功能？终端是否支持？
+解决方案: ECT(Explicit Call Transfer)是显示呼叫转移功能.其应用场景如下: A与B之间有通话,A通过ECT功能可以将A与B之间的通话,转移到B与C之间,A与B之间的通话断开. 根据协议有以下三种不同的ECT转移方式: (1)盲转 A与B之间有通话,A与C之间没有通话,A直接将AB之间的通话转移到BC之间,无论BC之间通话是否建立成功,AB之间的通话都立即断开. (2)有保证转移 A与B之间有通话,A与C之间没有通话,A将AB之间的通话转移到BC之间,A确定BC建立通话成功后才释放AB之间的通话.如果BC之间的通话没有建立成功,则通话退回到AB之间. (3)会话已存在的转移 A与B之间有通话,A与C之间也有通话,A将AB之间的通话转移到BC之间. 当前终端仅支持2G/3G下CS域的ECT功能,4G下VOLTE电话的ECT功能正在开发中,预计2019年5月支持.
+参考FAQ: FAQ115343
+### 问题: 终端是否支持电信的VoLTE电话？
+解决方案: 电信的VOLTE电话功能目前正在测试中,尚未开放给客户使用.具体开放时间请咨询CPM.
+参考FAQ: FAQ115347
+### 问题: EMI 干扰源的分类和现象判断
+解决方案: 要解决干扰问题需要确认干扰源和干扰路径,而干扰源可以从干扰现象出发来分辨.干扰现象按照干扰频段的数量可分为两种, 一种是宽带干扰(Broadband),一种是窄带干扰(Narrow band).如下图所示: 一般情况下,窄带干扰问题一定是由时钟的高次谐波引起,而全信道的干扰一般是由低频电源开关或者高速数字信号的数据传输引起
+参考FAQ: FAQ115348,含图片
+### 问题: 什么叫手机的内存？
+解决方案: 在某些宣传册上,我们经常能够看到某款手机标称为4+64,6+128这样的参数,如下图所示. 那么圈中的数字究竟代表什么意思呢? 第一个数字表示RAM:即随机存取存储器(Random Access Memory),也被称作运行内存,相当于电脑的内存条.上面说的数字4和6就表示该手机有4G运行内存和6G运行内存.RAM的大小决定了你在手机后台能开多少程序.RAM的通信标准为LPDDR,目前最先进的是LPDDR4X标准. 第二个数字表示ROM:即只读存储器(Read Only Memory),也被称作系统内存,相当于电脑的硬盘.上面说的数字64和128就表示该手机有64G和128G系统内存.ROM的大小决定了你能在手机中安装多少程序,存放多少歌曲、电影、小说等.ROM又有两种存储eMMC和UFS,目前最先进的是UFS2.1标准.整个ROM结构是由:系统空间+用户安装程序空间+用户存储空间这三个部分组成. ( 完 )
+参考FAQ: FAQ115359,含图片
+### 问题: [GCF&PTCRB测试]OMA-ETS-SUPL-V2_0中case 007 Test 3、007 Test 5和033_3测试注意事项
+解决方案: SUPL-2.0-con-007 Test 3:Alternative H-SLP Addresses SUPL-2.0-con-007 Test 5:Alternative H-SLP Addresses SUPL-2.0-con-033:Emergency Services Location Requests,Case 3: Use of default E-SLP address 测试上面3条SUPL 2.0 case前,需要清空手机SGPS中设置的SUPL服务器地址www.spirent-lcs.com再测试.
+参考FAQ: FAQ115377
+### 问题: 如何查看是否开启开机自动attach功能
+解决方案: 通过arm logel工具在层间消息中搜索如下消息: MSG_ID_GMMREG_POWERON_PS_REQ	MOD_MNM_1->MOD_GMM_1 
+ 在该层间消息中查看ps_attach_required_flag字段的值: 
+ ps_attach_required_flag = GMMREG_AUTO_ATTACH_AT_POWER_ON_OFF 
+如果ps_attach_required_flag值为GMMREG_AUTO_ATTACH_AT_POWER_ON_OFF则表示未开启自动attach功能,如果为
+ GMMREG_AUTO_ATTACH_AT_POWER_ON_ON则表示开启了自动attach功能
+参考FAQ: FAQ115394
+### 问题: WIFI吞吐量测试注意事项
+解决方案: 测试WIFI吞吐量时,除了关闭BT,还需要关闭GPS; GPS辅助定位,会从WIFI调用信息,占用部分时间片段,从而降低吞吐量.
+参考FAQ: FAQ115399
+### 问题: WIFI工模设置说明
+解决方案: SC7731E平台WIFI工模里面设置说明如下: Pkt length: 1000(设置在600~1024之间) Pkt cnt: 0(0为连续发射) Power level: 0(在0~17之间调节) 2351 chip: No Preamble: Normal RF Tx Path: Primary channel RF Standard: 802.11b(在802.11b,802.11g,802.11n之间选择) CBW: 20MHz SBW: 20MHz Channel: 1-2412MHz(bgn)(在1/7/13之间选择) Rate: 1Mbps(11b为1/11Mbps,11g为6/54Mbps,11n为6.5/65Mbps) Mode: 802.11 pkt Guard interval: 400ns(可选400ns,800ns)
+参考FAQ: FAQ115401
+### 问题: Android 9.0版本上如何打开刘海屏功能
+解决方案: 在android 9.0版本上,默认已支持刘海屏功能. 配置frameworks/base/core/res/res/values/config.xml 里的config_mainBuiltInDisplayCutout来打开刘海屏功能. 此值代表的是刘海的范围轨迹.所以需要根据项目的实际效果来配置. 配置frameworks/base/core/res/res/values/config.xml里的config_fillMainBuiltInDisplayCutout,可以显示刘海效果. 此值代表的是是否填充显示刘海区域.如果有实体刘海不建议配置此属性.
+参考FAQ: FAQ115820
+### 问题: android 9.0项目打开刘海屏功能后有些应用无法全屏
+解决方案: 在android 9.0项目上,针对刘海屏项目,新增了三个和刘海屏相关的flag.分别是: LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT:默认情况下,全屏窗口不会使用到刘海区域,非全屏窗口可正常使用刘海区域. LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS:窗口声明使用刘海区域 LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER:窗口声明不使用刘海区域. 应用需要完全全屏,使用刘海区域,需要重新适配: view.setSystemUiVisibility(SYSTEM_UI_FLAG_FULLSCREEN); lp = getWindow.getAttributes(); lp.layoutInDisplayCutoutMode =LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS; getWindow().setAttributes(lp);
+参考FAQ: FAQ115427

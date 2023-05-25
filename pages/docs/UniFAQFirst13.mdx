@@ -1,0 +1,300 @@
+### 问题: SC7701 是否支持 DM-JRD(版本V1.0)
+解决方案: SC7701 不支持 DM-JRD(版本V1.0)
+参考FAQ: FAQ38802
+### 问题: SC7701是否支持OTA-Provision(OMA CP1.1)
+解决方案: SC7701不支持OTA-Provision(OMA CP1.1)
+参考FAQ: FAQ38803
+### 问题: SC7701是否支持USB modem Tethering功能
+解决方案: SC7701暂不支持USB modem Tethering功能
+参考FAQ: FAQ38806
+### 问题: SC7701是否支持BT dialer功能
+解决方案: SC7701暂不支持BT dialer功能
+参考FAQ: FAQ38807
+### 问题: 目前SC7701上面，T9和CSTAR输入法能否继续使用
+解决方案: 有版权问题
+参考FAQ: FAQ38809
+### 问题: SC7701是否支持BT A2DP
+解决方案: SC7701支持BT A2DP
+参考FAQ: FAQ38811
+### 问题: 如何通过adb命令抓取应用打开时间？
+解决方案: 需要使用ubuntu环境,连接手机 通过输入adb shell logcat | grep Display可过滤出打开应用的时间 用来记录冷启动和热启动打开应用需要的时间
+参考FAQ: FAQ37517
+### 问题: 为何防盗短信功能在某些运营商网络下失效
+解决方案: 由于某些运营商对短信内容有限制,使得终端发出的短信被网络屏蔽了,此时可通过修改防盗短信内容修复. 发送防盗短信的函数为MMIMSD_SendMsdMsg,其中发送内容保存在msd_msg_string字串中,该字串包含两部分:提示语(msd_notify_string)和plmn信息(msg_text). 可参考该运营商网络下能够成功发送的防盗短信内容,修改相应字串.
+参考FAQ: FAQ37526
+### 问题: 如何添加一首歌曲作为系统内置来电铃声
+解决方案: 添加步骤如下: 1. 添加一首歌到frameworks/base/data/sounds/ringtones目录下 2. 修改AudioPackage_sprd_56.mk,参照其他歌曲声明的方式,添加一条声明, $(LOCAL_PATH)/ringtones/Sceptrum.ogg:system/media/audio/ringtones/Sceptrum.ogg \ 注意,如果项目上TARGET_LOWCOST_SUPPORT宏没有定义为true, 则使用的是AllAudio.mk,而不是AudioPackage_sprd_56.mk.
+参考FAQ: FAQ37616
+### 问题: 如何在资源中新增一套基于SPML显示方案的字库？
+解决方案: 如果需要在资源中新增一套字库,可以按如下步骤添加: 1、将对应的字库lib放到资源的Font目录下. 2、在mmi_res_prj_def_.h中,在矢量或点阵中的对应语言下,新增对应的资源路径,比如: RES_ADD_FONT(LANG_FONT_LATIN,"\\FONT\\LANG_FONT_LATIN_BASIC_VECTOR.lib","").
+参考FAQ: FAQ37619
+### 问题: 是否支持使用gif动画作为主菜单选中高亮图片
+解决方案: 平台版本主菜单图标和高亮图标均是直接调用GUIRES_DisplayImg接口显示到屏上的,这种刷屏方式不支持gif图片,gif图片需要使用Anim 控件才可正常显示. 不过对于PDA形态的工程,平台提供了动态选中特效功能,需要在主mk中打开PDA_UI_MAINMENU_SUPPORT_SELECT_ANIM、PDA_UI_SUPPORT_MAINMENU_GO功能宏.
+参考FAQ: FAQ37537
+### 问题: 如何查看剩余的动态内存？
+解决方案: 进入工程模式(base版本暗码:#*8378#1#)---->App Set---->Screen Log, 选择DEBUG后,在屏幕左上角显示实时的剩余动态内存.
+参考FAQ: FAQ37567
+### 问题: SC7715 VBAT_SENSE串联33欧姆电阻作用？
+解决方案: VBAT_SENSE串联33欧姆电阻,增强抗浪涌电压能力.如果电阻阻值超过33欧姆,会导致电池电压检测不准.
+参考FAQ: FAQ37572
+### 问题: MOCOR平台彩信发送的图片有什么要求？
+解决方案: MOCOR平台彩信发送的图片必须满足:(宽<=1024 且 高<=1024),否则会出现图片无法正常发送,对于移动入库测试项目特别要注意.
+参考FAQ: FAQ37570
+### 问题: SC7715 马达电路是否需要增加二极管？
+解决方案: SC7715芯片已经集成了内置续流二极管,外部无需再加.
+参考FAQ: FAQ37595
+### 问题: 如何解决在IDH包中使用SPML显示方案编译后真机无法显示文字而模拟器可以正常显示？
+解决方案: IDH包中SPML显示库分点阵和矢量,所以,真机编译时需要根据显示的类型来使用相应的显示库(spml.a). 如果在SPML矢量显示时遇到该问题,请使用默认显示方案为矢量的工程中的spml.a来替换正在编译的工程中的spml.a; 如果在SPML点阵显示时遇到该问题,请使用默认显示方案为点阵的工程中的spml.a来替换正在编译的工程中的spml.a.
+参考FAQ: FAQ37578
+### 问题: SR3131 GMSK模式下输出功率为多大？
+解决方案: SR3131的典型输出功率为2dBm.
+参考FAQ: FAQ37600
+### 问题: 如何调整工厂测试中系统测试的测试顺序
+解决方案: 修改测试顺序可以通过调整packages/apps/ValidationTools/src/com/sprd/validationtools/Const.java文件中的DEFAULT_AUTO_TEST_ITEMS数组中的顺序来实现. 注意, PhoneLoopBackTest和PhoneCallTestActivity最好不要挨在一起,两个测试项会相互影响.
+参考FAQ: FAQ37599
+### 问题: 命令行如何查看系统reserved空间大小？
+解决方案: $ adb root $ adb shell #cat /d/memblock/reserved 0: 0x80004000..0x80007fff------------swapper_pg_dir 1: 0x80009000..0x80bbd42b------------Ramdisk 2: 0x85500000..0x8555dc9e------------BLK_DEV_INITRD 3: 0x87800000..0x879fffff------------SIPC 4: 0x90000000..0x920fffff------------CPW 5: 0x94000000..0x94280fff------------WCN 6: 0x9bfc1000..0x9bfc7fff------------CMA 7: 0x9bfc8fe8..0x9bfdefff 8: 0x9bfdffd8..0x9fffffff
+参考FAQ: FAQ37713
+### 问题: SC7715 有省32K晶振方案吗？
+解决方案: SC7715暂时还没有省32K晶振的方案.
+参考FAQ: FAQ37604
+### 问题: 为什么在开发者选项中勾选了“停用HW叠加层”后，重新开机，该项又变为不勾选
+解决方案: 开发者选项中勾选"停用HW叠加层", 实际是往SurfaceFlinger中发送了指令,将SurfaceFlinger.cpp中的mDebugDisableHWC变量置为1. 而重启后,mDebugDisableHWC变量被重新初始化为0,停用HW叠加层功能关闭了, 因此开发者选项中"停用HW叠加层"这项又变为不勾选了.
+参考FAQ: FAQ37606
+### 问题: 为什么设置-安全里，存储类型这一项点击无效
+解决方案: 该项仅是起到一个说明的作用, 说明手机用的存储类型是什么,类似于关于手机中的版本号显示, 因此该项是无法点击的.
+参考FAQ: FAQ37607
+### 问题: 文件管理器在有大图片的地方滑动慢，甚至出现OutOfMemory的处理
+解决方案: 文件管理器中,在快速查看进入图片,或者浏览存有大图片的目录时,有图片文件列表的地方,都需要有图片文件的缩略图,而缩略图是由图片文件解码出来的.已经解码出来的图片的缩略图会有一个缓存来存储,而第一次加载的过程中,都有一个图片解码的过程,而且是同时在解码多张图片. 图片来自外部,可能是各式各样的大小、分辨率等,在解码图片的如果遇到特别大的图片,解码会耗费大量的内存,而手机的内存资源有限,有时候解码一张图片资源就能耗尽所有内存,出现OutOfMemory或者出现用户点击无反应. 解决这问题,在解码图片的时候,对图片文件的大小和分辨率做限制,超出支持的范围,就不再解码,而用缺省的图片资源替换. 所以,客户也可以根据自己剩余可用内存的情况调节图片文件的大小和分辨率限制的大小,在文件src/com/sprd/fileexplorer/util/FileUtil.java readBitmap()方法中.
+参考FAQ: FAQ37613
+### 问题: 点阵字体和矢量字体的差别是什么？
+解决方案: 1、点阵字体 点阵字体也叫位图字体,其中每个字形都以一组二维像素信息表示.点阵字体通过点阵表现字形,其本质上就是一组图片. 如果图片上的点非黑即白,就称之为黑白点阵;如果图片上的点有不同的亮度甚至颜色,则称之为AA点阵. 优点:显示速度快. 缺点:不可缩放,字体显示不平滑. 2、矢量字体 矢量字体通过数学曲线来表述,它包含了字形边界上的关键点,连线的导数信息等,字体的渲染引擎通过读取这些数学矢量, 然后进行一定的数学运算来进行渲染. 优点:可缩放,字体显示平滑. 缺点:因矢量显示需要进行运算,所以显示速度相对点阵比较慢.
+参考FAQ: FAQ37644
+### 问题: Framework中添加全局变量，编译时出现“Error 38”应如何处理？
+解决方案: 使用如下命令: 1、make clean (注:如果之前有编译过工程) 2、make update-api 3、make 说明: make update-api命令是更新API.在framework API改动之后,需要首先执行该命令来更新API,公开的API记录在frameworks/base/api目录下.
+参考FAQ: FAQ37648
+### 问题: 为什么在电子书中有一些俄文的txt打开后显示乱码？
+解决方案: 除了Unicode编码之外,俄文还有windows-1251编码和KOI8编码.显示乱码的原因是Ebook中不支持这两种编码的解析,需要增加对这两种编码的支持,因涉及较多的代码修改,具体的修改方案请联系展讯FAE获取帮助. 俄文windows-1251编码跟gb2313,gb18030相类似,只是在本地区使用的一种编码. 不同的是,windows-1251是在俄语中使用且是单字节编码,而后者是在中文地区使用的双字节编码. KOI8-R是KOI-8系列的斯拉夫文字8位元编码,供俄语及保加利亚语使用.在Unicode未流行之前,KOI8-R 是最为广泛使用的俄语编码. 平台默认不支持这两种编码的原因是该类编码不通用,跟现代一些使用Unicode或是UTF-8编码的系统不兼容.
+参考FAQ: FAQ37654
+### 问题: android4.4 主动挂断前台电话，后台的电话是否会自动取消保持？
+解决方案: android4.4 主动挂断前台电话,后台保持的电话会自动取消保持,为激活状态. 具体的操作见如下接口: CallManager.java (frameworks\opt\telephony\src\java\com\android\internal\telephony) public void hangupForegroundResumeBackground(Call heldCall) throws CallStateException { }
+参考FAQ: FAQ37645
+### 问题: 蓝牙文件传输可以发送和接收那些类型的文件呢？
+解决方案: 可以接收和发送的文件类型的MIME type定义位于packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java中. 1、可以发送的文件类型; "image/*"和 "text/x-vcard"; 2、不可以发送的文件类型:"virus/*"; 3、可以接收所有类型的文件;
+参考FAQ: FAQ37712
+### 问题: 如何查看launcher等进程的adj
+解决方案: 具体步骤: 1.连接数据线,使用adb shell 2. 通过ps命令获取launcher 等进程的pid(也就是第二列的值) 3.使用命令cat /proc/pid/oom_score_adj获取launcher adj的值.(其中pid为上面获取到的值)
+参考FAQ: FAQ38661
+### 问题: 一个硬件检查IO口状态的方法
+解决方案: 有一个办法可以粗略看下IO口配置是否正确,首先要断开外部电路连接,单独测试芯片: 一,如果在IO口测到高电平,用万用表电阻档测试IO口到VDDIO之间的电阻: 1, 如果电阻是几十欧姆,表示IO口当前状态是输出高. 2, 如果电阻在几十K到150K之间,表示IO口当前状态是输入上拉. 3, 如果电阻在2K到10K之间,表示IO口已经是I2C口,并且上拉已经使能. 二,如果在IO口测到低电平,用万用表电阻档测试IO口到GND之间的电阻: 4, 如果电阻是几十欧姆,表示IO口当前状态是输出低. 5, 如果电阻约60K,表示IO口当前状态是输入下拉.
+参考FAQ: FAQ37861
+### 问题: DORADO浏览器宏关闭后编译报错
+解决方案: OPERA MINI浏览器代码 依赖于dorado,dorado的宏不能关闭,否则编译不过.正确做法是, 1. 相关宏配置如下: BROWSER_SUPPORT = TRUE BROWSER_SUPPORT_DORADO = TRUE OPERA_MINI_SUPPORT = VER42 2. 修改代码,屏蔽主菜单DORADO的入口 此外,使用第三方opera浏览器,请确保\Third-party\opera\mini4 路径下有opera mini相关库,否则编译报错.
+参考FAQ: FAQ37766
+### 问题: 在没有触摸屏的情况下，如何设置机器的自动灭屏时间？
+解决方案: 关于自动灭屏时间(screen_off_timeout)是存放在Settings应用的数据库里,通过修改数据库的方式,可以不借助任何UI而达到此目的.这种方式需要重启机器才生效. 例如,将休眠时间设置为30分钟: 1. 获得机器root权限 2. adb shell 3. cd /data/data/com.android.providers.settings/databases 4. sqlite3 settings.db 5. sqlite> insert into system (name, value) values ("screen_off_timeout", "1800000"); 6. sqlite> .quit 7. reboot 其中screen_off_timeout的单位是毫秒.
+参考FAQ: FAQ37782
+### 问题: 对于EMMC方案FDL下载慢问题，如何定位是USB传输慢还是EMMC写入慢？
+解决方案: FDL2进度条过了之后,后面的分区下载时,进度条前进缓慢是USB传输慢,进度条停止时间久是EMMC写入慢. 原因:FDL2从USB收bin/image后是先缓存(平台设计缓存buffer为216MB),并不是收一个数据包写一次EMMC, 因此对于非system分区,由于bin/image size小,一般是进度条走到最后表明USB收完了该分区的数据,然后进度条停下来,写入缓存中的数据到EMMC中; 对于system分区,由于system.img size一般会超过缓存上限,所以会每缓存满一次进度条就会停下来十几二十秒写EMMC,然后USB继续收数据进度条继续往前走,直到将system.img接收并写完
+参考FAQ: FAQ37792
+### 问题: 在没有触摸屏的情况下，如何设置机器的按键背光超时？
+解决方案: 关于按键背光超时(button_light_off_timeout)是存放在Settings应用的数据库里,通过修改数据库的方式,可以不借助任何UI而达到此目的.这种方式需要重启机器才生效. button_light_off_timeout的取值包括以下4种: 1500: 1.5秒 6000: 6秒 -1 : 始终开启 -2 : 始终关闭 例如,将按键背光超时设置为"始终开启": 1. 获得机器root权限 2. adb shell 3. cd /data/data/com.android.providers.settings/databases 4. sqlite3 settings.db 5. sqlite> insert into system (name, value) values ("button_light_off_timeout", "-1"); 6. sqlite> .quit 7. reboot
+参考FAQ: FAQ37801
+### 问题: 在没有触摸屏可以操作的情况下，去除屏幕解锁（锁频）功能？
+解决方案: 通过直接修改System数据库的办法,去除屏幕解锁功能.这种方式需要重启机器才生效. 请参考如下步骤: 1. 获取手机root权限 2. adb shell 3. cd /data/system 4. sqlite3 locksettings.db 5. sqlite>update locksettings set value=1 where name="lockscreen.disabled"; 6. sqlite>.quit 6. reboot 重启后,手机不出现锁屏界面,直接进入IDLE界面.
+参考FAQ: FAQ37818
+### 问题: 在没有LCD时，如何查看当前的基带版本号？
+解决方案: 在没有LCD时,可以抓手机启动时的android log,在其中的radio log中,搜索CGMR,在搜到的行以下,就会发现基带版本号.例如:"BASE Version"的行和"Platform Version"的行.
+参考FAQ: FAQ37824
+### 问题: 如何使能恒流源ADC检测电池温度
+解决方案: 充电的驱动代码默认情况下支持的电池的温度检测方式是使用分压方式的ADC检测,如果需要使用恒流源ADC的方式,需要做下面修改: Sprd_2713_charge.c (kernel\drivers\power) int sprdchg_read_temp_adc(void) 上面函数是电池温度检测时读取ADC的接口函数,该函数默认情况下是认为采用分压方式,对于使用恒流源ADC的方式,需要用下面的函数代替该接口函数: Adc.c (kernel\arch\arm\mach-sc) int sci_adc_get_value_by_isen(unsigned int channel, int scale, int isen)
+参考FAQ: FAQ37832
+### 问题: SC7715+SR3131的26MHz DCXO的CL要求多少？
+解决方案: 要求9pF
+参考FAQ: FAQ37853
+### 问题: monkey测试中如何屏蔽某些应用(blacklist)
+解决方案: monkey测试中,会随机发送触屏或启动某个activity的指令,当我们不想某个应用被测试时,我们可以将其添加到blacklist中 这样这个应用就不会被测到. 添加blacklist方法: 第一步需要找到要测试的应用程序的包名: 进入adb shell cd data/data ls 此时会列出所有的包名,找到自己要测试的package.name 第二步将需要测试的包名写入blacklist中 注意: 在运行monkey时需要先将blacklist手动push到 /data/local/tmp/blacklist monkey运行命理中必须包含以下参数: --pkg-blacklist-file /data/local/tmp/blacklist
+参考FAQ: FAQ37838
+### 问题: 如何使用monkeyrunner单步调试脚本？
+解决方案: 如果需要使用monkeyrunner单步调试脚本的话,可按照以下步骤进行: 前提:monkeyrunner环境已搭建好并且已添加环境变量 步骤: 1.打开CMD敲入monkeyrunner回车 2.出现如图所示的"<<<"提示符 3.敲入如下两行导入需要用到的类: from com.android.monkeyrunner import MonkeyRunner,MonkeyDevice,MonkeyImage device = MonkeyRunner.waitForConnection() 之后就可以进行单步调试了.
+参考FAQ: FAQ37866
+### 问题: 蓝牙工作频率、跳频点
+解决方案: 地理位置 ISM频段范围 射频信道频率 中国、美国、欧洲 2400.0～2483.5MHz F=(2402+k)MHz,k在0、1、……78中随机取值 法国 2446.5～2483.5MHz F=(2454+k)MHz,k在0、1、……22中随机取值 日本 2471.0～2497.0MHz F=(2473+k)MHz,k在0、1、……22中随机取值 西班牙 2445.0～2475.0MHz F=(2449+k)MHz,k在0、1、……22中随机取值 我国的蓝牙频率在2.402GHz～2.483GHz,蓝牙每个频道的宽度为1MHz,为了减少带外辐射的干扰,保留上、下保护为3.5MHz和2MHz,79个跳频点中至少75个伪随机码跳动,30S内任何一个频点使用时长不能超过0.4S.
+参考FAQ: FAQ38210
+### 问题: 如何排查自动测试的BT测试不过问题？
+解决方案: 1.首先取同一项目的整机正常开机,打开蓝牙观察是否能正常使用,是否能搜索到其他蓝牙设备; 自动测试的第一步需先保证整机开机情况下能正常使用蓝牙设备. 2.可以取上述整机进行自动测试,在BBAT工具软件上"蓝牙/WIFI/GPS"配置页面里, 将"第一次查找超时时间"设置成5秒,以便设备可以多次复位后做该项测试,提高成功率. 3.若测试过程中BT测试不稳定,出现时过时不过现象时,请尝试做以下事项: 1)将目标蓝牙设备靠近夹具; 2)在夹具上安装蓝牙天线. 4.若测试过程中同时测试BT和WIFI时,BT测试失败,请尝试修改: 在BBAT工具软件上"蓝牙/WIFI/GPS"配置页面里不勾选"测试完成后打开设备"选项.
+参考FAQ: FAQ37985
+### 问题: SC9863A平台支持sensor hub功能吗？
+解决方案: 支持.
+参考FAQ: FAQ106927
+### 问题: SC7715内、外置Audio PA在设计上有什么要求？
+解决方案: 1、用于选择内置audio PA和外置audio PA 的磁珠或0 ohm电阻,最好选用0603封装,以保证导通能力; 2、PA_OUTP/PA_OUTN线宽至少0.3mm以减少线路损耗.
+参考FAQ: FAQ37994
+### 问题: SC7715耳机的GND用作FM天线时有哪些注意事项？
+解决方案: 耳机的GND用作FM天线的话,耳机MIC、GND和耳机左右声道应串入磁珠且加MLV或TVS防ESD,磁珠要靠近耳机座,以防FM信号从MLV或TVS的结电容泄漏.
+参考FAQ: FAQ37996
+### 问题: 如何切换CFT过程中的自动校准模式？
+解决方案: 在综测校准过程中,校准完之后,CFT工具并没有停在完成的界面,过一段时间又开始自动校准,这样可能会给工厂的工人流水线操作造成不便. 出现上述现象的原因主要是由于CFT工具的'自动校准'模式导致的,由于硬件上采用外部Charger IC,在校准完成后没有拔出USB,此时VBUS会有5V,然后Charger IC V-Bat端会有3.5V的电压,如果CFT端工具处于'自动校准'模式下,就会使系统重新启动,然后又开始校准. 为避免出现影响正常流水线操作的问题,可以在CFT工具的高级设置界面,确认不勾选'开机自动测试'项即可,这样就需要在工具端手动触发校准过程,所以是否开启'自动校准'模式与实际产线的具体作业流程有关系,根据实际情况进行设置即可.
+参考FAQ: FAQ37995
+### 问题: SC7715可外接几张SIM卡？
+解决方案: SC7715有三个独立的SIM卡接口,可外接三张SIM卡.每个SIM卡接口都有自己独立的电源.三个SIM卡接口都可以独立配置为1.8V或者3.0V,以适应不同的卡类型.
+参考FAQ: FAQ37998
+### 问题: 手机在使用过程中为什么会出现啸叫问题？
+解决方案: 手机在使用状态下啸叫的原因: 总的来说是一种闭环的自激现象,也就是说在手机使用时,从喇叭发出的信号经过一定的衰减之后翻过来又送回到MIC,当回授的信号大于原先送入的信号时,这时音频回路的总的增益大于1时,就产生了啸叫,形成啸叫的途径大约又三种: (1)喇叭发出的声音经过空间从机壳的外面回授到MIC (2)喇叭发出的声音经过机壳的内部的声音通道或空间回授到MIC (3)另一个途径是因为喇叭和MIC是装在同一个机壳上的,如果喇叭或MIC的减震效果不好的话,那么喇叭的振动,通过机壳传到MIC 另外MIC的前端如果有空腔的话,会对某一高频产生共振,从而产生高频啸叫.
+参考FAQ: FAQ38003
+### 问题: 如何释放系统Cache
+解决方案: (1) To free pagecache: echo 1 > /proc/sys/vm/drop_caches (2)To free dentries and inodes: echo 2 > /proc/sys/vm/drop_caches (3)To free pagecache, dentries and inodes: echo 3 > /proc/sys/vm/drop_caches 释放前最好sync一下,防止丢数据. buffer:作为buffer cache的内存,是块设备的读写缓冲区 cache:作为page cache的内存,文件系统的cache 如果 cache 的值很大,说明cache住的文件数很多.如果频繁访问到的文件都能被cache住,那么磁盘的读IO 必会非常小.
+参考FAQ: FAQ38018
+### 问题: adb环境下如何查看eMMM设备号、厂商号
+解决方案: adb root adb shell cd /sys/bus/mmc/devices/mmc0:0001 cat name // Product name cat manfid // Manufacturer ID cat oemid // OEM/Application ID 及eMMC其他相关信息
+参考FAQ: FAQ38022
+### 问题: 浏览器中长按网址信息分享时，没有通过信息分享的接口，如何修改？
+解决方案: 原因是ComposeMessageActivity没有接收mimeType为text/plain的分享,所以对于text/plain都无法选择信息分享. 修改需要在AndroidManifest.xml中,对ComposeMessageActivity添加mimeType为text/plain的类型检测就可以了.
+参考FAQ: FAQ68256
+### 问题: 如何修改wifi设置中“避开状况不佳的网络”的默认值
+解决方案: frameworks/base/wifi/java/android/net/wifi/WifiWatchdogStateMachine.java 默认是关闭的,对应变量DEFAULT_POOR_NETWORK_AVOIDANCE_ENABLED; public static final boolean DEFAULT_POOR_NETWORK_AVOIDANCE_ENABLED = false; 如果想设置为默认打开,只需设置DEFAULT_POOR_NETWORK_AVOIDANCE_ENABLED 为 true即可
+参考FAQ: FAQ38079
+### 问题: SC7701 UART0应用注意事项
+解决方案: UART0支持硬件流控 UART0(AC14,AC13)支持下载 UART0在JTAG模块有复用功能,但此处无下载功能
+参考FAQ: FAQ38139
+### 问题: USB的D+,D-并一个小电容的目的？
+解决方案: USB的D+,D-上并一个小电容是为了改善USB眼图,提高USB传输性能,容值一般是2pf.
+参考FAQ: FAQ38083
+### 问题: HCI分组类型
+解决方案: HCI分组有三个类型: 1)指令分组:只从主机法向主机控制器,用于发送指令; 2)事件分组:只从主机控制发向主机,用以说明指令分组的执行情况; 3)数据分组:主机和主机控制器间的双向传输.
+参考FAQ: FAQ38121
+### 问题: SDIO clock频率能达到多少？
+解决方案: SDIO clock is up to 48MHz, can support SD2.0 high speed SD card
+参考FAQ: FAQ38086
+### 问题: 为什么系统设置中没有重力感应校准选项了？
+解决方案: 在之前的Android2.3.5(6820平台及部分其他品牌机器)中在设置--显示中会有一项'Sensor水平校准',但是在Android4.1(8830)、4.0(8825)、Android4.4(7715、5735中)就不存在这个功能项了,是由于此功能本来就不是android原生功能,是之前根据需求而临时增加的附加功能项,另外实际的校准功能都是跟sensor硬件相关的,没有通用的方法,所以在后续平台中从Settings模块中对此功能进行了移除. 注:在工程测试模式(暗码:*#*#83789#*#*)中还是有'重力传感器测试'测试项,以满足实际设备的测试需要.
+参考FAQ: FAQ38091
+### 问题: SC8830的校准流程
+解决方案: SC8830/SC7715 USB校准流程如下: 当出现校准失败时,可以结合手机端串口log及PC Tools的log(Diag命令包)来判断失败的原因
+参考FAQ: FAQ38087
+### 问题: HCI协议数据包概述
+解决方案: 主机和主机控制器之间是通过HCI收发分组的方式进行信息交换的.主机控制器执行主机指令后产生结果信息,主机控制器通过相应的事件分组将此信息发给主机. 主机和主机控制器通过指令-应答(Command-Response)方式实现控制,主机向主机控制器发送指令分组.主机控制器执行指令后,通常返回给主机一个指令完成事件分组,该分组携带有指令完成信息;对于有些分组,不返回指令事件分组,但返回指令状态事件分组,用以说明主机发出的指令已经被主机控制器接收并开始处理;如果指令执行出错,返回的指令状态事件就会指示相应的错误代码.
+参考FAQ: FAQ38102
+### 问题: SC7701  DDR最大支持的容量有多大？
+解决方案: 单片选最大支持2Gb,共有双片选,最大支持4Gb
+参考FAQ: FAQ38127
+### 问题: 蓝牙HCI协议指令分组介绍
+解决方案: 指令分组是主机发向主机控制器的指令,6个分类如下: 1)链路控制指令 2)链路策略指令 3)主机控制与基带指令 4)信息参数指令 5)状态参数指令 6)测试指令
+参考FAQ: FAQ38140
+### 问题: 蓝牙HCI协议事件分组介绍
+解决方案: 事件分组是主机控制器向主机报告各种事件的分组,分为3类: 1)通用事件(包括指令完成事件和指令状态事件) 2)测试事件 3)出错事件(如缓存刷新和数据缓冲区溢出)
+参考FAQ: FAQ38144
+### 问题: 蓝牙HCI协议数据分组介绍
+解决方案: 数据分组是主机和主机控制器之间的双向传输,分为两类: 1)异步无连接(Asynchronization Connectionless, ACL)数据分组 2)同步线相连接(synchronization Connection Oriented, SCO)数据分组
+参考FAQ: FAQ38146
+### 问题: SC7701内部集成的DCDC开关频率是多少
+解决方案: SC7701内部集成2个DCDC,一个专门给CORE供电,电压1.2V,一个专门给W PA供电,电压调节范围0.8~3.4V,两个开关频率一般为1.5MHz,也可以通过分频,使之频率为1MHz~4MHz
+参考FAQ: FAQ38161
+### 问题: 蓝牙HCI分组构成的原则
+解决方案: 蓝牙HCI分组构成的原则如下: 1)数据值采用二进制大端格式; 2)负值参数采用二进制补码表示; 3)如果参数数组的一个集合定义为ParameterA[i],ParameterB[i]的格式,那么参数数组的顺序如下:ParameterA[0],ParameterB[0],ParameterA[1],ParameterB[1],……,ParameterA[n],ParameterB[n]; 4)复字节参数按小端格式进行收发; 5)分数组指令、指令参数和参数数组元素都具有固定长度.参数和非数组参数的长度都包含在一条指令里,并为每一指令和事件定义事件.参数组内元素数量可以不定.
+参考FAQ: FAQ38155
+### 问题: SC7701 W PA DCDC周边器件选型注意事项
+解决方案: 1.感值为4.7uH的功率电感 2.耐流能力在1A以上 3.Rdc小于0.5 ohm 4.匹配电容需要10uF
+参考FAQ: FAQ38165
+### 问题: WebKit支持哪些种类的资源？
+解决方案: WebKit支持哪些种类的资源呢?大致包括以下类型: JavaScript文本:JavaScript语言所对应的文本文件; CSS样式表: CSS样式文件; 图片:各种类型的图片文件; SVG:表示SVG文档的资源类; CSS Shader:支持CSS Shader的文件,目前WebKit支持该功能; 视频字幕:支持视频的字幕文件(TextTrack); 字体(CSS支持自定义字体):CSS3引入的自定义字体文件; XSL样式表:XSLT语言的文本; HTML文本:这个很基本和常见,通常就是HTML语法,以.htm或者.html结尾的文本,WebKit中称为主资源; 它们在WebKit中有相应的类表示,其公共基类是CachedResource.
+参考FAQ: FAQ38171
+### 问题: SC7701 W PA DCDC调节电压的途径有哪些？
+解决方案: W PA DCDC的电压调节电路,集成在芯片内部.调节的途径有两种: 1.DSPàA Die RAMP DACàWDCDC 2.DSPàPDM0àPDM_INàWDCDC 根据测试结果,进行选择,推荐使用PDM0
+参考FAQ: FAQ38174
+### 问题: 蓝牙HCI协议指令分组格式
+解决方案: 蓝牙HCI协议指令分组格式下图所示: 指令分组各段的定义:
+参考FAQ: FAQ38172
+### 问题: SC7701平台不同耳机状态下HEADMIC_IN的电压值是多少？
+解决方案: 耳机拔出时,V_HEADMIC_IN 为2.5V～2.8V; 耳机插入时,V_HEADMIC_IN为 0.4～2.5V; 耳机按键按下时,V_HEADMIC_IN为<0.4V.
+参考FAQ: FAQ38180
+### 问题: 6815 勾选USB虚拟光驱后电脑上没有显示虚拟光驱设备如何解决？
+解决方案: 如果遇到勾选USB虚拟光驱后电脑上没有显示虚拟光驱设备的问题,表现是第一次勾选CD-ROM可以正常挂载,第二次挂载不上,需要查看USB调试是否打开了,如果打开就不能使用正常使用虚拟光驱设备,关闭后即可解决.
+参考FAQ: FAQ38186
+### 问题: 输入法弹出时，如何让界面自动上移，使其不被遮挡。
+解决方案: 修改方法: 在AndroidManifest.xml文件中给Activity添加如下的属性: android:windowSoftInputMode="adjustResize"
+参考FAQ: FAQ38187
+### 问题: 为什么是用htmlview查看并复制文字之后，在MMS和Email的收件栏中没法粘贴内容
+解决方案: 前提: 当使用htmlview打开一个txt文件(包含很多邮箱地址)之后,长按内容并选择复制 而后在Email/MMS的 收件框,长按,选择粘贴,没法粘贴内容 原因: 因为Email / MMS 的收件人框edittext继承的是FW层的RecipientEditTextView.java, 在使用htmlview长安复制的时候,复制数据类型是MIMETYPE_TEXT_HTML=text/html, 这样在RecipientEditTextView.java的handlePasteClip中截断了这个数据类型,所以不能复制. 具体的代码实现在RecipientEditTextView.java中的handlePasteClip()方法中 所以这是android原生的设计,是正常现象. 如果要修改,可在handlePasteClip()方法中移除对MIMETYPE_TEXT_HTML类型的判断.
+参考FAQ: FAQ38195
+### 问题: 当adb server端口被占用时如何释放该端口？
+解决方案: 先执行adb nodaemon server 查看adb server端口 C:\Users\xxxx>adb nodaemon server cannot bind 'tcp:5037' 再执行netstat -ano | findstr "5037" C:\Users\xxxxxx>netstat -ano | findstr "5037" TCP 127.0.0.1:5037 0.0.0.0:0 LISTENING 4236 TCP 127.0.0.1:5037 127.0.0.1:49422 ESTABLISHED 4236 TCP 127.0.0.1:49422 127.0.0.1:5037 ESTABLISHED 3840 找到占用端口的进程 执行tskill 4236
+参考FAQ: FAQ38207
+### 问题: 传文件失败时，如何判断接收端是否弹出确认对话框？
+解决方案: 接收端main.log 搜索after confirm: userAccepted 这个关键字. userAccepted=1 // public static final int USER_CONFIRMATION_CONFIRMED = 1;表示用户确认接收 userAccepted=2 //USER_CONFIRMATION_AUTO_CONFIRMED = 2; 表示之前用户确认过,自动确认接收 userAccepted=3 //public static final int USER_CONFIRMATION_DENIED = 3;表示用户拒绝接收 userAccepted=4 // public static final int USER_CONFIRMATION_TIMEOUT = 4; 表示用户超时,没有弹出对话框
+参考FAQ: FAQ38147
+### 问题: 7731支持到多少像素摄像头？
+解决方案: 最大支持到800W像素camera
+参考FAQ: FAQ38252
+### 问题: 7731有几组I2S接口？
+解决方案: 有四组,I2S0~I2S3.I2S0 默认用作FM和wifi,I2S1默认用作GPIO,I2S2/I2S3,客户定义,如BT,ATV等
+参考FAQ: FAQ38253
+### 问题: 7731那组SIM接口可以用于WCDMA？
+解决方案: 只有SIM0可以用于支持WCDMA
+参考FAQ: FAQ38254
+### 问题: 蓝牙地址位数组成部分
+解决方案: BD_ADDR:BluetoothDevice Address的组成: 1、LAP:LowerAddress Part 低地址部分; 2、UAP: UpperAddress Part 高地址部分; 3、NAP: Non-significantAddress Part 无效地址部分.
+参考FAQ: FAQ38246
+### 问题: STK菜单的字符串能否更改？
+解决方案: STK菜单的字符是从SIM卡里读出来的,不能更改.
+参考FAQ: FAQ38331
+### 问题: 为什么无法使用CTS工具中的BLUETOOTH LOW ENERGY测试项？
+解决方案: 平台不支持ble功能
+参考FAQ: FAQ38333
+### 问题: 在使用蓝牙进行听歌或传文件，为什么卸载T卡时刚才的操作都会断掉？
+解决方案: ActivityManager: Killing 5035:com.android.bluetooth/1002 (adj 1): unmount media 由于在卸载T卡时,系统会将使用T卡的程序kill掉,而此时,蓝牙LOG正在写入T卡,所以bluetooth进程被杀.进而导致蓝牙耳机断开. 在蓝牙测试case中,若含有卸载T卡的操作时,请关闭蓝牙log后,再进行测试.
+参考FAQ: FAQ38335
+### 问题: 默认语言为泰语，进入日历，左上角的年份为什么显示为2557而不是2014？
+解决方案: 泰国使用的是佛历纪年,与公元纪年差543年,所以这个显示是正常的
+参考FAQ: FAQ38507
+### 问题: 为什么在monkey测试的过程中，发现slog中断现象
+解决方案: 现象: 在monkey测试的过程中,有时候会发现slog在某一个时间点后就没有log了,但是monkey没有停 原因: 定位原因可以发现是在monkey测试的过程中,测试在工程模式下开启slog后,没有将工程模式加入到monkey黑屏单,这样的话,在monkey随机的测试中就可能点击到应用,进而将slog关闭,就会出现以上描述的现象了. 解决方案: 将eng模块加入到monkey 黑名单中.
+参考FAQ: FAQ38508
+### 问题: 在data分区存储容量很低的情况下还能够使用slog吗？
+解决方案: 1.默认情况下,slog是存储到sdcard上面的,当sdcard容量小于50M的时候就会切换到低存储模式,提示释放空间. 2.如果没有sdcard的时候,slog会将log存储到data/slog下,当data分区的容量在5M～10M的时候会发出预警,当小于5M的时候就会将slog关闭.
+参考FAQ: FAQ38534
+### 问题: 如何知道某个进程中被调用最频繁的函数
+解决方案: 使用perf工具可以知道某个进程中每个函数的运行时间百分比. 具体方法如下: perf top -p pid // Android4.1之前的版本 perf_3.4 top -p pid // Android4.1之后的版本
+参考FAQ: FAQ38561
+### 问题: 如何查看某个LDO的电压
+解决方案: 通过以下命令可以知道在软件上将某个LDO配置成多少伏,但实际电压还是要以万用表的测量值为准 cat /sys/class/regulator/regulator.12/microvolts
+参考FAQ: FAQ38562
+### 问题: 如何正确替换flash分区的xml文件？
+解决方案: 比如7715的flash分区文件是SC7715.XML. 烧入工具导入pac后,在生成的临时目录中替换SC7715.XML文件,必须重新生成新的pac,烧入工具再导入新的pac包烧入才能将替换的SC7715.XML文件烧入.
+参考FAQ: FAQ38589
+### 问题: 代码中如何获取外置T卡的状态？
+解决方案: 为了在不插T卡的情况,也能够很好的支持第三方应用使用.于是修改了Environment.java中的获取外部存储状态的API接口getExternalStorageState(),在不插入外置T卡的情况下也返回mounted状态,这时实际使用的是内卡的存储. 此时可通过Environment中的getExternalStoragePathState()函数来准确的获取当前外置T卡的状态.
+参考FAQ: FAQ38591
+### 问题: 如何通过adb打开或关闭slog中的android log？
+解决方案: 展讯平台上slog中android log包括 main,system,radio,events,kernel. 在手机shell终端输入如下命令: $ adb shell slogctl enable //开启android log $ adb shell slogctl disable //关闭android log 设置完成之后,可以使用adb shell slogctl query 确认当前配置是否已经更改. 如: stream kernel on 0 7 stream radio on 0 0 stream system on 0 8 stream events on 0 0 stream main on 0 7 第三个参数即红色字体为on表示已经打开,为off表示关闭.
+参考FAQ: FAQ38627
+### 问题: 如何通过 adb 打开或关闭slog中的蓝牙log？
+解决方案: 展讯平台,Bluetooth log是独立于android log的.在手机终端使用adb命令能控制bt log的开关. 1、开启Bluetooth log # adb shell slogctl bt on OK 设置完成后,可以通过 adb shell slogctl query 确认结果 "stream bt on 0 7" 2、关闭Bluetooth log # adb shell slogctl bt off OK 设置完成后,可以通过 adb shell slogctl query 确认结果 "stream bt off 0 7"
+参考FAQ: FAQ38630
+### 问题: 如何通过 adb 打开或关闭slog 中的 Cap log？
+解决方案: 展讯平台,Cap log是独立于android log的.在手机终端使用adb命令能控制Cap log的开或关. 1、开启Cap log # adb shell slogctl tcp on OK 设置完成后,可以通过 adb shell slogctl query 确认结果 "stream tcp on 0 7" 2、关闭Cap log # adb shell slogctl tcp off OK 设置完成后,可以通过 adb shell slogctl query 确认结果? "stream Cap off 0 7"
+参考FAQ: FAQ38631
+### 问题: storage/sdcard/slog文件夹中cp0,cp1,cp2,cp3分别对应哪个modem？
+解决方案: 展讯平台根据不同的产品形态和制式,定义不同的modem. 不同的产品,slog中生成的文件不同. 如: 7715,7730,7731等WCDMA制式的产品,对应的通信 modem 就是 cp0; 8830,8825等TD-SCDMA制式的产品,对应的通信 modem 就是 cp1; 9620 LTE 产品,对应的4G modem 就是 cp3; connective 芯片(包含WIFI,BT,FM,GPS)对应的 modem 就是 cp2.
+参考FAQ: FAQ38649
+### 问题: 蓝牙CTS测试介绍
+解决方案: CTS软件其中的蓝牙相关测试项有哪几方面呢? 1.Toggle Bluetooth 这个是测试蓝牙打开关闭功能 2.Insecure Client / Insecure Server 测试蓝牙交互性的,手机一方进入client端界面,另一方进入server端界面,client搜到到server设备后,进行连接,连接成功后, client会往server端发送数据,检查双方是否可以接受到数据 3.Secure Client / Secure Server 与2相似,不同的地方是,在进行配对连接的时候会先进行配对请求,确认配对请求后,才会继续后面的流程
+参考FAQ: FAQ38656
+### 问题: SC7730如何修改手机型号
+解决方案: 修改./device/sprd/scx35_sp7730ec/scx35_sp7730ecplus.mk: PRODUCT_MODEL := SP7730A PRODUCT_MODEL对应手机型号.
+参考FAQ: FAQ38663
+### 问题: Slog配置文件在手机和工程中的存放路径？
+解决方案: user和userdebug各有一个配置文件,分别对应 slog.conf 和 slog.conf.user. 在源码工程中的路径: vendor/sprd/open-source/tools/slog/ 编译后存放路径: out/target/product/scx35_sc9620openphone/system/etc/ 最终被打包到system.img,flash到手机. 在手机的存放路径: /system/etc/slog/ 手机启动后,slog deamon 会 copy /system/etc/slog/slog.conf 到 /data/local/tmp/slog/目录下,并最终解析出来.
+参考FAQ: FAQ38665
+### 问题: 如何让状态栏上的网络类型图标由3G显示为H?
+解决方案: 定位到frameworks/base/packages/SystemUI/res/values/config.xml文件中,找到config_hspa_data_distinguishable这个配置项,将该项设置为true即可,具体代码修改如下: 修改前: <bool name="config_hspa_data_distinguishable">false</bool> 修改后: <bool name="config_hspa_data_distinguishable">true</bool>
+参考FAQ: FAQ38669
+### 问题: 如何修改slog的默认存储路径？
+解决方案: slog默认的存储路径是在slog.conf中定义的,默认为external,对应storage/sdcard/slog/ 可以根据需要存放到internal中,对应路径: /data/slog/. 以userdebug版本为例,修改手机 /data/local/tmp/slog/slog.conf "logpath",如红色字体. #control: enable/disable enable #type name value var logpath external var screenshot enable var kmemleak off .....
+参考FAQ: FAQ38670
+### 问题: 使用adb free命令查看手机内存概况
+解决方案: 一、adb 连接手机 二、输入adb shell 三、执行命令busybox free: 127|root@scx15_sp7715ga:/ # busybox free busybox free total used free shared buffers Mem: 220188 216500 3688 0 0 Swap: 204796 1448 203348 Total: 424984 217948 207036
+参考FAQ: FAQ38681
+### 问题: 如何让充电完成后状态栏电量图标上不显示闪电标志？
+解决方案: 这个是google原生设计.google 原生设计为只要是usb插入状态,则会在状态栏电量图标上显示闪电标志.如果期望充电完成后状态栏电量图标上不显示这个闪电标志,可按照下面的方式修改: 定位到:frameworks/base/packages/SystemUI/src/com/android/systemui/BatteryMeterView.java的draw方法,然后作如下修改: public void draw(Canvas c) { ... - if (tracker.plugged) { + if (tracker.plugged && level < 100) { ... } ... }
+参考FAQ: FAQ38688

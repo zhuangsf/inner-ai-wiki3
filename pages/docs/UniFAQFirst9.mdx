@@ -1,0 +1,304 @@
+### 问题: CFT_R9.0.0001工具的featurePhone工程能用于SC7701 SC7702校准吗？
+解决方案: 经确认CFT_R9.0.0001工具的featurePhone工程仅仅是针对SC7703平台的, SC7701 SC7702平台应使用[WCDMA+GSM]SR3131(DCXO)_COMMON工程.
+参考FAQ: FAQ33151
+### 问题: CMU200测试GPRS连接时，为什么需要将Number of PDUs参数设置为0
+解决方案: Number of PDUs 这个参数是CMU200与手机数据连接时,设定的发数据包数量. 设置为0,GPRS收发数据包数量不受限制,GPRS可以连续收发测试.
+参考FAQ: FAQ33165
+### 问题: SC7731内置AUDIO—PA的输出功率是多少？
+解决方案: Class D mode: 4.2V供电,8欧姆负载时,输出功率为800mW. Class AB mode: 4.2V供电,8欧姆负载时,输出功率为500mW.
+参考FAQ: FAQ33168
+### 问题: Android平台上，如何在slog中开启截屏服务？
+解决方案: 1.输入*#*#83781#*#*进入工程模式 2.进入Debug&log->log setting->Slog UI 3.点击屏幕右上方的设置图标->进入device log setting界面 4.进入general->Snap service->打勾->在status bar上会显示截屏服务 5.在任意界面,点击下拉窗口,点击SlogUI Snap即可截屏 6.截屏图片存放在slog的misc文件夹里
+参考FAQ: FAQ33166
+### 问题: CFT AFC校准的目的？
+解决方案: AFC 主要是为了保证手机的时钟频率能和网络正确同步. TCXO:线性度和一致性都较好,校准算法也简单; DCXO:一致性差,不做校准找不到网可能性较大或找网时间变很长,所以必须做AFC校准,校准算法相比TCXO更加复杂
+参考FAQ: FAQ33183
+### 问题: 如何调节LCD背光灯的静态功耗？
+解决方案: 在正常工作中,LCD的背光LED的功耗非常大,故通过以下几个方法去降低: 1)在LED灯回路中短接一个小电阻,改变阻值,用来控制LED灯工作时的电流; 2)利用人眼迟滞效应,使用PWM(脉宽调制)信号来控制LED灯的开关; 3)用软件去修改,ANDRIOD下的节约功耗软件是基于手机图形界面调节背光灯亮度界面
+参考FAQ: FAQ33281
+### 问题: CFT APC校准的目的？
+解决方案: 对APC 进行校正是为了让手机的发射功率能够满足协议 中对各个功率等级的定义; 在实际通讯过程中,手机和基站的发送功率是可变的,手机会根据实际情况来选择发送功率的大小.
+参考FAQ: FAQ33188
+### 问题: CFT AGC校准的目的？
+解决方案: AGC校正是为了保证输入信号(IQ信号)保持在基带可正确解调范围之内. 基带对IQ信号幅度响应范围比天线输入端的输入范围要小的多,所以我们必须将线的输入信号映像到基带的可用范围之内. 通过AGC校准手机还可以正确的向基站报告接收信号强度(Rx level)是多少.
+参考FAQ: FAQ33189
+### 问题: CP2 挂死后如何抓去mem
+解决方案: 在压力测试或者反复操作下,有时CP2会出现无响应的问题,BT wifi均无法打开.这时需要dump cp2 mem 针对2351芯片 可通过如下步骤dump mem 1、进入adb shell:cat /proc/cpwcn/mem > /data/wcn.mem 2、退出adb shell:adb pull /data/wcn.mem 最后连同版本对应CP2 的axf文件一起给研发同事即可 针对marlin芯片 出问题时开启CP2 log时,出现cp2 assert会自动dumpmem到cp2 目录下,名字叫"cp_wcn_memory_2012-01-03_00-39-37.dmp" 也可以手动进83781里 slog 里有控制菜单可manual dump wcn mem 注意2341A芯片不能
+参考FAQ: FAQ33205
+### 问题: 前后摄像头有相同的I2C地址，导致识别异常的摄像头组合汇总
+解决方案: 前后摄像头有相同的I2C地址,导致识别异常的摄像头组合汇总 汇总客户反馈的存在摄像头识别异常的前后摄像头组合如下: BF3703/BF3A03---I2C地址:0x6e GC0309/GC0328---I2C地址:0x21 SP0A19/SP0718---I2C地址:0x21 且摄像头的PowerDown脚均为设置高电平时进入省电模式 解决方式可参考FAQ30200实现 FAQ30200 GC0309/GC0328分别用作前后摄像头,出现识别异常的原因分析和解决方法
+参考FAQ: FAQ33229
+### 问题: 如何使用git diff命令自动制作diff文件？
+解决方案: 命令使用方法: git diff > ***.diff 注意 :该命令需要在修改文件后,没有使用git add之前使用,否则生成的diff文件为空
+参考FAQ: FAQ33228
+### 问题: 连接充电器，触摸屏异常问题
+解决方案: 首先,智能机要求支持多点触摸功能,大都采用互电容式触摸屏,其工作方式均为发送脉冲信号,检测互电容大小时,横向的电极依次发出激励信号,纵向的所有电极同时接收信号,这样可以得到所有横向和纵向电极交汇点的电容值大小,即整触摸屏的二维平面的电容大小,根据触摸屏二维电容变化量数据,可以计算出每一个触摸点的坐标;这里的信号很微弱,极易受到外界干扰.再者因为模组到主板(cob)或者IC(cof)的距离一般较远,且LAYOUT水平各不相同,因此受干扰几率更大. 另一方面,从充电器来看,受到成本和体积的制约,目前大部分手机充电器均是开关型充电器,这种充电器普遍存在开关频谱泄漏和共模严重的问题,加上充电器采用两芯交流插座,没有与真正的地连接,干扰就没办法泻放,而从充电器引到手机,这样就容易干扰到CTP了. 解决方案:比如充电器输出上加2.2nF及以上的电容到地,软件更改TP的扫描频段,规避干扰区等.
+参考FAQ: FAQ33225
+### 问题: MIC单端接法时，MICP上到地0.1uF电容为何要靠近MIC放置？
+解决方案: 为了实现假差分,加强抗干扰能力.
+参考FAQ: FAQ33231
+### 问题: 为何最新参考设计SR2351 TCXO供电用VDDRF0，SR2351用VDDRF2？
+解决方案: 如果VDDRF2也给TCXO供电则如果2351不用时VDDRF2是就无法关闭了.可能会影响待机电流(2351会有一点漏电).
+参考FAQ: FAQ33237
+### 问题: POP3邮箱里的邮件都显示未读状态，这是什么原因？
+解决方案: 该问题是由协议决定的,pop3协议不支持远程,使用pop3协议时,本地的操作不会同步到服务器上,每个手机创建pop3账户时,同步下来的邮件都是未读的. imap协议支持远程,假设两台手机都使用imap协议创建账户,如果其中一台手机将一封邮件设置为已读,然后手动同步一下邮件列表,会将本地的状态同步到imap服务器上,此时再从另一台手机创建imap账户同步下来的邮件其中有已读邮件,也有未读邮件.
+参考FAQ: FAQ67866
+### 问题: class G的 CAP_P和CAP_N之间的电容选择有什么要求么？
+解决方案: class G的 CAP_P和CAP_N之间的电容需要用0603封装,10V耐压. 音频效果会稳定些.
+参考FAQ: FAQ33242
+### 问题: 7715使用常闭耳机方案，为何有时会出现耳机检测不到？
+解决方案: 需要软件打个Patch.
+参考FAQ: FAQ33249
+### 问题: 使用ResearchDownload2.9.9006工具，下载时为何会出现imcompatible partition故障
+解决方案: 需要升级工具至ResearchDownload2.9.9008.
+参考FAQ: FAQ33250
+### 问题: 如何编译资源图片？
+解决方案: 我们知道图片以及字符串都会在R.java中生成一个唯一的id序列. 当在Eclipse里新增了图片时,编译工程时,会自动往R.java中生成图片对应的id序列,但是当我们直接在服务器上编译资源图片时,必须手动编译下指定的图片文件生成R.java. 编译指令如下: touch 图片绝对路径 如: touch packages/app/mms/res/drawable-hdpi/stat_notify_mms3.png 接着再编译模块即可.
+参考FAQ: FAQ33255
+### 问题: 如何判断sdcard的存储方案？
+解决方案: 1)SDCARD的存储方案共有四种如下: Storage1是虚拟内卡为主卡,外部T卡为副卡 Storage2是虚拟内卡为副卡,外部T卡为主卡 Storage3是物理内置T卡为主卡,外部T卡为副卡 Storage4 是物理内置T卡为副卡,外部T卡为主卡 注意:ea方案中四种方案都可以正常工作,ga方案中只有(Storage1,Storage2)可以正常工作 怎么判断当前手机的方案呢? adb root 获取root权限 adb pull /init.storage.rc local 通过查看 init.storage.rc的内容,就可以判断存储方式.
+参考FAQ: FAQ37119
+### 问题: Dophin平台怎么通过电源变换降低功耗？
+解决方案: 由于系统的外设很多,需要多种电源.仅以主cpu来看,就有1.3V和2.8V. 故需要很多电压变化单元,一般有以下几种电压变换方式: 1)线性调节器; 2)DC/DC; 3)LDO
+参考FAQ: FAQ33287
+### 问题: 为什么选择“清除快捷方式”后，返回搜索输入框，之前输入过的关键字还显示
+解决方案: 清除快捷方式的功能是用来清除之前的搜索历史记录,和输入框的输入是没关系的. 如搜索项为联系人,输入关键字,在输入框的下边会有一些搜索建议,点击其中的一个搜索建议,进入到联系人详情界面,再返回到搜索界面,此时在输入框的下边会出现一条搜索历史记录,清除快捷方式会把这条搜索历史记录清除. 清除快捷方式的描述为"清除最近所选搜索建议的快捷方式",选择之后,也会有提示会清除最近所选搜索建议.
+参考FAQ: FAQ33295
+### 问题: 合入TP驱动后怎样去除LCD上的圆点
+解决方案: 方法一:软件编译输出 比如6815项目,加入TP ft5206_ts驱动后, 在文件scx15_sp6815gabase 中的 PRODUCT_COPY_FILES += \ 加入以下项: $(BOARDDIR)/ft5206_ts.idc:system/usr/idc/ft5206_ts.idc \ 红色部分名称要和kernel\drivers\input\touchscreen路径下的C文件保持一致. 方法二:快速去除 首先adb root、adb remount下, 再进入adb shell,到system/usr/idc路径下, 拷贝其他TP的idc文件,如拷贝focaltech_ts,使用命令: cp focaltech_ts.idc ft5206_ts.idc
+参考FAQ: FAQ33311
+### 问题: Mobile Tester的功能是哪些？
+解决方案: Mobile Tester的功能主要包括: 手机与PC系统的连接和相关模式切换; 基本信息(IMEI、SN、BT、Wifi)读取和主要功能测试; AT命令控制以及通话呼叫等; RF射频信号控制发射与接收以及RF校准; Flash中校准参数的读取和写入; 蓝牙相关功能测试以及蓝牙地址读写; wifi相关功能测试以及wifi Mac地址读写; Memory指定区域的信息读取和写入; RF GPIO逻辑控制配置; AP ADC的读取写入;
+参考FAQ: FAQ33314
+### 问题: 如何关闭号码归属地显示？
+解决方案: 针对需要关闭号码归属地功能的工程,可以修改具体工程的mk文件进行关闭. 以scx15_sp7715eacuccspecAplus_UUI.mk工程为例,修改\device\sprd\scx15_sp7715ea\scx15_sp7715eacuccspecAplus_UUI.mk文件,添加ro.device.support.geocode=false的设置,如下: PRODUCT_PROPERTY_OVERRIDES += \ ro.device.support.geocode=false \ persist.sys.support.vt=false \
+参考FAQ: FAQ33335
+### 问题: dophin平台在调节动态功耗，需考虑的因素？
+解决方案: dophin平台在调节动态功耗,需考虑的因素主要包括6个方面: 1:Modem的控制; 2:软件方面的优化; 3:DPM切换cpu模式; 4:RPM运行时电源管理; 5:降低cpu的电压与频率; 6:DVFS的方面;
+参考FAQ: FAQ33370
+### 问题: 蓝牙的三种模式以及各自意义
+解决方案: 蓝牙一共三种模式:激活模式(active)、呼吸模式(sniff)和保持模式(hold). 激活模式:处于激活模式的设备参与微微网的正常通信.在一个微微网中任何时刻可以最多有7个从设备处于激活模式. 呼吸模式:呼吸模式是一种节能模式,可以减少从设备监听信道的时间.如果已经建立了ACL链路,处于呼吸模式的从设备只在主->从ACL时隙进行监听;处于呼吸模式下的主设备仅仅能够在某些特定的时隙向某个从设备发送数据. 保持模式:连接状态下的从设备可以暂时不使用ACL链路,进入保持模式.在保持模式下,从设备将临时不参与信道中的ACL分组,但是参与保留的同步信道中同步分组.保持模式可以腾出设备资源以便用于扫描、寻呼、查询、加入其他微微网等操作.
+参考FAQ: FAQ33388
+### 问题: 7731能否支持T卡热插拔
+解决方案: 支持
+参考FAQ: FAQ33401
+### 问题: SC7731能否支持双卡都是W模式
+解决方案: 不支持 只支持一张卡W模式
+参考FAQ: FAQ33402
+### 问题: SC7731最大支持多大的T卡
+解决方案: 32G
+参考FAQ: FAQ33403
+### 问题: SC7731平台支持OTG功能吗
+解决方案: 支持
+参考FAQ: FAQ33404
+### 问题: 展讯测试CET客户都需要做什么准备工作？
+解决方案: 1 客户要提供自测试报告 包括天线报告 2 客户要提供最终板子的原理图PCB BOM 3 客户提供debug版本 4 客户提供完整的机器至少四台
+参考FAQ: FAQ33405
+### 问题: SC7731平台支持的MPEG4最大编码速率？
+解决方案: 720p 30fps
+参考FAQ: FAQ33408
+### 问题: SC7731平台支持的H.264最大编码速率？
+解决方案: 720p 30fps
+参考FAQ: FAQ33409
+### 问题: SC7731平台支持JPEG格式的image Sensor大小？
+解决方案: 5M pixels
+参考FAQ: FAQ33410
+### 问题: SC7731平台普通GPIO口上下拉电阻的可选值是什么？
+解决方案: 
+参考FAQ: FAQ33411
+### 问题: 蓝牙配对的含义以及简单配对的几种模式
+解决方案: 配对过程指的是两个设备间创建加密密钥(linkkey)的过程.在蓝牙2.1之前,双方输入相同的pin码,通过这个pin码来计算出linkkey,然后通过鉴权过程检查linkkey,正确的话就储存下来,否则提示配对失败.在蓝牙2.1版本,引入了简单配对(Secure Simple Pairing )概念,避免了输入pin码的过程,缩短了配对过程的时间,也提高了整体安全性. 四种简单配对模式 Numeric comparison:显示6个数字和一个yes/no供用户选择. Just Work:通讯过程与Numeric comparison类似,但是不需要用户确认. Passkey Entry:让用户输入6个数字. Out Of Band:在inquriy时候会交换oob信息,包含加密信息和蓝牙地址.
+参考FAQ: FAQ33406
+### 问题: SC7731平台的camera都支持哪些格式和支持像素大小？
+解决方案: Support JPEG image sensor sizes up to 8M pixels Support YUV image sensor sizes up to 3M pixels Support raw-RGB image sensor sizes up to 13Mpixels
+参考FAQ: FAQ33413
+### 问题: 【SC7701】为什么双卡项目PIN码输入提示窗口不是按SIM1、SIM2顺序弹出的？
+解决方案: SIM卡启动是按SIM1、SIM2的顺序启动,仍然出现"双卡项目PIN码输入提示窗口不按SIM1、SIM2弹出"现象主要原因如下: 1、协议底层SIM初始化采用并行处理方式; 2、SIM卡本身特性的差异,SIM卡完成初始化所需的时间也不一样.
+参考FAQ: FAQ33427
+### 问题: 展讯7701平台CET测试底电流的标准是多少？
+解决方案: 小于1.5mA
+参考FAQ: FAQ39195
+### 问题: 如何adb 命令assert cp2
+解决方案: 针对2351芯片 adb shell setprop persist.sys.sprd.wcnreset 1 echo "at+spatassert=1\r\n" > /dev/spipe_wcn5 针对marlin芯片 adb root wcnd_cli wcn 'at+spatassert=1'
+参考FAQ: FAQ33506
+### 问题: android如何调整亮度条映射的亮度范围
+解决方案: idh.code/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/QuickSettingsModel.java 调整MINIMUM_BACKLIGHT的值,MINIMUM_BACKLIGHT默认是30 MINIMUM_BACKLIGHT的取值范围是0~255 注意:MINIMUM_BACKLIGHT 不能比MAXIMUM_BACKLIGHT大
+参考FAQ: FAQ33448
+### 问题: SC7701平台使用CFT9.0.0001版本做CFT校准应选择什么工程？
+解决方案: 应选择[WCDMA+GSM]SR3131(DCXO)_COMMON,而不能选择[featurephone]SR3131(DCXO)_COMMON
+参考FAQ: FAQ33518
+### 问题: 2351FM无声问题的分析方法
+解决方案: 在某些场景下操作会发现 FM 有时突然没有声音了,由于声音和 AUDIO 牵扯较多,需要做的是确认问题是出现在 AUDIO 还是 FM,对于shark方案,判断方法如下: 1. 只要 FM 正常工作条件存在,且使能了 FM 功能(0x40270030 的 bit0 为 1),且处于unmute 状态(0x40270084 的 bit0 为 0),则理论上 MODEM 会发音频数据到后端. 2. 判断 MODEM 是否把音频数据通过 IIS 总线发出.状态寄存器 0x402700d0 的[22:21]bit,这两个 bit 一个是 IIS 的 DATA,一个是 IIS 的 LRCLK,可以通过 look at 命令多打印几次,看看这个两个 bit 是否有翻转,如果有则说明 FM 是 OK 的. 3. 2351没有IQ数据发出,很可能是2351掉电.出现的概率比较小,用示波器测量一下IQ管脚是否有信号数据和第1管脚电压是否满足要求即可.
+参考FAQ: FAQ33543
+### 问题: UART的数量和功能
+解决方案: 总共4个UART, 其中: UART0: 支持硬件流控, 可用于BT/WIFI; UART1: 不支持硬件流控, 用于数据Log的输出(DDR扫描log输出, 充电等等log); UART2: 不支持硬件流控, 由用户定义应用; UART3: 支持硬件流控, 可用于非2351的GPS通讯方案.
+参考FAQ: FAQ33559
+### 问题: IIS数量和功能
+解决方案: 7731有4个IIS接口 IIS0: WIFI_AGC_GAIN和FM_RXIQ_DATA共用(缺省用法) IIS1: 音频接口共用(缺省用做GPIO) IIS2/3: 可用于BT,作为PCM数据传送; 或者外部CODEC; ATV; 由用户定义应用.
+参考FAQ: FAQ33590
+### 问题: 展讯平台是否支持蓝牙4.0
+解决方案: Android 4.3系统正式支持低能耗蓝牙4.0技术(Bluetooth 4.0 Low Energy).相较于3.0版本,蓝牙4.0拥有低功耗、3毫秒低延迟、AES-128加密等特点,它将三种规格集一体,包括传统蓝牙技术、高速技术和低耗能技术.根据官方的数据,蓝牙4.0的峰值能耗约为3.0的一半,极低的运行和待机功耗使得一粒纽扣电池甚至可连续工作一年之久.考虑到安卓设备的全球占有率情况,低能耗的连接方式,将会促进可穿戴设备的普及,并加速互联网的建设. 而展讯蓝牙trout目前只支持到2.1版本,不支持4.0.
+参考FAQ: FAQ33594
+### 问题: 同时连接蓝牙耳机和有线耳机，接通电话瞬间有线耳机先发声然后才切到蓝牙耳机。
+解决方案: 同时连接有线耳机、蓝牙耳机接听电话的过程大体如下:
+电话接听后马上进行声音输出设备选择,并选出当前可用输出设备为有线耳机---> 蓝牙切换到sco----->上层调用setForceUse强制使用蓝牙sco作为声音输出设备---------->重新进行设备路由,切换到蓝牙耳机输出.
+两种耳机的切换速度与蓝牙切换到sco的耗时及上层强制选择sco作为声音输出的时机相关.
+参考FAQ: FAQ33612
+### 问题: SR3131/3500上的26M时钟输出幅度
+解决方案: 输出幅度是可以调整的, 可以通过软件编程或NV配置, 当用VDDRF0=2.8V供电时: Amplitude[11]-->typ 2.19Vpp的26M输出幅度(2~2.57) Amplitude[10]-->typ 1.74Vpp的26M输出幅度(1.58~2.03) Amplitude[01]-->typ 1.38Vpp的26M输出幅度(1.25~1.6) Amplitude[00]-->typ 0.85Vpp的26M输出幅度(0.77~1.26)
+参考FAQ: FAQ33631
+### 问题: Dolphin平台如何准确判断手机FLASH为NAND or eMMC方案？
+解决方案: 判断手机FLASH为NAND还是eMMC方案,可通过getprop来获取,具体操作方法如下: 在adb shell下输入: getprop | grep flash 1)若FLASH 为NAND则输出信息为: [ro.storage.flash_type]: [1] 2)若FLASH 为eMMC则输出信息为: [ro.storage.flash_type]: [2]
+参考FAQ: FAQ33654
+### 问题: WIFI softap模式下信道设置
+解决方案: 信道配置位于system/netd/SoftapController.cpp SoftapController()函数中,默认采用AP_CHANNEL_DEFAULT 6信道,注意不在ini与nvram中设置
+参考FAQ: FAQ33658
+### 问题: SC7701支持DDR和SDRAM吗？
+解决方案: 支持
+参考FAQ: FAQ33674
+### 问题: SC7701的外部memory接口有哪些？
+解决方案: 支持NAND+DDR和NAND+SDRAM
+参考FAQ: FAQ33676
+### 问题: SC7701平台支持双SIM卡吗？
+解决方案: 支持双SIM卡,1.8V和 3.0V的SIM卡均支持
+参考FAQ: FAQ33681
+### 问题: 7715 nand方案cache2的作用原因?
+解决方案: 7715 nand方案,当插入T卡时,系统会自动多挂载cach2分区.说明如下: 主要原因是海外要求装GMS包,其中有一个google服务,对cache的大小有一定的要求.而nand方案配的cache空间比较小,一般只有几M.所以展讯平台实现了cache_to_sd这个功能. 即当手机插T卡时会划分一部分空间(也就是文件cachedisk),挂载到cache目录,这样cache空间就会比较大了,从而满足了google服务的要求.而先前的空间比较小的cache分区就会被挂载到cache2目录上,因为这个分区会记录升级所需要的一些信息,这样在重启后能够正确的进入recovery模式,并正确的升级.
+参考FAQ: FAQ33830
+### 问题: 电脑上连接多个设备时，如何对某一手机执行adb命令
+解决方案: 当电脑上连接多台设备时,可使用 adb -s 设备ID 来指定在哪台设备上执行该命令 如:
+参考FAQ: FAQ33667
+### 问题: 如何修改monkey进程优先级
+解决方案: monkey测试开始后需要修改monkey进程优先级,避免monkey进程被系统杀掉 一般我们会将优先级修改为"-16"代表最高优先级 修改优先级方法如下: adb root adb shell ps 找到"com.android.commands.monkey"的pid值pinnum adb shell echo -16 >/proc/pinnum/oom_adj cat /proc/pinnum/oom_adj 此时如果回显-16代表修改成功
+参考FAQ: FAQ33688
+### 问题: SC7701平台支持内部32K吗?
+解决方案: 支持
+参考FAQ: FAQ33686
+### 问题: SC7701平台支持SPI Flash吗？
+解决方案: 支持,Option5拉低就支持SPI Flash
+参考FAQ: FAQ33725
+### 问题: SC7701平台支持500W像素的摄像头吗？
+解决方案: 支持5M像素JPEG数据格式的摄像头
+参考FAQ: FAQ33730
+### 问题: YUV格式数据摄像头模组，SC7701平台能支持多少万像素？
+解决方案: 最大支持3M YUV格式数据的摄像头模组
+参考FAQ: FAQ33731
+### 问题: fdl1和fdl2下载失败的原因？
+解决方案: 首先fdl1下载失败与Baseband芯片有关,而fdl2下载失败与Memory有关,先进行相关检查; 其次在查看是不是焊接的错误
+参考FAQ: FAQ33737
+### 问题: 如何用monkey只对指定的应用程序进行测试（whitelist）
+解决方案: 第一步需要找到要测试的应用程序的包名: 进入adb shell cd data/data ls 此时会列出所有的包名,找到自己要测试的package.name 第二步: 执行测试: 方法1:通过命令行: adb shell monkey -p package.name -v 30 如果需要测试多个包,可添加多个" -p package.name"参数 方法2:通过whitelist 将需要测试的包名写入whitelist中,执行monkey测试即可
+参考FAQ: FAQ33712
+### 问题: audio系统的架构简图
+解决方案: 这个是audio系统的架构简图.耳机、mic、speaker等外设与codec相连;codec通过iis与基带进行声音数据交互; codec包含数字部分和模拟部分,通过D/A,A/D转换,多路选择等按指定路径输出/录制声音.
+参考FAQ: FAQ33733
+### 问题: rtsp流媒体如何设置UA？
+解决方案: 终端和服务器建立rtsp连接后,后续向服务器发送SETUP, PLAY, PAUSE等命令请求时,在请求中会携带User Agent字段,类似如下:User-Agent: stagefright/1.1 (Linux;Android 4.0.3).发送请求是在ARTSPConnection.cpp文件中onSendRequest函数,其通过调用addUserAgent接口添加UA字段,而最终UA的确定是在Utils.cpp文件中MakeUserAgent函数里,UA的形式如下: User-Agent: stagefright/框架版本 (Linux;Android + Android平台版本 其中框架版本在Android 4.0和Android 4.1平台都是1.1,在android4.4平台为1.2
+参考FAQ: FAQ33761
+### 问题: SC7701平台摄像头支持哪些数据格式？
+解决方案: 支持YUV422、RGB565、YUV420
+参考FAQ: FAQ33765
+### 问题: SC7701平台支持WVGA分辨率的屏吗？
+解决方案: 支持
+参考FAQ: FAQ33766
+### 问题: 如何做一个简单的应用程序启动画面?
+解决方案: 在Theme中有一个item,<item name="windowBackground">@android:color/black</item>,可以将它的值 设置为一张图片, <item name="android:windowBackground">@drawable/launch_background</item> ,这样应用程序在启动的时候就不是默认的黑屏效果,而是一张自己定义的图片,从而实现一个简单的 启动画面. 这样会有一个问题,windowBackground改变了activity的背景颜色,当activity再次加载,例如解锁, 仍会出现这个背景图片,这就需要在activity在加载完成之后重新将背景刷上需要的效果, getWindow ().setBackgroundDrawableResource(R.color.item_black).
+参考FAQ: FAQ33738
+### 问题: SC7701平台DCDC的电感选型需要注意哪些指标？
+解决方案: 1.耐流能力在1A以上 2.Rdc小于 0.5ohm 3.感值在4.7uH的功率电感
+参考FAQ: FAQ33771
+### 问题: 如何打开Camera JNI的log
+解决方案: 将android_hardware_Camera.cpp中的//#define LOG_NDEBUG 0改为: #define LOG_NDEBUG 0即可. 一般log的开启方式如下: #undef NDEBUG //打开LOGV/LOGI/LOGD #define LOG_NDEBUG 0 //打开LOGV #define LOG_NIDEBUG 0 //打开LOGI #define LOG_NDDEBUG 0 //打开LOGD
+参考FAQ: FAQ33779
+### 问题: 如何查看视频源是否包含GMC特性
+解决方案: 有些视频源是特殊片源,比如视频格式是MPEG-4 ASP格式,如果包含GMC特性,则属于不支持的范围,播放时会提示无法播放,此时我们可以使用mediainfo进行查看该视频源是否包含GMC特性,请参照如下图:
+参考FAQ: FAQ33772
+### 问题: 如何更改actionbar返回按键的图标？
+解决方案: 在配置文件中通过设置android:actionModeCloseDrawable完成actionbar的左上角返回图标 如下: <item name="android:actionModeCloseDrawable">@drawable/ic_ab_back_holo_dark</item>
+参考FAQ: FAQ33785
+### 问题: SC7730设置辅助功能菜单,开启辅助功能快捷方式后功能无效的问题分析
+解决方案: 辅助功能快捷方式:需要安装例如google的talkback应用或者第三方的有屏幕阅读功能的语音助手后,在辅助功能的服务菜单里会生成所安装的辅助功能信息后,此时按照"辅助功能快捷方式"里的操作才能生效. 比如安装上google应用talkback.可以提供为盲人服务的语音功能.安装该应用后就可以通过辅助功能快捷方式打开该服务,并在"文字转语音(TTS)"中设置需要阅读的语言即可.
+参考FAQ: FAQ33824
+### 问题: 如何检查资源中所使用的默认铃声文件的大小？
+解决方案: 如果需要检查资源中所使用的默认铃声文件的大小,可以打开编译目录\build\***_builddir\tmp中的文件mmi_res_***_ring.txt,查看其中的每个铃声对应的dst_size值.
+参考FAQ: FAQ45733
+### 问题: SC7730恢复出厂设置耗费太长时间的原因分析和解决方法。
+解决方案: 原因:主要是恢复出厂设置时发出的广播,没有立刻得到处理导致的. 解决方法:将恢复出厂设置的广播改为前台广播,提高处理的优先级. 具体将android.intent.action.MASTER_CLEAR广播消息,设置成前台广播 Intent.FLAG_RECEIVER_FOREGROUND即可. 备注:有多处地方的android.intent.action.MASTER_CLEAR都需要修改.
+参考FAQ: FAQ33831
+### 问题: LDN和SDN的解释和智能机哪些平台支持该功能？
+解决方案: LDN:Last dial number. 在拨号盘设置菜单选择LDN列表会显示sim卡里最近10个拨号记录,这些号码是保存在sim卡里, 因此该功能需要营运商的sim卡和modem都支持才能正常使用. SDN: Service Dail Number 选择该SDN列表菜单显示服务拨号号码,该号码也是营运商先预存在入sim卡里的, 因此该功能也需要sim卡和modem都支持才能正常使用. 目前7730/SC7715平台modem上支持LDN和SDN,其他就看营运商sim卡是否支持了. 见如下图:
+参考FAQ: FAQ33832
+### 问题: FM搜台少问题
+解决方案: FM搜台少可能存在的问题有一下几种. 1.环境信号差.排除此问题只需要测试人员拿出自己的手机或者对比机搜一下台,如果也搜不到台则说明环境信号比较差,这不是手机本身的问题. 2.软件问题.通过驱动中调节阈值进行调节,调节原因主要是因为不同的手机的PCB不同,射频部分电路的性能会有略微差别,可以通过修改阈值进行调节. 3.硬件问题.上一条其实也可归为硬件问题,只不过是是性能上的略微差别.当出现同一软件版本,同一硬件环境搜台数量明显减少或者基本上搜不到台的时候,而且FM的log也是正常的,则需要硬件同事帮助检查一下硬件是否有问题.
+参考FAQ: FAQ33889
+### 问题: 7715上内部dcdc的配置流程
+解决方案: 7715上内部dcdc的配置流程 7715上dcdc的配置流程按ga工程与ea工程分有区别: ga工程的初始化函数为void init_ldo_sleep_gr(void);对应文件在ldo_sleep.c ea工程的配置函数为low_power_init();对应的修改在sp7715ea/ldo.h
+参考FAQ: FAQ33908
+### 问题: 增加GMS开机向导后怎么修改默认睡眠时间
+解决方案: 由于GMS向导影响到了休眠时间,需要增加规避,在设置灭屏为121000时,直接return; 代码修改建议如下: 可以在/frameworks/base/core/java/android/provider/Settings.java的1278行左右的putInt接口里增加下面的判断阻止google开机向导更改默认睡眠时间. if(name.equals("screen_off_timeout") && (value == 121000)) { //google开机向导会修改休眠时间为121000,因此直接return掉 return false; }
+参考FAQ: FAQ33914
+### 问题: 蓝牙通话sco与esco链路的区别
+解决方案: SCO 逻辑传输是主设备和特定从设备之间的对称点对点信道. eSCO 逻辑传输是主设备和特定从设备间的对称或不对称点对点链路. eSCO 链路在标准 SCO 链路上提供了许多扩展,这主要表现在:它们支持更灵活的数据包类型组合,支持选择数据包内容和选择时隙时段,从而支持多种同步比特率.eSCO 链路还可以提供有限的数据包重新传送(SCO 链路不存在重新传送).如果要求重新传送,则重新传送将发生在跟随保留时隙的时隙内,否则时隙将用于其它通信.
+参考FAQ: FAQ33878
+### 问题: 如何修改日历的默认显示界面
+解决方案: 修改GeneralPreferences.java文件中的"DEFAULT_START_VIEW"的值,主要有WEEK,MONTH,DAY,AGENDA等显示界面.
+参考FAQ: FAQ33928
+### 问题: 如何修改设备ID
+解决方案: 对于userdebug版本可以使用命令来修改,而user版本只能使用mobletester工具来修改. userdebug版本修改ID命令如下: adb root adb shell回显为"#"号时输入: echo -n 123456 > /sys/bus/platform/drivers/android_usb/serialnumber 其中"123456" 为修改后的设备ID 注意此修改修改后需重新插拔USB线,且重启设备后会失效
+参考FAQ: FAQ33958
+### 问题: 内置在preload中的应用对应的lib放在哪里
+解决方案: 第三方应用可以内置在preoload目录中,也可以内置在system/app目录中, 当apk内置在preload目录中时PackageManagerService会在/data/app-lib创建相应的应用的对应的文件夹,在此文件夹下放入对应的so文件,这样可以避免不同应用有相同的so shell@scx35_sp7730ec:/data/app-lib # ls AIMail ... shell@scx35_sp7730ec:/data/app-lib # cd AIMail/ shell@scx35_sp7730ec:/data/app-lib/AIMail # ls libyzs_usc.so
+参考FAQ: FAQ33979
+### 问题: 应用内置在system/app目录下与system/preload目录下有什么区别
+解决方案: 1.可卸载性: /system/app:应用不能卸载 /system/preloadapp:应用可以卸载,但是恢复出厂设置时可以还原 2.lib存放位置: /system/app:需要将应用对应的lib内置到system/lib目录下 /system/preloadapp:PackageManagerService会在/data/app-lib创建相应的应用的对应的文件夹,在此文件夹下放入对应的so
+参考FAQ: FAQ33982
+### 问题: 视频特性GMC(全局运动补偿)介绍
+解决方案: GMC 是 Global Motion Compensation的缩写,也就是全局运动补偿.GMC 的出现是基于一个前提:现实中很多视频的运动是因为摄像机的运动造成的,比如摄像机的平移,旋转,缩放所产生的比较复杂的变化,而不是物体运动造成的.举例来说:你在车上看到的窗外的景物在后移实际上是你在前进!从视频编码角度来看,就是全屏幕都在运动,为了处理这种情况,就引入了 GMC 编码方式. 全局运动补偿编码的基本原理是:在编码时,首先通过全局运动估计技术计算出摄像机的运动参数,然后通过运动模型参数进行运动预测,最后对运动参数和补偿后的残差进行编码.从信息论的观点看,由于这些在同一场景中拍摄的视频段中每帧之间的背景图像是相关的(考虑背景整体相关性),而全局运动补偿编码就是利用这些相关性进行编码.这种编码方式能够进一步提高压缩比,改善相同码率下的图像质量.
+参考FAQ: FAQ33993
+### 问题: 展讯平台充电方案NMOS管的选择
+解决方案: NMOS管的选择只要满足2个指标就可以了: Vgs(th)<1.5V; Rds(on)<10欧姆.
+参考FAQ: FAQ39751
+### 问题: 安兔兔测试软件无法获取CPU frequency参数
+解决方案: 下载最新版本的安兔兔测试软件无法获取CPU frequency参数,如下图所示: 首先确认手机中是否有以下文件: Max_freq: /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq Min_freq: /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq 若不存在以上文件,则要看看 kernel/drivers/cpufreq/cpufreq.c文件是否编入版本. cpufreq.c文件是否编译到是依赖CONFIG_CPU_FREQ,如下所示: 检查CONFIG_CPU_FREQ是否定义.
+参考FAQ: FAQ34132
+### 问题: RTSP的基本概念？
+解决方案: RTSP(Real Time Streaming Protocol)即实时流协议,是由Real Network和Netscape共同提出的如何有效地在IP网络上传输流媒体数据的应用层协议.RTSP对流媒体提供了诸如暂停,快进等控制,而它本身并不传输数据,RTSP的作用相当于流媒体服务器的远程控制.RTSP主要通过DESCRIBE,SETUP,PLAY,PAUSE 和TEARDOWN等控制消息来实现流媒体的会话建立、播放、暂停、中止等操作.
+参考FAQ: FAQ34161
+### 问题: 什么是RTP？
+解决方案: RTP(Real-time Transport Protocol)也叫实时传输协议,主要用于传输流媒体中的视频、音频和语音等媒体内容.RTP位于传输层(通常是UDP)之上,应用层之下,语音和视频数据经过转换及压缩编码处理后,先送给RTP封装成RTP数据包,RTP数据再由传输层封装成UDP数据包,最终由网络层封装成IP数据包发送到网络中传输.
+参考FAQ: FAQ34162
+### 问题: 什么是RTCP？
+解决方案: RTCP(RTP Control Protocol)即实时传输控制协议,主要用于服务器和客户端之间的流量控制和拥塞控制.在RTP会话期间,各参与者周期性地传送RTCP包,RTCP包中包含已发送的数据包的数量、丢失的数据包的数量等统计信息,服务器可以利用这些信息动态改变传输速率.RTP和RTCP配合使用,能以有效的反馈和最小的开销使传输效率最佳化.
+参考FAQ: FAQ34163
+### 问题: tcp协议中URG和PSH的区别？
+解决方案: 在tcp层有6个标志位,分别标识表示不同的数据包:URG(urgent紧急),ACK(acknowledgement 确认),PSH(push传送),RST(reset重置),SYN(synchronous 建立连接)和FIN(finish 断开连接). (1)URG设置为1时表明tcp首部中紧急指针(紧急指针指出在本报文段中紧急数据共有多少个字节,紧急数据放在本报文段数据的最前面)字段有效.它告诉系统此报文段中有紧急数据应尽快传送,紧急数据不进入接收缓冲区直接提交给上层进程,余下的数据要进入接收缓冲. (2)PSH=1时,只对接收方的接收缓冲区起作用,发送方通过使用PSH位来通知接收方将所有收到的数据立即提交给上层,而不用为了等待额外数据将缓冲区填满,避免数据在缓存中停留.这里所说的数据包括与此PUSH包一起传输的数据以及之前就为该进程传输过来的数据(滞留在缓存中的数据).
+参考FAQ: FAQ34170
+### 问题: IEEE1725认证主要关注哪些方面？
+解决方案: IEEE1725标准将手机锂离子电池系统分为了四个版块,即电芯(Cell)部分、电池组(Battery Pack)部分、主机(Host Device)部分及电池充电器(Adapter)部分.其中电芯部分也是IEEE1725标准的重中之重. IEEE1725标准要求对电芯涉及安全性能的方面进行全方位的审核及检测,可分为文件审核、制造现场审核及成品电芯测试三方面,IEEE1725标准已要求电芯必须通过UL1642测试,故UL1642中含有的测试条款,在IEEE1725标准中都未要求测试.尽管如此,IEEE1725标准中成品电芯测试的条款仍有14项之多. 大多数锂离子电芯标准仅规定成品测试,不拆解电芯,但在IEEE1725所要求的14项测试条款中,包含了若干项拆解电芯来测量或观察短路预防的条款.如隔膜与极片、正负极片之间的overhang测量.
+参考FAQ: FAQ34203
+### 问题: 场测的关注点是什么？
+解决方案: 通过被测移动电话在实际的网络环境中运行,对其性能、功能、可靠性等进行验证 位置登记/位置更新 电信业务 与不同厂家的基站/交换厂家的兼容性(切换) 与不同的移动通讯运营公司(如:中国移动,中国联通)的兼容性(切 换) 在城区、近郊、远郊的通信效果 在有无双频覆盖区域的通信下效果 在固定、低速移动和高速移动中的通信效果 在移动中进行较长时间通话的通信效果．测试项目细分如下: (分移动,联通,固话,10086,13800138000,112类),(同地点不同方向性测试),(快速移动通话测试),(信号强弱不同地点测试) 1.呼叫成功率 2.主叫测试 3.被叫测试 不同界面如拍照菜单等,听MP3时等 4.通话音质 5.回音(串音)有无 6.侧音有无 7.杂音有无 8.有无断音 9.音量切换 10.铃声与振动测试 11.短信收发 12.耳机通话测试 13.插拨SIM卡与网络搜索时间记录 14.拨打长途 15.漫游通话 16.通话与手机发热状况测试
+参考FAQ: FAQ34209
+### 问题: android4.4工厂测试蓝牙模块需注意问题
+解决方案: 在进入工厂模式测试蓝牙模块之前,需要确保如下问题: 1.确保手机没有和任何音频设备配对以及链接 原因: 进入工厂测试模式会先进行蓝牙打开,当蓝牙打开后会自动连接已经配对的蓝牙音频设备,导致discovering失败,然后工厂测试失败.
+参考FAQ: FAQ39403
+### 问题: 通话和音乐模式如何配置使用class D或者class AB？
+解决方案: Class D功耗小,class AB 声音质量好 配置方法如下: 我们通过音频参数来控制PA,分为AP侧音频参数和CP侧音频参数. 1.AP侧: 使用audio_para文件中的相应参数来配置PA: audio_arm\audio_arm\Handsfree\AudioStructure\reserve\reserve[45] 2.CP侧: CP侧使用的是NV,使用NVEditor打开NV工程后: Audio_dsp_codec->dsp_codec_config->Handsfree->AudioStructure->resv->resv[0] 以上两处值的第9位(从第0位开始算):1->classD, 0->classAB 以上举例是针对Handsfree模式,其它模式类似.
+参考FAQ: FAQ39440
+### 问题: SC7715能支持LCD多大的分辨率
+解决方案: 最大支持FWVGA的分辨率,即854×480.FWVGA是full wide VGA的缩写,比WVGA分辨率高,别名是Full Wide VGA.
+参考FAQ: FAQ39557
+### 问题: 如何修改语言设置列表中的国家语言翻译
+解决方案: 语言设置列表中的翻译在icu4c中定义,需要修改icu4c中翻译,并重新编译icu4c 例如,修改列表中维吾尔语的翻译,方法如下: external/icu4c/lang/ug.txt ug{   Languages{
+      ug{"ئۇيغۇرچە"} /**修改此处翻译**/  }
+  Version{"2.0.47.65"} } 其他语言翻译修改办法找对应语言的**.txt修改,注意要修改完整带国家码的对应部分 修改完成后需要重新编译icu4c,编译方法请参考 [FAQ31215] :android4.4如何编译更新icu4c中数据
+参考FAQ: FAQ39521
+### 问题: wifi认证简介
+解决方案: Wi-Fi认证针对的是基于IEEE 802.11b标准的无线局域网产品,Wi-Fi证书是由一个非赢利的工业组织即WECA颁布的.Wi-Fi(Wireless Fidelity的简称)作为无线局域网互操作性的标准,厂家的产品只有完全满足Wi-Fi标准,并通过Wi-Fi认证,才可以在其产品上打Wi-Fi标签.Wi-Fi标签是WECA(无线以太网兼容性联盟)注册的商标,只有通过WECA的授权,厂家才可以使用该商标.
+参考FAQ: FAQ34234
+### 问题: FCC认证需要提交哪些材料
+解决方案: 1、申请认证产品的生产厂商和申请认证方的全称和详细的联系通信地址; 2、将提供给用户的认证产品的安装和使用手册的副本.(如该产品还没有用户手册,则可提供相关内容的草稿副本); 3、产品电气原理图及工作原理说明.(如产品有接地或天线,应加以描述); 4、有关产品的工作振荡频率表,表中应列出信号的传播路径和相应振荡频率; 5、其它一些需要说明的产品特点. 备注说明: 1、相关的文件资料需为中英文两种; 2、为缩短认证周期,提供的资料最好为电子文档形式; 3、在认证过程中,针对一些特殊情况,可能需要企业补交其它额外相关资料
+参考FAQ: FAQ34235
+### 问题: 发生assert时，Logel无法弹出dump窗口
+解决方案: 需要注意以下几点: (1)使用对应软件版本的Logel工具 (2)软件使用的是user版本,需要使用userdebug版本 (3)Nv中的assert_mode不为1(debug),需要改为1(debug)
+参考FAQ: FAQ34242

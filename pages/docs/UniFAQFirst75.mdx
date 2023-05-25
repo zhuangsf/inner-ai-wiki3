@@ -1,0 +1,322 @@
+### 问题: ARM jtag 和DSP jtag是否都要预留测点？
+解决方案: 客户原理图中一般只需要预留ARM Jtag测点,DSPJtag不用预留测点,这是因为一般客户使用的Dsp log可以用arm 转换后从ARM Jtag接口输出,所以DSP Jtag不用留测点,并且DSP JTAG的pin 脚可以被用作其他functon..
+参考FAQ: FAQ202274249
+### 问题: RFTest工具能在CMW500上跑LTE CA吗?
+解决方案: RFTest工具不支持在CMW500上跑LTE CA, RFTest工具目前只支持在Anritsu MT8821C上跑CA.
+参考FAQ: FAQ202274255
+### 问题: GPIO如何切换电源域？
+解决方案: 以SC9863A为例: 1、哪一种GPIO可以切换电源域? 电源域为VIO18_SD0、VIO18_SD2、VSIM0、VSIM1、VSIM2的GPIO可以由1.8V切换为3V. 换句话说,与SD和SIM相关的GPIO一般都可以由1.8V切换为3V(VIO18_SD1除外). 2、如何切换电源域? 我司早期芯片除了改变外部的电源域后,还需要手动配置Global寄存器中的ms bit位,使PAD能 和供电电源适配. 但后面的芯片都统一引入了电源域自动适配的功能,仅改变对应GPIO组*的电源域即可进行1.8V 和3V电源域的切换(在DBB POWER页供电).如SC9832、SC9863、SL8541E等. 电源域可由PMIC或外接LDO输入. 3、为什么需要切换电源域? 驱动需要较高电平的外设时,需要考虑用到能够输入输出3V的GPIO. *某一电源域使用3V供给,则该电源域下所有的GPIO都为3V IO
+参考FAQ: FAQ202274256
+### 问题: 通过裁剪应用的方式进行内存优化的一般方案
+解决方案: 裁剪应用进行内存优化的方案思路比较简单,大致方法如下: 开机后静置10min,通过命令行命令: adb shell dumpsys meminfo > meminfo.txt
+ 抓取当前内存信息,查看Total PSS by OOM adjustment列,对不需要的应用进行裁剪,若不确定某些应用是否可以裁剪,可以列出应用提cq到我司进行询问.
+参考FAQ: FAQ202274257
+### 问题: 512C PWRSW配置方法
+解决方案: 在HW设计的时候,PWRSW pin与公版设计可能存在不一样,需要确认IVDD配置正确才能开机 make menuconfig--> IC Configuration --> [] 533/512A/531/506/305/8501/8503/8506/8503e IVDD circuit patch 如果poweron 不反向,此选项不勾选 如果poweron 反向,此项勾选
+参考FAQ: FAQ202274283
+### 问题: UIS8910DM 是否支持电话本功能
+解决方案: UIS8910DM 是否支持电话本功能 不支持
+参考FAQ: FAQ202274284
+### 问题: UIS8910DM 如何解析nv.bin中NV文件
+解决方案: UIS8910DM 如何解析nv.bin中NV文件 Extract nv data from nv.bin. 命令: dtools.exe [options] nvextract nvbin 该命令用以从nv.bin文件中提取nv. [options]: l -a, --all extract all nvid l --id <id> nvid to be extracte 使用示例: $ dtools.exe nvextract ./pac/la.bin -a
+参考FAQ: FAQ202274285
+### 问题: 展锐平台进行RF传导，OTA,协议自动化测试时的注意事项
+解决方案: 在进行RF传导,OTA,协议自动化测试时必须关闭如下补充业务查询和数据流量,具体方法如下: 1. 开机补充业务查询的关闭方法: 进入手机工程模式(*#*#83781#*#*),进入App Settings,第一项Call Forward Query,去掉勾选; 2.关闭数据流量的方法: 在插入USIM卡的条件下,进入手机设置--移动网络--选择SIM卡--将已启用数据流量勾选去掉 补充 1.1. 为什么关闭开机补充业务查询: 由于协议测试、RF测试及OTA测试,都是通过自动测试的方式发送AT命令实现.而如果开启了开机补充业务查询,那么开机时手机会自动发送一条获取补充业务信息的AT命令给基站,那么这条命令会被误认为是自动测试时的第一条命令,从而影响测试结果. 1.2. 开机补充业务查询获取哪些信息: 从基站获取来电转接等信息给终端
+参考FAQ: FAQ202274306
+### 问题: Wakeup Sources: sbuf-6-5-0-rx频繁唤醒系统
+解决方案: 在路径device/sprd/sharkl3/uis8581xxx/log_conf/slog_modem_userdebug.conf 把 stream pm_sh on 256 0 128 5 on 改成 stream pm_sh off 256 0 128 5 on
+参考FAQ: FAQ202274312
+### 问题: GSM\GPRS\EDGE发射功率温度补偿
+解决方案: GSM\GPRS\EDGE发射功率温度补偿 1、NV中GSM\GPRS\EDGE温补参数位置如下: GSM_optimize\GSM_calibration_param_optimize\rf_param_dsp_use\rf_gsm(或DCS\PCS\GSM850)_param_dsp_use\temperature_and_voltage_compensate_struct. ①GSM和GPRS温补参数是在temperature_gsm_tx_compensate_value中进行高、低温补偿; ②EDGE温补参数是在temperature_edge_tx_compensate_value中进行高、低温补偿; 2、GSM温补补的是TX factor值,factor越大功率越大,要结合校准的factor值进行补偿.举例:factor值:0x1000可能对应1dB,也有可能0x2000对应1dB. 3、GSM温补只对最大PCL等级生效,其它PCL下不生效.
+参考FAQ: FAQ202274313
+### 问题: 手表项目监听功能如何实现通话中远端无声
+解决方案: 接通电话后远端静音接口为MMICC_EnableRemoteMute 但涉及流程中响铃功能与监听功能实现流程相关: 本端MO实现拨打电话接通: 1. 需要关闭回铃音处理,未接通前响铃相关接口不做处理: CC_CallAlertingInd CC_CallEarlyMediaInd 2. 接通成功后远端静音 收到APP_MN_SETUP_COMPLETE_CNF消息表示接通成功,处理函数CC_SetupCompleteCnf时调用接口MMICC_EnableRemoteMute 本端MT实现来电接通: 1. 来电不响铃 一收到来电消息APP_MN_SETUP_IND消息表示来电,立即调用接口CC_ConnectCallReq, 2. 接通成功后远端静音 收到APP_MN_SETUP_COMPLETE_IND消息表示接通成功,处理函数CC_SetupCompleteInd时调用接口MMICC_EnableRemoteMute
+参考FAQ: FAQ202274314
+### 问题: CameraCalibration默认授权相机权限
+解决方案: 为保护隐私权限,平台对camera权限做了限制,需要手动授权方可使用,若需默认授权,可在manifest文件中添加share user id的属性,具体方案如下: vendor/sprd/platform/packages/apps/CameraCalibration/AndroidManifest.xml
+1 <?xml version="1.0" encoding="utf-8"?>
+2 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3     package="com.sprd.cameracalibration"
++     android:sharedUserId="android.uid.system"
+5     android:versionCode="1"
+6     android:versionName="1.0" >
+参考FAQ: FAQ202274315
+### 问题: 如何在代码中设置 SC2721G 的 MIC_BIAS 偏置电压
+解决方案: SC2721G 的 MIC_BIAS 偏置电压在 ANA_PMU1 寄存器里,相关配置描述如下所示: 每次开启/关闭MIC就会执行 mic_bias_event 函数,可以在这里设置MIC_BIAS电压寄存器,参考代码如下: 可以通过开启录音进行测试,以SL8541E为例: /* 录音前 */ # lookat 0x40388704 0x00000000 /* 录音中,默认MICBIAS输出电压为2.5V,即bit[2:0]为010 */ # lookat 0x40388704 0x0000832a /* 修改MICBIAS输出电压为3.0V,即bit[2:0]为111,将0x0000832a改为0x0000832f配置给寄存器 */ # lookat -s 0x0000832f 0x40388704 /* 查看修改是否生效 */ # lookat 0x40388704 0x0000832f
+参考FAQ: FAQ202274317,含图片
+### 问题: DreamCamera2如何生成水印图片
+解决方案: DreamCamera2 水印可以用户自定义内容,分别为logo水印,时间水印.暂时不支持地理位置水印. 1:制作水印文件.logo水印为rgba,时间水印为yuv格式 水印文件保存路径在device\sprd\mpool\module\camera\watermark 请参考里面readme.txt,里面制作和照片大小相匹配的logo水印和时间水印. 2:打开水印开关 水印在APP的开关如下 TARGET_BOARD_LOGOWATERMARK_SUPPORT := true TARGET_BOARD_TIMEWATERMARK_SUPPORT := true 3:水印实现代码 水印代码在HAL层,cmr_watermark.c .通过上面1做出来的水印素材.在代码里面camera_select_logo和camera_select_time_file分别获取1里制作的水印素材.通过watermark_add_yuv函数添加到照片里面.
+参考FAQ: FAQ202274322
+### 问题: AndroidR SD卡上存有的非本机产生的录音文件在本机进行重命名失败是否正常？
+解决方案: 该现象为正常现象,其中录音信息位于sd卡music/recordings的目录下,在插入后,mediaprovider会去主动扫描该目录(原来的记录在sd卡拔掉后,就被删除了),并将音乐信息插入到数据库中,此时音乐记录的package_name也发生相应变化,而在R上,应用是没法直接通过resolver来更改非自身应用产生的数据的,故会更新失败
+参考FAQ: FAQ202274323
+### 问题: Tx noise in Rx Band指标3GPP相关标准
+解决方案: 主要用于衡量发射端对于邻近通道的干扰,测试TX信号落在RX带内的杂散能量,3GPP标准如下所示,RX带内fail spec不可超过5个
+参考FAQ: FAQ202274325,含图片
+### 问题: SC6531E 如何修改GSM target功率
+解决方案: SC6531E的目标功率设置不在NV中,而是在CFT校准文件中,具体操作步骤如下: 1. 打开CFT的设置界面,点击"Modify Callibration Configuratin File..." 2. 再弹出框中输入设置密码:sprd; 3. 查找设置文件中 #期望功率SPEC 进行最大功率设置(PCL0所对应的目标功率)修改,如若需提高0.5dbm则target增加0.5dbm. 4. 设置结果后关闭设置文件,对GSM重新进行校准. 5. 校准结束后查看实际信令状态下的最大功率.
+参考FAQ: FAQ202274326
+### 问题: CDMA HDET校准fail
+解决方案: 问题描述:HDET ADC 为72,超出范围(100,4000),导致校准fail; 问题分析:1)由于是概率性出现CDMA HDET校准fail,fail原因是ADC低于下限;可对fail板子重置扫描和调衰减网络,无优化 2)多次校准fail板子,偶尔也能pass,但是ADC依旧偏下限;由于是概率性出现fail,其中pass板子中的 HDET ADC范围在500左右;怀疑是HDET链路上物料一致性问题; 3)在确定RF指标均可以pass的情况下,可以修改NV中HDET_Down_limit来进行处理.具体修改位置如下:
+参考FAQ: FAQ202274327,含图片
+### 问题: 9832E平台上，AI场景识别无效问题
+解决方案: 答: SC9832E 平台不支持AI场景识别. 原因:由于 SC9832E 平台是4线程,使用AI场景识别算法耗时过高,不能及时返回检测结果,因此不适合使用AI场景识别功能. 当前在 SC9863A、UM512、UMS512T、UMS9230、UMS9620 上支持.
+参考FAQ: FAQ202274328
+### 问题: 如何单独修改wifi  5G高速率模式功率
+解决方案: 针对wifi 5g 高速率功率偏高的情况,可以修改wifi_config中的[Section 6: Rate To Power with BW 20M]: 11ac_Power = 44,44,44,44,44,44,44,44,44,44,44,44,44,44,44,44,44,44,44,44 从左至右前10位为天线1的MCS0-MCS9控制项,后十位为天线2的MCS0-MCS9的控制项,Tx 功率步进为-1/8dB
+参考FAQ: FAQ202274330
+### 问题: wifi能否支持快速漫游
+解决方案: marlin2和marlin3均可以支持快速漫游,支持80211k/r/v协议,如不支持请更新基线 marlin3e不支持快速漫游
+参考FAQ: FAQ202274331
+### 问题: SC6533G平台校准提示错误编号#20
+解决方案: 问题描述:SC6533G平台校准提示错误编号#20——Crystal校准错误 问题分析:根据RDA校准工具使用指南文档中校准错误编号可以了解到,编号#20表示Crystal校准错误,其给出的原因分析:1、校准 Crystal 采用 手机发射,如果校准时,电流没有增大,则手机发射部分有问题,多数情况由PA发射部分虚焊造成.2、Flash lod 和 FF 不匹配, 导致手机不能发射.以上两种情况通过排查发现均不是问题根本点. 问题解决:通过查看原理图和bom表,发现客户的晶体采用的是9PF电容负载的晶体,而平台要求晶体负载电容为7.3~7.5PF.最终通过更换晶体解决.
+参考FAQ: FAQ202274340
+### 问题: Dorado浏览器上网过程中弹出内存不足提示框
+解决方案: 因T117项目内存受限,所以给dorado游览器划分的内存为4MB,另外可处理的网页最大size为1MB,当收到的网页数据大小超过1MB,在处理网页解析SSL的时候内存申请buffer失败,提示网页太大,当4MB内存用完后就会提示内存不足. T117平台架构中各模块内存定义大小是经评审过的,如改动可能会影响其他模块功能.此问题暂无法解决,如有需求建议联系CPM提交rat评审.
+参考FAQ: FAQ202274344
+### 问题: 如何关闭相机进入或退出动画
+解决方案: 路径:frameworks/base/core/res/res/values/config_ex.xml 找到 name="config_anim_app_exit" 和 name="config_anim_app_start" 如需关闭动画,添加如下设置: <item>com.android.camera2,0,-1,-1</item> 第1个参数:包名 第2个参数:打开或关闭动画,-1 不设置, 0 关闭 第3个参数:动画时长, -1 不设置 第4个参数:透明度, -1 不设置, 0 关闭
+参考FAQ: FAQ202274350
+### 问题: 不支持闪光灯的项目，如何去掉DreamCamera应用中的闪光灯图标
+解决方案: DreamCamera根据硬件能力进行适配,无需手动修改APP端的代码,需要将SprdCamera3Setting.cpp中的闪光灯可用设置为0即可 路径: vendor/sprd/modules/libcamera/hal_2v6/SprdCamera3Setting.cpp (7731E是2v4) initStaticParameters(int32_t cameraid) 找到 // flash_info 将对应cameraID的 s_setting[cameraId].flash_InfoInfo.available 设置为 0
+参考FAQ: FAQ202274351
+### 问题: dump通话语音的方法
+解决方案: 1.修改music nv中的AUDIO-> audio_arm -> handsfree -> AudioStructure ->reserve ->reserve[63] = 0x131d,这个修改会将通话的语音数据发送到log里 2.重新导入NV后,再抓取一下log. 3.使用logel导入log,选择 Tool->Audio->Audio_Arm_Transfer,点击Transfer 其中: 00是CVS处理之前的下行数据 01是cute down之后的下行数据 02是CVS处理之后的上行数据 03是CVS处理之前的上行数据 04是CVS处理之后的下行数据 05是用来消除回声的上行数据
+参考FAQ: FAQ202274352
+### 问题: 如何修改BBAT中audio回环测试的延迟时间
+解决方案: 可以通过设置audio的NV来修改延迟时间,具体修改项如下: AUDIO\AUDIO_ARM\Handset\AudioStructure\reserve\reserve[63]=0x1060 0到7bit是下行的延迟 8到15bit是上行的延迟 步长是20ms,默认设置是0x1060.
+参考FAQ: FAQ202274353
+### 问题: UIS8910DM 如何替换PAC包中img文件
+解决方案: UIS8910DM 如何替换PAC包中img文件 Substitute image from .pac to another. 命令: dtools.exe [options] pacsubst base ext output 该命令用以将base pac文件中的ID image,替换为ext pac文件中的对应ID image,然后保存为一个新文件. [options]:  --id <id> substitute id 使用示例: $ dtools.exe pacsubst --id BOOT ./pac/old.pac ./pac/new.pac output.pac 其中:id可以通过dtool pacinfo xxxx.pac命令来获取
+参考FAQ: FAQ202274355
+### 问题: Debug版本和Release版本区别
+解决方案: Debug版本和Release版本区别 release版本会打开看门狗,当发生异常死机后会重启,而debug版本不会重启,可以抓蓝屏现场进行问题分析,对应开关配置见下面文件 ./CmakeList.txt文件 if("${BUILD_RELEASE_TYPE}" STREQUAL "release") set(CONFIG_WDT_ENABLE ON) endif()
+参考FAQ: FAQ202274356
+### 问题: UIS8910DM 是否自带解析JSON格式文件的API
+解决方案: UIS8910DM 是否自带解析JSON格式文件的API 不支持
+参考FAQ: FAQ202274358
+### 问题: 8850 CP ram空间使用说明
+解决方案: 8850 CP ram空间使用说明 1,CONFIG_CP_RAM_SIZE默认配置,这部分占用主要用来存放和运行解压后的CP代码,请不要随意调整; 2,GNSS模块在CP这边占用内存接近2MB,目前CP这边版本库限制,功能不能关掉;
+参考FAQ: FAQ202274359
+### 问题: adb devices 显示名称
+解决方案: adb devices 显示的名称,为读取 "ro.serialno" property 获得, 该 property 是由 bootloader 通过 get_product_sn() 获取回来, 客户可通过 Pandora 工具写入该 serial number. packages/modules/adb/daemon/mdns.cpp bsp/bootloader/u-boot15/common/loader/loader_common.c
+参考FAQ: FAQ202274364,含图片
+### 问题: 117平台接收不到彩信
+解决方案: -----#ifdef MMI_OTA_SUPPORT
+            MMIAPIOTA_DecodePush(dual_sys, &mms_user_data_t,tele_num,num_len,sc_tele_num,sc_num_len);
+-----#endif
+ 由于代码中MMS的push消息处理需要依赖OTA模块,所以需要同时打开OTA模块才可以,需要在mk文件中定义 MMI_OTA_SUPPORT = TRUE
+参考FAQ: FAQ202274367
+### 问题: 如何通过Mobile Tester工具修改2G的输出功率
+解决方案: 1 主板插入USB连接电脑,上电,连接Mobile Tester 2 选择"FLASH"界面,以GSM900为例,按图示步骤说明进行修改
+参考FAQ: FAQ202274368,含图片
+### 问题: SC7701B HSDPA Timing FAIL如何修改
+解决方案: 1 打开NV工程,进入下图位置,band[X]对应要进行Timing调试的BAND; 2 correct_freq_num:按频率分段补偿 tx_hw_delay_adjust:补偿值,单位是chip,若补偿值为负数,则写入值为0xFF-负补偿值的绝对值 3 调试NV项w_tx_delay对HSDPA下的timing进行补偿,需要同时兼顾WCDMA EVM常规测试下的timing error指标
+参考FAQ: FAQ202274369,含图片
+### 问题: RSRP RSRQ正负值转换
+解决方案: rsrp负值=正值-141 rsrq负值=正值/2-19.5
+参考FAQ: FAQ202274372
+### 问题: ]8850 让系统进入 panic 死机状态
+解决方案: 无AT指令,需要连接dtools工具主动panic
+参考FAQ: FAQ202274373
+### 问题: Simba工具中LTE能否修改FAIL后的重测次数
+解决方案: 可以修改,将simba工具中LTE CAL的常用界面下的"LoopCount"从1改成2即可增加fail后的重测试数,该项只有Fail后会重新校准,校准时间可能会增加.客户需要衡量后导入更改.
+参考FAQ: FAQ202274383,含图片
+### 问题: WCN的DCXO_BONFING_OPT管脚的状态如何选择？
+解决方案: WCN的DCXO_BONFING_OPT管脚是一个Strapping pin,状态有0和1两种. 0:buffer mode 表示不使用WCN内部的时钟模块进行起振,直接使用外部提供的准确的26M时钟源,比如PMIC输出的26M或者外部使用TCXO晶体提供的26M精准时钟源. 1:XO mode 表示要使用WCN内部的时钟模块进行起振,给WCN提供的时钟源是外部的DCXO无源的晶体.
+参考FAQ: FAQ202274385,含图片
+### 问题: Type-C to USB3.1 Standard-A 线材是否支持双向USB3.1识别
+解决方案: 疑问:标准Type-C to Type-C线材支持插头正反插,支持USB3.1 USB双向识别,Type-C to USB3.1 Standard-A 线材的 type-C端插头正反插是否同样支持双向USB3.1识别? 结论:支持 原因:该类线材Standard-A 插头端虽只有一组USB3.1信号pin,对应的type-C端也只有一组USB3.1信号pin,但type-C插头对应母座的两个方向信号都有接,手机会识别CC的插入方向自动切换手机端MUX,接通插入的方向.也限于Standard A只有一组USB3.1信号,该线材只支持两种物理通路接通方式.
+参考FAQ: FAQ202274389
+### 问题: LCD跳频原理
+解决方案: 当RF工作在某个频率的时候,PS把频率上报给CP,CP然后根据ＮV的配置把其转换成LCD需要工作的频率上报给AP,然后AP收到后调用对应的屏幕驱动改变屏幕工作的频率． cp起一个线程去判断NV里面变频功能是否打开,若打开则往PS注册一个Callback函数,PS有变频的时候就会调用这个函数把频率上报,Refnotify会用上报的band和freq在NV中查找对应的band及其对应freq配置信息,然后转化出对应LCD的频率,通过sipc发送到AP,AP操作具体的driver完成lcd频率的设置.
+参考FAQ: FAQ202274391
+### 问题: 耳机模式下通话插充电器可能导致耳机上下行噪声的问题该如何避免？
+解决方案: 对于大家以往通常的设计会将USB的地和耳机地下在同一层的表层地上,这样在充电时充电器的纹波会通过表层地导入耳机地引入噪声. 我们建议USB的下地点不要和耳机地下地点在同一个表层地,按照如下方案可以避开充电干扰. 耳机下地方案如下: 1)USB的地下在顶层地,耳机地下在底层表层地 2)USB地下在表层地,耳机地单点下主地
+参考FAQ: FAQ202274393
+### 问题: PDET电路或参数失效后LTE最大功率控制方式
+解决方案: PDET电路或参数失效后LTE最大功率控制方式 1、LTE功控以网侧调度与NV各band所配置的最大功率为准,以校准参数为基础; 2、常规最大功率由各band NV决定,根据校准结果配置APC gain word,在校准基础上由NV配置的各band APC温度补偿来弥补温度效应带来的影响;而补偿参数由HW填写在各band NV中,客户可以自行调试; 3、PDET补偿在APC温补之后,PDET机制只支持大功率20~24dBm.在这个范围之外无PDET补偿. 综上PDET电路和参数失效后,LTE最大功率受band NV和APC温度补偿决定.
+参考FAQ: FAQ202274394
+### 问题: smartmicro S55255 AUX_RX switch配置控制注意事项
+解决方案: 客户配置N1射频通路发现ant1/ant2 RX校准不通,ant3 RX校准pass,检查发现smartmicro55255 AUX_RX switch配置控制字错误造成fail,具体如下: 初始状态: ant1/ant2 AUX RX switch控制字配置 然后读0X5寄存器发现ant1/ant2/ant3 AUX RX switch都为0X30,正好能够对于ant1/ant2 RX校准不通,ant3 RX校准pass的现象,按照如上nv配置是开关有冲突,只能打开一路开关,不能同时打开三路开关,还有一个AUX RX switch配置就是0X3F,三路可以同时打开,修改完后ant1/ant2/ant3 RX校准pass.
+参考FAQ: FAQ202274399,含图片
+### 问题: 6533g平台如何添加plmn name
+解决方案: 添加plmn name的步骤如下: 首先,修改application/mmi_customer/ResGenerator目录下的plmnlist.txt文件,添加新的plmn name. 然后编辑application/target_res/xxxx/mmi_customer/resgen.sh,删除最后的rm语句. #清理现场 #rm $CUSTRES_DIR/*.c #rm $CUSTRES_DIR/*.h #rm -f -r $CUSTINC_DIR #rm -f -r $RESGEN_DIR/res_temp #rm -f -r $RESGEN_DIR/obj #rm -rdf $RESGEN_DIR/* 最后重新编译资源,编译后会在application/target_res/xxxx/mmi_customer/ResGenerator目录下生成ref_list.txt, 将此ref_list.txt文件拷贝出来替换原文件即可.
+参考FAQ: FAQ202274400
+### 问题: 平台双击唤醒功能不灵敏
+解决方案: 平台虚拟sensor wake gesture依赖于 ACC,请在校准ACC后重新测试下黑屏唤醒功能,校准方式:*#*#83789#*#* -> 单项测试 -> 加速度传感器校验 1)双击黑屏唤醒屏幕原理: 根据双击手机时ACC的变化是否符合一定规律,从而判断wake gesture是否触发并上报该功能 2)若使用该黑屏唤醒方案,则请按以下推荐测试方法测试: (1)请勿单手拿手机并双击屏幕,此情况下产生的加速度变化太小会导致触发率较低 (2)手持手机进行双击动作,在双击时需要稍用力才会有较明显的加速度变化,否则影响触发率 3)由于双击唤醒wake gesture基于ACC,因此该唤醒功能可能不仅在敲击屏幕时会触发,也会在其它位置受到敲击时触发(如背部); 另外黑屏唤醒功能目前主流实现方式都是用TP(触摸屏)实现,如对ACC校准后仍不灵敏,建议舍弃该功能,通过触摸屏幕来替代该方案.
+参考FAQ: FAQ202274403
+### 问题: 音频耳机的CE认证要求是什么样的？
+解决方案: EN 62368-1:音频/视频,信息和通信技术设备,安全要求(电视机,音响等音视频产品使用的适配器标准) 包含用于娱乐的无线电接收机或音乐播放器,或允许从外部设备输入音频.它们还提供了传达警告信号或信息的可能性.产品标准对耳朵的再现声压级施加了限制.娱乐音频信号可以通过无线电(广播或本地植物节目)或有线或蓝牙等其他通信方式传输. 具体指标如下: 一般CE认证需要满足RS1的指标要求
+参考FAQ: FAQ202274405,含图片
+### 问题: UMS9230平台，typec 数字耳机播放音乐，audiotool工具写入参数不起作用，是什么原因
+解决方案: 具体的限制条件判断在:vendor/sprd/modules/audio/vendor/whale/audio_hw.c中 函数: check_supprot_typec_record/check_supprot_typec_offload 分析发现TYPEC耳机播放属于非offload模块 当前非offload模块数字耳机走安卓原生hal层,当前平台不支持此类耳机参数调试
+参考FAQ: FAQ202274406
+### 问题: LTE B66不支持LCD跳频
+解决方案: LTE B66不支持LCD跳频,是因为B66测试信道值超过nv最大限制值65535.
+参考FAQ: FAQ202274407
+### 问题: 如何到 google source 查找不同版本的 CTS 代码
+解决方案: 点击如下 link,在左边 Tags 下方有个 more 点击打开后,查找想要的版本号,格式 "cts-11.0_r7" https://android.googlesource.com/platform/cts/ Tags 下方有个 more 查找想要的版本号 cts-11.0_r7 代码 或者可以参考如下 link 直接修改想查找的 CTS 版本号 https://android.googlesource.com/platform/cts/+/refs/tags/android-cts-11.0_r7 https://android.googlesource.com/platform/cts/+/refs/tags/android-cts-12.0_r3
+参考FAQ: FAQ202274409,含图片
+### 问题: LostRam 是否可以回收
+解决方案: LostRam的计算方式可以参考如下: base/services/core/java/com/android/server/am/ActivityManagerService.java: final long lostRAM = memInfo.getTotalSizeKb() - (totalPss - totalSwapPss) - memInfo.getFreeSizeKb() - memInfo.getCachedSizeKb() - kernelUsed - memInfo.getZramTotalSizeKb(); 简单点理解就是:LostRam=总内存 - 可用内存 - 已经用内存otalRAM,LostRam可大可小,可正可负,并非是内存泄漏,而是未跟踪到的内存,比如一些多媒体、驱动等模块的内存分配无法被系统检测到,就会产生LostRam,这部分内存,目前没有主动释放回收的办法.
+参考FAQ: FAQ202274411
+### 问题: Android10上如何将显示内容旋转180°
+解决方案: 以sl8541e为例,请按如下方式修改: /device/sprd/sharkle/sl8541e_xxx_xxx/sl8541e_xxx_base.mk +#surface rotation +SF_PRIMARY_DISPLAY_ORIENTATION = 180
+参考FAQ: FAQ202274412
+### 问题: UMS9117功能机平台能否支持低功耗蓝牙BLE？
+解决方案: 不支持. 芯片本身是支持BLE的,但UMS9117功能机平台软件上未开BLE,因为没有应用.BLE是从蓝牙 4.0 起支持的协议,与经典蓝牙相比,功耗极低、传输速度更快,但传输数据量较小.常用在对续航要求较高且只需小数据量传输的各种智能电子产品中,比如智能穿戴设备、智能家电、智能工业、运动健康、传感器等.
+参考FAQ: FAQ202274414
+### 问题: SC6533G平台AFC校准报错问题
+解决方案: 问题描述:SC6533G平台校准提示错误编号#21,#31,#41,#51——AFC校准错误 问题分析:1、首先排除是否是晶体本身导致的,6533G平台采用负载电容为7.3~7.5PF的晶体;2、因为AFC是在特定PCL等级发射功率下进行的,如果手机发射的功率超过仪表i的测量范围,测不到值,也会报AFC校准Fail; 问题解决:排除了晶体本身原因,最终定位到仪表检测不到发射功率导致的;可通过修改RDA 校准工具中对应频段的AFC PCL等级来解决,如下图所示.
+参考FAQ: FAQ202274416,含图片
+### 问题: drv_lcd 和 drv_lcd_v2 有什么区别
+解决方案: 当作两套驱动,lcd_v2是基于lcd重架构的.LCD_V2可以完全替代lcd version1. 可以认为lcd version 1已经过时.
+参考FAQ: FAQ202274420
+### 问题: UIS8850 读取芯片唯一ID接口
+解决方案: UIS8850 读取芯片唯一ID接口 Static void prvReadChipUniqueId(struct chip_unique_id *id, int kind) 参考代码相关调用
+参考FAQ: FAQ202274424
+### 问题: UIS8910DM 关于IPC中断的一些说明
+解决方案: UIS8910DM 关于IPC中断的一些说明 IPC ISR status/0x00000800 //CP到AP的ZSP_MUSIC_NOTIFY中断通知 IPC ISR status/0x00000002 //AP/CP交互时产生RPC中断,Remote Procedure Call,它是构建在IPC之上处理多核间通信的机制,通过写share memory然后触发中断来达到相互调用的目的 IPC ISR status/0x00000004 //PS IPC的中断,表示CP这边有数据包报上来时产生的中断
+参考FAQ: FAQ202274425
+### 问题: UIS8910DM 关于USB命令行静默安装方法说明
+解决方案: UIS8910DM 关于USB命令行静默安装方法说明 两种方式实现静默打包: 1. 直接调用安装程序集成,使用静默参数,就可以不弹出对话框,SampleCode:ExecuteProcess("\\Driver\\DPInst64.exe /SW",&dwExitCode,TRUE); 2. Unisupport上下载Driver_R4.21.3901,把里面的DriverSetup.exe直接拿到当前使用的驱动包中调用使用,该exe已经实现了第一步,直接调用就是静默安装
+参考FAQ: FAQ202274426
+### 问题: UIS8850 如何查看内存申请情况
+解决方案: UIS8850 如何查看内存申请情况 1,使用AT^HEAPINFO: 0x80cc9660,2779552,1197464,1115416查看变化,具体说明可以参考内存使用文档 2,使用coolwatcher 工具的heapreport功能可以查看内存申请详细情况
+参考FAQ: FAQ202274427
+### 问题: 支持GPS频段
+解决方案: SC9820E/SC9832E/SC9863A系列都支持GPS L1、BDS B1、GlONASS L1; UMW2651/UMW2652系列支持GPS、BDS、GLONASS、Galileo
+参考FAQ: FAQ202274429
+### 问题: 系统修改充电电量达到90%退出省电模式
+解决方案: 核心是修改:LOW_POWER_MODE_STICKY_AUTO_DISABLE_LEVEL
+ 修改位置:
+src/com/android/settings/fuelgauge/batterysaver/BatterySaverStickyPreferenceController.java
+40      protected void refreshSummary(Preference preference) {
+41          super.refreshSummary(preference);
+42          final int stickyShutoffLevel = Settings.Global.getInt(
+43              mContext.getContentResolver(), Global.LOW_POWER_MODE_STICKY_AUTO_DISABLE_LEVEL, 90);
+参考FAQ: FAQ202274431
+### 问题: 短信编辑添加联系人后，名字重复
+解决方案: 在MMIPB_SearchPhoneNumber函数中会调用IntelligentSearch,其中内部比较函数ComparePhoneNumber比较号码时只比较高三位和低八位,如果一致就认为是同一个号码, 所以如果两个号码的高三位和第八位都相同,就会认为是同一个号码.
+参考FAQ: FAQ202274443
+### 问题: 电源键长按关机功能
+解决方案: 1.bsp/bootloader/u-boot15/include/configs/对应board.h 修改为#define CONFIG_7S_RST_2KEY_MODE 0 #ifdef DEBUG 修改为#define CONFIG_7S_RST_SW_MODE 0 2.bsp/bootloader/u-boot15/drivers/misc/check_reboot.c check_reboot_mode里 else if(is_7s_reset()){ -- return CMD_NORMAL_MODE; ++ return CMD_POWER_DOWN_DEVICE; }
+参考FAQ: FAQ202274453
+### 问题: GNSS场测环境要求
+解决方案: WCN GNSS场测轨迹路线图出现漂移,首先要检查测试环境是否符合规范,要求如下: 1.测试样机需要放置在车辆前挡风玻璃下,原则上以最优接收信号位置为准,且需要将GNSS接收天线朝向天空,保证接收效果; 2.由于待测机接收到的GNSS卫星信号极低,容易被金属或者钢筋混凝土材料阻隔,所以轨迹测试时,待测机需要摆放在尽量远离车辆金属结构的地方,保证GNSS天线接收效果,而外场定点测试时尽量选择空旷场所,避免城市高楼建筑影响测试结果; 3.玻璃材料一般不会引起GNSS信号衰减,不过挡风玻璃车膜由于材料各异,有可能导致信号衰减,所以原则上不能将待测机放置在贴有车膜的挡风玻璃下; 4.如有多台样机一同测试,尽量将待测机距离拉远,避免测试机之间互相干扰,影响测试结果.
+参考FAQ: FAQ202274457
+### 问题: 对于安卓12以上的版本，音频参数的PUSH写入和PULL导出的路径是什么？
+解决方案: 原始的参数在路径/vendor/etc/audio_params 音频工具调试形成的临时参数在路径data/vendor/local/media PULL参数: 每次音频工具调试后,优先pull出data/vendor/local/media路径参数,此路径即为调试好的音频参数 如果未调试,下载好软件之后,优先pull出/vendor/etc/audio_params路径参数 PUSH参数: 直接push到路径/vendor/etc/audio_params,然后重启样机即可.
+参考FAQ: FAQ202274458
+### 问题: 26M时钟信号影响FM传导性能
+解决方案: 26M 时钟信号影响FM的传导性能: 26M 时钟与FM的布线在同一层时,且布线之间地隔离不足,会影响FM的传导性能.因FM的频率为76MHZ-108MHZ,26M时钟与FM的频率有倍频关系,从而对FM的传导性能有影响,如下图:
+参考FAQ: FAQ202274462,含图片
+### 问题: 减小导航栏防误触区域大小
+解决方案: 屏幕底部导航栏附近有一部分区域叫dead zone,此区域的设置是为了防止误触导航栏.但如果想增加导航栏的灵敏度,可以减小该区域的大小.具体配置代码如下: frameworks/base/packages/SystemUI/res/values/dimens.xml <dimen name="navigation_bar_deadzone_size">12dp</dimen> <dimen name="navigation_bar_deadzone_size_max">32dp</dimen> 可以通过减小上述两项的值来减小防误触区域的大小,从而增加导航栏灵敏度.
+参考FAQ: FAQ202274463
+### 问题: UWM2652的FM的短接点应靠近耳机座放置，目的是布线为差分布线。
+解决方案: UWM2652/2651的FM的短接点应靠近耳机座放置,目的是布线为差分布线: 如下图:FM_LANT 与VSS_FM(即为地信号),两根信号线需要布线为差分走线,这样在耳机端需要增加一个短接点,而整个短接点必须要靠近耳机座放置,才能有效形成差分布线.
+参考FAQ: FAQ202274465,含图片
+### 问题: BT支持热点功能的芯片
+解决方案: 1.展锐智能机的芯片方案都支持BT热点功能 2.设置路径:设置——网络和互联网——热点和网络共享——蓝牙网络共享
+参考FAQ: FAQ202274467
+### 问题: 展锐支持WIFI DFS的方案
+解决方案: 1.WIFI DFS Dynamic Frequency Selection 动态频率选择,为WIFI 5G功能,WIFI 2.4G无此功能 2.只有WIFI为2.4G频段,无WIFI 5G的芯片方案,无DFS的功能 3.目前,展锐有WIFI 5G的方案芯片方案: a.有从设备的DFS功能 b.无主设备的DFS功能
+参考FAQ: FAQ202274471
+### 问题: GNSS如何清除星历
+解决方案: 在*#*#2266#*#*工程模式SGPS——Information里,选择Cold或Factory模式 GNSS再运行时,会自动清除星历
+参考FAQ: FAQ202274476
+### 问题: 产线测试应用ValidationTools
+解决方案: com.sprd.validationtools是展锐自研,用于对显示、输入/输出设备、多媒体功能设备、音频设备、camera 以及其它手机功能进行测试,可在拨号界面输入暗码*#*#83789#*#*进入该应用,如无使用需求可删除.
+参考FAQ: FAQ202274483
+### 问题: 关于工程模式应用EngineerMode
+解决方案: com.sprd.engineermode为展锐自研应用,可通过暗码*#*#87781#*#*进入,用于测试人员对电话、网络、系统信息、WCN、GPS等相关模块的功能验证,也提供了进入其他应用的接口,如Ylog,如无使用需求,可删除
+参考FAQ: FAQ202274484
+### 问题: 展锐哪些芯片支持伽利略Galileo定位系统
+解决方案: 伽利略Galileo定位系统是由欧盟开发的全球性定位系统. 展锐芯片里,哪些支持伽利略Galileo,哪些不支持? 1.支持的芯片:UMW2651、UWE5621、UMW2652、UWE5622等 2.不支持的芯片:SC9820E、SC9832E、SC9863A(内置)、SL8521E、SL8541E、UIS8581E(内置)等 3.直观的确认方法 a.芯片规格书 b.SGPS工程模式 输入*#*#2266#*#*,进入SGPS工程模式,在Information界面——Mode and System Config里可以看到是否有伽利略功能 4.简单的判断方法 在有GNSS定位系统的芯片里 a.有WIFI 5G功能,则有伽利略Galileo功能 b.无WIFI 5G功能,则无伽利略Galileo功能
+参考FAQ: FAQ202274497
+### 问题: TSX 晶体的TSEN_VREF_P/TSEN_VREFP_N/TSEN_IN 布局布线要求
+解决方案: TSX 晶体的TSEN_VREF_P/TSEN_VREFP_N/TSEN_IN 布局布线要求: TSEN_VREF_P/TSEN_VREFP_N/TSEN_IN 需要严格立体包地处理,需要远离热源,且其短接点必须靠近芯片放置,不能靠近晶体放置.如下图的C7206
+参考FAQ: FAQ202274499,含图片
+### 问题: 短信接收不到
+解决方案: 这个问题是由于网络对TP_VP字段有限制,只接受不设置这个字段的短信,因此可以将TP_VPF设置为0 可以修改SendMsgReqToMN, MN_PLMN_T plmn_con; plmn_con = MNSIM_GetHplmnEx(dual_sys); if((plmn_con.mcc ==460)&&(plmn_con.mnc == 99)) mo_sms.time_format_e = MN_SMS_TP_VPF_NOT_PRESENT; else mo_sms.time_format_e = MN_SMS_TP_VPF_RELATIVE_FORMAT;
+参考FAQ: FAQ202274500
+### 问题: SC2720A设置过温保护
+解决方案: 通过设置SC2720A的OTP_CTRL寄存器,OPT_EN使能该功能,OPT_OP写值可选: 00:135度 01:140度 10:145度 11:150度 目前UIS8310过温保护代码中使能该功能,且设置为OPT_OP为00:135度,也就是当PMIC内部温度达到135度时,会直接断电处理.
+参考FAQ: FAQ202274503
+### 问题: 通话手持模式下的超大音量支持
+解决方案: device/sprd/mpool/module/audio/msoc/qogirl6/qogirl6.mk
+-----#audio support hight volume
+PRODUCT_SYSTEM_EXT_PROPERTIES += \
+    persist.sys.hight_volume_switch=true
+设置为true即为打开此功能
+
+其他平台或版本是否支持请提CQ询问
+参考FAQ: FAQ202274505
+### 问题: 8910支持的camera类型
+解决方案: 8910 仅支持SPI YUV格式和MIPI YUV格式的摄像头. MIPI RAW8摄像头V1.6上才会有正式交付
+参考FAQ: FAQ202274517
+### 问题: 8910耳机按键默认功能
+解决方案: 代码里对按键事件并没有做处理,仅是打印log. 具体log请见components\service\src\srv_headset.c中的prvSetAudioInOutPath.
+参考FAQ: FAQ202274518
+### 问题: AudioCalibrator版本如何设置
+解决方案: 按照工具提示窗口中的信息,找到对应的SW version即可.如果遍历所有的platform都没有对应的SW version,说明工具版本太旧.
+参考FAQ: FAQ202274519,含图片
+### 问题: UIS8850 SPI LCD支持的bus mode有几种
+解决方案: UIS8850 SPI LCD支持的bus mode有几种 · 1, 3-wire 9-bit 接口 I,数据输入输出共用一根线(SIO),SIO中有一个数据位表示是data还是command,对应CLK /SIO /CS三条线. · 2, 4-wire 8-bit 接口 I,数据输入输出共用一根线(SIO),由SDC来决定是data还是command,对应 CLK /SIO /SDC /CS四条线. · 3, 3-wire 9-bit 接口 II,数据有D0/D1两条, 由 SDC转换D1,对应CLK /SIO /SDC /CS四条线.
+参考FAQ: FAQ202274523
+### 问题: UIS8850 替换NV.bin打包方法
+解决方案: UIS8850 替换NV.bin打包方法 替换PAC包中NV有如下三种方法: 1,替换old.pac包中NV为new.pac的NV,输出到output.pac,方法如下: $ dtools.exe pacsubst --id NV ./pac/old.pac ./pac/new.pac output.pac 2,使用researchdownload中设置界面,替换掉NV后,使用"packet"功能打包; 3,在chip_8850.cmake脚本里面修改默认打包流程;
+参考FAQ: FAQ202274525
+### 问题: 回读镜像时加载原始pac没有在对应路径中找到super镜像如何处理
+解决方案: 找到对应工具文件夹\Bin\Binpack.ini配置文件,将其中的LoadPolicy设置为0,再重新加载pac,可在Main page的相关路径下找到原始的super.img镜像文件.
+参考FAQ: FAQ202274533,含图片
+### 问题: WCN Log的路径与导出
+解决方案: 手机进入工程模式后,点击Debug&log选项,点击进入Y log Y log中的connectivity目录下包含wcn log 与GNSS log SC9863A等系列机器log存放路径为 /storage/emulated/0/ylog UMS312以及UMS512机器log存放路径为 data/ylog log的导出: adb root adb remount adb pull xxx/ylog xxx(导出log本地存放路径)
+参考FAQ: FAQ202274537
+### 问题: WCN 的diplexer器件表层布线需要增加隔离度
+解决方案: WCN 的diplexer器件表层布线需要增加隔离度: 表层走线需要为Y型,三个方向要地线隔离,且增加盲孔(地孔)保证WCN/GPS的隔离度.
+参考FAQ: FAQ202274547,含图片
+### 问题: 如何修改PMIC UMP510输出供给SR3595D芯片的26M时钟波形-UMS512平台
+解决方案: UMS512平台PMIC的CLK输出端口为REF_OUT0时,当RF上遇到疑似26M时钟波形对于射频性能的影响时,可通过修改驱动能力快速定位问题根因,具体步骤如下: 1.首先手机开机,通过USB与电脑相连,通过ADB命令进行修改 adb root adb shell (进入adb环境) lookat 寄存器地址(读取当前寄存器的值) lookat -s 寄存器值 寄存器地址(将寄存器值写入当前寄存器) 例:将电压由1.8V修改为1V,具体操作如下: adb root adb shell lookat 0x32121b24 \\此处返回值为0x0000077e lookat -s 0x72e 0x32121b24 \\将0x72e写入寄存器0x32121b24 中 此时26M的时钟幅值被修改为1V 2.不同幅值与寄存器值对应关系如下: 注:该方式掉电失效,只能用来临时验证26M波形对应射频性能的影响,不能导入量产
+参考FAQ: FAQ202274548,含图片
+### 问题: 使用Google文件极客时, 通过OTG插入U盘, 文件极客界面会多显示SD卡（可用空间为0）
+解决方案: 这边发现部分GMS包版本内的Google文件极客(Google Files)应用再使用过程中透过OTG插入U盘, 文件极客界面会多显示SD卡(可用空间为0). 如果出现此情况, 请先透过Google Play Store将Google 文件极客更新到最新版本. 此现象是Google再部分Google文件极客版本上做修改引起的问题.
+参考FAQ: FAQ202274555
+### 问题: 如何确认GPU核心数是单核和双核
+解决方案: 性能跑分工具常见GPU项测试,一般需要先确认测试与对比机的ＧＰＵ核心型号／核心数／时脉, 该如何确认GPU核心数可透过ADB以下指令获取(软件使用debug版本): adb root adb remount adb shell cd /sys/module/mali_XXX/drivers/platform:mali/XXXXX.gpu # cat gpuinfo 如下面表示双核: Mali-G52 2 cores r1p0 0x7402 若找不到/sys/module/mali_XXX 路径,建议开CQ询问．
+参考FAQ: FAQ202274556
+### 问题: LTE Timing delay 单位时间1Ts等于多长时间
+解决方案: LTE Timing delay 单位时间:1Ts = 1ms/30720. 即约等于0.0325520833微秒
+参考FAQ: FAQ202274559
+### 问题: UIS8910FF sim卡一卡二搜网频段配置
+解决方案: UIS8910FF平台卡1卡2 LTE配置搜网频段配置位置是分开的, 分别在modem_nv_static和modem_nv_static_card2内, 对于客制化产品来说,两张卡搜网频段均需正确配置,并且支持卡1卡2配置不同的频段支持组合. GSM搜网频段配置则在Cfw_nv项的freq band控制.
+参考FAQ: FAQ202274560,含图片
+### 问题: SL8541E和SL8521E是否可以做WCN only方案，需要注意什么
+解决方案: SL8541E和SL8521E可以不做主射频,做wcn only方案,硬件需做如下注意: 1、如需Vowifi,需要保留transceiver,保留SPI,CLK,供电以及相关电容; 2、TSX是由于本身精度只有+/-10ppm,并且需要温度补偿,所以需要做AFC校准,因此要保留2G PA以及GSM900(850)发射接收通路 3、NV和CP modem文件均需要保留,不可删除,除了晶体类型/时钟输出/TSX AFC校准参考频段逻辑,ProductionNV外,无特殊配置 4、如使用TCXO+32k方案,且不使用Vowifi,则transceiver可以删除.(因为TCXO的精度为+/-0.5ppm,所以可以不用校准AFC) 注: 软件相关比如软件的裁剪请提交软件CQ确认.
+参考FAQ: FAQ202274561
+### 问题: 蜂窝射频传导杂散测试，为什么频谱仪能测出WiFi2.4G信号
+解决方案: 传导测试蜂窝射频子单元杂散,测出WiFi信号,说明主板系统的WiFi系统正在进行上行发射,且WiFi通路未能端接负载(天线或仪表测试端口). WiFi设备一般不具备大范围动态功率控制,发射功率较大,其信号链端接开路时,上行信号会通过下地的匹配物料,通过地路径进入频谱仪,此时频谱仪可测得2.4G信号.取决于设备WiFi信号的功率,一定程度影响蜂窝杂散测试准确性. 举例: 普通手机形态产品进行杂散测试建议背面打孔,露出开关型同轴测试座(或coaxial cable),WiFi开关型同轴测试座扣入线材时,其负载为仪表50Ω端口,未扣入线材时其负载是天线. 路由形态产品测试,测试线材若与天线共用公头同轴连接器,测试杂散需要接入天线或连接测试线材与仪表进行端接. 即是保证WiFi信号链端接负载,而非开路或短路,以免信号泄露,导致RF地的2.4GHz底噪过大影响测试准确性. 非共存测试case,亦可关闭WiFi.
+参考FAQ: FAQ202274562
+### 问题: 图库中双指缩放图片，当手指缩放距离较短时无效
+解决方案: 双指缩放是调用的手势识别的相关接口,图库中会通过ScaleGestureDetector类来监听手势识别. 一般出现这样的原因,是因为屏幕尺寸过大,需要缩放较大的距离才能认为是做了缩放动作. 因此需要改动配置,修改最短缩放距离,如下两处配置config_minScalingSpan, 大屏幕的一般会使用下面那个config.xml中的. 1、frameworks/base/core/res/res/values/config.xml <dimen name="config_minScalingSpan">27mm</dimen> 2、frameworks/base/core/res/res/values-sw600dp/config.xml <dimen name="config_minScalingSpan">32mm</dimen> 需要将config_minScalingSpan的值改小,具体改为多大需要自行调节看最后的效果.
+参考FAQ: FAQ202274566
+### 问题: 手机来电，外放铃声正常，蓝牙耳机中却只有"嘟嘟嘟"的声音
+解决方案: 来电时,蓝牙会以sco协议连接,google原生配置的默认不会从蓝牙耳机中播放来电铃声,因此只有"嘟嘟嘟"的声音. 若要修改蓝牙耳机也会播放来电铃声,则需要修改如下蓝牙相关的配置: frameworks/base/core/res/res/values/config.xml <!-- Boolean indicating if current platform supports HFP inband ringing --> <bool name="config_bluetooth_hfp_inband_ringing_support">false</bool> 修改成true验证.
+参考FAQ: FAQ202274569
+### 问题: 工厂测试校准信息显示问题
+解决方案: 检查NV配置是否支持对应的band,如确认支持请检查项目的modem版本,确认modem版本在4G_MODEM_20A_W22.08.6及以上,如否请更新modem版本
+参考FAQ: FAQ202274571
+### 问题: 如何下载 xTS 正式版本套件以及最新测试套件
+解决方案: google 官方网站: 正式版本发布下载地址, ex: Android 12 R3 https://source.android.com/compatibility/cts/downloads google partner 网站: 正式版本发布后,google 只要有修正就会更新并发布到这里,需有 partner 权限才可获取 https://partner.android.com/build/ EAP(Early Access Program): 正式版本发布到官方网站前,EAP partner 可以先到这里获取 https://docs.partner.android.com/gms/testing/eap?hl=en
+参考FAQ: FAQ202274572
+### 问题: W317和W307下拉状态栏显示异常问题说明
+解决方案: MOCOR_W317_C02 或是 MOCOR_W307_Trunk 可能偶现在idle画面上下划动状态栏卡住问题, 此问题在新的版本上已经解决,请取W22之后的IDH包: 1. 更新 app\slidewin 中文件 2. 合入 app\dropdown 及 app\notifycenter 中关于WatchSLIDEWIN修改 3. 在 caf.h 约 1047行 加入下述消息 #define MSG_SLIDEPAGE_END MSG_USER_START+8 + #define MSG_SLIDEWIN_END MSG_USER_START+9 + #define MSG_SLIDEWIN_BEGIN MSG_USER_START+0x0a
+参考FAQ: FAQ202274573
+### 问题: DCDC_CPU_EN信号的作用
+解决方案: DCDC_CPU_EN信号, 从UMS9230侧 输出( DCDCARM0_EN),PMIC侧作为输入.它用于控制 DCDC_CPU0电 源的开关,随着 AP的状态而变化. 当出现 DCDC_CPU0 电压异常时,可以同步监测DCDC_CPU_EN信号,建议预留测试点.
+参考FAQ: FAQ202274574
+### 问题: DCDC_GPU_EN的作用
+解决方案: DCDC_GPU_EN信号, 从UMS9230侧输出( DCDCARM1_EN) PMIC 或 外部 DCDC 侧输入. 1)UMS9230和UMS9230H平台, PMIC的 DCDC_GPU给 ARM1供电, UMS9230H的 DCDCARM1_EN连接到 DCDC_GPU_EN. 2)UMS9230T平台, 外部 DCDC给 ARM1供电, UMS9230的 DCDCARM1_EN连接到外部 DCDC的使能, PMIC的 DCDC_GPU_EN接 UMS9230的 XTL_EN2.
+参考FAQ: FAQ202274575

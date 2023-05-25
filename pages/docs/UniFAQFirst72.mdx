@@ -1,0 +1,331 @@
+### 问题: SC9863A搭配UMW2651芯片时，VDDWIFIPA单独使用DCDC芯片供电，BB端的AVDD3V3_PA和AVDD1V2电源应该怎么接？
+解决方案: SC9863A芯片DBB POWER中的AVDD3V3_PA是给BB内部自带的WCN模块PA供电的,AVDD1V2为内部WCN模块的射频电路供电,当使用外置的UMW2651提供wifi、BT、GNSS和FM时,不需要给SC9863A侧的AVDD3V3_PA供电,AVDD3V3_PA用0ohm电阻接地.同理AVDD1V2_AFE、AVDD1V2_FM、AVDD1V2_GNSS、AVDD1V2_TRX_ISM也接地处理.
+参考FAQ: FAQ202072031
+### 问题: UMW2651芯片上3.3V电源，1.2V电源，1.8V电源最大电流各有多少？
+解决方案: 电流功耗请按如下表数据评估. 电源电压(V) pin name 电流(max.mA) 3.3 AVDD3V3_PRI AVDD3V3_DIV AVDD3V3_BT_PA 605 1.2 AVDD1V2_AFE1 AVDD1V2_AFE2 AVDD1V2_WF_TRX1 AVDD1V2_WF_TRX2 AVDD1V2_GNSS 510 1.8 AVDD1V8_DCXO AVDD_RTC VDDIO VDDEFU 20
+参考FAQ: FAQ202072032
+### 问题: 没有AUDIO电路，UMP510G的N2,M2,L2,J1M1,P1是否可以悬空
+解决方案: 没有AUDIO电路,UMP510G的AMPG_VCOM[N2],VDD_CG_GEN0[M2],VDD_CG_GEN1[L2],AVDD_VB[J1],VNEG_CP[M1],VNEG_DRV[P1]不能悬空,必须按照参考设计连接.悬空可能会有漏电.
+参考FAQ: FAQ202072035
+### 问题: SC2703P(L) DISP_VSYSP/DISP_VSYSA PIN供电必看注意事项
+解决方案: 1. 如下图,原理图封装上,SC2703P(L) PIN J6/J7,即DISP_VSYSP/DISP_VSYSA PIN虽和屏正负偏压模块放在一起,但它不光是正负偏压模块的输入电压. 2. SC2703P(L) PIN J6/J7,是整个SC2703数字逻辑电路模块的供电. 常见错误: 误以为SC2703P(L) PIN J6/J7只是屏正负偏压模块的输入电源.在不需要屏正负偏压时, 错误的删除了PIN J6/J7的供电,造成SC2703异常,如WLED/正负偏压/boost/BUCK/charger等异常. 一句话: 任何情况下,SC2703P(L) PIN J6/J7 PIN均需供电.
+参考FAQ: FAQ202072048,含图片
+### 问题: UMW2651/2&UWE5623DU的控制连接接口如：GPIO接口，CTRL接口等，与平台连接时是否可以更换原参考设计上连接的GPIO？
+解决方案: 平台与WCN芯片的连接控制pin与GPIO等,在软件上已经配置完毕,平台不建议随意更改序列.请按参考设计上AP侧选定的GPIO来连接.如果因项目原因非要更改AP侧默认的GPIO,请先提交一个软件CQ询问是否可被调试.
+参考FAQ: FAQ202072051
+### 问题: 功能机 NAND Flash 如何测试读写速率?
+解决方案: 用BSD_READ()函数去读取一个block数据,并在调用这个函数之前和之后加时间戳,这样就可以计算出NAND Flash的读取速率,调用BSD_Write()就可以测试NAND Flash的写速率
+参考FAQ: FAQ202072058
+### 问题: 呼叫转接(ECT)功能
+解决方案: 支持2G、3G以及4G下VOLTE的呼叫转接功能. ECT(Explicit Call Transfer,呼叫转接)是一种较为特殊的补充业务,与呼叫转移(Call Forwarding)不同. 其应用场景如下: 若当前用户终端A插入的SIM卡签约了ECT业务,A与B之间有通话,A通过ECT功能可以将A与B之间的通话,转移到B与C之间,A与B之间的通话断开. 使用方法: 在已经拨通一路电话的情况,在拨号界面,输入数字键4并呼叫(4键 + CALL键),如果当前通话场景不支持或SIM卡不支持,会弹出提示"Request Failed". 若需UI界面显示此功能,可以开启宏开关MMI_ECT_MENU_SUPPORT, 在通话场景支持的情况下在menu界面才显示ECT功能(与HOLD以及MPTY一样),调用后是否成功由SIM卡签约情况以及网络情况决定,无论成功与否都会弹框提示.若操作结果失败,请确定此卡可支持ECT功能,并抓取测试机log以及对比机使用成功的modem的log.
+参考FAQ: FAQ202072066
+### 问题: 开启VIRTUAL_VIBRATE_FUNC做三合一，软件是否支持Vibrate when connect功能？
+解决方案: 三合一喇叭,是无法支持来电接通震动的功能
+原因是三合一喇叭的震动是透过播放一特定震动音源来触发喇叭震动
+
+在语音通话时,音频通道已经转到audio dsp,此时无法播放一般音源而且震动得透过喇叭,所以语音通话在话柄侧的话,也会出现异常,总结上述说明,若采用三合一喇叭的项目,请关闭去电接通振动功能,此为硬件限制
+参考FAQ: FAQ202072068
+### 问题: 人脸解锁功能，如何切换两种活体检测版本
+解决方案: 人脸解锁的活体检测功能,内置两个活体检测的版本,分别为宽松版本和严格版本,但两个版本在解锁时都需要用户眨眼才可以解锁. (1)宽松版本存在一定的误检率,在某些极端情况下不眨眼也可能会解开锁,但解锁速度快; (2)严格版本对活体检测的准确率更高,但如果眨眼过快可能无法解锁. 配置方式: (1)前提人脸解锁功能中打开活体检测 (2)通过如下property进行配置 persist.vendor.faceid.livenessgrade设置为1(默认)为宽松版本 persist.vendor.faceid.livenessgrade设置为3为严格版本 (3)人脸解锁 客户可以根据自己的需求自行配置活体检测的版本.
+参考FAQ: FAQ202072070
+### 问题: SC7731E 是否支持走单端RX？
+解决方案: SC7731E不建议用单端双工器走单端RX,这样做RF性能会有问题; 优先推荐按照参考设计使用差分双工器,RX走差分线; 如果实在差分双工器比较难采购,可以采用单端双工器+balun的形式,保证接到SC7731E RX port依旧是差分线.同时注意balun前后留够匹配位置,此种设计由于加了颗器件及走线原因,插损会大0.7左右. 知悉,感谢
+参考FAQ: FAQ202072074
+### 问题: 手表等产品只有主天线，去掉分集天线软件版本注意事项？
+解决方案: 首先,请贵司软件同事与我司对口的CPM拿到支持关闭分集的软件版本; 然后,此版本上做NV配置关闭分集,这部分贵司可以用NVAide配置;如果有疑问,可提交NV配置CQ,我司RF同事会帮忙协助配置.
+参考FAQ: FAQ202072075
+### 问题: SR3595D SCH设计SPIA/B上预留的下地电容是否可以删除？放在这里作用是什么？
+解决方案: 推荐按照参考设计预留位置; 如果布局紧凑,可以删除,但需要将SPI走线立体用地保护,避免被其他模块及走线干扰. 电容作用是:SPI如果受干扰,做滤波用.
+参考FAQ: FAQ202072077
+### 问题: android Q 如何适配挖孔屏
+解决方案: 挖孔屏相关配置同水滴屏一样,可以参考isupport 上文档《Android P自定义模拟刘海.pptx》,不同的是,如果挖孔在左边,配置config_mainBuiltInDisplayCutout属性性时,由于原生没有@left 这个属性,需要改成@right,然后调整起始点的位置到左边,调试时可以把<bool name="config_fillMainBuiltInDisplayCutout">false</bool> 这个属性改为true看下具体的调试效果,最后请务必改为false,否则会增加图层.
+参考FAQ: FAQ202072078
+### 问题: SC2703P（L）是否支持4.35V/4.4V/4.45V高压电池
+解决方案: 支持.
+参考FAQ: FAQ202072080
+### 问题: Logel工具开启后无数据刷新问题
+解决方案: 连接手机并开启logel工具后,如果遇到下图此类问题,没有数据刷新,但数据大小在增加,可以不用等到数据刷新,操作完保存即可抓到完整log. 也可以在Option->Parser Settings中修改选项,不要选择Auto loading default parser,选取本地解析库后(Parser Lib Dir为本地存放logel工具目录,一般会自动获取),就不会发生数据显示延迟问题.
+参考FAQ: FAQ202072083,含图片
+### 问题: 8910FF平台BT是否支持BLE功能
+解决方案: 回答: 不支持BLE,只支持BR/EDR.
+参考FAQ: FAQ202072084
+### 问题: 设置动态壁纸后重启，动态壁纸为何显示延迟
+解决方案: Google原生设计.Android N引入Direct Boot模式,即设备启动后进入的一个新模式,直到用户解锁(unlock)设备此阶段结束.不支持该模式的应用在该阶段不允许启动.动态壁纸不支持Direct Boot 模式,所以在重启后直到第一次解锁之前,动态壁纸均不能启动,故系统显示了备用的静态壁纸,直到第一次解锁后,动态壁纸才可以启动,则后续正常显示动态壁纸
+参考FAQ: FAQ202072085
+### 问题: 8910FF是否带WIFI功能 ？
+解决方案: 回答: 不带WIFI功能.但是 支持wifi scan,可以用于协助定位.
+参考FAQ: FAQ202072087
+### 问题: SDN服务号码怎么内置到电话本联系人清单
+解决方案: 电话本查看SDN号码的菜单为 contact->option->others->service number 平台没有将SDN号码列在联系人主页面清单的方案,若要此功能,请客户按以下思路实现: 1. 修改pb init list:MMIPB_InitEntryList @ mmipb_app.c,增加SDN号码的读取 2. 读取SDN号码可参考SDN号列表handle 函数 HandleSIMDNListWinMsg @ mmipb_view.c 对于 LoadSIMDailNumberList 的调用 3. 由于SDN号码固定在sim内,无法编辑,对应的编辑菜单需要置灰或屏蔽处理.判断是否为SDN号码的接口为 MMIPB_IsSDNContact @ mmipb_adapt.c
+参考FAQ: FAQ202072088
+### 问题: SC9863A+UMW2651平台 WIFI是否支持MIMO方案
+解决方案: 回答: UMW2651 和 SC9863A搭在一起 WIFI不支持MIMO.
+参考FAQ: FAQ202072090
+### 问题: SC2703P（L）是否支持4.35V/4.4V/4.45V高压电池
+解决方案: 支持.
+参考FAQ: FAQ202072091
+### 问题: volte DSP产生的回铃声响度的调试
+解决方案: volte回铃声主要呈现两种:1.由DSP产生;2.由网络产生; 由网络侧产生的回铃声调用参数与下行的通话参数一致;由DSP产生的回铃声,会经过参数PGA和渐变参数调整,送给VBC,与通话参数数字部分的参数不重叠. 针对DSP产生的回铃声的参数调整,通过修改nv中的对应模式的UL_DP_gain和ul_DP_attenu. UL_DP_gain的值x,目标增益y=20*logx/4096,假如目标增益为-6,此时x=0x800; ul_DP_attenu表示每个step的大小,假如x=0x1000(0dB),设置step的大小z为0x100,则表示step数量为16(x/z);
+参考FAQ: FAQ202072097
+### 问题: 耳机输出通路在不使用的时候能否加隔直电容接地
+解决方案: 在耳机输出不使用的情况下,耳机的输出端不建议加隔直电容接地,若软件误将耳机输出打开,接地相当于直接连接了一个非常小阻抗的负载,若输出有噪声,会造成耗流较大,故建议不使用的时候悬空.
+参考FAQ: FAQ202072098
+### 问题: 测试喇叭听筒通话功率，仪器播放1KHZ手机只能发声3S左右
+解决方案: 由于CVS有一个喇叭保护机制,防止单频率音源破坏喇叭,默认单音3S播放3S左右后关闭,以保护喇叭和听筒. 在CVS的TONE里将band centre freq改为1KHZ, band weidth 改为100HZ ,这样可以确保1KHZ的音源能够一直持续的播放.播放1KHZ音源测试时就不会出现中断的现象了
+参考FAQ: FAQ202072103
+### 问题: 通话中听筒和喇叭的功率要如何测试
+解决方案: 展锐的测试仪器和连接如下: CMU200和AP连在一起,AP上信号发生器给一个0DB 1KHZ的音源,手机和CMU200建立通信. AP上的音源传给CMU后再通过网络传到手机上,然后AP测试手机的听筒或者喇叭的有效电压值计算功率.
+参考FAQ: FAQ202072104
+### 问题: UMS9117这个平台支持外部功放做听筒喇叭马达三合一功能吗？
+解决方案: UMS9117是支持三合一的方案的,支持外部功放做听筒喇叭马达三合一,三合一喇叭直接连接内部AudioPA
+参考FAQ: FAQ202072106
+### 问题: 免提通话时怎样调用副麦克作为免提通话的麦克
+解决方案: 可以通过audiotester工具(R6.18.4801),在免提模式下,CODEC点进去选择DEVICE SET,将path set由0618改为0a18就可以切换到副麦克.
+参考FAQ: FAQ202072108
+### 问题: 锁屏界面是否可以旋转
+解决方案: 锁屏是否可以旋转是通过属性config_enableLockScreenRotation控制的,目前只有在下面这个分辨率是默认打开的 /frameworks/base/core/res/res/values-sw600dp/ <bool name="config_enableLockScreenRotation">true</bool> 其他情况下默认false,如果要打开,请修改为true,同时要注意,在横屏时可能会导致布局控件有异常,自行调整下即可.
+参考FAQ: FAQ202072110
+### 问题: SC6531E是否可以合入喇叭曲线
+解决方案: 目前SC6531E平台未开发使用喇叭频响曲线调整的功能 可根据实际声学频响,在相应的频段进行优化频调整,目前不能直接导入喇叭的本体频响.
+参考FAQ: FAQ202072111
+### 问题: SL8521ET平台IIS信号在待机状态不工作的时候，DI、DO、BCLK、WCK的状态是高电平还是低电平
+解决方案: SL8521ET平台IIS信号在待机状态不工作的时候,WCK默认为高,BCLK, DO默认为低,为芯片的默认配置.DI是输入口,由外部给的信号决定
+参考FAQ: FAQ202072112
+### 问题: 点击关机对话框中关机或者重启选项，如何直接执行而不弹出确认框
+解决方案: 长按power键弹出关机对话框,点击重启或者关机菜单,会弹出一个确认框,如果不需要该确认框,直接关机或者重启,请参考下面的修改: 在 /frameworks/base/services/core/java/com/android/server/statusbar/StatusBarManagerService.java 中将private static final boolean SHUTDOWN_CONFIRM = true; 置为false即可
+参考FAQ: FAQ202072113
+### 问题: 设置蓝牙通话的通路的NV是修改哪里？
+解决方案: 对于客户出现蓝牙通话无声的问题,可能是由于蓝牙通路配置错误导致. NV中错误的配置如下: audio\audio\BTHSNRECD16K\AudioStructure\extend2\extend2[117]=0x0 audio\audio\BTHSNRECD16K\AudioStructure\extend2\extend2[118]=0x0 修改如下即可: audio\audio\BTHSNRECD16K\AudioStructure\extend2\extend2[117]=0x0改为0x95 audio\audio\BTHSNRECD16K\AudioStructure\extend2\extend2[118]=0x0改为0x66 这样就可以将蓝牙通话模式通路切换正常. 其中extend2[118]改为0x66是走的IIS,改为0x0走的是VBC extend2[117]是设置IIS时钟.
+参考FAQ: FAQ202072114
+### 问题: SC7701平台喇叭听筒震动合一的项目如何调整FM频响降低FM外放震感
+解决方案: SC7701平台FM无法调整EQ,它不是自带FM模块,使用的外置FM芯片模块 将BB line in脚和FM芯片串联的两个电容容值降低,可以滤除更多低频.
+参考FAQ: FAQ202072115
+### 问题: 安卓9以上的版本，audio_para在哪个路径下
+解决方案: 安卓版本在安卓9以上,audio_para路径为 data/vendor/local/media/
+参考FAQ: FAQ202072116
+### 问题: CDMA无法连接仪表
+解决方案: 确认一下AP的board是什么
+adb shell getprop ro.build.flavor
+
+目前只有出CTCC Board才会支持6模CDMA. Native/Oversea只支持4模(L/W/G) 同时注意测试白卡,CDMA要用专用卡,并且支持连接测试卡中写入的信道
+参考FAQ: FAQ202072117
+### 问题: UMS512T平台的smart PA的SPK选型有什么要求吗？
+解决方案: SMART PA能够专门提高智能机音乐输出动态范围,动态跟踪喇叭的状态并感知其所处环境的变化,在适应后给出改变,为手机、便携式音乐播放器和平板计算机带来更高的音量、更浑厚的低音与更出色的音质,而且还可以在不超过扬声器本身承受能力的前提下提高音乐的平均音量. SMART PA目前提供两大外放上最为强悍的功能: 第一,保护功能,保护器件不受超额工作的损害;第二,可以理解为效果类功能,在保护器件的同时,能够一定程度上提升音质. 对于UMS512T平台的smart PA所使用的喇叭,建议使用一体化BOX,这样可以确保喇叭的气密性.对于对响度要求较大的设计,气密性十分重要.确保所有批次喇叭的性能(频响.灵敏度,失真)一致性好.同时喇叭最大功率1.5W,额定功率1W 我们在做SMART PA校准喇叭环节时,需要喇叭供应商提供喇叭的升温系数以及最大振幅.
+参考FAQ: FAQ202072118
+### 问题: Android 10 Go版本recent界面Google Play Store名称为何重复显示
+解决方案: Google原生设计:如果ApplicationLabel和ActivityLabel名字不一样,则两个加在一起,中间用空格隔开.
+参考FAQ: FAQ202072121
+### 问题: T117平台是否支持GPIO PA方案
+解决方案: 支持.
+参考FAQ: FAQ202072125
+### 问题: T117平台采用GPIO PA方案 NV是否需要更新Action table
+解决方案: 无需更新NV的action table项. DSP会根据NV项GSM_logic\GSM_mipi_config_logic\gsm_PA_mipi_enable=0X1来判别当前RF PA方案自适应处理. modem版本要求FM_BASE_20A_THIN_MODEM_W20.43.2及以后的版本.
+参考FAQ: FAQ202072126
+### 问题: 高温测试wcdma最大功率偏低
+解决方案: 高温测试wcdma最大功率偏低: 1)首先检查wcdma band HDET值校准log是否正常.如果功率检测HDET值不正常,就会使最大发射功率控制有异常,通过修改功率检衰减值使其正常. 2)如果校准logHDET值正常后,然后再通过修改HDET功率温度补偿去优化,具体如下: 打开HDET功率温度补偿标志位: band_num: 对应的WCDMA Bandfreq[0]～freq[4]:代表对应的频率分段.如上页PPT的默认配置,即分1段补偿,对应修改freq[0]即可.comp[0]~comp[13]: 对应不同温度下的PDET功率补偿,对应温度范围如截图所示.unit:1/32dB,range: -4~(+4-1/32) dB.如0xE0=0x20(补码)=-32/32dB=-1dB
+参考FAQ: FAQ202072130,含图片
+### 问题: PMIC BAT_DET PIN脚和BB BAT_DET  PIN脚功能的区别？
+解决方案: 以UMS312+PMIC UMP510G平台设计为例,分别对两者介绍: 1. PMIC UMP510G PIN L12定义为BAT_DET,是一个ADC输入口.该pin通过网络BAT_TEMP_ADC连接到电池座.它有两个功能:检测电池温度和检测电池是否在位. 2. UMS312 PIN F17这个IO口有多个function,默认用作BAT_DET function(连接网络名BUA_BAT_DET).该pin脚接收PMIC端输出的BAT_OK信号,从而判断电池是否发生(电压)抖动或拔出动作.据此对SIM卡等模块执行下电保护或恢复操作,此功能默认关闭,若需开启请联系我司确认.
+参考FAQ: FAQ202072131,含图片
+### 问题: SC2721G/SC2720A USB BC1.2枚举功能，软件可否主动关闭？
+解决方案: 不可以. 原因:BC1.2枚举过程是VCHG_D中断触发的自动行为,只要有VCHG_D中断就会触发BC1.2枚举过程,软件无法关闭.
+参考FAQ: FAQ202072132
+### 问题: 如何修改长按响应时间？
+解决方案: 长按响应时间 目前所有按键的响应时间是一致的,不区分red键和普通按键 #define MMI_KBD_LONG_KEY_VALUE 1500 开始记录repeat事件响应时间 #define MMI_KBD_START_REPEAT_KEY_VALUE 300 repeat事件响应时间 #define MMI_KBD_REPEAT_KEY_VALUE 100 触屏长按响应时间 #define MMI_TP_LONG_PRESS_VALUE 600 触屏短按响应时间 #define MMI_TP_SHORT_PRESS_VALUE 150 触屏双击响应时间 #define MMI_TP_DBLCLK_PRESS_VALUE 360
+参考FAQ: FAQ202072139
+### 问题: [APP-BT] 连接蓝牙耳机来电，无任何操作手机会自动接听电话
+解决方案: 遇到此现象,多数是蓝牙耳机自身的行为,首先使用其他对比机器进行对比测试,若同样存在该现象,那么考虑是该耳机有自动接听电话的功能. 有如下log,证明是蓝牙耳机发送过来的接听命令: S0310C3 09-18 16:09:01.564   818  2376 I Telecom : BluetoothPhoneService: BT - answering call: BPSI.aC@ALU
+R0310D5 09-18 16:09:01.569  1033  1033 I phone   : acceptCall: incoming...
+R0310F5 09-18 16:09:01.580  1033  1033 D RILJ    : [4930]> ANSWER [SUB0]
+参考FAQ: FAQ202072148
+### 问题: [APP-BT] 蓝牙配对时配对框默认允许访问通讯录
+解决方案: 在/packages/apps/Settings/src/com/android/settings/bluetooth/ 路径下找到BluetoothPairingDialogFragment.java这个java文件,分别将245和335行的:
+contactSharing.setChecked(mPairingController.getContactSharingState());
+更改为:
+contactSharing.setChecked(true);
+再对Settings模块进行编译,再将生成的Settings.apk push到手机上.
+从而可以实现弹出配对框时即可共享联系人.
+参考FAQ: FAQ202072149
+### 问题: [APP-BT][WCN-BT] 修改蓝牙名称的默认显示长度
+解决方案: 将external/bluetooth/bluedroid/btif/src/btif_dm.c的第79行的:
+-----#define DEFAULT_LOCAL_NAME_MAX  31 根据自身需求进行调整
+参考FAQ: FAQ202072150
+### 问题: [APP-BT] 蓝牙相关的一些adb操作
+解决方案: 1.打开和关闭蓝牙,操作如下
+sudo adb root
+adb shell svc bluetooth enable
+adb shell svc bluetooth disable
+
+2.获取mac地址:
+adb shell settings get secure bluetooth_address
+
+3.查看蓝牙状态
+sudo adb shell
+dumpsys bluetooth_manage
+
+4.导出蓝牙apk
+sudo adb shell pm list packages 列出所有包,找到蓝牙对应的包
+例如:
+adb shell pm path com.android.bluetooth
+adb pull system/app/Bluetooth/Bluetooth.apk
+参考FAQ: FAQ202072151
+### 问题: 9863平台如何打开GSM自动接听
+解决方案: NV位置路径如下:默认为0X0关闭,更改为0X1即可打开GSM自动接听
+PS_NV_PARAMS\ATC_CONFIG_NV\spauto_flag=0X1
+参考FAQ: FAQ202072154
+### 问题: SR3595D芯片外供26M时钟REFOUT1~3功能开启
+解决方案: 通过NV配置时钟开启或关闭, 默认配置:RF_init_common\RF_init_common\reserved\reserved[8]=0X6 引脚寄存器对应关系: bit0-----REFOUT1 bit1-----REFOUT2 bit2-----REFOUT3 bit3-----Reserved 开关方式: 配为0是开启,配1是关闭,TSX+32KLess方案默认用REFOUT1为AP供26M时钟,因此配为0110=0x6 示例: 开启REFOUT1为AP供26M时钟,REFOUT3为其它外设供时钟(如NFC). 配置REFOUT1,REFOUT3开启: 0010=0x2 原理图:
+参考FAQ: FAQ202072155,含图片
+### 问题: 关于T117各应用IP协议的支持情况是什么？
+解决方案: T117 平台的 IP 协议栈支持IPV4及IPV6协议. T117 应用使用到IP协议的功能及支持程度如下: 1. 收发彩信(大部分运营商的彩信预置APN是IPV4的,也有部分是IPV4/IPV6的) ---- 当前支持IPV4/IPV6 2. 浏览器上网:Dorado浏览器支持IPV4/IPV6,Operamini仅支持IPV4(Operamini浏览器支持问题) 3. 附加业务及其他需要激活PDN的业务:支持IPV4/IPV6 激活PDP时使用的是IPV4还是IPV6取决于手机配置的APN,可参考"UMS9117 预置APN列表更新说明V1.0.pdf(文档编号:31001)"中的Reserved一项的具体说明.
+参考FAQ: FAQ202072162
+### 问题: 【BBAT】G3工具是否支持双喇叭测试
+解决方案: BBAT G3工具可以支持双喇叭测试,SP_BBAutotester_G3_R3.0.0005之后的工具已经支持,对应的测试子项ID为510,默认采用的是sub speaker->main mic(未贴片)的loop方式测试. 夹具接线:sub speaker的P/N分别接到盒子的B9/B10. 如果是就旧版本的G3定制化工具需要支持双喇叭测试,可以参考最新工具里面的parameterlist.csv文件自行增加510测试子项.
+参考FAQ: FAQ202072165
+### 问题: CMW100一拖多测试Simba设置
+解决方案: 1、CMW100设置成one instrument 2、simba设置测试手机数量,仪表地址,仪表端口等 3、点击应用开始测试(测试是串行的,只是节省进模式等待时间,建议设置一拖二即可)
+参考FAQ: FAQ202072172
+### 问题: simba工具扫描LTE极限灵敏度方法
+解决方案: 1、simba工具seq序列里右键新增测试项,选择LteFT.dll\SR3596\sensitivity,添加 2、选择新增的测试项LTE LMT (Sensitivity)测试,右边常用设置里可配置扫描stepsize和stepnumber 3、开始测试后会按照高级设置里设置的cellpower作为起始扫描点,按照stepsize一直往下测试,直到sensitivity fail为止.fail点即为最终极限灵敏度.
+参考FAQ: FAQ202072174
+### 问题: LTE B13设计注意事项？
+解决方案: 主要考虑B13谐波对GNSS的干扰. SCH设计: 1.LTE B13通路上需预留低通滤波器,低通滤波器在B13二次谐波处的衰减至少要30dB; 2.如果GNSS SAW在LTE B13处的衰减小于35dB,或者LNA的LTE B13二次谐波性能较差,GNSS通路上则还需预留一个如下图所示的陷波网络.如需要兼容北斗频段,则必须预留此陷波网络. PCB及天线: 1.GNSS天线及相关走线需尽量远离LTE B13相关电路及器件等(特别是B13的PA供电走线),保证两者之间有足够的隔离度. 2.GNSS与LTE B13天线隔离度>30dB.
+参考FAQ: FAQ202072177,含图片
+### 问题: UIS8910 Bt / FM / WIFI 无法共存
+解决方案: lUIS8910芯片内部 Bt / FM / WIFI SCAN 是复用的射频,所以三者互相不能共存,因而由 UI 开启前做检查,并弹出提示框. lMMIWIFI_OpenMainWin() 内会调用 MMIAPIBT_IsBtOn() 和 MMIAPIFM_IsFmActive() 做检查;在 MMIBT_OpenMainMenuWin() 和 MMIFM_OpenMainWin() 都有相同的检查.
+参考FAQ: FAQ202072178,含图片
+### 问题: GSM打开分集天线测试OTA未改善？
+解决方案: 一般有两个原因: 1.分集天线性能太差,此种情况需要提升分集天线的性能与主集天线相当. 2.NV配置打开的动态开分集. NV中打开分集有三种:强制开分集/动态开分集/分集ONLY. 建议测试OTA时候设置为强制开分集;实网中如果要打开分集务必设置为动态开分集! 动态开分集为防止实网中信号突变抖动/分集频繁打开等情况,只有软件判断主分集两个天线信号数据达到预先设定条件时才会合并分集数据,这样灵敏度才可能有提升. 动态开分集测试OTA时候,由于软件需要做判断处理,而OTA测试进行较快,分集会来不及得打开,故测试时候有可能分集数据未合并进来. 为了验证天线性能可以考虑使用分集天线only或是强制打开分集,但这两项只是为了验证硬件性能的一种测试手段,不能在实网中这样设置.
+参考FAQ: FAQ202072180
+### 问题: 如何修改WCDMA模式下PA的VDDWPA的供电电压
+解决方案: 修改如下NV项: WCDMA_optimize\WCDMA_download_params_optimize\pa_dcdc_config\control_word\ control_word[0]由0x35E8改为0x38A4 (start word, high voltage. 0x35E8=3.34V, 0x36B0=3.39V, 0x38A4=3.51V, 0x39D0=3.58V) 可以把WCDMA模式下 VDDWPA电压改到3.5V
+参考FAQ: FAQ202072186
+### 问题: T107(UMS9117-L)平台LTE支持的CAT等级是多少
+解决方案: T107(UMS9117-L)平台LTE 只能支持CAT1
+参考FAQ: FAQ202072187
+### 问题: UIS8910FF射频NV合入方法
+解决方案: 由于公版NVitem包中的文件缺少部分AP项目,用NVeditor工具打开prj,修改射频逻辑,生成bin,打包成pac,可能会导致开机assert. 建议采用平台推荐的脚本编译方式去合软件,只需将导入了射频修改项的NVM文件提供到软件融合编译即可. nvitem文件夹中如下文件涉及射频逻辑和搜网频段修改: Cfw_nv.nvm中的nw_sim_freq_band,用于修改sim1/2支持2G频段; modem_nv_static.nvm中修改LTE搜网频段项radioAccessCapability; RF_nv.nvm中各逻辑相关项目. 用nveditor打开prj,修改好射频逻辑或导入射频差分nv后,保存prj,将以下三个修改好的nvm文件融合到软件编译即可: Cfw_nv.nvm modem_nv_cat1bis_uix8910_static.nvm RF_nv.nvm
+参考FAQ: FAQ202072189
+### 问题: SC7731E GSM 850和PCS的PVT FAIL
+解决方案: 针对SC7731E平台GSM850的CH174~204和PCS的CH606~636 PVT偏移的情况,调试如下地方可以修改好其时序,在原始值上做微调即可,调试值视具体情况而定: GSM_DownloadParam\system_param_dsp_use_T\action_tables_struct\saved_action_table\[0x115]=0xFFFF
+参考FAQ: FAQ202072193
+### 问题: SL8541E项目更换新功放RTM7916-51和RPM6743-31后，WCDMA所有频道开环功控OLPC的RX-dynamic end都不过，测试不到值
+解决方案: Ø由spec可以看出6743-31的0X2只做TDD RX开关,TX部分无需配置.而6743-12在TX配置时需要配置0x0和0X2 Ø问题就是由这些差异引起,故此问题的解决方案:将PA的Reg0x0的位置放在了PA common里,OLPC测试pass.具体示意如下:
+参考FAQ: FAQ202072194,含图片
+### 问题: BT硬件电路差分改单端方案的实现方法
+解决方案: lBT通路硬件上默认采用差分双端口方案,请优先按平台参考建议来设计. 如因布局影响无法采用差分方案,可参考如下更改建议,单端方案对BT硬件性能有一定下降. l确认9117平台BT单端硬件电路有预留: lBT改单端硬件匹配改动如下: L7201=NC,兼容位R7202=2.7NH,C7202=NC R7203=NC,兼容位R7204=0ohm,C7200=NC l软件上无须更改,CP2兼容BT差分和单端硬件方案. lNv调试方法与差分方式一致,无须改动. l更改后功率有1~2dB下降.
+参考FAQ: FAQ202072197,含图片
+### 问题: UMS512平台，如何通过SMART PA UCP1301推多个喇叭（2到4个）
+解决方案: 以推四个喇叭为例,按照如下设计 使用UMS512的PAOUT_P和PAOUT_N接四路UCP1301,每个UCP1301推一个喇叭. 必须确保4个喇叭一致性好(喇叭的灵敏度控制在+/-1DB以内,频率响应+/-1DB) UCP1301的最大电流不能超过0.7A ,支持的喇叭是:8欧喇叭最大支持到4W,4欧喇叭最大支持到2W 同时从一个UCP1301的反馈信号CLK_PDM和DATA_PDM连到主芯片即可. 对于推动其他数量(如2个或3个)喇叭,按照上述方法如此类推
+参考FAQ: FAQ202072200
+### 问题: RF前端电路设计时RF端口选取方法？
+解决方案: RF前端电路设计时RF端口选择主要三个原则: 1.RF端口频率要匹配,具体可参考对应transceiver的 RF design guide中定义. 2.走线尽量顺,不交叉,尽量保证RX走线以及TXM到DPX/SAW这段线走表层. 3.相邻频率,重叠频率的band在TXM 端口及 SR3595D RX端口都隔开下,例如B1/B2,B7/B41,B2/B39等. 这部分建议新项目在SCH设计之前提交RF框图申请,我们会针对客户频段信息来给出对应RF框图. 知悉 感谢
+参考FAQ: FAQ202072201
+### 问题: 【BBAT】G3工具是否支持FM发射测试
+解决方案: G3工具可以支持FM发射器测试,子项ID为1103. FM发射器测试需要用到外置收音机,并通过耳机线将收音机的左声道信号接到G3盒子的耳机左声道测试,注意G3盒子的耳机mic信号一定要空载. 可以使用定制的3段转4段的耳机线或者使用普通的耳机,剪短左听筒后再将左声道单独接到G3盒子的耳机左声道.
+参考FAQ: FAQ202072203
+### 问题: 【BBAT】G3工具是否支持压力测试
+解决方案: G3工具支持单板压力测试,需要在配置文件SP_BBAutotester.ini中设置. 具体参数如下: Enable Cycle Test = 1 ;开关,0关闭,1开启 Test Count = 100 ;测试次数 WaitTimeEveryCycle = 1000;两次测试的时间间隔
+参考FAQ: FAQ202072204
+### 问题: 7731E平台功率回退
+解决方案: 7731E平台功率回退实现方案,目前平台暂不支持开机生效功能,只支持AT命令生效. 参考文档有点出入. 参考文档:(SC7731E Power Back Off V1.1)
+参考FAQ: FAQ202072205
+### 问题: TDD-band41测试功率偏低
+解决方案: 若UMS512和UMS512T平台,测试B41功率发现偏低(B38功率正常)的情况下,需要检查NV中PDET补偿值是否为0xF010,若不是的话需要修改为0xF010. NV路径如下: LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_PDET_PCC\LTE_pdet_rb_comp\Band_no6\comp_channel_rb\comp_channel_0\full_rb_QPSK_*M=0xF010 LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_PDET_PCC\LTE_pdet_rb_comp\Band_no6\comp_channel_rb\comp_channel_0\partial_rb_QPSK_*M=0xF010
+参考FAQ: FAQ202072206
+### 问题: SC9863A测试LTE OTA性能，单独开主集天线或分集天线的设置方法
+解决方案: 通过*#*#83781#*#*进入EngineerMode↓ 在HARDWARETEST↓ 天线设置→↓LTE Primary and Diversity ,进行单主集天线、单分集天线设定
+参考FAQ: FAQ202072210
+### 问题: 如何用ADB读取主板实时温度
+解决方案: RF调试中常需要读取主板工作实时温度.ADB命令读取方式如下: Software:userdebug版本 Adb shell Adb root cat /sys/class/thermal/thermal_zone1/type cat /sys/class/thermal/thermal_zone1/temp:读数/1000就是摄氏度
+参考FAQ: FAQ202173276
+### 问题: 插T卡：开机时，Detect信号有220mV的台阶后，才上升到1.85V。
+解决方案: 插T卡:开机时,Detect信号有220mV的台阶后,才上升到1.85V. 硬件方案为三合一卡槽,SIM0/SIM1/TF的Detect连接到一起.在开机的过程中,这三个pin脚的default的状态是对地接50kohm电阻,三个并联在一起的的对地阻抗16.6kohm,和上拉的电阻进行分压,此时Detect的电压为220mV. 当进入uboot之后,pinmap将SIM0/SIM1/TF的Detect管脚对地的50kohm电阻断开,此时电压上升到1.85V.
+参考FAQ: FAQ202173297,含图片
+### 问题: 插T卡：关机时Detect信号有异常跳变
+解决方案: 插T卡:关机时Detect信号有异常跳变. 硬件方案为三合一卡槽,SIM0/SIM1/TF的Detect连接到一起. 在关机过程中,由于EXT_RST_B先拉低(如下图),会使得SIM0/SIM1/TF的Detect管脚恢复到default状态,SIM0/SIM1/TF的Detect管脚default状态是对地下拉50kohm,三个关键连接在一起形成并联,等效阻抗为16.6kohm,同时VDD1V85的电还未掉电,所以此时电压为220mV左右.当VDD1V85掉电的时候,此时电压也就掉到0V.
+参考FAQ: FAQ202173298,含图片
+### 问题: UMP510G的FGU的采样电阻最小能接多少欧姆?
+解决方案: UMP510G的FGU的采样电阻最小可以使用5mohm,采样电阻的功率要求0.5W以上,否则有浪涌损坏的风险. FGU电流采样的精度实测如下表所示. 注意:电流采样的精度,与采样电阻贴片的精度也有一定的关系. 采样电阻 FGU采样电阻经过的电流 FGU读取的精度 最大偏差 最小偏差 5mohm 10mA 16.08% 40% -20% 5mohm 50mA 4.19% 8% -6% 5mohm 100mA 2.2% 4% -2% 5mohm 300mA 0.72% 1% -0.67% 5mohm 500mA 0.32% 0.8% -0.4% 5mohm 1000mA 0.3% 0.5% -0.3% 5mohm 3000mA 0.29% 0.47% -0.1% 5mohm 6000mA 0.11% 0.6% -0.15%
+参考FAQ: FAQ202173299
+### 问题: case9.2.1G Single Link Performance-Enhanced Performance Requirements
+解决方案: case9.2.1G Single Link Performance-Enhanced Performance Requirements(单链路性能-增强性能要求),此case测试时WCDMA需要打开双天线(主集和分集). 若case9.2.1G测试fail的话,需要打开WCDMA分集并确保分集灵敏度测试正常.
+参考FAQ: FAQ202173300
+### 问题: WCDMA IRR校准NV enable位置
+解决方案: WCDMA IRR校准只校准Middle band(WB1/B2),WB5/8 low band是不校准的,IRR NV Enable位置在NV1.0和NV2.0分别如下截图位置配置;
+参考FAQ: FAQ202173304,含图片
+### 问题: 平台是否支持虚拟运营商SIM卡？
+解决方案: T107/T117平台支持虚拟运营商的SIM卡. 对于modem侧来说,虚拟运营商的SIM卡处理与运营商的SIM卡处理并无差别. 对于MMI侧来说虚拟运营商的收发短彩信、打电话上网是没有问题的,如遇到平台未包含需要增加的虚拟运营商则需要提供相关数据进行配置. MMI侧预置APN配置文档请参考:UMS9117 预置APN列表更新说明V1.1.pdf
+参考FAQ: FAQ202173311
+### 问题: 如何在log中查看SIP消息、信号强度及当前所驻的网络的mcc/mnc？
+解决方案: 如何在log中查看SIP消息、信号强度及当前所驻的网络的mcc/mnc? SIP消息可在Modem log中查看: 使用Logel工具打开modem log后,Ctrl+F,在搜索菜单中输入"msg ->""msg <-",Search in Column框勾选Content,Serach in View框勾选Traces,可以搜索到log中所有的SIP消息. 点击搜索结果中的具体SIP消息,可在"Internal Messages"或"Traces"窗口中看到详细SIP信令内容. 信号强度: 搜索关键字"HandleScellRssiInd",其中rxlev对应的值即为对应SIM卡的信号强度. 当前所驻的网络的mcc及mnc: 搜索"APP_MN_NETWORK_STATUS_IND",双击该消息可查看消息携带的对应的SIM卡ID以及所驻网络的mcc及mnc. 事件日期logel工具中解析出的信息是有标出的.
+参考FAQ: FAQ202173313
+### 问题: 驻3G网络时设备不会向网络发送ACTIVATE PDP CONTEXT REQUEST
+解决方案: 驻3G网络时设备不会向网络发送ACTIVATE PDP CONTEXT REQUEST 智能机在3G驻网的流程中, 并不会主动发起PDP承载. 之所以会有是因为智能机平台3G下有一路PDP是后台长期处于激活状态, 用于数据业务. T117 平台即功能机平台则是按需激活PDP, 上层有数据业务需要激活时, 才会发起PDP承载. 因此功能机在3G驻网过程中并不会主动发起PDP承载
+参考FAQ: FAQ202173314
+### 问题: 草稿箱收件人显示
+解决方案: 这是因为在FormListBoxItem中加载SMS列表时,草稿箱item的收件人的显示中, MAX_NO_RECI_STRING_LENGTH 定义的是 20,而印地语no recipient长度是21,导致做wstrcpy失败,wchar_reciept为空,收件人显示为空, 只需要修改MAX_NO_RECI_STRING_LENGTH 值为30 ,则收件人会显示为印地语的no recipient.
+参考FAQ: FAQ202173321
+### 问题: 射频一致性 2G测试Case13.17.3.4.1_ EGPRS Transmitter output power Fail解决方法
+解决方案: 问题背景:若测试射频一致性2G测试Case13.17.3.4.1 EGPRS Transmitter output power测试Fail,Fail的问题点为PCL等级功率偏低上下限或线性度不好. 解决方法:可通过修改Simba校准参数(如下图所示)DeltaGain改为4,PwrRange改为1.0,来提高APC的校准精度.需重新校准后重新测试.
+参考FAQ: FAQ202173325,含图片
+### 问题: 短信添加不支持音乐类型不能转换为彩信
+解决方案: 要实现在短信编辑中添加不支持的音乐类型,并转换为彩信, 需要在 mmifmm.c文件 HandleSelectMusicWinMsg 函数 中将MMIAPISET_PlayMusicFile函数移除,不进行文件是否可以播放判断即可.
+参考FAQ: FAQ202173326
+### 问题: 搭载LPDDR4和LPDDR4X时BB端供电说明
+解决方案: 对于SC9863A,UIS8581A,UIS8581E平台来说使用LPDDR4的物料在BB端VDDQ供电是0.9V,必须使用外置LDO供电,具体如下图所示: 因为SC9863,UIS8581A,UIS8581E平台LPDDR3(1.2V),LPDDR4(1.1V)和LPDDR4X(0.6V) IO做了兼容设计,IO结构比较特殊,在LPDDR4模式下必须使用0.9V,而不能使用1.1V. 所以SC9863,UIS8581A,UIS8581E平台搭载LPDDR4时BB端的VDDMEMQ的供电是0.9V
+参考FAQ: FAQ202173328,含图片
+### 问题: 开机PDP激活失败，原因值111
+解决方案: 开机PDP激活失败,原因值111. 该问题常见于20.46.4版本开机附加业务查询失败. T117 平台 modem 侧的 PDP 激活是不支持并发的,而驻 4G 网络发起的 init attach 会激活 default 一路的 PDP ,此时若 MMI 侧向 modem 侧发起激活 PDP 请求,则会收到 modem 侧返回的失败结果,原因值为 111 . 此问题解决方案为增加附加业务的重传机制: MMI 侧发起附加业务激活 PDP 失败后进行超时重传处理,若重传仍失败,则不再进行激活 PDP 操作,直接调用底层接口 MNSS_SendSSEx 向底层发起附加业务请求.
+参考FAQ: FAQ202173329
+### 问题: MMI 侧如何识别 SIM 卡的 MCC 和 MNC 信息？
+解决方案: MMI 侧如何识别 SIM 卡的 MCC 和 MNC 信息? MMI 侧接收底层上报事件 APP_MN_SIM_READY_IND 并解析出 SIM 卡的 MCC/MNC 存储在 s_sim_status 中的 hplmn 中,结构体如下: typedef struct MN_PLMN_T { uint16 mcc; uint16 mnc; uint16 mnc_digit_num; } MN_PLMN_T; 而某些运营商 SIM 卡中是未写 MNC 的位数的,这时底层上报的 mnc_digit_num 为 FF,MMI 侧依据固定规则进行调整.调整方法可参考宏 MMI_SIM_NODIGITNUM_SUPPORT 包含的相关处理.
+参考FAQ: FAQ202173332
+### 问题: SC6533G平台如何使用APN自适应功能
+解决方案: SC6533G平台上的自适应功能模块不是很完善,默认情况下是关闭的,如果客户希望使用此功能可以自行打开,但要注意下面事项: 相关的宏开关:__JATAAYU_AUTO_CFG_DATAACCOUNT_SUPPORT__ 调用接口:mmi_brw_auto_profile_settings 注意事项: SC6533G平台APN自适应功能使用内置的文件wap_mms.txt,将目前全球所有已知的APN信息录入到其中,在编译资源时,会自动生成文件gprs_profile_default.h等文件,如果需要修改或添加文件wap_mms.txt需要注意三点: 1、wap_mms.txt文件需要使用excel程序打开,并且要保证F列PLMN中的数字是按照升序排列,plmn长度不能超过7位. 2、每一个PLMN下的APN总数不能超过15个 3、SC6533G目前只支持两种类型的APN(mms APN和wap APN),对于mms APN,C列type中的名称必须为mms
+参考FAQ: FAQ202173333
+### 问题: UWS6130（W307）用那个uart出串口log
+解决方案: 目前平台方案是,使用UART 0 抓取uart log, UART 1 是用来与sensorhub通信的,以上硬件ready之后,需做以下操作: 1. 开机后,进入工程模式界面: 表盘- > 设置-> 系统-> 关于手机 -> "点击5下" -> log set -> log switch -> uart log 2. 选择"open" 打开 uart log, 重启开机之后,uart 吐log, 所有sensorhub 功能失效. 3. 选择"close" 则 uart 用来与sensorhub 通信,重启开机之后,所有sensorhub 功能正常, uart 不出 log 默认开机为sensorhub功能正常. 如果不能开机如何走默认串口log,mmieng_win.c中增加下图高亮的语句,就可以默认走uartlog.
+参考FAQ: FAQ202173335,含图片
+### 问题: 夏令时到时是否会自动更新时间
+解决方案: 目前手机的更新时间的触发机制: (1)自动更新时间是打开的,那么开机时收到网络消息后,会通过网络获取时间后自动更新时间. (2)用户通过菜单手动进行时间更新. 因此当新的夏令时到时,如果手机重新开机或是用户通过菜单操作更新,是会获取到新的夏令时时间. 但是如果手机一直处于开机且不通过菜单操作,那么系统时间不会主动更新会新的夏令时时间.
+参考FAQ: FAQ202173341
+### 问题: NVAide工具里没有相关器件可选怎么办
+解决方案: 1、NVAide工具只支持4G平台,2G3G平台和5G平台都不支持,也不支持我司RDA平台 2、NVAide器件库里的器件要么是经过公司测试验证,要么是使用客户比较多的成熟器件,某些新出射频器件或者非主流器件将无法在库里找到 3、主流厂家新器件如果不在库里,可以咨询我司AE是否考虑添加,即使要添加,也只是提供临时配置文件供客户使用,正式添加到库里供所有客户使用要等工具发布新版本时
+参考FAQ: FAQ202173350
+### 问题: 平台USB的DP/DM电压幅值多少是合适的？
+解决方案: 1.当设备工作在low或者full Speed模式下时候: VoH(min)=2.8V,Voh(max)=3.6V VoL=0-0.3V; 这时候高电平是跟随主控侧的VDDUSB的供电电压,当VDDUSB供电电压提高时候,高电平也随之提高; 2.当设备工作在High speed模式下: 差分低电平电压为 -10~+10mV; 输出差分高电平为360~440mV; 这时候的高电平电压可以通过调整USB驱动器内部的45欧姆电阻来调整高电平的电压(每个平台的寄存器不同,具体可以提交CQ咨询)
+参考FAQ: FAQ202173355
+### 问题: GPS的版本和支持定位系统的信息
+解决方案: 1.输入工程模式密码*#*#2266#*#*,进入SGPS工程模式 2.在Information界面,GPS version为GPS软件版本 3.在Information界面,Mode and System Config里有支持的定位系统信息 如:GPS Only、GLONASS+GPS等可选的定位系统
+参考FAQ: FAQ202173356
+### 问题: 需要解锁的安卓版本
+解决方案: 在调试过程中,会发现使用Debug版本的软件,控制指令不生效,原因可能是安卓系统没解锁. 1.安卓10(Android Q)及其以后的安卓版本,除了软件为Debug,还需要解锁,才能开放控制权限 2.安卓9(android 9)及其以前的版本,软件为Debug,不需要解锁,就有控制权限
+参考FAQ: FAQ202173358
+### 问题: W307 W317如何进入工程模式
+解决方案: W307 W317有两种方式可以进入工程模式 1. 在call界面,输入#*8378#1#后按Call键 2. 在Setting->about菜单内,连续5次点击屏幕也可以进入工程模式
+参考FAQ: FAQ202173359
+### 问题: 如何在 log 中查看当前手机终端设置的 MTU ?
+解决方案: T117 平台 MMI 侧暂不支持配置 MTU, 实际 MTU 以手机终端 modem 侧配置的大小为准. 在文件 FR_Bouygues_P.nv 中查看如下信息: PS_NV_PARAMS\NV_PARAM_TYPE_PLMN_DELTA_NV\ims_plmn_nvinfo\sip_mtu=1354 如何在 log 信息中查看 mtu 大小 ? 可在抓取的 log 中通过搜索打印信息"sip_mtu",举例如下: 77397130-1 16:43:32.712 16:43:32.712 Time: 8571805 [IMS]:sip_mtu: 1354, sip_pcscf_port: 5060, sip_ue_port: 5060
+参考FAQ: FAQ202173361
+### 问题: wifi only版本写googlekey失败
+解决方案: 请修改图版中选项后再操作
+参考FAQ: FAQ202173369,含图片
+### 问题: 判定TSX AFC校准功能是否正常工作的两个方法
+解决方案: 判定AFC校准功能是否正常,有以下两种方法: 1. 使用万用表测量PMU_TSEN_VREFP这一脚的精密电阻到地的电压,AFC功能正常工作时电压应为2.95V,若没有电压则AFC未工作; 2. AFC校准之后会生成txdata.txt校准文件,使用adb指令可导出该文件,adb指令如下: adb root adb pull /mnt/vendor/txdata.txt "导出的文件夹路径" 若成功导出,则表示AFC校准功能正常,若导出失败,则表示AFC功能异常,txdata.txt校准文件没有正常生成
+参考FAQ: FAQ202173373
+### 问题: 手表如何存储log到内部存储设备Udisk
+解决方案: 手表项目若要在没有T卡的情况下,需要进行存储log,可以存储在到手表内部.以Ap log为例,步骤如下.其他log类似. 1 .将NV配置参数进行修改 common->nv_parameters->refbase->ULOG_NV_PARAMETER.xml的Log2Internal 参数置1, 然后编译pac下载 2. 进入工程模式,设置菜单 log set-->log switch-->Ap log->open log set-->log output-->Ap log->log to SD 3. 重启手机
+参考FAQ: FAQ202173375
+### 问题: WCDMA的HSUPA/HSDPA手动测试在Agilent 8960上无法注册问题
+解决方案: WCDMA在进行HSUPA和HSDPA测试时,需要手机关闭数据开关; 当样机屏幕无法点亮时,可通过如下ADB命令关闭手机数据开关: adb shell connmanctl setautoconnect on adb shell connmanctl setautoconnect off adb shell connmanctl DeactivatePdp 1
+参考FAQ: FAQ202173381
+### 问题: 是否支持将通话中收到对方发来的DTMF解析成按键值
+解决方案: T117以及基于T117的平台均不支持. 有些客制化功能需要使用接口,用于获取通话中收到对方的DTMF并解析成相应的按键值. Modem侧可以支持PS VOLTE DTMF的检测和上报, CS是不支持dtmf的检测和上报的.现有版本未开发, 若有需求可联系CPM提需求.
+参考FAQ: FAQ202173389
+### 问题: 通话应用UI定制后如何解决DTMF失效
+解决方案: 需要关注的以下三点进行自查: 1. 通话中什么情况可以发送DTMF,判断接口使用MMICC_IsAllowSendDtmf,遵循协议不建议修改. 2. 发送DTMF的应用接口是SendDtmfByChar 此接口主要实现: - 本地tone音播放 - 根据当前通话状态发送START/STOP成对指令,发送间隔可根据变量 is_stop_immediately 客制化. 3. 界面相关问题可关注MMIAPICC_SendDtmf中对当前界面的判断,如新建UI界面请添加,保证可以调用到MMICC_SendSingleDtmf.
+参考FAQ: FAQ202173392
+### 问题: DreamCamera2 APP，如何dump送给全景算法库的yuv？
+解决方案: 答案:在 Android 11 和 Android 12,展锐的全景算法库添加了dump yuv图片的功能,通过 adb 命令可以 dump app 送给全景算法的yuv. 下面是全景模式 dump yuv 和 获取 yuv 图片的操作: 1. 输入以下命令: adb root adb remount adb shell setprop vendor.pano.yuv.dump true 2. 打开DreamCamera2的全景模式,点击拍照 3. 手机连上电脑,usb选MTP,进手机,打开手机的DownLoad文件夹,将yuv拷贝出来
+参考FAQ: FAQ202173397,含图片

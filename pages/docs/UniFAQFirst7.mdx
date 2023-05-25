@@ -1,0 +1,317 @@
+### 问题: 为什么当前播放列表没有显示当前正在播放的图标
+解决方案: 添加歌曲到新建播放列表,然后进入该播放列表,点击歌曲播放后,当前播放列表没有显示当前正在播放的图标.而在"音乐人/专辑/歌曲"列表里,该首歌曲右侧均有正在播放的图标.出现这个现象的原因是由于自己建的播放列表是可以重复添加相同歌曲,导致可能出现同时显示多个正在播放图标,所以在里面显示当前正在播放的图标是不合适的.
+参考FAQ: FAQ30313
+### 问题: 如何强制让手机驻留在wcdma上
+解决方案: 进入工程模式,默认输入#*8378#1#进入工程模式,在App Set-->Network type下选择WCDMA,这样就是只找WCDMA了,不会驻留在GSM了,注意此方法只用于测试,在测试完后需要置回WCDMA preferred或者重新烧录版本.
+参考FAQ: FAQ30301
+### 问题: Android系统自带样式之Theme.NoDisplay介绍
+解决方案: 在android开发中有时候会用到一些后台的Activity,但又不适合使用service. 比如如下例子 1.程序图标直接进入指定的网址,不需要弹出程序界面 2.点击桌面单张图片的小部件,需要弹出可供选择的处理应用(QQ等),又不希望先进入单张图片显示再返回到选择框 此时可以在项目的AndroidManifest.xml文件中相应的Activity标签中添加这样一行: android:theme="@android:style/Theme.NoDisplay"
+参考FAQ: FAQ30316
+### 问题: 为什么编译出的vmlinux没有符号信息？
+解决方案: 1.首先确定kernel config中打开了CONFIG_DEBUG_INFO 2.加密软件会去掉str段的字符串,导致symbol无法解析.
+参考FAQ: FAQ30331
+### 问题: 默认铃声是响10分钟后停，现在要改成1分钟，修改了这个DEFAULT_ALARM_TIMEOUT_SETTING值为1后，默认显示是1分钟了，但响铃时间还是10分钟
+解决方案: 修改方式以其他平台不同,需要修改2个地方才能完成: 1.代码中DEFAULT_ALARM_TIMEOUT_SETTING 的值改为1 2.配置文件 res\xml\settings.xml 中的snooze_duration 的默认键值 改为: <com.android.deskclock.SnoozeLengthDialog android:key="snooze_duration" android:title="@string/snooze_duration_title" android:defaultValue="1"/>
+参考FAQ: FAQ30332
+### 问题: 如何在睡眠状态屏蔽掉按键？
+解决方案: 在睡眠状态,按外部按键(除power key)仍然会导致相关引脚的电流被拉起.这时,需要在suspend过程 中屏蔽掉按键功能. 相关代码位于 kernel/drivers/input/keyboard/sc_keypad.c 文件中,需要在sci_keypad_suspend函数中添 加如下代码: unsigned long value; value = __raw_readl(KPD_INT_EN); value &= ~KPD_INT_DOWNUP; if (pdata->support_long_key) value &= ~KPD_INT_LONG; __raw_writel(value, KPD_INT_EN); 对应的resume函数已有相关代码,不用修改.
+参考FAQ: FAQ30370
+### 问题: 关于Android 4.4版本WLAN关闭也能扫描是否是个bug？
+解决方案: 答:其实这个不是bug,这是自从 android 4.3版本引入的新功能 这个功能的好处即使关掉WLAN,也可以使用WiFi来定位,即就是不用GPS也可以进行定位了,这样用起来相比GPS会更省电一些,部分用户如果不喜欢这样的设计,担心隐私泄漏和手机安全的考虑,可以按照下面的操作关闭这个功能: 　　进入WiFi设置画面,点菜单键,选择"高级",把当中的"随时都可扫描"选项钩掉即可.
+参考FAQ: FAQ30368
+### 问题: 如何在应用层发送AT命令
+解决方案: Android.mk中: LOCAL_JAVA_LIBRARIES := telephony-common java文件中: import android.os.ServiceManager; import com.sprd.internal.telephony.IAtChannel; mAtChannel = IAtChannel.Stub.asInterface(ServiceManager.getService("atchannel0")); //获取atchannel服务,这里"atchannel0"对应phoneid0,"atchannel1"对应phoneid1 strTmp = mAtChannel.sendAt(cmd); //调用服务的接口sendAt发送AT命令,这里的cmd即AT命令的字符串,比如"AT+CRSM=192,28512,0,0,15,0,3F007FFF"
+参考FAQ: FAQ31928
+### 问题: SIPC的主要模块有哪些？
+解决方案: SIPC主要模块有:SMSG、SMEM、SBUF、SBLOCK、SRPC 1. SMSG 基于IPI和共享的双ring-buffer实现的一个底层消息通道,在AP和CP间进行有效分发low-latency event 2. SMEM 共享内存管理模块,SMEM主要在AP侧进行管理,并共享给CP侧 3. SBUF 基于SMSG和SMEM的一个可配大小size和数量number的双工ring-buffer模块,是实现stty和spipe等的通用接口 4. SBLOCK 基于SMSG和SMEM实现的一个内存块交换共享的通用接口,相当于在SBUF上传输的是共享内存块的地址而不是数据 5. SRPC The implementation of SPRD Remote-Procedure-Call的server和client端的接口和封装
+参考FAQ: FAQ42086
+### 问题: 自动化测试GPS启动异常
+解决方案: 经检查, 客户为了加速开机, 移除了FusedLocation.apk, 导致开机后GPS异常; 保留FusedLocation.apk就没有问题了.
+参考FAQ: FAQ31133
+### 问题: 如何通过串口进行命令行调试？
+解决方案: Android4.4 是可以通过串口来进行命令行调试的 首先、将串口的TX和RX以及底线连接到手机上 其次、手机上电开机,当u-boot log输出结束,稍等片刻之后kernel就会开始运行,这是kernel会启动一个shell进程,这样就可以通过串口输入shell命令进行调试. 默认shell是没有root权限的需要通过命令来改变权限 $ su #ls #cat /proc/kmsg 这个时候只能看到一小段的kernel log,如果想看到全部kernel log可以通过调整节点参数来达到目的. echo 15 >/proc/sys/kernel/printk 这样kernel log就会连续的输出了.
+参考FAQ: FAQ31139
+### 问题: android4.4 如何添加IP拨号按钮
+解决方案: android4.4版本IP拨号只有通过menu请求,可以在拨号按钮并列设置IP拨号按钮,步骤如下: 1,在layout布局文件,添加IP拨号按钮,添加一个ImageButton项. Dialpad_fragment.xml (packages\apps\dialer\res\layout) Dialpad_fragment_sprd.xml (packages\apps\dialer\res\layout) 2,在Fragment中添加button的显示及Click事件处理. DialpadFragment.java (packages\apps\dialer\src\com\android\dialer\dialpad) 显示及Click事件demo code参考dialButton
+参考FAQ: FAQ30448
+### 问题: SC7730带GMS版本工厂测试偶现wifi测试不过
+解决方案: GMS会开启"随时都可扫描"选项(wifi关闭时,底层仍开启).这导致工厂wifi测试时,状态一直显示为on状态.并且偶见测试不过.可通过下列方式关闭"随时都可扫描"选项来解决该问题. 方法一:在第一次开机google向导界面的"Google&location"界面,不勾选两个选项. 方法二:设置-》网络-》wifi界面->menu->高级-》不勾选"随时都可扫描"选项
+参考FAQ: FAQ30450
+### 问题: 如何读取手机中FLASH的数据
+解决方案: 用ResearchDownload,在工具主界面的左上角,进入设置选项 在打开的选项框上方选择Flash Operations,再选中该页的Active Read Flash,如下图所示: 选中Active Read Flash前面的框之后,就可以添加修改要读的flash地址和长度,以及保存到电脑上的路径了. Base地址是从"Main Page"页中Base1那一栏里抄来的,Size是看该下载分区的bin实际大小,注意保存的地址路径一定要是已存在的,否则工具保存会失败. 如果这次读取flash之前不需要下载,请在开始读取flash之前,双击"Main Page"页的Select All Files,将要下载的bin前面的勾全部去掉,如下图: 最后,选择设置OK,按住下载键,连接USB线给手机上电就可以开始读取flash的数据了.
+参考FAQ: FAQ30512
+### 问题: 分区表的生成流程是什么？怎么导出分区表
+解决方案: sprd平台的分区表(ptable)是在uboot做repartition操作过程中,根据实际情况动态生成的. 1)生成的过程如下: 首先uboot会根据xml获得每个分区的大小和名称,然后根据EFI的格式要求,把ptable裸写到EMMC normal分区的零起始地址的地方. 2)EMMC解析分区表的流程? kernel启动的时候,会解析分区表,根据各个分区起始地址和大小创建blk设备. 3)那么mmcblk0p1是ptable分区么? 不是,注意的是,在1)生成的最终的分区表中,没有写入ptable的大小和名称信息,所以kernel在解析ptable的时候,读不到ptable分区的信息.读到的第一个分区就是product info分区(当然,productinfo的起始地址不是0,前面提到过ptable的起始地址是0) 4)如何获取分区表? 直接用dd命令从/dev/mmcblk0中导出,导出前1M的内容里面就有分区表,在里面可以看到EFI的字样.
+参考FAQ: FAQ30508
+### 问题: 手动SD卡分区，挂载的操作
+解决方案: 1)比较直接的做法是自己通过其他方式制作分区表,然后想办法烧到SD卡的0起始地址的地方,然后想办法挂载上去(修改fstab).这个方案非常复杂. 2)相比而言,最简单的方法就是利用linux的工具.如下步骤也是一步步摸索出来的. 主要用的工具是 fdisk mkfs.vfat mount 步骤1 ) 进入 adb shell , busybox fdisk /dev/block/mmcblk1根据提示为SD卡分区 2) busybox mkfs.vfat /dev/block/mmcblk1 格式化SD卡 3) mount vfat /dev/block/mmcblk1p1 /data/slog 如果需要格式化ext4格式的分区表,方法类似不再赘述
+参考FAQ: FAQ30559
+### 问题: android下perf工具使用
+解决方案: perf是一款用来分析软件性能问题的工具,通过它应用程序可以利用 PMU,tracepoint 和内核中的特殊计数器来进行性能统计. 通常情况下我们可以用perf工具来抓取像整个系统的CPU占用情况,以及单个进程的各个调用函数之间的CPU占用情况. 1、 perf支持的采样事件 # perf_3.4 list 上面这个命令会列出perf工具所支持的采样事件 2、使用采样事件进行检测 perf stat –e cpu-clock -p 790 这个就是分析pid 为720的整体cpu占用情况, perf top -e cpu-clock -p 790 则是实时显示CPU占用情况,通常打印出来的信息是进程中各个函数之间的调用占用CPU的情况. 其它更多请使用:perf_3.4 --help查询
+参考FAQ: FAQ30571
+### 问题: 如何在ftrace中打开stack tracer?
+解决方案: 按以下步骤操作: 1.在kernel config中打开CONFIG_STACK_TRACER 2.在cmdline中加上参数'stacktrace',或者在运行时执行: echo 1 >/proc/sys/kernel/stack_tracer_enabled mount -t debugfs none /sys/kernel/debug 3.运行需要trace的程序后 cat /sys/kernel/debug/tracing/stack_trace
+参考FAQ: FAQ30573
+### 问题: android下dmesg使用
+解决方案: dmesg用来显示内核环缓冲区(kernel-ring buffer)内容,内核将各种消息存放在这里.在系统引导时,内核将与硬件和模块初始化相关的信息填到这个缓冲区中. 使用: #dmesg 显示全部内核缓冲区内容 #dmesg -c 显示缓冲区内容后清除缓冲区 #dmesg | busybox tail 显示缓冲区后面数行内容
+参考FAQ: FAQ30575
+### 问题: shark mclk_26M_sin0 和sin1走线需要注意事项
+解决方案: sin0,sin1需要分开走线,避免平行走线发生!
+参考FAQ: FAQ32197
+### 问题: 如何监听actionbar上的返回按键
+解决方案: 如果应用开发人员要监听actionbar上的home up (向上的)按钮的按键事件: 可如下配置: public boolean onOptionsItemSelected(MenuItem item) { switch (item.getItemId()) { case android.R.id.home: //android.R.id.home是系统分配给actionbar上home up 的id //可在这里做应用自己的事务 return true; default: return super.onOptionsItemSelected(item); }
+参考FAQ: FAQ30611
+### 问题: 性能测试-高速摄像机拍摄有哪些注意点？
+解决方案: 1.测试时,使用一台机器开启秒表计时(建议可使用iphone上的秒表或采购专业的秒表),然后和测试机放入同一个平面,保证摄像可以全部拍摄进去 2.拍摄前,先把秒表启动,然后开启相机拍摄,最后再操作测试机 3.拍摄画面要显示全,包括3方面 1)秒表计时一定要在拍摄范围内,且不能被遮住 2)测试机一定要拍摄全屏,包括下方的硬图标范围,统计时间时需使用 3)手点击屏幕后,需马上离开点击位置,不要停留住,统计时间时需查看手点击屏幕的时间点 4.拍摄的视频要尽可能的清晰,方便后续视频回放时查看界面
+参考FAQ: FAQ30613
+### 问题: 冷启动某个应用，会采集哪些时间点以及时间点的采集方法？
+解决方案: 冷启动某个应用,会统计3个时间点,三个时间点相加得出总时间 1.点击图标后响应时间 具体统计方法:把视频导入工具(有快进/快退功能),查看手点击屏幕的时间,这个时间就是秒表当前显示时间,例如A,从视频上查看,当应用的第一个缩影图出现的时间点,例如B,点击图标后响应时间=B-A 2.动画过渡时间 具体统计方法:启点时间是第一个缩影图时间,是步骤1中的B,当缩影图沾满屏幕时记录时间C,动画过渡时间=C-B 3.Layout布局显示完全时间 具体统计方法:启动时间是步骤2的时间C,查看屏幕完全显示出来,第一个清晰画面的时间D,ayout布局显示完全时间=D-C 4.总时间 三个时间点的耗时加起来,统计一个总时间=(B-A)+(C-B)+(D-C)
+参考FAQ: FAQ30615
+### 问题: 7731平台32k的必须用CL=7PF的晶体吗？  220K和10M电阻在什么时候将有可能用到
+解决方案: 必须用7pf晶体,电阻没有机会用到了,这是芯片内部设计要求
+参考FAQ: FAQ33086
+### 问题: 如果用7731的USB OTG功能， 其ID随便用一个GPIO还是必须用EXTINT管脚
+解决方案: 应该用EXTINT1
+参考FAQ: FAQ33101
+### 问题: 展讯打包GSM PA是否支持上下行edge？
+解决方案: 展讯打包PA SC2663支持上下行edge,SC2662不支持上行edge.
+参考FAQ: FAQ66412
+### 问题: 7731的APCOUT_WG和APC_WPA用0ohm连起来的目的是什么
+解决方案: 芯片设计需要,需要外部连一起.目前测试下来OK.
+参考FAQ: FAQ33105
+### 问题: Contact名词解释及作用
+解决方案: 在联系人中经常会遇到一些sim名词缩写,具体的的名词如下: 1.ADN Abbreviated dialing number 缩位拨号 作用:sim卡电话簿,用于保存联系人相关信息至sim卡,例如电话号码,姓名等.拨号盘具有快速拨号功能,例如输入"1#",则可快速定位到sim卡中第一个联系人的号码至拨号盘. 2.FDN Fixed dialer number 固定拨号 作用:开启固定拨号功能后,只可以拨打存储的固定拨号列表中的号码.固定号码表存放在SIM卡中.能否使用固定拨号功能取决于SIM卡类型以及网络商是否提供此功能. 3.LND Last number dialed 最后拨号 作用:用于sim卡保留最近拨出的号码,一般sim卡保存最近10记录. 4.SDN Service dialing number 服务拨号 作用:网络服务拨号,固化的用户不能编辑.
+参考FAQ: FAQ30674
+### 问题: 如何通过dev目录下创建的节点判断AP/CP是否可以正常通信？
+解决方案: 1. adb shell进入后,查看dev下有哪些节点 TD的项目,可以查看到这样的节点: CHNPTYT0,CHNPTYT1..., stty_td0, stty_td1,...等 W的项目,可以查看到这样的节点: CHNPTYW0,CHNPTYW1..., stty_w0, stty_w1,...等 2. 针对以上节点,我们可以通过cat的方式,对其进行监听,如果不能cat,可能需要adb root下获取权限 cat dev/要验证的节点 & 如:cat dev/CHNPTYT0 & 3. 通过echo向节点发送AT命令 echo -e "AT\r" > dev/要验证的节点 如:echo -e "AT\r" > dev/CHNPTYT0 4. 如果AT发送成功,则在终端上会显示OK,也可以使用拨打电话的AT命令验证通道是否正常 如:echo -e "ATD10086;\r" > dev/CHNPTYT0
+参考FAQ: FAQ30600
+### 问题: GCF 实验室验证手机配置注意事项
+解决方案: 1.每次下载完新版本后,需要进入工程模式关闭call forward query; 2.进入手机Setting菜单,把GPRS设置为自动附着;
+参考FAQ: FAQ30738
+### 问题: 数据连接的设置省电作用
+解决方案: 省电模式主要是通信协议层进行优化从而达到系统省电的作用,比如 Fast Dormancy, 一定时间没有数据时,会自动 Release rrc connection 以省电
+参考FAQ: FAQ30735
+### 问题: 如何关闭wcdma prefer
+解决方案: 发送 AT 命令 AT^SYSCOFNIG=13,3,2,4 配置成 GSM Only即可
+参考FAQ: FAQ30733
+### 问题: 如何提高蓝牙波特率为 2M
+解决方案: 基于Beken的蓝牙方案,MOCOR_13A_W13.38版本 在 ms_ref/source/bt_pal/low_level/uart.c 函数 UartDrv_Configure(uint32 baudrate) 中, 在 s_uart_param.baud_rate = UartDrv_GetUartDivider(baudrate)之前将 baudrate 指定为2M即可
+参考FAQ: FAQ30734
+### 问题: 如何方便快捷的查看控制寄存器的值
+解决方案: 通过lookat命令看寄存器最方便. lookat命令格式如下: lookat -l 2 0x80000280 -l 表示long型 2表示连续两个 0x80000280 表示寄存器物理地址 只要能进入控制台,就可以在控制台下输入lookat. 进入控制台可以通过串口,USB adb,或者手机上装控制台apk软件.
+参考FAQ: FAQ30764
+### 问题: 如何修改通话记录列表默认的通话记录最大条数
+解决方案: 请按照如下修改方法: CallLogQueryHandler.java中定义了常量 private static final int NUM_LOGS_TO_DISPLAY = 1000; 修改此常量的值即可.
+参考FAQ: FAQ30821
+### 问题: dolphin 4.4 中spl和fdl1怎么编译？
+解决方案: dolphin 4.4 相对以前shark 4.1的代码有个小小的变动,spl 和fdl1 现在不和u-boot 一起编译. spl 和fdl1的代码更换到代码根目录下的chipram 目录下边,使用 make chipram 命令编译.
+参考FAQ: FAQ30814
+### 问题: wifi和bt是打开的，为什么经过工厂测试流程之后，会将wifi和bt关闭
+解决方案: 目前工厂测试完成后,是有将wifi和bt关闭的功能, 如果需要去掉该功能,可以修改BtTestUtil.java和WifiTestUtil.java, 注释掉stopTest接口里关闭wifi和bt的代码即可. BtTestUtil.java, 注释掉mBluetoothAdapter.disable(); WifiTestUtil.java,注释掉mWifiManager.setWifiEnabled(false);
+参考FAQ: FAQ31022
+### 问题: 文件管理器中,复制文件过程中切换语言，返回后文件管理器停止运行怎么处理
+解决方案: 问题描述:1、进入文件管理器-复制文件过程中下拉状态栏进入设置-切换语言 2、返回后取消复制3、提示"文件管理器停止运行". 原因分析:有一个费时的copy线程操作,需要在任务开始的时候显示一个对话框,然后当任务完成了再Dismiss对话框,在此期间如果Activity因为某种原因(切换语言)被杀掉且又重新启动了,那么当Dismiss的时候WindowManager检查发现Dialog所属的Activity已经不存在了,故出现java.lang.IllegalArgumentException. 解决方法:修改成切换语言后不oncreate了,而是直接调onConfigurationChanged方法.需要在AndroidManifest.xml里面的android:configChanges属性增加"locale|layoutDirection", 然后将所有Dismiss的操作放onConfigurationChanged方法中做.
+参考FAQ: FAQ30862
+### 问题: 设置文字样式为各种样式，为什么浏览器字体样式无变化？
+解决方案: 分析测试网站http://218.206.177.209:8080/waptest/browser15 , 网页的CSS样式中,设置了网页内容的字形和字体. body { background:#eee; margin:0; padding:15px 40px; font-family:'trebuchet ms',verdana,sans-serif; font-size:13px; text-align:center; } 所以网页文字不会变化.
+参考FAQ: FAQ31695
+### 问题: 如何限制拨号最大字符数
+解决方案: 修改拨号盘fragment的layout配置文件dialpad_fragment.xml,在DigitsEditText里定义android:maxLength属性即可.
+参考FAQ: FAQ30879
+### 问题: getView里面优化视图的两种方法
+解决方案: ListView每一个条目被显示到界面上的时候都要调用getView的方法,下面是两种优化的方法: 第一: 重用convertView,很大程度上的减少了内存的消耗.通过判断convertView是否为null,是的话才需要通过LayoutInfler产生一个view; 第二: 每次在getVIew的时候,都需要重新调用findViewById,重新找到控件,然后进行控件的赋值以及事件相应设置.这样其实是在做重复的事情,因为在geiview中,其实包含有这些控件,而且这些控件的id还都是一样的,ViewHolder用来标识view中的一些控件,方便进行一些事件相应操作的设置,比如onClick等等,这样可以不用每次都要findViewById了,减少了性能的消耗.同时重用了convertView.
+参考FAQ: FAQ30878
+### 问题: 如何读取对比机进程内存信息？
+解决方案: 1.安装百度一键root.apk,获取root权限
+
+2.使用如下命令将so和bin存放到sdcard中
+   adb push procrank sdcard/
+   adb push libpagemap.so sdcard/
+
+3.将sdcard中的procran和so导入系统文件夹
+   adb shell
+   su
+   cp sdcard/libpagemap.so system/lib/
+   cp sdcard/procrank system/xbin/
+
+4.进入system/xbin下,
+   chmod 777 procrank
+
+5.运行procrank
+   ./procrank
+参考FAQ: FAQ30905
+### 问题: IO性能优化工具FIO 使用介绍
+解决方案: 1. 简述: I/O的基准测试中有无数需要考虑的因素.是I/O依次访问还是随机访问?是通过read/write的I/O?还是通过访问mmap的空间的I/O?是单一进程发出的I/O?还是多个进程同时发出的I/O?进程是受I/O限制还是受CPU限制?等等.如果使用FIO,就不需要每次都根据不同情况来编写用于性能评估的程序,就可以模拟这些情况的I/O. 2. 典型的fio的工作过程: 1)写一个job文件来描述要访真的io负载.一个job文件可以控制产生任意数目的线程和文件.典型的job文件有一个global段(定义共享参数),一个或多少job段(描述具体要产生的job). 2)运行时,FIO从文件读这些参数,做处理,并根据这些参数描述,启动这些访真线程/进程. 3. FIO应用: 1)利用FIO搭建不同IO访问场景,便于了解平台性能瓶颈展开性能调优. 2)利用FIO建立对IO性能评估的BENCHMARK,导入测试标准.
+参考FAQ: FAQ30916
+### 问题: IO性能优化工具VMSTAT介绍
+解决方案: 1. 简述: VMSTAT命令是最常见的Linux/Unix监控工具,可以展现给定时间间隔的设备的状态值,包括设备的CPU使用率,内存使用,虚拟内存交换情况,IO读写情况. 2. 输出示例: procs -----------memory---------- ---swap-- -----io---- --system-- ----cpu---- r b swpd free buff cache si so bi bo in cs us sy id wa 0 0 100152 2436 97200 289740 0 1 34 45 99 33 0 0 99 0 与IO相关的参数如下: b:表示阻塞的进程. bi :块设备每秒接收的块数量.这里的块设备是指系统上所有块设备,默认块大小是1024byte. bo:块设备每秒发送的块数量. wa:等待IO CPU时间. 3. 应用: 用来初步定位是否存在IO性能瓶颈.
+参考FAQ: FAQ30924
+### 问题: IO性能优化工具IOTOP介绍
+解决方案: 1. 简述: IOTOP的用法有点类似top,直接在terminal输入命令iotop即可查看所有进程或线程的io活动状况.目前我们平台尚未集成 此工具. 2. 输出示例: Total DISK READ: 0.00 B/s | Total DISK WRITE: 27.64 K/s TIME TID PRIO USER DISK READ DISK WRITE SWAPIN IO COMMAND 17:08:25 177 be/4 root 0.00 B/s 7.90 K/s 0.00 % 0.05 % [kjournald] 3. 应用: 是对IOSTAT的补充,在出现系统IO性能问题时明确是哪些进程对IO性能有较大的影响.
+参考FAQ: FAQ30931
+### 问题: IO性能优化工具STRACE介绍
+解决方案: 1. 简述: 经常会有这样的需求,进入某应用程序使用过程中出现卡顿,怀疑与KERNEL相关,例如:怀疑与IO性能问题相关,此时快速的确认方法是使用strace命令查看在哪个系统调用上耗时. 2. 使用示例: strace -T -p 需要监控进程的PID. 例如: open("/dev/ashmem", O_RDWR|O_LARGEFILE) = 17 <0.000457> ioctl(17, 0x41007701, 0xbe9cd1cc) = 0 <0.000373> ioctl(17, 0x40047703, 0x2a9000) = 0 <0.000310> 3. 应用: 是对IOTOP的补充,具体确认进程的哪个IO类系统调用(如open/read/write/fsync/sync)有拥塞,具体是操作哪个文件.
+参考FAQ: FAQ30932
+### 问题: 什么是dropbox文件及如何获取
+解决方案: dropbox记录的是系统运行是的一些日志文件,记录了系统或某个应用程序出错时的信息. 由DropBoxManagerService生成和管理(这个服务是由systemserver在init2AddErrorToDropbox阶段启动的). 如果想要将某些信息记录到dropbox中,可以通过调用函数AddErrorToDropbox,这个函数会将相应的信息写入到dropbox文件中. 想获取dropbox文件,可以通过如下两个简单的方式: 1.在发生重启后,slog会将dropbox文件导出到重启的根目录下 2.使用Logs4Android导log工具,会将dopbox文件导出到该工具自己创建的dropbox目录下面
+参考FAQ: FAQ30965
+### 问题: dropbox文件的命名规则
+解决方案: dropbox文件的命名规则如下: 1.前缀为一个tag,这个tag组成两部分:进程类型_事件类型进程的类型,system_server,system_app,data_app 事件类型eventType也有三种,crash,wtf(what a terrible failure),anr 2.dropbox最终的文件名是以1)中介绍的tag@唯一的时间戳,当文本文件的尺寸超过文件系统的最小区块尺寸后,DropBoxManager 还会自动压缩该文件.
+参考FAQ: FAQ30970
+### 问题: dropbox记录的内容都有哪些
+解决方案: 
+参考FAQ: FAQ30971
+### 问题: 在没开slog时，如何使用sdk自带工具hierarchyviewer截图？
+解决方案: 使用hierarchyviewer快速截图方法: 1.usb 连上手机后,进入sdk tools目录,双击hierarchyviewer.bat 2.手机进入需要截图的界面,点击Inspect Screenshot 3.点击Save as PNG,即可保存当前界面的截图
+参考FAQ: FAQ31031
+### 问题: SC7715平台电池负极到地电阻是做什么用的，能否省掉？
+解决方案: 库仑计的功能,检测电池电量的,不建议省掉.
+参考FAQ: FAQ31047
+### 问题: user版本打开adb方法
+解决方案: 首先进入 设置->关于手机->在build number选项处双击,可以显示打开了开发者选项. 再进入开发者选项菜单-》选择usb调试功能 连接手机到pc,并对弹出的授权菜单选确定.
+参考FAQ: FAQ31048
+### 问题: MIPI信号传输模式
+解决方案: 1.低功耗模式:max 10Mbps,单信号,0V~1.2V 2.高速传输模式:80Mbps~1Gbps per lane,差分信号,100mV~300mV
+参考FAQ: FAQ31046
+### 问题: SC7715平台系统复位的脚是哪个？
+解决方案: EXTRSTN 是系统复位脚,拉低有效.V25 脚 PBINT 也支持系统复位, 拉低7S 系统复位.
+参考FAQ: FAQ31052
+### 问题: Android 4.4上如何获取默认的mms应用？
+解决方案: Android4.4上支持修改默认mms应用 通过Telephony.Sms.getDefaultSmsPackage(context)获取默认的mms应用,demo如下: private static final String MMS_APP_PACKAGE = "com.android.mms"; String defaultSmsApplication = Telephony.Sms.getDefaultSmsPackage(context); //获取当前默认mms应用 if (defaultSmsApplication != null && defaultSmsApplication.equals(MMS_APP_PACKAGE)) { //当前默认mms应用为系统mms应用 return true; }
+参考FAQ: FAQ31040
+### 问题: WLAN自动速率算法原理是怎样的
+解决方案: WLAN自动速率算法的基本原理是根据发包的成功率来进行升降速.每秒钟会统计上一秒内的发包的数量,重传数量,发送失败数量.如果重传率低,则发送成功计数+1,发送成功计数超过一定的门限后,速率就提升一档,如果重传率或发送失败率高,则速率降低一档,同时调整发送成功计数的门限.因此如果没有数据包发送的情况下,将不会触发自动速率算法机制,速率不会调整.
+参考FAQ: FAQ31120
+### 问题: SC7715的vddcore输出最大支持多大的电流？
+解决方案: SC7715的vddcore输出最大支持1A的电流.
+参考FAQ: FAQ31161
+### 问题: SC7715的vddarm输出最大支持多大的电流？
+解决方案: SC7715的vddarm输出最大支持1A的电流.
+参考FAQ: FAQ31162
+### 问题: SC7715的vddmem输出最大支持多大的电流？
+解决方案: SC7715的vddmem输出最大支持1A的电流.
+参考FAQ: FAQ31165
+### 问题: SC7715平台W PA供电改成DCDC供电，需要做哪些修改？
+解决方案: 参考设计默认是采用VBATT给 W PA供电,如果改成DCDC供电方式,NV中需要做相应修改,请直接用我们平台给出的DCDC供电的相应NV.
+参考FAQ: FAQ31172
+### 问题: SC7715 A31管脚（FLASH_SINK）的功能？
+解决方案: CAMERA 闪光灯的驱动脚,最大能提供470mA电流,做到真闪.
+参考FAQ: FAQ31180
+### 问题: SC7715 KPLED驱动能力怎么样？
+解决方案: KPLED 16阶亮度可调,最低5mA,最高80mA,一般3颗灯的情况下设置10mA.
+参考FAQ: FAQ31181
+### 问题: SC7715 T_flash 最大支持多大容量的T卡？
+解决方案: SC7715 平台T_flash 最大支持到32G容量的T卡.
+参考FAQ: FAQ31184
+### 问题: 什么是蓝牙OPP
+解决方案: 对象存储规范(Object Push Profile)定义了推送服务器和客户端之间基于Generic Object Exchange Profile(GOEP,通用对象交换规范)进行对象交换的规范. OPP主要用于手机与手机或者手机与电脑之间通过蓝牙进行文件操作.可交换的文件类型有电话本,备忘录,日程表等文本文件,还有视频,声音,图片,音乐等多媒体文件. 代码路径; packages/apps/Bluetooth/src/com/android/bluetooth/opp
+参考FAQ: FAQ31207
+### 问题: 什么是蓝牙HRP
+解决方案: HRP(Heart Rate Profile)定位与和医疗/健康相关的应用场景中,它使得蓝牙设备能与心率传感器交互. HRP中有两个角色:心率感应器和收集器.心率感应器是GATT服务器,是测量心率的设备,它包含心率服务和设备信息服务,心率服务导出心率测量数据;收集器是GATT客户端,是从心率感应器接收心率测量数据和其它数据的设备. 心率规范用于让设备获得心率传感器的心率测量和其它数据.例如,护士或医生可以用心率传感器测量病人的心率,并把心率数据传到笔记本或手持设备上.
+参考FAQ: FAQ31210
+### 问题: 什么是蓝牙A2DP
+解决方案: 蓝牙立体声音频传输规范(Advance Audio Distribution Profile),规定了使用蓝牙异步传输信道方式,传输高质量音乐文件数据的协议堆栈软件和使用方法,基于该协议就能通过以蓝牙方式传输高质量的立体声音乐.分为1.1版和1.2版,只要连接双方支持A2DP协议都能以16 bits,44.1 kHz的质量传输声音信号.假如有一方没有支持A2DP的话,只能以8 bits,8 kHz的质量的Handsfree Profile传输模式,声音质量会大打折扣.
+参考FAQ: FAQ31216
+### 问题: 7731G参考设计上的GPIO92,GPIO93接上下拉电阻，是为了board ID吧
+解决方案: 是的,预留而已.
+参考FAQ: FAQ33103
+### 问题: 什么是蓝牙AVRCP
+解决方案: 音频／视频远程控制配置文件(Audio Video Remote Control Profile,简称AVRCP)设计用于提供控制 TV、Hi-Fi 设备等的标准接口.此配置文件用于许可单个远程控制设备. android 4.2/4.4 版本: external/bluetooth/bluedroid/stack/avct android 2.3.5/4.0/4.1 external/bluetooth/bluez/audio
+参考FAQ: FAQ31223
+### 问题: SC7715小概率开机过程中重启如果解决？
+解决方案: 测试VDDARM发现VDDRAM在上电开机过程中有10ms时间的电压下陷现象.软件修改将VDDARM电压提供50mV.可以改善重启现象.
+参考FAQ: FAQ31232
+### 问题: 什么是蓝牙OBEX
+解决方案: OBEX(Object Exchange)对象交换,所以称之为对象交换协议.它在此软件当中有着核心地位,文件传输和IrMC同步都会使用到它.OBEX协议构建在IrDA架构的上层. OBEX协议通过简单的使用"PUT"和"GET"命令实现在不同的设备、不同的平台之间方便、高效的交换信息.支持的设备广泛,例如PC,PDA,电话,摄像头,自动答录机,计算器,数据采集器,手表等等. OBEX协议定义了一种柔性的概念——objects.也即是对象.这些对象可以包括文件,诊断信息,电子商务卡片,银行的存款等等.Objects在这里没有高级的技术含义,而是视你的应用而定. 代码路径: frameworks/base/core/java/android/bluetooth
+参考FAQ: FAQ31258
+### 问题: 什么是蓝牙RFCOMM
+解决方案: RFCOMM是为了兼容传统的串口应用,同时取代有线的通信方式,蓝牙协议栈需要提供与有线串口一致的通信接口而开发出的协议.RFCOMM协议提供对基于L2CAP协议的串口仿真,基于ETSI07.10.可支持在两个BT设备之间同时保持高达60路的通信连接. 目的为了解决如何在两个不同设备上的应用程序之间保证一条完整的通信路径,并在它们之间保持一通信段的问题. 代码路径: android 4.2/4.4 版本: /external/bluetooth/bluedroid/stack/rfcomm android 2.3.5/4.0/4.1 kernel/net/bluetooth/rfcomm
+参考FAQ: FAQ31259
+### 问题: CTS测试时如何继续运行测试用例
+解决方案: 由于CTS测试时间较长,期间可能会由于种种原因中断,需要继续运行时,需要做如下操作: 1. 输入./cts-tradefed 进入cts测试环境 2. 输入l r列出上次测试的任务信息,其中第一列为session id. 3. 输入run cts --continue-session [session_id] 如果需要继续跑未完成的或者fail的用例,则需要创建一个plan: add derivedplan -plan [plan_name] -s [session_id] -r [fail/notExecuted/timeout] 添加一个计划,plan_name为计划名称,session_id为测试任务的id,-r参数指定计划运行fail用例或者notExecuted或者timeout的用例.注意只能运行一种 例如:add derivedplan -plan FAIL_TEST -s 0 -r fail 然后再运行run cts --plan FAIL_TEST即可
+参考FAQ: FAQ31263
+### 问题: 什么是蓝牙L2CAP
+解决方案: 逻辑链路控制和适配协议(Logical Link Control and Adaptation Protocol),是蓝牙系统中的核心协议,负责适配基带中的上层协议.它同链路管理器并行工作,向上层协议提供定向连接的和无连接的数据业务.这个上层具有L2CAP的分割和重组功能,使更高层次的协议和应用能够以64KB的长度发送和接收数据包.它还能够处理协议的多路复用,以提供多种连接和多个连接类型(通过一个空中接口),同时提供服务质量支持和成组通讯. 代码路径: android 4.2/4.4 版本: /external/bluetooth/bluedroid/stack/l2cap android 2.3.5/4.0/4.1 kernel/net/bluetooth/
+参考FAQ: FAQ31275
+### 问题: 如何不修改代码，打开或者关闭串口kernel log输出
+解决方案: 需要在userdebug版本上,有root权限,通过 sudo adb shell "echo 0 > /proc/sys/kernel/printk"关闭kernel log输出,测一些性能问题更准确; sudo adb shell "echo 7 > /proc/sys/kernel/printk"打开kernel log输出,有时需要通过串口实时抓log或者adb很难抓到kernel开头的log时会用得到.
+参考FAQ: FAQ31337
+### 问题: 在u-boot中如何获取时间戳？
+解决方案: u-boot阶段的log默认是不带时间戳的,但是调试阶段想知道某一个模块加载的时间该如何处理那? 在u-boot中有实现get_ticks() 这个函数,通过获取系统的tick值就可以 计算出模块加载的时间了. 使用方法很简单,例如: printf("before nand init ticks:%d\n",get_ticks); printf("after nand init ticks:%d\n",get_ticks); 做个差值就知道模块耗费的时间了.
+参考FAQ: FAQ31335
+### 问题: EMMC方案某些物料为什么恢复出厂设置慢或不成功
+解决方案: 由于部分EMMC器件的擦除特性导致,请先参考"FAQ17234 关于EMMC方案恢复出厂设置慢的问题". 但正确配置后,可能仍然还有极少数EMMC物料特性不管是安全擦除还是非安全擦除,就是都慢.这种器件建议不使用擦除方式回复出厂设置,不擦直接写文件系统即可: 修改system/extras/ext4_utils/make_ext4fs.c中make_ext4fs接口,将 status = make_ext4fs_internal(fd, NULL, mountpoint, NULL, 0, 0, 0, 1, sehnd, 0); 改为 status = make_ext4fs_internal(fd, NULL, mountpoint, NULL, 0, 0, 0, 0, sehnd, 0); 即将wipe参数关掉就可以不擦除直接写文件系统.
+参考FAQ: FAQ31365
+### 问题: 7730平台上是否能提供国际拨号助手的功能
+解决方案: 1. 国际拨号助手功能目前在部分其它方案手机上有提供; 2. 在这些手机中,进入call --> 设置-->其它设置-->国际拨号助手 里,有个勾选项,当勾选后启动该功能; 3. 客户普遍反馈该功能不好用,因为它在输入国家码之后才会启动,但是启动后又自动增加上国家码,导致号码重复, 例如,希望拨打香港的号码,1259300852xxxxxxxx,会弹出 "国际拨号助手"的对话框,提示正在拨打国外号码,并在12593之前自动添加上00852的国家代码,最后号码变成了008521259300852xxxxxxxx,这样反而无法拨出; 建议不要实现这个功能;
+参考FAQ: FAQ31423
+### 问题: SC7715 mcu屏用软件测出的帧率过低，只有30fps
+解决方案: 为什么在屏驱动的panel_spec中设置了帧率为.fps=60, 用软件测试的帧率只有30帧.因为mcu屏带内部ram,帧率跟从内部ram刷新到屏上的速度有关,需要联系屏厂,修改屏的初始化代码,修改帧率. struct panel_spec lcd_xxxx_mcu_spec = { .width = 480, .height = 800, .fps=60, .type = LCD_MODE_MCU, .direction = LCD_DIRECT_NORMAL, .info = {.mcu = &lcd_xxxx_info}, .ops = &lcd_xxxx_operations, };
+参考FAQ: FAQ31421
+### 问题: 设置里的打印功能无法使用
+解决方案: 该功能需要google账户,并且需要安装google云打印服务应用, 打印机也需要支持云打印. 具体使用方法可以参照谷歌官网http://www.google.com/cloudprint/learn/index.html.上面有详细的介绍. 操作方法: 1.安装云打印apk后,进入 设置-打印-云打印. 2.开启云打印. 3.点击menu键-添加打印机,接着会跳转到google云打印配置页面,根据向导设置即可. 注:使用google云打印需要google账户.
+参考FAQ: FAQ31452
+### 问题: Android4.4上如何从log获取camera sensor输出帧率
+解决方案: 4.4版本上camera流程里去掉了很多log,以前通过查看got one frame的方式去检测帧率的方法就不适合了,可以通过如下命令查看: adb logcat -v time | egrep 'set_frame_type' 从log信息中可以根据如下log信息来简单判断sensor输出帧率,每次打印set_frame_type表示user层收到一帧数据,所以通过计算两次set_frame_type打印之间的时间间隔,然后可以得到大致帧率,帧率=1s/时间间隔.
+参考FAQ: FAQ31463
+### 问题: 如何使用git-checkout使代码仓库回退到某个bug提交时的状态？
+解决方案: 1) 进入模块后,查看提交记录:git log commit e320ab6b40f9be960bcd333e6f7cc2a7cfa3923d 获取需要回退到的代码点的commit id 2)回退到提交代码:git checkout e320ab6b40f9be960bcd333e6f7cc2a7cfa3923d //蓝色为commitid 如果成功,则已经成功回退到此bug提交状态后的所有代码状态.如果失败,表示有文件冲突. 3)若需要在此基础上合入其他修改,可以使用cherry-pick获取修改合入即可
+参考FAQ: FAQ31467
+### 问题: android4.4 多卡版本如何正确获取某张卡的TelephonyManager service
+解决方案: 多卡版本,telephony service有多个,在获取telephony service时, 正确的做法: i为PhoneID:0为卡一,1为卡二; TelephonyManager tm = (TelephonyManager) mContext.getSystemService(
+                    TelephonyManager.getServiceName(Context.TELEPHONY_SERVICE, i));
+参考FAQ: FAQ31470
+### 问题: 如何使用linux自带diff命令生成diff文件？
+解决方案: diff 命令是 linux上非常重要的工具,用于比较文件的内容,特别是比较两个版本不同的文件以找到改动的地方.diff在命令行中打印每一个行的改动.最新版本的diff还支持二进制文件.diff程序的输出被称为补丁 (patch),因为Linux系统中还有一个patch程序,可以根据diff的输出将a.c的文件内容更新为b.c.diff是svn、cvs、git等版本控制工具不可或缺的一部分. 使用diff 命令生成后缀为diff的文件: diff -ruN old new >patch.diff 注释:old new为文件夹或者差异文件均可.该命令只能生成diff文件,不能生成差分文件夹.
+参考FAQ: FAQ31472
+### 问题: SC6531怎样确认UA信息是否设置正确？
+解决方案: 用手机插入SIM卡,联网登录 www.whatsmyuseragent.com 就可以确认设置是否正确. SC6531平台或SC7701平台,设置及确认UA步骤如下: 1、 #define MMI_CUSTOMER_UA_PROFILE_FIELD http://www-xxxxxxxxxxxxxxxxxxxxxxxxx #define MMI_DEFAULT_UA "XXXXXXX/1.0 DORADO/1.0" 2、在mk中定义CUSTOM_DEFINE_UA 3、编译后,在工程模式中查看UA信息和上面修改的是一致的 4、用手机登录 www.whatsmyuseragent.com,UA信息正常.
+参考FAQ: FAQ31474
+### 问题: 什么是secure boot，展讯支持Secure Boot吗？
+解决方案: Secure Boot是一种安全启动方式,它创建了一条安全认证的密码链,通过保存在芯片OTP(One Time Program)区域中的根证书,对系统uboot/Kernel Image/System Image files等文件进行安全签名认证,确保EMMC或NAND上的程序镜像文件不被恶意入侵者所修改,避免非法刷机和篡改行为,保证手机程序的安全与正确; 针对Secure boot,每一家芯片公司均提出了自己的实现方案;目前还没有统一的标准,但是具体实现的原理相差不大.展讯在Shark之后的系列芯片上均实现了自己Secure Boot功能,如有需求,请向CPM/CSI咨询相关技术实现细节;
+参考FAQ: FAQ31481
+### 问题: SC6815平台为什么下载版本后开机提示“加密失败”需要恢复出厂设置？
+解决方案: 对应的system、data分区大小和实际不匹配就会有这样的提示,需要重新调整对应的分区大小. 具体请修改:修改/device/sprd/"project"/Boardconfig.mk 中的 BOARD_SYSTEMIMAGE_PARTITION_SIZE 及 BOARD_USERDATAIMAGE_PARTITION_SIZE 等项.
+参考FAQ: FAQ31478
+### 问题: 进入工厂测试模式前后摄像头预览旋转了90°
+解决方案: 修改CameraTestActivity.java,FrontCameraTestActivity.java public static int getCameraDisplayOrientation函数的返回值 result返回90
+参考FAQ: FAQ31490
+### 问题: 如何更改REQUEST IO的请求数量？
+解决方案: 部分应用在使用时会对多个存储设备进行不同操作,这样会造成交叉 读写,会降低IO性能,导致应用体验不好.这种情况可以通过修改底层request io队列数量来得到改善. 源码位于kernel/include/linux/blkdev.h .将 BLKDEV_MAX_RQ 的值由128 改为256即可.
+参考FAQ: FAQ31520
+### 问题: 7715支持哪些类型的G-sensor
+解决方案: 两轴和三轴的G-sensor都可以支持
+参考FAQ: FAQ31557
+### 问题: ConnectivityTest_R3.0.0001工具支持N4010A吗？
+解决方案: 不支持N4010A,支持IQ2010
+参考FAQ: FAQ31562
+### 问题: SC7715内部集成的Class G功放有什么作用？
+解决方案: 耳机输出支持CAP和CAPLESS两种方式.SC7715设计使用CAPLESS方式,通过使用SC7715内部的Class G耳机功放实现,能够省去耳机音频输出端大隔直电容且能有效防止耳机插入拔出PO音.
+参考FAQ: FAQ31563
+### 问题: SC7715 内置耳机Class G功放在音效设计上有什么注意的？
+解决方案: 为了获得更好的低频性能,内置Class G耳机功放输入隔直电容至少1uF.
+参考FAQ: FAQ31568
+### 问题: 4.0以上安卓系统如何快速截屏
+解决方案: 4.0+的安卓系统里有自带截屏功能,首先请插入SD卡到手机中,在用户需要截屏的界面,只要同时按下 "音量下"按键+电源按键,就可以咔嚓一声截屏,截屏的图片同时会显示一下,截屏下来的文件保存在/sdcard/Pictures/Screenshots 路径下,用户可以在图库中进行查看截屏的图片,也可以通过USB在电脑中查看和读取截屏的图片.
+参考FAQ: FAQ31549
+### 问题: SC7715A的触摸屏I2C预留上拉电阻是否可以删除
+解决方案: 为了更好的用户体验,提高报点率,触摸屏I2C工作速率为400KHz,内置上拉电阻可能无法满足时序要求,I2C信号需预留外部上拉.
+参考FAQ: FAQ31582
+### 问题: 浏览器的默认搜索引擎在哪里修改。
+解决方案: 文件路径:\packages\apps\Browser\res\xml\advanced_preferences.xml 代码位置: <com.android.browser.search.SearchEnginePreference android:key="search_engine" android:title="@string/pref_content_search_engine" android:defaultValue="baidu" //该处的defaultValue就是默认搜索引擎 android:summary="@string/pref_content_search_engine_summary" android:dialogTitle="@string/pref_content_search_engine" />
+参考FAQ: FAQ31594
+### 问题: mp3音频参数audio_para存放位置
+解决方案: 4.4版本mp3参数在手机里的存放路径在 data/local/media目录下的audio_para,而不是之前版本的data/local/tmp 使用adb pull,push参数请注意. 另工程里配置文件的路径如下: idh.code\device\sprd\scx15_sp7715xx\audio_params
+参考FAQ: FAQ31591
+### 问题: launcher.db数据库中favorites表内container分类
+解决方案: desktop为-100; hotseat为-101; folder为对应的文件夹row的_id值. LauncherSettings.java中定义: static final int CONTAINER_DESKTOP = -100; static final int CONTAINER_HOTSEAT = -101; 如果container值不为-100或-101,那么就为文件夹内的图标,相同的container值代表在同一个文件夹内.
+参考FAQ: FAQ31639
+### 问题: 7715支不支持SDIO3.0？
+解决方案: 7715支持2个sdio2.0,一个sdio3.0.
+参考FAQ: FAQ31650
+### 问题: Android4.4浏览器菜单下载内容进入documentsui应用
+解决方案: 步骤:点击浏览器菜单项"下载内容" 现象:进入的下载列表是documentsui应用,不是以前的downloadprovider应用,这是什么原因. android4.2前,下载管理是由downloadmanager管理, android4.4改为由documentsui 统一管理文件相关处理,这是google自身功能的一个调整, 相关android4.4原生代码可以参考http://androidxref.com/查看.
+参考FAQ: FAQ31675
+### 问题: 如何在SPML显示方案所使用的字库中新增字符？
+解决方案: 使用SPML显示引擎,可使用FONT TOOL工具将标准ttf、otf 或者bdf转换成spml所使用的字库格式. 如果需要在字库新增字符,首先确认该字符集配置文件是否包含该字符(unicode), 如果不存在,可以通过修改FONT TOOL工具目录下的INI文件. 如下以在简体中文字库中新增一个中文字符0xEB为例: 1、首先配置字库对应的INI文件,打开Han_gb2312.ini,在UnicodeSector中按顺序在0x00EA之后新增0x00EA对应的字段:8=0x00EB,0x00EB 注意:unicode区间一定要按顺序排列. 2、配置好INI文件后,加载对应的标准字库文件,根据需要选择矢量或者点阵选项生成对应的字库,如果需要修改字形, 在FONTTOOL中进行字形编辑. 这样,生成后的字库就包含了新增的0x00EB字符. 注:关于FONTTOOL的详细使用方法,请参考工程tools\DEBUG_TOOLS\FONTTOOL\Doc目录下的指导文档.
+参考FAQ: FAQ32830

@@ -1,0 +1,316 @@
+### 问题: SC7731E项目DDR2和DDR3是否可以兼容设计
+解决方案: 1.SC7731E平台memory接口部分硬件设计上不能兼容; 原理图设计时需注意两点: 1.1 data-lane:左边列为LPDDR3,右边列为LPDDR2; 1.2 CA0~9:左边列为LPDDR3,右边列为LPDDR2; 2.软件上是自适应兼容.
+参考FAQ: FAQ104551
+### 问题: SC7731E可以做分离式的memory吗？
+解决方案: 可以使用分离式memory,硬件设计请参考SC7731E的SPM_discrete.
+参考FAQ: FAQ104553
+### 问题: 硬件上EMMC上的Data Strobe 这个PIn原理图上怎么与AP设计连接?
+解决方案: 请参考《SC7731E_Hardware_Design_Guide_V0.1.pdf》第55页.
+参考FAQ: FAQ104554
+### 问题: simba_LTE综测的修改测试项配置
+解决方案: 1、LTE综测Channel和测试项的配置: 1)点击"LTE LMT",使设置区域切换到LTE LMT的配置界面; 2)点击"高级",使设置区域切换到高级的配置界面; 3)点击所需修改的band,打开band内的配置内容. 注意:配置界面的Channel均为UL Channel,若配置RX测试Channel还请转换为UL Channel配置. 2、LTE各测试项SPEC的设定:
+参考FAQ: FAQ104555
+### 问题: Simba工具内配置LTE Only项目的AFC校准项
+解决方案: 1)在树形图处添加新增测试组,并修改测试组命名为AFC; 2)在AFC测试组内增加测试项目;3)依次将AFC的所有测试项添加到AFC测试组内;注意:AFC测试项顺序必须是LTEAfc-LTETsxStart-LTETsxCal-LTETsxFinal,不能随意排列. 配置OK后如下图,并将测试项均勾选上;
+参考FAQ: FAQ104559
+### 问题: 校准USB驱动版本的检查
+解决方案: 1)执行DUT进入校准模式,使PC上虚拟出USB端口; 2)计算机管理的设备管理器内查看端口; 3)右击设备端口并查看端口属性; 4)点击驱动程序并查看驱动程序版本; 5)点击驱动程序详细信息,并检查sprdvcom.sys文件的版本; 注意:要求驱动版本和sprdvcom.sys文件版本均为2.0.0.131.
+参考FAQ: FAQ104562
+### 问题: 是否可以用RGB_IB0 RGB_IB1 RGB_IB2做并联来驱动LED闪光灯？
+解决方案: 可以作为电流源并联使用,每一路承受的电流最大27.7mA,三路共83.1mA
+参考FAQ: FAQ104566
+### 问题: 新版下载工具R20.0.0001工具打开之后为什么提示要升级驱动
+解决方案: 新版R20.0.0001的工具在部分电脑上打开后,会提示升级USB驱动版本,否则无法打开工具,是因为之前有出现过产线驱动版本过于老旧,导致校准下载会出现莫名的问题,故新版下载功率会提示升级USB diag口驱动,强制升级USB驱动版本,如果不升级到新的2.0.0.131,会导致下载工具无法打开使用; 正确的驱动版本是安装之后为2.0.0.131,驱动的文件夹名字是SPRD_NPI_USBDriver_1.4,安装之后驱动显示附件所示.
+参考FAQ: FAQ104597
+### 问题: SC2721上电时序
+解决方案: 使用SC2721的平台上电时序如下:
+参考FAQ: FAQ104608
+### 问题: SC9850K平台上电池的过流能力需要多大？
+解决方案: 参考Sharkl系列平台,最大持续电流3A,瞬间4A以上就可以.
+参考FAQ: FAQ104612
+### 问题: SC9850K的ISP是单pipeline还是多级pipeline
+解决方案: 单pipeline
+参考FAQ: FAQ104613
+### 问题: SC9832E&SC9820E平台是否支持TDSCDMA?
+解决方案: SC9832E&SC9820E这两个平台不支持TDSCDMA.
+参考FAQ: FAQ104637
+### 问题: SC9863A平台热设计有哪些注意事项
+解决方案: SC9863A热设计的注意事项: 1、 PCB面积小于2500mm^2有很大的热风险,推荐PCB面积≥3000mm^2; 2、热源距离板边≥3mm,热源与热源之间距离≥5mm,热源需要错开放, 2个热源不能背对背摆放; 3、热敏器件不能靠近热源摆放.
+参考FAQ: FAQ109304
+### 问题: 展锐有哪些平台需要出RF框图，出RF框图的流程是什么？
+解决方案: 展锐目前需要出RF框图的平台主要有:SC9850K/KL/KH、SC9853I、SC9832E、SC9820E、SC9863 展锐出RF框图的流程如下: 1. 客户确定项目定义,包括目标市场、支持的频段以及用到的主要RF器件等; 2. 客户提交cq给展锐,并提供目标市场、支持的频段以及用到的主要RF器件等信息; 3. 展锐RF支持团队根据客户提供的信息输出RF框图; 4. 客户根据此RF框图设计原理图. [注意]: 客户提交出RF框图的cq务必要在项目初期原理图还没有设计好的阶段,如果等原理图设计好再出RF框图的话可能需要调整的地方就比较多,经常出现展锐出的RF框图和客户原理图设计不一致导致的问题,请务必注意申请RF框图的时间点.
+参考FAQ: FAQ104639
+### 问题: SC9832E&SC9820E平台NV配置必须使用NVAide V3.1.1版本
+解决方案: SC9832E&SC9820E平台NV配置必须使用NVAide V3.1.1版本,请在Isupport系统上下载. 原因:对早期版本的bug修复
+参考FAQ: FAQ104640
+### 问题: Android7.0中，原生计算器为何没有一键归零按钮？
+解决方案: Android 7.0计算器原生设计,CLR/DEL复用,短按实现DEL功能,长按实现CLR功能,支持一键清零
+参考FAQ: FAQ104648
+### 问题: SC9820A 与SC9820E的区别
+解决方案: SC9820A 默认搭配SR3592+SC2731 SC9820E默认搭配SR3593A+SC2721 SC9820A 需要额外搭配SC2342A SC9820E内置WCN与GPS芯片
+参考FAQ: FAQ104689
+### 问题: Fuel  gauge 20毫欧电阻摆件需要注意什么？
+解决方案: Fuel gauge 20毫欧电阻尽量靠近电池负极,走线越短对浪涌抑制越好.VBAT浪涌测试时候,浪涌电流从VBAT流出,经主板地、Fuel gauge 20毫欧电阻流出,浪涌电流最高可以到100A左右,回流路经上的电阻会分压,从而影响主板地电平.
+参考FAQ: FAQ104671
+### 问题: Android8.1中，Install unknown apps选项的位置
+解决方案: Android 7.0: Settings—>Security—>Unknown sources 是一个开关,可以统一控制未知来源的应用是否能安装 Android 8.1: Settings—>Apps & notifications—>Special app access —>Install unknown apps 是一个列表,列出的是所有拥有应用安装权限的应用.每个应用可以单独设置是否允许安装其他应用. 如果要让应用显示在这个列表中,可以在应用对于的AndroidManifest.xml中申请如下权限: <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+参考FAQ: FAQ104673
+### 问题: kaios reliance项目国内不能拨打112怎么办
+解决方案: 请在adb输入如下命令,但关机后,需要重新输入以下命令 adb root adb remount adb shell "echo 'AT+SFUN=5\r' > dev/stty_lte31" adb shell "echo 'AT+SPTESTMODEM=6,254\r' > dev/stty_lte31" adb shell "echo 'AT+SFUN=4\r' > dev/stty_lte31"
+参考FAQ: FAQ104684
+### 问题: KAIOS工程模式
+解决方案: KAIOS怎么进入工程模式 工程模式:*#8378269#
+参考FAQ: FAQ104685
+### 问题: 双通道LPDDR2/3是否可以用在只支持单通道的平台上？
+解决方案: 可以,双通道LPDDR内部相对独立的,但必须主要两点: 1. 双通道LPDDR2/3用在只支持单通道的平台时,LPDDR2/3的容量只可以被使用一半,另外一半将被浪费; 2. 另外一个通道的电源不可以单纯的悬空处理,具体的处理方法请咨询您的FAE.
+参考FAQ: FAQ104699
+### 问题: SC9850K平台的单麦克手机回声抑制在哪调试？
+解决方案: 可将NLP2加大,值越大,回声抑制越强,手持耳机0.05--0.1 免提0.2--0.5,Global Threshold范围0到1,越大回声抑制越强. Subband Compansate范围0到1,越小回声抑制越强,推荐值在0.8到0.999之间
+参考FAQ: FAQ104704
+### 问题: SC9820W的功能机集成音乐NV参数不生效？
+解决方案: 尽管该手机是功能机,但是SC9820W是智能机平台,因此需要合入audio_para文件才能生效
+参考FAQ: FAQ104707
+### 问题: 【BBAT】自动测试sensor如何测试？
+解决方案: BBAT G2版本测试Sensor支持两种方法: 1.工具下发命令给手机,手机接收命令后执行对相应sensor的上电,初始化I2C信号操作,主要检查sensor的贴片情况,是否可以通讯,不对sensor本身的数据进行任何判断; 2.在上面1的基础上增加读取数据的判断,因BBAT测试依靠测试夹具进行,手机放在夹具上无法移动,无法实时读取到数据的变化,故BBAT只判断一个默认状态下的数据(一般是水平状态下)是否有效,如G-sensor,检查是否可以返回x,y,z三轴上的值,无法实时判断sensor数据值的状态; 针对sensor本身性能异常,数据变化异常的情况,BBAT上sensor的测试目前还无法有效拦截. BBAT工具上如何配置两种sensor的方法:
+参考FAQ: FAQ104708
+### 问题: 【BBAT】【G2】耳机测试过程中出现耳机侦测(Headset Detect)概率性失败原因
+解决方案: 1.因BBAT测试使用的耳机非真实耳机,是通过控制盒模拟有效耳机来测试,出现侦测不到是由于不满足软件内耳机侦测的条件,HP_L中断的产生及检查HP_L和HeadMIC_IN上的电压; 2.解决方法是请升级PC端的BBAT工具至SP_BBAutoTester_R20.0.0001及以上版本,优化了控制盒耳机上headmic_in上的接入电阻,进而调整了电压范围,可从iSupport服务器上获取新工具.
+参考FAQ: FAQ104710
+### 问题: 免提通话MIC无声
+解决方案: 平台默认用的是双MIC,在免提的时候用的辅MIC,如果项目是用单MIC,需要更改一下NV配置. 如下位置,XXXX为所有含有handsfree字符的模式 audio_dsp_codec\dsp_codec_config\XXXX\AudioStructure\path_set=0xa18(开辅MIC/关主MIC)改为audio_dsp_codec\dsp_codec_config\XXXX\AudioStructure\path_set=0x618(开主MIC/关辅MIC)
+参考FAQ: FAQ104706
+### 问题: 9820E/9832E是否支持数字MIC
+解决方案: 不支持.
+参考FAQ: FAQ104713
+### 问题: 飞行待机电流偏高硬件如何分析
+解决方案: 首先,检查手机端设置,飞行模式,关闭GPS、WIFI、蓝牙等,检查LOG为关闭状态,灭屏后等待三分钟,测试三分钟的平均电流; 如还是偏高,记录三分钟电流图,观察是底电流偏高还是唤醒导致偏高,如唤醒导致,由软件同事排查唤醒源. 如底电流偏高,做电流分解,查找那一路电源导致,再针对性分析.如遇到困难,可提交硬件CQ,并提供图纸,电流图和分解数据.
+参考FAQ: FAQ104737
+### 问题: 耗流测试时，KaiOS系统如何关闭LOG
+解决方案: 拨号界面输入*#*#0574#*#*,即可进入Log Manager关闭LOG; 也可输入*#8378269# 进入工程模式关闭.
+参考FAQ: FAQ104754
+### 问题: SC6531E/F/M通话录音时，上行的声音小
+解决方案: 录音取的点是在NXP之后,所以上行的数字增益不生效,造成录音上行声音偏小. 建议将上行的数字增益在NXP中的ul_gain中设置.
+参考FAQ: FAQ104757
+### 问题: SC9820E kaios版本读取到COM口，连接audio tester工具无法读取的音频信息。
+解决方案: 输入工程暗码"×#×#0574#×#×",进入Modem Log Setting,使能Modem to PC.
+参考FAQ: FAQ104758
+### 问题: SharkL2 (9850K) 视频编解码支持格式
+解决方案: HW Decoder: H.264: 1080P/30fps/50Mbps MPEG-4/DivX/XviD: 1080P/30fps/40Mbps H.263: 1080P/30fps/40Mbps Sorenson Spark: 1080P/30fps/40Mbps VP8: 1080P/30fps/40Mbps HW Encoder: H.264: 1080P/30fps/40Mbps MPEG-4: 1080P/30fps/40Mbps H.263: 1080P/30fps/40Mbps
+参考FAQ: FAQ104765
+### 问题: SC7731E调试接口说明
+解决方案: JTAG: (适用2-wire JTAG) MTMS/MTCK配合VDD1V85/GND -- 必须预留 UART1: AP log -- 必须预留 以上测试点建议放置在容易焊接的位置,方便整机状态操作.
+参考FAQ: FAQ104768
+### 问题: STM7289/7285兼容设计说明
+解决方案: STM7289/7285 封装 PIN to PIN兼容,但STM7285的PIN22/24 接地. 所以在做WCDMA 2频和 4频兼容设计时,需注意2频涉及的Band不能接到PIN22/24; 同时TX switch部分的兼容设计也要对齐.
+参考FAQ: FAQ104770
+### 问题: Android7.0中，手机存在音频视频，为何存储界面显示的大小是0？
+解决方案: 1,通过手机Camera拍摄的图片以及视频均默认存放在 DCIM/Camera/目录下. 2,设置存储界面音频文件大小是统计下面几个目录: Environment.DIRECTORY_MUSIC Environment.DIRECTORY_ALARMS Environment.DIRECTORY_NOTIFICATIONS Environment.DIRECTORY_RINGTONES Environment.DIRECTORY_PODCASTS 3,设置存储界面视频文件大小是统计Environment.DIRECTORY_MOVIES目录. 4,综上所述,拍摄的图片或者视频不在Android原生设计的统计目录下,而是默认存储在DCIM/Camera/目录,故大小显示为零,是正常的.
+参考FAQ: FAQ104798
+### 问题: Android8.1中，手机连接电脑选择仅充电，为何还能在电脑上看到？
+解决方案: 电脑上能看到设备的原因是由于仅充电时,persist.sys.usb.config属性的值为ptp,adb 当persist.sys.usb.config属性包含ptp或mtp,即usb function被设置为ptp或mtp时,仅充电时PC端也能看到便携设备,但是不会有存储内容.原因如下: 在仅充电时,usb function仍是ptp或mtp,pc必须要与手机建立mtp session,mtp session建立后pc端就能看到便携设备名称,但是仅充电时,usb是locked状态,不会去添加存储设备,所以pc端不能查看设备中的内容. 一些低版本的android设备没有这个现象的原因是,设备支持mass_storage大容量存储功能,usb function被设置为mass_storage(persist.sys.usb.config属性包含mass_storage).
+参考FAQ: FAQ104802
+### 问题: NemoG SPI屏如何配置
+解决方案: 主make中有下面两项配置 LCD_SPI = 3WIRE_9BIT_1DATA #### LCD SPI mode support # Option1:3WIRE_9BIT_1DATA # Option2:3WIRE_9BIT_2DATA # Option3:4WIRE_8BIT_1DATA # Option4:4WIRE_8BIT_2DATA SPI_DATA2_SEL = DI #### LCD SPI data2 line select # Option1:CD # Option2:DI 三线模式:使用CLK ,DATA,CS数据线. 四线模式:使用CLK ,DATA,CS,CD数据线. 三线模式固定为9位,四线模式固定为8位. SPI_DATA2_SEL只用在LCD_SPI为3WIRE_9BIT_2DATA或4WIRE_8BIT_2DATA才配置,具体配置由硬件连接决定.
+参考FAQ: FAQ104849
+### 问题: 如何解锁
+解决方案: disableKeyguard只能禁止锁屏,但是对于已经锁屏的情况无法解锁.
+解锁可以使用requestDismissKeyguard.使用isKeyguardLocked读取锁屏状态.
+另外,解锁只能解滑动锁,安全锁(密码、图案等)不能解.
+参考FAQ: FAQ104876
+### 问题: 双卡手机数据业务恢复不及时
+解决方案: 问题原因: 原生问题,对双卡的设计不完善. 当电话结束时,没有及时处理此类网络变化,从而没有重新调度下载任务. 修改方法: 增加这种情形下的网络变化处理,重新调度下载任务.增加如下代码: frameworks/base/services/core/java/com/android/server/job/controllers/ConnectivityController.java @Override public void onNetworkResumed(Network network) { updateTrackedJobs(-1); }
+参考FAQ: FAQ104880
+### 问题: SC9863A TSX和TCXO是否可以共焊盘设计？
+解决方案: 因为TSX和TCXO对的地的走线要求不一样,不能共焊盘.具体可以参考平台 PCB Design Guide.
+参考FAQ: FAQ104872
+### 问题: ETAG缺失导致的下载失败
+解决方案: 问题原因: 遇到下载失败,查看下载结束时的状态.如果状态为STATUS_CANNOT_RESUME(489),那么再查看下载的http请求中是否包含etag. 如果没有etag,就说明此下载不支持续传,所以如果下载发生错误就不会进行重试,从而直接输出下载失败. if ((mInfoDelta.mETag == null && mMadeProgress) mInfoDelta.mStatus = STATUS_CANNOT_RESUME; } 解决方法: 此类问题可以不作为bug修改.但是如果要求解决,可以将上述处理删除. 删除以后,如果服务器支持指定字节范围的下载,那么就可以继续下载,如果服务器不支持,那么就会在重试失败后进入下载失败.
+参考FAQ: FAQ104881
+### 问题: 已支持vowifi功能的工程，如何关闭该功能
+解决方案: 在已有vowifi功能的工程中关闭vowifi,需要关闭去除device/sprd/xxx 文件下 board.mk中(如sp9850ka_2c30_sbs.mk)与vowifi相关的代码: #enable VoWiFi VOWIFI_SERVICE_ENABLE := true ifeq ($(strip $(VOWIFI_SERVICE_ENABLE)), true) # enable the Wi-Fi calling menu in settings. PRODUCT_PROPERTY_OVERRIDES += persist.dbg.wfc_avail_ovr=1 endif 注意:这个修改只是针对8.1和8.0平台,并且已经支持vowifi的工程.如果想通过此修改逆向在不支持vowifi的工程添加vowifi功能是不可行的.
+参考FAQ: FAQ104819
+### 问题: SC9832E最大的耗流是多少? 电池保护板需要根据最大耗流选择MOSFET!
+解决方案: 最大耗流为4A,
+参考FAQ: FAQ104896
+### 问题: TSX和TCXO 是否可以共焊盘设计？
+解决方案: 不可以,TCXO/TSX 地的处理方式有差异,具体参照layout guide
+参考FAQ: FAQ104897
+### 问题: 前后摄像头Mclk、I2c、vcama是否可以共用?
+解决方案: 可以,前后摄I2C地址不能相同
+参考FAQ: FAQ104899
+### 问题: SC9832E，SC9820E平台TSX晶振负载电容分别用多少容值？
+解决方案: 7pf/7.8pf/9pf 都有
+参考FAQ: FAQ104901
+### 问题: SC9832E RF支持的频段信息是什么？
+解决方案: SC9832E RF支持的频段信息是什么? GSM: B2/3/5/8 WCDMA: B1/2/5/8 LTE: B1/3/5/7/8/12/20/34/38/39/40/41
+参考FAQ: FAQ104902
+### 问题: SC9832E没有GPS是否可以使用DCXO+32K LESS方案？
+解决方案: 无GPS功能,可以使用DCXO+32Kless
+参考FAQ: FAQ104903
+### 问题: 【BBAT】【G2】控制盒驱动安装失败原因？
+解决方案: 1.展锐BBAT G2控制盒首次使用时,需要在PC端安装驱动,驱动文件跟随在工具包内; 2.若安装过程中失败,需要查看PC操作系统是否缺少相关系统文件,正版原装操作系统安装没有问题,一般网上下载的ghost系统会出现安装失败的现象; 3.驱动文件在安装时,会检查系统文件MsPorts.dll,usbser.sys等,需要补充或替换相关系统文件,参考附件的补充文件. BBAT G2控制盒驱动所需系统文件补充
+参考FAQ: FAQ105209
+### 问题: 后射闪光灯处ESD防护方法
+解决方案: 后射闪光灯处一般结构都有缝隙,在空气放电时,ESD会通过分析对主板放电,因为放电路径不确定性比较大 ,比较难以防护,大多是通过漏铜贴导电布等.比较不利于生产.我们可以采用如下策略:1.利用尖端放电原理有意识的把闪光灯周围禁空并漏铜.2禁空区域外的电容的接地端朝向闪光灯处,电容接地要良好,这样有静电进来可以利用电容接地端吸引静电.3.空气放电有问题时,可以在可能放电路径的露铜区域贴电阻或者电容.制造尖端放电条件,把静电引导到地.
+参考FAQ: FAQ104935
+### 问题: UpgradeDownload升级工具出现“_BKF_NV_WLTE”失败原因
+解决方案: 升级工具是强制备份保留手机内的参数信息,不进行擦除动作,且下载之前会首先检查校准标志位的状态,如果标志位检查失败则直接fail,出现"_BKF_NV_WLTE"失败,展讯软件版本xml文件里默认配置的一般是检查"GSM,WCDMA,LTE",如果项目是LTE only,软件版本xml内没有及时配置正确的话,升级下载就会出现错误,故出现此fail情况下,先检查一下xml文件里面配置的标志位检查是否与当前项目符合; 如何查看和修改xml文件内标志位检查: 1.使用ResearchDownload工具加载软件pac包,加载完后工具目录下会生成ImageFiles文件夹,找到.xml文件; 2.如下地方查看修改,若是LTE only项目,就将如下圈出的部分GSM,WCDMA去掉即可,并保存; 3.最后再使用ResearchDownload工具重新打包软件pac.
+参考FAQ: FAQ104937
+### 问题: SC9863A VDDARM0和VDDARM1电源如何实现和SC9832E&SC9850E兼容
+解决方案: SC9863A VDDARM0由外部DCDC提供;SC9832E&SC9850E 不需要外部DCDC.但这两个平台需要做到兼容 所以针对VDDARM0/1这部分,如果贴SC9832E&SC9850E,VDDARM0这部分可以不需要.基板上VDDARM1供过去,不需要外部供电,也就是通过Substrate 来相连.
+参考FAQ: FAQ104940
+### 问题: Android8.1中，如何去除Settings子菜单左侧很长的空白？
+解决方案: Settings子菜单左侧很长的空白是为子菜单预留的图标空间,如果要去除,需找到对应菜单的preference示例,然后 通过如下方式屏蔽预留图标空间. preference.setIconSpaceReserved(false);
+参考FAQ: FAQ104985
+### 问题: SC9832E平台 TSX省32K方案是否可以保证关机漏电流小于0.1mA ？
+解决方案: TSX方案,可以保证所有PCBA关机漏电流小于300ua, 但大部分PCBA关机漏电流都在200ua以内
+参考FAQ: FAQ105006
+### 问题: 请问SC2721的VDDSDCORE LDO有没有过流保护功能？
+解决方案: VDDSDCORE LDO自带过流保护功能
+参考FAQ: FAQ105007
+### 问题: SC2721的VRDV这个管脚的工作模式
+解决方案: VDRV 在PMIC内部是电流源,它是吸电流的,在CC阶段VDRV电压保持不变,在CV阶段电压慢慢上升
+参考FAQ: FAQ105009
+### 问题: 采用TCXO 的方式，32k那颗晶体是不是不能省?
+解决方案: TCXO方案需要搭配32K晶体,用于提供deepsleep时和关机后的32K时钟
+参考FAQ: FAQ105010
+### 问题: SC9832E项目搭载外部充电芯片，VCHG_D是否可以悬空？
+解决方案: VCHG_D需要连接,否则系统无法工作
+参考FAQ: FAQ105011
+### 问题: SC9832E的EMMC/DDR，最小和最大分别支持多少?
+解决方案: SC9832E 对memory的要求最小是4G+512M(emmc+DDR). SC9832E上对DDR的支持最大4G,对EMMC的支持无上限.
+参考FAQ: FAQ105012
+### 问题: SC9832E 前后摄像头I2C 可以共用一组吗？
+解决方案: 可以,前后摄像头不会同时工作
+参考FAQ: FAQ105014
+### 问题: 请问SC9832E平台的四路UART口，UART0预留测试点用于debug，其他三路UART接口还需要预留测试点吗？
+解决方案: UART0和UART1必须留测试点,UART2的测试点可以删除.UART3本来就没留测试点
+参考FAQ: FAQ105015
+### 问题: 请问SE9832E平台，使用HD+分辨率（1440*720）的LCD，MIPI数据通道需要几组lane？
+解决方案: 如果屏本身是HD+的,且只有三个lane,硬件上是可以支持到的.我司MIPI是按照1Gbps传输速率来评估的.HD+,3lane,每个lane的速度只需要达到597Mbps/lane 就可以了
+参考FAQ: FAQ105016
+### 问题: SC9820E/SC9832E 4G PA是否需要与transceiver隔离
+解决方案: 需要,否则EVM 有fail风险
+参考FAQ: FAQ105023
+### 问题: SC9820E 是否支持DDR频率为400MHz的物料？
+解决方案: SC9820E推荐使用DDR频率为533MHz的物料,不支持DDR频率小于466MHz的物料. 低于466MHz的物料会影响LTE性能.
+参考FAQ: FAQ105111
+### 问题: 已完成验证的带电源路径管理功能的Sub PMIC有哪些？
+解决方案: 截止2018年5月, SC2705在SC9861E平台完成验证. SC2703L在SC9863A平台完成验证.
+参考FAQ: FAQ105095
+### 问题: SC9820E平台是否支持双摄
+解决方案: 不支持双摄,但支持前后摄.
+参考FAQ: FAQ105121
+### 问题: SC9820E平台 SIM卡是否支持热插拔
+解决方案: 支持热插拔,Sim0/1 需要相应的 BUD_SIM_DET: 详请参考SC9820E_Hardware_Design_Guide_V1.1 Page 31.
+参考FAQ: FAQ105122
+### 问题: 6531E平台是否可以区别两套电池参数？
+解决方案: 1.区分两款电池是否有应用意义?
+6531E,为"电压电量显示算法",只通过检测电压确认百分比,没有对电流检测的模块,因此偏差较大(根据电压区间,在大电流场景下可能偏差5%-15%). 所以"电压电量显示"算法百分比的显示本身已经偏差很大.两块电池的差别,在此种情况下做区分,没有太大意义.
+
+2.是否可以通过ADC检测两套电池参数?
+可以,通过AUXADC管脚(H18),在电池端配置不同的电阻,使ADC检测到的电压不同,从而区分不同电池.
+参考FAQ: FAQ105242
+### 问题: Android8.1中，如果关闭系统自带的system update？
+解决方案: 在文件packages/apps/Settings/src/com/android/settings/deviceinfo/SystemUpdatePreferenceController.java中, 让方法isAvailable默认返回false即可.
+参考FAQ: FAQ105337
+### 问题: 待机功耗：如何定位特殊（异常）唤醒中断？
+解决方案: 一般情况下,正常的中断唤醒都可以通过wake up by来确定唤醒源;但是事情总是有意外,有时候系统被频繁唤醒却无法找到对应的中断源,这种特殊情况的唤醒常常会伴随以下两种打印之一:ret 0 not from idle 或 empty interrupt detected 遇到这种情况怎么定位问题? 1)首先参考FAQ105404,打印出所有可唤醒中断源,可对应查看下/proc/interrupts节点信息; 2)逐个注释掉对应中断,缩小问题范围(排查以客户新增加的中断为主); 3)找出导致问题的中断号后,查看该GPIO引脚的电平信号以及pinmap配置是否有问题(pinmap配置应为BIT_PIN_SLP_IE).
+参考FAQ: FAQ105408
+### 问题: Android Browser访问HTTPS网站时弹出安全警告说明
+解决方案: 访问HTTPS网站时,弹出安全警告"Security warning" 和"There are problems with the security certificate for the website",也就是网站的安全数字证书有问题. 可以选择"查看证书",会弹出安全数字证书的错误类型和网站数字证书信息; 也可以选择"继续"或者"返回",无视安全警告,不会影响继续浏览网站.
+参考FAQ: FAQ105405
+### 问题: SC9820E/SC9832E 32K-less方案下拔掉主电池状态下时钟能否保持
+解决方案: 1.当VBATBK上的电容为10uF时,如果拔掉主电池,26M时钟会消失,此时RTC的时钟源会切换到PMU内部的RC振荡器.此时VBATBK会持续掉电,当VBATBK低于1.1v时,RC振荡器停止工作,系统时钟停止更新.当VBATBK电压持续掉电到低于600mV时,RTC相关寄存器将复位,系统时钟也将会发生复位.实测主电池存在时,VBATBK电压在2.96v左右,掉电到600mV的时间为10s. 2.如果VBATBK有备份电池供电,拔掉主电池后,RTC时钟源会切换到PMU内部RC振荡器,系统时钟一直保持且会更新,只是因为RC振荡器误差比较大,会导致系统时钟在很长一段时候后累积偏差很大. 3.在不存在备份电池的时候,如果要延长系统时钟的保持时间,可以加大VBATBK上的电容.
+参考FAQ: FAQ105525
+### 问题: SC9832E平台前后摄是否可以共用一个CMMCLK
+解决方案: 前后摄可以共用MCLK,因为前后摄不会同时工作,所以即使接在一起,前后摄也不会同时用到MCLK,相当于前后摄都独立在使用MCLK.
+参考FAQ: FAQ105888
+### 问题: GSI版本如何打开虚拟按键
+解决方案: 在
+device/sprd/sharkl2(换成对应的项目)/sp9850ka_1h10_go(替换对应的工程目录)/overlay/frameworks/base/core/res/res/values/config.xml 中添加 
+
+<bool name="config_showNavigationBar">true</bool>
+参考FAQ: FAQ105484
+### 问题: SC9820A 32K-less方案下拔掉主电池状态下时钟能否保持
+解决方案: 1.当VBATBK上的电容为10uF时,如果拔掉主电池,26M时钟会消失,26M时钟分频得到的32K时钟也将消失,此时RTC的时钟源会切换到PMU内部的RC振荡器.此时VBATBK会持续掉电,当VBATBK低于1.2v时,RC振荡器停止工作且RTC相关寄存器将复位,系统时钟将会发生复位.实测主电池存在时,VBATBK电压在2.873v左右,拔掉主电池,VBATBK掉电到1.2V的时间为0.82s. 2.如果VBATBK有备份电池供电,拔掉主电池后,RTC时钟源会切换到PMU内部RC振荡器,系统时钟一直保持且会更新,只是因为RC振荡器误差比较大,会导致系统时钟在很长一段时候后累积偏差很大. 3.在不存在备份电池的时候,如果要延长系统时钟的保持时间,可以加大VBATBK上的电容.
+参考FAQ: FAQ105528
+### 问题: SC9820E/SC9832E 是否支持OTG
+解决方案: 支持OTG,USB_ID请接到有EXTINT标识的管脚,该类管脚有硬件去抖.
+参考FAQ: FAQ105538
+### 问题: SC9820E/SC9832E I2C最高速率
+解决方案: SC9820E/SC9832E I2C最高速率为3.4Mbps
+参考FAQ: FAQ105541
+### 问题: SC9820E前摄和后摄分别支持多大像素？
+解决方案: SC9820E前摄和后摄最大都只能支持2M摄像头
+参考FAQ: FAQ105543
+### 问题: SC9820E/SC9832E UART最高速率
+解决方案: SC9820E/SC9832E UART最高速率可达3Mbps
+参考FAQ: FAQ105549
+### 问题: SC7731E平台前摄和后摄支持的最大像素？
+解决方案: SC7731E平台后摄最大支持8M像素摄像头,前摄最大支持2M像素摄像头
+参考FAQ: FAQ105550
+### 问题: SC7731E平台是否支持HEVC(H.265)?
+解决方案: 不支持硬件HEVC编解码,不过有谷歌原生的HEVC软件解码
+参考FAQ: FAQ105618
+### 问题: SC7731E TSX 选型及注意事项
+解决方案: 支持CL=7pF 或者9pF 物料; 设计注意: 1. TSX表层走线的项目可以使用7pF和9pF 2. TSX内层走线的项目需要使用9pF 3. SIMBA工具 CAFC范围32767+/-6000
+参考FAQ: FAQ105615
+### 问题: 如何查看adb端口是否被占用
+解决方案: 通常情况下adb是通过5037端口和手机端的adbd进行通信的,但是5037端口有可能被其他PC应用占用,导致手机不能连接adb工具. 可以通过如下的命令,找出PC上的5037端口是否被占用: 在PC上cmd串口执行如下命令: netstat -ano | findstr :5037 如果有占用,会显示占用5037端口的PC端进程PID. 可以通过在任务管理器中找到该占用进程并结束. 然后再执行: adb kill-server adb start-server
+参考FAQ: FAQ105621
+### 问题: 如何进入fastboot模式
+解决方案: Fastboot工具放在adb目录下 使用adb命令连接fastboot: adb reboot bootloader 注:fastboot device //看能否得到一个序列号,如果不可以则怀疑fastboot工具不匹配;
+参考FAQ: FAQ109253
+### 问题: 使用CheckX或者Simba测试充电时使用什么样的USB线？
+解决方案: 1、如果是单通道精密电源,使用正常的USB线即可,不用剪断红色的vbus线; 2、如果是使用双通道电源,则需要剪断USB线里面的红色vbus线,并把靠近手机端的红色线接到精密电源通道2的正极上,USB的黑色GND线可以剪断也可以不剪断,剪断后,必须保证USB和手机主板共地,否则不能进校准模式,导致不能测试充电,这里我们推荐不剪断黑色的GND线,而是把电源的2路和1路负极直接一起接到手机端的vbat负极上.保证USB和手机主板共地. 3、如果不能进模式,请排查是否共地; 4、如果进模式后还不能测到电流值,结果是0,请手动看一下,手机是否能正常关机充电,如果不可以,请查看关机状态下充电问题,而与测试方式无关.如果可以,则可能就是工具以及环境问题了.
+参考FAQ: FAQ105699
+### 问题: 7701怎么打开java功能
+解决方案: 目前展讯已经没有跟JAVA 方案商签约了 , 7701 无法支持JAVA 功能, 也没有Facebook 相关应用可以提供
+参考FAQ: FAQ105673
+### 问题: 如何设置下载工具FactroyDownload，才能使每个手机下载的SN默认相同？
+解决方案: 在FactoryDownload中,设置如下: 修改工具配置:
+在FactoryDownload.ini文件中找到SN配置:
+并修改如下:
+[SN]
+SN_LENGTH = 14
+AutoGenerateSN =0
+FixedSN=12345678901234
+默认这样是下载完成之后手机里的默认SN是12345678901234(自行定义,但长度需要与SN_LENGTH一致即可)
+参考FAQ: FAQ105701
+### 问题: MMS 设置
+解决方案: Messaging à Options à settings à 右方向键 –> 选择SIM卡account
+参考FAQ: FAQ105709
+### 问题: 软件上如何去掉HSDPA和HSUPA
+解决方案: 通过NV Editor打开NV工程, 搜索HS_DSCH_supported,把对应的item value从0x1改为0x0; 搜索E_DCH_Supported,把对应的item value从0x1改为0x0; 搜索rlc_mac_ehs_supported,把对应的item value从0x1改为0x0; 搜索rlc_mac_ehs_supported,把对应的item value从0x1改为0x0; 修改完成后保存NV,然后重新生成NV bin文件,烧录到手机里;其中上述NV item路径为TD_TIANJI12_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY;如果NV Editor不能编辑上述NV item,可以通过windows记事本打开nv文件直接修改
+参考FAQ: FAQ106225
+### 问题: SC9863中如何查看gpu状态
+解决方案: $adb root $adb remount $adb shell #cd /d/pvr #cat status 输出如下 Driver Status: OK Firmware Status: OK HWR Event Count: 0 CRR Event Count: 0 APM Event Count: 184 GPU Utilisation: 1%
+参考FAQ: FAQ105716
+### 问题: 什么是虚拟SIM？
+解决方案: 虚拟SIM卡概念和实体SIM 卡相对应,是数字化SIM卡的总称,在终端内以非实体卡形式存在的SIM卡统称为虚拟SIM卡.
+参考FAQ: FAQ105729
+### 问题: 什么是云SIM？
+解决方案: 云SIM卡是虚拟SIM卡的一种.在终端内并不存在SIM卡的实体和数据,在终端开机后从云端将SIM卡数据下载到安全区域之后再对其进行初始化.
+参考FAQ: FAQ105730
+### 问题: 什么是软SIM？
+解决方案: 软SIM卡也是虚拟SIM卡的一种.在终端的安全区域中保存着SIM卡完整的数据,终端开机后直接读取和使用.
+参考FAQ: FAQ105732
+### 问题: 什么是eSIM？
+解决方案: eSIM 即Embedded SIM ,是将传统SIM卡电子化,卡的硬件载体与数据分离,通过eSIM管理平台进行管理.eSIM的核心用户识别模块的数据结构及功能都与传统SIM卡一致.
+参考FAQ: FAQ105733
+### 问题: SC9820E KaiOS项目为何TDD AFC校准标志位显示不通过。
+解决方案: 类似于非LTE Only的项目,如在GSM上校准了AFC就不会再单独校准3G制式或者4G制式上的AFC了.不管在哪个制式上校准AFC都会等效计算到GSM900频点上的值然后保存到NV中,所以AFC只需要做一次就可以了. LTE Only项目,AFC校准选择低频上校准,即如在FDD上面进行了AFC校准,那么就不会再在TDD上面再次校准AFC了. 所以AFC校准标志位只会将FDD LTE AFC置为Pass,而TDD LTE AFC的校准标志位仍旧为Not test/Fail/Not Pass状态. 所以建议在MMI中注销掉TDD LTE AFC校准标志位的显示. 同理,在其他平台上,由于不能提前获知各客户项目的制式和Band配置,那么MMI工模中可能会预留各制式上面AFC校准的标志位.如果认为这些多余的标志位有引起误解的话,可以申请软件支持,注销掉不用校准的AFC校准标志位在MMI工程模式中的显示即可.
+参考FAQ: FAQ105822
+### 问题: 展锐平台是否有推荐的NFC方案?
+解决方案: 1. 展锐平台验证并推荐客户使用的NFC方案主要有两个:PN547/548(NXP), SEN81DGX(三星); 2. 根据应用场合不同,设计上主要有两点注意: > SE加密模块形式:一种是SIM卡作为SE通过SWP与NFC进行通信的方式,主要针对中国移动客户;另一种是各大手机品牌厂商推广的eSE方案,SE内嵌在NFC TRC中,或者外置SE模块; > NFC TRC时钟输入:当不支持关机使用NFC时,可以使用平台26M供给;当支持关机下使用NFC时,时钟只能通过外加晶体方式供给. 3. 以上,只用于学习入门,请客户联系您的供应商获取帮助.
+参考FAQ: FAQ105821
+### 问题: 展锐平台对DDR走线阻抗控制有要求吗？
+解决方案: 1. 展锐平台DDR部分走线主要通过仿真结果来管控,不特意关注特性阻抗; 2. 决定仿真PASS的因素除PCB叠层、线宽、线距外,还有BB DDR的模型因素; 3. 一旦仿真PASS,客户必须按照仿真输入的叠层、线宽、线距进行制板,不允许修改任何参数.
+参考FAQ: FAQ105836
+### 问题: 是否可以提供一个简易Debug不开机问题的方法？
+解决方案: 1. 首先,必须保证BOM的准确性;测量板子上所有PWR CLK以发现异常现象; 2. 当U1TXD/U0TXD有Log输出时,可以初步排除主要PWR CLK的问题,这时主要从两点排除: 2.1. Strap Pin配置问题; 2.2. DDR焊接问题,包括BB侧和memory侧;Flash焊接出现问题的可能性较小; 3. U1TXD/U1TXD无Log输出时,可确定是硬件问题: 3.1. 如果VBAT电流为mA级: 3.1.1 排除VBAT_Sense是否正确连接; 3.1.2 排除32K是否启振,以及相关电源; 3.2. 如果VBAT电流为几十mA级,则主要排除26M,及时钟方案BOM;
+参考FAQ: FAQ105837
+### 问题: android8.1，如何默认用户新建桌面应用文件夹的名字
+解决方案: android8.1,用户新建桌面应用文件夹的名字默认为空,此为android原生设计. 如需默认此文件夹名字,可以修改以下字符串定义: packages/apps/Launcher3/res/values/strings.xml ... ... <!-- Default folder name --> <string name="folder_name"></string> PS:由于android原生在每种语言中都定义了folder_name为空,如果修改,需要修改所有语言中的folder_name定义.
+参考FAQ: FAQ105832

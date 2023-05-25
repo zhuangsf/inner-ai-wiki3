@@ -1,0 +1,301 @@
+### 问题: 收件框输入与保存的联系人不匹配的字符，搜索栏中也能搜到保存的联系人
+解决方案: 实际上这是google在android 4.1之后新添加的功能:如果输入字符没有搜索结果,则显示上一次的搜索内容.
+参考FAQ: FAQ28691
+### 问题: 如何卸载预置APK
+解决方案: 一些有编程缺陷的APK会频繁通过RTC唤醒系统,或者有频繁的数据业务,导致功耗增大. 在排查功耗问题时,有时候希望能先卸载这些有问题的APK然后再复测功耗. 但是预置的APK并不能简单地在应用管理器卸载,而要通过以下方式卸载. 通过adb执行命令rm /system/preload/*,然后执行"恢复出厂设置".
+参考FAQ: FAQ28692
+### 问题: 设置语言，选择语言列表里有空行，有的只显示一个“（）”。
+解决方案: 空白原因为缺少字库. 4.4平台版本中支持语言中旁遮普、藏语、古吉拉特语、阿撒姆语这四门语言,但我司并没有有版权的字库,若须支持这四门语言需要找到这四门语言字库替换frameworks/base/data/fonts/下Gujarati.ttf、Punjabi.ttf、Tibetan.ttf、Assamese.ttf这四个字库,若不需要支持,则可删除对应项目.mk文件中PRODUCT_LOCALES中的bo_CN、bo_IN、gu_IN、pa_IN pa_PK、as_ET
+参考FAQ: FAQ28775
+### 问题: Mocor Camera如何设置预览显示模式？
+解决方案: Camera应用预览显示模式可支持全景模式和全屏模式,预览前会调用接口GetDCPreviewParam@mmidc_flow.c获取显示模式preview_param.disp_mode, 需要全景模式时,将preview_param.disp_mode设置为CAMERA_ENG_FULL_VISUAL_ANGLE;需要全屏模式,将preview_param.disp_mode设置为CAMERA_ENG_FULL_SCREEN. 软件上默认显示模式设置为全屏模式.
+参考FAQ: FAQ28795
+### 问题: 简单屏蔽telephony call业务的方法
+解决方案: 方法: 修改frameworks\base\core\res\res\values\Config.xml文件中 <bool name="config_voice_capable">true</bool>定义,将其值改成false即可. ps: 1:本方法可以在application层面屏蔽call相关的业务,但telephony framework,ril,modem等底层通信功能不会受影响. 2:本方法使用后,各种电话均拨不出,来电无响应,voice mail无提示
+参考FAQ: FAQ28841
+### 问题: 怎样使通话记录保存/不保存通话时长
+解决方案: 通话结束后,创建通话记录时,可以用以下方法去配置要不要将通话时长保存到通话记录中: 修改packages\apps\phonecommon\src\com\sprd\phone\common\utils\OperatorUtils.java文件中变量 ENABLR_CALLLOG_DURATION的值. 值为 true 表示保存通话时长; 值为 false 表示不保存
+参考FAQ: FAQ28852
+### 问题: 如何修改日历当前日期的背景色
+解决方案: 将Calendar包下res/values/colors.xml中的month_today_bgcolor的值设置为所需要的颜色即可.
+参考FAQ: FAQ28854
+### 问题: Memory中专用ZQpin脚的电阻要求？
+解决方案: DDR中在其pin脚提供一个精准的电阻,电阻放置在ZQpin和地之间,要求是240欧姆,1%精度;如果使用其他电阻,会出现误差较大影响DDR的稳定
+参考FAQ: FAQ28871
+### 问题: 如何定位native层某个库内存泄露
+解决方案: 可以通过while脚本每过几秒就打印下procrank的值,或者直接连上adb,在命令行中每过几秒就输入procrank, 如果发现某pid的pss/uss一直上升,说明该pid有内存泄漏的嫌疑. 定位到pid,每过一段用脚本或者adb输出/proc/pid/maps的值,比较增长区间,一般都可以看到相应的库.
+参考FAQ: FAQ28879
+### 问题: android中lsmod的命令使用
+解决方案: 1、linux下若我们以module方式编译内核代码时会生成ko文件,这样我们加载时会通过insmod命令将对应的module加载到内核中. 2、完成这个加载后,内核会将相关module信息呈现在/proc/modules下,我们只要可以查看这个文件系统就可以获取加载的module信息. 3、lsmod命令的核心就是cat /proc/modules 使用: # adb shell lsmod 比如查看mali是否加载成功,adb shell lsmod | grep "mali"就可以了.
+参考FAQ: FAQ29503
+### 问题: 为什么文件管理器中快速查看里可以多选分享，手机或存储卡不能多选分享
+解决方案: 多选分享是要选择同一类型的文件,获得MIME类型然后向系统发Intent "android.intent.action.SEND_MULTIPLE"请求. 在快速查看中,文件是按照类型组织起来的,同一类型的在一起,所以打开了分享; 而手机和存储卡中,所有的文件不是按类型组织存放的,可能多选选择的是不同类型的文件,所以在这里就没放开分享功能.
+参考FAQ: FAQ28906
+### 问题: 创建Toast不显示的常见原因
+解决方案: Toast不显示常见的原因就要有两个: 1,忘记调用show()方法 2,没有创建在主线程中,这种情况通常利用handler发出空消息来解决
+参考FAQ: FAQ28937
+### 问题: 如何关闭drm功能
+解决方案: 关闭这个prop需要在对应product的system.prop文件中修改成如下, drm.service.enabled=false 理论上关闭后会导致所有file explorer, media player, download provider等等不再试图访问drmserver 当然,drmserver还是会启动,只是没有人调用它,不再占用CPU资源. 不能够直接关闭drmserver进程的方法禁止,以免有的地方还需要调用,而导致拿不到造成异常.
+参考FAQ: FAQ28955
+### 问题: 如何判断system执行shell命令是否成功
+解决方案: 以执行ps为例: int ret =system("ps"); 此时的ret由两部分组成: 低8位为ps的main中return的值,return/exit(3)/_exit(2) 高8位为ps在执行过程中收到的信号又或者是碰到异常退出后的返回值. 因此,我们如果需要判断ps执行成功,只需要判断 1. ret !=-1 //子进程是否fork成功,不成功直接返回-1 2. WIFEXITED(ret) 低八位返回值是否为ps的main函数中指定的正常返回值 3. WEXITSTATUS(ret) 高八位返回值为0 对于上面两个宏可以参看man waitpid中的说明. system的实现见:bionic/libc/unistd/system.c
+参考FAQ: FAQ28948
+### 问题: 7715工具升压的简易方法
+解决方案: 对于7715 android 4.4平台,可以通过Research download工具对ARM、Core电压及DDR频率等进行升降操作,而不需要重新编译代码. 具体方法如下: 1、load对应的pac包; 2、选择工具上的"settings"按钮; 3、选择"Vol-Freq Tunning"页; 4、此时可以修改DCDC ARM、DCDC CORE、DDR频率待信息; 修改完成点击OK后下载u-boot-spl-16k.bin就会完成升压,如要确认升压是否成功,可以用万用表实际量一下开机时的电压.
+参考FAQ: FAQ28984
+### 问题: 7715、7730平台WriteIMEI工具读写IMEI号超时失败
+解决方案: 对于7730与7715平台,用WriteIMEI工具读写IMEI号时,要在工具界面选择"设置",将弹出的界面中的"工程"一栏中的"Shark"前的"CheckBox"选择中,否则读写IMEI号会无法正常进行.
+参考FAQ: FAQ28985
+### 问题: 如何调整智能输入法下候选字个数？
+解决方案: 在智能输入法下,如果需要调整候选字个数,可以通过调整宏MMIIM_CAND_WORDS_SPACE来实现.
+参考FAQ: FAQ28996
+### 问题: 如何修改系统默认的初始年份？
+解决方案: 在平台现有的流程中,系统初始年份宏MMISET_DEFAULT_SYS_DATE默认为编译时间PROJECT_BUILD_YEAR,如果需要更改系统初始年份,可以通过调整MMISET_DEFAULT_SYS_DATE宏来实现.
+参考FAQ: FAQ28997
+### 问题: 功能机如何读取sim卡的GID值
+解决方案: 读取GID接口为:ERR_MNDATAMAG_CODE_E MNSIM_GetGidData( MN_DUAL_SYS_E dual_sys, MNSIM_GID_E gid_type,MN_SIM_EF_MAPPING_GID_T *ptr); 参数说明如下: dual_sys SIM卡槽位置 gid_type GID1 or GID2 ptr GID返回值数据指针 使用MNSIM_GetGidData获取GID,(MNSIM_GetGidData接口必须在收到SIM READY消息之后调用),同时此接口为同步接口 判断是否存在GID,建议从两方面判断: a、从返回值判断,返回0,则说明获取GID成功,否则失败(即不存在) b、如果函数调用返回成功,则判断MN_SIM_EF_MAPPING_GID_T中len,如果len为零,则GID为空,也可以认为GID不存在. 注意,12C软件在W13.04.14及之前的版本不支持,如需要使用,需升级协议库,详情请联系展讯FAE接口人.
+参考FAQ: FAQ29000
+### 问题: 发送Vcard对方接收不到
+解决方案: 这是正常的.Vcard功能机只保证短信形式发送的Vcard版本间兼容,且保证其它平台支持短信发送Vcardr的功能机发送的Vcard我们能正常解析,不能保证其它平台的不支持短信发送Vcard的功能机可以解析我们发送的短信形式的Vcard. 另外,目前很多智能机都不支持短信形式发送的Vcard,这些机型对短信形式发送的Vcard都是不处理的.
+参考FAQ: FAQ29005
+### 问题: 为什么开机之后立刻查看联系人，联系人列表为空，等待一段时间，列表出现
+解决方案: 开机加载SIM卡联系人的过程如下: 1 删除数据库中SIM相关的联系人 2 从卡上读出SIM卡联系人 3 插入到数据库中 如果在问题步骤 1和步骤2之间,首次进入联系人,则会出现上面所描述的问题.
+参考FAQ: FAQ29042
+### 问题: 为什么开机之后立刻查看联系人，联系人列表显示正常，先返回到桌面，然后再次查看联系人，列表为空，等待一段时间之后，列表出现
+解决方案: 开机加载SIM卡联系人的过程如下: 1 删除数据库中SIM相关的联系人 2 从卡上读出SIM卡联系人 3 插入到数据库中 如果在步骤1之前就首次进入联系人界面则会出现上面描述的问题.
+参考FAQ: FAQ29043
+### 问题: 如何解决更换关机充电图片后电量百分比不显示的问题
+解决方案: 以7715平台的代码为例,关机充电的相关代码的位置为: idh.code\vendor\sprd\open-source\apps\charge 该目录先的images目录用于放置关机充电动画的图片,这些图片经常需要根据项目定制,具体使用这些图片去刷新手机屏幕的代码的位置为: Ui.c (vendor\sprd\open-source\apps\charge) static void draw_progress_locked(int level) 由于代码里面是先往屏幕刷电量百分比再刷图片的,而平台代码默认的图片只是一个小的矩形区域(没有与电量百分比发生重叠),所以如果更换的图片是覆盖全屏幕的图片(或者与电量百分比有重叠),就会导致电量的百分比显示不出来,具体的解决办法是修改draw_progress_locked函数的刷屏幕内容的顺序,包刷电量百分比的函数draw_text_xy()放到刷图片函数gr_blit()之后执行
+参考FAQ: FAQ29035
+### 问题: SC5735平台是否支持Wifi Display(Miracast)？
+解决方案: 5735平台在Mocordroid4.4prime_3.10_14A_pad_W14.xx.x整个分支都是不支持Wifi Display(Miracast)功能的;但在V2分支的MocorDroid4.4_3.10_pad_v2_W14.26.1以后的版本都支持了;
+参考FAQ: FAQ29114
+### 问题: 怎样手动让手机进sysdump模式
+解决方案: 由于调试需要,常常手动让手机进入sysdump模式来抓取内存信息.user-debug版本,让手机进入sysdump模式方式 1、按组合键,音量上和音量下同时安装,再连续按2此power键 2、长按power键7秒 3、通过hardware rest复位键 若非user-debug版本,可以手动让kernel产生panic从而进入sysdump模式. 例: sudo adb shell dd if=/dev/zero of=/dev/kmem bs=4096 count=1
+参考FAQ: FAQ30463
+### 问题: 不同android平台对HLS流媒体的支持情况？
+解决方案: android2.3.5平台对HLS流媒体的支持情况并不好,使用STAGEFRIGHT_PLAYER播放引擎一般无法正常播放.在android4.0及以上平台,加入了NU_PLAYER播放引擎以及chromium_http模块,并对httplive模块进行了完善,从而可以正常播放HLS协议的流媒体.
+参考FAQ: FAQ29134
+### 问题: SC7715上怎么使用串口2(UART2)
+解决方案: 在u-boot/board/spreadtrum/sp7715ea/pinctrl.c下将 { REG_PIN_CTRL2, (0<<22)/*CP0 Control SIM1*/|(0<<20)/*CP0 Control SIM0*/|(1<<16)|(2<<10)}, //ap_uart4-->cp0_uart0, ap_uart2-->cp1_uart1 }, 修改为 { REG_PIN_CTRL2, (0<<22)/*CP0 Control SIM1*/|(0<<20)/*CP0 Control SIM0*/|(1<<16)|(0<<10)}, //ap_uart4-->cp0_uart0, ap_uart2-->cp1_uart1 }, 主要原因是因为uart2本来是给cp1用的,如果ap要用的话先要切换到ap才能使用
+参考FAQ: FAQ29125
+### 问题: 7715板子不插屏的情况下不能校准
+解决方案: 硬件上是CS1,检查了uboot中pinmap的配置: 发现: {REG_PIN_LCD_CSN1, PIN_NULL, FUNC0, PIN_NULL, SLP_WPD, DS_L1, PIN_NULL, PIN_NULL, SLP_AP}, {REG_PIN_LCD_CSN0, PIN_NULL, FUNC0, FUNC_WPU, SLP_WPU, DS_L1, PIN_NULL, PIN_NULL, SLP_AP}, 配置的状态有所不同,仿照cs0配置后测试可连接校准.
+参考FAQ: FAQ29149
+### 问题: 组装厂升级工具不能使用
+解决方案: 首先将NPI工具放到c盘下,另外,要严格按照下面步骤执行: 按factorydownload工具先烧好,然后进行校准,这两步都正确后,再用 UPGRADEDOWNLOAD更新
+参考FAQ: FAQ29155
+### 问题: ffos sdcard OTA包怎么制作
+解决方案: 根目录下执行 ./build.sh gecko-update-fota 编OTA包. sdcard里放update.zip做升级.
+参考FAQ: FAQ29181
+### 问题: 如何手动打印ffos平台中相关的log
+解决方案: 1.js的代码通过dump打印 dump("log messages"); or console.log("=====hello world====="); 2.可以用logcat过滤一下log,如 adb logcat | grep MyApp adb logcat | grep -i myapp #忽略大小写. 3.打印某个函数执行时间 #include "libui/Timers.h" nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC); FUNC(); now = systemTime(SYSTEM_TIME_MONOTONIC) - now; now = ns2ms( now ); LOG("james ticks = %d", now);
+参考FAQ: FAQ29189
+### 问题: 7715 关于camera打样怎么样才能选择正确的方向
+解决方案: 方法是: camera模组的cmos长边对长边,短边对短边,就可以了!
+参考FAQ: FAQ29188
+### 问题: 如何使用命令清除slog
+解决方案: 在测试的过程中,通常都需要清楚log来避免干扰,通常的时候测试人员会使用slogUI里面的清除log选项来完成这项功能,但其实slogui完成的这项工作也是通过slogctl命令来完成的,这样平时测试的时候直接使用如下命令: adb root adb shell slogctl clear
+参考FAQ: FAQ29209
+### 问题: 如何查看当前所有activity信息
+解决方案: adb shell dumpsys activity
+参考FAQ: FAQ29221
+### 问题: 什么是GTS认证？
+解决方案: GTS测试的全称是 GMS Test Suite(GMS自动测试用例包) GTS认证由三部分组成:CTS自动测试、CTS Verifier手工测试、CAT手工测试和GTS自动测试 GTS测试流程: 1、客户和google签约,获取Lisense 2、获取widevine专利代码,集成到平台 3、获取最新GTS测试包 4、启动测试工具,1小时完成所有测试项
+参考FAQ: FAQ29220
+### 问题: 未捕获异常为什么会导致应用程序退出
+解决方案: 1. android平台会为每个应用程序设置一个未捕获异常处理器,相关代码frameworks/base/core/java/com/android/internal/os/RuntimeInit.java 2. 当应用程序中的某个线程有未捕获异常产生时,该线程就会退出,在退出之前未捕获异常处理器会进行未捕获异常的处理,该处理器在处理完未捕获异常的相关操作(打印关键信息及调用栈,给出提示窗口等)后,会将该线程所在的应用进程杀掉Process.killProcess(Process.myPid()),从而导致应用程序退出.
+参考FAQ: FAQ29226
+### 问题: 如何通过slog截屏
+解决方案: 在定屏情况下,如果adb可以连接,可以通过slogctl命令来获取当时的屏幕情况,具体命令为: adb root adb shell slogctl screen
+参考FAQ: FAQ29233
+### 问题: 如何控制录音界面指针的摆动频率
+解决方案: 录音界面的指针,实际是自定义的view:VUMeter,这个类VUMeter.java里有个参数ANIMATION_INTERVAL,通过调整这个参数就可以控制指针的摆动频率.
+参考FAQ: FAQ29249
+### 问题: common和FDT校准的差异？
+解决方案: common模式校准采用的是迭代应答方式,整个校准过程采用的是串行校准方式,所以校准速度比较慢. FDT模式校准采用Sweep方式,可以批处理测试多个信道多个时隙的信号,整个数据测量过程近似于并行.把要测试的多个点的信号一次性发送到仪器,仪器一次性测完,并把全部的测试结果都报告出来.从而提高了校准速度.
+参考FAQ: FAQ29288
+### 问题: 什么是B帧？
+解决方案: B帧:双向预测内插编码帧.B帧是双向差别帧,也就是B帧记录的是本帧与前后帧的差别(具体比较复杂,有4种情况,但我这样说简单些),换言之,要解码B帧,不仅要取得之前的缓存画面,还要解码之后的画面,通过前后画面的与本帧数据的叠加取得最终的画面.B帧压缩率高,但是解码时CPU会比较累. B帧的预测与重构 B帧以前面的I或P帧和后面的P帧为参考帧,"找出"B帧"某点"的预测值和两个运动矢量,并取预测差值和运动矢量传送.接收端根据运动矢量在两个参考帧中"找出(算出)"预测值并与差值求和,得到B帧"某点"样值,从而可得到完整的B帧. B帧特点 1.B帧是由前面的I或P帧和后面的P帧来进行预测的; 2.B帧传送的是它与前面的I或P帧和后面的P帧之间的预测误差及运动矢量; 3.B帧是双向预测编码帧; 4.B帧压缩比最高,因为它只反映丙参考帧间运动主体的变化情况,预测比较准确; 5.B帧不是参考帧,不会造成解码错误的扩散
+参考FAQ: FAQ29321
+### 问题: 工程模式中如何开启或关闭CP2 log？
+解决方案: 展讯平台CP2是指BT、WIFI、GPS三合一芯片处理器,CP2的log是独立控制的. 目前平台是这样设计的: 1. USE版本默认CP2 log关闭 2. USER_DEBUG版本默认CP2 log打开 3. *#*#83781#*#*进入工程模式,Log settings ----> PC Log -----> CP2Log,点击滑块,关闭CP2 log.下次开机后,默认又会开启CP2 log. 说明: AP侧控制CP2 log的at命令如下: 下发 "at+armlog=0" 到wcnd所在节点设备,最终关闭CP2的log 下发 "at+armlog=1" 到wcnd所在节点设备,最终开启CP2的log
+参考FAQ: FAQ29332
+### 问题: Android权限之sharedUserId
+解决方案: 对于一个APK来说,如果要使用某个共享UID的话,必须做三步 1.在Manifest节点中增加android:sharedUserId属性. 2.在Android.mk中增加LOCAL_CERTIFICATE的定义. 3.把APK的源码放到packages/apps/目录下,用mm进行编译. 例如: 系统中所有使用android.uid.system作为共享UID的APK,都会在manifest节点中增加android:sharedUserId="android.uid.system",然后再Android.mk中增加LOCAL_CERTIFICATE:=platform.可以参见Settings等.
+参考FAQ: FAQ29330
+### 问题: user版本如何在工程模式中开启串口开关来抓取armlog？
+解决方案: 若需要连接PC使用logel工具抓取armlog,就要打开diag虚拟串口.默认在userdebug模式,串口是打开的.而user模式下,串口关闭着. *#*#83781#*#* 进入工程模式,TELEPHONY->App Settings->Enable Vser Gser 通过此滑块开关,可以控制虚拟串口的开启或关闭. 实现方案 滑块开关On: SystemProperties.set("persist.sys.modem.diag", ",gser"); 滑块开关Off: SystemProperties.set("persist.sys.modem.diag", ",none"); 系统属性设置完成之后,驱动会读取此属性,然后开启/关闭串口.
+参考FAQ: FAQ29352
+### 问题: Android系统中RAM和ROM的区别
+解决方案: RAM(random access memory)即随机存储内存,这种存储器在断电时将丢失其存储内容,故主要用于存储短时间使用的程序.ROM(Read-Only Memory)即只读内存,是一种只能读出事先所存数据的固态半导体存储器. 在安卓手机中,ROM包含了安卓系统、手机软件、用户文件(照片、视频等).而用户存储的文件只占据ROM空间,是不影响RAM空间的.其次,ROM空间的大小对系统运行速度的影响是微乎其微的; 影响手机运行速度的最主要因素是RAM,也就是运行内存,它支撑的是手机软件的运行,存放手机软件运行后进行的数据交换等工作.也就是,RAM决定了您的手机可以开多少后台程序;相同的配置下,RAM越大,手机应用运行的流畅性就越好;一旦手机关机,RAM中的数据就丢失,开机后也不会恢复.
+参考FAQ: FAQ29379
+### 问题: 关于LCD花屏的分析总结
+解决方案: LCD花屏不同样式代码表出错的地方不一样,可以给我们提供一下思路: 1.最常见的是全屏均匀雪花点. 这样的花屏提供我们两个有用的信息: a.init code已经下载到屏那端,并且解析没有问题.如果使用MCU接口和RGB的SPI接口,则表示这两个接口写通信没有问题.因为雪花点但表屏已经收到上电的命令才上电的,否则我们看到的是白屏或黑屏. b.init code初始化命令有问题. 2.不均匀的雪花点 这里请检查timing是否设置正确以及init code是否设置错误,是比较麻烦的一种错误. 3.大片的彩色 如这张图片 /ishare/uploadeditor/file/20140715/20140715172333_423.zip 这样最可能出现的情况是logo烧写错误.当我们把比当前的分辨率大的图片烧到logo分区后,显示到framebuffer时就会出现这样的.
+参考FAQ: FAQ29399
+### 问题: WakeLock几种flag的用法
+解决方案: 四种用法: PARTIAL_WAKE_LOCK:保持CPU 运转,屏幕和键盘灯有可能是关闭的; SCREEN_DIM_WAKE_LOCK:保持CPU 运转,允许保持屏幕显示但有可能是灰的,允许关闭键盘灯; SCREEN_BRIGHT_WAKE_LOCK:保持CPU 运转,允许保持屏幕高亮显示,允许关闭键盘灯; FULL_WAKE_LOCK:保持CPU 运转,保持屏幕高亮显示,键盘灯也保持亮度.
+参考FAQ: FAQ29429
+### 问题: 如何在代码添加systrace跟踪
+解决方案: framework的java层代码里面添加systrace跟踪方式: import android.os.Trace; Trace.traceBegin(Trace.TRACE_TAG_VIEW, "method name"); Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+参考FAQ: FAQ29432
+### 问题: 如何获取不同modem的basebandversion的信息
+解决方案: 不同的Modem的 basebandversion 信息通常都是不一样的,通过展讯平台的软件包如何获取basebandversion的信息呢? (1)在TelephonyProperties.java中有如下定义 (frameworks\base\telephony\java\com\android\internal\telephony) static final String PROPERTY_BASEBAND_VERSION = "gsm.version.baseband"; (2)可以参考telephonymanger.java中现有的getModemType的接口中的使用方法: String baseBand = SystemProperties.get( SprdPhoneSupport.getProperty(TelephonyProperties.PROPERTY_BASEBAND_VERSION, mPhoneId), "");
+参考FAQ: FAQ39000
+### 问题: MediaProvider如何存放播放列表？
+解决方案: audio_playlists表中,存放播放列表名. audio_playlists_map表中,存放歌曲和播放列表的对应关系. 例:一条数据有audio_id和playlist_id. audio_id是audio表中id号,可在audio表中,找到对应id歌曲. playlist_id是audio_playlists表中id号,可在audio_playlists表中,找到对应id播放列表. PS:play_order是播放顺序 audio表:
+参考FAQ: FAQ38990
+### 问题: 怎么查看手机文件系统的磁盘空间占用情况？
+解决方案: linux中df命令的功能是用来检查linux文件系统的磁盘空间占用情况.可以利用该命令来获取硬盘被占用了多少空间,目前还剩下多少空间等信息.
+参考FAQ: FAQ38991
+### 问题: 基于7715平台 ARM log影响底电流偏大
+解决方案: 在拨号键盘中输入:*#*#83781#*#* -》DEBUG&LOG-》Log Setting->PC Log->ARM Log (关闭)、CP2 Log(关闭)
+参考FAQ: FAQ29453
+### 问题: 功耗测试使用user版本还是userdebug版本？
+解决方案: user版本上打印的log信息有限,相对是比较少,对功耗测试影响小 userdebug版本上打印的log信息更多,相对user版本而言是比较多,对功耗测试影响较大 所以原则上测试功耗应用使用user版本,当出现问题时使用userdebug问题进行复现
+参考FAQ: FAQ29514
+### 问题: 性能测试使用user版本还是userdebug版本？
+解决方案: userdebug通常称为调试版本,它包含调试信息,并且不作任何优化,便于程序员调试程序. user版本称为发布版本,它往往是进行了各种优化,使得程序在代码大小和运行速度上都是最优的,以便用户很好地使用. 性能测试就是用户体验测试,为了达到更好的效果或数据,原则上使用user版本.
+参考FAQ: FAQ29496
+### 问题: android中df命令的使用
+解决方案: 1、在linux中,启动时会创建rootfs,dev.proc以及vold等文件系统并将它们挂载到对应的挂载点 2、当mount操作完成后,kernel会通过/proc/mounts文件系统将这些分区信息展现出来,这一点可以通过cat /proc/mounts查看到 3、要想获取分区信息大小,首先要获取分区对应的路径,第二步中可以获取到分区的对应路径,这里就需要使用statfs函数将对应路径下的分区信息获取出来,然后根据totalSize和available之间关系计算出可用空间比率,以及总共大小和可用大小以及使用大小. 使用: #adb shell df
+参考FAQ: FAQ29523
+### 问题: 如何在ffos中加入gaia app
+解决方案: 1.建立应用目录,包括各个功能文件夹. - js,主要存放相关js文件. - style,主要存在相关css文件. 2.在根目录建立index.html文件,用于应用总的html布局. 3.建立mannifest.webapp文件,用于对此app的应用描述. 主要说明如下, - name: 此应用在homescreen中显示的name. - description:此应用的描述. - launch_path:此应用的起始页面. - permissions:此应用可以访问的其他应用权限. - activities:此应用的activities控制配置. - locales:语言. - icons:此应用在homescreen中显示的icons. 4.把目录放到gaia根目录下customize_apps目录中.
+参考FAQ: FAQ29525
+### 问题: 蓝牙共享网络连接不上
+解决方案: 1.请确认作为server手机,连接wifi或使用2G/3G上网,可否正常访问网页; 2.请确认在server手机的"网络共享与便携式热点"中是否选上"蓝牙共享网络"; 3.请确认server手机和client手机在statusbar上,图标都是现实为已连接的蓝牙图标. 4.server端的手机,请确认statusbar上是否会显示"网络热点与共享已启用",蓝牙共享网络中,会显示有多少设备连接到该设备上网. 5.如果蓝牙共享网络仍然连接不上,请与我们联系.
+参考FAQ: FAQ31885
+### 问题: Phase Check的应用。
+解决方案: 1.phase check的存储位置 在工程模式中有个phase check的菜单选项,其中读出的是存储在手机productinfo分区上的productinfo.bin中的内容. 2.phase chek内容及含义. phase check的具体内容可以参考结构体_PHASE_CHECK_HEADER.phase check的主要应用是记录主板的SN号,以及生产线上各个工位的测试信息.如果某个工位测试通过了,则iTestSign的相应bit位置1,否则置0. 3.读写phase check的diag命令 通过WriteSN,WriteImei等工具可以读写phase check中关于sn的内容,工具发送的DIAG命令为:0x5F subtype:0x81 读取 ;0x01为写入.内容的数据可以打开工具的log,从log文件中看出相应的数据内容.
+参考FAQ: FAQ31911
+### 问题: 如何查看本地手机的蓝牙地址和WLAN MAC地址
+解决方案: 1.打开蓝牙和WIFI(蓝牙或WIFI关闭时,相应的地址为不可用); 2.进入手机"设置"; 3.点击"关于手机"; 4.点击"状态消息",然后选择"其他",里面就可以查看WLAN MAC地址和蓝牙地址等.
+参考FAQ: FAQ31944
+### 问题: 如何在user版本中编译iwnpi可执行文件
+解决方案: 修改 vendor/sprd/open-source/common_packages.mk文件: PRODUCT_PACKAGES += \ AudioProfile \ ... 添加 iwnpi \ 添加 libiwnpi 举一反三,如果以后要添加某个应用文件,可以修改其上层目录Makefile中PRODUCT_PACKAGES的选项 具体的查找命令是-- grep 'PRODUCT_PACKAGES' -rn ./
+参考FAQ: FAQ29582
+### 问题: 770X DDR扫描方式
+解决方案: 1. DDR扫描的BIN文件 有两种方式,一种是替换KERNEL IMAGE,这种BIN可以断电后重新上电扫描,另一个直接在FDL1中,由于有的KERNEL IMAGE无法下载,直接在IRAM中扫描. 2. 高温低温各5台,扫描时,使用UART1输出LOG. 3. 扫描大概需要2天时间,扫描时dqs,data,ctl,clk从0,0,0,0扫描到3,3,3,3 4. 将扫描的所有结果,使用MemoryAnalyzer工具分析,结果类似(2,2,0,2),CLKWR:10 前面(2,2,0,2)填在sdram_phy_sc7702.c中Chip_Init函数里面的 __pin_config中. CLKWR填在0x20000100,0x20000104,0x20000108,0x2000010c这四个寄存器中. 5. 重新生成版本,再次提供高低温验证.
+参考FAQ: FAQ29600
+### 问题: 如何获悉android4.4当前的存储方案
+解决方案: 目前android4.4的存储方案有3中. 第一种是内部存储为主卡,外卡存储为副卡.此时persist.storage.type的值是2,可以参考scx15_sp7715ea和scx35_sp7730ec工程. 第二种是外部存储为主卡,内部存储为副卡.此时persist.storage.type的值是1,可以参考scx15_sp7715ga和scx35_sp7730ga工程. 第三种是nand方案,此时persist.storage.type的值是0,目前没有这种方案的配置. 因此可在电脑能够adb连接到手机的情况下,命令: adb shell getprop persist.storage.type 根据返回的值就可以知道当前手机的存储方案.
+参考FAQ: FAQ29611
+### 问题: 为何蓝牙通话中有T卡卸载动作时有时会断开连接
+解决方案: 由于在卸载T卡时,系统会将使用T卡的程序kill掉,而此时如果蓝牙正在写LOG到T卡,bluetooth进程就会被杀死,进而导致蓝牙耳机断开.
+所以在蓝牙测试case中若含有卸载T卡的操作时,需关闭蓝牙log后再进行测试,或把log路径改到内置存储空间.
+参考FAQ: FAQ31847
+### 问题: 如何修改状态栏上电池的颜色
+解决方案: 针对的软件版本是电池图标不是动态切换的. 修改frameworks/base/packages/SystemUI/res/values/arrays.xml中的<item>#FFFFFFFF</item>,其中#FFFFFFFF表示白色,#FF00FF00表示绿色,可定义成自己所需要的颜色. 当电池电量低的时候还是会显示红色.
+参考FAQ: FAQ29615
+### 问题: 如何修改状态栏上电池充电时的颜色
+解决方案: 针对的软件版本是电池图标不是动态切换的. 修改frameworks/base/packages/SystemUI/res/values/colors.xml中的<color name="batterymeter_charge_color">#FFFFFFFF</color>,其中#FFFFFFFF表示白色.可自定义成自己所需要的颜色.
+参考FAQ: FAQ29616
+### 问题: 为何默认主题下的主题包内都没有res资源
+解决方案: 若将默认主题改为SimpleStyle,发现编译最终结果,system/etc/theme/default下的的com.android.settings的大小为884字节,检查发现压缩包中没有res.而HelloColor/的settings的包有300KB以上. 这是因为使用了overlay的机制,故default的主题下的res,都会被分别编译进各个apk,故default主题下的主题包资源都很少.其他的主题包的资源是正常.为了能够节省flash空间.
+参考FAQ: FAQ29618
+### 问题: 如何在framework/base/core/res中添加一个string
+解决方案: 首先在frameworks/base/core/res/res/values/strings.xml中添加 <string name="ext_media_checking_notification_title_usb">Preparing USB storage</string> 然后需要在frameworks/base/core/res/res/values/public.xml中标明属性 <java-symbol type="string" name="ext_media_checking_notification_title_usb" /> 这样在编译后,其他模块就可以使用了.
+参考FAQ: FAQ29620
+### 问题: 为何在monkey测试后，"usb 设定"界面的操作有时不起作用
+解决方案: "usb 设定"界面(即sprdusbsettings.java)是不允许有monkey测试的按键的,通过Utils.isMonkeyRunning()来判断. 当跑完monkeytest的时候,停止monkey的进程所需的时间比较久,可能会导致这个判断还是认为在monkey测试,所以usb的功能无效. 一般情况下,建议在monkey测试后,重启下手机,再进行功能性质的测试.
+参考FAQ: FAQ29621
+### 问题: 为何调用MMIAPIFMM_DeleteDirectory接口删除指定目录失败
+解决方案: MMIAPIFMM_DeleteDirectory用于删除空目录,当该目录下存在文件/文件夹时会导致删除失败,返回SFS_ERROR_NOT_EMPTY错误. 如需要删除指定目录及该目录下的所有文件,请使用MMIAPIFMM_DeleteTree接口. 比如删除D盘下的memo目录及其文件,可采用如下方式: wchar path_d[] = L"D:"; wchar filename[] = L"meno"; SFS_ERROR_E error = SFS_NO_ERROR; error = MMIAPIFMM_DeleteTree(path_d, filename);
+参考FAQ: FAQ29689
+### 问题: 如何将秒表计时列表的显示时间修改为从start开始的累计时间，而非每次计时的时间差
+解决方案: 秒表模块中用两个静态变量记录了当前时间(@mmistopwatch_main.c): s_st_current_time1为每次计时的时间差 s_st_current_time2为从start开始的累计时间 而计时列表的显示时间值是由AppendListItem(@mmistopwatch_main.c)的参数count_time决定的.平台默认使用s_st_current_time1,因此列表显示的是每次计时的时间差.如需要修改为累计时间,需要将AppendListItem的实参修改为s_st_current_time2.
+参考FAQ: FAQ29690
+### 问题: UBIFS 系统升级异常
+解决方案: 展讯在最新平台上为配合nand flash,上层使用更为先进的ubifs . 由于ubifs 具有文件压缩的功能,理论上有可能在100M的system分区中存放101M的文件内容.但是基于文件压缩的不确定性, 很难预测system分区究竟可以放下多少文件内容.偶尔会有客户因为要在system分区中存放过多内容而导致升级过程失败的情况. 为了保证升级过程的顺利,请确保system 分区中的文件总大小不要超过system分区的大小(最好保留5M左右).
+参考FAQ: FAQ29786
+### 问题: 请问7715如何升 arm 以及 core 电压
+解决方案: 1. chipram/include/configs/sp7715ea.h #define DCDC_ARM 1200 #define DCDC_CORE 1100 2. kernel/arch/arm/mach-sc/cpufreq-scx35.c : /* for 7715 test */ static struct cpufreq_table_data sc7715_cpufreq_table_data = { .freq_tbl = { {0, 1000000}, {1, SHARK_TDPLL_FREQUENCY}, {2, 600000}, {3, SHARK_TDPLL_FREQUENCY/2}, {4, CPUFREQ_TABLE_END}, }, .vddarm_mv = { 1200000, //这个列表里每一项都加 50mv 1150000, 1100000, 1100000, 1000000, }, };
+参考FAQ: FAQ29834
+### 问题: 如何平滑显示电池电量
+解决方案: 平台采用电压来表示电池的百分比,此方法不能达到电量计效果,由于电池电量在某一电压区间比较密集很难做到完全均匀显示,只能尽量优化. 将一个充满电的电池做接近恒流放电(可播放一个视频),放电到结束并保存log,将log中的vbat_ocv值全部摘取出来,时间10等分后每个点的电压值便是对应每个10%的电压,填入voltage_capacity_table电压表里.此方法可以基本保证放电显示平滑. 由于充放电电池内阻不同,有可能放电OCV表不能适用于充电,因此需要修改充电电池内阻,内阻修改方式:放电时候看log中VBAT_OCV值后马上拔出电池测量电池两端电压,记录差值,只要保证相同操作充电时差值也相同即可. 电池的化学特性决定其充电或者放电结束后一段时间内电池电压会发生变化,这是软件不可控的,如果有此问题可根据具体电压情况及具体需求进行变压表的细调,并没有具体调整方法,需要根据测试结果和客户需求调整.
+参考FAQ: FAQ29844
+### 问题: 如何调试arm core 电压
+解决方案: 1. chipram/include/configs/sp7715ea.h #define DCDC_ARM 1200 #define DCDC_CORE 1100 2. kernel/arch/arm/mach-sc/cpufreq-scx35.c : /* for 7715 test */ static struct cpufreq_table_data sc7715_cpufreq_table_data = { .freq_tbl = { {0, 1000000}, {1, SHARK_TDPLL_FREQUENCY}, {2, 600000}, {3, SHARK_TDPLL_FREQUENCY/2}, {4, CPUFREQ_TABLE_END}, }, .vddarm_mv = { 1200000, //这个列表里每一项都加 50mv 1150000, 1100000, 1100000, 1000000, }, };
+参考FAQ: FAQ29871
+### 问题: android4.4 IP拨号入口
+解决方案: android4.4 IP拨号入口: 拨号盘输入号码,然后点击option menu,点击IP拨号即可. 拨号盘并没有IP拨号的button,拨号盘没有输入号码时,option menu中不会有ＩＰ拨号
+参考FAQ: FAQ29882
+### 问题: SC7730机器插移动卡和联通卡电流达到稳定时间不一致原因分析
+解决方案: SC7730 是W 产品,默认是双模优先,搜网是先搜W 再搜GSM; 1)如果插移动卡,W必定搜不到可用的小区,但是搜索过程不会少;搜完 W 后发现没有可用小区,再搜 GSM,然后注册, 所以费时造成电流稳定时间长; 2)如果插联通卡,会很快找到WCDMA 小区,立即注册成功,就不去搜GSM网,这样费时少电流稳定下来快; 总结:如果一定要在移动卡测试该情况下的电流,插移动卡时请设置为GSM Only;
+参考FAQ: FAQ29910
+### 问题: 在手机板子上拿掉transfer，开机dsp会assert
+解决方案: 当在modem端将transfer拿掉,在开机的时候arm/CA5会load dsp的code到DSP运行,这个时候DSP会通过SPI读取transfer的ID,如果读取失败,dsp就进入assert 解决:当在9620上至需要一个modem,拿掉了另外一个transfer的时候,不要去初始化layer1,就不会开启dsp;
+参考FAQ: FAQ29917
+### 问题: AndroidManifest.xml中protectionLevel属性说明
+解决方案: Android系统中权限是通过protectionLevel来标识保护级别:normal,dangerous,signature,signatureorsystem. 不同的保护级别代表了程序要使用此权限时的认证方式. normal :只要申请了就可以使用; dangerous: 在安装时需要用户确认才可以使用; signature :当请求某个权限的应用与已经申请了这个权限的应用具有相同的证书签名,系统就会授予其相应的权限. SignatureorSystem:只有在系统镜像里或具有相同证书签名的packages才会被授予的权限
+参考FAQ: FAQ29953
+### 问题: dex文件优化发生的时机
+解决方案: 优化发生的时机有两个: 1、对于预置应用,可以在系统编译后,生成优化文件,以ODEX 结尾.这样在发布时除 APK 文件(不包含 DEX)以外,还有一个相应的 ODEX 文件; 2、对于非预置应用,包含在 APK 文件里的 DEX 文件会 a、user/userdebug版本:在安装时进行dex优化 b、eng版本:在运行时通过dexopt进行优化 优化后的文件将被保存在缓存中(data/dalvik-cache)
+参考FAQ: FAQ29955
+### 问题: 在应用程序中如何获取安全级别为signature的系统权限
+解决方案: 对于一个应用程序来说,要想获取安全级别为signature的系统权限,必须做如下几步 1、在第应用的AndroidManifest.xml文件中, 添加android:sharedUserId="android.uid.system" 2、Android.mk中,添加LOCAL_CERTIFICATE := platform 两者的关系如果没有正确对应,则在apk安装时会报错,提示程序签名文件不正确: Failure [INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES]
+参考FAQ: FAQ29956
+### 问题: 如何完整的开启UUI功能
+解决方案: 如果在mk文件中加入universe_ui_support=true ,基本的uui功能是完全可以正常使用的.但是相对于uui项目(如scx15_sp7715gacuccspecAplus_UUI.mk),会少了一些资源apk,具体从universeui.mk 这个文件可以看出来. 所以完整的开启UUI功能 应该是在对应的mk文件中加入 include vendor/sprd/UniverseUI/ThemeRes/universeui.mk 即可. 另外 scx15_sp7715gaplus_UUIhvga.mk,scx15_sp7715gacuccspecAplus_UUI.mk 也都是带uui功能的,默认加入 include vendor/sprd/UniverseUI/ThemeRes/universeui.mk .
+参考FAQ: FAQ29963
+### 问题: StagefrightPlayer如何获取当前播放位置和总时长？
+解决方案: StagefrightPlayer通过调用AwesomePlayer的相关接口获取当前播放位置和总时长,在AwesomePlayer中返回的单位是微秒(us),而在StagefrightPlayer中返回的时间单位是毫秒(ms).StagefrightPlayer中在计算当前位置和总时长时是按照四舍五入的方式来计算的,即小于500us的舍去不计入,大于等于500us的则按照1毫秒计入.在计算总时长时如果是视频文件,则视频track和音频track中都可以通过元数据取得各自的时长,最终是把较长的时长作为整个视频的总时长.
+参考FAQ: FAQ30016
+### 问题: android4.4如何修改浏览器默认下载路径。
+解决方案: 需修改的文件路径:\packages\apps\Browser\src\com\android\browser\provider\BrowserProvider2.java 代码: @Override public void onCreate(SQLiteDatabase db) { …… String path = ""; path = Environment.getInternalStoragePath() + "/Download"; //path就是默认路径,可根据需要修改 …… }
+参考FAQ: FAQ30052
+### 问题: 在其他应用程序中可以通过发送什么消息来关闭FM应用？
+解决方案: 在其他应用程序中如果想关闭FM应用, 可以通过发送"com.thunderst.radio.RadioService.SHUTDOWN"消息来实现关闭FM. 举例: Intent intent = new Intent(); intent.setAction("com.thunderst.radio.RadioService.SHUTDOWN"); sendBroadcast(intent);
+参考FAQ: FAQ30081
+### 问题: 做CFT时，工具显示error code 11是什么意思？
+解决方案: 表示手机命令没有响应.
+参考FAQ: FAQ30144
+### 问题: listview顶部和底部实现渐变效果
+解决方案: 应用端,可在通过获得listview如下设置: mListview.setVerticalFadingEdgeEnabled(true); mListview.setHorizontalFadingEdgeEnabled(true);//当这个view可以横向滑动的时候,是否显示渐变框 这样设置之后,会在listview底部/顶部有渐变效果,其实这些渐变效果都是view.java中绘制出来的. (这些渐变框可能效果不明显,可在滑动listview的时候看到) 当然这些渐变的效果的实现,以及渐变框的范围大小都是在framework层的 View.java 中 ScrollabilityCache这个内部类中实现的.详情可参看这里的描述
+参考FAQ: FAQ30163
+### 问题: 内置gms包时，wifi影响功耗
+解决方案: 当内置gms包时,开机向导会打开wifi,同时会有２个勾选项默认勾选. 分别是 １.随时扫描 2.开启gps定位. 其中"随时扫描"是Android　4.4的wifi新功能 作用是:当关闭wifi时,可以利用wifi搜索功能. 原理:只在界面上关闭wifi,驱动和中间层都不关闭. 所以此时的功耗是相当于wifi开启的,所以此时待机功耗是不达标的. 关闭方法. 1.在开机向导里,把勾选去掉 2.在wlan设置里关掉 　步骤:设置－》wlan设置－》高级设置－》去掉勾选"随时扫描"
+参考FAQ: FAQ30172
+### 问题: 修改系统默认签名的方法
+解决方案: 目前使用的是google的test key为默认签名. 例如: 如果想修改默认签名为releasekey,需要修改android配置,在/build/core/config.mk中定义变量: DEFAULT_SYSTEM_DEV_CERTIFICATE:=build/target/product/security/releasekey 在主makefile文件里面: /build/core/makefile ifeq($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/releasekey) BUILD_KEYS:=release-keys else BUILD_KEYS:=dev-keys endif
+参考FAQ: FAQ30181
+### 问题: SC7715集成背光灯对地限流电阻是否可以省略？
+解决方案: 不可以,内部其他电流源都参考此限流电阻
+参考FAQ: FAQ30186
+### 问题: SC7730平台如何修改摄像头像素的插值
+解决方案: 需配置如下: 以sp8830ec为例 device/sprd/scx35_sp8830ec/BoardConfig.mk CAMERA_SUPPORT_SIZE := 5M 改成8M 即可.
+参考FAQ: FAQ30210
+### 问题: 为什么在主菜单的搜索中设置搜索为日历，输入关键字不会自动匹配搜索内容？
+解决方案: android的原生设计中主菜单进行日历搜索与在日历中进行日程搜索的方式是一样的,需要提交搜索内容才会进行数据库查询,列出搜索到的内容.
+参考FAQ: FAQ30218
+### 问题: 关于wifi高级设置里，ip地址栏会有类似乱码的显示
+解决方案: 当android 4.4系统连接上wifi热点后, 在　"设置－》wlan设置－》高级设置－》ip地址"　栏里会有２串数字. 其中一个是正常的ip.如192.168.1.101 另一个是fe80:fcda:e6ff:fe06:d824这么一串数. 这一串数是ipv6地址,并非显示异常.
+参考FAQ: FAQ30245
+### 问题: 内核中可回收页有哪些
+解决方案: Linux内核的页框回收算法从用户态进程和内核cache中回收page frames,补充到buddy中. 可回收页框包括如下几类: 1. 可交换页, 用户态进程的匿名页、tmpfs文件系统的映射页 2. 可同步页, 用户态进程文件映射页、内核page cache、inode/dentry cache 3. 可丢弃页, cache未被使用的页
+参考FAQ: FAQ30255
+### 问题: 内核中不可回收页有哪些
+解决方案: Linux页框回收算法不能回收的页框分为如下几类: 1. free page 2. PG_reserved标志置位的页(保留页) 3. 内核动态申请分配的页 4. 进程的内核空间的堆栈页 5. PG_locked标志置位的页(锁定页)
+参考FAQ: FAQ30261
+### 问题: 内核kswapd何时执行回收页框
+解决方案: 内核必须确保在用完所有空闲page frame之前,必须执行页框回收动作.否则, 内核很可能陷入一种内存申请"僵局",最终导致系统崩溃. kswapd就是一个负责页框回收的内核守护进程,定期执行回收动作. 在某一内存申请的上下文中,发现当前系统的空闲内存小于low watermark时,就会唤醒kswapd,kswapd开始回收页框.
+参考FAQ: FAQ30266
+### 问题: ffos中新增gaia app应用目录的文件名不支持大写
+解决方案: 当我们新开发了一个ffos应用,需要将其编译到工程中: 首先需要新建一个应用目录(假设应用目录为test),将应用的html、js等文件放到test中 其次将此目录放到gaia/apps中就可以编译到工程中了. 此过程需要注意:应用目录名不支持大写,如上面的test不能写为Test,否则应用程序无法正常运行.
+参考FAQ: FAQ30262
+### 问题: 内核分配内存基本原则
+解决方案: 内核内存管理是系统对可用内存的"总管",在分配时有其自身的分配原则,概括起来如下: 1. 内核自身会尽量充分使用内存,无尽去用,不让系统有过多的free page. 2. 对于用户态进程,内存分配则采取"能拖就拖"的策略,不会在用户态一发起内存申请时就满足其需求,只有当真正需要的那一刻才会给其分配内存.
+参考FAQ: FAQ30268
+### 问题: 如何修改系统默认日期
+解决方案: 需要修改: kernel/arch/arm/configs/sp7715ea-native_defconfig下CONFIG_RTC_START_YEAR这个宏,比如2014年01月01日,CONFIG_RTC_START_YEAR修改为2014,如果对应的月份和日期也要变,请修改对应kernel/drivers/rtc/rtc-sprd.c文件中的mktime(CONFIG_RTC_START_YEAR, 1, 1, 0, 0, 0) 格式为:年,月,日,时间.
+参考FAQ: FAQ30277
+### 问题: ffos中如何让工程模式应用能够在homescreen中显示？
+解决方案: ffos上默认的实现工程模式需要通过*#*#83781#*#*暗码进入,但我们在开发调试过程中,为了方便,希望能在homeScreen中显示,可按如下方式实现: 去掉工程模式manifest.webapp文件中的如下语句: "role": "system",
+参考FAQ: FAQ30286
+### 问题: 如何显示ActionBar的向上导航图标(操作栏左边"<")
+解决方案: 显示应用程序向上导航图标,就要在你的ActionBar中调用setDisplayHomeAsUpEnabled(true)方法. 当用户触摸这个图标时,系统会调用带有android.R.id.home ID的onOptionsItemSelected()方法,可以在此监听处理.
+参考FAQ: FAQ30294
+### 问题: 关于侧键音的几点说明
+解决方案: 侧键一般用来调节音量,调节结束后一般跟着一个按键提示音. 这个侧键音是否播放有以下几个条件: 1、传递过来的flag包含AudioManager.FLAG_PLAY_SOUND 2、铃声、提示音uri不为空 3、300ms缓冲.即300ms内可以取消播放
+参考FAQ: FAQ30300

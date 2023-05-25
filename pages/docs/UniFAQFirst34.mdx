@@ -1,0 +1,302 @@
+### 问题: 如何长按Home key会开启google search
+解决方案: 请将config.xml中的config_longPressOnHomeBehavior改成2,如下所示 \frameworks\base\core\res\res\values\config.xml <integer name="config_longPressOnHomeBehavior">2</integer>
+参考FAQ: FAQ67687
+### 问题: 为何在插入充电器的情况下灭屏时间到手机一直不会灭屏，只是变暗。
+解决方案: 原因是进入了开发者选项,勾选了不锁定屏幕,才会出现此现象
+参考FAQ: FAQ67745
+### 问题: 如何将预设备份服务设定为google云备份
+解决方案: 修改\frameworks\base\packages\settingsprovider\res\values\Defaults.xml内 <string name="def_backup_transport" translatable="false">android/com.android.internal.backup.LocalTransport</string> 改为 <string name="def_backup_transport" translatable="false">com.google.android.backup/.BackupTransportService</string> 并确定gms.mk內是否有加入 GoogleBackupTransport与GmsCore.
+参考FAQ: FAQ67816
+### 问题: 闹钟家中时区的默认值是在哪里设置的
+解决方案: 闹钟-》菜单键 -》设置 -》家中时区,默认为(GMT +8:00)北京,这个默认值是在packages\apps\DeskClock\src\com\android\deskclock\DeskClock.java的setHomeTimeZone()方法中进行设置的.
+参考FAQ: FAQ67842
+### 问题: 7731上如何配置成GSM only？
+解决方案: 在NV中把TD_TIANJI2_NV_TYPE->NV_PARAM_TYPE_MS_PREFERRED_RAT设成0.
+参考FAQ: FAQ67860
+### 问题: 7731上如何配置成WCDMA only？
+解决方案: 在NV中把TD_TIANJI2_NV_TYPE->NV_PARAM_TYPE_MS_PREFERRED_RAT设成1.
+参考FAQ: FAQ67861
+### 问题: 7731上如何配置成WCDMA+GSM双模？
+解决方案: 在NV中把TD_TIANJI2_NV_TYPE->NV_PARAM_TYPE_MS_PREFERRED_RAT设成2.
+参考FAQ: FAQ67862
+### 问题: 文字缩放比例设置大于100%，浏览器界面图字有重叠遮挡
+解决方案: 网页出现重叠的主要是因为网页本身已经将行高限定死了,文字缩放比例设置大于100%导致字体变大后显示区域不够导致.由于浏览器无法对写死的的行高进行调整,所以在行高限定的网页中字体过大出现显示问题是正常的.
+参考FAQ: FAQ67922
+### 问题: 日历设置中“弹出式通知”是否勾选在显示上有什么不同？
+解决方案: 如果勾选"弹出式通知",日程到时提示框过一会才会消失(5s);而如果不勾选"弹出式通知",日程到时提示框闪现一下会立即收回到状态栏,和原生设计一致.在android5.1系统中,由于底层Notification的设计和android4.4不一样,所以和android4.4现象不同,android4.4会弹出一个full screen的提示界面.
+参考FAQ: FAQ77288
+### 问题: 1GByte ram的手机，为何显示内存只有700M左右？
+解决方案: 在kernel的配置文件中,开启CONFIG_HIGHMEM,即CONFIG_HIGHMEM=y,从而将大于vmalloc_limit的memory加入到buddy system的HIGHMEM ZONE. 注意:修改完后,要重新编译ko,否则insmod会失败,因为kernel的magic number改变了
+参考FAQ: FAQ67975
+### 问题: 如何设置usb连接服务默认为udisk
+解决方案: 按照如下方法修改即可: 在 mmiudisk_wintab.c 文件的 SetUSBServiceList( ) 函数中,将如下函数调用 GUILIST_SetSelectedItem(ctrl_id, 0, TRUE); 修改为 GUILIST_SetSelectedItem(ctrl_id, 1, TRUE); 即实现了将默认服务由Charging 改为U Disk.
+参考FAQ: FAQ67995
+### 问题: ART Rosalloc对小内存是如何管理的
+解决方案: Rosalloc将内存空间分为34个箱子等级,0~31号箱子大小为16*(箱号+1),32号箱子为1K,33号箱子为2K. 那么如何分配内存? 假设需要new一个字符串,需要的内存大小为25个字节. 25个字节对应的箱号就是25/16向上取整 =2 ,那么需要1号箱子. 于是找到拥有一号箱子的Run们当中的一个(其实就是保存的上次成功分配的Run),尝试从这个Run中分配. 那么如何找到free的箱子使用呢? Run使用了bitmap的方法来保存箱子的占用情况,找到第一个为0的bit,并以此求出该箱子的index(总体偏移量*8+第几个bit),就可以得到slot的地址了,等于Run的首地址+head的大小+每个箱子的内存大小(此处为32)*箱子的index.
+参考FAQ: FAQ68019
+### 问题: 如何去除通话中点击callbutton的震动反馈效果
+解决方案: 如果不想在通话界面点击call button是有震动反馈的效果,可参考如下修改: 修改packages/apps/InCallUi/src/com/android/incallui/CallButtonFragment.java 中的onClick方法 int id = view.getId(); android.util.Log.d("suzie", "onClick(View " + view + ", id " + id + ")..."); - boolean isClickHandled = true;//该变量的值确定震动反馈是否生效 + boolean isClickHandled = false;//true 生效;false 无效 switch(id) { case R.id.audioButton: onAudioButtonClicked();
+参考FAQ: FAQ79934
+### 问题: [android5.1]virtualbox下载image无法进入到fdl2
+解决方案: 该问题的原因是fdl1会重新枚举端口,设备的pid产生了变化,解决方法在USB设备中选择新出的设备重新加载就好了.
+参考FAQ: FAQ68035
+### 问题: SC7731前后camera能否使用同一个reset信号？
+解决方案: 可以使用.但是,有一些sensor在powerdown时reset会有倒灌电流,请与sensor厂商确认是否有问题.
+参考FAQ: FAQ68051
+### 问题: SC7731中“LCM_FMARK”的作用是什么？
+解决方案: 用于消除tearing effect.
+参考FAQ: FAQ68050
+### 问题: 如何把通话的回铃音、音量设置成固定的，不随系统音量变化。
+解决方案: CallNotifier.java ToneGenerator 设置为AudioManager.STREAM_SYSTEM
+参考FAQ: FAQ68056
+### 问题: 7701手机MCP由【1G+256M】改为【1G+512M】，软件是否可以不调整？
+解决方案: 可以的,只要nandflash配置支持列表中有这两款MCP的配置即可.这样,对于某些客户,前期MCP用的是[1G+256M]规格的,后来因为缺货或别的什么原因只有[1G+512M]规格MCP可用时,就不需要修改代码,也即不需要更换软件版本,当SDRAM变为512M时只是它的使用容量占比变小了,浪费了一部分容量而已.
+参考FAQ: FAQ68066
+### 问题: 7701平台中如何配置camera的avdd电压为2.8V？
+解决方案: 有客户调试camera时碰到摄像头界面预览花屏,测量发现AVDD电压为1.8伏,当飞了一个2.8V的电压过去后,摄像头显示正常了,那么如何配置camera的avdd电压为2.8V? 按照如下修改即可,需要在具体camera驱动文件中修改,以sensor_ov5640.c 为例: PUBLIC SENSOR_INFO_T g_ov5640_yuv_info = { ... SENSOR_AVDD_2800MV, // 2.8v voltage of avdd ... }
+参考FAQ: FAQ68086
+### 问题: android5.1上如何修改蓝牙默认名称
+解决方案: 进入external/bluetooth/bluedroid/include/bt_target.h里面,有 BTM_DEF_LOCAL_NAME的定义,只需 #define BTM_DEF_LOCAL_NAME "所需名称" 即可
+参考FAQ: FAQ68312
+### 问题: Opera mini浏览器如何内置书签和主页？
+解决方案: OPERA没有开放预置书签接口,如需实现需要OPERA解决.
+参考FAQ: FAQ68126
+### 问题: [SC7731]卡1卡2如何分别设置来电铃声？
+解决方案: 7731平台上已经有双SIM卡铃声的逻辑, 目前默认是没有打开的, 打开方法如下: /frameworks/base/core/java/android/provider/Settings.java public static final boolean IS_MULTI_CARD_RINGTONE_SUPPORT = false; 改为true即可.
+参考FAQ: FAQ68130
+### 问题: [SC7715]7715 平台是否支持藏语？
+解决方案: 4.4平台版本中支持语言中旁遮普、藏语、古吉拉特语、阿撒姆语这四门语言,但我司并没有有版权的字库,若须支持这四门语言需要找到这四门语言字库替换frameworks/base/data/fonts/下Gujarati.ttf、Punjabi.ttf、Tibetan.ttf、Assamese.ttf这四个字库,若不需要支持,则可删除对应项目.mk文件中PRODUCT_LOCALES中的bo_CN、bo_IN、gu_IN、pa_IN pa_PK、as_ET
+参考FAQ: FAQ68140
+### 问题: [SC7715]锁卡解锁默认是10次机会，如何修改次数？
+解决方案: 修改对应NV中BaseParam->SIM_LOCK_CUSTOMIZE_DATA->max_num_trials这个值
+参考FAQ: FAQ68142
+### 问题: 5.1上主副卡的选择设计的介绍
+解决方案: 5.1上主副卡的选择是这样的设计的,反之是直接通过SimPriorities去设置. 1,上次的sim的iccid和当前sim的iccid比较,就回置isSimsChanged为true,这个是dialog的先决条件. 2,在条件1的基础上,回根据isPrimaryCardNeedManualSet这个变量再去做判断,而且当前有2张激活的sim卡(新版本上getActiveSubscriptionInfoCount); //SimPriorities的属性,即这个里会判断usim卡,赋值给isPrimaryCardNeedManualSet return mMaxPriorityCount >= 2 && (mSimPriorities[mMaxPriorityPhoneId] == SimPriority.HIGH_USIM);
+参考FAQ: FAQ68161
+### 问题: 5.1平台卡槽和主卡切换的关系
+解决方案: 卡槽的开启或者关闭,是开启/关闭协议栈.而多模卡槽则表示其卡槽是否具有驻留多种网络模式的能力. 多模卡槽切换属于一种多模能力的设置,与开/禁卡并无根本的直接关系, 也就是说其设计想想就是:如果有卡就可以让用户进行手动操作,所以它不会关注此时的卡状态是否可用,有卡就能够切换.
+参考FAQ: FAQ68162
+### 问题: 如果判断蓝牙耳机是16K还是8K
+解决方案: 在蓝牙耳机介绍里如果写明支持高清语音HD Voice,则表明此耳机是16K宽带蓝牙耳机,
+参考FAQ: FAQ68176
+### 问题: 如何修改手机内蓝牙支持的HFP feature
+解决方案: 在external/bluetooth/bluedroid/btif/src/btif_hf.c中有BTIF_HF_FEATURES定义,目前展讯定义的feature为 #define BTIF_HF_FEATURES ( BTA_AG_FEAT_3WAY | \ BTA_AG_FEAT_ECNR | \ BTA_AG_FEAT_REJECT | \ BTA_AG_FEAT_ECS | \ BTA_AG_FEAT_EXTERR | \ BTA_AG_FEAT_BTRH | \ BTA_AG_FEAT_VREC | \ BTA_AG_FEAT_UNAT)
+参考FAQ: FAQ68177
+### 问题: 蓝牙耳机编码方式有哪几种
+解决方案: 蓝牙耳机编码方式分为CVSD以及mSBC,如果耳机和手机都支持Codec Negotiation,则使用mSBC编码,否则使用CVSD编码.
+参考FAQ: FAQ68179
+### 问题: 802.11 MAC层帧的分类
+解决方案: 针对帧的不同功能,可将802.11中的MAC帧细分为以下3类: 1)控制帧:用于竞争期间的握手通信和正向确认、结束非竞争期等; 2)管理帧:主要用于STA与AP之间协商、关系的控制,如关联、认证、同步等; 3)数据帧:用于在竞争期和非竞争期传输数据.
+参考FAQ: FAQ71213
+### 问题: IMAP邮箱是否支持搜索功能？
+解决方案: IMAP协议支持搜索,可以使用UID SEARCH/SEARH命令做搜索. 但是有些IMAP邮箱服务器不支持SEARCH命令,比如QQ邮箱, 当QQ邮箱手机向服务器发送SEARCH命令后服务器没有返回,故IMAP搜索无法获得搜索结果. 而Gmail邮箱支持搜索,可以从服务器搜索到邮件.
+参考FAQ: FAQ68190
+### 问题: GTS测试Fail： testPermitInputMethods
+解决方案: GTS测试发生testPermitInputMethods fail, 此测项失败通常为以下两原因. 1.This method will fail if it is called for a admin that is not for the foreground user or a profile of the foreground user. 此原因通常不太会发生, 如发生请洽展训FAE人员. 2.It will fail if there are one or more non-system input methods currently enabled that are not in the packageNames list. 此原因通常为设定默认输入法为第三方输入法ex:触宝输入法, 所导致的问题, 此测项要pass默认输入法必须是google系列输入法或Android系统原生输入法.
+参考FAQ: FAQ68249
+### 问题: android5.1开机logo显示更新
+解决方案: android5.1平台默认开机logo是不允许覆盖的,如果在开机过程中希望将开机logo修改,需要修改如下代码 uboot64/common/lcd.c static void *lcd_logo(void) if (do_splash && (s = getenv("splashimage")) != NULL) { int x = 0, y = 0; - do_splash = 0; //do_splash是静态的,图片显示一次后就再也不能更新了 + // do_splash = 0; if (splash_screen_prepare()) return (void *)lcd_base;
+参考FAQ: FAQ68193
+### 问题: 进入gmail邮箱后，弹出google play停止运行，这是什么原因？
+解决方案: 此问题源于gms到google server拿取auth token时, google server error造成拿到的token是null, 此问题是在google play service内部无代码无法修改, 客户可至google search输入google play service搜索, 搜索结果会有以google play开启的选项, 点选进去即可导入升级google play service的页面, 进行升级google play service.
+参考FAQ: FAQ68202
+### 问题: 单独ADC校准工具
+解决方案: 有,在CFT工具bin文件夹里,AdcCal工具.
+参考FAQ: FAQ68206
+### 问题: SC7731支持从哪些boot启动？
+解决方案: 支持从NAND,eMMC,USB,UART,启动.
+参考FAQ: FAQ68216
+### 问题: SC7731是否支持only wifi设计？
+解决方案: 做wifi only项目,可以去掉SR3131.SC7731的时钟由一个TCXO提供硬件就可以实现. 需要注意wifi only需要专门的软件版本.
+参考FAQ: FAQ74930
+### 问题: CFT工具是否支持使用CMW500校准2G,3G？
+解决方案: 支持.
+参考FAQ: FAQ68265
+### 问题: flash有哪些分区，各自含义或用途是什么？
+解决方案: flash各分区含义和用途如下: 1.NBL_SIZE---BOOTLOADER分区 2.DL_NV_SIZE----FIX NV分区 3.CALIPARAM_SIZE----校准参数分区 4.PROTECT_NV_SIZE----FIX NV备份分区 5.DSP_CODE_SIZE/DSP_CODE2_SIZE----DSP CODE分区 6.UA_SIZE/UBB_SIZE/DU_SIZE/UAEB_SIZE/UF_SIZE----第三方FOTA分区,目前没有 7.RUNNING_NV_SIZE----RUNNING NV分区,电话本短信相关 8.OSB_SIZE---kernel 分区 9.OSA_SIZE---USER分区 10.OSC_SIZE---预留 11.HIDDEN_FS_SIZE---系统盘分区 12.ROMDISK_FS_SIZE---CDROM光盘分区 13.FS_SIZE---U盘分区
+参考FAQ: FAQ68281
+### 问题: SC7731的ADC是通过哪个管脚检测VBAT电压的？
+解决方案: 内部ADC是通过VBAT-SENSE管脚检测VBAT电压
+参考FAQ: FAQ68287
+### 问题: 如何通过按键进入recovery模式
+解决方案: 1 按power+voldown组合键进入recovery模式 2 按home键或者同时按下power键和音量上键 如果项目没有home键则可以自己定义按什么键(比如单个音量键进入菜单),定义的地方在: bootable/recovery/ui.cpp RecoveryUI::KeyAction RecoveryUI::CheckKey(int key) { if ((IsKeyPressed(KEY_POWER) && key == KEY_VOLUMEUP) || key == KEY_HOME) { return TOGGLE; }
+参考FAQ: FAQ68308
+### 问题: recovery模式界面显示不全或者字符和进度条有重叠
+解决方案: 需根据项目的屏幕分辨率,然后以bootable/recovery/res/images下面的图片为母版,制作出适合实际项目分辨率的资源图片,然后替换上述目录原有的 另外替换资源后还需根据项目实际位置调整下提示字符和进度条的显示位置 负责界面显示的文件是: bootable/recovery/screen_ui.cpp 或bootable/recovery/screen_ui.c draw_background_locked 函数中定义了 文本的起始坐标 textX textY draw_progress_locked 函数中定义了 进度条的起始坐标 dx dy 可以调节这些参数以符合实际设备.
+参考FAQ: FAQ71883
+### 问题: 如何将APN上网参数中的APN 协议 默认设为IPv4？
+解决方案: 修改 packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyProvider.java 中 static public ContentValues setDefaultValue(ContentValues values) { ...................................................... if (!values.containsKey(Telephony.Carriers.PROTOCOL)) { - - values.put(Telephony.Carriers.PROTOCOL, "IPV4V6"); ++ values.put(Telephony.Carriers.PROTOCOL, "IP"); } 修改后恢复出厂设置即可.
+参考FAQ: FAQ68331
+### 问题: 如何将APN上网参数中的APN 漫游协议 默认设为IPv4？
+解决方案: 修改 packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyProvider.java 中 static public ContentValues setDefaultValue(ContentValues values) { ...................................................... if (!values.containsKey(Telephony.Carriers.ROAMING_PROTOCOL)) { - - values.put(Telephony.Carriers.ROAMING_PROTOCOL, "IPV4V6"); ++ values.put(Telephony.Carriers.ROAMING_PROTOCOL, "IP"); } 修改后恢复出厂设置即可
+参考FAQ: FAQ68332
+### 问题: 为什么中文语言下，联系人选项中没有设置选项
+解决方案: 设置中的选项,设置的是排序方式(First name,Last name)和名字格式(First name first, Last name first).在对应语言的Donottranslate_config.xml (\packages\apps\contacts\res\values-zh-rcn)中有如下两个标志
+    <bool name="config_sort_order_user_changeable">false</bool>
+    <bool name="config_display_order_user_changeable">false</bool> 以上两个标志都设置成false时不显示设置选项.
+参考FAQ: FAQ80932
+### 问题: 主界面页面较少时，宽屏壁纸为何不能够完整显示？
+解决方案: 这是原生设计,在滑动至下一页,对壁纸移动的距离做了处理.如只有两页时,滑动至下一页壁纸并不会由左半边滑动至右半边,而是滑动一小段距离;同样如果只有一页,壁纸也不会居中显示;当屏幕数达到五页时,即可显示完整的宽屏壁纸.
+参考FAQ: FAQ79210
+### 问题: SC7731G前后Camera是否可以同时录像？
+解决方案: SC7731G前后Camera不可以同时录像.
+参考FAQ: FAQ75792
+### 问题: vim 如何为一行打标记快速跳转
+解决方案: 用vi分析log时,经常要高亮一些关键的log行并且在其中进行跳转. 使用标记 在使用vi进行编辑时,我们可以对某一行进行标记.将光标移到某一行,用命令ma来进行标记.在这里m是标记的命令,a是对这一行所做标记的名称,当然也可以使用26个字母中的任意一个做为标记名称. 在做了标记以后,我们可以用'a命令快速移到刚才所做标记的那一行的行首.这里'是单引号.也可以使用`a来移到所做标记时的光标所在位置,这里`是反引号(也就是数字键1左边的那一个). 我们可以用:marks命令列出所有的标记.这其中也包括一些特别的标记(Special marks). ' 跳转前的光标位置 " 最后编辑的光标位置 [ 上一次修改的开始处 ] 上一次修改的结尾处 如果我们将做了标记的那一行删除,那么所做的标记也就不存了.我们用标记不仅可以快速的移到做了标记的行,而且还可以用标记来删除掉一行,例如在某一行用ma做了标记,然后就可以用d'a来删掉这一行.我们也可用y'a命令就可以来复制这一行了.
+参考FAQ: FAQ75791
+### 问题: SC7731G前后Camera MIPI信号是否可以互换使用？
+解决方案: SC7731G前后Camera MIPI信号是可以互换使用,但需要软件做相应的配置修改.
+参考FAQ: FAQ75798
+### 问题: 校准口为什么要设置为full speed模式，是在哪里设置的？
+解决方案: SC7731平台,android5.1版本校准口配置为full speed,而不是high speed,主要原因是校准时对速率要求不高,但对连接稳定性要求较高,同时手机连接PC的环境在客户端较为复杂,所以采用相对稳定的full speed模式. 校准口会被枚举2次,配置full_speed模式也是两次,u-boot中的代码位置,uboot/drivers/usb/gadget/usb_driver_2/dwc_otg_cil.c中init_devspd()函数. kernel中代码位置,在/kernel/drivers/usb/gadget/dwc_otg/dwc_otg_cil.c中init_devspd函数.
+参考FAQ: FAQ75933
+### 问题: 蓝牙时钟有什么特点
+解决方案: 每个蓝牙设备都有一个独立运行的内部系统时钟,称为本地时钟(Local Clock),决定定时器的收发跳频.为了与其他设备同步,本地时钟要加一个偏移量(offset),提供给其他设备同步. 蓝牙基带四个关键周期:312.5uS、625uS、1.25mS、1.28S. CLKN:本地时钟: CLKE:预计时钟,扫描寻呼过程中用到; CLK:设备实际运行的时钟频率. CLKE、CLK由CLKN加上一个偏移量得到的.
+参考FAQ: FAQ75818
+### 问题: SC7731查看当前手机配置的何种合并分区方案
+解决方案: 可以通过查看手机的属性即可, # adb shell # cat init.storage.rc 类似下面打印,表现当前方案 emulated internal 内卡为模拟卡,internal storage is primary 内卡作主卡 # for emulated internal and # internal storage is primary
+参考FAQ: FAQ68404
+### 问题: SC7731合并分区逻辑分区大小在哪配置
+解决方案: 需要在项目主工程中配置,如/device/sprd/scx35_sp7731gea/BoardConfig.mk,经常需要修改的值 为userdata和systemimage,如下 BOARD_USERDATAIMAGE_PARTITION_SIZE := 2610000000 //表示userdata分区大小 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 460000000 //表示system分区大小
+参考FAQ: FAQ68405
+### 问题: SC7731 安装应用空间不足阈值修改
+解决方案: 修改PackageManagerService.java类中的LOW_THRESHOLD_PERCENTAGE即可 static final int LOW_THRESHOLD_PERCENTAGE = 15; //15%,此值可适当减小点,例10%,但也不可修改到太小,以免安装应用过多导致空间不足
+参考FAQ: FAQ68410
+### 问题: UltraISO工具修改CDROM卷标后，CDROM无法正常弹出?
+解决方案: 使用UltraISO工具修改CDROM卷标,打开adb.iso保存,重新编译systemimage后出现CDROM无法弹出的问题.解决这个问题的方法是检查UltraISO的设置选项,菜单中选项->配置->保存项,找到检查直接保存时重新编译ISO文件项,这个选项要设置为非勾选状态.
+参考FAQ: FAQ68411
+### 问题: 展讯USB 驱动安装包中包含哪些文件，作用是什么？
+解决方案: .sys 驱动文件,用于操作硬件. .inf 配置文件,帮助系统找到硬件所要的驱动,包含可以支持的设备ID列表. .exe 分别对应在32位或64位系统下直接安装驱动程序. dpinst.xml 用于配置需要自动安装哪些驱动程序
+参考FAQ: FAQ68414
+### 问题: 展讯USB驱动程序安装包含的inf文件，其作用是什么？
+解决方案: sprdadb.inf 定义了该产品在x86和amd64系统下,所有adb设备的VID和PID,以及接口号. sprdmtp.inf 定义了该产品在x86和amd64系统下,所有MTP设备VID和PID,以及接口号. sprdrndis.inf 定义了该产品在x86和amd64系统下,所有rndis设备VID和PID,以及接口号. sprdvcom.inf定义了该产品那在不同系统下,所有串口设备的VID和PID,以及接口号.
+参考FAQ: FAQ68416
+### 问题: SC7731平台支持哪些安装目录
+解决方案: 目前支持如下目录: System/priv-app :系统核心应用,预置到此目录中的应用不可卸载,恢复出厂设置能恢复 System/app: 系统应用,预置到此目录中的应用不可卸载,恢复出厂设置能恢复 System/preloadapp:常见第三方应用预置目录,预置到此目录中的应用可卸载,恢复出厂设置能恢复 data/app :手动安装目录,可卸载,恢复出厂设置不可恢复
+参考FAQ: FAQ68417
+### 问题: SC7715,耳机按键接听和挂断时，如何添加toast提示？
+解决方案: services\Telephony\src\com\android\phone\PhoneUtils 耳机hook处理函数static boolean handleHeadsetHook(Phone phone, KeyEvent event) ,其中接听函数是answerAndEndActive和answerCall,挂断函数是hangup. 在接听和挂断函数上边添加toast提示即可.
+参考FAQ: FAQ68433
+### 问题: android编译好后生成的众多.rc文件是如何调用的
+解决方案: init.rc的确是在init进程启动的时候调用的,而其它的.rc其实都是一级级被init.rc import到的,可以参考下面的框图,谢谢!
+参考FAQ: FAQ68446
+### 问题: SC7715，原生UI,锁屏来电界面，怎么去掉下方的黑色背景？
+解决方案: 原生UI,锁屏来电界面,去掉下方的黑色背景: 在InCallUI\res\layout\answer_fragment.xml中,将android:background="@android:color/black"改为全透明.
+参考FAQ: FAQ68487
+### 问题: SC7731，拨号时，怎么去掉呼出界面中的白线？
+解决方案: SC7731,拨号时,去掉呼出界面中的白线: InCallUI\src\com\android\incallui\CallCardFragment.java public void animateForNewOutgoingCall(final Point touchPoint, final boolean showCircularReveal) { ... final Animator animator = getOutgoingCallAnimator(touchPoint, -- parent.getHeight(), originalHeight, showCircularReveal); ++ parent.getHeight(), originalHeight, false);
+参考FAQ: FAQ68488
+### 问题: 【通话设置】拨号盘里的SDN 是什么功能？
+解决方案: SDN : 英文全称 Service Dialling Number 是预置在SIM卡里的服务号码.用户不能编辑.有的SIM卡是有SDN,此时SDN 列表会将SIM 里的SDN 号码都列出来. 有的SIM卡是不支持的,该卡SDN列表为空.
+参考FAQ: FAQ68493
+### 问题: 【通话设置】拨号盘菜单里的LND 是什么功能？
+解决方案: LND : 全称 Latest Number Dial SIM卡保存最新通话过的几个号码,具体保存数量由SIM卡决定.
+参考FAQ: FAQ68494
+### 问题: pop3邮箱收到带图片邮件，为什么必须点击邮件下方加载更多“‘才能看到实际图片？
+解决方案: 这是pop3邮箱的省流量设计,需要点击"加载更多"才会下载图片附件等内容. 如果文本较多也需要点击"加载更多"才能全部显示.
+参考FAQ: FAQ68507
+### 问题: 登录邮件后，已发送、发件箱，草稿箱中带附件邮件，无法加载、保存、下载这是什么原因？
+解决方案: 草稿箱,发件箱,已发送三个信箱,不能加载保存,原因在于: 1 这三个信箱的附件缓存位置和其他信箱不同,并且并没有向其他应用开放读取的权限. 2 这三个信箱的内容,基本上源于用户从本地资源选取,如果保存到指定路径会导致资源被重复保存,用户体验不好. 这个功能设计如此.
+参考FAQ: FAQ68508
+### 问题: 如何在支持OTG功能的android5.1手机上监测OTG线是否已插入
+解决方案: 通过读取/sys/devices/20200000.usb/otg_status值来监测OTG线是否已插入,值为low表示OTG线插入,hign表示OTG线拔出
+参考FAQ: FAQ68554
+### 问题: 如何在支持OTG功能的android5.1手机上判断手机处于device还是host模式
+解决方案: 通过读取sys/devices/20200000.usb/mode值来判断手机处于device还是host模式,值为0表示手机处于device模式,值为1表示手机处于host模式
+参考FAQ: FAQ68555
+### 问题: 如何解决google语音识别无法正常的退出的问题
+解决方案: 某些版本的google search在没网络的情况下会create大量的重覆activity,导致无法正常的退出, 目前有问题的版本确认有4.6.10.19与4.7.13.19,建议可以改成与Nexus5相同的版本4.3.11可以解决此问题
+参考FAQ: FAQ68565
+### 问题: 如何解决新增的apk造成CTS check debuggable fail
+解决方案: CTS中有一个测项会检查apk的debug information, 新增的apk需要在AndroidManifest.xml增加下面这行才能避免CTS fail <application android:debuggable="false" >
+参考FAQ: FAQ68567
+### 问题: CLIR (Calling Line Identification Restriction)
+解决方案: 解 释: 如果主叫用户不同意在被叫用户话机上显示自己的电话号码,可以向电信部门申请这种主叫线路识别限制(CLIR)的业务功能,即可限制在被叫用户话机上显示自己的电话号码. CLIRListPreference @CLIRListPreference.java (packages\services\telephony\src\com\android\phone) handleGetCLIRResult --》setEnabled(enabled);
+参考FAQ: FAQ68575
+### 问题: 如何配置卡1不解锁，卡槽2白名单卡可以正常用？
+解决方案: 锁卡逻辑说明:此锁卡需求逻辑为主卡依赖,通常主解锁卡槽为卡槽一. 具体锁卡行为:卡槽一插入白名单卡,卡槽二任意卡可用,若卡槽1不插卡,或者插入黑名单卡,卡槽二若插入白名单卡,此卡可正常使用,若为黑名单卡,则LOCKED. 首先需要确认Modem是否支持此锁卡逻辑,在配置基本锁卡内容基础上,只需配置SIM_LOCK_CUSTOMIZE_DATA----->dummy2=3. 卡槽1插入白名单的情况,卡槽2任意卡可用.卡槽1不插卡或插入黑名单卡,卡槽2白名单卡可用,黑名单卡不可用. 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助
+参考FAQ: FAQ83511
+### 问题: 锁卡版本，如何判断插入的SIM卡的locked状态
+解决方案: 可以通过调用TelephonyManager的checkSimLocked(int phoneId)来判断具体插入的SIM卡是否处于Locked状态.
+参考FAQ: FAQ83516
+### 问题: 如何对TextView文本中邮箱、电话增加链接
+解决方案: 在该TextView组件中添加auoLink属性: 如下示例: <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:singleLine="true" android:text="Email:sprd@spreadtrum.com, Phone: 02188888888" android:autoLink="email|phone" />
+参考FAQ: FAQ83518
+### 问题: 为什么在email应用中刷新，收到邮件，提示音和震动 无反应
+解决方案: 当用户处于email界面且处于接收邮件文件夹的界面时,收到邮件是不会做提示的.因为在此种情形下默认用户是可以第一时间察觉到有新邮件的. 当接收到新的未读邮件时,用户若不处于所接收邮件文件夹的界面或不在email界面,此时才会有提示音和震动提示.
+参考FAQ: FAQ68635
+### 问题: 版本升级后，为什么有时拨打通讯录中存在的号码显示为陌生号码
+解决方案: 这个问题可以通过打印sql语句定位,一般情况下原因是版本升级前及版本升级后的号码匹配位数不同.号码查询时需要与phone_lookup表的min_match字段匹配相同,而在升级过程中如果没有特别操作,原先数据库的数据是不会删除的,所以phone_lookup的数据还是保持不变,由于匹配不上而查询不到记录导致存在的号码被认为是陌生号码.比如,升级前某个存储的号码是13112345678,如果升级前的匹配位数是7,那么对应min_match的字段值是8765432,升级后的匹配位数为11位,那么对应min_match字段应该是87654321131,但表中的数据没有更新仍然为8765432,查询时就查不到记录造成问题中的现象,修改的方法是在数据库升级回调方法onUpgrade()中在对应的版本处理中将upgradeViewsAndTriggers设置true,phone_lookup的数据在升级过程中被清理掉,根据新的规则生成正确的数据.
+参考FAQ: FAQ68633
+### 问题: sql语句，默认搜索字段慎用count(*)
+解决方案: android搜索时一般通过系统的query函数,指定selection,projection等参数进行搜索,projection是需要搜索返回的字段,如果为null,一般情况下是返回该表的所有字段,有些情况下不是所有字段,而是会指定某些字段.有时扩充功能需要在这个指定字段中添加新的字段,添加新字段需要注意,某些字段是不能放在这里的.比如count(某个字段),sql语句加了这个查询字段后即使满足条件的数据有再多条也只能最多查询出一条数据,当时的问题正是因为添加了这个字段,导致蓝牙同步联系人异常.
+参考FAQ: FAQ68638
+### 问题: 通话记录中如何显示私有号码？
+解决方案: 来电时除了上报号码,还会上报一个presentation,该值为2(PRESENTATION_RESTRICTED)时,标识私有号码,在通话记录显示在如下文件中 packages/apps/Dialer/src/com/android/dialer/calllog/PhoneNumberHelper.java 如下方法中处理 if (presentation == Calls.PRESENTATION_RESTRICTED) { return mResources.getString(R.string.private_num); } 上报值为2,就显示为private number
+参考FAQ: FAQ68640
+### 问题: sim卡联系人编辑页面姓名长度为何不同语言长度限制不同
+解决方案: 英文状态下,sim卡联系人姓名长度限制为14,而俄语下为11,这是由于不同语言编码不同,转换到sim卡使用的编码长度不同造成.处理代码可以参考 packages/providers/ContactsProvider/src/com/sprd/providers/contacts/SimUtils.java 的getSimContactNameLength方法
+参考FAQ: FAQ68644
+### 问题: 为什么登陆邮箱时，有时点击下一步和手动设置都进入协议选择界面
+解决方案: 在Email登陆界面点击下一步时,会从根据输入的email地址的domain,从providers.xml和providers_product.xml中查找登录相关的配置信息,如服务器地址,协议,是否使用安全协议等.如果找到相关信息则自动登录,如果没有找到则进入手动登录流程,手动登陆流程的第一个界面就是协议选择界面. 综上所述,如果在providers.xml和providers_product.xml没有预置相应的配置信息,就会出现这种现象.
+参考FAQ: FAQ68668
+### 问题: SC7731 摄像头录像对于任意分辨率的支持限制
+解决方案: Camera录像的任意分辨率支持限制, 必须先通过以下检视: 1. 首先受限于摄像头是否可以输出客户要求的长宽分辨率. 2. 假设Camera确定可以输出, 接下来是视频编码器的支持限制. 3. SC7731 编码器支持1080P (1920 x 1080) 以下的任意长宽分辨率, 但是长与宽需同时能16字节对齐(被16整除)
+参考FAQ: FAQ68674
+### 问题: 为什么在android 5.1中没启动过WLAN​热点之前“快速设置面板”中没有热点图标？
+解决方案: 在没有启动过WLAN热点前,在"快速设置面板"中不显示WLAN热点快捷图标,这是android 5.1 原生设计. 在android 5.1中,有一些功能的快速设置图标,默认是不显示在"快速设置面板"里的, 需要使用该功能后,才会自动在"快速设置面板"里显示. 同时,当关闭该功能后,长按该快速设置图标,可以弹出对话框选择隐藏该快速设置图标. 目前android 5.1 原生设计,只有 "WLAN热点" 和 "颜色反转" 这两项 支持此功能, "快速设置面板"里的其他速设置图标不支持此功能. ("颜色反转"功能,可以通过 设置-> 无障碍 -> 颜色反转 打开)
+参考FAQ: FAQ68725
+### 问题: FM2351搜台少的分析步骤
+解决方案: 确认设备是否搜台少: 1.是否弱信号环境:和对比机比较,如果台数差别不大,则可认为正常. 2.和相邻版本或者同环境下其他设备做比较,若和正常版本或设备比较台数差别不大,则可认为正常. 搜台少的处理: 1.请硬件同事确保设备无异常. 2.抓取运行log,交由相关责任人进行分析.
+参考FAQ: FAQ70191
+### 问题: 为什么某些蓝牙耳机在连接成功后，手机上会显示音量进度条？
+解决方案: 耳机端发来VGS(volume gain speaker)/ VGM(volume gain mic)命令, 目的是要将手机中的音量设置成耳机中的音量, 在设置音量时,变会显示音量进度条. 属于某些蓝牙耳机的一种功能,并不是一个问题.
+参考FAQ: FAQ68741
+### 问题: 如何使用fastboot命令下载
+解决方案: 手机进入 fastboot的方法: (1)按住home+power键 (2)输入指令adb reboot bootloader fastboot组成: (1)pc端的fastboot(主要功能:发包) 生成指令:make fastboot 生成目录:sprd4.4_3.10/out/host/linux-x86/bin/fastboot, 下载指令: sudo fastboot flash boot boot.img 下载kernel sudo fastboot flash 2ndbl u-boot.bin 下载u-boot.bin sudo fastboot flash params u-boot-spl-16k.bin 下载spl (2)uboot的端的fastboot(主要功能:接包 具体参考文档,谢谢
+参考FAQ: FAQ68760
+### 问题: 同时按下power键、音量上下键介入recovery模式
+解决方案: 同时按下应该会被识别成 KEY_KBDILLUMDOWN 所以代码应该要改成这样: unsigned int check_key_boot(unsigned char key) { if(KEY_VOLUMEUP == key) return BOOT_CALIBRATE; else if(KEY_HOME == key) return BOOT_FASTBOOT; else if(KEY_KBDILLUMDOWN == key) return BOOT_RECOVERY; else return 0; } code 在 u-boot/property/cmd_cboot.c 要先按power键,再按音量上下键.
+参考FAQ: FAQ68764
+### 问题: 未开启auto answer，来电时却 自动接听
+解决方案: 出现此现象一般都是手机在之前工程模式中打开过来电自动接听,后又重启造成. 因为目前来电自动接听的设置是存储在nv当中的,ap通过at命令来设置和查询nv中对应参数才能设置和查询此功能.所以出现问题后重启和恢复出厂设置都无效.(只能重新打开选项再关闭才能恢复) 由于此功能仅限Enginner mode中测试使用,在开机时ap并不会主动去查询此选项对应nv状态,导致只要重启手机此选项ap侧就会默认显示关闭.因为不会影响到生产和最终用户使用,这部分开机暂不做查询,以免影响开机时间.
+参考FAQ: FAQ68790
+### 问题: 不同协议下Email Push功能支持情况
+解决方案: 目前平台Email应用支持POP3,IMAP4,Eas三种Email接收协议,三种协议下对PUSH的支持如下: POP3/IMAP 不支持PUSH. Eas协议支持PUSH,通过Eas协议中定义的Ping命令实现.
+参考FAQ: FAQ70604
+### 问题: Exchange应用支持Eas协议哪些版本
+解决方案: 目前支持且仅下述版本: 2.5(2003)12.0(2007),12.1(2007_SP1),14.0(2010),14.1(2010_SP1)
+参考FAQ: FAQ70607
+### 问题: android5.1上wifi 更多相关log如何打开？
+解决方案: 在android5.1上,wifi模块对于log输出有了更好的控制.进入"开发者选项"->开启"启用WLAN详细日志记录功能",将在slog中输出更多的wifi log,避免了重复抓取log的工作便于更好的定位问题. 原理:WifiManager.java提供接口enableVerboseLogging,通过"开发者选项"中开启动作,调用此接口,打开或者关闭相应wifi log开关.
+参考FAQ: FAQ69233
+### 问题: 联系人列表和添加世界时钟列表界面在滑动过程中，ListView的滚动条会出现跳跃的现象，出现这种现象的原因是什么
+解决方案: 联系人列表和添加世界时钟列表都调用了listView.setFastScrollEnabled(true),在这两个列表界面显示的都是是"快速滚动条",而不是ListView滑动位置的指示条. 快速滚动条指示的位置是根据A-Z字母等分的,显示的是item在A-Z分组中的位置,而不是item在ListView中的位置. 所以出现这种情况是正常的.
+参考FAQ: FAQ68845
+### 问题: 怎么关闭IPV6功能
+解决方案: \system\core\rootdir\init.rc 在此文件中,添加下面最后一行: write /proc/sys/kernel/sched_rt_runtime_us 950000 write /proc/sys/kernel/sched_rt_period_us 1000000 write /proc/sys/net/ipv6/conf/all/disable_ipv6 1 //关闭ipv6
+参考FAQ: FAQ68878
+### 问题: 如何修改默认APN类型
+解决方案: 在TelephonyProvider.java中的insertAddingDefaults和insert中进行修改.改为"IPV4V6"或者"IP"; 如果不想修改全局默认,而只是要修改指定运营商的apntype,就在apns-conf*.xml中将指定运营商的列表中加入protocol="IPV4V6"或者 protocol="IP"
+参考FAQ: FAQ68874
+### 问题: 为什么Email数据库文件EmailProviderBody.db，中htmlContent和textContent全都为空
+解决方案: 在Android4.4中,htmlContent用于存放邮件正文中html文本,textContent用于存放普通文本. 但是在Android5.0和Android5.1以及之后的版本中,从网络数据中解析的html文本和普通文本并不插入到数据库中,而是以文件的形式data分区中.存储路径的规则为: 若messageId为邮件在message表中的_id字段的值,x = messageId/100%100 ,y = messageId%100, ext = html 或 ext = text 路径为 data/data/com.android.email/files/body/x/y/messageId.ext
+参考FAQ: FAQ68981
+### 问题: 为什么无法导入android.os.SystemProperties
+解决方案: 以Email代码为例,在 idh.code\packages\apps\Email\emailcommon\src\com\android\emailcommon\provider\Account.java中添加 import android.os.SystemProperties; 会导致编译失败,原因在于: android.os.SystemProperties为隐藏接口,packages\apps\Email\emailcommon\Android.mk中有如下内容: "LOCAL_SDK_VERSION := 14" 当.mk文件中设置LOCAL_SDK_VERSION,则不允许使用隐藏API. 为解决这个问题,将该行注释即可.
+参考FAQ: FAQ68960
+### 问题: 如何实现simlock强制锁，去除SIMLOCK解锁界面
+解决方案: 只需做如下修改: 1.修改配置文件 1.packages\services\telephony\res\values\Config.xml 修改文件下面的ignore_sim_network_locked_events为true. 2.修改源代码OtherGlobals.java (packages\services\telephony\src\com\android\phone) 注释掉注册simlock事件的的代码即可.
+参考FAQ: FAQ82031
+### 问题: 如何实现simlock强制锁，去除SIMLOCK解锁界面
+解决方案: 只需做如下修改: 1.修改配置文件 1. vendor\sprd\plugins\packages\services\telephony\addons\simlocksupport\res\values\Config.xml. 修改文件下面的ignore_sim_network_locked_events为true. 2.修改源代码OtherGlobals.java (packages\services\telephony\src\com\android\phone) 注释掉注册simlock事件的的代码即可.
+参考FAQ: FAQ82032
+### 问题: POP/IMAP邮箱登陆时，选择STARTTLS和SSL有什么不同
+解决方案: 选择SSL,和服务器建立SOCKET连接是回直接使用安全套接字.而选择STARTTLS,首先不使用安全套接字和服务器连接,并以明文发送CAPA(POP3)或CAPABILITY(IMAP)命令获得服务器所支持的能力,当服务器支持TLS时则重新使用安全套接字进行连接,如果服务器不支持则提示异常.
+参考FAQ: FAQ68973
+### 问题: 如何将特殊符号联系人归档在#符号下？
+解决方案: 以符号命名的联系人显示在联系人列表中的空label下,以数字命名的归属在"#"字符下.若希望特殊符号命名的联系人也归属在"#"下,可参考如下修改: 文件:packages\providers\ContactsProvider\src\com\android\providers\contacts\ContactLocaleUtils.java 修改: public int getBucketIndex(String name) { ... ... final int bucket = mAlphabeticIndex.getBucketIndex(name); if (bucket < 0) { return -1; } + if (bucket == 0) { + return mNumberBucketIndex; + } if (bucket >= mNumberBucketIndex) { return bucket + 1; } return bucket; }
+参考FAQ: FAQ68992
+### 问题: 横屏下，甩动手势网页并未前进或后退
+解决方案: 因为gsensor的限制,目前只有竖屏是可以甩动支持前进或后退的.
+参考FAQ: FAQ69015

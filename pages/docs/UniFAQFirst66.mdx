@@ -1,0 +1,330 @@
+### 问题: Android8.1 在开关SIM卡时手机发生一次重启
+解决方案: 修改无法return的方法
+参考FAQ: FAQ117280
+### 问题: 应用运行限制
+解决方案: 在AMS测修改默认进程数目  private static final int DEFAULT_MAX_CACHED_PROCESSES = 8;  验证的话可以通过如下命令查看  adb shell dumpsys activity |grep CUR_MAX_CACHED_PROCESSES
+参考FAQ: FAQ117287
+### 问题: Simba测试灵敏度如何进行cellpower的步进以找出最佳灵敏度
+解决方案: 如图,-117～-127是步进范围,-0.2是step,可以根据实际情况对范围和step进行修改
+参考FAQ: FAQ117316
+### 问题: android P如何调整下拉快捷设置的顺序
+解决方案: 修改frameworks/base/packages/SystemUI/res/values/config.xml 里的quick_settings_tiles_default里的值的顺序即可, 比如默认是 <string name="quick_settings_tiles_default" translatable="false"> wifi,bt,dnd,vowifi,lte,lte2,flashlight,rotation,battery,cell,airplane,cast </string> 需要将BT显示在第一个,修改为 <string name="quick_settings_tiles_default" translatable="false"> bt,wifi,dnd,vowifi,lte,lte2,flashlight,rotation,battery,cell,airplane,cast </string> 修改时请注意是否有overlay.
+参考FAQ: FAQ117320
+### 问题: 如何确认gsensor是否支持
+解决方案: 通过log确认: af_sprd_set_update_aux_sensor:accelerometer vertical_up=0.919373 vertical_down=4.079720 horizontal=8.121132
+参考FAQ: FAQ117349
+### 问题: 双摄如何拍raw和yuv图片
+解决方案: 1、拍raw图片 输入命令adb shell setprop persist.vendor.cam.raw.mode raw 手机进入双摄模式,点击拍照,即在/data/vendor/cameraserver下同时生成主摄和辅摄的raw 2、拍yuv和depth图片 输入命令adb shell setprop persist.vendor.cam.raw.mode jpg adb shell setprop persist.vendor.cam.bokeh.dump capdepth 手机进入双摄模式,点击拍照,即在/data/vendor/cameraserver下生成yuv和depth图供debug
+参考FAQ: FAQ117350
+### 问题: SC9863A平台使用外部充电IC时，使能脚怎么接
+解决方案: 使用外部充电IC时,外部充电IC的使能脚建议连接到PMIC的CHG_PD引脚,并需要兼容连接到上电默认WPD的GPIO. 当使用Halo Micro充电芯片(如HL7005D,HL7007)使能脚需连接到GPIO,并提软件需求soft ocv的方式来获取初始电量百分比. 使用其他未认证的物料时,建议和充电IC厂商确认:从disable PIN 拉低,到充电开启的时间.超过46ms则需要使用GPIO控制.
+参考FAQ: FAQ117380
+### 问题: SC9820E&SC9832E平台使用外部充电IC时，使能脚怎么接
+解决方案: 使用外部充电IC时,外部充电IC的使能脚建议连接到PMIC的CHG_PD引脚,并需要兼容连接到上电默认WPD的GPIO. 当使用Halo Micro充电芯片(如HL7005D,HL7007)使能脚需连接到GPIO,并提软件需求soft ocv的方式来获取初始电量百分比. 使用其他未认证的物料时,建议和充电IC厂商确认:从disable PIN 拉低,到充电开启的时间.超过46ms则需要使用GPIO控制.
+参考FAQ: FAQ117384
+### 问题: SC7731E平台使用外部充电IC时，使能脚怎么接
+解决方案: 使用外部充电IC时,外部充电IC的使能脚建议连接到PMIC的CHG_PD引脚,并需要兼容连接到上电默认WPD的GPIO. 当使用Halo Micro充电芯片(如HL7005D,HL7007)使能脚需连接到GPIO,并提软件需求soft ocv的方式来获取初始电量百分比. 使用其他未认证的物料时,建议和充电IC厂商确认:从disable PIN 拉低,到充电开启的时间.超过46ms则需要使用GPIO控制.
+参考FAQ: FAQ117385
+### 问题: 中国支持的WiFi 5G频段
+解决方案: 根据工信部无函〔2012〕620号通知,规划5150-5350MHz频率用于接入无线系统,使我国可使用的WiFi 5G频段为:5150-5350MHz及5725-5825MHz.
+参考FAQ: FAQ117438
+### 问题: 网络拦截导致SC6531项目插联通卡发送短信出现概率失败问题
+解决方案: 插入移动卡发送短信,接收手机能收到短信.插入联通卡送短信,大概率接收手机收不到短信. 对于此种情况可能是短信概率性被联通网络拦截. 客户可以更改发送的短息内容,验证发送短信是否正常. 之前有客户出现过此问题: 客户插入的联通卡,发送SOS短信,提示发送成功,但接收方未收到短信. 发送内容为: I am in an emergency,Please call me.Position is:MCC:460;MNC:1;CELLID:9513;LAC:50042
+参考FAQ: FAQ117442
+### 问题: SC6531E平台AOC_SUPPORT功能是否可以使用
+解决方案: 6531E平台有通话计费的功能,但有宏开关控制,现在默认没有打开. 如果客户需要此功能,需要重新更新库文件. 注:由于国内运营商不支持计费功能,在国内没有实网测试过.
+参考FAQ: FAQ117443
+### 问题: SC9853i是否支持外接双T卡设计，用SD0+SD2?
+解决方案: SL8541E/SL8521E/SC9853I/SC9863A等平台支持双SD卡设计,SD0电压域支持1.8V/3.0V, 但是SD2的电压域仅支持1.8V,SD2做SD卡需要增加level shift; 设计时,需要与展锐工程师沟通,对SD走线SD_CLK做好包地,level-shift转换芯片选型时输出驱动能力、极限速率、输入阻抗等要和供应商确认清楚.
+参考FAQ: FAQ117448
+### 问题: 整机Thermal问题需要调试如何处理？
+解决方案: 1、优先确认机器本身状态是否正常,即该场景功耗是否正常,若功耗、性能不达标,先解决功耗问题再提交温升测试需求;Thermal调试,所有的温控调试动作,都是基于功耗正常的前提下进行的; 2、提交thermal调试CQ,正确填写软件版本,确认基本功耗数据并提供debug软件、原理图、PCB、完整机器两台(带后壳)、充电器一个及相关接口人员联系方式; 3、提供详细的热测试场景具体要求、标准和测试步骤,希望达到的状态,如有对比机器,一起提供; 4、 对于散热问题,常规解决手段之后,可能增加物料成本和牺牲性能,如有改版机会尝试改版.
+参考FAQ: FAQ117456
+### 问题: Volte白名单配置
+解决方案: 掌握Volte白名单配置流程以及常见问题的处理 1、 vendor/sprd/telephony-res/volte/volte-conf.xml <allowPlmn numeric="732130" enable="true" /> 2、 vendor/sprd/telephony-res/apn/apns-conf_8.xml <apn carrier="Avantel LTE HD" mcc="732" mnc="130" apn="ims.avt.com" protocol="IPV4" roaming_protocol="IPV4" type="ims" />
+参考FAQ: FAQ117536
+### 问题: 何开启实时文本（RTT） 这个功能
+解决方案: 基于版本: 相关接口参考,修改默认配置值为true即可 xref: /sprdroid9.0_trunk/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java isRttSupported()函数
+参考FAQ: FAQ117537
+### 问题: Android9.0使用GoogleDialer和GoogleContacts，有未接来电时，GoogleDialer未显示未接来电数量，也没有通话记录
+解决方案: 问题原因:添加的user_id字段引起 修改方案:删除此字段. 修改文件路径:frameworks/base/core/java/android/provider/CallLog.java
+参考FAQ: FAQ117553
+### 问题: BLE实现低功耗的原因
+解决方案: BLE实现低功耗的原因有: 1. BLE只有3个广播信道,相比于BR的32个信道,master设备会消耗更多的时间去扫描,从而带来更大的功耗 2. BLE典型的广播间隔是20ms至10.24s,相比于BR而言,典型间隔只有1.25ms,更小的间隔会带来更大的功耗 3. BLE RF ON时间只有0.6至1.2ms,而BR为22.5ms 4. BLE连接建立时长为3ms,而BR大于100ms
+参考FAQ: FAQ117577
+### 问题: WCDMA小区信号值的范围是什么？
+解决方案: WCDMA小区的信号强度RSCP的范围是[-120dbm,-25dbm]; 信号质量ECNO范围是[-24dbm,0dbm];
+参考FAQ: FAQ117824
+### 问题: ping网址和ping IP有什么区别
+解决方案: ping网址的过程中有DNS解析的过程,不同的UE可能解析出不同的IP地址,造成ping操作的server不同,从而造成ping时延的差别.而直接ping IP地址就不会有这个问题.
+参考FAQ: FAQ117831
+### 问题: 预置APN添加
+解决方案: 分析:将需要添加的apn写在指定文件中,手机开机后会自动加载预置apn. 添加到文件:vendor/sprd/telephony-res/apn/apns-conf_8.xml中.
+参考FAQ: FAQ117601
+### 问题: 重启无法正常开机
+解决方案: 在vendor/sprd/telephony-res/apn/apns-conf_8.xml文件中存在如下新增: 其中authtype=""填写错误,如果没有的话,请去掉该字段,正常填写值为 1,2 ,3 ,参照其他平台APN填写: <apn carrier="IMS" mcc="334" mnc="020" apn="ims" spn="" user="" password="" server="" proxy="" port="" mmsc="" mmsproxy="" mmsport="" type="ims" authtype="" protocol="IPV4V6" roaming_protocol="IPV4V6" bearer_bitmask="1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18" mvno_type="" mvno_match_data="" csdnum="0"/>
+参考FAQ: FAQ117602
+### 问题: GSM下待机，每分钟唤醒一次
+解决方案: 若当前服务小区信号强度较差,路径损耗准则参数C1值小于0,GAS会启动一个1min的定时器,定时器超时开始找网, 如果未找到合适的小区,再次启功1min定时器,超时后继续找网,直到找到合适的小区,因此会导致1min一次大电流
+参考FAQ: FAQ117799
+### 问题: 在StsHostTestCases中，android.security.sts.Poc17_01#testPocCVE_2016_9120等不固定项-failed
+解决方案: (1)测试case执行流程:先检测到了device oom,然后程序会使device开始走reboot的流程,但是在adb reboot 过程中出现了wait device state被打断的情况,导致抛出java.lang.InterruptedException或者NullPointerException异常 ,所以会出现测试失败. (2)解决方案:此问题已经在5月份的测试包中解决,通过用5月份的测试包进行测试,若出现fail项,可以通过run retry --retry <seddion id>操作,在retry 6次后整个module可以全部pass,可以解决该问题. partnerissue地址如下: https://partnerissuetracker.corp.google.com/issues/130324778
+参考FAQ: FAQ117798
+### 问题: 如何从modem中查看注册的网络类型
+解决方案: 可以通过+COPS的返回值查看当前的rat AT+COPS?
+
++COPS: <mode>[,<format>,<oper>[,<AcT>]]
+ 上述命令返回的AcT即是当前驻留的网络类型,具体取值含义如下
+    NW_ACT_0_GSM = 0,
+    NW_ACT_1_GSM_Compact = 1,
+    NW_ACT_2_UTRAN = 2,
+    NW_ACT_3_GSM_w_EGPRS = 3,
+    NW_ACT_4_UTRAN_w_HSDPA = 4,
+    NW_ACT_5_UTRAN_w_HSUPA = 5,
+    NW_ACT_6_UTRAN_w_HSDPA_and_HSUPA = 6,
+    NW_ACT_7_E_UTRAN       = 7,
+    NW_ACT_15_UTRAN_w_HSPAPLUS=15,
+    NW_ACT_16_E_UTRAN_CA=16
+参考FAQ: FAQ117801
+### 问题: 语音通话中的FET方案
+解决方案: FET为frame early termination的缩写,在语音通话中,信号强度满足一定条件时,可以在帧级别调度中通过多次尝试提前译码,然后尽早关闭下行射频,可以达到节省功耗的目的.
+参考FAQ: FAQ117585
+### 问题: CtsPermission2TestCases--android.permission2.cts.PrivappPermissionsTest#testPrivappPermissionsEnforcement fail
+解决方案: 1.1 问题原因 客户预置的系统应用申请了signature|privileged权限,没有在文件frameworks/base/data/etc/privapp-permissions-platform.xml中声明. 1.2 解决方案 客户预置的系统应用申请了signature|privileged权限,必须在文件frameworks/base/data/etc/privapp-permissions-platform.xml中声明.
+参考FAQ: FAQ117636
+### 问题: 配置运营商名称
+解决方案: 1. 配置运营商显示名称 1.1 有些运营商的sim卡在出厂的时候并没有写入spn信息,会导致sim卡相关的加载显示的名称不对, 解决方案: 可参考如下代码,对没有显示运营商名称和运营商名称显示错误的进行配置. <carrier_config_list><carrier_config><boolean name="carrier_name_override_bool" value="true"/><string name="carrier_name_string">DTAC</string></carrier_config></carrier_config_list>
+参考FAQ: FAQ117637
+### 问题: 通话过程中，能否进入录音机应用进行录音？
+解决方案: 通话中,此时音频焦点在电话那边,如果进入录音机应用进行录音,音频焦点会切换到录音机app那边,会导致通话出现异常,所以通话中禁止在录音机应用中录音,如果通话中需要录音,请使用通话录音功能.
+参考FAQ: FAQ117738
+### 问题: [Android 9.0]录音文件保存在SD卡中的路径是否可以修改？
+解决方案: 因为在Android 9.0上,由于平台上遵循Google要求:Google原生只允许主卡有写权限,而副卡(外置SD卡)只能读不能写,并且有专门的CTS CASE会检测该要求.SoundRecorder模块本身的录音,如果选择保存到SD卡的话,会存储到应用专有目录下,录音文件保存在/Android/media/包名/recordings下面,即存储路径是/Android/media/com.android.soundrecorder/recordings,这样也就有了对SD卡的写权限,此修改是基于Android 9.0谷歌对SD卡操作的权限控制,用户不能更改录音文件保存在SD卡的存储路径.
+参考FAQ: FAQ117743
+### 问题: SC7701 3PGPP功能机的2G是否支持VAMOS I技术？3G是否支持Fast Dormancy(Rel8)和CELL&URA-PCH?
+解决方案: 3G支持 pre-R8 fastdormancy 支持 CELL/URA-PCH 2G支持VAMOS
+参考FAQ: FAQ117764
+### 问题: SC7701B 墨西哥电信测试需求确认
+解决方案: 1. VAMOS 是否支持? 如支持的话,是 VAMOS I 或者 VAMOS II ? 是否可切换? 支持vamos,但是目前仅仅支持vamos I 2. UMTS Ciphering for Voice 支持情况, UEA-0 UEA-1 ? 支持UEA0和UEA1 3. UMTS Integrity Protection UIA-1 是否支持? 支持UIA1
+参考FAQ: FAQ117767
+### 问题: 设置里面新加了字符串后Fota升级后设置菜单错乱
+解决方案: 1.1 问题原因 fota升级不能在相同版本之间进行,也就是说不能在相同fingerprint版本之间进行,fingerprint需要更新. 1.2 解决方案 fota升级之间需要更新fingerprint.
+参考FAQ: FAQ117653
+### 问题: 开机进入系统后点击谷歌搜索没反应
+解决方案: 1.1 解决方案 1.将com.google.android.apps.searchlite进程加入protectarea 2.修改AppWidgetService发送广播的flag为FLAG_RECEIVER_FOREGROUND 1.2 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.23.5_P2
+参考FAQ: FAQ117661
+### 问题: android.appsecurity.cts.InstantCookieHostTest#testCookieUpdateAndRetrieval fail
+解决方案: 1.1 问题原因 测试Case的问题,连续测试64位和32位会导致32位测试时失败,是由于内部一临时文件没有删除. 1.2 解决方案 单测失败后,恢复出场设置,再使用cts retry的方式测试,测试通过可使用Pass的Report和Logs过审. 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18B_SHARKL3_W18.39.6_P1
+参考FAQ: FAQ117665
+### 问题: Volte白名单配置
+解决方案: 1. Volte 白名单配置 1.1 修改方案 1.1.1 Volte白名单配置 基于版本: 掌握Volte白名单配置流程以及常见问题的处理 1、 vendor/sprd/telephony-res/volte/volte-conf.xml <allowPlmn numeric="732130" enable="true" /> 2、 vendor/sprd/telephony-res/apn/apns-conf_8.xml <apn carrier="Avantel LTE HD" mcc="732" mnc="130" apn="ims.avt.com" protocol="IPV4" roaming_protocol="IPV4" type="ims" />
+参考FAQ: FAQ117668
+### 问题: Activity Destroy Timeout后Activity其它生命周期回调报错
+解决方案: 1.1 解决方案 分析应用进程耗时或系统耗时导致应用进程无法及时响应AMS生命周期信号的问题.一般发生在Monkey过程,偶现,可以酌情忽略. 1.2 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_ITEL_CUS_W18.26.5
+参考FAQ: FAQ117671
+### 问题: RBT问题
+解决方案: 关于印度RBT问题解释如下: 1.正常流程: 回铃音是由网络播放,网络不播放,则由Modem播放 2.正常的回铃音应该是由网络播放,但是Airtel运营商不支持,因此需要由Modem去播放这个铃声,但是展讯平台的Modem的铃声不符合Airtel运营商的特殊需求,因此需要AP侧去播放这个铃声. 3.该功能是在VOLTE下Airtel运营商的特殊需求.AP侧播放这个铃声会涉及到通话的整个流程,在播放的过程中需要跟Modem交互,而ims和lib由于涉及到平台闭源库,因此需要多个模块共同协作.
+参考FAQ: FAQ117686
+### 问题: 默认显示IMS APN
+解决方案: 1. 默认显示IMS APN 1.1.1 问题描述 默认显示IMS apn 1.1.2 修改方案 基于版本: MOCOR5_Sfphone_W17.47.5 该问题有两种解决方式: 1,修改SystemProperties值(界面修改):    1),拨号盘输入"*#*#83781#*#*"进入工程模式  2),在TELEPHONY选项卡下,向下划,找到IMS APN菜单,将radio button打开  3),进入系统设置,APN界面,查看,可见ims类型apn   2,修改CarrierConfig值(代码修改):     文件路径 : vendor/sprd/platform/packages/apps/CarrierConfig / res/xml/vendor.xml   在如下属性上参考其他运营商加上您需要的运营商mccmnc :   <string name="operator_show_ims_apn">***</string>
+参考FAQ: FAQ117699
+### 问题: android P 状态栏如何默认显示电池电量百分比
+解决方案: 状态栏电池电量百分比与设置中的电量百分比开关对应,由数据库字段SHOW_BATTERY_PERCENT控制,如果需要默认显示,要设置该字段的默认值为1,可参考如下方案: 1,在frameworks/base/packages/SettingsProvider/res/values/defaults.xml中添加 <integer name="def_show_precent">1</integer> 2,在frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java的 loadSystemSettings方法中添加 loadIntegerSetting(stmt, Settings.System.SHOW_BATTERY_PERCENT, R.integer.def_show_precent);
+参考FAQ: FAQ117702
+### 问题: 修改IMS注册时长有哪些影响？
+解决方案: IMS注册流程如下: 终端 -> 网络 REGISTER (Expires: 600000) 终端 <- 网络 401 终端 -> 网络 REGISTER 终端 <- 网络 200 (expires = value) 终端进行IMS注册时会与网络协商一个注册有效期,有效期以网络回复的值为准,在有效期超时之前需要进行注册刷新.UE在发送REGISTER消息时会带上一个Expires值,网络会在200 OK响应中带上一个比Expires小的值作为该次注册的有效期. 我司UE发送的REGISTER消息中携带的Expires值默认为600000.网络将expires值改为3600以后,终端注册刷新间隔拉长,无其他影响.
+参考FAQ: FAQ117892
+### 问题: 展锐哪些modem版本可以支持双L？
+解决方案: 展锐18A和18B分支的modem版本可以支持双L.
+参考FAQ: FAQ117893
+### 问题: RTCP的发送间隔如何修改？
+解决方案: 可以通过修改NV值改变RTCP的发送间隔,在NV工程中Ctrl+F搜索值audioRtcpInterval修改为需要的值即可,单位秒.
+参考FAQ: FAQ117894
+### 问题: Audio Frquency Unprorcessed Test
+解决方案: 第一项,TEST TONE 找到分贝仪显示-94的位置,在此位置缓慢移动设备,多次点击PLAY和TEST,直到结果显示的Max RMX为 -36dBFS+上下浮动3dBFS,可PASS 即标准是MAX RMS 为-33dBFS到-39dBFS之间的都可 Successful ,即[33:39] (有些Speaker设备可能由于设计原因等,在同一个水平面向难测过,可以更换成斜向等) 第二项,TEST NOISE 需要在测试完成第一项时,测试设备保持原位置不动,然后点击PLAY和TEST完成测试,才可PASS 第三项, 无,按照基本要操作即可 第四, 注意测试设备和microphone在一端,然后在距离40CM左右的地方是Sperkers设备(音箱), 备注:RMS为音频输出电压值,MAX RMS表示峰值音频输出峰值电压
+参考FAQ: FAQ117912
+### 问题: CMCC定制终端对于芯片认证要求的说明
+解决方案: CMCC芯片认证的目的主要是为了客户终端在送测前,其使用的芯片已经通过了测试,使客户终端在正式测试过程中不出现大规模雷同的通信相关问题. 从已经发布的测试用例看,针对战略手机产品,通过芯片认证和未通过芯片认证测试用例范围差别很大,未通过芯片认证产品对应的测试用例数量远远大于已经通过芯片认证的产品,并且集中在协议相关模块;针对合作手机产品,测试用例范围固定,并且没有区分通过芯片与未通过芯片认证.针对非手机类产品,测试范围同样是单一固定的. 综上,对于战略手机而言,最好选用通过芯片认证的产品;而对于合作手机以及非手机类产品而言,芯片是否通过认证对产品测试范围的影响不大.
+参考FAQ: FAQ117898
+### 问题: SC9863A支持最大的SPI速率
+解决方案: SC9863A总共有4路SPI,SPI0/1/2/3都支持最高48Mbps.
+参考FAQ: FAQ117915
+### 问题: 如何在log中查看GSM发送上行分组数据时的发射功率？
+解决方案: 看tg dsp log中如下打点
+0xD873的低8bit:	Tx power level in uplink transmit.
+
+Example: The network indicate UE to send data with power level pcl=Txpcl, then,
+for GSM850 and 900 band,= Txpcl- 5
+for 1800 and 1900 band, = Txpcl
+参考FAQ: FAQ117972
+### 问题: 3G WCDMA产品支持Band4时，驻留Band4小区有无特殊注意事项？
+解决方案: 手机所接收的Band4小区系统消息SIB5中frequencyBandIndicator需要指明是bandIV,手机才会确认该小区为Band4小区
+参考FAQ: FAQ117980
+### 问题: 如何使用AT命令配置user agent
+解决方案: AT+SPENGMDVOLTE=22,1,"USER_AGENT" //双引号中的内容可以由客户自行定制
+参考FAQ: FAQ118001
+### 问题: 如何从log中看出手机是否支持EDGE
+解决方案: PH_MAC_DATA_IND和RLC_MAC_DATA_REQ这两条消息中MCS =MCS_1～ MCS_9表示支持EDGE;MCS =CS_1～ CS_4表示支持GRPRS;
+参考FAQ: FAQ118020
+### 问题: android P，如何调整主菜单中搜索应用背景为圆角矩形
+解决方案: 修改搜索应用背景相关drawable中圆角半径参数"android:radius"为所需值即可: packages/apps/Launcher3/res/drawable/bg_all_apps_searchbox.xml ... ... <corners android:radius="2dp" />
+参考FAQ: FAQ118033
+### 问题: GSM语音支持哪几种类型？
+解决方案: FS、EFS、HR、AMR. 即全速率、增强全速率、半速率、自适应多码率. 注:wideband AMR不支持.
+参考FAQ: FAQ118030
+### 问题: android P，竖屏时，如何显示进入主菜单界面提示的“小箭头”
+解决方案: Android P原生设计,横屏时显示进入主菜单界面提示的"小箭头",竖屏时隐藏进入主菜单界面提示的"小箭头". 如需竖屏时进入主菜单界面提示的"小箭头",请控制以下逻辑中visible为true即可: Launcher3\src\com\android\launcher3\views\ScrimView.java ... ... private void updateDragHandleVisibility(Drawable recycle) { boolean visible = mLauncher.getDeviceProfile().isVerticalBarLayout() || mAM.isEnabled();
+参考FAQ: FAQ118043
+### 问题: 什么是DPDT？其作用是什么？
+解决方案: 1、什么是DPDT? DPDT是Double Pole Double Throw(双刀双掷)的缩写. 2、其作用和实现原理是什么? 对于UE来说,在天线设计中,由于空间的限制,通常主天线的性能要优于分集天线.但是如果发现分集天线的性能更好,那么可能主天线被阻塞,此时考虑将上行发送切换到分集天线上,可以带来上行性能的提升,并起到降低UE功耗的目的. 在设计中,需要在射频前端增加一个DPDT switch器件( 比如: SKY13396-397LF,或者RF1643C),然后软件根据算法给出的切换方案(比如:上行TPC已经达到最大功率,但是基站的接收仍然微弱,仍然发出需要UE增大发射功率的指令,且UE接收电平微弱并低于算法给出的门限),此时可以考虑使能DPDT switch进行主天线和分集天线进行切换.
+参考FAQ: FAQ118052
+### 问题: SC9863A type C接口USB2.0 OTG功能实现
+解决方案: 1.SC9863A当用type-C接口时,支持USB2.0 OTG功能,OTG模式是通过CC引脚识别的. 2.通常接U盘等device设备时,通过一条USB TYPE-C转USB 3.1标准A母头线缆连接即可. 3.硬件上需要注意:OTG功能要求charger IC支持boost模式.
+参考FAQ: FAQ118064
+### 问题: SL8521E在VBAT电压小于1.1V的时候，如何实现充电插入检测的？硬件控制充电电流为3mA，70mA，450mA是如何实现的？
+解决方案: 1.SC2721G内置线充电路,涓流充电阶段,系统不能开机,充电电流全部由硬件完成,软件不参与. 2.SC2721G 通过VCHG来持续监测充电事件,当有充电事件时,通过VBAT_SENSE上的多个比较器确定是否进入涓流充电阶段,并确定涓流充电电流大小. 3.涓流充电电流大小无法通过软件方式修改,只能通过修改68mOhm精密检测电阻值实现.此电阻值变化后,会等比例影响所有充电电流大小. 4. 当68mOhm电阻值变化时,例如变成200mOhm时,涓流充电电流典型值会由70mA变成70mA*68mOhm/200mOhm=23.8mA(1.1<VBAT<2.05V).
+参考FAQ: FAQ118066
+### 问题: SC9863A&SC9832E兼容设计仿真如何提交?
+解决方案: 做SC9863/SC9832E兼容设计,只需要提交SC9863就可以了,不需要同时提交两个平台的仿真.
+参考FAQ: FAQ118079
+### 问题: Modem to PC开启方法
+解决方案: Android 8.0及以上 : 工程模式--Debug&Log—Ylog--Settings->Debug Setting & Tools->开启 Wcn To PC Android 6.0、7.0 : 工程模式--Debug&Log--LogManager—Tools--打开Modem To PC Android 5.1: 工程模式--Debug&Log--Slog--SlogSettings--Modem Log Settings--Log输出方式设置--PC抓取 Android 4.4: 工程模式-- Debug&Log--Log Settings--PC Log--EngPC Service--开启
+参考FAQ: FAQ118084
+### 问题: 相同电感量，不同封装大小的电感，DCR哪个更小？
+解决方案: 实际电感的一项重要参数——DCR,这也是低频段电感的主要阻抗来源,这会在电感上造成损耗,影响电源的整体效率,DCR越大,效率越低.另外,电感值一定时,电感封装越小,DCR越大(绕线越细);封装一定时,电感值越大,DCR越大(绕线越长);电感值一定时,磁屏蔽电感的DCR要比非屏蔽的小.选型时尽量选择DCR较小的电感
+参考FAQ: FAQ118107
+### 问题: WIFI抗干扰设计
+解决方案: 一、WIFI射频走线 1.和主芯片/DDR同一个屏蔽罩时,屏蔽罩内的WIFI射频线尽可能的短 2.WIFI射频线出了主芯片/DDR屏蔽罩后,WIFI射频电路单独使用一个屏蔽罩 3.WIFI射频线的布局远离DDR走线、电源线 二、VDDWCN电源线 VDDWCN电源线远离DDR/大电流走线,同时尽可能包地完整 三、屏蔽罩 1.DDR屏蔽罩和电源屏蔽罩的开口,避免朝向天线 2.靠近天线的屏蔽框,采用全焊盘加强封闭 3.焊盘打地孔到主地
+参考FAQ: FAQ118114
+### 问题: 如何测试FM功率以及常用测试设备？
+解决方案: 一般使用R&S的SMB100A测试FM的一些指标,其中功率测试设置如下: 1. 将手机通过RF传导线连接上SMB100A的''RF 50Ω''口,这里SMB100A作为FM发生器,通过传导线给手机输入FM信号; 2. SMB100A打开"Modulation"和"RF"模块后,设置Modulation模块如下表: 3.手机打开FM ,输入对应频点98 M,音量设置最大,通过AP 测试耳机输出电平,然后计算功率;打开外放,设置最大音量, 通过AP或者示波器测试输出电平,然后计算功率. 4.注意测试功率时,电池电量建议在80%以上;
+参考FAQ: FAQ119184
+### 问题: SC9863A和SC9832E原理图参考设计彼此兼容关系？
+解决方案: SC9863A和SC9832E最新的原理图如下: 1)SC9863_A_CS_A_SCH_V0.2.0_SC2721G_SR3595D_5M_eMMC_LPDDR3 2)SC9832_B_CS_E_SCH_V1.0.0_SC2721G_SR3593A_4M_eMMC_LPDDR3 1可以兼容2; 2不可以兼容1.
+参考FAQ: FAQ118249
+### 问题: 什么是drx，有什么作用
+解决方案: drx 全称为discontinuous reception,表示UE在一定时间周期内停止监听pdcch信道.根据UE状态通常分为2种,IDLE和active,分别对应UE处于IDLE态和rrc connected.active 态主要作用就是优化资源配置,节省非必要场景下不停监听数据带来的功耗.
+参考FAQ: FAQ118252
+### 问题: 在SC9863A和SC9832E原理图中，如何设计ARM电源?
+解决方案: 1)SC9832E的ARM电源由SC2721G提供. 2)SC9863A平台分ARM0和ARM1,ARM0由外部DCDC提供,ARM1由SC2721G提供. 3)外加DCDC的IIC接口需要接到IIC6. 4)注意电容大小和数量,请参考CS参考设计. 注:SC9832E CPU is CA53 x 4; SC9863A CPU is CA55x 8.
+参考FAQ: FAQ118260
+### 问题: SL8521E平台，不支持GPS时，是否可以使用DCXO？
+解决方案: 没有GPS功能,可以使用DCXO+32Kless方案. 除硬件改动外,NV中需进行对应配置,晶体类型配置成DCXO,具体配置路径如下: -RF_init_common -AFC_cali_config -Crystal_type_config =0x1
+参考FAQ: FAQ118307
+### 问题: 带NFC的SIM卡，对SIM卡的VPP管脚硬件如何设计？
+解决方案: 保持和没有NFC的参考设计一致,直接悬空. 
+补充内容: 目前发现部分Sim卡本身有问题,在VPP悬空时sim卡可能出现无法进入低功耗模式,出现待机功耗从2mA上升到8mA的现象. 此问题由Sim卡厂商解决.
+参考FAQ: FAQ118376
+### 问题: SC9820E/SC9832E/SL8521E/SL8541E PBINT开机低电平脉冲宽度最小可以到多少？
+解决方案: 1.PBINT低电平触发开机过程,包含1s左右硬件debounce时间和3s左右软件debounce时间,因此PBINT开机低电平脉冲时间宽度应大于硬件debounce时间和软件debounce时间之和. 2.当要减小PBINT开机低电平脉冲时间宽度最小要求时,可以关闭软件debounce,此时PBINT开机低电平脉冲时间宽度只要大于硬件debounce时间即可. 3.硬件debounce时间受32K时钟精度影响较大.当无32K晶体时,首次上电使用的是内部RC电路作为32K时钟源,此时钟精度随芯片个体差异和温度变化而变化.当对开机脉冲时间宽度有严格要求时,必须使用外部32K晶体,以提高硬件debounce时间精度. 4.在使用32K晶体条件下,硬件debounce时间在1s+/-0.05s,因此PBINT开机低电平脉冲宽度应该大于1.05S.
+参考FAQ: FAQ118467
+### 问题: 判断sim卡的工作频段、判断sim卡是否连接wifi
+解决方案: 1、通过搜索关键log打印:chan: CHAN_Update_Serving_Cell: 会得到频点DL_UARFCN、Band和PGC的信息. 2、首先判断手机是否驻上cs、ps域,如果一直处于搜网状态并且未驻上cs和ps域,则说明一直在尝试wifi连接,但未连接上.
+参考FAQ: FAQ118515
+### 问题: 软切换，硬切换的概念
+解决方案: 1)软切换:移动用户从一个小区切换到一个新的小区时,先不断开与原小区的连接,当与新小区连接稳定之后再与原小区断开.这样,用户可以同时与两个以及两个以上小区连接. 2)硬切换:移动用户从一个小区切换到一个新的小区时,断开与原小区的连接,再与新小区建立连接. 区别:软切换中的用户可以同时与两个以及两个以上小区连接,而硬切换则只可以与一个小区连接.
+参考FAQ: FAQ118562
+### 问题: GPS定位功能正常但是无法统计TTFF，全是显示N/A
+解决方案: 如果在使用SGPS测试前有其他定位软件请求,那么在定位成功后会有TTFF的计算处理,当再开启测试应用时由于已经定位成功,就不会再有TTFF的处理,这样对GNSS测试产生影响. 尤其是在系统中有预置的定位软件时会高概率出现此问题,需要关闭预置在系统中相关定位软件后再测试.
+参考FAQ: FAQ118519
+### 问题: 搜网WCDMA报assert或者死机?
+解决方案: 此类问题请抓取log提交软件分析. 根据经验,有部分是NV造成,一般有下面两种情况: 1.PS NV中搜网band配置/W calibration NV中band配置/W download NV中band配置与实际硬件贴片情况不一致,请修改为一致; 2.W calibration NV中参数不完整:a.无校准参数.b.有校准参数但校准频率数目不对.可以校准后将校准参数导入软件pac(记得清除校准标志位),或者请展锐RF支持团队帮忙.
+参考FAQ: FAQ118740
+### 问题: Simba如何配置可以检查多个站位的PhaseCheck节点
+解决方案: 在序列上点击右键新增测试项,如下图,添加亮条的选项 添加后继续按下图操作即可
+参考FAQ: FAQ118729
+### 问题: SC9863A切换RTM7916-51后高频小功率下PVT FAIL
+解决方案: 修改底电压从0x50改到0x20,抑制尖峰,以DCS为例,在NV的修改路径如下:GSM_optimize\GSM_calibration_param_optimize\rf_param_dsp_use\rf_dcs_param_dsp_use\rf_ramp_param_constant_value\rf_ramp_param_constant_value[0]=0X20;PCS的修改位置也在相应的路径下. 或者也可以修改delta time和duration,可以将尖峰移到margin更大的位置,同时能保证开关谱性能.
+参考FAQ: FAQ118727
+### 问题: 录音过程中，来闹钟提醒，录音为什么会被停止？
+解决方案: 录音机和其他声音并发的情况很多,涉及到音频焦点的切换,录音机进行录音时会获取音频焦点,如果此时来闹钟提醒,录音机则会失去音频焦点,当录音机在录音过程中监听到失去音频焦点时,则会自动停止录音,平台设计如此.
+参考FAQ: FAQ118535
+### 问题: 如何处理校准模式下指纹漏电流？
+解决方案: 指纹导致底电流高的原因:unisoc参考设计,指纹模块为常保供电模块.校准模式下Android系统不启动,上层指纹TEE服务无法启动,不能给指纹模组发进入低功耗指令,指纹无法正常进入低功耗模式,导致底电流较高.有三种解决方案: 1、通用硬件方案:增加ldo和gpio,通过驱动控制. 缺点:增加硬件成本 2、软件修改:需要各指纹厂商单独提供非android模式下软件支持. 缺点:不通用,不同指纹方案实现方案不同,需要指纹厂商提供软件支持. 3、针对特定指纹项目情况,放宽deepsleep spec.
+参考FAQ: FAQ118568
+### 问题: 展锐Phase2.5 PA与Phase2 PA是pin2pin吗？
+解决方案: Phase2.5PA与之前Phase2 PA可以pin2pin,但是部分管脚功能及命名稍有变化,建议对照PA datasheet修改下SCH/PCB PA封装pin脚命名.例如:RPM6743-31 Pin14为RFIN_L2,之前PA RPM6743-12 Pin14为GND.
+参考FAQ: FAQ118735
+### 问题: SOTER指纹支付简介
+解决方案: SOTER是微信制定的一个通用、安全以及便捷的生物认证识别方案.任何生物特征信息都能通过该平台进行安全可靠的认证,保证信息的安全性.目前应用较多的是指纹支付: 在已实现SOTER功能的终端设备上,可以在 微信->我->钱包->支付中心->支付管理 菜单中开启"指纹支付"功能,一键支付,方便快捷.
+参考FAQ: FAQ118389
+### 问题: 如何开启SOTER支付
+解决方案: 要开启微信指纹支付,需要 1、代码层面,打开如下功能宏,编译SOTER相关代码 CONFIG_CHIP_UID := false BOARD_SOTER_TRUSTY := false 2、利用产线工具对每台设备生成设备密钥 3、向微信申请SOTER接入服务,上传设备密钥 具体详情可以咨询 展讯/微信 方.
+参考FAQ: FAQ118412
+### 问题: 如何通过SIMBA工具查看LTE最大功率
+解决方案: RF调试中需要查看各个BAND的最大功率以便确认射频性能,可以通过Pandora工具非信令进行查看,但不太方便. SIMBA工具中可以增加一个最大功率校准测试项,设置频段后可以快速查看LTE最大功率.以9863平台为例: 1 打开SIMBA工具,加载9863测试序列,在LTE CAL界面点击右键选择"新增测试项" 2 在新增测试项中选择"ltecal.dll","SR359X",勾选MaxPowerCheck后点添加. 3 点击"LTE porbe",在右侧频段界面勾选需要测试最大功率的频段,保存测试序列后按照正常校准流程操作即可.
+参考FAQ: FAQ118413
+### 问题: SOTER支付如何测试
+解决方案: SOTER功能性测试: 1、利用 sotertesk.apk 测试,确保各个子功能正确 2、利用 client-demo.apk,点击支付按钮进行模拟支付 3、上传设备密钥,在微信设置中开通指纹支付,测试一般用户场景
+参考FAQ: FAQ118414
+### 问题: 针对抬起唤醒功能，如何调整唤醒时屏幕的亮度值
+解决方案: 目前在doze状态下,亮度值默认为1,可根据项目实际情况修改该状态下的亮度值 frameworks/base/core/res/res/values/config.xml <integer name="config_screenBrightnessDoze">1</integer> 注意项目是否有做overlay
+参考FAQ: FAQ118418
+### 问题: CTS项CtsDevicePolicyManagerTestCases
+解决方案: 1.1 修改方案    callog中添加users_id字段. 1.2 基于版本 基于版本:MOCORDROID9.0_Trunk_18C_W19.11.5_P2 1.3 修改方案
+参考FAQ: FAQ118581
+### 问题: CtsTransitionTestCases--android.transition.cts.SlideEdgeTest的解决方案
+解决方案: 1.1 修改原理    将窗口动画缩放、多度动画缩放、animator时长缩放默认值为0.5X 是会影响CTS的,可以设置成1X, 2X, 5X, 但是至少要是1X才可以. 1.2 修改方案 请将窗口动画缩放、多度动画缩放、animator时长缩放默认值为0.5X 的需求回退掉
+参考FAQ: FAQ118582
+### 问题: 喇叭信号回采到麦克电路
+解决方案: 主要应用方案:喇叭的输出功率较大(输出信号是Class-D),特别是播放音乐时的回声消除场景,可以将喇叭的信号通过线路反馈到mic的输入来进一步消除回声. 备注:对于播放音乐过程中的拾音场景,需要涉及到回声降噪,我司暂不支持,需要使用第三方的回声和噪声算法. 设计原理图: 1. speaker输出的信号直接连接到下图"外部音频功放输入信号"处; 2. 通路回采电路连接到UNISOC的PMIC的MIC2_P/N或者HEADMIC_P/N;
+参考FAQ: FAQ118647,含图片
+### 问题: 如何获取产线测试工具或者研发使用工具？
+解决方案: Bugzilla系统不是工具的发放途径,正确的途径是和FAE沟通,然后从Isupport系统上获取.
+参考FAQ: FAQ118631
+### 问题: 什么是共天线测试
+解决方案: 对比机和测试机可以采用共天线测试: 手机作为无线通信终端,经常处于不断运动状态之中,因而导致接收到的信号幅度和相位将随时间、地点而不断地变化.特别是GSM等陆地移动通信方式,遭受到地形、地物的影响极大.这会导致手机通信功能受到一些影响,有些问题可能是由于无线网络的覆盖(比如电梯)、网络优化不够导致.为了排除网络问题,可以采用对比机和测试机可采用共天线测试. 具体操作就是采用RF功分器,如图. 对比机和测试机分别通过RF Cable连接到RF功分器的两个输出端,另一端连接RF天线,这样对比测试,就可以保证是在相同的无线条件.
+参考FAQ: FAQ118642,含图片
+### 问题: 自激振荡产生的必要条件
+解决方案: 我们在PA的调试过程当中,可能会遇到放大器自激导致其EVM等性能受到影响,有必要对放大器自激振荡做一个了解: 自激振荡是不需要输入信号的,当我们接通电源时,会在电路中激起一个微小的扰动信号,它是一个非正玄波信号, 含有一系列不同正弦波分量,那么放大电路如果要产生自激振荡,必须要有足够的反馈量,而且振荡电路必须是正反馈
+参考FAQ: FAQ118743
+### 问题: SC9863A使用RTM7916-51高频小功率信令测试PVT在切换PCL或信道时会瞬间Fail
+解决方案: 在切换PCL功率或信道时底噪概率性会瞬间抬起, 需将PA OFF也配置成isolation mode,寄存器值改为0xC, 以DCS为例,NV修改路径如下: GSM_logic\GSM_mipi_config_logic\gsm_mipi_pa\pa_DCS\gmsk_tx_off_word\gmsk_tx_off_word[0]=0X3100C GSM_logic\GSM_mipi_config_logic\gsm_mipi_pa\pa_DCS\tx_off_word_8psk\tx_off_word_8psk[0]=0X3100C PCS的修改位置也在相应的路径下
+参考FAQ: FAQ118730
+### 问题: 【BBAT】G3测试盒audio loop测试介绍
+解决方案: 1.测试原理: G3音频测试采用的是手机自发自录的外部loop方案,手机输出的音频通过控制盒切换转到对应的mic,测试盒最多支持3输入和4输出(2贴片mic和2未贴片mic) 2.测试配置 目前工具配置的loop方案如下,基本可以满足绝大部分手机测试,如有特殊需求,可以提CQ. 其中501~504对应的是未贴片mic测试,505~508对应贴片mic测试
+参考FAQ: FAQ118753,含图片
+### 问题: 修改通话参数时，临时有效，重启后无效，是什么原因？
+解决方案: 是因为软件上模式设置没有对应当前实际使用的模式,比如现在是手持模式通话,实际软件设置的是免提模式; 这种情况下使用工具修改是可以强制写入手机ram的,此时看起来修改手持模式的参数似乎''有效'',但是重启之后手机读取的是flash里面的免提模式参数,导致重启不生效的现象. 此时需要先通过工具确认实际软件设置的是哪个模式,然后再通知软件修改到正确的模式即可.
+参考FAQ: FAQ118820
+### 问题: android 9.0 如何快速新增快捷设置功能
+解决方案: 在android 9.0 中如果需要快速新增快捷设置功能,可参考如下开发: 1:新增service并继承android.service.quicksettings.TileService,实现里面的onClick()方法. 2:在androidmanifest.xml里注册对应的service,并添加 QS的名称 android:label、QS的图标 android:icon以及对应的权限 android:permission="android.permission.BIND_QUICK_SETTINGS_TILE", 再添加对应的intent-filter <action android:name="android.service.quicksettings.action.QS_TILE" /> 注:此方式新增的tile只能实现单击功能,并且需要用户从QS 设置里手动将功能移动到默认快捷界面方可使用.
+参考FAQ: FAQ118800
+### 问题: android9.0 如何在状态栏左侧添加运营商信息
+解决方案: 在android9.0中 如果想在状态栏左侧添加运营商信息,可以将 frameworks\base\packages\SystemUI\res\values\config.xml里的 <bool name="config_showOperatorNameInStatusBar">false</bool>改为 <bool name="config_showOperatorNameInStatusBar">true</bool> 注:此修改只会显示sim状态为State.READY且信号服务状态为 ServiceState.STATE_IN_SERVICE情况下的运营商信息
+参考FAQ: FAQ118789
+### 问题: 从modem日志log中如何查看手机支持的WCDMA band信息
+解决方案: 在modem log中搜索"Internal messages"类别的消息Message WRCC_WRRC_UE_CAP_CMD,可以看到手机所支持的WCDMA band
+参考FAQ: FAQ118827
+### 问题: 如何有效提高耳机crosstalk指标？
+解决方案: 需要从走线布局和器件选用上考虑: 1.FM_ant网络走线尽量粗,建议耳机地pin和对地电感之间走线宽度≥0.3mm,耳机地pin到对地电感走线长度≤10mm; 2.耳机下地点尽量靠近耳机座,外围器件靠近耳机座摆放; 3.耳机对地电感DCR≤0.35Ω;
+参考FAQ: FAQ118825
+### 问题: 当3G信号差时，手机是否能自动切换到2G，是如何切换的？
+解决方案: 首先,3G/2G之间的小区重选所有支持3G的芯片都支持的;
+正常情况是按照3GPP协议规定的小区信号门限值进行测量和评估, 根据小区的测量结果信号进行重选操作;
+参考FAQ: FAQ118828
+### 问题: 如何有效提高喇叭外放效果以及音乐播放时音质？
+解决方案: 需要从器件选型,音腔结构与结构料选用,走线,器件选型,音频参数调试来综合考虑; 1.注意选用高灵敏度高功率喇叭,建议SPL(2K Hz)≥90dB, 额定功率在0.7W以上,功放建议选择高压功放,具体结合项目定位考虑; 2. 喇叭后音腔注意避免太小,建议在1cc以上;喇叭防尘网建议选择声阻较小的,注意预留前腔振膜高度; 3. PAout_P到SPK_P和PAout_N到SPK_N之间走线的阻抗之和,建议＜1Ω; 4.喇叭通路建议:如果RF条件允许,使用0欧姆代替磁珠; 5.参数方面:需要注意音腔F0位置,有杂音时,可以适当衰减;800Hz,5000Hz两点注意衰减(800Hz很容易恶化音质,5000Hz容易导致齿音);低频太高会偏闷,但是会提高声音力度;高频过多会偏尖,但是会提高声音响度,响度不足时可以适当提高高频分量(2K以后);
+参考FAQ: FAQ118829
+### 问题: 增加支持电信volte对系统功耗、驻网速度、内存占用的影响
+解决方案: 问题1:增加支持电信volte是否会对系统功耗有影响,如果有影响,那么会增加多少毫安的功耗? 答:不会占用更多内存,因为VOLTE使用的内存是动态申请的,使用完就释放了.电信VOLTE使用的代码和在其他网络中(例如中国移动)使用的代码是同一套代码,只是根据不同的网络需求会进行适配. 问题2:支持电信volte对于开机驻网、信号强度等是否带来影响? 答:对开机驻网、信号强度无影响. 问题3:支持电信volte是否会占用更多的内存? 如果会,会多占用多少? 答:增加支持电信volte不会增加系统功耗.电信VOLTE和其他网络中(例如中国移动)的业务流程是一样的,不会增加额外的功耗.
+参考FAQ: FAQ119641
+### 问题: 【BBAT】Android 8.1 BBAT测试wifi命令fail
+解决方案: 1. 正常的SSID name不会超过32位,但当wifi信号设置为隐藏时底层反馈给BBAT的SSID会有异常,如下图所示,会有超过64位的请况,但代码中定义的buffer为64,从而导致数组越界. 2. 修改测试软件测试代码 vendor\sprd\proprietories-source\autotest\tester.cpp
+下面做如下修改:
+typedef struct wifi_ap_t
+{
+    char smac[32]; // string mac
+    unsigned char bssid[32];
+--  char name[64]; //wifi name
+++  char name[256]; //wifi name
+    int sig_level;
+    int frequency;
+} wifi_ap_t;
+参考FAQ: FAQ118870,含图片
+### 问题: 如何查看终端的IMEI
+解决方案: 1.2/3G上通过AUTHENTICATION_AND_CIPHERING_RESP携带给网络(若网络在AUTHENTICATION_AND_CIPHERING_REQ中有请求); 2. 4G上通过SECURITY_MODE_COMPLETE带给网络(若网络在SECURITY_MODE_COMMAND中有请求); 3. 还有一种常见的方式是网络通过IDENTITY_REQUEST来查询,终端在IDENTITY_RESPONSE中回复给网络; 4. 另外,也可以在log中搜索"string:+SPNWIMEIi",在trace中查找.
+参考FAQ: FAQ118875
+### 问题: 6531E是否支持GSM宽带
+解决方案: 不支持
+参考FAQ: FAQ118897

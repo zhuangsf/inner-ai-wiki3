@@ -1,0 +1,300 @@
+### 问题: 7701支持的message type有哪些，是否有优先级
+解决方案: 1. CBS Message 2. Schedule Message //以上两Feature支持 3. CBS41 Message // 7701 目前不支持该Feature. 2 Schedule Message 对 MMI 不可见,对MMI来说只有 CBS Message,故不存在优先级问题.
+参考FAQ: FAQ84882
+### 问题: 7701平台，双卡槽配置颠倒。
+解决方案: NVitem -> nv_type -> NV_SIM_CONFIG -> sim_slot_cfg 10203 -> 1000203 修改nv:TD_TIANJI2_NV_TYPE\NVPARAM_TYPE_MN_CFG\sim_slot_cfg=0x1000302 -----> 0x 00 01 02 03 正常情况 0x 01 00 02 03 卡槽1与卡槽2 互换 双卡版本不要动 02 03 位置,02 03 代表卡槽3 卡槽4, 00 - 代表卡槽1, 01 代表卡槽2. 7701 双卡版本,只有如下两种可能性,对应修改即可. 0x 00 01 02 03 正常情况 0x 01 00 02 03 卡槽1与卡槽2互换
+参考FAQ: FAQ84890
+### 问题: 手机无法从2G小区重选到3G小区
+解决方案: 需通过LOG中查看系统消息3.网络侧是否对当前手机驻留的2G小区配置3G邻区.如系统消息3中参数 SI2quater Indicator=0,代表网络没有配置系统消息2quater,没有3G邻小区,所以MS无法在GSM发起3G邻小区测量,无法自动重选回3G. 网络问题,导致无法从GSM自动重选回3G.非芯片问题,建议拿对比机同步测试.
+参考FAQ: FAQ84898
+### 问题: 如何去掉联系人Direct dial and Direct message widgets上号码类型显示
+解决方案: 设置"号码类型"字符为null,当为null时不在画布canvas显示 ShortcutIntentBuilder.java(packages/apps/ContactsCommon/src/com/android/contacts/common/list/) private Bitmap generatePhoneNumberIcon(Drawable photo, int phoneType, String phoneLabel, int actionResId) { // Create an overlay for the phone number type - CharSequence overlay = Phone.getTypeLabel(r, phoneType, phoneLabel); + CharSequence overlay = null; }
+参考FAQ: FAQ85061
+### 问题: 在slog里面修改了android loglevel的级别，是否需要重启手机才生效？
+解决方案: 不需要重启手机的,通过ui设置android loglevel设置,会修改slog.conf,然后会主动触发slog重启一次重新解析conf文件
+参考FAQ: FAQ85020
+### 问题: 当插入两张卡时，为什么在Settings--about phone--Status--SIM Status--Network栏显示的名称与此页面中的tab中显示的名称不一样？
+解决方案: 在SIM status中,该页面tab上读的是SIM卡的名称,而在此页面中network 中显示的是此SIM卡驻留网的名称,故两者会出现显示不一样的现象.
+参考FAQ: FAQ85041
+### 问题: 如何增加VoLTE锁白名单
+解决方案: 目前通过白名单来控制Sim卡是否能够驻留到VoLTE网络,没有在白名单的PLMN将无法使用VoLTE网络 如果要使Sim能够驻留上VoLTE, 则需要添加它的MCC/MNC到白名单中,修改方法如下: 修改文件:vendor/sprd/open-source/res/volte/volte-conf.xml 如添加: <allowPlmn numeric="46007" enable="true"/> 如上一行表示将46007的Sim卡添加到白名单 注: 1. 使用手机必须是支持4G模式和VoLTE的手机 2. 验证时VoLTE必须打以及Sim卡必须开通Volte功能 3. 当前网络必须处于LTE网络才能够驻留VoLTE
+参考FAQ: FAQ85069
+### 问题: Android6.0支持Doze模式需要哪些条件？
+解决方案: 1.硬件上需要有TYPE_SIGNIFICANT_MOTION 类型的传感器 2.软件配置framework/base/core/res/values/config.xml <bool name="config_enableAutoPowerModes">false</bool> 需要改为true
+参考FAQ: FAQ85113
+### 问题: 拨号盘数字未设置快速拨号时，如何实现长按清除功能
+解决方案: DialpadFragment.java(packages/apps/Dialer/src/com/android/dialer/dialpad) public boolean onLongClick(View view) { default: Intent intent = FastDialUtils.getFastDialIntent(this, digits, id); + if(digits.length()==1){ + digits.clear(); + } if (intent != null) { DialerUtils.startActivityWithErrorToast(getActivity(), intent); - digits.clear(); return true; } break; }
+参考FAQ: FAQ85156
+### 问题: 如何加快广播接收速度？
+解决方案: 给发送的Intent添加这个flag: intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND); FLAG_RECEIVER_FOREGROUND 接受器以前台优先级运行 当发送广播的时候设置了这个标志,会允许接收者以前台的优先级运行,有更短的时间间隔.正常广播的接受者是后台优先级,不会被自动提升
+参考FAQ: FAQ85385
+### 问题: Android 6.0如何开启系统调谐器界面？
+解决方案: Android M新增加了一个隐藏功能 -系统界面调谐器. 下拉状态栏下拉两次(可以显示设置小图标),长按下拉菜单的设置按钮数秒,然后松开手,系统就会提示设置界面已经添加了"系统界面调谐器"的功能了(如下图左侧所示); 进入到设置界面,拉到最下方的"系统"模块,就会看到"系统界面调谐器"这个选项;点击该选项,系统会弹出"是否有趣取决于个人感觉"的提示框(如下图右侧所示),确认后就可以开始使用了. (备注:系统调谐器界面上有四个功能选项,分别是快速设置、状态栏、嵌入式显示电池电量百分比和演示模式.)
+参考FAQ: FAQ85179
+### 问题: android.theme.cts.ThemeHostTest#testHoloThemes FAIL
+解决方案: 这个CASE测试控件兼容性,测试过程中会将手机端生成的控件图片保存到PC端/tmp目录下,然后和原生图片比较. 检查生成到PC端/tmp目录下的diff_holo_inputmethod_color_red_dark******.png图片,如果出现以下对比结果,则是修改系统缺省字体大小导致: 只需要将系统设置里面的字体设置为Normal即可.
+参考FAQ: FAQ85211
+### 问题: CTS-Verifier：Audio Loopback Latency Test 是如何测试的？
+解决方案: Audio Loopback Latency Test 测试步骤: 1. 安装CTS-Verifier.apk之后进入Audio Loopback Latency Test测试项 2. 插入Loopback Plug 3. 单击Loopback plug ready按钮,测试项下半部分不再为灰显状态 4. 通过移动滑动块的位置,调整audio level到一个合适的值,单击Test按钮.该过程可能需要多次重复执行直到confidence的值 ≧ 0.6 Loopback Plug参考以下链接制作:https://source.android.com/devices/audio/loopback.html
+参考FAQ: FAQ85221
+### 问题: Android 6.0. 32+4配置是否可以过CTS认证？
+解决方案: Android6.0的CDD要求屏幕密度配置mdpi及以下,/data分区最少1.5GB,因此32+4可以过6.0的CTS:
+参考FAQ: FAQ85226
+### 问题: Android 6.0系统中，G-SENSOR的8bits和10bits的能否过谷歌的CTS测试与认证？
+解决方案: CDD规范对g-sensor的精度要求至少12bits,8bits和10bits不能过CTS:
+参考FAQ: FAQ85233
+### 问题: 如何切换android log的收集机制?
+解决方案: 切换方法: 1. kernel logger:BoardConfigCommon.mk中,设置TARGET_USES_LOGD := false 2. logd:TARGET_USES_LOGD := true
+参考FAQ: FAQ85340
+### 问题: 如何修改Activity选项菜单中的MenuItem项在ActionBar上的显示方式？
+解决方案: 可通过调用MenuItem.setShowAsAction(int actionEnum);方法来实现,其中参数actionEnum的可取值及含义如下: 1、MenuItem.SHOW_AS_ACTION_NEVER :从不在ActionBar上显示 2、MenuItem.SHOW_AS_ACTION_IF_ROOM :如果有空间就显示 3、MenuItem.SHOW_AS_ACTION_ALWAYS :总是显示 4、MenuItem.SHOW_AS_ACTION_WITH_TEXT :显示时跟随文字 5、MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW :默认收缩其action view
+参考FAQ: FAQ85247
+### 问题: OTA升级不能升级SN号
+解决方案: 不能 原因: 由于SN存放在productinfo分区,目前的OTA升级方案是不支持此分区的升级的,即此分区不会通过OTA进行升级. 故想通过OTA升级来改写SN号不可行.
+参考FAQ: FAQ85307
+### 问题: 启动后台应用管理
+解决方案: 后台应用管理可以通过设置菜单进入,但有时需要直接进入 比如要在最近任务界面增加一个按钮,点击可以进入到后台应用管理界面,用以下方式实现: startActivity(new Intent("android.settings.MANAGE_APPLICATIONS_SETTINGS"));
+参考FAQ: FAQ85300
+### 问题: SC9820A平台支持WCDMA频段吗？
+解决方案: 不支持.
+参考FAQ: FAQ92629
+### 问题: 添加一个联系人到Homepage，点击这个图标为何会出现Crash？
+解决方案: 6.0权限设计发生了变更,Launcher3需要在用户手动允许相应权限后才可进行相关操作,请到设置->应用->Launcher3->权限,开启相关权限.
+参考FAQ: FAQ85578
+### 问题: 如何修改设置-辅助功能里的Large text对应显示设置里的Large字体？
+解决方案: 辅助功能中的大字体对应的是系统设置菜单中字体大小设置的超大字体(Huge).此原生设计. 如果需要修改为对应显示设置里的Large字体,请做如下修改: packages/apps/Settings/src/com/android/settings/accessibility/AccessibilitySettings.java - private static final float LARGE_FONT_SCALE = 1.3f; + private static final float LARGE_FONT_SCALE = 1.15f;
+参考FAQ: FAQ85581
+### 问题: 在设置--电池--省电管理中满足什么条件才会显示应用？
+解决方案: 省电管理原生设计思想是:此界面不显示手机烧机后自带的应用(包括预制应用和系统应用),只显示用户自己下载的第三方应用,手机自带的应用不需要进行节电设置.
+参考FAQ: FAQ85582
+### 问题: CFT EDGE信令综测可以支持吗
+解决方案: 不可以,目前只能支持非信令综测
+参考FAQ: FAQ85605
+### 问题: CFT工具界面 综测栏无EDGE频段选项，怎么打开此选项
+解决方案: 在CFT工具下的CFTGui.ini文件内将"Enable EDGE NST =0"修改为"Enable EDGE NST =1",勾选对应频段即可测试.
+参考FAQ: FAQ85610
+### 问题: 禁止NumberPicker控件编辑功能
+解决方案: 如在DeskClock应用中的设置->Snooze length 该界面包含一个NumberPicker控件,一般来说只需要上下滑动选择即可,如果需要禁止编辑功能 需要在控件定义的地方加上属性android:descendantFocusability="blocksDescendants",如: <NumberPicker android:id="@+id/your_numberpicker" android:layout_width="wrap_content" android:layout_height="wrap_content" android:descendantFocusability="blocksDescendants"/>
+参考FAQ: FAQ85617
+### 问题: AP侧SIM卡热插拔开关
+解决方案: 将frameworks\base\core\res\res\values\config.xml配置文件中的config_hotswapCapable 设置为true即为打开热插拔开关. 注意:此修改需要建立在硬件,modem以及kernel都支持热插拔的前提下. <!-- Is the device capable of hot swapping an UICC Card --> <bool name="config_hotswapCapable">true</bool>
+参考FAQ: FAQ96658
+### 问题: 6.0版本如何获取SIM卡管理界面的SIM卡Enable/Disable状态
+解决方案: 获取方式如下: int phoneId = 0;//想知道卡1的状态phoneId设置为0,卡2的状态则设为1,这里用卡1举例. 方法一、 boolean isSimStandBy = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.SIM_STANDBY + phonId, 1) == 1;//获取指定phoneId的SIM卡Enable/Disable状态 方法二、 TelephonyManager mTelephonyManager = TelephonyManager.from(mContext); mTelephonyManager.isSimStandby(phoneId);//获取指定phoneId的SIM卡Enable/Disable状态 获取过程中,碰到任何问题也欢迎随时联系展讯FAE获取更多支持和帮助.
+参考FAQ: FAQ96659
+### 问题: 为什么飞行模式开机会弹出“感谢您选择中国移动通信”的pop框
+解决方案: 首先这个display text的消息上报是SIM卡的主动行为,至于什么时候上报,可能和对sim中信息的读取触发,具体要看SIM行为. 其次我们要清楚,开飞行模式只是关闭了协议栈,并没有关闭SIM卡.所以还是有stk信息上报的. 因此会有开启飞行模式开机会弹出"感谢您选择中国移动通信"的pop框. 如还有其他疑问可咨询展讯接口人.
+参考FAQ: FAQ85659
+### 问题: 怎样在软件中加入提供的PLMN list
+解决方案: 解决方案: Numeric_operator.xml (\vendor\sprd\operator\operator_res\operatorname_overlay\frameworks\base\core\res\res\values) 在该文件中添加需要配置的mccmnc对应的plmn名称. 配置方法: 已知mcc mnc 1. Tmnc为mnc做取整处理 ; 例如: 01即1; 020即20; 2. 添加项: <item>mccTmnc=plmn名称</item> 例子: 74402 ---- CLARO PY 334020 ---- TECEL 74810 ---- CLARO UY 添加: <item>7442=CLARO PY</item> <item>33420=CLARO PY</iTECEL <item>74810=CLARO UY</item>
+参考FAQ: FAQ85676
+### 问题: SC3592 RX port接法需要注意些什么？
+解决方案: RPX L1/L2/H1/H2 Port只能接GSMRX; PRX L3/L4/H3/H4 Port可以接GSM/TD-SCDMA/WCDMA/LTERX.
+参考FAQ: FAQ85731
+### 问题: 如何修改usb的驱动能力
+解决方案: 修改对应工程的dts文件,驱动能力主要改tune_value中的12～15位,最大可以为1111 . kernel/arch/arm/boot/dts/sprd-_xxxxxx.dts usb: usb@20200000 { ....... tune_value = <0x078e33>;
+参考FAQ: FAQ85752
+### 问题: Android6.0 如何设置apn可编辑或不可编辑
+解决方案: Android6.0 carriers数据库表新增了一个字段 editable用来控制apn项是否可以编辑. 可编辑:配置 editable="1" 示例: <apn carrier="沃宽带用户手机上网" mcc="460" mnc="01" apn="3gwap" proxy="10.0.0.172" port="80" type="default,supl" editable="1" /> 不可编辑: 配置 editable="0" 或者删掉editable配置(默认不可编辑) 注意版本: MOCORDROID6.0_prime_16b_W16.11.2, MOCORDROID6.0_Trunk_16b_W16.11.2, MOCORDROID6.0_prime_W16.11.2, MOCORDROID6.0_Trunk_W16.11.2, MocorDroid6.0_Trunk_W16.10.2 只有在以上版本之前的版本,这样设置才有效. apn、编辑、不可编辑
+参考FAQ: FAQ85844
+### 问题: email帐户无法登录的常见原因
+解决方案: 1、帐户本身没有开通客户端登录权限,需要在服务器开通 2、服务器要求ssl加密,默认登录时没有勾选ssl加密,导致登录失败 若需要添加自动登录的ssl加密可以在/res/xml/providers.xml文件中,找到对应邮箱添加,如126邮箱: 默认配置为: <incoming uri="pop3://pop3.126.com" username="$email" /> <outgoing uri="smtp://smtp.126.com" username="$email" /> 添加后: <incoming uri="pop3+ssl+://pop3.126.com" username="$email" /> <outgoing uri="smtp+ssl+://smtp.126.com" username="$email" /> 3、网络问题,切换网络尝试
+参考FAQ: FAQ85760
+### 问题: Android 6.0 CTS测试环境新增搭建项
+解决方案: 在原先5.1 CTS测试环境的基础上,进行Android 6.0测试时需要配置aapt文件,配置方法如下: 1.检查电脑中是否存在aapt文件 打开终端 cd ../.. cd bin ls 查看是否存在aapt,同时该文件颜色是否是绿色的(代表是否可执行) 2.如果没有需要配置一下该文件 将aapt文件复制到根目录下 重新打开终端 cd ../.. cd bin sudo cp (aapt路径) /bin sudo chmod 777 aapt ls 查看是否存在aapt,同时该文件颜色是否是绿色的(代表是否可执行) 备注: 1.Aapt文件可联系TAM获取 2.配置该环境不影响Android 5.1CTS、GTS测试
+参考FAQ: FAQ85810
+### 问题: PRE_BOOT_COMPLETED和BOOT_COMPLETED广播的区别
+解决方案: PRE_BOOT_COMPLETED广播: 该广播发送在系统重要服务初始化完成后,Launcher启动前 BOOT_COMPLETED广播: 该广播发送在Launcher启动后,代表了系统启动操作已经完成了 用户如果有些不依赖于BOOT_COMPLETED广播的组件(主要指服务)等需要提前运行,可以接收PRE_BOOT_COMPLETED广播来进行处理
+参考FAQ: FAQ85822
+### 问题: Android6.0如何开启“仅限优先打扰”模式功能？
+解决方案: 1、首先选择想设置哪些通知为优先打扰类型通知: 进入 设置 - 提示音和通知 - 勿扰 - 仅允许优先打扰内容, 可以看到 闹钟(在仅允许优先打扰模式下会一直处于开启状态)、 活动、提醒、消息、通话、重复来电者. 可以将上述类型的通知设为优先通知. 2、启用"仅限优先打扰"功能 从屏幕顶部下滑两次,可看到"快速设置"面板; 触摸"勿扰"快捷按钮,选择"仅限优先打扰",设置持续时间或直至您将其关闭;点击"完成". 经过如上步骤,就打开了"仅限优先打扰功能".收到优先通知会以当前铃声或振动提供;收到其他通知手机静音.
+参考FAQ: FAQ85846
+### 问题: 如何去掉“最近”页面通话记录显示条数的限制
+解决方案: 平台上目前拨号应用"最近"页面中会显示最近两周时间内的最近20条通话记录,要去掉此界面通话记录条数的限制, 可以修改ListsFragment.java (\packages\apps\dialer\src\com\android\dialer\list)文件中MAX_RECENTS_ENTRIES的定义, - private static final int MAX_RECENTS_ENTRIES = 20; + private static final int MAX_RECENTS_ENTRIES = -1;
+参考FAQ: FAQ85883
+### 问题: 如何判断SIM卡联系人支持添加的号码最大个数
+解决方案: 一个SIM卡联系人支持添加的号码最大个数可以使用SimUtils.getSimContactPhoneTypeOverallMax(mSubId);方法获得,其中的mSubId可以通过SubscriptionManager类的public static int[] getSubId(int slotId) {}这个方法获取, 比如卡1的mSubId为 int[] subIds = SubscriptionManager.getSubId(0); int mSubId = subIds[0]; //卡1的mSubId 卡2的mSubId为 int[] subIds = SubscriptionManager.getSubId(1); int mSubId = subIds[0]; //卡2的mSubId
+参考FAQ: FAQ85897
+### 问题: 如何判断SIM卡联系人支持添加Email信息
+解决方案: 一个SIM卡联系人支持添加的email个数可以使用SimUtils.getSimContactEmailTypeOverallMax(mSubId);方法获得,此方法如果返回-1,则表示该SIM卡不支持添加email信息,其中的mSubId可以通过SubscriptionManager类的public static int[] getSubId(int slotId) {}这个方法获取, 比如卡1的mSubId为 int[] subIds = SubscriptionManager.getSubId(0); int mSubId = subIds[0]; //卡1的mSubId 卡2的mSubId为 int[] subIds = SubscriptionManager.getSubId(1); int mSubId = subIds[0]; //卡2的mSubId
+参考FAQ: FAQ85901
+### 问题: 打开触摸震动，点击主菜单和桌面快捷方式为何没有震动反馈？
+解决方案: 主菜单和桌面快捷方式没有设置单击的震动反馈,主要是为了区分长按和短按事件,长按是有震动反馈的,故此为正常现象.
+参考FAQ: FAQ85925
+### 问题: 如何去除锁屏界面的相机图标
+解决方案: 锁屏界面的相机图标默认是开启的,如果想去除相机图标,将配置显示锁屏界面相机图标的开关关闭即可. 修改文件frameworks/base/packages/SystemUI/res/values/config.xml <!-- Show camera affordance on Keyguard --> - <bool name="config_keyguardShowCameraAffordance">true</bool> + <bool name="config_keyguardShowCameraAffordance">false</bool>
+参考FAQ: FAQ85922
+### 问题: android5.1在无法开机情况下查看last_kmsg log方法
+解决方案: 1、按powerkey + volume下键进入recovery模式 2、通过上下键选择,进入"view recovery logs"项-->选择"/cache/recovery/last_kmsg"项 这样可以查看之前一次的kernel log,对于user版本分析死机定屏、黑屏开不了机问题的分析会有帮助.
+参考FAQ: FAQ85931
+### 问题: 如何将apk设置为system组
+解决方案: a、在manifest节点中增加android:sharedUserId="android.uid.system" b、在对应的apk代码目录下的Android.mk中添加下面语句 LOCAL_MODULE := SprdTest LOCAL_SRC_FILES := $(LOCAL_MODULE).apk +LOCAL_CERTIFICATE := platform或shared、media等 之后重新编译代码,烧写软件,通过ps -Z apk名称,可以看到类似下面代码 u:r:system_app:s0 system 1608 180 com.android.settings
+参考FAQ: FAQ85933
+### 问题: 如何使apk在编译时生成到指定的目录下
+解决方案: 在对应的apk代码目录下的Android.mk中添加下面语句 LOCAL_MODULE := SprdTest LOCAL_SRC_FILES := $(LOCAL_MODULE).apk +LOCAL_MODULE_PATH := $(TARGET_OUT)/priv-app //表示最后的目标安装路径
+参考FAQ: FAQ85935
+### 问题: 如何从kernal.log中确认耳机的插入和拔出的时间
+解决方案: 请在抓取的UserDebug版本的Kernal.log中搜索关键字:HEADSET,找到如下log: //耳机插入时间 Line 703: <6>[ 206.362243] c0 [SPRD_HEADSET_INFO][2723] headphone plug in (headset_detect_work_func) //耳机拔出时间 Line 2177: <6>[ 256.139312] c0 [SPRD_HEADSET_INFO][2723] headphone plug out (headset_detect_work_func)
+参考FAQ: FAQ85942
+### 问题: 为什么浏览器设置，高级选项中的文字编码，无自动检测选项？
+解决方案: 从Android4.4开始,平台浏览器去掉自动检测(Auto-detector)选项,原因是浏览器内核本来已经是优先自动检测网页编码,如果自动检测后仍然无法识别编码,会使用设置选项中的默认编码.
+参考FAQ: FAQ85947
+### 问题: 应用预置到system/preloadapp和system/vital-app的区别
+解决方案: 应用预置到system/preloadapp和system/vital-app目录下 共同点: 应用可以卸载,恢复出厂设置后仍然存在 不同点: preloadapp目录下的应用是异步扫描的过程,不影响开机过程,如果应用预置多开机会可能会出现launcher界面无显示预置应用,过一会才显示的现象 vital-app目录下的应用是同步扫描的过程,在开机的过程中,应用扫描安装完成后才会进入开机启动launcher的流程,不会出现开机后launcher界面无显示,过一会显示的问题
+参考FAQ: FAQ85993
+### 问题: 为什么设置关机闹钟，手机到时自动开机之后有时候显示错过闹钟
+解决方案: 问题: 设置一个至少2分钟之后的闹钟然后关机,在闹钟时间到来之前手机自动开机,但是有时候开机后闹钟没有响,且在通知栏上显示错过闹钟 原因: 关机闹钟是提前开机的(默认是提前两分钟),开机后Deskclock应用监听启动完成广播去设置闹钟,闹钟时间到后就可以触发并提醒用户了. 但是有时候开机完成后Deskclock监听启动完成广播去设置闹钟时发现已经闹钟时间已经过去了(系统中应用太多开机完成广播处理时间太长),所以就会在状态栏上显示一个错过闹钟. 解决方案: 针对如上原因,可尝试修改关机闹钟提前开机时间到3mins,给开机完成广播有充分的处理时间,从而保证闹钟正常设置下去.
+参考FAQ: FAQ86007
+### 问题: Notification.FLAG_ONGOING_EVENT的含义
+解决方案: 在发送nofication的时候设置flag为Notification.FLAG_ONGOING_EVENT,表示该通知为一个正在运行的通知的,点击或者左右滑动均不能将此通知清除,除非该事件被用户响应处理完成 那么,哪种情况下可以使用该通知,哪种情况下不应该使用该通知? 如果发出通知的为正在进行的状态,则建议设置该通知的标签为Notification.FLAG_ONGOING_EVENT 如果发出的通知为某一时刻的状态,则不建议设置 例如: 1、后台导入联系人,发出通知,此种情况下导入联系人动作为正在运行状态,发送的notification应该添加该flag notification.flags = Notification.FLAG_ONGOING_EVENT 在联系人导入完成后取消该通知 2、手机上有一个未接来电,此种情况为某一时刻的状态,则发送的notification不建议添加此flag
+参考FAQ: FAQ86005
+### 问题: 为什么有些项目中没有“多用户”和“语音识别”功能？
+解决方案: 项目中的拥有哪些features,都是通过读取配置xml文件解析得到的,其中有个属性notLowRam来控制是否在低内存项目上打开特定功能. features配置文件目录位置frameworks/native/data/etc,如下在低内存项目上关闭了"语音识别""多用户"功能: <feature name="android.software.voice_recognizers" notLowRam="true" /> <feature name="android.software.managed_users" notLowRam="true" />
+参考FAQ: FAQ86008
+### 问题: 6.0平台桑如何配置虚拟运营商数据信息
+解决方案: 1,在packages\apps\CarrierConfig\assets里配置对应的mccmnc的文件,比如46001的卡就是carrier_config_46001.xml 46001就是sim的mccmnc,以此类推;然后仿照46001的数据,填充对应信息即可,spn是最终要显示的名称. <carrier_config spn="阿里通信"> <boolean name="mvno" value="true"/> <string name="spn">阿里通信</string> </carrier_config> <carrier_config spn="京东通信"> <boolean name="mvno" value="true"/> <string name="spn">京东通信</string> </carrier_config> 2,apn那边同以往5.1平台,填充数据段mvno_type 和mvno_match_data
+参考FAQ: FAQ86126
+### 问题: startActivityForResult与startActvity的区别
+解决方案: startActivityForResult与startActvity 共同点: 两者都可以启动一个activity 不同点: startActivityForResult的参数中多了一个requestcode,该方法为启动一个activity,但需要该activity返回一个结果时使用 startActivity则是启动一个activity,无需返回任何结果 例如说编辑短信的时候添加附件启动图库,短信应用需要图库应用返回添加的图片的信息,则此种activity的启动需要调度startActivityForResult方法
+参考FAQ: FAQ86020
+### 问题: 预置无源码apk时LOCAL_CERTIFICATE:=PRESIGNED什么意思？
+解决方案: PRESIGNED 表示预先已经签名了,由于第三方apk其开发商在发布该apk时已经签名了所以系统在编译时无需再签名. build/core/prebuilt_internal.mk ifneq ($(LOCAL_CERTIFICATE),PRESIGNED) // 不等于PRESIGNED时才执行签名命令sign-package @# Only strip out files if we can re-sign the package. ifdef LOCAL_DEX_PREOPT ifneq (nostripping,$(LOCAL_DEX_PREOPT)) $(call dexpreopt-remove-classes.dex,$@) endif endif $(sign-package) endif $(align-package)
+参考FAQ: FAQ86051
+### 问题: 5.1平台上的虚拟运营商如何配置通过imsi区分的信息
+解决方案: 比如:运营商为虚拟运营商:skinny mobile 租用Telecom NZ mcc/mnc:530/05的网络 要求:根据IMSI:5300520 第6、7位区分APN参数 和spn区分的原则类似,类推,只需要 virtual-net-rule-conf.xml配置区分类型为imsi, mvno_type="imsi" mvno_match_data="5300520",apn xml文件也是同理,配置对应的二个字段;其它同配置spn的方式一样.
+参考FAQ: FAQ86127
+### 问题: 是否可以打开开发者模式中的“Don't keep activities”开关
+解决方案: 打开这个开关后,当activity切换到后台后,这个activity就会被destroy掉.如果这个activtity有一些异步的回调操作,当这些操作完成,并回调相关的函数时,由于这个activity已经执行了destroy操作,所以一些相关的变量已经被清除,如果在回调函数了用到了这些变量,就会出现crash的现象. 所以这个开关是不能轻易打开的.
+参考FAQ: FAQ86156
+### 问题: 如何抓取连续开关机操作中的android log
+解决方案: 由于slog只能保存上次一次开机和当前开机的LOG,无法保存l连续多次开机的android log.所以可以做如下的代码修改来保存多次开机的所有LOG. 打开devices/sprd/scx**/init.sc8830.rc文件 增加如下的service service logcat /system/bin/logcat -v time -f /data/corefile/logcat.txt class main user root group log oneshot 这样会在开机时增加一个服务,将android log保存到/data/corefile/logcat.txt文件中,并且这个文件是附加模式,也就是说,下一次开机的androidlog会附加在上一次的后面.这样就可以连续保存多次开机的android log了.不过由于所有的数据都保存在一个文件中,时间长了,这个文件会比较的大.
+参考FAQ: FAQ86157
+### 问题: 在普通第三方应用中,如何实现自动调用Dialer拨打紧急电话
+解决方案: 可参考 /packages/services/Telephony/src/com/android/phone/EmergencyDialer.java中 placecall(){ ..... Intent intent = new Intent(Intent.ACTION_CALL_EMERGENCY); intent.setData(Uri.fromParts(PhoneAccount.SCHEME_TEL, mLastNumber, null)); intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); startActivity(intent); }
+参考FAQ: FAQ87901
+### 问题: 触宝输入法候选区最大输入字符数限制
+解决方案: 候选词输入字符数量是一个宏定义,最多可容纳64个字符,如果是中文,则最多显示16个中文汉字.
+参考FAQ: FAQ86184
+### 问题: 设置第三方输入法作为默认输入法时，低概率出现重启后默认输入法改变的情况？
+解决方案: 这种情况往往出现在预置应用较多时,使用多线程进行开机package扫描后,系统启动加快,同时也会使系统进入SystemReady状态时间提前,有可能会出现package还没有扫描完就已经systemReady的情况. InputMethodManager就是根据systemReady状态来设置默认输入法的.如果InputMethodManager 在 systemReady以后发现要设置的默认输入法没有安装完成,就重新选择默认输入法,就有可能设置成其他输入法比如拉丁输入法. 解决方法是将第三方输入法预置到system/vital-app目录下,提早完成扫描.如果要求输入法为不可卸载可以安装在priv-app下.
+参考FAQ: FAQ86187
+### 问题: MIDI格式铃声播放会震动, 原因为何? 该怎么处理?
+解决方案: 有些MIDI格式铃声直接利用audio player播放也会震动, 原因是因为该音频文件本身是自带有震动信息的, MIDI格式音乐可以设置多个声道, 其中有一个声道被设置为震动的关系. 只要将该声道移除, 即可正常播放, 不会震动.
+参考FAQ: FAQ86245
+### 问题: ping 流程
+解决方案: wifi会用ping测试丢包情况,简介ping流程如下: Ping实际上利用的就是ICMP ECHO和ICMP ECHO REPLY包来探测主机是否存在,所以Ping程序的流程十分简单: 发送ICMP ECHO包---- > 接收ICMP ECHO REPLY包 发送ICMP ECHO包时填充Identifier为进程ID,Sequence Number为从0递增计数,data填充为发送时间接收ICMP ECHO REPLY包时检查Identifier, Sequence Number是否正确,通过IP报头的源地址字段获得回送报文的主机地址是否正确.
+参考FAQ: FAQ86268
+### 问题: 联系人头像如何保存与获取？
+解决方案: (1)缩略图:直接保存到数据库中的data表中,mimetypes为vnd.android.cursor.item/photo,对应的数据在data15中,获取时可以直接调用ContactsContract.Contacts.openContactPhotoInputStream(mContentResolver, photoUri, false) (2)清晰图:以文件的形式保存在/data/data/com.android.providers.contacts/files/photos路径下(可参考PhotoStore.java相关处理),并且在数据库photo_files表中记录相关信息,photo_files表中的id即对应保存的文件名,获取时可以直接调用ContactsContract.Contacts.openContactPhotoInputStream(mContentResolver, photoUri, true)
+参考FAQ: FAQ86293
+### 问题: 拨打的电话号码0XXXXXXXX，接通后手机显示0没有了
+解决方案: MO拨打给网络侧的电话号,网络侧修改后会通过空口消息的CONNECT回给UE.如果手机在开机时AP下发了AT+COLP=1那么代表会显示网络侧修改后的号码.如果下发AT+COLP=0.代表不采纳网络修改后的号码,直接显示客户拨打号.海外部分网络会把处理掉后发给UE.这样就造成0被删掉.所以可以通过下发AT指令来根据客户需求处理该问题.
+参考FAQ: FAQ86295
+### 问题: 修改SVN号后，手机无法做业务
+解决方案: 修改后的SVN号可通过"AT+SGMR=0,0,2"条AT指令的返回值来确认修改的号码是否是正确的.很多客户拿到的SVN号是一个16进制表示数字.但由于填写有误,却直接将16进制的数值,直接写到NV的SVN ITEM项中,没有加0x.所以在写入NV时要先确认.可用的SVN号是16进制的数值,还是10进制数值.必须正确填写NV ITEM. 填写后通过LOG,TRACE中的AT+SGMR来再次确认填写是否正确.
+参考FAQ: FAQ86296
+### 问题: 真闪和假闪的区别
+解决方案: 真闪:使用GPIO接外挂IC,从而达到800ma及以上的闪光灯驱动电流的方式 假闪:使用平台端恒流源控制闪光灯驱动电流的方式,7731g使用的是FLASH_IB控制方式,最大可达到470ma,7731C,9830等使用的是 并行WHTLED方式,最大可达到180ma 两者优缺点:真闪的闪光灯亮度高,效率高,相对于假闪打闪效果更好,更省电,所以一般中高端的手机都是用真闪.但是,需要外挂IC,同时要增加与其对应的大电容等充放电元器件,在增加成本的同时,还需要考虑硬件布线排板.
+参考FAQ: FAQ86301
+### 问题: 前后摄像头是否可同时工作
+解决方案: 目前,773×系列,983×系列芯片由于平台端DCAM控制器的限制,同一时间,只能处理前置摄像头或者后置摄像头的数据,所以都不支持前后摄同时工作.后续的平台在DCAM硬件上有改进,同时支持三个ISP同时工作,给前后摄同时工作的功能提供了硬件支持.
+参考FAQ: FAQ86305
+### 问题: 6.0_r6 CTS测试结束不能生成测试报告
+解决方案: 05-31 14:37:05 E/FileSystemLogSaver: Unable to create unique directory in /tmp. Attempting to use tmp dir instead 05-31 14:37:05 E/FileSystemLogSaver: Permission denied java.io.IOException: Permission denied host_log显示不能在PC端的/tmp目录下创建测试日志文件,检查/tmp目录是否存在,分区是否已满,权限是否正确.
+参考FAQ: FAQ86315
+### 问题: google要求CTS测试前检查安全级别是否达标，怎么看手机的安全级别？
+解决方案: 检查安全级别,进入系统设置:Settings -> About phone -> Android security patch level
+参考FAQ: FAQ86316
+### 问题: camera菜单中的定格显示是什么意思
+解决方案: 勾选该项后,点击拍照,拍摄到的图片将定格显示在屏幕,并出现询问删除或保存的界面,不满意当前效果可以选择删除后重新拍摄,如果满意则可选择保存
+参考FAQ: FAQ86330
+### 问题: 为何移动网络设置中没有UPLMN菜单
+解决方案: 由于在代码中有限制,非CMCC版本和Relance版本将不会有UPLMN菜单,如下代码: if (!isRelianceBoard && TeleServicePluginsHelper.getInstance(this).isSuportPlmn()) { Log.d(LOG_TAG, "add preference of ulpmn settings"); prefSet.addPreference(mUplmnPref); } else { Log.d(LOG_TAG, "remove preference of ulpmn settings due to CMCC or Reliance"); } 所以如果需要添加UPLMN菜单,修改如上的if条件即可
+参考FAQ: FAQ86338
+### 问题: AndroidM环境下framework层添加代码遇到编译检查报错时如何解决?
+解决方案: 产生这个报错是因为AndroidM新添加了对framework下jar包的package name检查,解决的方法是在 build/core/tasks/check_boot_jars/package_whitelist.txt 文件中按照规则将新增代码添加到白名单 name检查的逻辑由build/core/tasks/check_boot_jars/check_boot_jars.py脚本实现
+参考FAQ: FAQ86344
+### 问题: pad项目的launcher3如何禁止横竖屏旋转？
+解决方案: 一般情况,禁止Launcher3横竖屏旋转,需要在AndroidManifest.xml下加入如下属性: android:screenOrientation="nosensor" 但是Launcher3对pad项目横竖屏旋转单独做了处理! 具体如Launcher.java的onCreate方法: // On large interfaces, or on devices that a user has specifically enabled screen rotation, // we want the screen to auto-rotate based on the current orientation setOrientation(); 该方法会获取对应config.xml文件中是否允许旋转的默认值,如下: <bool name="allow_rotation">false</bool>
+参考FAQ: FAQ86354
+### 问题: 在设置--电池--省电管理(Heart beat synchronization)是指什么功能？
+解决方案: 解答: Heart beat Synchronization是心跳同步功能,用于节省耗电,当手机休眠以后,会使服务间隔性的休眠,而不是让应用一直与服务器同步信息,从而达到了省电效果.省电设置中的应用如果被勾上,那么就不参与到心跳控制中. 另外,Heart beat Synchronization原生设计思想是,此界面不显示手机烧机后自带的应用,只显示用户自己下载的第三方应用,手机自带的应用不需要进行节电设置.
+参考FAQ: FAQ86360
+### 问题: 锁屏、下拉、设置/关于手机/状态信息/SIM卡状态/网络、设置/无线和网络/更多/移动网络/网络运营商/搜索网络、设置/无线和网络/SIM卡，这些地方显示的网络名称有什么区别
+解决方案: 1. 锁屏和下拉显示的网络名称: 网络plmn与卡spn名称,按照协议及sim卡文件由所注册网络共同决定. 2. 设置/关于手机/状态信息/SIM卡状态/网络 该部分是当前所注册到网络plmn名称 3. 设置/无线和网络/更多/移动网络/网络运营商/搜索网络(手动) 该部分搜索出来的网络名称包含: 当前所注册到网络plmn名称、当前可注册网络plmn名称、当前禁止注册的网络plmn名称 4. 设置/无线和网络/SIM卡 该部分指卡的spn名称
+参考FAQ: FAQ86422
+### 问题: 使用某运营商的手机卡无法做业务
+解决方案: 通过抓取开机的ARM LOG中.搜索MESSAGE"ACTIVATE_PROTOCOL_STACK_REQ"查看消息信元中的"protocol_stack_mod"项.如果显示为LIMITED_PROTOCOL.那么就需要客户自行确认下,该张卡是否是加密卡.或者与是手机禁用的黑卡..
+参考FAQ: FAQ86450
+### 问题: 如何通过ARM Log工具查看当前WCDMA网络下的服务小区和邻区
+解决方案: 通过ARM LOG工具中的MESSAGE消息中的WRCC_WRRC_CELL_LIST_INFO_PRINT消息可以查看到当前网络的服务小区和邻区.也可以通过ARM Log工具左侧的"Cell Measurement"窗口查看,其中服务小区信息以红色字体表示.
+参考FAQ: FAQ86474
+### 问题: SIM LOCK中两张卡的解锁依赖关系
+解决方案: 目前的实现方案就是卡一解锁,卡一卡二都会解锁.
+参考FAQ: FAQ86519
+### 问题: 在WCDMA弱场环境下如何确认UE找到的网络是否满足搜网门限
+解决方案: 在trace窗口中搜索关键字"WRCC:Type20,RF meas result",如果搜索结果中所有RSSI_64th_dBm的值都不大于WCDMA搜网门限-6720(即-105dbm),说明此时的网络为弱场环境,不满足UE的搜网门限.
+参考FAQ: FAQ86480
+### 问题: 选网模式上的GSM PREFER的实际处理方法
+解决方案: GSM prefer不代表手机一直驻留在2G网络,只是选网的时候手机会优先选择2G驻留, 当3G信号存在时,且足够强,满足重选条件时,手机还是会重选到3G 上.
+参考FAQ: FAQ86533
+### 问题: 掉网过程中未发送出去的短信，网络回复后不能RESEND SMS
+解决方案: 自动重发功能主要是处理网络短暂出现问题而很快又会恢复这种情形的,以免手动重发影响用户体验.当比较长的时间出现不能发送成功的情况时,可以进入发件箱手动选择resend,这样更合理.
+参考FAQ: FAQ86535
+### 问题: 如何通过ARM LOG查看短信中心的号码
+解决方案: 在Messagep窗口中查找消息"MSG_ID_SMS_SUBMIT",通过消息解析窗口中Structure页中的sc_addr域,可以看到短信中心号码.在sc_addr域中,先表示短信中心号码类型,0x91为国际型,0x80为国内型.
+参考FAQ: FAQ86489
+### 问题: android触摸事件流程
+解决方案: 如图: 触摸事件处理主要分三层,依次是Activity,Viewgroup(父View),View(子View) 一个触摸事件到来之后,,按从上到下依次处理,图中涉及到的几个方法解释一下: dispatchTouchEvent:三层都具有的触摸事件分发方法,是每一层的切入点 onInterceptTouchEvent:父View独有的事件拦截方法, 若返回true,则事件不再向子View传递,并且需要给子View发送MotionEvent.ACTION_CANCEL onTouch:父View和子View具有的触摸事件监听方法,如果通过setOnTouchListener设置了监听,则该监听会在onTouchEvent之前被调用,onTouch返回false才会走onTouchEvent onTouchEvent:三层都具有的触摸事件处理方法,若该方法返回false则事件返回上一层的onTouch(父View)或onTouchEvent(Activity)
+参考FAQ: FAQ86526
+### 问题: 浏览器如何降低Gif图片显示帧率
+解决方案: 浏览器显示GIF动画是chromium通过Skia渲染的, 参数的获取是在GIFImageReader.cpp parseData() Case GIFControlExtension:中, 修改setDelayTime()的参数,加大这个值就可以降低Gif图片显示帧率.
+参考FAQ: FAQ86567
+### 问题: 浏览器如何降低网页上下滑动的速度
+解决方案: 代码 external\chromium_org\android_webview\java\src\org\chromium\android_webview\AwScrollOffsetManager.java 方法 public void flingScroll(int velocityX, int velocityY) 减小velocityY的值可以降低上下滑动的速度, 比如: mScroller.fling(scrollX, scrollY, velocityX, velocityY, 0, scrollRangeX, 0, scrollRangeY); 可改为 mScroller.fling(scrollX, scrollY, velocityX, velocityY/2, 0, scrollRangeX, 0, scrollRangeY);
+参考FAQ: FAQ86569
+### 问题: 用首号码为0的号码拨打电话成功后，通话界面中电话号码前的0会消失，这是为什么？
+解决方案: 通话界面中电话号码前的0会消失,一般原因是:由于网络侧传来的号码中就没有0,因为使用了网络侧的号码. 如果遇到此问题,请先查看radio log,确认初始化Log中是否有下发:AT+COLP = 1. (1)如果下发的是AT+COLP = 1,则说明此现象正常. 若需要修改,请联系展讯Tele相关同事修改. (2)如果下发的是AT+COLP = 0,则说明不使用网络侧传过来的号码,但现在仍显示了,说明Modem端不支持COLP功能. 若需要修改,请联系展讯Modem端相关同事修改.
+参考FAQ: FAQ86682
+### 问题: 浏览器如何修改网页最大滑动距离
+解决方案: 代码 external\chromium_org\content\browser\renderer_host\overscroll_controller.cc const float kFlingVelocityThreshold = 1100.f; 变量kFlingVelocityThreshold定义了最大滑动距离,可以修改这个值改变最大滑动距离.
+参考FAQ: FAQ86571
+### 问题: TP增加手势唤醒功能后，底电流过高,从2.2MA增加到5.3MA
+解决方案: 请在pinmap.c文件中, 将TP中断脚配置中的BIT_PIN_SLP_Z 改为BIT_PIN_SLP_IE
+参考FAQ: FAQ86578
+### 问题: 网页动画如何开启GPU硬件加速？
+解决方案: 为动画DOM元素添加CSS3样式-webkit-transform:transition3d(0,0,0)或-webkit-transform:translateZ(0);这两个属性都会开启GPU硬件加速模式,从而让浏览器在渲染动画时从CPU转向GPU, -webkit-transform:transition3d和-webkit-transform:translateZ其实是为了渲染3D样式,但我们设置值为0后,并没有真正使用3D效果,但浏览器却因此开启了GPU硬件加速模式. 通过开启GPU硬件加速虽然可以提升动画渲染性能,但使用仍需谨慎,否则它反而会大量占用浏览网页用户的系统资源,尤其是在移动端,肆无忌惮的开启GPU硬件加速会导致大量消耗设备电量,降低电池寿命等问题.
+参考FAQ: FAQ86580
+### 问题: 如何使用Chrome浏览器监测网页动画帧速率
+解决方案: 使用Chrome浏览器监测网页动画帧速率的方法如下: 1.Chrome的DevTool中TimeLine的Frame模块,可记录分析帧速率的变化. 2.地址栏输入"chrome:flags"搜索"fps",将"FPS计数器"开启,浏览器重启后右上角会实时显示帧速率.
+参考FAQ: FAQ86585
+### 问题: 网页通过-webkit-transform:transition3d/translateZ开启GPU硬件加速的适用范围
+解决方案: 网页通过-webkit-transform:transition3d/translateZ开启GPU硬件加速的适用范围: 1.使用很多大尺寸图片(尤其是PNG24图)进行动画的页面. 2.页面有很多大尺寸图片并且进行了css缩放处理,页面可以滚动时. 3.使用background-size:cover设置大尺寸背景图,并且页面可以滚动时.(详见:https://coderwall.com/p/j5udlw) 4.编写大量DOM元素进行CSS3动画时(transition/transform/keyframes/absTop&Left). 5.使用很多PNG图片拼接成CSS Sprite时.
+参考FAQ: FAQ86587
+### 问题: Dialog对话框方法 setCancelable(false)和 setCanceledOnTouchOutside(false)的区别
+解决方案: 1. setCancelable(false)方法: dialog弹出后,点击对话框外区域或物理返回键,dialog不消失; 2. setCanceledOnTouchOutside(false)方法: dialog弹出后,点击对话框外区域,dialog不消失;点击物理返回键dialog消失 特点: setCancelable(false) 不能响应返回键的事件,但 setCanceledOnTouchOutside(false)仍能响应返回键的事件.
+参考FAQ: FAQ86625
+### 问题: 如何获得卡注册到当前网络的国家码iso
+解决方案: 可以通过 TelephonyManager 的接口获取:(参数是phoneId) public String getNetworkCountryIsoForPhone(int phoneId);
+参考FAQ: FAQ86628
+### 问题: apn protocol错误导致无法上网的问题
+解决方案: 客户反馈:插入两张sim 4G卡,其中切换到4G能上网,切换到2G/3G无法上网 分析结果,发现客户的apns-conf.xml中对于使用的apn的protocol设置错误,错误如下: <apn carrier="myGlobe Inet" mcc="515" mnc="02" apn="http.globe.com.ph" type="default,supl" port="8080" protocol="IPV4" /> 解决方法是将protocol="IPV4"修改为protocol="IP".
+参考FAQ: FAQ86634
+### 问题: vodafone sim卡彩信无法发送
+解决方案: 彩信无法发送,本案例有两个 原因,一是缺少apn,二是apn的protocol必须是IPV4不能是IPV4V6 增加了以下apn后测试ok.后续遇到类似情况,可参照表现正常的对比机增加相同的apn. 另外,目前还存在个别运营商,要求apn的protocol只能是IPV4,如果是IPV4V6就会出现类似问题.需要关注. Name: Vodafone MMS MCC: 404 MNC: 11 APN: portalnmms MMSC: http://mms1.live.vodafone.in/mms/ MMS proxy: 10.10.1.100 MMS port: 9401 APN type: mms APN protocol / roaming protocol: IPv4
+参考FAQ: FAQ86636
+### 问题: android.net.cts.ConnectivityManagerTest#testStartUsingNetworkFeature_enableHipri FAIL
+解决方案: 此条测试case,要求apn type中包含hipri这个类型,如果没有则请在apn中添加.
+参考FAQ: FAQ86644
+### 问题: 展讯平台是如何实现user版本与debug版本kernel配置差异的
+解决方案: 在展讯平台上user版本与debug版本kernel配置差异在文件 device/sprd/<plat_name>/user_diff_config中定义 对该文件的调用通过kernel/AndroidKernel.mk实现 文件的规则是 ADD:在user版本中设定一个新的config DEF:在user版本中去掉一个config VAL:在user版本中重新定义一个config的值
+参考FAQ: FAQ86703
+### 问题: 如果获取到当前正在播放的FM频道名字？
+解决方案: 首先只有保存在频道列表的频道才有频道名字,因此如果当前正在播放的频道 没有保存在频道列表,它是没有名字的. 那么如果当前正在播放的频道已经保存在频道列表,那么如果获取到它的名字呢? String stationName = FMPlaySharedPreferences.getStationName(0, FMPlaySharedPreferences.getTunedFreq()); 字符串 stationName就是获取到的当前正在播放的频道的名字.
+参考FAQ: FAQ86734
+### 问题: android5.1非volte分支，如何打开视频通话
+解决方案: android5.1非volte分支,默认关闭视频通话. 如需支持3G或者4G的视频通话,将persist.sys.support.vt置为true即可
+参考FAQ: FAQ86739
+### 问题: 为什么分享联系人有时提示"选择的联系人数据量超出最大限制，请选择更少的联系人"？
+解决方案: 根据Google官方解释Activity之间使用Parcel是有大小限制的,依据使用环境而定,分享联系人使用pracle对象传输数据,通过测试,为保证能够顺利传输,最大传输为150000字节,而每个联系人大小可能不同,故有时会出现提示. 其代码中设置如下: packages/apps/Contacts/src/com/android/contacts/activities/PeopleActivity.java private static final int MAX_DATA_SIZE = 150000;
+参考FAQ: FAQ86758

@@ -1,0 +1,313 @@
+### 问题: SC7701平台video recording最大支持多少resolution和 frame rate？
+解决方案: 
+参考FAQ: FAQ97150
+### 问题: SC9820A测试4G VOLTE call时手机如何设置？
+解决方案: 打开手机菜单如下图操作完成设置.
+参考FAQ: FAQ97151
+### 问题: RF校准的的tuning target在那可以找到？
+解决方案: 打开CFT工具如下图操作即可找到RF校准的Tuning target.
+参考FAQ: FAQ97152
+### 问题: 是否可以把VDD1V8这个LDO的电容C0325拿掉？
+解决方案: 不可删除,此LDO内部需要使用,在power up上电时序中,此电源还是靠前打开的,故此电容不可删除.
+参考FAQ: FAQ97153
+### 问题: SC7701B平台是否支持USB audio？
+解决方案: SC7701B不支持USB AUDIO
+参考FAQ: FAQ97154
+### 问题: 拔电池后手机实时时间需要维持一段时间，根据拔电池的维持时间如何计算电容容量？
+解决方案: 没有32kcrystal是不可以的,因为在没有32k晶体时,32k时钟是由26M时钟转换的,VDD DCXO有供电时,26M时钟才有输出, 所以发掉电池后,VDD DCXO没有输出,26M没有输出,32k时钟也没有输出. 根据拔电池的维持时间计算电容容量: 理论最低工作电压约为1.3V,但实际可以使用的最低电压约2V ,RTC是2.8V,压差是0.8V. RTC的工作电流约为2ua, 理论计算与实际可能有误差 根据公式计算: i(t)=Cdu/dt 要维持2分钟,可能需要300uf电容. 也可以考虑外加电池(纽扣电池).
+参考FAQ: FAQ97155
+### 问题: SC6531E/M是否支持外接 Flash
+解决方案: SC6531E/M不支持外接flash,内置flash只有32Mbit一种容量
+参考FAQ: FAQ97164
+### 问题: SC7701 是否能支持 WCDMA BAND3
+解决方案: SC7701平台现在不支持BAND3
+参考FAQ: FAQ97167
+### 问题: 7731 android6.0支持的蓝牙协议版本
+解决方案: 7731 android6.0支持的蓝牙协议2.1+EDR版本
+参考FAQ: FAQ97188
+### 问题: android6.0 蓝牙各profile版本
+解决方案: android 6.0蓝牙各profile版本 HFP 1.6 HSP 1.2 OPP 1.1 A2DP 1.2 AVRCP 1.3 PAN 1.0 PBAP 1.1 MAP 1.2 HID 1.0
+参考FAQ: FAQ97204
+### 问题: SC9820支持TCXO+32K less吗？
+解决方案: 不支持
+参考FAQ: FAQ97224
+### 问题: android 6.0如何关闭PAN功能
+解决方案: /packages/apps/Bluetooth/res/values/config.xml中 <bool name="profile_supported_pan">true</bool> 改为 <bool name="profile_supported_pan">false</bool>
+参考FAQ: FAQ97230
+### 问题: android 6.0如何关闭MAP功能
+解决方案: packages/apps/Bluetooth/res/values/config.xml中 <bool name="profile_supported_map">true</bool> 改为 <bool name="profile_supported_map">false</bool>
+参考FAQ: FAQ97233
+### 问题: andriod 6.0如何关闭HID功能
+解决方案: packages/apps/Bluetooth/res/values/config.xml中 <bool name="profile_supported_hid">true</bool> 改为 <bool name="profile_supported_hid">false</bool>
+参考FAQ: FAQ97237
+### 问题: SC9820A平台是否支持键盘扩展？
+解决方案: 支持,设计方法请参考SPRD MatrixKeypad Appliction_V1.0.pdf(从isupport系统下载)
+参考FAQ: FAQ97263
+### 问题: 开启FDN后，如何配置不限制发送短信（SMS）\彩信（MMS）
+解决方案: FDN开启后,会对SMS、MMS发送,以及PDP激活做限制性检查: 1.SMS发送:需要同时满足目标号码和短信中心都在FDN列表中,才可以正常发送 2.MMS发送:需要满足目标号码在FDN列表 3.PDP激活:需要检查相关网关(*99#)是否存在FDN列表 FDN开启后MMI部分的限制: 1.MMS发送: MMI检查FDN的接口为MMIMMS_IsAllowSendMMSByFDN,会检查所有发送目标号码是否在FDN列表.如不检查,上述判断可以直接返回TRUE; 2.PDP激活: MMIPDP_IsFDNPermitActivePdp会检查相关网关是否在FDN列表.如不检查,上述判断直接返回TRUE即可. 3.SMS发送: MMI部分没有检查 除MMI部分检查外,协议部分也会有相关检查,由于协议部分并不开源,如需要修改,可获取展讯支持.
+参考FAQ: FAQ97357
+### 问题: 如何抓取开机log、cap log
+解决方案: 1.很多问题需要抓取[开机log],比如自动更新时间、网络注册、STK、Network name等等: 使用USB线,开机log的抓取方法: 开启phone lock后,重新开机,到phone lock密码输入界面,连接log工具,待有正常log信息输出后,输入phone lock密码开机执行相关操作后保存即可. 2.上网问题需要抓取cap log: cap log的抓取方法: #*8378#1#进入工程模式 -> Para Set -> Tcpip Debug -> Cap Output -> On. Cap Output On后,在Logel工具抓取的log文件中会有.cap文件.
+参考FAQ: FAQ97391
+### 问题: 手机发生定屏时，该如何处理？
+解决方案: 首先需要确认adb是否可以连接,排除系统未挂死的情况,如果驱动无法识别的情况下,需要dump mem信息时,需要先采用组合键(volume up + volume down 同时按下,紧跟连续按下2次power key)dump mem,这样能保存panic的线程信息,方便研发定位分析,如组合键无响应时,说明linux kernel已经挂死,这种状态下,才使用长按7S的powerkey来dump mem 信息.
+参考FAQ: FAQ97410
+### 问题: 测试实网吞吐率时，如何生成10M文件？
+解决方案: 在测试实网吞吐率测试时,通常需要使用FTP传输10M或者30M的文件,但无法找到大小合适的文件, 可通过如下操作获取大小合适的文件: 在win7电脑环境下,可进行DOS命令生成10M文件,命令如下: fsutil file createnew C:\testfile.txt 10485760 该命令执行后,会在C盘下创建testfile.txt文件,大小为10485760字节
+参考FAQ: FAQ97426
+### 问题: 如何通过adb截取手机屏幕信息？
+解决方案: 可以将以下代码编辑入bat文件,adb正常连接后,点击该bat批处理文件,即可抓取手机当前屏幕信息 adb wait-for-device adb shell /system/bin/screencap /sdcard/screenshot.png adb pull /sdcard/screenshot.png %cd%\screenshot%time:~0,2%%time:~3,2%%time:~6,2%.png 例如下图所示,在D盘下创建该bat文件,在连接adb后,点击bat文件后,会在bat文件所在的目录中生成screenshotXXXXXX.png XXXXXX即为当前电脑系统时间,下图中212633即为21:26:33(时:分:秒)
+参考FAQ: FAQ97429
+### 问题: 如何在debug版本使用USB线连接ADB的情况下，停止USB线的供电？
+解决方案: 在连接adb的情况下,修改sys/class/power_supply/battery的stop_charge值来控制USB充电,操作如下: shell@sp9830aea_pad_h100:/sys/class/power_supply/battery # echo 1 > stop_charge //关闭USB的充电 shell@sp9830aea_pad_h100:/sys/class/power_supply/battery # echo 0 > stop_charge //打开USB的充电 提示:在adb连接的情况下,系统不会进入休眠,所以该状态下不能进行功耗测试
+参考FAQ: FAQ97431
+### 问题: Android6.0 如何调整主菜单界面应用图标之间的行距？
+解决方案: 定位到\packages\apps\Launcher3\res\values\dimens.xml <dimen name="all_apps_icon_top_bottom_padding">8dp</dimen> 适当调整这个图标距离顶部和底部的距离,对应的行距就会跟随变化.
+参考FAQ: FAQ97441
+### 问题: Android7.0中，如何添加支持的语言列表？
+解决方案: android 7.0 配置语言列表的地方在frameworks/base/core/res/res/values/locale_config.xml,例如添加菲律宾语, <item>fil-PH</item> <!-- Filipino (Philippines) -->
+参考FAQ: FAQ98306
+### 问题: 6531 支持哪些 SSL 协议及加密算法
+解决方案: 若是6531 12C 的话 , TLS 需要合入差分包 , 其他的SSL 支持如下 1. SSL version: TLS1.0(SSL3.0) 2. Supported cipher suits: Cipher Suite: TLS_NULL_WITH_NULL_NULL (0x0000) Cipher Suite: TLS_RSA_WITH_NULL_MD5 (0x0001) Cipher Suite: TLS_RSA_WITH_RC4_128_MD5 (0x0004) Cipher Suite: TLS_RSA_WITH_RC4_128_SHA (0x0005) Cipher Suite: TLS_RSA_WITH_DES_CBC_SHA (0x0009) Cipher Suite: TLS_RSA_WITH_3DES_EDE_CBC_SHA (0x000a)
+参考FAQ: FAQ97614
+### 问题: 如何快速判断产品底层是否支持FRP(factory reset protection)
+解决方案: FRP功能从结构上说,由GMS程序和底层基础服务组成. 是否支持GMS程序显而易见,那如何快速检查手机底层的FRP基础服务是否OK呢? 步骤如下: 1. 开机,进入桌面 -> 设置 -> 关于手机,点击7次"版本号",手机进入开发者模式; 2. 进入设置 -> 开发者选项. 3. 检查是否存在"OEM解锁"菜单项,如果没有,表示不支持FRP; 4. 如果有"OEM解锁"菜单,点击该菜单的开关图标,如果开/关操作失败,表示不支持FRP
+参考FAQ: FAQ97622
+### 问题: 手机锁屏后，指纹输入超次后，30秒超时时间到后再使用已录入的指纹也无法解锁
+解决方案: 此问题为google原生问题 原因:framework超时结束后,不会通知keyguard,在未灭屏亮屏前keyguard不会重新调用指纹验证接口 解决:指纹framework添加超时结束的callback,供keyguard调用,实现与keyguard的交互,重新reset指纹 具体修改请联系CPM获取sample code,谢谢
+参考FAQ: FAQ97623
+### 问题: 如何实现adb连接设备的序列号唯一
+解决方案: adb get的序列号是从init.sc××××.usb.rc(平台对应的usb.rc文件)文件中如下代码ro.serialno获取到的. on boot write /sys/class/android_usb/android0/iManufacturer Spreadtrum write /sys/class/android_usb/android0/iProduct Spreadtrum Phone write /sys/class/android_usb/android0/iSerial $ro.serialno 而这个ro.serialno是在产线imei工具写入的. 当执行imei工具写入s/n号之后,adb连接设备获取到的序列号就是唯一的.
+参考FAQ: FAQ97673
+### 问题: CTS测试android.net.cts.MultinetworkApiTest  Fail
+解决方案: Line 5987: 06-06 00:50:24.771 9633 9647 D MultinetworkApiTest: QUIC UDP 443: sent=12 but rcvd=-1, errno=11 Line 5988: 06-06 00:50:24.771 9633 9647 D MultinetworkApiTest: Does this network block UDP port 443? 网路原因,没有数据返回,和代码无关.如果客户更换网络仍然fail的话,请联系预约展讯测试环境进行测试.
+参考FAQ: FAQ98167
+### 问题: 32KLess方案下，为什么关机漏电流远大于上电漏电流？
+解决方案: 1. 使用32Kless方案时,为保障关机状态下RTC的精度,所以平台通常会使用外部26M晶体作为32K的时钟源; 2. 从原理上得知,从26M分频出32K就需要TRC的部分电路处于Active状态;而初次上电这部分电路是不工作的. 3. 一般来说,这部分将有<200uA功耗.
+参考FAQ: FAQ107660
+### 问题: webview打开详细log输出及关键数据的保存的方式
+解决方案: webview本身已经添加了详细的流程log以及dump tree结构和资源加载数据的打印,打开方式如下: 1. 拨号盘输入"*#*#83781#*#*" 2. 向左来菜单,进入: DEBUG&LOG 3. 进入 browser debug 子目录 4. 可以选择需要的log类型 说明: log enable: 一般是流程性的log; save receive: 保存接收到的网页数据,保存位置:/sdcard/browser/ dump tree: 打印dom tree 个render tree,保存位置:/sdcard/browser *** domTree.txt/ renderTree.txt
+参考FAQ: FAQ98236
+### 问题: Android6.0如何配置高压电池
+解决方案: 配置高压电池需要修改arch/arm/boot/dts/sprd-battery.dtsi文件中的如下参数 原参数 高压电池参数 chg-end-vol-h = <4225>; ->chg-end-vol-h = <4375>; chg-end-vol-pure = <4200>; ->chg-end-vol-pure = <4350>; chg-end-vol-l = <4190>; ->chg-end-vol-l = <4340>; chg-bat-safety-vol = <4280>; ->chg-bat-safety-vol = <4430>; rechg-vol = <4131>; ->rechg-vol = <4281>;
+参考FAQ: FAQ98270
+### 问题: 文件夹复制到同样路径下，生成的文件名后面括号内数字如何修改成按数字排序？
+解决方案: MMIAPICOM_AutoRenameFileName 会在现有文件名后多次添加随机数,直到不出现重名文件, 此为原生设计非缺陷. 若是一定要修改,请在 MMIAPICOM_GetNoExistFileName @ mmi_common.c 中加入: PUBLIC void MMIAPICOM_GetNoExistFileName(...) { ...... do { if(is_folder) { ...... } else { ...... } random = rand(); //约1548行,把这句改成 random++; ...... } }
+参考FAQ: FAQ98330
+### 问题: Android6.0和Android7.0，格式化SD卡为内部存储，为什么无法移动应用？
+解决方案: Google原生的设计,为了防止将应用移动到SD卡后,导致应用无法使用和丢失,例如拔掉SD卡,SD卡损坏,SD卡重新格式化,都会导致移动到SD卡的应用消失,需要重新安装,为了避免此类问题,所以Google设计时,底层移动文件没有包含应用.
+参考FAQ: FAQ98347
+### 问题: 联系人中显示总人数和SIM卡容量上显示人数不一样
+解决方案: sim卡上存有12个联系人,其中有两个SIM卡联系人图标上带锁,带锁的图标表示SDN联系人,SDN联系人不计入SIM卡容量的统计,故在SIM卡容量里显示已存储10,这是正常现象. SDN:(系统拨叫号码)网络服务拨号联系人,该联系人为Telcel运营商预置的,用户本身不可增加、编辑及删除. FDN: 固定拨号联系人,可在CallSetting中执行增、删、改操作. 在联系人应用中,不可以对sdn和fdn联系人进行增、删和改的操作,且在联系人sim卡容量界面,不对sdn和fdn联系人进行计数,sdn和fdn本身不影响sim卡容量.
+参考FAQ: FAQ98301
+### 问题: Android7.0中，为什么有时添加语言列表不生效？
+解决方案: Android7.0中,配置语言列表的地方在frameworks/base/core/res/res/values/locale_config.xml 但有时会出现添加语言不生效的情况,原因是针对一些特定的版本, vendor/sprd/feature_configs/目录下会有对应版本的一些特定配置,其中如果有locale_config.xml,就会overlay系统原本的配置.
+参考FAQ: FAQ98307
+### 问题: 为何Settings-SIM Management选项无作用
+解决方案: 原因分析: 该设置项由三个因素决定:1 当前存在卡数量 2 卡状态是否ready 3 卡是否被lock 当activeSimCount卡数量大于等于2时,才将这些设置项目设置为可用,也就是说必须同时存在至少两张卡,且卡的状态为ready且不被lock状态. 解决方案: 该设置项由三个因素决定:1 当前存在卡数量 2 卡状态是否ready 3 卡是否被lock 当activeSimCount卡数量大于等于2时,才将这些设置项目设置为可用,也就是说必须同时存在至少两张卡,且卡的状态为ready且不被lock状态.
+参考FAQ: FAQ98360
+### 问题: android7.0,如何集成widevine?
+解决方案: 由于google 对widevine的发布策略改变 ,我司不能在IDH包中向客户发布widevine的so文件 widevine的获取需要客户公司和google签订协议之后才能获取 android 7.0上widevine的集成 ,可按一下步骤操作确认 1.android 7.0对应widevine版本是11.2,请进入widevine/libwvdrmengine/docs/,查看Widevine_Modular_DRM_Version是否是11.2. 2. 将得到的widevine 文件夹放入展讯代码的vendor目录下,编译工程 3.刷机后 确认手机对应的文件是否存在 /system/vendor/lib/mediadrm/libwvdrmengine.so 若libwvdrmengine.so存在,则widevine 已成功集成
+参考FAQ: FAQ98531
+### 问题: 如何通过串口来进行固定周期的reboot
+解决方案: 使用串口sscom来进行reboot压力测试或者复现重启相关的casee相比较其他方式有更大的优势: 1.可以实时的输出log 2.可以排除usb或者ac充电的干扰 3.操作界面化,易操作 操作方式: 1.保证手机的TX\RX\GND三根线引出,连接到串口线上,可以通过sscom正常的输出log和输入shell命令 2.点击PC上sscom工具中的"拓展"按钮 3.勾选HEX,同行输入7265626F6F740a ASIC码(reboo回车=7265626F6F740a),勾选自动循环,间隔自行定义,单位是ms 经过上述操作即可实现自定义的固定时间的reboot重启动作.
+参考FAQ: FAQ98555
+### 问题: 展讯平台NV差分升级注意事项
+解决方案: 目前我们在给客户配置NV时一般都会提供一份NV delta文件(同时也会提供NV工程文件),如果客户后续需要升级软件版本的话可以直接将此NV delta文件导入新的NV工程,此操作即为NV差分升级. [注意]: 在NV升级过程中严禁取2个时间节点间隔比较远的NV工程直接差分出delta nv,如果这样做的话可能会差分出一些不属于RF常规配置的NV项,也可能会导致比较严重的后果(比如开机搜不到网、assert等现象).所以,最好的NV升级方法就是保留展讯提供的NV delta文件,每次升级直接导入此NV delta文件即可.如果由于某些原因实在找不到此NV delta文件的话,可以取与当前使用的版本完全相同的原始NV工程(展讯原始大版本里面包含的NV工程),然后用此NV工程和当前正在使用的NV工程进行差分(这样的话会差分出一些校准参数、ramp调试参数以及其它在调试过程中引入的NV修改等),最后再将差分出来的delta文件导入新版本NV工程即可.
+参考FAQ: FAQ102472
+### 问题: 如何获取最新的PC侧adb工具
+解决方案: 可以通过谷歌的官方网址进行下载和更新: 链接如下,可根据如下截图获取不同操作系统的adb工具最新版本 https://developer.android.com/studio/releases/platform-tools.html
+参考FAQ: FAQ102489
+### 问题: SC9820A平台是否有微跌过程中瞬间掉电后的重启(SMPL)功能吗？
+解决方案: SC2723G2芯片有SMPL功能. 打开SMPL功能,电池断开小于设定时间(最长2s),再次上电,系统可自动重启.
+参考FAQ: FAQ98595
+### 问题: SC7731G平台使用外置PA，BB端(AORP/AORN)的输出底噪为多少？
+解决方案: BB端AORP/N的输出底噪在10uV左右.
+参考FAQ: FAQ98599
+### 问题: 为什么添加新用户，切换到新用户时，输入法不能使用？
+解决方案: 这种情况不只是对于输入法,而是对于所有的第三方应用都存在此问题.需要把应用安装到system/app或者system/priv-app下才能做到对于所有用户的共享.
+参考FAQ: FAQ99741
+### 问题: NV中dev_set和path_set的含义
+解决方案: dev_set主要控制的是music下的音频通路,每个位的含义如下: path_set主要控制的是通话时dsp下的音频通路,每个位的含义如下:
+参考FAQ: FAQ99335,含图片
+### 问题: 如何修改邮件默认签名
+解决方案: 展讯平台7.0上已经实现默认签名功能 如需求改,可通过修改string signature_default达到修改默认签名的目的 参考路径: vendor/sprd/platform/packages/apps/SprdEmail/UnifiedEmail/res/values-zh-rCN/strings.xml <string name="signature_default">发自我的手机</string>
+参考FAQ: FAQ98832
+### 问题: 如何支持OTG模式下识别FTDI设备
+解决方案: 在OTG功能配置完成之后,有些客户需要支持识别FTDI设备. 软件上我们需要做如下的配置: defconfig中打开如下两个宏开关 +CONFIG_USB_FTDI_ELAN=y +CONFIG_USB_SERIAL_FTDI_SIO=y Framework配置HOST模式的访问权限: handheld_core_hardware.xml文件中增加: <feature name="android.software.print" /> <feature name="android.hardware.usb.host" />//增加这行 <!-- Feature to specify if the device supports adding device admins. --> <feature name="android.software.device_admin" />
+参考FAQ: FAQ99087
+### 问题: Android系统的快门声音的外放
+解决方案: Android照相机快门强制外放设置如下: frameworks/base/core/res/values/config.xml <bool name="config_camera_sound_forced">true</bool> 修改这个boolean,就可以设置是否强制外放快门音.
+参考FAQ: FAQ98872
+### 问题: 校准模式下如何抓取dump信息
+解决方案: 当校准时出现Modem Assert时,可以通过以下方式来抓取Modem的dump信息: 1. 关闭CFT工具(前提是CFT工具不能控制电源,否则手机会掉电关机) 2. 打开armlogel工具(请先确认在设备管理器中可以看到SPRD U2S Diag口) 然后按下图依次操作 这个时候应该会弹出assert 窗口(如果没有,请按下图操作) 3. 在assert 窗口 输入 't'执行dump操作 4. dump结束后将整个Log文件夹取出提供给我们.
+参考FAQ: FAQ98880
+### 问题: SC9820A参考设计LCD RTP_YN、RTP_YP、RTP_XN、RTP_XP引脚是用来干什么的?
+解决方案: 外接电阻式触摸屏的四个管脚,用于实现电阻式触摸屏. 需要注意:目前SC9820A软件不支持触摸屏(电阻式和电容式),所以电阻式触摸屏的管脚连接只是预留给以后调试用的
+参考FAQ: FAQ99097
+### 问题: SC9820A NFC采用的时钟方案
+解决方案: Q1.关于NFC,展讯所释放的软件版本是采用系统时钟的方式,还是采用外部的27.12MHz的晶体方案? SPRD: 默认使用系统时钟 Q2.如果采用外部的27.12MHz的晶体时候,不需要时钟请求信号吧? SPRD: 外部时钟是预留的不能删除,以免后期内部时钟出现干扰,有调试手段 Q3.当采用系统时钟信号时,电平是否匹配?不需要分压吧? SPRD: 现在时钟信号使用的就是1.8V,不需要分压
+参考FAQ: FAQ99099
+### 问题: 充电时充电电流固定每隔10s充电电流断1s，这是正常现象吗？
+解决方案: 6531E这种现象是正常的,目前我司只有6531E这个平台充电时10s充电电流断1s. 这种充电的优势是,在暂停的1s中可以实时监控电压.
+参考FAQ: FAQ99116
+### 问题: 为什么MP3的EQ参数调试无变化？
+解决方案: 请查看eq sel有没有选对模式,要选EQ SET->eq sel的EQMode_Set_Regular.
+参考FAQ: FAQ99119
+### 问题: 请问4层板的memory频率可以到多少？
+解决方案: 4层板DDR建议400MHz, 6层板可以533MHz.
+参考FAQ: FAQ99120
+### 问题: 充电器中的ADP_TYPE_CDP,ADP_TYPE_DCP 和ADP_TYPE_SDP 代表什么意思
+解决方案: ADP_TYPE_CDP 特殊的主板充电,大功率充电 ADP_TYPE_DCP 标准AC充电器,dp dm短路的那种 ADP_TYPE_SDP USB充电及非标充电器都识别为USB充电
+参考FAQ: FAQ99154
+### 问题: 恢复出厂设置蓝牙地址改变的原因
+解决方案: 展讯的蓝牙地址存在两个地方:/productinfo/btmac.txt和/data/misc/bluedroid/btmac.txt produnctinfo中的btmac.txt是在产线用产线工具写入生成,恢复出厂设置不会消失 data中的btmac.txt是开机产生,恢复出厂设置会消失. 展讯蓝牙地址生成方法是 1.判断productinfo中是否存在bbtmac.txt. 所以如果机器在产线没有写入地址,则开机会随tmac.txt 2. 如果存在则读取写入data中的btmac.txt 3. 如果不存在则随机生成蓝牙地址写入机生成一个地址,恢复出厂设置,生成的data下的btmac.txt会清除,再次开机又会生成一个新的蓝牙地址. 解决方案:用产线工具写入mac,或者在productinfo下生成btmac.txt文件.
+参考FAQ: FAQ99936
+### 问题: 如何解决蓝牙多张图片发送时，部分文件发送失败问题
+解决方案: 在MMIBT_SendNextFileCallBack() @ mmibt_export.c中:
+{
+    SCI_TRACE_ID(TRACE_TOOL_CONVERT,MMIBT_EXPORT_793_112_2_18_2_7_48_55,(uint8*)"dd",cursendfileindex,send_file_num);
+    
+// 加入此行
+    SCI_SLEEP(3000); <-- 如果状况有改善, 可以慢慢把数值调小一点
+
+    if(cursendfileindex < send_file_num)
+    ....
+}
+参考FAQ: FAQ99433
+### 问题: 蓝牙耳机是否支持调节音乐音量
+解决方案: 蓝牙a2dp对蓝牙耳机的音量加减键调节只能调节蓝牙耳机的音量, 没有和相关按键的消息发给手机,和手机终端无关,所以单从手机端无法实现此同步需求.
+参考FAQ: FAQ99434
+### 问题: OTA整包升级如何去掉对编译时间戳的校验
+解决方案: 保留当前目标版本的target包target.zip,使用如下命令(加入'-n'参数)做包 ./build/tools/releasetools/ota_from_target_files -n target.zip update_full_notime.zip update_full_notime.zip即是没有时间校验的整包.
+参考FAQ: FAQ99455
+### 问题: 如何保证target包里面的systemimg和pac包里面的systemimg一致？
+解决方案: 有的fota方案要求target包里面的system.img和pac包里里面的 system.img必须严格一致,否则无法产生差分升级包. 此问题的解决办法是在target包的制作过程中将out目录下的system.img拷贝进target包中. 请参考附件的samplecode,此samplecode经平台基线验证和众多客户验证,是有效的.samplecode
+参考FAQ: FAQ99456
+### 问题: 差分OTA升级中碰到“some symlinks failed”错误如何处理
+解决方案: 此问题为system分区空间不够所致,即system的文件系统中没有可用剩余空间,导致差分升级时文件升级和权限设置没有空间失败. 此问题多为system分区自适应所致,解决办法是进行整包升级或者扩大基准版本的system分区文件系统大小. 进行整包升级分为普通整包升级或者分区变更的特殊整包升级. 扩大基准版本system分区文件系统大小则牵涉到system分区自适应的参数的修改. 详情请参考附件的文档,里面有详细的应对策略和更改指导,并有打包指导.system分区自适应对应的ota升级指导
+参考FAQ: FAQ99457
+### 问题: Dorado 浏览器版本讯息
+解决方案: Html:4.0 xHtml:1.0 WML:1.3
+参考FAQ: FAQ99512
+### 问题: 拔出充电器依然显示充电
+解决方案: 拔出充电器后如果发现充电图标不消失可能是由于高压电池在高电量的时候电压回灌导致 可以优先检查如下 1、是否没有充电器拔出中断,在log中搜索"plug out"关键字 2、测量vchg_d点的电压值是否依然存在 3、判断电池是否处于高电量 如果以上条件都是"是"则检查如下代码 sprd_2713_charge.c 找到如下寄存器配置: sci_adi_write(ANA_REG_GLB_CHGR_CTRL2, BITS_CHGR_DPM(2), BITS_CHGR_DPM(~0)); BITS_CHGR_DPM(2)这个参数改大,最大为3
+参考FAQ: FAQ99516
+### 问题: 时区固定在默认时区，无法自动根据网络更新
+解决方案: 时区更新依赖的网络协议是NITZ,而该协议是3GPP可选协议,因此并不是所有的运营商网络都支持.在无法收到网络NITZ时区消息时,Android源码实现了一套优化方案,当手机注册到网络后(无卡紧急驻留也支持),设备可以获取到网络的MCC码,从而获取到处在哪个国家,之后在维护的映射表里找到该国家使用的时区,另外展讯平台还对该方案进行了扩展,可以支持多时区国家默认时区的选择. 但Android原生代码存在一个缺陷,偶现流程下会将存放NITZ时区的变量赋值为默认时区,之后时区就无法再根据网络MCC更新了.此问题我们在找到根本原因后发现是Android原生代码的缺陷,因此向AOSP项目提交了patch,Google工程师在review后合入了我们的修改方案. 因此如果出现此类问题,可以将Google AOSP的提交pick到本地代码进行修改验证: https://android-review.googlesource.com/#/c/412839
+参考FAQ: FAQ99534
+### 问题: Android 7.0中，T卡作为内部存储后，手机连MTP，电脑端为什么只显示一个盘符？
+解决方案: 此现象是正常现象,手机只能有一个内部存储是挂载的状态,即同时只有一个主存储. 我们将sd卡格式化为内部存储之后,对于手机来说就有了两个内部存储,由于内部存储只能有一个是挂载状态 
+ (也就是主存储),如果直接选择移动数据,则这个过程会将原内部存储卸载,将其中的数据移动到sd卡对应的内部存储之后, 
+ 将sd卡对应的内部存储挂载,所以这时选择mtp,只会有一个sd卡的盘符;如果格式化后不选择立即移动,则手机的内部存储 
+ 还是原来的手机自身内部存储,sd卡只是进行了格式化,并没有挂载,所以此时选择mtp,只会显示真正的手机内部存储.
+参考FAQ: FAQ100189
+### 问题: 如何判断是低电导致的关机?
+解决方案: 查看 kernel log, 关键字 "sprdbat": //vbat小于3.4V为电池没电, 3.4V以上正常;current < 0 表示电池正在放电,cap表示电量为0; sprdbat: vbat:3023,ocv:3156,current:-417,cap:0 //state:1 表示充电,其他值为不充电 , auxbat:3030 充电电压 sprdbat: state:1,auxbat:3030,temp:200 上面表明充电的时候,电池掉电了, 充电入不敷出进而导致关机. 造成上述现象一般有两种原因: 1). 充电器类型:sprdbat: plugin_callback:adp_type:2 => 2表示的是AC充电器充电,其他的值为小电流充电; 2). Thermal: sprdbat: set chgr limit:500000 => 充电进行限流为500mA(最小就是500mA,一般900mA以上正常). 以上说明thermal限制充电导致关机.
+参考FAQ: FAQ99633
+### 问题: 定屏案例一mediaserver频繁native crash导致定屏
+解决方案: 开机阶段mediaserver的频繁native crash,会导致系统无法正常启动,停在开机动画,servicemanager 一直在等待media.audio_flinger的ready.典型log如下,这个时候需要先解决mediaserver 的native crash. 01-02 17:02:17.621 3849 3849 I ServiceManager: Waiting for service media.audio_flinger... 01-02 17:02:18.266 3849 4670 W AudioSystem: AudioPolicyService not published, waiting... 01-02 17:02:18.621 3849 3849 W AudioSystem: AudioFlinger not published, waiting... <<<<===跑在systemserver的主线程里
+参考FAQ: FAQ99745
+### 问题: 如果查看cpu最大支持频率和最小支持频率及当前运行频率
+解决方案: -----#cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq 1300000 #cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_min_freq 768000 #cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq 1300000 1300000表示1.3Ghz 768000表示768Mhz
+参考FAQ: FAQ99749
+### 问题: 如何手动设置cpu在线离线状态
+解决方案: 输入下面命令,将cpu1设置为离线状态,即拔掉cpu1,使其停止工作 echo 0 > /sys/devices/system/cpu/cpu1/online 输入下面命令,将cpu1设置为在线状态,即插入cpu1,使其工作 echo 1 > /sys/devices/system/cpu/cpu1/online
+参考FAQ: FAQ99754
+### 问题: 如何在user版本默认打开Ylog?
+解决方案: 找到对应项目的如下参考目录:device/sprd/scx35l/common/rootdir/root/ 修改init.sc8830_ieb.rc 文件,在文件最后增加如下配置 on property:ro.debuggable=0 mkdir /data/ylog 0777 start ylog
+参考FAQ: FAQ99761
+### 问题: 在C/C++中使用LOG接口时有哪些注意？
+解决方案: 在使用C/C++文件中按照如下方式输出Log时,携带的参数不能为空. 因为在liblog中会对参数进行strlen操作,参数为空则会报错. 引入的头文件 <android-base/logging.h> 在如下log语句中t->serial不能为空. LOG(INFO) << "read_transport thread is exiting->" << t->serial;
+参考FAQ: FAQ106600
+### 问题: SC2342A 是否支持外挂PA(WIFI)？
+解决方案: 不支持
+参考FAQ: FAQ99822
+### 问题: CFT tool中综测项fail后，针对fail项是否有自动重测功能
+解决方案: CFT 18.0.0003版本和后续版本已经支持GSM、WCDMA、LTE fail项自动重测功能. 设定:选择project后,打开CALIPARAM.ini文件找到ReFT Total Count = 1(default)进行设置,1表示没有启用重测功能,改为2以上的值表示总共进行多少次测试.
+参考FAQ: FAQ99923
+### 问题: 如何解决三合一喇叭同时震动与播放音源时，音量改变问题
+解决方案: 三合一喇叭的震动原理是透过播放个特定音源来触发震动并以音量大小来决定震度, 当同时有播放其他音源(如MP3, FM等)时,两个音源音量的设置是无法分开的, 因此此现象目前没有优化方案,主要是3合1的架构限制 目前只能透过限制音源无法同时播放来规避此问题 当有一般音源播放时,不能开启震动 修改方式请参考如下代码: IsNewSrvCoexist @ mmisrvaud.c { ++ //FL(MMISRVAUD_TYPE_RING_FILE) | FL(MMISRVAUD_TYPE_VIBERATE), -- FL(MMISRVAUD_TYPE_RING_FILE) | FL(MMISRVAUD_TYPE_VIBERATE), }
+参考FAQ: FAQ99915
+### 问题: CTS对g-sensor加速度计的要求
+解决方案: 1. 对硬件IC要求 A.报点率最低要求50Hz以上,推荐最大能到达200Hz以上; B.测量范围要求4g(正负2g,g为重力加速度约等于9.8); C.分辨率解析度要求12bit,推荐能达到16bit; D.角速度标准差小于0.05 m/s. 2. 对软件要求 A. 必须实现SENSOR_TYPE_ACCELEROMETER类型数据上报; B. 必须遵守Android API中详细介绍的Android传感器坐标系; C. 如果设备同时带有陀螺仪,必须实现SENSOR_TYPE_GRAVITY 和 SENSOR_TYPE_LINEAR_ACCELERATION数据上报; D. 如果设备同时带有加速度,地磁,陀螺仪,必须实现SENSOR_TYPE_ROTATION_VECTOR类型的数据上报.
+参考FAQ: FAQ99940
+### 问题: CTS对compass地磁的要求
+解决方案: 1. 对硬件IC要求 A.报点率最低要求10Hz以上,推荐最大能到达50Hz以上; B.测量范围要求1800μT(正负900μT,1T=1000mT=1000000μT,T为磁场强度的单位); C.分辨率解析度要求小于等于0.6μT,推荐能小于0.2μT ; D.硬件偏差不能高于700μT,推荐小于200μT E.必须支持在线校准; 2. 对软件要求 A. 必须实现SENSOR_TYPE_MAGNETIC_FIELD类型数据上报; B. 必须遵守Android API中详细介绍的Android传感器坐标系; C. 必须有软件补偿应用或校准应用; D. 如果设备同时带有加速度,地磁,陀螺仪,必须实现SENSOR_TYPE_ROTATION_VECTOR类型的数据上报.
+参考FAQ: FAQ99942
+### 问题: Unbalanced enable for IRQ的意义
+解决方案: 申请完中断后为enable状态,depth计数器为0,linux要求后续disable和enable为一对一匹配使用,disable时depth加1,enable时减1. 1.当enable 同一个中断次数大于disable的次数时会发出该提醒log,"Unbalanced enable for IRQ xxx",其中xxx为中断号,表明该中断已经是enable状态不影响使用,同时告诉作者的代码不够严谨. 2. 当disable同一个中断次数大于enable的次数,该中断处于禁用状态,软件不响应该中断处理. 注:具体可以详见代码kernel/irq/manage.c中函数__disable_irq和__enable_irq.
+参考FAQ: FAQ99944
+### 问题: Android7.0 如何默认去除情景模式？
+解决方案: 在frameworks/base/packages/SettingsLib/res/values/config.xml文件中有一个配置项: <string name="is_support_google_audioprofile" translatable="false">"false"</string> 将其值默认设置为"true"即可
+参考FAQ: FAQ99956
+### 问题: android7.0中，为什么设置中无法切换用户？
+解决方案: 参考谷歌原生设计,对比谷歌Nexcus6p和pixel手机,切换用户入口放在下拉状态栏中,设置中只保留用户创建功能.
+参考FAQ: FAQ99963
+### 问题: android7.0中，为什么一直显示“没有电池使用数据”?
+解决方案: 如果要显示电池使用数据,需要配置模块功耗数据,具体在frameworks\base\core\res\res\xml\power_profile.xml文件中. 需要根据测试的电池实际使用情况填入数据,如电池电量,各模块耗电数据等.
+参考FAQ: FAQ99964
+### 问题: android 7.0中，如何默认关闭Spell Checker？
+解决方案: 在frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java文件的loadSecureSettings方法中,添加: loadSetting(stmt, Settings.Secure.SPELL_CHECKER_ENABLED, "0");
+参考FAQ: FAQ100006
+### 问题: 为什么有时手机连接PC，选择MTP模式，PC显示设备名称与真实设备型号不符？
+解决方案: PC中看到的设备名称是DeviceFriendlyName,PC会保存DeviceFriendlyName,当两台设备的SN号相同时,PC会认为这是同一台设备,会将之前保存的DeviceFriendlyName显示出来. 正常情况下,两台设备的SN号是不可能相同的,因为设备出厂前都会写入不同的SN号,只有没有写过SN号的正在研发的设备才会出现这种情况.
+参考FAQ: FAQ100192
+### 问题: MOCOR 如何取消状态栏漫游图标的显示
+解决方案: CheckIsRealRoaming @ mmiphone.c 中 通过确认SIM 卡 mcc, mnc 在网络 mcc, mnc 的时候设置屏蔽 如下同样方式设置即可 // Lycamobile-SIM(234/26) on the O2-network(234/10) is not roaming if (((234 == cur_plmn.mcc) && (10 == cur_plmn.mnc)) && ((234 == s_sim_status[dual_sys].hplmn.mcc) && (26 == s_sim_status[dual_sys].hplmn.mnc))) { return FALSE; }
+参考FAQ: FAQ100203
+### 问题: 开启强制从右到左显示，电话号码的+号显示在号码最后面如何修改？
+解决方案: 将格式化后的电话号码字符串前面添加"\u200e",然后设置到显示的View中即可.
+参考FAQ: FAQ100198
+### 问题: Android7.0中，为什么切换从右往左显示后，禁用数据流量图标显示反了？
+解决方案: 这是因为该图标是一个矢量图,其对应的矢量描述xml文件中有一个属性android:autoMirrored,该属性如果设置为true,则会自动跟随系统的显示方向进行镜像翻转,如果希望图标显示方向正常,只要将该属性的值设置为false即可.
+参考FAQ: FAQ100223
+### 问题: SC9820A是否支持MCU接口的LCD?
+解决方案: 不支持MCU接口,支持SPI和MIPI接口.
+参考FAQ: FAQ100244
+### 问题: Android7.0 如何修改低电提醒阈值？
+解决方案: 配置低电提醒阈值的文件在frameworks/base/core/res/res/values/config.xml 对应的配置项为:config_lowBatteryWarningLevel,形式如下: <integer name="config_lowBatteryWarningLevel">15</integer>
+ 只需要搜索到该配置项,将其修改为项目需要的值即可.
+参考FAQ: FAQ100359
+### 问题: Android7.0中，长按power键的关机对话框中如何显示静音按钮？
+解决方案: 在vendor/sprd/platform/frameworks/base/core/res/res/values/config.xml文件中搜索config_globalActionsList配置项,在其列表中添加如下内容即可: <string-array translatable="false" name="config_globalActionsList"> <item>power</item> <item>bugreport</item> <item>users</item> <item>reboot</item> <item>airplane</item> + <item>silent</item> </string-array>
+参考FAQ: FAQ100374
+### 问题: 藍牙配對搜索设备时，只能搜尋到藍芽耳機
+解决方案: 目前蓝牙搜索为上层带参数来控制,如果只需要搜索蓝芽耳机,只需要搜索handsfree 以及a2dp 功能 因此可以使用BT_SearchDevice (BT_SERVICE_HANDFREE|BT_SERVICE_A2DP) 如有其他需求可以自行修改service_type 参数
+参考FAQ: FAQ100397
+### 问题: adb shell dumpsys input_method 获得IMF变量信息
+解决方案: 通过命令 adb shell dumpsys input_method可以获得系统中inputmethodmanagerservice的相关变量. 分析如下: 此命令进入的方法为:inputmethodmanagerservice.java 中的dump()方法
+参考FAQ: FAQ100403
+### 问题: 功耗测试不同场景log抓取
+解决方案: Debug版本抓Slog之前,需先关闭所有的Modem Log *#*#83781#*#*进工程模式,选择DEBUG&LOG -> LogManager,选择右上角scene -> Custom,然后根据下面不同场景选择不同log,选择好后点击Commit. 下面是几种不同场景需要抓取的log 1、底电流/实网待机功耗异常: Android Log -> Commit 2、实网+开启数据连接待机功耗异常: Android Log + TCP/IP Log -> Commit 3、连接WIFI待机功耗异常: Android Log + TCP/IP Log -> Commit 4、连接BT待机功耗异常: Android Log + BT HCI Log -> Commit 设置完后,界面如图所示绿色表示完成并开启自定义log 在抓取Slog之前,清空之前手机上的Slog,以便抓取的Slog只有一份,方便分析
+参考FAQ: FAQ100417
+### 问题: FM 能否从蓝牙耳机播放
+解决方案: 目前展讯功能机上 fm 是 linein 的,播放方案只有两种: 1.codec中直接linein到output 2.linein进来,走到vbc,再通过vbc 到output 架构上没有可以从蓝牙出去的方案 , 因此无法支持蓝牙耳机播放FM的功能
+参考FAQ: FAQ101004
+### 问题: 播放视频功耗：为什么有些机器第二次播放视频功耗比首次播放视频有明显优化？
+解决方案: 1、如果客户机器内存较大,那么在第一次播放过程中数据缓存到cache中,因此第二次播放视频时(不用到SD卡读取视频文件数据),会有较明显的功耗优化. 2、播放一次以上之后,如果此时清理cache,命令如下: echo 3 > /proc/sys/vm/drop_caches 那么清理后,再次播放视频的功耗和应该和第一次播放视频的功耗基本一致,不再有优化. 3、有些机器为何没有(明显)优化? 原因是有些机器的内存可能剩余只有几十M,几乎没有剩余,因此无法缓存到cache中. 4、内存剩余越大,第二次播放对功耗优化表现越明显.
+参考FAQ: FAQ100646
+### 问题: 动态打开InputMethodManagerService的log开关命令8.0
+解决方案: adb shell dumpsys input_method -d enable 0//打开inputmethodmanagerservice的开关 adb shell dumpsys input_method -d disable 0//关闭inputmethodmanagerservice的开关 adb shell dumpsys input_method -d enable 1//打开InputMethodService的开关 adb shell dumpsys input_method -d disable 1//关闭InputMethodService的开关 adb shell dumpsys input_method -d enable 2//打开InputMethodManager的开关 adb shell dumpsys input_method -d disable 2//关闭InputMethodManager的开关
+参考FAQ: FAQ100666
+### 问题: SC7731E 32K-less方案下拔掉主电池状态下时钟能否保持
+解决方案: 1.当VBATBK上的电容为10uF时,如果拔掉主电池,26M时钟会消失,26M时钟分频得到的32K时钟也将消失,此时RTC的时钟源会切换到PMU内部的RC振荡器.此时VBATBK会持续掉电,当VBATBK低于1.1v时,RC振荡器停止工作,系统时钟停止更新.当VBATBK电压持续掉电到低于500mV时,RTC相关寄存器将复位,系统时钟也将会发生复位.实测主电池存在时,VBATBK电压在2.937v左右,掉电到500mV的时间为20s. 2.如果VBATBK有备份电池供电,拔掉主电池后,RTC时钟源会切换到PMU内部RC振荡器,系统时钟一直保持且会更新,只是因为RC振荡器误差比较大,会导致系统时钟在很长一段时候后累积偏差很大. 3.在不存在备份电池的时候,如果要延长系统时钟的保持时间,可以加大VBATBK上的电容.
+参考FAQ: FAQ105526
+### 问题: 在android7.0项目上如何不让CTS-verify显示otg相关测试项
+解决方案: 请在frameworks/native/data/etc/android.hardware.usb.host.xml 文件中关闭host功能, 注释掉这行<feature name="android.hardware.usb.host" />代码即可! 如上修改后,当cts-verify运行起来之后,就不会显示otg相关的测试项目.
+参考FAQ: FAQ100711
+### 问题: 如何读取手机文件的MD5值
+解决方案: 在Linux环境下执行下面的命令既可以读出对应文件的md5值 命令参考: $ md5sum /system/framework/framework.jar
+参考FAQ: FAQ100723
+### 问题: 如何通过串口抓取Android 层Log
+解决方案: 抓取的前提: (1)使用debug版本或者使用user版本+debug版本的boot.img (2)保证串口设备和手机连接上3根线分别为: rx,tx,地. (3)DTS 配置中的logleve要为1,手机默认即为1. 抓取办法: 在手机开机后,串口输出开机的部分Kerne lLog后,会主动进入shell. 此时在串口工具输入命令logcat 并发送该命令,既可以通过串口抓到logcat的Android log
+参考FAQ: FAQ100724
+### 问题: 按键的键值是在哪里定义的
+解决方案: 我们经常能看到如下的log 《interceptKeyTi keyCode=24》.这个键值24所对应的按键可以在 /frameworks/base/core/java/android/view/KeyEvent.java中看到. /** Key code constant: Volume Up key. * Adjusts the speaker volume up. */ public static final int KEYCODE_VOLUME_UP = 24;
+参考FAQ: FAQ100736
+### 问题: dvm_lock_sample含义简述?
+解决方案: dvm_lock_sample的定义格式: dvm_lock_sample (process),(main),(thread),(time),(file),(line),(ownerfile),(ownerline),(sample_percent) 参数含义: process:用于表明进程名 main: 用于表明主线程的状态 thread:用于表明线程名 time:用于表明等待的时间 file:用于表明等锁的文件 line:用于表明等锁行号 ownerfile:用于表明持锁文件 ownerline:用于表明持锁行号 格式: 01-01 10:03:17.834 3529 3548 I dvm_lock_sample: [system_server,0,android.fg,122,WindowManagerService.java,10788,WindowState.java,1785,100]
+参考FAQ: FAQ100743
+### 问题: shell脚本中各类符号的含义代表什么？​
+解决方案: &: & 放在启动参数后面表示设置此进程为后台进程 默认情况下,进程是前台进程,这时就把Shell给占据了,我们无法进行其他操作,对于那些没有交互的进程,很多时候,我们希望将其在后台启动,可以在启动参数的时候加一个'&'实现这个目的. $$: Shell本身的PID(ProcessID) $! Shell最后运行的后台Process的PID $? 最后运行的命令的结束代码(返回值) $- 使用Set命令设定的Flag一览 $* 所有参数列表.如"$*"用「"」括起来的情况、以"$1 $2 … $n"的形式输出所有参数. $@ 所有参数列表.如"$@"用「"」括起来的情况、以"$1" "$2" … "$n" 的形式输出所有参数. $# 添加到Shell的参数个数 $0 Shell本身的文件名 $1～$n 添加到Shell的各参数值.$1是第1参数、$2是第2参数….
+参考FAQ: FAQ100751

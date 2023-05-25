@@ -1,0 +1,404 @@
+### 问题: SC7731E NVeditor修改NV不生效
+解决方案: 只要能证明这个值能改到nvitem.bin内,升级就可以生效,save iamge之后,使用load image方式回读nvitem.bin文件可确认bin文件是否导入此修改.
+NV项均为重要配置,NVeditor阅览界面显示为灰色项的内容均不建议手动修改,除非必要请勿改动.
+
+NVeditor工具文件夹内配置文件NVEditor.ini,修改super配置值开放读写权限.
+;Super: 0 => Edit X, Read X
+;Super: 1 => Edit O, Read O
+;Super: 2 => Edit X, Read O
+Super = 1
+
+校准参数、开机变化的动态NV之外的NV项,常被称为静态NV,静态NV会通过软件升级变化.软件升级需备份校准参数和IMEI配置等产品参数按原数据内容写入样机.为达成研发目,可以不保留这些信息的样机升级操作,才能选择不
+完整回答请参考FAQ: FAQ202274631
+### 问题: AndroidR相机HDR图标在user版本未正常显示，如何修改？
+解决方案: 相机HDR图标在Userdebug版本正常显示,但user版中未显示该图标,可进行如下修改: 1.检查vendor/partner_gms/products/gms_go.mk下是否有如下配置,如果没有,进行添加并验证 # Once we add USCPhotosProvider above, we also have to configure these properties below: ifneq ($(TARGET_BUILD_VARIANT),user) PRODUCT_PRODUCT_PROPERTIES += \ oem_trusted_authority=com.sprd.android.providers.SpecialTypesProvider \ oem_trusted_certificate=B79DF4A82E90B57EA76525AB7037AB238A42
+完整回答请参考FAQ: FAQ202274632
+### 问题: Simba校准如何设置AGC SCAN
+解决方案: WCDMA校准时候常有RSSI校准fail的情况,通过AGC SCAN可以查看gaintable的线性度,接下来将说明如何使用SImba进行AGC SCAN: Step1 : WCDMA CAL右键,选择新增测试项,再弹出界面选择 FullScan → WCDMA → AGC ,点击添加. Step2 :在 AGC Scan 界面可以选择 modem 版本,设置信道、 cell power 、 Step 等参数.如下图所示,设置完参数后,保存文件,进入 Simba 测试界面开始运行.扫描结束后数据将自动保存,数据存放位置: Simba 根目录下的 Bin/Log/ 日期 / DUT1 /PASS_ WCDMA_FullScan / 1、V2平台设置如下,需要分别扫描两次: 2、V3平台设置如下: step3:如下图是band1 AGC扫描数据的excel文档,可以看到完整的数据,将 RSS
+完整回答请参考FAQ: FAQ202274636
+### 问题: 关闭fuse，打开sdcardfs的方法
+解决方案: Userdebug/User版本关闭fuse方法可参考如下说明: 1)打开sdcardfs config arch/arm|arm64/configs/sprd_xxx_defconfig: -# CONFIG_SDCARD_FS is not set +CONFIG_SDCARD_FS=y 2)使用sdcardfs build/target/product/emulated_storage.mk: -PRODUCT_PROPERTY_OVERRIDES += external_storage.sdcardfs.enabled=0 +PRODUCT_PROPERTY_OVERRIDES += external_storage.sdcardfs.enabled=1 3)关闭fuse device/sprd/mpool/module/storage/main.mk - $(call inher
+完整回答请参考FAQ: FAQ202274642
+### 问题: 无屏项目系统无法启动
+解决方案: 当固件用于无屏设备时,需要在uboot里启用dummy的lcd配置 示例路径:bsp/bootloader/u-boot15/drivers/video/sprd/lcd/panel_cfg.h 出错log: 1、串口日志有如下错误: [ 3.588632] c1 [sprd-adf][ panel_info_attach] get panel failed [ 3.594659] c1 [sprd-adf][ sprd_panel_probe] attach panel info failed [ 3.602609] c1 [sprd-adf][ sprd_dphy_probe] error: dphy->panel is null [ 3.610282] c1 [sprd-adf][ sprd_dsi_probe] error: dsi->panel is null [ 3.61787
+完整回答请参考FAQ: FAQ202274643
+### 问题: 如何在log中查看mode_id
+解决方案: 参数共支持13种mode,分别是common、Prv_0、 Prv_1、Prv_2、Prv_3、 Cap_0、Cap_1、Cap_2、Cap_3、 video_0、video_1 video_2、video_3.不同的mode有不同的输出尺寸. 查看mode_id可得知当前哪个mode生效,可通过关键字"isp_pm_set_param"在log中查看. 举例: 05-14 11:09:22.892 462 5319 D isp_pm : 1362, isp_pm_set_param: i 0, k 0, mode 10, mode_id 10. 4in1 0, size 2040 1536. insize 1280 720 mode_id 10 对应参数video_1 2040 * 1536 05-14 11:09:22.892 462 5319 D isp_pm : 1362, isp
+完整回答请参考FAQ: FAQ202274663
+### 问题: 无线方式发送ADB命令环境搭建
+解决方案: 在对SHARK LE平台进行Host眼图测试,当UART0未留测试点时,需要通过WIFI发送ADB命令. 无线方式(wifi)发送ADB命令环境搭建步骤如下: 第一步:将待测机通过USB线连接到电脑,打开电脑上的adb,输入 adb tcpip 5555,会弹出 restarting in TCP mode port:5555. 第二步:将待测机和电脑连接同一个WIFI(推荐使用个人手机热点)并查看待测机IP地址. 查看IP地址的方式有两种: 方式一:发ADB命令:adb shell ifconfig 可以看到IP地址为:192.168.43.36 方式二:拔掉USB线,在待测机上查看IP地址.在连接的WIFI界面可以看到. 步骤三:电脑和待测机处于共用同一WIFI模式下,拔掉USB线.打开电脑的adb,输入adb connect 192.168.43.36(192.168.43.36为I
+完整回答请参考FAQ: FAQ202274664
+### 问题: android S usap功能作用
+解决方案: USAP用于进程预创建,在system_server需要zygote创建进程的时候,zygote直接从预创建的进程池中取出,而不是等zygote fork之后才返回,这样可加速应用启动 平台非go版本是默认打开的,通过配置属性persist.device_config.runtime_native.usap_pool_enabled为true,代码路径如下: /device/sprd/mpool/module/performance/mversion/full/full.mk #enable usap PRODUCT_SYSTEM_EXT_PROPERTIES += persist.device_config.runtime_native.usap_pool_enabled=true 通过下面命令可确认功能是否生效 1.执行adb shell getprop persist.device_
+完整回答请参考FAQ: FAQ202274671
+### 问题: 如何将屏幕透光率作为光感参数下载至CM4？
+解决方案: light sensor需要采用动态加载方式,使用dynamic_receive_data接口传递lcd数据,并需要在AP侧 kernel 层获取到LCD的参数信息 dynamic_receive_data 函数指针声明如下: int (*dynamic_receive_data)(uint8_t handle, void *pdata, int len); 功能:获取从AP传递来的数据. 1)输入参数: handle:sensor类型. pdata:从AP传递来的参数. len:pdata长度. 2)返回值: 失败返回-1,正常返回0; 3)使用范例: 此接口需要和AP侧发送函数一起使用,AP侧提供了节点作为参考,如下: static ssize_t data_to_dynamic_store(struct device *dev, struct device_attribute *at
+完整回答请参考FAQ: FAQ202274673
+### 问题: A12中如何添加CameraToggleTile和MicrophoneToggleTile到QS栏？
+解决方案: A12中新增了两个Feature: CameraToggleTile和MicrophoneToggleTile,可以添加至QS栏中分别用于控制camera和Microphone权限.但是平台默认QS栏中是没有这两个Tile的,这是因为对应的available条件不满足: SystemUI/src/com/android/systemui/qs/tiles/CameraToggleTile.java
+64      @Override
+65      public boolean isAvailable() {
+66          return mSensorPrivacyController.supportsSensorToggle(CAMERA)
+67                  && whitelistIpcs(() -> DeviceConfig.getBoolea
+完整回答请参考FAQ: FAQ202274674
+### 问题: 如何设置默认Launcher
+解决方案: 参考修改: --- a/services/java/com/android/server/am/ActivityManagerService.java +++ b/services/java/com/android/server/am/ActivityManagerService.java @@ -3136,6 +3136,9 @@ public class ActivityManagerService extends ActivityManagerNative // error message and don't try to start anything. return false; } + + setDefaultLauncher(userId); Intent intent = getHomeIntent(); ActivityInfo aInfo = resolveActivit
+完整回答请参考FAQ: FAQ202274680
+### 问题: 如何提高应用线程的优先级
+解决方案: 添加提高线程优先级的修改: 修改文件/device/sprd/mpool/module/performance/msoc/qogirl6/mfeature/kernel/kernel14.14/sprd_performance_config.xml(找到对应的工程) <policy name="Schedule"> <config name="SchedAdjustment" > <item package="com.tencent.tmgp.sgame"> <process>com.tencent.tmgp.sgame</process> <string-array name= "threads"> <string>cent.tmgp.sgame, other, -19</string> <string>Unity*, other, -19</string> </string-array
+完整回答请参考FAQ: FAQ202274690
+### 问题: 实验室IPV6 认证测试方法及注意事项
+解决方案: FAQ: 实验室IPV6 认证测试方法及注意事项 如实验室使用的是mcc及mnc为1的白卡,请注意将实验室需要使用的apn配置到ntac文件中出版本测试.否则会因为apn与预期不符导致激活PDP失败. T117平台测试参考方法: 1、插入MCC/MNC为 1/1 的白卡 2、APN 设置要求为 IPV4V6,anritsu1.com 3、AT+CGDATA="M-ETHER",1 4、测试命令AT+TESTPING=www.aipv6.com 如果"AT+TESTPING=www.aipv6.com"ping不同,请尝试将www.aipv6.com换成对应的IP地址进行ping操作. W307/W317 AP、CP非共核项目请注意使用串口工具下发AT命令: 请保证default一路PDP已激活后使用: ipv6 test case AT+TESTPING=V6,ipv6.ustb.edu.
+完整回答请参考FAQ: FAQ202274691
+### 问题: W307 平台手表开启飞行模式后无法使用WIFI网络
+解决方案: W307 平台默认飞行模式开启不允许用户使用数据. 如有飞行模式下使用WIFI数据的需求请修改如下接口实现. 文件:mmipdp_api.c LOCAL BOOLEAN mmipdp_ActiveWifi(MMIPDP_ACTIVE_INFO_T *app_info_ptr) { ... #if 0 /*如果当前是飞行模式,则不允许使用网络*/ if(TRUE == MMIAPISET_GetFlyMode()) { //SCI_TRACE_LOW:"mmipdp info %s: mmipdp_WifiRegApp is abnormal" SCI_TRACE_ID(TRACE_TOOL_CONVERT,MMIPDP_API_2660_112_2_18_2_44_53_68,(uint8*)"s", __func__); MMIAPIPDP_WifiActiveCnf(MMIPDP_RE
+完整回答请参考FAQ: FAQ202274692
+### 问题: W307平台客户项目VoLTE白名单进行配置方法
+解决方案: W307平台提供客户通过文件ims_toggle_config_table.h对VoLTE白名单进行配置: 参数说明如下: typedef struct { uint16 mcc; //运营商sim卡的MCC uint16 mnc; //运营商sim卡的MNC BOOLEAN is_volte_icon_on; //status bar是否显示: 1:显示 0:不显示; BOOLEAN is_volte_default_on; //volte 默认开关状态:1:默认开启 0:默认关闭; BOOLEAN is_volte_set_display_on;//menu 是否显示VoLTE菜单: 1:显示 0:不显示; MMIPHONE_VOLTE_ICON_STYLE_E volte_icon_style; //显示Status bar上VoLTE图标的类型:1:HD 0:VoLTE uint8
+完整回答请参考FAQ: FAQ202274693
+### 问题: 客户应用发送完数据后，会持续11秒左右较大电流
+解决方案: 原因:发包后网络侧约10s后给modem侧release消息,此前tcpip timer一直在运行导致电流偏大. 解决方法:应用在发包后主动调用modem local release 功能接口主动释放并停止tcpip timer. modem local release功能: 1. 在文件mn_rpc_disp_ap.c文件(MSL\rpc\ap\src\)中查找函数 em_nas_common_function 是否已提供,未提供请提交CQ联系研发处理. 2. 过代码中调用接口 em_nas_common_function 实现主动释放. 函数调用方式如下: em_nas_common_function(dual_sys, "set nas local release timer", &1, time_value)其中timer_value //0～255,参数单位是s 注意: 由于底层
+完整回答请参考FAQ: FAQ202274698
+### 问题: T117带wifi平台部分疑问解答
+解决方案: 1. 当正在使用数据网络时,wifi连接上了,网络如何切换? 当前网络不会发生切换,仍使用原有数据链路. 2. wifi在2个热点之间自动切换,上层是否有感知?socket是否需要断开重连? 上层需要断开重连,热点之间切换网卡会被注销. 首先wifi切换会上报断开连接和连接事件,在断开连接处理时,会通过事件MMIPDP_DEACTIVE_IND报给应用当前网络链路已断开.应用在此情况下继续上网需要重新激活PDP. 3. T117/T107 socket数量是多少,socket总数量是否能增加? 当前Daps侧未对socket创建数量限制. 以下是应用设置的socket数目,仅供参考: #define MAX_SOCKET_NUMS 32 #define OPEN_SOCKET_MAX_NUM 16 #define MEX_MAX_SOCKET_NUM (6) #define MRAPP_S
+完整回答请参考FAQ: FAQ202274700
+### 问题: 打开ntfs的方法
+解决方案: ntfs存在专利版权问题,故我司默认不打开. 如需要打开,则需客户自行评估风险后再自行打开. 其打开方式可参考如下sample code: >ntfs所需bin文件的编译 diff --git a/Android.mk b/Android.mk index f6af63c..0ff563e 100644 --- a/Android.mk +++ b/Android.mk @@ -4,7 +4,7 @@ LOCAL_PATH := $(call my-dir) # ------------------------------------- # libfuse-lite - # ------------------------------------- -ifeq ($(strip $(SPRD_NTFS_SUPPORT)), true) +#ifeq ($(strip $(SPRD_NTFS
+完整回答请参考FAQ: FAQ202274702
+### 问题: UIS8850 如何将openSDK中hello_world.c打包到目录
+解决方案: UIS8850 如何将openSDK中hello_world.c打包到目录 将hello_world.c默认打包到根目录src目录下修改方法如下: diff --git a/components/apploader/pack/CMakeLists_8850.txt b/components/apploader/pack/CMakeLists_8850.txt index f0e75e516..80809308a 100755 --- a/components/apploader/pack/CMakeLists_8850.txt +++ b/components/apploader/pack/CMakeLists_8850.txt @@ -113,7 +113,7 @@ endif() if(CONFIG_APPIMG_LOAD_FLASH) set(target hello_flash) 
+完整回答请参考FAQ: FAQ202274704
+### 问题: Android12紧急号码配置
+解决方案: 配置文件路径 vendor/sprd/platform/packages/apps/UniTelephony/uniecc/input/eccdata.txt 配置方式 示例 countries {
+ iso_code: "CO"        // 国家码
+ eccs {
+   phone_number: "123"
+   types: POLICE       // 即categories
+   types: AMBULANCE     // 一个phone_number可配置多个types
+   types: FIRE
+ }
+ eccs {
+   phone_number: "112"
+   mnc: "101"        // 针对运营商配置
+ }
+ eccs {
+   phone_number: "911"
+   routing: 2       
+完整回答请参考FAQ: FAQ202274709
+### 问题: CarrierConfig配置不生效
+解决方案: 如果出现CarrierConfig配置问题,比如配置了某个变量,但测试未生效,请按以下流程排查 ps:展锐有两套CarrierConfig,两套逻辑相互独立,互不影响,一个是CarrierConfigManager,一个是UniCarrierConfigManager,看业务逻辑使用的是哪个就分析哪套流程 1.先导出缓存文件,看缓存文件中是否有对应配置值,若相同,请检查业务逻辑是否有问题;若与配置不同,可以继续以步骤2分析. (1).adb root (2) adb remount (3) adb pull /data/user_de/0/com.android.phone/files ps:缓存文件中带-sub-和-vendor-的是UniCarrierConfigLoader加载的,其他的都是原生逻辑加载的 2.是否优先级配置错误(vendor>carrier_config_carri
+完整回答请参考FAQ: FAQ202274710
+### 问题: 右排版语言下，手动搜网界面RAT和信号棒重叠
+解决方案: diff --git a/src/com/android/settings/network/telephony/MobileNetworkUtils.java b/src/com/android/settings/network/telephony/MobileNetworkUtils.java index ae36064..1ac87a9 100644 --- a/src/com/android/settings/network/telephony/MobileNetworkUtils.java +++ b/src/com/android/settings/network/telephony/MobileNetworkUtils.java @@ -17,6 +17,7 @@ package com.android.settings.network.telephony; import st
+完整回答请参考FAQ: FAQ202274711
+### 问题: Android11状态栏下拉菜单界面添加 volte/vowifi 开关快捷键
+解决方案: 平台通过"config_show_volte_tile "实现是否显示volte快捷开关.平台默认值为false.如果需要显示可以通过如下方法实现. 设置显示的方法: 1 确认运营商overlays 2 在对应的配置文件路径 frameworks/base/packages/SystemUI/res-unisoc/values/config_ex.xml 添加<bool name="config_show_volte_tile ">true</bool> 平台通过"config_show_vowifi_tile "实现是否显示vowifi快捷开关.平台默认值为false.如果需要显示可以通过如下方法实现. 设置显示的方法: 1 确认运营商overlays 2 在对应的配置文件路径 frameworks/base/packages/SystemUI/res-unisoc/values/con
+完整回答请参考FAQ: FAQ202274714
+### 问题: carrrierconfig使用的加载完的配置
+解决方案: 业务逻辑中经常会读取carrier配置值,如果需要确保使用的加载完的配置,而不是CarrierConfigManager的默认值可以 使用如下函数CarrierConfigManager.isConfigForIdentifiedCarrier(b); public static boolean isConfigForIdentifiedCarrier(PersistableBundle bundle) {
+          return bundle != null && bundle.getBoolean(KEY_CARRIER_CONFIG_APPLIED_BOOL);
+      }
+ 可以参考下data的使用方法: http://10.0.1.79:8081/xref/sprdroidr_trunk/frameworks/opt/telephony/src/java/co
+完整回答请参考FAQ: FAQ202274715
+### 问题: voice clear code相关配置
+解决方案: 功能介绍: voice clear code 是运营商要求拨号如*00012时,会自动挂断并回复一个错误码,然后上层根据错误码在incallUI界面显示,并在屏幕下方弹出Toast显示对应的字符串. 对于其中一些错误码,如"403",需要进行CSFB(网络回落) 并弹出Toast. 主要针对 Telcel 和 Claro 两个运营商. 相关配置: 1.是否支持voice clear code,根据KEY_SUPPORT_VOICE_CLEAR_CODE实现运营商定制,默认为false,即不支持voice clear code. 若需要支持,方法如下: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行如下配置: <boolean name="support_voice_clear_code" value="true" /> 2.是否支持CSF
+完整回答请参考FAQ: FAQ202274716
+### 问题: 手动搜网结果是否应该显示Forbidden
+解决方案: 1.手动搜网调用的telephonymanager的接口,直接读取写在sim卡上的fplmn的值.ril上报的FFFFFF……就是没有读到fplmn,在上层上报的空列表. 2.由于fplmn是写在sim卡里面的,所以不同的sim卡里面的fplmn可能会写的不同,插入不同的sim卡显示的fplmn就会不同,也有可能有的sim卡没有写入任何fplmn,这种情况不显示禁止网络是正常的. 3.平台沿用的是Google原生逻辑,手动搜网搜到什么列表显示什么,不建议去做修改,不符合逻辑. 1. 如果是fplmn,会有如下log打印: 例如: M0289CE 04-25 17:06:34.180 4263 11109 D NetworkSelectSettings: fplmn = … R0D21FF 03-11 11:00:22.771 1192 1192 D SIMRecords: [SIMReco
+完整回答请参考FAQ: FAQ202274717
+### 问题: LTE 物理层的throughput理论数值计算
+解决方案: LTE 物理层的throughput理论数值是怎么定出来的? 下行峰值速率 两种方法: 1、 从物理资源最小单位看,计算一个TTI或者一个无线帧承载多少比特流量,得到速率. 2、 查找终端的类型在一个TTI内能够传输的最大资源块,得到相应的速率. FDD 方法1 估算结果: 20MHz带宽情况下,一个TTI内,算得最高速率为: 理论总速率=1200 * 6 * 7 * 2 * 2 / 0.001 = 201.6Mbps 有效的速率=201.6*75%≈150Mbps 注: 6:最高调制方式为64QAM,1个符号包含6bit数; 2和7:LTE系统的TTI为1个子帧(时长1ms),包含2个时隙,常规CP下,1个时隙包含7个符号;因此:在一个TTI内,单天线情况下,一个子载波下行最多传输数据6×7×2bit; 2:下行采用2×2MIMO,两层空分复用,双流可以传输两路数据; 1200:20MH
+完整回答请参考FAQ: FAQ202274719
+### 问题: AndroidR CarrierConfig配置文件加载优先级
+解决方案: CarrierConfig APP的配置文件包括如下三部分: packages/apps/CarrierConfig/assets/carrier_config_carrierid_xxxxx.xml packages/apps/CarrierConfig/assets/carrier_config_mccmnc_xxxxx.xml packages/apps/CarrierConfig/res/xml/vendor.xml 每次CarrierConfig随卡参数加载顺序按照 carrier_config_carrierid_xxxxx.xml ---> vendor.xml (无对应carrierId的话,carrier_config_mccmnc_xxxxx.xml --->vendor.xml)依次加载. 所以如果vendor.xml 与carrier_config_carrieri
+完整回答请参考FAQ: FAQ202274721
+### 问题: 如何在APK中发送AT指令到modem？
+解决方案: 版本中包含一个lib库libatci.so, 它提供的sendAtCmd接口可以发送AT.源码中很多模块,如SprdAutoSlt、ValidationTools等都是通过jni的方式使用该接口. 具体使用方法如下: 以vendor/sprd/platform/packages/apps/SprdAutoSlt模块为例: (1)编写JNI方法,如vendor/sprd/platform/packages/apps/SprdAutoSlt/jni/src/jniutils.cpp下Validation_sendATCmd 如: extern "C" { #include "atci.h" } static jstring Validation_sendATCmd(JNIEnv* env, jobject thiz, jint phoneId, jstring cmd) { char resu
+完整回答请参考FAQ: FAQ202274723
+### 问题: 如何固定cpu频点
+解决方案: 在某些场景下需要查看CPU频点对性能的影响,可以使用如下命令进行定频操作,以三核架构定最高频为例: #查看支持的cpu频点 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies(取最大) cat /sys/devices/system/cpu/cpu4/cpufreq/scaling_available_frequencies(取最大) cat /sys/devices/system/cpu/cpu7/cpufreq/scaling_available_frequencies(取最大) #固定cpu频点 echo userspace > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor echo 最大 > /sys/devices/syst
+完整回答请参考FAQ: FAQ202274725
+### 问题: iso_special_mode配置
+解决方案: iso_special_mode:0 固定 iso 模式 // gain在 iso 设置 值附近 浮动. Flash 模式不 受 iso 影响 . iso_special_mode:1 特殊 iso 模式 // gain的上限对应 iso 设置 值,上限以内浮动变化. Flash 模式不受 iso 影响 . iso_special_mode:2 iso 非闪光灯拍照时绝对固定 // auto预览 拍照的 gain 是 iso 设置的固定值, Flash 模式不受 iso 影响 . iso_special_mode:3 iso 除闪光灯预闪时绝对固定 // flash拍照和 auto 预览 拍照的 gain 都是 iso 设置的固定 值, flash 预闪的 gain 是变化的,不受 iso 影响 说明: 1、固定 iso 模式,当 gain 在对应 ISO 允许的范围内时,曝光时间会尽可能
+完整回答请参考FAQ: FAQ202274726
+### 问题: 收敛参数(CVG) log信息确认
+解决方案: 1、Twinkle thrd :过冲的判断,当振荡次数大于 Twinkle thrd ,降低 限制收敛速度 . Log中搜索: twinkle_flag (0: 未生效, 1: 生效) twinkle_flag 0 , mv 0.178239, mv_prv 0.000000, mv_calc 0.036793, ad_k 0.963207, cur_lum 61.101086, target_luma 54.000000, calc[ idx_w 0.628319, idx_a 0.206424, idx_b 1.256637 2、CVG frame rate开启 后, unstb 情况下,会触发收敛提速,该阶段会重新调整曝光输出, 此时会和曝光表存在 差异 . 搜关键字确认"aec_cvgn_speed_up en 1 ( 0: 关闭 1 开启) aec_cvgn_speed_up:e
+完整回答请参考FAQ: FAQ202274728
+### 问题: AE 各小模块log信息确认
+解决方案: 查看AE 各小模块log信息,需提高ae log等级,指令如下: adb shell setprop persist.vendor.isp.aec.log 5 //ae 库 adb shell setprop persist.vendor.cam.isp.ae.logv 5 //控制层 1、搜" COM_TAR "关键字:可查看 mulaes compensation touch/face 模块 target 和 weight . // COM_TAR :final target mu[52 10]: mulaes模块输出的targe和weight compen[44 10]:HM&NS模块共同作用后输出的target和weight tf[69 180]:touch/face ae输出的target和weight 2、搜" aec_compensation_calc "关键字:可查看 HM
+完整回答请参考FAQ: FAQ202274729
+### 问题: NR模块EE低倍gain调试参数有效果高倍gain调试参数无效果问题排查流程
+解决方案: 该问题是主摄EE模块在ee_level=20后,调试tuning参数,但是看不出锐化效果.但是在ee_level=20前,调试ee参数可以看出锐化效果. 拿到问题图片,将图片拖到isptool工具里查看exif信息,确保问题图片分别走了ee_level=20前后的挡位.可查看exif信息,两张图片分别是在3倍和50倍gain下拍摄的,且50gain下的图片确实存在该问题. 档位划分如图1所示.50倍gain下 关bayernr 和其他降噪模块,设置不同强度的EE参数如图1所示: 图1:50倍gain下设置EE不同效果参数 其效果如图2所示,左图使用图1第二组参数,右图使用图1第一组参数.两组参数效果无差别: 图2:50倍gain下设置EE不同效果参数 两张图片的exif信息分别如图3: 图3:50倍gain拍摄图片的exif信息 3倍gain下关闭降噪模块 设置EE 效果参数.效果如图4所
+完整回答请参考FAQ: FAQ202274735
+### 问题: A12平台如何关闭Dm-verity校验功能
+解决方案: 1、量产版本关闭dm-verity校验 Google CDD文档要求开启Verified Boot功能,所以对于需要过Google认证的项目,都需要开启dm-verity校验.但如果有关闭该功能的需求,也支持通过以下方式关闭: 1) 找到对应board的fstab文件(fstab.ramdisk、fstab.xxx、fstab.xxx.f2fs...) 2) 删除所有"avb=vbmeta_system"、"avb=vbmeta_system_ext""avb=vbmeta_vendor"、"avb=vbmeta_product"等flag 3) 删除system分区的"avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey" 4) 重新编译版本 2、临时关闭dm-verity校验 如调试需要临时关闭或
+完整回答请参考FAQ: FAQ202274739
+### 问题: Babble异常问题
+解决方案: Babble异常,是指USB Controller硬件向驱动主动发出的一种异常中断.代表USB底层通信遇到异常.当软件尝试恢复失败的情况下,需要硬件做debug调查.客户也可以尝试更换otg转接线、眼图调整以及更换otg设备,发现其规律,再做进一步排查. 驱动上,当发生BABBLE中断后,会触发一次recover操作musb_recover_from_babble(), 其中,会调用musb_platform_recover(), 它会去调用sprd_musb_recover() 从而调用schedule_delayed_work(&glue->recover_work) --> sprd_musb_recvoer_work() //可以从代码中看到,其做的操作,简单讲, 先执行拔出的sprd_musb_work操作(包括断开vbus供电);之后执行插入的sprd_musb_work操作(
+完整回答请参考FAQ: FAQ202274743
+### 问题: 【A11】【A12】VOIP通话场景下背景音乐声音偏小（无法达到正常的音量最大值）
+解决方案: 这是在phonestate为communcation状态下,对同时存在的相关播放stream的分贝值减小25db的设计 删除此设计的方案如下: --- a/services/audiopolicy/managerdefault/AudioPolicyManager.cpp +++ b/services/audiopolicy/managerdefault/AudioPolicyManager.cpp @@ -66,7 +66,6 @@ using content::AttributionSourceState; // Largest difference in dB on earpiece in call between the voice volume and another // media / notification / system volume. constexpr float
+完整回答请参考FAQ: FAQ202274744
+### 问题: Windows XP系统mtp等不识别问题
+解决方案: 对于一些客户遇到MTP等功能,在WIN7、WIN8、WIN10等系统上识别正常,而WinXP系统上出现不识别等异常情况. 首先要说明的是因为XP系统很早就停止维护了,我司早已对XP系统不维护了,也不对XP系统做验证.代码也都是基于google android原生代码基础上开发的. 其次,手机做为DEVICE侧,它并不清楚HOST侧的行为的,也就是说,XP不识别,而Win7、Win8、Win10等系统识别,说明是HOST侧的windows系统对于外设的软件上的兼容行为,它自身为其不同版本的WinUSB驱动的兼容上的表现行为.而HOST能够辨识device支持什么功能协议等,都是通过枚举阶段获取其设备描述信息来辨识的,那么处理此问题,就必须知道Windows系统是如何来判断外设的,XP系统和其它版本windows系统的辨识标准差异在哪里. 我们知道,通常来说,一般android系统,usb设备
+完整回答请参考FAQ: FAQ202274745
+### 问题: 展锐平台，如何通过开关抓取perfetto-trace
+解决方案: 性能分析需要用到systrace进行分析,android 10开始,平台提供了通过开关抓取trace的方法 下面提供通过Settings开关抓取perfetto-trace文件的方法,perfetto-trace文件用于systrace分析 ①首先,需要进入开发者选项; 打开开发者选项操作:Settings --> About phone --> Build number --> 连续点击4下 ②进入"Settings-->System-->Developer options-->System Tracing-->Record trace.点击Record trace只是在抓取,保存需要再点击下Record trace; ③trace保存路径为:data/local/traces. 注: ①user版本无法使用此方法,因为using版本没有root权限,无法拷贝生成的trace ②抓取的p
+完整回答请参考FAQ: FAQ202274746
+### 问题: LTE ULCA  timing error调试位置 for NV2.0
+解决方案: 调试位置开放在RD NV中,单CC可参考FAQ202173075. 当Cat7 PCC Timing不能与Cat4 Timing共用同一组参数时,采用如下方案进行PCC&SCC Timing调整,NV位置如下: LTE_tool_comp\LTE_download_dsp_compensation_cc0_tool_comp\LTE_timing_delay\RX_PCC_Timing_delay\Band_no1\Timing_Reserved\ NV定义如下: (1)Timing_flag: 功能使能位 Timing_flag=0x1: 使能ULCA Timing补偿值从NV中读取 Timing_flag=0x0: 不使能ULCA Timing补偿值从NV中读取 (2)Timing调整 Reserved[0]: max[2CC BW]=1.4MHz的timing补偿值 Reserved
+完整回答请参考FAQ: FAQ202274758
+### 问题: UMS512平台Bring up时，DDR常见问题调试方法
+解决方案: 1.提升log等级 ① /bsp/bootloader/chipram/ddr/ddr_init/init/ddrc/r2p2/ddrc_init.h - #define TEST_DEBUG_LOG_LEVEL 0 + #define TEST_DEBUG_LOG_LEVEL 2 ② /bsp/bootloader/chipram/ddr/ddr_init/init/ddrc/r2p2/dram_support.c void dram_size_ctrl_set()该函数中的while(1)先删除; ③修改完后make chipram,替换fdl1-sign.bin和u-boot-spl-16k-sign.bin; ④由于SPL空间受限,修改log等级之后可能会遇到超空间导致的编译报错,这时需要裁减下代码,调试完回退即可. 如果是LPDDR4/4X的物料,将LPDDR3的相关的结构体全局
+完整回答请参考FAQ: FAQ202274763
+### 问题: DDR降频定频方法
+解决方案: 1.通过文件节点设置(重启失效) (1)查看ddr支持的所有频率 cat /sys/class/devfreq/scene-frequency/sprd_governor/ddrinfo_freq_table (2)设置ddr运行频率 echo 768 > /sys/class/devfreq/scene-frequency/sprd_governor/scaling_force_ddr_freq (3)查看当前ddr运行频率 cat /sys/class/devfreq/scene-frequency/sprd_governor/ddrinfo_cur_freq 2.通过代码修改设置 (1)UMS9230 /bsp/bootloader/chipram/include/configs/xxx.h #ifdef DDR_SCAN_ENABLE #define CLK_DDR_FREQ 18
+完整回答请参考FAQ: FAQ202274764
+### 问题: NVTool中FDD-LTE射频频段B28A和B28B的频段信息配置
+解决方案: 在FDD-LTE频段里,如果同时有band28A和band28B,那NVTool里的"numOfEUTRAFDDBand"里按照1计数还是2计数? 答:FDD-LTE频段信息可在NV中进行配置,位置如下: LTE_bandinfo--LTE_download_rf_common_bandinfo--LTE_Band_Support_info--Band_no ; 其中, Band_no13对应Band28A (reserved[0]需写0xA); Band_no14对应Band28B(reserved[0]需写0xB); 尽管二者属于2个独立频段,但PS_NV中不区分B28A和B28B,若同时有band28A和band28B,则NVTool里的"numOfEUTRAFDDBand"里按照1计数,即numOfEUTRAFDDBand=0x1. 另外,LTE B28A与B28B区分标志位置为:
+完整回答请参考FAQ: FAQ202274765
+### 问题: UMS9230平台Bring up时，DDR常见问题调试方法
+解决方案: 1.提升log等级 ①/bsp/bootloader/chipram/ddr/ddr_init/init/ddrc/r2p3/ddrc_init.h - #define TEST_DEBUG_LOG_LEVEL 0 + #define TEST_DEBUG_LOG_LEVEL 2 ②/bsp/bootloader/chipram/ddr/ddr_init/init/ddrc/r2p3/dram_support.c void dram_size_ctrl_set()该函数中的while(1)先删除; ③修改完后make chipram,替换fdl1-sign.bin和u-boot-spl-16k-emmc-sign.bin和u-boot-spl-16k-ufs-sign.bin 2.替换bin文件后,抓下载或者开机阶段的串口log 重点关注如下2处: ADC Volt Value 0x000
+完整回答请参考FAQ: FAQ202274767
+### 问题: 如何回读metadata或misc分区
+解决方案: metadata/misc分区不在ResearchDownload的回读分区功能的默认列表里,如果要回读,可参考如下步骤,其他非默认分区也可参考. 1. researchdownload 打开一个pac包.最好和机器里同一版本,如不是同一版本,确认分区没有修改过. 2. Settings -> Main Page -> 只勾选FDL1/FDL2 2个分区,其他的分区都不要勾选,如下图(请特别注意UserData和EraseMetadata项是否有勾选,要保持不勾选状态,否则会破坏现场,擦掉data和metadata内容): 3. Flash Operations -> ReadFlash -> 勾选Active ReadFlash -> 然后选中待回读分区.由于metadata和misc分区没有默认列出,故需要新增两行回读,方法如下图中3的位置. 例如metadata分区大小为16M,对应
+完整回答请参考FAQ: FAQ202274787
+### 问题: app保活白名单
+解决方案: 将需要保活的app需要放在: device/sprd/sharkle/common/lmkd_param.conf 的CONFIG_LMKD_SKIP_PROCESS_LIST字段,如下配置,鲁大师,安兔兔等app都是能保活 # format: title and string # TITLE_ for different usage # string detail information for every TITLE. ####TITLE_LMKD_SKIP_PROCESS_LIST ##For some benchmark com.ludashi.benchmark com.ludashi.benchmark2 com.ludashi.benchmark:pushcore com.ludashi.benchmark:monitorService com.ludashi.benchma
+完整回答请参考FAQ: FAQ202274796
+### 问题: 9863A camera go apk VIDEO preview 模式下怎么去开关3dnr功能
+解决方案: 开启硬件3DNR,可以将param_ptr->cap_inf_cfg.cfg.need_3dnr 的值置 1
+    在kernel log中通过 camioctl_3dnr_mode_set 查看是否生效
+
+vendor/sprd/modules/libcamera/oem2v6/src/cmr_oem.c
+11637  cmr_int camera_channel_cfg(cmr_handle oem_handle, cmr_handle caller_handle,
+
+
+11813  #ifdef CONFIG_SUPPROT_AUTO_3DNR
+11814      cmr_bzero(&setting_param, sizeof(setting_param));
+11815      setting_param.camera_id = cxt->camera_i
+完整回答请参考FAQ: FAQ202274806
+### 问题: 数据漫游开关默认配置
+解决方案: 数据漫游默认是关闭的. 如要设置为默认开启,可按下面方案修改: 根据运营商 sim 卡信息(mccmnc,mvno_type,mvno_match_data) 在 packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb 中的 carrier_attribute 找到最匹配的,然后再看对应的 carrier_id 中的 canonical_id与 carrier_name. 在 /packages/apps/CarrierConfig/assets/carrier_config_carrierid_canonical_id _carrier_name.xml 配置 carrier_default_data_roaming_enabled_bool 值,true 为默认打开,false 
+完整回答请参考FAQ: FAQ202274808
+### 问题: 移动数据开关默认设置
+解决方案: 针对当前版本,请先通过 adb shell getprop 查看属性是否配置成功: 如是因为属性配置不生效,请参考如下1和2的配置. 如属性配置已生效,请追加下述2的修改. 1.相应board的编译文件中,配置: PRODUCT_SYSTEM_EXT_PROPERTIES += ro.com.android.mobiledata=false 
+
+ 如果有开机向导,同时要将  ro.com.android.prov_mobiledata=false 
+ 2.修改如下逻辑: vendor/sprd/platform/frameworks/uniframework/base/telephony/java/com/android/internal/telephony/DataEnableController.java
+​
+ private boolean getDataEnable() 
+完整回答请参考FAQ: FAQ202274810
+### 问题: 如何自定义list item的字符串的颜色
+解决方案: 目前没有支持调整list item的字符串颜色,修改方法: 1. ctrllist_export.h typedef struct { GUIITEM_DATA_U item_data; /*!< 数据联合体*/ MMI_IMAGE_ID_T icon_id; /*!< content上左下角显示小icon,目前只对content类型为GUIITEM_DATA_IMAGE_ID时有效*/ GUIITEM_DATA_TYPE_E item_data_type; /*!< 数据类型*/ MMITHEME_COLOR_ID_E bg_color_id; /*!< content小背景,为0的时候默认不画背景色,目前只对content类型为GUIITEM_DATA_IMAGE_ID时有效**/ MMITHEME_COLOR_ID_E font_color_id; /*!< 文字背景色ID,为0的时
+完整回答请参考FAQ: FAQ202274813
+### 问题: GPRS多UP回退功率与GSM 语言功率之间的关系？
+解决方案: 有客户提出疑问,GPRS 多UP回退功率与GSM 语言功率之间的关系是什么,是否可以修改simba校准target 来降低GPRS 多UP回退功率? 现在如下解释: 1、3GPP 对GSM多上允许功率回退,9117平台代码里面默认定义的3GPP回退值默认为: 2、以GPRS 为例,2UP\3UP\4UP按照3GPP协议分别要求回退2dB\4dB\6dB,在展锐平台GSM MPR功率回退值是取校准后相应的PCL对应的factor值来实现的,对应关系如下: 　GSM９００ PCL5 －＞1up PCL6－＞ 2up PCL7 －＞3up PCL8 －＞ 4up 3、Simba 校准中的target power与GPRS多UP功率回退之间的关系,以GSM900 GPRS为例: 1)PCL target power 与 GPRS多UP功率回退之间的关系与item2 一致,且修改maxpower t
+完整回答请参考FAQ: FAQ202274815
+### 问题: 如何排查开机/重启时间长问题
+解决方案: 前提条件:抓开机ylog或抓重启串口log. 开机流程:请参见客户文档的详细阶段分析. 定位开机各阶段方法: 显示开机logo时间:在uboot log中检索lcd init关键词,backlight on time:对应的时间即为logo开始显示时间. Uboot阶段时间:在uboot log中检索consume或boot_reason关键词,enter mode normal前的时间为uboot阶段时间,正常uboot阶段时间在约8S以下为正常. Kernel阶段时间:在kernel log中检索first stage,对应log中如[ 1.644287]的时间即为kernel阶段时间. 安卓阶段:在android log 中检索boot_progress关键词,出现如下带有时间(单位ms)的记录,并注意各阶段的影响因素. boot_progress_start: //该时间点偏大,需
+完整回答请参考FAQ: FAQ202274817
+### 问题: Android R 如何关闭系统动画
+解决方案: 1. 在WindowManagerService中将默认系统动画属性值置为0,文件路径: frameworks/base/services/core/java/com/android/server/wm/WindowManagerService.java 修改方法: - private float mWindowAnimationScaleSetting = 1.0f; - private float mTransitionAnimationScaleSetting = 1.0f; - private float mAnimatorDurationScaleSetting = 1.0f; + private float mWindowAnimationScaleSetting = 0.0f; + private float mTransitionAnimationScaleSetting 
+完整回答请参考FAQ: FAQ202274819
+### 问题: 桌面启动双摄标定apk
+解决方案: 目前cameracalibration.apk应用是添加在工模中,需要输入暗码*#*#83789#*#*进入.若需要左面启动,可在manifest文件中配置launcher属性,具体方案如下: \vendor\sprd\platform\packages\apps\CameraCalibration\AndroidManifest.xml <activity android:name="com.sprd.cameracalibration.ListItemTestActivity" android:configChanges="orientation|screenSize|keyboardHidden|mnc|mcc" - android:label="@string/title_activity_camera_tools_main" + android:label="@string/ap
+完整回答请参考FAQ: FAQ202274823
+### 问题: Pac包中的XML中 ID是怎么定义的（Nor-Flash）
+解决方案: 这是工具端通知手机端的fdl的代号
+
+是在fdl中定义好的
+
+fdl_main.c
+-----#define NOR_BOOTLOADER_LOGIC_ADRESS   0x80000000
+-----#ifndef FOTA_SUPPORT_NONE
+-----#define FOTA_BOOTLOADER_LOGIC_ADRESS   0x80000002
+-----#endif
+-----#define NV_LOGIC_ADRESS               0x90000001
+-----#define PS_LOGIC_ADRESS               0x80000003
+-----#define RES_LOGIC_ADRESS              0x90000004
+-----#define ERASEFLASH_LOGIC_AD
+完整回答请参考FAQ: FAQ202274827
+### 问题: audio dump音频数据的说明
+解决方案: MUSIC、RING、VOIP、RECORD、RECOGNITION场景dump说明 该部分场景,音频从framework输出,音频数据会经过hal层(VOIP场景还会经过dsp进行算法处理) 1、打开framework层pcm dump adb root
+adb shell "setenforce 0"
+adb shell "echo loglevel=5 > /data/vendor/local/media/mmi.audio.ctrl"
+adb shell "setprop af.media.audiofw.devices.dump 0xffffff"
+adb shell "setprop af.media.audiofw.dump 0xffffff"
+ 2、打开hal层dump adb root
+adb shell "echo set_dump_data_switch=
+完整回答请参考FAQ: FAQ202274829
+### 问题: IMEI问题排查
+解决方案: IMEI数据在第一次开机时,当协议栈状态变为RADIO_AVAILABLE时通过getDeviceIdentity读取,主要关注以下log和流程 主要log: 读取imei AT命令:AT+CGSN Line 24065: R004CFF 10-22 11:08:32.078 1206 1206 D RILJ : [0014]> RIL_REQUEST_DEVICE_IDENTITY [PHONE0] Line 24070: R004D04 10-22 11:08:32.079 534 615 D RIL : onRequest: DEVICE_IDENTITY radioState = RADIO_OFF R004D21 10-22 11:08:32.086 534 824 D RIL-AT : Channel1: AT< 867400020316612 R004D22 10-22 11
+完整回答请参考FAQ: FAQ202274832
+### 问题: logcat重定向到串口
+解决方案: 可以通过下面的方法例子把logcat log重定向到kmsg中后,再抓取串口 log得到上层android的log: (1)、Android 13 logcat重定向到串口 1. 设置loglevel=7,可在researchdownload工具的optins选项中手动选择debuglevel=7.(如不能开机修改为4或5) 2、修改如下代码: diff --git a/module/vendor/debug/main.rc b/module/vendor/debug/main.rc index cd443b7..a190203 100644 --- a/module/vendor/debug/main.rc +++ b/module/vendor/debug/main.rc @@ -32,14 +32,12 @@ #for logcat2kmsg service logcat2kmsg 
+完整回答请参考FAQ: FAQ202274834
+### 问题: 为什么保存在SIM卡上的已发短信时间显示为本地时间
+解决方案: 为什么保存在SIM卡上的已发短信时间显示为本地时间,保存在本机的短信正常? 在函数HandleMoSMSOrder
+中
+   if (MN_SMS_STORAGE_ME == storage)
+    {
+        MMISMS_CorrectTimeStamp(&mo_sms_ptr->time_stamp_t, MMISMS_MO_TYPE);
+
+        // translate the time to second
+        sc_time = MMIAPICOM_Tm2Second(mo_sms_ptr->time_stamp_t.second,
+            mo_sms_ptr->time_stamp_t.minute,
+            mo_sms_ptr->time_stamp_t.hour,
+           
+完整回答请参考FAQ: FAQ202274835
+### 问题: android10、11、12 应用进程保活机制
+解决方案: 保活机制是防止被lmk kill,方法如下: lmkd_param.conf文件是lmkd杀进程的白名单配置文件,其中配置的应用是不会被lmkd杀掉的. 请在device/sprd目录中搜索lmkd_param.conf(android10、11、12)文件,接着确定出和你们项目对应的lmkd_param.conf文件, 然后添加配置,如: device/sprd/<soc>/common/DeviceCommon.mk: PRODUCT_COPY_FILES += \ $(LOCAL_PATH)/lmkd_param.conf:$(TARGET_COPY_OUT_VENDOR)/etc/lmkd_param.conf 或者 PRODUCT_COPY_FILES += \ $(call md-path-cur)/lmkd_param.conf:$(TARGET_COPY_OUT_VENDO
+完整回答请参考FAQ: FAQ202274837
+### 问题: Android应用Java Heap泄漏
+解决方案: 1.首先确认是否Java Heap泄漏,执行adb shell dumpsys meminfo `pidof xxx.xxx.xxx` (xxx.xxx.xxx代表进程名), 查看输出的结果中Dalvik Heap这一行,Heap Alloc字段大小,如以下2749(KB),是否接近VM heap限制:普通java进程查看dalvik.vm.heapgrowthlimit属性值,system_server(或配置了large heap的应用)查看dalvik.vm.heapsize属性值. 2.如果接近VM heap上限表明可能存在Java Heap泄漏,请执行以下命令 3.把pull出的文件名后缀prof改成hprof 4.用AndroidStudio打开hprof文件 5.Profiler具体使用方法请参考AndroidStudio Profiler功能介绍,了解Profiler 的M
+完整回答请参考FAQ: FAQ202274838
+### 问题: 距离传感器自动校准失败
+解决方案: 距离传感器自动校准原理 采集无遮挡时的距离传感器的值做为底噪值(又称工厂底噪,采集多笔求平均). 如果采集的工厂底噪小于opcode中设置的底噪,自动校准就会没问题,否者就失败. 自动校准失败请检查opcdoe中的设置的底噪值. 工厂底噪可以从ylog中的ylog/sensorhub目录下的log文件中找相关log信息,如下: SHUB: proximity_sensor_calibration: cali passed! factory_cali_data.ground_noise=1027, factory_cali_data.cali_flag=7 其中factory_cali_data.ground_noise的值为工厂底噪. opcode中的底噪值保存在.noise_reference这个字段中. opcode文件(类似proximity_xxx.cpp) static prox
+完整回答请参考FAQ: FAQ202274840
+### 问题: 回铃音播放类型
+解决方案: MO呼叫回铃音类型由网络告知类型 1. 本地铃音 1.1 通常GSM,收到APP_MN_ALERTING_IND携带参数alerting_type为MN_CALL_LOCAL_USER_ALERTING, 此类需要播放软件定制铃音.可查看log如下: 3407534-1 11:38:17.816 11:38:17.816 Time: 723209 ccapp.c:enter function CC_CallAlertingInd(), call_id = 0, alerting_type = 1 1.2 VOLTE通话,收到早媒体消息APP_MN_CALL_EARLY_MEDIA_IND携带参数is_announce_ply为FALSE, 此类需要播放软件定制铃音.可查看log如下: 1359-86 11:55:39.992 11:55:39.992 ccapp.c:enter funct
+完整回答请参考FAQ: FAQ202274843
+### 问题: OTG autotester
+解决方案: 一、结论 Auto Tester工具已经不再做升级维护,Android12没有对应的Auto Tester工具,所以暂不可使用.Android10、Android11平台可用. 二、简介 AutoTester是电脑上自动化测试小工具.AutoTester_Release_Vxx工具只适合展锐老平台,工具目前已不做维修,不建议用在9230等新平台使用. OTG测试只支持 micro USB和 mini USB typeC USB不使用 该方案,需配合G3盒用以下指令测试 OTG测试分为 OTG禁用、读取 ID状态和 OTG Vbus开关 1) OTG禁用 PC->MS 7E 49 00 00 00 0A 00 38 0C 05 01 7E MS->PC 7E 00 00 00 00 08 00 38 xx 7E xx 00成功, ,01失败 2) 读取 ID状态 PC->MS 7E 49 0
+完整回答请参考FAQ: FAQ202274847
+### 问题: 超清模式拍照如何增加1:1，16:9画幅比
+解决方案: 1.app侧修改部分: diff --git a/res/values/dream_camera_arrays_photo_part.xml b/res/values/dream_camera_arrays_photo_part.xml old mode 100644 new mode 100755 index 3706956d7..8b548b96d --- a/res/values/dream_camera_arrays_photo_part.xml +++ b/res/values/dream_camera_arrays_photo_part.xml @@ -1081,6 +1081,7 @@ <item>@string/pref_camera_gesture_recongition_key</item> </integer-array> <integer-array name="p
+完整回答请参考FAQ: FAQ202274848
+### 问题: UIS8850 内存规划
+解决方案: UIS8850 内存规划 RAM layout在chip_8850.cmake文件中定义,对应的宏都在具体的kconfig文件里定义,通过menuconfig配置,默认配置如下 CP RAM | AP RAM | GNSS ZONE RAM | APPIMG FLASH RAM | APPIMG FILE RAM 10M | 5.6MB | 224KB | 64KB | 64KB CP RAM: CP代码加载和执行区 AP RAM:　AP代码的.text/.data/.bss段,以及heap空间,所有任务栈空间从heap中分配,AP动态内存申请也是从heap中分配 GNSS ZONE RAM: GNSS打开的场景下 需要保存星历数据,划分出psram空间存储临时更新的数据 然后进行写flash APPIMG FLASH RAM: 以flash形式存储的APP,将其.data .bss存放在
+完整回答请参考FAQ: FAQ202274855
+### 问题: 闪光灯概率偏暗分析
+解决方案: 一、原因分析 偏暗flash流程log分析:主闪时由于启用了3dnr,preflash关闭后,mainflash未能开启,导致概率偏暗问题. M171F78 03-22 19:59:52.785 15582 21430 I flash_lib: 1598, flash_pfStart: qqx version=FLASH VERSION : 20190627-1154 M17200B 03-22 19:59:52.888 15582 21430 D cmr_oem : 5089, camera_isp_flash_set_charge: led_idx=1, flash_type=0, idx=0 M17200D 03-22 19:59:52.888 15582 21430 D ae_sprd_adpt: 2954, ae_post_process: ae_flash1_callback 
+完整回答请参考FAQ: FAQ202274857
+### 问题: 连续打开关闭相机，概率性出现黑屏/闪屏
+解决方案: 一、从log上看,0.01*168/(0.009*128)=1.458,亮度却从255变成了0 M07E535 04-15 04:16:19.587 576 17625 D Libae[Core]: 2550,aec_alg_status_printf:(auto):ae.m,8,unstb,near_unstb,face_unstb,unlock,50Hz,fps[14.28, 30.00]:30.00 cur-(s 1216(0.010000s),g 168,dmy 2838),nxt:idx:150,(s 507(0.004169s),g 128,dmy 3547) bv:1204,cur_l:(f:254,c:255,n:245),y_l:254,tar_l[61[62,66]67]64 M07E57C 04-15 04:16:19.618 576 17625 D Libae[Co
+完整回答请参考FAQ: FAQ202274859
+### 问题: 全景模式拍照，拼接处模糊失真
+解决方案: 一、全景拍照的ae lock,cur_scene=6,fps=30,与参数中配置 panorama scene mode对应. Line 17089: M05D12E 04-11 06:38:59.457 23108 23108 D WCamera/BaseModuleUI_Capture: onShutterButtonClick Line 17090: M05D12F 04-11 06:38:59.457 23108 23108 I WCamera/PanoramaModule: onShutterButtonClick : mPaused = false mThreadRunning = false M05D191 04-11 06:38:59.493 413 790 D Cam3OEMIf: 8209, SetCameraParaTag: ANDROID_CONTROL_AE_LO
+完整回答请参考FAQ: FAQ202274860
+### 问题: AE log中cur_l tar_l数据具体含义
+解决方案: M020982 05-25 09:21:57.214 551 26505 D Libae[Core]: 2574,aec_alg_status_printf:(auto):ae.m,272,stb,near_stb,face_unstb,unlock,50Hz,fps[14.28, 30.00]:30.00 cur-(s 3648(0.030000s),g 801,dmy 406),nxt:idx:276,(s 3648(0.030000s),g 801,dmy 406) bv:427,cur_l:(f:10,c:8,n:10),y_l:46,tar_l[7[8,12]13]10 cur_l(f/c/n)=AEM_BLOCK_LUM*Weight TABLE(默认中心测光) f:当前的统计亮度值,全图带权重 c:当前的中心区域(1/2*1/2)亮度值,不带权重 n:当前的统计亮度值,全图不
+完整回答请参考FAQ: FAQ202274861
+### 问题: Hold音播放类型
+解决方案: 1、CS电话 CS电话通常是网络播放Hold音,本地AP不会播放Hold音,网络播放Hold音底层Modem会上报EarlyMedia,参数为1 .可查看如下log: RadioInteractor: [UNSL]< UNSOL_EARLY_MEDIA 1 2、PS电话 PS电话默认底层Modem播放Hold音,但是当底层Modem上报SPTONEPLYSOURCE为0时需要AP播放本地定制Hold音.可查看如下log ImsRIL : [UNSL]< RIL_IMS_UNSOL_HOLD_TONE 0 如果AP正在播放Hold音时底层Modem上报SPTONEPLYSOURCE为1,或者上报EarlyMedia,上层停止播放Hold音,等待底层Modem播放Hold音.可查看如下log: ImsRIL : [UNSL]< RIL_IMS_UNSOL_HOLD_TONE 1 ImsRIL 
+完整回答请参考FAQ: FAQ202274870
+### 问题: Ai Scene场景返回值查询
+解决方案: 一、问题描述 Camera App适配Ai Scene功能,需要通过识别的AI场景返回值来显示检测结果. 二、问题答案 场景识别结果的返回值可通过枚举 ai_scene_type 查询. path:平台版本/vendor/sprd/modules/libcamera/ispalg/common/inc/isp_com.h 	302  enum ai_scene_type {
+	303               AI_SCENE_DEFAULT,
+	304            AI_SCENE_FOOD,
+	305            AI_SCENE_PORTRAIT,
+	306            AI_SCENE_FOLIAGE,
+	307            AI_SCENE_SKY,
+	308        AI_SCENE_NIGHT,
+	309     
+完整回答请参考FAQ: FAQ202274880
+### 问题: NVaide配置GSM制式使用的GPIO器件，为何要在WCDMA界面配置GSM USED GPIO？
+解决方案: LTE平台,WCDMA modem是双模modem,同时控制GSM; WCDMA比GSM先启动,负责初始化RFFE器件,因此GSM想要使用GPIO控制(RF_CTL)的RFFE器件,相关GPIO(RF_CTL)引脚需在WCDMA NV中声明. WCDMA_logic\WCDMA_rf_gpio_config\GSM_Used_GPIO=0x1fd GSM_logic\GSM_antenna_switch_rfgpio_config_logic\antenna_switch_pin_control=0x1fd 在第一个WCDMA频段下配置GSM会使用到的GPIO为1后,其它频段自动带入此配置; 由于GSM_Used_GPIO配置是单一NV项,在任意WCDMA频段界面下修改GSM_Used_GPIO,其它频段界面的此位置相应会被修改,WCDMA_logic\WCDMA_rf_gpio_conf
+完整回答请参考FAQ: FAQ202274881
+### 问题: Vts测试#GyroscopeStreamingOperationSlow/0_default报错
+解决方案: a). 测试结果显示报错在SensorsHidlTestBase.h的第300行 b). 查看host_log.txt报错log报错在SensorsHidlTestBase.h的第300行, Event打印实际数据超过测试规范范围 I/ModuleListener: [1/1] VtsHalSensorsV1_0TargetTest PerInstance/SensorsHidlTest#GyroscopeStreamingOperationSlow/0_default FAILURE: hardware/interfaces/sensors/common/vts/utils/include/sensors-vts-utils/SensorsHidlTestBase.h:300: Failure Value of: checker.check(sensorEvents, &s) Actua
+完整回答请参考FAQ: FAQ202274883
+### 问题: 8910 模拟器如何支持全键盘
+解决方案: 1. MK文件中开启下述宏 QWERTY_KEYPAD = CUST KEYPAD_TYPE = QWERTY_KEYPAD 2. 修改 s_keycode_table @ mmi_default.c, 需要定义全键盘的对应键值: { - #ifdef PLATFORM_UIX8910 + #if 0 0, /*0x28*/ 0, /*0x29*/ ... #else SCI_VK_Q, /*0x28*/ SCI_VK_W, /*0x29*/ SCI_VK_E, /*0x2a*/ SCI_VK_R, /*0x2b*/ #endif } 3. 编译资源和模拟器通过后,打开模拟器上,右键 > Change Image之后重启模拟器即可 Image file 选择: MS_Code\MS_MMI_Main\source\winsimulator_tp\skin\mssim_duallcd_240
+完整回答请参考FAQ: FAQ202274885
+### 问题: 如何获取mac地址
+解决方案: 驱动已加载: 1.上层 参考setting调用接口: frameworks/base/packages/SettingsLib/src/com/android/settingslib/deviceinfo/AbstractWifiMacAddressPreferenceController.java -> mWifiManager.getFactoryMacAddresses(); /frameworks/base/packages/SettingsLib/src/com/android/settingslib/deviceinfo/AbstractBluetoothAddressPreferenceController.java -> BluetoothAdapter.getAddress() 2.adb adb shell svc wifi enable //开启wifi adb sh
+完整回答请参考FAQ: FAQ202274887
+### 问题: 为什么模拟器与真机的语言设置存在差异
+解决方案: 在语言设置的代码 , 真机还会再多了个Fix NV 针对语言设置的判断 MMIAPISET_CheckLanguageStatus //判断该语言状态是否有效 #ifdef WIN32 if(s_lang_set[language_type].lang_status) #else GetMulNVConfigInfo(&config_info); if(s_lang_set[language_type].lang_status && (config_info.flag[language_type]>>2)& 1) // 編譯出來nv(build资料夹内的multi_language_cfg.xml)的数量是一致的 #endif 排查项目实际开了哪些多国语言: 1.操作 NVEditor.exe 工具, 选取项目的 nvitem 文件夹资料 build\projectname_builddi
+完整回答请参考FAQ: FAQ202274890
+### 问题: 如何得知MMI Module的ID
+解决方案: MMI Module ID通常用于来分别是那个module拥有哪些资源
+
+如window ID/Image ID/text ID
+Image: IM(2)
+im   DEFAULT  0x40020002	IMG_IMSP_ARROW_DOWN_ON  	IMG_PNG   	IMG_CMP_PNG_ARGB_RLE      30	  30	    3279
+
+Text: common(0)
+common              	DEFAULT   	0x40000C8E	TXT_COMM_EBOOK
+
+Window ID: Setting Module
+WIN_ID_DEF(MMISET_RING_MENU_WIN_ID)
+
+MMI NV: Eng Module
+    MMIENG_NV_SENSOR_MODE_ID = MMI_MODULE_ENG<<
+完整回答请参考FAQ: FAQ202274891
+### 问题: UIS8910DM lzma 压缩用法
+解决方案: UIS8910DM lzma 压缩用法 一 ,软件压缩&解压接口 /** * \brief compress data to blocked compressed output * * The output buffer should be larger enough to hole the compressed data. * * \param input input data * \param insize input data size * \param output output buffer * \param outsize output buffer size * \parem block_size compress block size * \return * - compressed data size * - negative on error */ int lzmarC
+完整回答请参考FAQ: FAQ202274892
+### 问题: 6533g 字库加载的流程说明
+解决方案: 编译项目时 , 在编译工程中的 target.def 会定义 CT_ERES 如 CT_ERES ?= qqvga_3232 然后要更新FontRes.c 在下列路径 : application\mmi_customer\CustResource\src\ 确定有编译成功后 , 会透过下列的全域结构体载入 langpack2ndJumpTbl[] @ soft\application\target_res\qvga_3264\mmi_customer\custresource\src\Resource_lang_pack_jtbl.c void* langpack2ndJumpTbl[] = { (void*) CSD_gLanguageArray, (void*) &CSD_gMaxDeployedLangs, (void*) CSD_gStringList, ======= 略 ===
+完整回答请参考FAQ: FAQ202274894
+### 问题: USB图眼
+解决方案: 1.什么是眼图?有什么作用? USB眼图是用余辉方式累积叠加显示采集到串行信号的比特的结果,叠加后的图形形状看起来和眼睛很像,故名眼图. 由于USB眼图是用一张图形就完整地表征了串行信号的比特信息,所以成为了衡量信号质量的最重要工具,所以眼图测量也叫"信号质量测试". USB眼图,实际上就是调试USB通路的阻抗特性,将阻抗收敛到45Ω;所以眼图的调试⽅法类似射频匹配的调试,都是将阻抗收敛到⼀个值. 2.调节眼图的方式 可以通过调节寄存器的值的方式 通常眼图有两种测试方式通过adb调试和代码层修改. 1.ADB命令调试 参考文件有:客户文档34889(device侧),客户文档34895(host侧) 实例操作:连接手机,打开dos窗口àadb shellàlookat -1 1 (要修改的寄存器)àlookat –s (修改后的寄存器值) (要修改的寄存器) 此修改只能用于adb 测试,待
+完整回答请参考FAQ: FAQ202274899
+### 问题: camera预览边缘出现锯齿般线条的解决思路
+解决方案: 解决思路分为4个步骤 一、拍摄raw 首先拍摄raw图,观察是否存在该现象,如存在,应找sensor厂排查;如不存在,则需要进一步排查tuning以及显示以及size问题 二、尝试调试EE参数 首先通过by pass EE,观察是否依然存在.如果现象消失,可以降低EE强度;如果现象依然存在,排除参数调试原因 三、dump 预览YUV 通过输入以下命令: adb root adb remount adb shell setprop debug.camera.preview.dump.count 10 dump出YUV图,利用YUV viewer可视化,观察yuv图是否存在锯齿,如存在,则排除camera显示的原因;如yuv图现象消失,则需要排查预览display原因 四、排查dcam_out size 在ylog里查询关键词"camcore_channel_size_binning_cal"
+完整回答请参考FAQ: FAQ202274901
+### 问题: 如何配置lowmemorykiller白名单
+解决方案: lmkd_param.conf文件是lmkd杀进程的白名单配置文件,其中配置的应用是不会被lmkd杀掉的 请在device/sprd目录中搜索lmkd_param.conf文件,然后确定出和你们项目对应的lmkd_param.conf文件 然后添加配置如: device/sprd/<soc>/common/DeviceCommon.mk: PRODUCT_COPY_FILES += \ $(LOCAL_PATH)/lmkd_param.conf:$(TARGET_COPY_OUT_VENDOR)/etc/lmkd_param.conf 或者 PRODUCT_COPY_FILES += \ $(call md-path-cur)/lmkd_param.conf:$(TARGET_COPY_OUT_VENDOR)/etc/lmkd_param.conf 最后,向lmkd_param.conf中
+完整回答请参考FAQ: FAQ202274907
+### 问题: 请提供获取电话本匹配名字的接口
+解决方案: =>以下接口可进行名字匹配,在全匹配和包含都不满足后,模糊匹配的处理可以按照需求进行优化. PUBLIC BOOLEAN MMIPB_GetCotact(MMIPB_NAME_T *name_ptr,MMIPB_BCD_NUMBER_T *bcd_number_ptr) { uint16 i = 0; uint16 contact_id = 0; uint16 storage_id = 0; uint16 start_pos = 0; uint16 end_pos = 0; uint16 pos = 0; MMIPB_NAME_LETTERS_T *letters_ptr = PNULL; MMI_STRING_T wchar_lower = {0}; MMIPB_NAME_NUMBER_MAIL_T contact_info = {0}; BOOLEAN isfind = FALSE; 
+完整回答请参考FAQ: FAQ202274918
+### 问题: 驻网PLMN与SIM PLMN不一样时不显示漫游图标
+解决方案: =>当驻网Plmn与SIM PLMN不一样时,在ChangeRoamingState 中, mmi_bootup_is_roaming判断为漫游,因此会显示漫游图标. 若要不显示漫游图标 ,可以在mmi_bootup_is_roaming 中进行修改, 可参考cmcc_sim_in_cmcc_networks 的处理. 例:Zantel 和 TTCL 运营商不显示漫游图标 MMI_BOOL tz_sim_in_tz_networks = 0; tz_sim_in_tz_networks = ((memcmp(gHomePLMNNum[sim_id], "64002", 5) == 0 || memcmp(gHomePLMNNum[sim_id], "64007", 5) == 0 || memcmp(gHomePLMNNum[sim_id], "64003", 5) == 0) && ((
+完整回答请参考FAQ: FAQ202274919
+### 问题: A10如何配置默认的voicemail number？
+解决方案: [配置方法]:到路径packages/apps/CarrierConfig/assets/下找到需要配置的运营商配置文件(如有carrier_id就配置在对应的carrier_id配置文件中,如没有carrier_id就配置在对应的mcc/mnc配置文件中) 需要配置的字段为: <string name="default_vm_number_string">xxx</string> <string name="default_vm_number_roaming_string">xxxx</string> 注: (1)carrier_id可从packages/providers/TelephonyProvider/assets/sdk28_carrier_id/carrier_list.textpb文件中查询 (2)default_vm_number_roaming_string是否配置,以
+完整回答请参考FAQ: FAQ202274932
+### 问题: 物理接口和控制器的匹配问题
+解决方案: 对于uart、SPI、I2C等,会有物理接口和控制器的区分: 物理接口决定的是硬件连线,即外接设备选择的引脚; 控制器是指外设的dts或者驱动所选的的控制总线. 二者的映射关系在pinmap中设置,具体选项可以参照芯片SPEC手册中Pin Regsister Description或者Pin Control Regsister对应内容. 注意: 1.一个控制器不能同时映射在不同的物理接口上. 2.通常选择AP侧的控制器用于客制化,在<soc name>.dtsi文件中可以查看相应的节点信息:,对照SPEC的映射关系,通过寄存器起始地址可以看出该节点属于AP还是属于AON(命名规律:对于i2c,名称为"i2cX"的是AP侧,名称为"aon_i2cX"是AON侧); 3.如果需要修改,尽可能选择没有使用的控制器,因为如果一个控制器被其他物理接口的设备A使用,将该控制器的物理接口切换后,设备A因
+完整回答请参考FAQ: FAQ202274942
+### 问题: 307/317平台如何添加一款新sensor驱动
+解决方案: 1、添加驱动文件
+路径:MS_Code\MS_Ref\source\cam_sensor_drv\sensor_drv
+
+2、在sensor_cfg.c中添加新sensor信息
+1)
+++extern const SENSOR_INFO_T g_gc030a_mipi_raw_info;
+extern const SENSOR_INFO_T g_GC2145_yuv_info;
+extern const SENSOR_INFO_T g_SIV121D_yuv_info;
+2)
+LOCAL const SENSOR_MATCH_T main_sensor_infor_tab[] = 
+++ {MODULE_SUNNY, "gc030a", &g_gc030a_mipi_raw_info, {NULL,0}, {NULL, 0, 0, 0}},
+
+3、在mk文件中添加新
+完整回答请参考FAQ: FAQ202274952
+### 问题: APP死机后如果获取当前窗口信息
+解决方案: App死机后,通过trace32 simulator加载mem,axf文件后 获取当前窗口的handle ,例如:s_focus_win_handle = 0x01EE0020 取s_focus_win_handle的低16位, 获取窗口list对应的handle的值,例如s_handle_list[20] s_handle_list[32]_=_( data_ptr = 0x82E3D8C0 -> ( handle_type = MMI_HANDLE_WINDOW = 0x2, handle = 0x01EE0020), prev_node_ptr = 0x818F5068, next_node_ptr = 0x818F5110) 3.取s_handle_list[index]的data_ptr的值,强制类型转换为MMI_WINDOW_NODE_T *,即得到当前窗口的信息,例如 (MM
+完整回答请参考FAQ: FAQ202274956
+### 问题: 307 触摸方式进出Slide Page会有timer泄漏
+解决方案: 307通过Slide Page创建一个可以左右滑动的entity. 在通过触摸方式退出当前的Slide page时,没有销毁当前Slide page的timer,从而导致timer泄漏. 修改WatchSLIDEPAGE_DestoryHandle如下: ...... if (s_watchslidepage_entity[i].is_used) { WatchSLIDEAGE_Close(handle); +++ if(0 != s_watchslidepage_entity[i].tp_drap_timer) +++ { +++ MMK_StopTimer(s_watchslidepage_entity[i].tp_drap_timer); +++ s_watchslidepage_entity[i].tp_drap_timer = 0; +++ } SCI_MEMSET(&s_wat
+完整回答请参考FAQ: FAQ202274957
+### 问题: 多帧导通配置
+解决方案: 1.关于多帧配置具体如下,以该路径为例:device/sprd/shaklel5/ums312_1h10/module/camera/md.mk 在md.mk文件中做如下修改 PRODUCT_PROPERTY_OVERRIDES += persist.vendor.cam.3dnr.version=1 TARGET_BOARD_CAMERA_3DNR_CAPTURE := true //3dnr capture TARGET_BOARD_CAMERA_NIGHT_3DNR_TYPE :=2//夜景||3dnr 映射的是预览硬件拍照软件 TARGET_BOARD_CAMERA_SUPPORT_AUTO_3DNR := true //支持AUTO 3DNR TARGET_BOARD_CAMERA_DRE_CAPTURE := true //超夜配置 TARGET_BOARD_CAMERA_DR
+完整回答请参考FAQ: FAQ202274961
+### 问题: 效果参数上验证多帧生效注意事项
+解决方案: 多帧流程导通后,修改MFNR效果参数图像表现不明显,这时要注意检查下: 一:效果方面: 1.是否是在最大gain暗环境下拍有细节的场景验证. 2.是否是其他去噪模块参数设置太强,比如bayerNR,YNR,YNRS,验证时可将这些模块去噪强度写弱或者baypass,放出一些颗粒感的亮度噪声出来,然后将MFNR的参数baypass/写弱/写强进行验证. 二:log上确认: 关键字:TDNS_LOG log举例: Line 81068: M026BFA 05-27 03:12:08.541 548 8359 D TDNS_LOG: CAM_ALGO_CV_MFNR_LIBVER[3.1.0.8.1557584][May 26 2021][14:28:13] // 算法版本MFNR3.1 Line 81069: M026BFB 05-27 03:12:08.541 548 8359 D TDNS
+完整回答请参考FAQ: FAQ202274962
+### 问题: 展锐平台纹波测试方法
+解决方案: 根据不同的场景使 LDO/开关电源,工作在相应的工作状态(开关电源有PFM/PWM模式). 测试位置:测试纹波的位置选择近负载电容两端, 测试探头: 1)优先选择猪尾巴进行测试. 2)探头测试时选用示波器探头 +接地环的方式直接测量测试点. 示波器的设置如下: 1)示波器上相应通道设置为直流( DC)状态,带宽设置为 20M,电压幅度设置为小于 50mV/div. 2)测试时打开测量计数. Measure->Statistics ON->Measure->Measure Stepup->Show table->P1 ->Peak to peak->C1 以此类推 2/3/4路测试( P2->Peak to peak->C2 .时基设置为 10ms,测试时统计次数需要大于100次. 3)在测试纹波大小时使用余辉模式. Display->Persistence on->Persistense 
+完整回答请参考FAQ: FAQ202274964
+### 问题: cpu单核关dvfs 和 ddr降频关DFS 方法
+解决方案: 稳定性问题,经常需要cpu单核关dvfs 和 ddr降频关DFS 来对比测试. 具体方法如下 1. cpu单核 对应board dts文件 bootargs = "... loglevel=1 ... 改成 bootargs = "... loglevel=1 maxcpus=1 ... 2. cpu 关 dvfs arch/arm/configs/sprd_sharkl3_deconfig arch/arm64/configs/sprd_sharkl3_deconfig -CONFIG_ARM_SPRD_HW_CPUFREQ=y +# CONFIG_ARM_SPRD_HW_CPUFREQ is not set -CONFIG_ARM_SPRD_HW_CPUFREQ_SHARKL3=y +# CONFIG_ARM_SPRD_HW_CPUFREQ_SHARKL3 is not set 3. 
+完整回答请参考FAQ: FAQ202274969
+### 问题: sysdump文件crash解析命令
+解决方案: sysdump文件crash解析命令 A12: ~/bin/728/crash_arm64 -m vabits_actual=39 -m phys_offset=0x80000000 -m kimage_voffset=0xffffffbf90000000 vmlinux sysdump.core kimage_voffset=0x*** 需要根据dump report里的信息修改 有sysdump.core.00文件 的A11 ~/bin/728/crash_arm64 -m phys_offset=0x80000000 vmlinux sysdump.core --cpus 8 没有sysdump.core.00, 要加@0x80000000 kimage_voffset=0x*** --kaslr 0x**** 需要根据dump report里的信息修改 1. ~/bin/728/c
+完整回答请参考FAQ: FAQ202274970
+### 问题: 通过文件节点只开cpu core0 和 固定cpu频率  固定ddr频率方法
+解决方案: 通过文件节点关闭cpu core和 固定cpu频率 固定ddr频率方法 注意: 文件节点配置cpu core online 和 固定cpu和ddr频率, 重启后失效,如测试过程中需要重启,请修改对应文件 编译和替换版本,具体参考FAQ202274969 adb root adb shell 1. 只开core0 echo 1 > /sys/devices/system/cpu/cpu0/online && echo 0 > /sys/devices/system/cpu/cpu1/online && echo 0 > /sys/devices/system/cpu/cpu2/online && echo 0 > /sys/devices/system/cpu/cpu3/online && echo 0 > /sys/devices/system/cpu/cpu4/online && ech
+完整回答请参考FAQ: FAQ202274971
+### 问题: 定位deep sleep挂死位置的方法
+解决方案: 定位deep sleep挂死位置的方法 正常版本, deep sleep走到suspend console后,会停止打印,看不到deep sleep走到哪一步了, 如deepsleep挂死,可以通过下面的方法初步定位. adb root adb shell echo 0 > /sys/module/printk/parameters/console_suspend echo 1 > /sys/module/kernel/parameters/initcall_debug echo 7 > /proc/sys/kernel/printk // 打开串口log level后,速度会变慢,影响时序,如打开log level后不复现.不要修改log level, 挂死后抓sysdump, 从log buf里看挂在那一步 如果kernel 已走到这里 [ 38.344684] CPU7: shutd
+完整回答请参考FAQ: FAQ202274972
+### 问题: USB硬件版型导致没法正常枚举，只能充电
+解决方案: 1.基本状况 初次插入USB线再开机才能启动USB功能进入枚举,其他情况下再次插入USB则不能进入枚举,而只能充电. 2.问题分析 在LOG跟踪中开机后再插入USB的时候,直接就进入 //第二次识别插入为状态为8,sc27xx_debug_cable,与正常使用PC(host)输入的状态不同,正常成为2、5,即插入状态有问题,即输入就有问题. sc27xx-typec 32100000.spi:pmic@0:typec@380: now works as DRP and is in 8 state, event 1 //gpio检测到usb插入 musb-sprd 5fff0000.usb: device connection detected from VBUS GPIO. //在充电模式下不需要恢复 musb 设备,此处打印是出现非CDP和非SDP状态才会打印出来,也就是说机器识别插入
+完整回答请参考FAQ: FAQ202274977
+### 问题: UMS9117三合一配置震动异常
+解决方案: 1. 震动有底噪 虚拟震动是发生特定频率的声音(例如170hz,200hz),三合一场景时我们硬件vbc模块会产生震动音源,底噪一般是播放震动音源导致的,所以需要将震动音源mute掉,同时将以下目录下的震动音源换成mute文件: 1. \MS_MMI_KN4\source\resource\Common\RING\ R_VIBRATE_200hz 2. \MS_MMI_Main\source\resource\Common\RING\ R_VIBRATE_200hz 3. \MS_MMI_NQ2\source\resource\Common\RING\ R_VIBRATE_200hz 2. 震动异常 震动异常一般是由于参数不对导致的,需要请硬件同事调试音频参数,注意,渐入渐出的参数设置不能为0,即以下NV参数不能为0: AUDIO\AUDIO_ARM\Handsfree\AudioStru
+完整回答请参考FAQ: FAQ202274984
+### 问题: ums512语音回环测试听筒无声/副MIC回环无效
+解决方案: 平台默认是听筒到副mic,喇叭到主mic,耳机到主mic或耳机mic,需要测试其他通路的话,需要修改以下内容: audioparam_config.xml修改: <audioparam name="Loopback\Handset\Loop1" Path="Loopback\RCV" Usecase="Loop" OutDevice="Earpiece" InDevice="AuxMic" /> <audioparam name="Loopback\Handsfree\Loop1" Path="Loopback\SPK" Usecase="Loop" OutDevice="Speaker" InDevice="MainMic,AuxMic" /> <audioparam name="Loopback\Headset4P\Loop1" Path="Loopback\HP" Usecase="
+完整回答请参考FAQ: FAQ202274985

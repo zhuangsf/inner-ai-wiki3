@@ -1,0 +1,319 @@
+### 问题: SC6531E VoLTE导致呼叫转移失败
+解决方案: 问题现象: SC6531E功能机设置呼叫转移失败,但插入相同SIM卡的智能机可以设置呼叫转移,复现log中搜索消息MNSS_END_IND,其中参数会出现cause=16,illegal SS operation. 问题原因: 可能是使用开通VoLTE功能的SIM卡导致的. VoLTE功能开启后,基站CS域关闭,而6531E功能机的CFU功能是走CS域,会导致冲突;而智能机的CFU功能是走PS域,不会出现问题. 解决办法: 不要使用开通VoLTE功能的SIM卡.
+参考FAQ: FAQ125296
+### 问题: 如何确认af功能是否生效
+解决方案: 1.从现象判断是否有对焦现象. 有对焦现象 :图像由清晰到模糊的过程 对焦后出现绿框,表示对焦成功 对焦后预览和拍照模糊,需要重新 tune AF 参数 没有对焦现象 :需要确认 af driver 是否有问题 2.从 log 判断 对焦过程 看到 notify_start 和 notify_stop 的 log ,说明有对焦开始和结束流程,完成对焦过程. 3.使用全扫,确认是否可以看到由模糊到清晰的过程,并可以找到 peak 点 adb shell setprop persist.vendor.cam.isp.caf.defocus 150:900:3 150 是 起始 dac,900 是结束的 dac ,3 是 步长 如果没有看到图像的 清晰到模糊变化,确认指令 成功,有问题请联系驱动工程师.
+参考FAQ: FAQ125397
+### 问题: [AndroidQ]客户端修改了NewGallery2的代码，如何做才能在客户端编译有效?
+解决方案: 在AndroidQ上,NewGallery2使用了货架化方式编译, 客户端不能编译源码,如果客户端自己需要修改NewGallery2的代码,可以通过添加系统属性修改编译方式,即在对应工程的BoardConfig.mk中配置 GALLERY_PLATFORM_BUILD_SUPPORT := true 开启平台编译.在添加以上配置后,进行整个工程全部编译,此时NewGallery2中修改的代码在平台编译才会有效.
+参考FAQ: FAQ125490
+### 问题: wcdma的feature Improve layer2功能的打开与关闭
+解决方案: 1)feature Improve layer2 DL 由NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\rlc_cap\rlc_mac_ehs_suppoted 控制; 0:代表不支持,即该功能关闭 1:代表支持,即该功能打开 2)feature Improve layer2 UL 由NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\rlc_cap\rlc_mac_iis_suppoted 控制; 0:代表不支持,即该功能关闭 1:代表支持,即该功能打开
+参考FAQ: FAQ125700
+### 问题: 安卓10马达的路径不存在/sys/class/timed_output/vibrator/
+解决方案: android 10 上 k4.14 vibarator 是在通过 input 事件处理 马达事件 例如通过getevnt 可以查看 input 事件. add device 3: /dev/input/event0
+  name:     "sc27xx:vibrator" input 系统通过 ioctrl 来实现对马达的控制,具体例子可以参考 
+	/vendor/sprd/modules/vibrator/vibfftest.c
+参考FAQ: FAQ125949
+### 问题: UMP510G的VDDMEM的反馈pin L16连接
+解决方案: UMP510G上VDDMEM为单端feedback, 目前的参考设计,feedback是连接到VDDMEM内部电源层近端,已可以满足此路电源设计需求. 设计时建议套用平台SPM设计即可.
+参考FAQ: FAQ126393
+### 问题: UMS312/UMS512(T)平台BOARD_ID_ADC1 对应电阻
+解决方案: UMS312/UMS512是通过BOARD_ID_ADC1 读取不同电压值来判断DDR类型. 需要硬件bom根据项目所用DDR配置不同下拉电阻,当前软件的对应关系如下: 30K 分离式LPDDR4X 39K 分离式LPDDR4 47K EMCP LPDDR4X 56k LPDDR3
+参考FAQ: FAQ126361
+### 问题: SC9850K平台能不能支持3GB的LPDDR3
+解决方案: SC9850K DDR最大地址空间2GB,不能支持3GB DDR. 高配版的SC9850KH可以支持3GB或4GB的DDR
+参考FAQ: FAQ126399
+### 问题: UMP510G的VDDQ的反馈pin M16连接
+解决方案: UMP510G上VDDQ为单端feedback. 目前的参考设计,feedback是连接到VDDQ内部电源层近端,已可以满足此路电源设计需求. 设计时建议套用平台SPM设计即可. VDDQ feedback上串接电阻可以参考我司hw design guide做删减.
+参考FAQ: FAQ126395
+### 问题: 如何确认 wcdma  HS_RACH功能是否打开
+解决方案: HS_RACH(ERACH): 由NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\ul_phy_fdd_cap\commonE_DCH_suppoted 控制; 0:代表不支持,即该功能关闭 1:代表支持,即该功能打开
+参考FAQ: FAQ125723
+### 问题: SC9863 EDL安全下载功能
+解决方案: EDL安全下载需要将主板上可以用于下载的管脚删除. 在SC9863平台上,KEYIN0/KEYIN1/UART1TX/UART1RX/UART0RX不能引出. 这个时候如果需要抓串口log,软件上可以将log口改到UART0TX上.
+ 此时音量+键,建议软件配置到在EXTINT8~EXTINT15中空闲pin中.
+参考FAQ: FAQ126397
+### 问题: 耳机左声道并联100K 电阻到GND，有啥作用，能否删掉？
+解决方案: HP_L上的100K下地,主要是用于自拍杆检测的电压检测判断,从而执行对应的中断.删除对于正常耳机检测没有影响(但是会导致四段式空头耳机(只有耳机头)无法检测,如客户还有空头耳机检测需求,建议不删除).
+参考FAQ: FAQ125739
+### 问题: SC2721G耳机通路上面0805的22uF隔直电容能否更换成0603封装或者0402的10uF，是否有影响？
+解决方案: 同样的22uF, 0805封装相对于0603/0402封装,耳机电信号指标会更好一些,具体的对比数据由于受到客户走线和器件影响,需要根据客户机器实测; 22uF对于10uF,由于容值降低,根据高通滤波器的截止频率计算公式, Fc=1/2Pi*RC, 可以知道会导致截止频率的升高,造成耳机低频性能变差.
+参考FAQ: FAQ125741
+### 问题: UMS512平台，UMP510G的HP的输出最大电压值是多少？
+解决方案: UMP510G,软件可调的最大输出电压为1.0V(对应0dB),同时也是最大不失真电压.
+增益设置从-30dB到0dB,3dB步进.
+参考FAQ: FAQ125745
+### 问题: BAND28谐波杂散FAIL如何调试
+解决方案: 由于B28 TX上行频率较低(703~748MHZ),如果PA输出匹配不合适容易导致高次谐波超标,建议PI型匹配电路采用低通网络形式,串联大电感(8.2nH或更大感值),并联大电容(3.9pF或更大容值),具体值可根据PA LoadPull位置来调整,不要采用高通匹配电路(串电容并电感)
+参考FAQ: FAQ126137
+### 问题: xml增加参数后，audio_process.xml文件中id号会错乱，如何重新排序
+解决方案: audio_process.xml中id号的排序问题,可以基于客户已经修改后软件版本(增加参数后),按照如下顺序执行: 1. 将xml push进手机里(位置:/system/vendor/etc/audio_params/sprd/) 2. 将/data/vendor/local/media/audio_params的参数删除掉,执行rm -r *.xml 3. 使用audio tool工具读出来,id可以自动正确排序
+参考FAQ: FAQ125836
+### 问题: SC6531E cdac值变化问题
+解决方案: 一般情况下,cdac值在经过校准得出后不会再变化. DSP对cdac值的调整依赖于AFC功能的开启,当AFC功能开启时,DSP会重新选择cdac值并通过RR_MN_SCELL_RSSI_IND消息上报,L4会将上报的新cdac值写入nv. 在搜不到网的情况下,L4会调用AFC函数,并在以下两种情况下会开启AFC功能: 1) 手机没有经过AFC校准 协议栈通过读取nv值adc_reserved[7]来判断手机是否经过AFC校准,若adc_reserved[7]=0,则判定没有经过AFC校准;若adc_reserved[7]非0,则判定经过AFC校准. 2) 是否有调用MNPHONE_AFC_SetExternalCondition接口设置AFC开启外部条件,接口原理可以参见FAQ113676
+参考FAQ: FAQ126264
+### 问题: LTE网络发起的paging流程简介
+解决方案: 网络发起的paging流程 1. S_TMSI寻呼 UE在IDLE模式下,当网络需要给该UE发送数据(业务或者信令)时,发起寻呼过程,流程图如下: 2. IMSI寻呼 当网络发生错误需要恢复时(例如S-TMSI不可用),可发起IMSI寻呼,UE收到后执行本地detach,然后再开始attach.
+参考FAQ: FAQ126272,含图片
+### 问题: SC6531E平台是否需要做DDRScan和内存压力测试
+解决方案: SC6531E为内置RAM不需要做DDRScan等DDR相关的测试.
+参考FAQ: FAQ126400
+### 问题: SL8521E MCP支持情况确认
+解决方案: SL8521E上MCP NAND+LPDDR2支持主要容量 1Gb+1Gb/2Gb+1Gb/2Gb+2Gb/4Gb+2Gb/4Gb+4Gb 注意SL8521E NAND模式只支持8bit;16bit nand使用8bit接法会损失容量,不推荐使用. 
+ 关于系统容量,通常nand容量偏小,flash建议使用容量更大的emmc
+ SL8521E Mocor5: 最低 4Gb+2Gb[Nand/EMMC+LPDDR2] 
+ SL8521E KaiOS:  最低32Gb+4Gb[Nand/EMMC+LPDDR2] 
+针对儿童手表和模块形态产品: 
+ 最低 1Gb+1Gb[Nand/EMMC+LPDDR2],需自行评估剪裁适应.
+参考FAQ: FAQ126402
+### 问题: 工规车规memory选型
+解决方案: 对于我司2nd source的memory支持列表中,我们认为工规车规产品对于温度需要满足低温-40℃.
+如相应器件规格不能满足-40℃低温需求,则不适用于工规车规产品.
+参考FAQ: FAQ126405
+### 问题: UMS312 平台wcn only 时钟方案
+解决方案: 方案: TSX + TCXO , 无需AFC校准,唯一方案.
+参考FAQ: FAQ126448
+### 问题: SC9863A软件如何设置LTE Only？
+解决方案: 一般情况下,工程师会认为这部分是在NV中配置; 实际SC9863A是需要软件同事在AP侧将Testmdoe配置为LTE Only. 为了严谨,具体修改方法请提交软件CQ咨询. 下面修改方法仅供参考: 修改方案: 在 device/sprd/sharkl3/common/TelephonyCommon.mk 中 将 ro.telephony.default_network 的属性值改为 11 然后在上述属性值后面添加属性 persist.vendor.radio.modem.workmode=3,3 \
+参考FAQ: FAQ126451
+### 问题: SC9863A 搭配5G WIFI 晶体方案是否可以使用TSX+DCXO？
+解决方案: SC9863A 搭配5G WIFI 晶体方案只能使用TCXO+DCXO.
+参考FAQ: FAQ126452
+### 问题: LTE关于载波聚合（CA），频段组合表示的含义 ？
+解决方案: 通过后缀可以表示CA的bandwidth class,A/B/C/D定义具体见下面图片. 举例: 5B:表示Band5带内连续CA,合成等效带宽大于5MHz,小于20MHz. 1C:表示Band1带内连续CA,合成等效带宽大于20MHz,小于40MHz. 3A+7A:表示Band3与Band7带间CA,每个CC带宽小于20MHz(合成等效带宽不大于40MHz).
+参考FAQ: FAQ126455
+### 问题: 不要主射频，做WCN Only，硬件软件设计注意事项？
+解决方案: 部分项目不要主射频,做WCN Only,硬件软件注意事项如下: 硬件方面: UMS312/UMS512平台的Transceiver本身及周边电路可直接删除. SC9863A平台的Transceiver由于软件语音需要,不能删除.但可以删除周围LVDS/TX/RX/PDET网络,下面网络必须按照参考设计保留:SPI/电源及电容,CAP_TX的电容,CLK走线,接地管脚. UMS312/UMS512平台时钟方案使用TSX+TCXO. SC9863A使用TCXO+32K. 软件方面: 参考对应平台文档WCN Only时钟方案及软件裁剪指导,特别关注是否做VoWIFI,软件裁剪不一样..
+参考FAQ: FAQ126460
+### 问题: SC9832E平台是否可以支持SPI串口摄象头？
+解决方案: Camera的SPI接口协议与通用SPI接口不同,SC9832E无法支持SPI接口的Camera.
+参考FAQ: FAQ126481
+### 问题: SC9820E 是否支持SPI接口的Camera？
+解决方案: Camera的SPI接口协议与通用SPI接口不同,SC9820E无法支持SPI接口的Camera.
+参考FAQ: FAQ126482
+### 问题: SL8521E是否支持SPI接口的Camera？
+解决方案: 不支持.
+参考FAQ: FAQ126483
+### 问题: UWE5621芯片的天线选择模式在硬件上如何配置？
+解决方案: UWE5621支持2x2MIMO,可以选择两天线配置(BT与2.4Gwifi共享天线,5Gwifi单独天线)和三天线配置(BT、2.4Gwifi、5Gwifi均单独天线).将GPIO25通过10K电阻上拉至1.8V电源或者NC时,硬件上对应的天线配置为三天线模式,当GPIO25通过1K电阻下拉接地时对应的是两天线配置.
+参考FAQ: FAQ126492
+### 问题: UMW2651/UMW2652的DCXO_LP_MODE pin脚是做什么用的？
+解决方案: UMW2651和UMW2652的时钟方案支持buffer mode和XO mode,当时钟方案使用XO mode时,如果系统进入sleep状态后,会通过DCXO_LP_MODE这个pin脚控制UMW2651和UMW2652内部的26M时钟振荡电路也进入低功耗状态.如果时钟方案是buffer mode,则此pin需要断开连接.
+参考FAQ: FAQ126524
+### 问题: UMS312参考设计中UMP510G的PTEST0与UMW2652的GPIO0相连接做什么用处？
+解决方案: 在UMP510G上,PTEST0管脚是复用T_SEL功能,当UMP510G选择TSX only方案时,GPS需要读取温度以克服温飘,所以就需要UMW2652用GPIO0连接PTEST0去选择读取的是TSX中NTC的温度还是UMP510G内部振荡电路的温度.此接法只有在TSX only(PMU)中才会被使用.
+参考FAQ: FAQ126548
+### 问题: connectivity_calibration.ini文件里面 txpower_reserved 的含义
+解决方案: 一般而言,该参数的配置方式为txpower_reserved = 1, 0, 0, 0,第一个参数为开启温补使能位,后三个参数属于预留位置,没有具体功能,配置为0,调试功率时,不需要作修改,仅保留对应格式即可.
+参考FAQ: FAQ126564
+### 问题: SC2721G 26M时钟输入作用是什么？
+解决方案: PMU2721G输入26M有两个目的: 1. PMU的ADC模块工作需要使用26M; 2. PMU内部音频Codec解码器需要使用26M,而且必须与modem使用同源时钟,否则解码会失步.所以,26M是BB输出给出的,而不是从Transceiver给出.
+参考FAQ: FAQ126567
+### 问题: SC9863A支持4麦克风方案吗？硬件如何实现？
+解决方案: 9863平台硬件上支持双麦克的方案,不支持四麦克风的方案: 1.对于模拟麦克风:按照传统的接法,双麦克分别接MIC1,MIC2即可(注意需要差分输入); 2.对于数字麦克风:AP有两个数字麦克接口(PDM格式),但是需要注意DMIC0和DMIC1只能二选一,在其中一个口上接两个麦克风; 软件方面的注意事项,请咨询我司软件.
+参考FAQ: FAQ126568
+### 问题: 基于R8.0.0001及以前版本audio tester，调整下行的dl dac gain的增益，会影响上行的响度
+解决方案: 在R8.0.0001版本及以前的版本audio tester工具,在调整dl dgain,在影响下行模拟增益的同时,上行的模拟增益会变化. 下行设置-1.5dB,上行增益会提升1.5dB,上行响度会相应的提高1.5dB.
+参考FAQ: FAQ126584
+### 问题: WIFI RSSI的测试方法
+解决方案: 测试方法说明如下: 1.通过第三方APK,连接具体AP热点后可实时查看. 2.通过在:开发者选项——启动WLAN详细日志记录功能,将该功能开启.之后在WIFI设置界面连接AP,网络详情中即可查看到对应的RSSI.
+参考FAQ: FAQ126650
+### 问题: 设置BT跳频的方法
+解决方案: 1、输入*#*#83781#*#*进入工程模式; 2、进入NO SIGNALLING TX设置界面; 3、在TX Channel设置255即可
+参考FAQ: FAQ126653
+### 问题: WIFI传导功率正常，而BT开启BQB后无法连接仪表
+解决方案: 解决措施参考如下: BT工模中,需注意将RF Path开关和BQB开关同时打开. RF Path=OFF状态,BT Only Single Path. RF Path=ON状态,BT Shared WIFI Path.
+参考FAQ: FAQ126654
+### 问题: 如何确认当前软件版本是否支持R7、R8的增强CELL_FACH技术
+解决方案: 1)HS FACH (Enhanced Cell FACH for Downlink) is a Release 7 feature 可查看NV:hsdsch_cell_fach_Supported: (位置在:NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\DL_Phch) 0x0:不支持 0x1:支持 2)HS RACH (Enhanced Cell FACH for Uplink) is a Release 8 feature 可查看NV:commonE_DCH_Supported (位置在:NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\UL_Phch) 0x0:不支持; 0x1:支持
+参考FAQ: FAQ126749
+### 问题: WCDMA模式下，设置锁频的参数frq和PCI的范围
+解决方案: 1)频点允许设置范围是0~0xFFFF;(具体有效频点可以参考协议25.101里5.4.4)
+
+  PCI的范围是0~512. 2)如果锁频频点和小区都是输入的无效值,UE不会在这个无效频点上搜索的,
+    而是会去找实际存在的频点和小区,相当于没有锁频,发起正常的驻网流程
+参考FAQ: FAQ126788
+### 问题: BT单载波设置方法
+解决方案: 测试BT单载波的方法有两种:
+1、用pandora设置:
+   pandora——connect——BT——BR\EDR——Enter EUT——CW TX ON
+2、用工程模式设置:    输入*#*#83781#*#*进入工模,在BT_NOSIGNAL_TEST设置界面将TX Pac Cnt设为12345
+参考FAQ: FAQ126790
+### 问题: SC2721G 及UMP510G 的VDDKPLED作为LDO时输出端外置电容最大值可为多少
+解决方案: SC2721G 和 UMP510G 作为LDO ,最大输出能力50mA, 外加电容范围是1uf -4.7uf,最大是4.7uf.
+参考FAQ: FAQ126854
+### 问题: UMS512T的 THM0_IEXT 是做什么用的？可否用作ADC?
+解决方案: THM0_IEXT ,THM2_IEXT是用来测试芯片内部thermal,输出为模拟信号,不可用作ADC,原理图上保持悬空.
+参考FAQ: FAQ126856
+### 问题: UMP510G PBINT/EXTRSTN 引脚有效电平（低电平）电压触发点是多少？
+解决方案: 电压由高到低下降时,有效低电平电压触发点是0.6V. 电压由低到高上升时,有效高电平电压触发点是1.3V.
+参考FAQ: FAQ126867
+### 问题: UMP510G PBINT/EXTRSTN 内置上拉电阻值为多少？
+解决方案: UMP510G PBINT/EXTRSTN 内置上拉电阻值均为20K.
+参考FAQ: FAQ126868
+### 问题: UpgradeDownload工具升级操作是否会操作ProdNV分区？
+解决方案: UpgradeDownload工具在升级操作时不读写ProdNV分区.
+参考FAQ: FAQ126990
+### 问题: OTA升级是否会操作ProdNV分区？
+解决方案: OTA升级不读写ProdNV分区.
+参考FAQ: FAQ126993
+### 问题: 欧洲经济区(EEA)GTS测试Fail遮挡按钮
+解决方案: 该问题要结合视频来看,测试过程中在chrome向导的第二页出现"Broswer faster.Use less data"界面,导致搜索引擎设置dialog被遮挡而case fail,由该case设计缺陷造成. 由于平台没有同类型的项目,无法向google申请waiver,建议客户自行和google申请waiver或者和3pl解释.
+参考FAQ: FAQ127449
+### 问题: spi lcd读不到id，要求写完命令cs保持使能
+解决方案: 此问题只针对spi已经通的情况下或者屏已经点亮了,但是lcd id读到的全是0, lcd ic 要求写cmd后cs不能拉低,要保持使能: sprdfb_spi.c (u-boot15\drivers\video\sprdfb) static void DISPC_SpiWriteCmd(uint32_t cmd) { sprd_spi_set_data_width(8); sprd_spi_set_cs(0, TRUE); sprd_gpio_set(NULL, LCM_GPIO_CDPIN,0); // Write a data identical with buswidth sprd_spi_write_data( &cmd, 1, 0); - sprd_spi_set_cs(0, FALSE); //去掉这一行,保持发完命令后cs一直使能 }
+参考FAQ: FAQ127555
+### 问题: UIS8910FF的UART使用
+解决方案: UIS8910FF有3个UART和一个Debug_Host(UART) UART2固定与芯片内部BT的UART通信,在有BT需求的产品中,不能被使用成其它功能. 一般各log从uart输出,uart使用情况如下: UART1:AT UART3:AP log/DIAG DEBUG_HOST(UART):内部event信息输出---调试专用,不可用于其他功能 故使用UART外设,只能使用UART1和UART3,这两个口可以同时使用(即可以同时支持两个UART外设) 注意:使用UART外设,软件需要将log输出从UART切换到USB
+参考FAQ: FAQ202071844
+### 问题: 如何查看平台的音视频编解码格式支持情况
+解决方案: 1.查看项目的Video_Performace_SPRD.xlsx文件. 该文件详细列举了各个芯片所支持的视频编解码格式,包括软/硬解、framerate、bit-rate、level等参数. 2.通过代码配置查看支持的音视频编解码格式 编译代码文件路径:/device/sprd/<芯片名称>/common/media_codecs**.xml media_profiles**.xml 手机中的文件路径:/vendor/etc/media* adb命令举例:$ adb shell ls /vendor/etc/media*
+参考FAQ: FAQ202071868
+### 问题: Android Q，是否支持在待机界面预置DeepShortcut
+解决方案: 由于DeepShortcut是由framework侧的ShortcutManager统一管理.所以即使在Launcher应用中预置DeepShortcut,framework侧也不会存在相应的DeepShortcut,导致预置DeepShortcut不会生效.
+参考FAQ: FAQ202071869
+### 问题: android Q GMS版本，怎么预置待机界面图标
+解决方案: android Q GMS非Go版本中的配置文件在如下目录: vendor\partner_gms\apps\GmsSampleIntegration\res_XXXX\xml\partner_default_layout.xml android P GMS Go版本中的配置文件在如下目录: vendor\partner_gms\apps\GmsSampleIntegration\res_XXXX_go\xml\partner_default_layout.xml 其中res_XXXX/res_XXXX_go,请根据项目配置情况确认.
+参考FAQ: FAQ202071870
+### 问题: 如果进入uboot的命令行模式
+解决方案: userdebug版本上,开机阶段,默认通过uart1的rx输出q到手机,手机可以进到uboot的cmd模式.
+参考FAQ: FAQ202071871
+### 问题: 耦合箱线缆信令测试中手机设置
+解决方案: 与CMW500等射频仪表连接测试时,手机界面上的数据连接必须关闭.(即使测的是数据连接相关的业务和性能)!
+参考FAQ: FAQ202071873
+### 问题: Android Q-Go版本是否支持Widget(小部件)
+解决方案: 在google文档《Android Q-Go Device Configuration Guide.pdf》中,关于Widget(小部件)的描述如下: ● Launcher: Widgets should not be supported in both custom launchers and AOSP Launcher3Go.
+参考FAQ: FAQ202071874
+### 问题: Android P 待机界面小箭头大小
+解决方案: Launcher3/res/values/dimens.xml 根据客制化需要修改大小 <dimen name="vertical_drag_handle_size">24dp</dimen>
+参考FAQ: FAQ202071875
+### 问题: SC2720的RGB LED亮度太低了，如何把亮度调高？
+解决方案: SC2720A 使用default 默认电流值,在不同的项目上有可能因为不同的硬件结构设计等原因,使得RGB LED灯的亮度存在差异. 在Kernel驱动代码中,通过修改 RGB_CURRENT_V 宏的值可以修改RGB LED灯的电流值,计算方法是:1.68+0.84*RGB_CURRENT_V (mA),RGB_CURRENT_V 值范围(0x0～0x3F),默认值是0,即1.68mA,这个值可以适当提高,例如设置为0x2,具体可以根据项目的实际综合需求进行修改. 另外请注意,SC2720_LEDS_CURRENT_R/SC2720_LEDS_CURRENT_G/SC2720_LEDS_CURRENT_B 这个寄存器只适用于PMIC SC2720A,其它PMIC型号请参考对应功能的寄存器.
+参考FAQ: FAQ202071877
+### 问题: 如何关闭dm-verity
+解决方案: 请从iSupport系统获取《Android Dm-Verity 适配指导文档_V2.0.pdf》,该文档第3章有如何关闭dm-verity详细说明.
+参考FAQ: FAQ202071878
+### 问题: adb remount失败问题排查
+解决方案: 平台开启secure boot&verify boot,需要解锁bootloader后,disable dm-verity才能执行remount. 请从iSupport系统获取设备解锁指导手册-V1.1.pdf 解锁后,remount 流程如下: $ adb root $ adb disable-verity $ adb reboot $ adb wait-for-device $ adb root $ adb remount
+参考FAQ: FAQ202071880
+### 问题: OTA升级后需要格式化data分区问题
+解决方案: OTA升级需要确保升级后的版本security patch level大于升级前,否则tos安全机制会认为版本回退,导致keymaster无法计算出密钥. 请确保升级后的版本正确合入了security patch.
+参考FAQ: FAQ202071881
+### 问题: AndroidP更改all apps界面滚动条颜色
+解决方案: 修改主菜单界面的滚动条颜色相关代码及路径为: Launcher3/src/com/android/launcher3/views/RecyclerViewFastScroller.java public RecyclerViewFastScroller(Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr); ...... mThumbPaint.setColor(Themes.getColorAccent(context));//颜色设置 //若替换为黄色,则 mThumbPaint.setColor(Color.YELLOW); ..... }
+参考FAQ: FAQ202071885
+### 问题: AndroidP更改search框内部text颜色
+解决方案: 谷歌搜索框中"Search apps"字体颜色修改: packages/apps/Launcher3/res/layout/search_container_all_apps.xml android:textColorHint="@drawable/all_apps_search_hint" 具体搜索内容的字体颜色修改: android:textColor="?android:attr/textColorSecondary"
+参考FAQ: FAQ202071886
+### 问题: 使用人脸识别，如何默认解锁成功后直接进入应用界面，不需要手动滑动
+解决方案: 10.0的原生设计,通过以下属性控制,直接默认true即可,注意overlay的情况 <!-- If the lock screen should be dismissed after biometric auth. --> <bool name="config_faceAuthDismissesKeyguard">false</bool>
+参考FAQ: FAQ202071887
+### 问题: 指纹BBAT工厂测试log如何获取
+解决方案: 有两个方法,推荐使用方法二. 一、通过串口抓取log,搜索"BBAT_FINGER"关键字确认; 二、BBAT测试的ylog保存在手机data/ylog或cache/ylog中,可在测试完成后稍作停留,然后开机将这两个目录下的ylog都导出来,搜索"BBAT_FINGER"关键字确认.
+参考FAQ: FAQ202071893
+### 问题: 指纹BBAT工厂测试时报错找不到指纹工厂测试库
+解决方案: 指纹厂商应当同时提供32位和64位的工厂测试库,终端厂商需要将这两个库均集成到版本中,而不是认为芯片项目支持64位就只集成64位的库. BBAT测试工具是32位的,不会因为手机系统是64位的而找寻64位的测试库,而是会在手机的/vendor/lib/目录下查找指纹工厂测试库,平台默认的库名是"libfactorylib.so".
+参考FAQ: FAQ202071894
+### 问题: ”ro.build.fingerprint“的问题与指纹不相关
+解决方案: "ro.build.fingerprint"属性是build相关,与指纹无关,此类问题请选择Android_Build模块. 常见类似问题如下: ro.build.fingerprint与Google送测报告的要求不符. 客户要求修改ro.build.fingerprint,会影响CTS测试吗? ro.build.fingerprint在哪里赋值的? 修改ro.build.fingerprint值之后OTA升级失败. 编译ro.build.fingerprint 长度超出91byte. 要求软件自适应ro.build.fingerprint属性值.
+参考FAQ: FAQ202071896
+### 问题: 无法完成网络定位
+解决方案: Unisoc平台Native版本是不支持网络定位功能的.那如何才能支持网络定位呢? 1. 使用GMS版本 GMS版本一般适用于出货海外的客户,GMS版本本身包含网络定位组件,可以直接支持网络定位功能,但是,国内测试需要连接翻墙网络. 2. 集成第三方SDK 国内的一些地图提供商可以提供专供国内使用的网络定位SDK,因此,如果需要的话,客户可以自行联系相关的地图提供商,如百度、高德和腾讯.
+参考FAQ: FAQ202071898
+### 问题: 单软多硬控制
+解决方案: 目前我们的ums512单软多硬,有针对rf_board_id、rf_band、26M晶体类型、32K_or_32Kless、wcn晶体类型.
+     其中,rf_board_id、rf_band、26M晶体类型的开关通过在u-boot15/scripts/Makefile.autoconf的AUTO_ADAPTIVE_BOARD_LIST中添加该board名来控制(如果在AUTO_ADAPTIVE_BOARD_LIST有该board名,则是能单软多硬,否则关闭单软多硬)
+    32K_or_32Kless是默认打开的,目前没有开关
+    wcn晶体类型的开关通过在u-boot15/scripts/Makefile.autoconf的WCN_ADAPTIVE_BOARD_LIST中添加该board名来控制(如果在WCN_ADAPTIVE_BOARD_LIST有该board名,则是能单软多硬,否则关闭单软多硬)
+参考FAQ: FAQ202071899
+### 问题: WCDMA PHY什么场景需要进行共天线测试以及共天线测试方法？
+解决方案: 在进行WCDMA实网测试时,一般需要进行共天线测试场景如下: (1)一般弱场测试中测试机和对比机信号差距较大时,为了排除UE天线性能以及无线多径效应的影响,一般log中会看到双天线的RSSI有差距. (2)进行高速数据业务测试时,为了保证UE驻网小区和对比机一致,可用共天线测试. (3)进行弱场下掉话率测试时,为了消除弱场干扰,需要用共天线测试. (4)场测环境不稳定点测试时,比如UE放左右手测试时UE收到信号有差距的测试点,可进行共天线测试排除环境问题. 共天线测试方法如下: 测试机和对比机都连接cable 线,然后这2个cable 线连接工分器,工分器为一拖2接口, 2 的部分连接着2个cable 线, 1的部分拧上黑色的外置天线,这样测试机和对比机都通过1个外置天线接收信号,通过工分器分成2路给测试机和对比机,这样测试机和对比机通过一个共用天线接收信号,可以排除测试机和对比机天线个体影响以及多经接收影响.
+参考FAQ: FAQ202071900,含图片
+### 问题: WCDMA PHY软件主动开双天线的常见场景有哪些？
+解决方案: WCDMA PHY 双天线打开前提是UE项目要支持双天线,包含下面常见场景: 1. UE处于连接态,包含DPCH和FACH态,在服务服务小区的RSCP和ECNO低于预定门限时,会开双天线. 2. UE处于连接态,起了HSDPA业务时会开副天线. 3. UE处于连接态,项目如果支持DPDT功能,满足相应条件后可能会开副天线. 4. UE处于IDLE态,处于PCH态,在服务服务小区的RSCP和ECNO低于预定门限时,会开双天线. 5. NV里面写死默认开副天线,会开副天线. 6. 通过AT命令开副天线. 可以通过下面trace来查看是否开了双天线: HAL_RF_WCDMA_Get_RX_DIV_Enable,RX_Div_Enable = 1 //表示双天线已开 HAL_RF_WCDMA_Get_RX_DIV_Enable,RX_Div_Enable = 0 //没开
+参考FAQ: FAQ202071901
+### 问题: 关于外场环境下驻不上网的问题
+解决方案: 该情况可能产生的原因: 1、首先需要判断一下需要驻网的频点是否是有信号的,即该频点的RSSI是否过小.log中可以搜索关键词cali2q2. 该条trace最后带的变量dbm:就是指示RSSI的大小.需要注意该值是乘以8的结果,例如该值为-800时,即此时该频点的RSSI为100db,是很弱的环境.可以用此trace先初步排除一下环境问题. 2、手机是否校准.log中可以搜索关键词cafc,查看cafc的值的变化,若是变化剧烈,则是手机未校准的.若是band1和band2的频点,则一个cafc控制字对应斜率为13,Band5和band8的一个cafc控制字对应斜率为6.可以计算一下总共偏差多少频偏.若是超过正负12khz,可以重新校准该手机尝试驻网. 因此若出现外场环境下驻不上网的情况,可以先确定如上两点.
+参考FAQ: FAQ202071902
+### 问题: 打开手机时间的秒显示，即状态栏时间显示秒针功能
+解决方案: 打开手机秒显示功能,需要手机有root权限,依次进行如下操作: 1.adb root 2.adb remount 3.adb shell pm enable com.android.systemui/com.android.systemui.tuner.TunerActivity 4.adb shell am start -n com.android.systemui/com.android.systemui.tuner.TunerActivity 5.此时进入了System UI Tuner界面,点击status bar,滑动到页面底部,点击time,选择显示时分秒,此时状态栏上的时间会显示"秒"
+参考FAQ: FAQ202071907
+### 问题: 如何在复现问题时使用adb命令录制现象视频
+解决方案: 1.adb root 2.adb remount 3.adb shell --time-limit 60 screenrecord /sdcard/01.mp4 4.adb pull /sdcard/01.mp4 备注: --time-limit 60 为设置录制时间为60秒(默认为180秒) /sdcard/01.mp4 为录制视频的存储路径和文件名
+参考FAQ: FAQ202071908
+### 问题: 视频编解码的Profile和Level含义
+解决方案: Profile:档次,用来定义不同档次间的编码功能. 下面以H264举例介绍: BP(Baseline Profile) 1. I and P slice 2.CAVLC 3.多帧参考 H.264 MP(Main Profile) 增加下面的特性: 1.B-silce 2.Weighting-prediction 3.CABAC 4.隔行编码 HP(High Profile) 增加下面的特性: 1.8*8变换 2.Scaling Matrices量化 3.独立的色度亮度参数 Level:级别 - 在给定的profile下,level通常与编码器的处理能力和内存容量相对应. - 每一个profile设置不同的参数(如图像尺寸、比特率等),得到对应的编解码器性能的不同level
+参考FAQ: FAQ202071910
+### 问题: 视频缩略图的基本获取流程
+解决方案: 缩略图由MediaMetadataRetriever::getFrameAtTime()方法取得, 该bp对应bn为MetadataRetrieverClient::getFrameAtTime(), 该方法的最终实现是在StagefrightMetadataRetriever::getFrameAtTime()函数中, 该函数中又会调用StagefrightMetadataRetriever::getFrameInternal(). getFrameInternal()函数会先循环尝试每个可用的decoder, 创建相应的decoder并初始化, 然后调用FrameDecoder::extractFrame()获取一帧数据,作为视频的缩略图.
+参考FAQ: FAQ202071912
+### 问题: 使用adb命令删除android手机中的缩略图
+解决方案: android手机每次重启都会生成缩略图,如果需要再重启之前删除手机中的缩略图,可以使用如下操作: adb shell rm -r /storage/sdcard0/Android/ adb shell rm -r /storage/sdcard1/Android/ adb shell rm /data/data/com.android.providers.media/databases/external.db adb shell reboot
+参考FAQ: FAQ202071913
+### 问题: 人脸识别功能中"确认按钮"菜单的作用
+解决方案: 该菜单针对的是需要进行身份验证的应用,功能开关关闭,人脸识别验证成功后即可直接登录应用.若功能开关打开,人脸验证成功后会弹出一个对话框,只有点击对话框的确认按钮后,才可以登录应用,使用户体验更加安全.
+参考FAQ: FAQ202071919
+### 问题: Audio tool工具，FM外放调试VBC_FM_Gain时，发现不生效
+解决方案: 在使用Audio tool调试时,在VBC_FM_Gain界面,是一个音量等级的界面,需要注意各音量等级前面的"点", 调试某一级音量时,需要点选此等级前面的"点",调整之后点击"apply"后即可生效.如附图,想要调整 第三级时,需要先点选第三级,然后调试.注意这点和之前的Audio tester 里面的FM调试略有不同.
+参考FAQ: FAQ202071931,含图片
+### 问题: 外置功放输出，FM外放时有很大杂音，但是耳放正常，什么原因？
+解决方案: 耳机FM天线信号经耳机地到codec输入端,如果通路上紧邻喇叭信号线(尤其是走线都在FPC上时),当外置功放为Class D模式输出,FM天线就会受到Class D类功放输出的PWM波的高频干扰,从而导致FM信号恶化.建议在音频PA输出端加磁珠(R1,R2,R3,R4,建议使用音频专用磁珠),以减弱PA输出信号对FM天线的干扰.另外,需要注意,如果是PA_out P/N端接外置功放,需要在参数中把内置PA的模式配置为AB类输出.
+参考FAQ: FAQ202071932,含图片
+### 问题: 当手机提供的正常AT/Diag口连接方式无法使手机进入deep sleep状态，如何处理？
+解决方案: 1. 研究手机功耗问题时,要使手机进入deep sleep状态,也就是实现全系统掉电,正常AT/Diag口会唤醒Pubcp等,进而影响测试; 2. 可以通过平台机预留的UART口进行调试,这种调试方式全系统可掉电; 3. UART口很难去唤醒CP、AP等,所以可以满足当前场景应用.
+参考FAQ: FAQ202071936
+### 问题: 通信场景功耗测试注意事项
+解决方案: 在测试通信场景功耗时,需注意以下事项: 1)需要将ylog关闭,防止输出log访问内存对于通信功耗测试的影响; 2)需要息屏,关闭蓝牙,GPS功能,防止屏幕lcd,蓝牙,GPS等模块对于通信功耗测试的影响; 3)进行功耗测试前,手机必须进行校准; 4)明确手机版本是否为GMS版本,若为GMS版本,在国内会自动搜寻google服务,影响功耗测试,需关闭数据连接来测试功耗; 5)在进行功耗测试时,要注意手机要插天线进行测试,如果未插天线需要注明此情况; 6)测试功耗时要标注手机是否插卡,无卡待机测试和有卡待机测试功耗会有所不同; 7)需要开机3-5min之后再进行待机功耗测试,为了防止开机后的校准,搜网对于功耗测试的影响; 8)当处于通话场景时需要打开mute,防止音频数据包的传输对于通信功耗测试的影响;
+参考FAQ: FAQ202071938
+### 问题: Android Q，是否支持在待机界面预置DeepShortcut
+解决方案: 由于DeepShortcut是由framework侧的ShortcutManager统一管理.所以即使在Launcher应用中预置DeepShortcut,framework侧也不会存在相应的DeepShortcut,导致预置DeepShortcut不会生效.
+参考FAQ: FAQ202071939
+### 问题: Android Q，原生是否提供实现动态壁纸的应用
+解决方案: Android7.0、Android8.1、Android9.0以及AndroidQ,Android原生不提供实现动态壁纸的应用.
+参考FAQ: FAQ202071940
+### 问题: 为什么在Audio tool里面的CVS模块的AEC delay设置为0ms?
+解决方案: 因为在新平台(指需要使用Audio tool调试的平台,如UMS312/512/Roc1等)上,音频算法架构变化,回声参考信号和麦克风输入信号均在ADSP中同时处理,所以延时很小,一般情况下AEC Delay默认值设置为0ms即可.
+参考FAQ: FAQ202071941
+### 问题: DCDC WPA导致底电流高0.3mA的原因（4G切换到2/3G）
+解决方案: 1.LTE开机,DCDC WPA供电; 2.LTE RELEASE回IDLE态,驻留小区成功,关闭DCDC WPA供电; 3.LTE关机需要从IDLE态发detach,有需要打开DCDC WPA供电,关LTE协议之后,还没有驻留上小区; 4.切换到2/3G时,无法给DCDC WPA下电,导致底电流高0.3mA.
+参考FAQ: FAQ202071942
+### 问题: Android Q，如何测试Factory Reset Protection (FRP) 功能？
+解决方案: 一、FRP功能打开方式如下: 1、手机软件版本必须是GMS版本; 2、手机设置了锁屏方式:PIN、密码,图案等; 3、在[设置]->[开发者选项]界面有"OEM解锁"菜单项,默认禁用; 4、连上翻墙wifi后登录Google账号; 经过以上步骤后,需要等待10分钟左右.. 备注:persist存储数据需要一小段时间 二、验证FRP是否生效: 1、关机按音量上键+power键进入recovery模式; 2、在recovery模式里执行恢复出厂设置; 3、重新开机,进入开机向导,如果开机向导状态栏有锁标,并强制要求输入之前设置的锁屏密码或者谷歌账号密码,则表明FRP功能生效.
+参考FAQ: FAQ202071944
+### 问题: 热插拔sim卡换卡槽，会导modem单双卡模式变化吗？
+解决方案: 1、单卡开机时,modem为单卡模式,如果将这张卡拔出换到另一个卡槽中插入,modem就会由单卡模式变成双卡模式. 由单卡模式变为双卡模式后,会对待机功耗造成影响,例如: 1)在双卡模式下,L给G分配的gap会比单卡模式下多,导致测量GSM周期变短,功耗变高. 2)在双卡模式下,为双paging模式,在其他条件同等的情况下,功耗会比单卡模式高. 2、modem由单卡模式变成双卡模式后,无法再变回单卡模式,除非重启手机.
+参考FAQ: FAQ202071953
+### 问题: 不做2G和3G，只要4G，2G PAM是否可用开关代替？
+解决方案: 不做2G和3G,只要4G,2G PAM可用开关代替. 开关需要注意能够支持TX,RF Input Power大于33dBm,推荐使用SP10T RSW9110A. 另外,请注意: 1.主路开关后要加Coupler做功率检测. 2.软件使用支持LTE only版本.
+参考FAQ: FAQ202071954
+### 问题: T117平台是否支持GSM分集
+解决方案: 支持! 通过NVAide工具常规配置GSM分集即可,同时需要注意配置WCDMA逻辑GSM_Used_GPIO时将GSM 分集用到的RFCTRL口也要置1(NV项路径:WCDMA_logic\WCDMA_rf_gpio_config\GSM_Used_GPIO ); 另外,请手动修改NV项gsm_research\gsm_agc_cali_param\agc_cali_param_pri\cali_HB\reserved\reserved[11]=0x1; 这样Simba工具才会进行GSM分集AGC的校准
+参考FAQ: FAQ202071957
+### 问题: 无卡开机后插一张sim卡，modem的识卡状态？
+解决方案: 前提: 支持热插拔的项目. 无卡开机后,插一张sim卡分为两种情况: 1) 开机后插卡1,modem将会变成单卡模式. 2) 开机后插卡2,modem将会变成双卡模式. 这是因为是无卡开机时,AP要启动一个协议栈,默认是卡1的协议栈,如果此时插入的也是卡1,那就不会变成双卡模式.
+参考FAQ: FAQ202071958
+### 问题: 实网场景中，不同时间、不同地点，RRC连接下，WCDMA模式的功耗存在明显差距的可能原因
+解决方案: 1、WCDMA模式中,RRC连接下,网络可将UE配置成三种状态:DCH、FACH和PCH态; 2、网络配置UE为DCH态时,系统会给UE分配一条专用信道,用于大流量的数据传输; 3、当UE的活跃性降低,传输的数据量减少时,网络会将UE配置成FACH态,UE使用公共信道与系统通信,适合少量数据的传输; 4、当UE的活跃性进一步降低时,网络将UE配置成PCH态,UE只监听寻呼信道,不能进行任何数据的传输,功耗最低. 所以,实网场景中,不同时间、不同地点,RRC连接下,WCDMA模式的功耗存在明显差距的原因可能是网络配置的RRC连接状态不同.
+参考FAQ: FAQ202071959
+### 问题: UMS512平台26MHz晶体方案的NV配置类型有哪些
+解决方案: 平台提供的参考设计主要有两种: 1, 只有PMIC芯片贴了26MHz TSX晶体,WCN共用PMIC时钟,NV时钟配置类型为PMIC_TSX,即RF_init_common\Crystal_type_config=0X6 2, 只有PMIC芯片贴了26MHz TSX或DCXO晶体,WCN不共用PMIC时钟,而是额外加贴了一颗26MHz TCXO晶体,NV时钟配置类型为PMIC_DCXO,即RF_init_common\Crystal_type_config=0X8
+参考FAQ: FAQ202071973
+### 问题: UIS8910FF LTE功率回退
+解决方案: 在LTE_MPR_Compensation中配置,配置不分频段不分带宽; 请进行用于实现标准要求的修改; lte_mpr_comp[0]:QPSK FullRB 回退; lte_mpr_comp[1]:QPSK PartialRB 回退; lte_mpr_comp[2]:16QAM FullRB 回退; lte_mpr_comp[3]:16QAM PartialRB 回退. 回退单位为1/8dB,比如0xFFF8 对应的实际功率回退值为8×0.125dB= 1.0dB.
+参考FAQ: FAQ202071977,含图片
+### 问题: UIS8910FF平台补偿校准LTE最大功率，提升maxpower
+解决方案: LTE默认校准目标值为23dBm,可以在NV中调整补偿,提高maxpower,仅应用于特殊场合. 参考下图中的位置,步进为0.125dBm,即配为0x4代表提升0.5dB maxpower, 子项目lte_calib_txpwr_comp[n]中的n指代各频段number,在RF_Common_NV_T→SYSCTRL→Band中查询.
+参考FAQ: FAQ202071978,含图片
+### 问题: AMPR、ASEM余量偏低
+解决方案: SL8541E平台硬件支持Rel-10,软件代码是按照Rel-12编译的, CP版本需要升级到FM_BASE_18A_W20.31.2或之后版本(包含Rel_10版本),同时NV中下面标志位需要设置为1(数值1调用Rel-10,数值0调用Rel-12). LTE_DownloadParam\LTE_Download_RF_Common\LTE_Download_DSP_Compensation\LTE_Flag_config\reserved[66]
+参考FAQ: FAQ202071979
+### 问题: RTM7289 VRAMP控制线上的RC值要求是多少
+解决方案: RTM7289 vramp控制线上建议串联100K电阻,并联电容NC(即不使用电容)
+参考FAQ: FAQ202071984
+### 问题: 9863A调制是否支持16QAM和256QAM？
+解决方案: LTE支持16QAM,不支持256QAM; WCDMA支持16QAM,但不支持256QAM; GSM不支持16QAM,也不支持256QAM.
+参考FAQ: FAQ202071986
+### 问题: UIW8910平台VDDWPA的bypass模式
+解决方案: 当所需电压低于3.4V(具体参考软件代码设定的阈值),由LX_WPA供电;LX_WPA的电压由APT控制,Vout=2*APT或2.5倍APT; 当需要以更高电压工作,或电池电量降低电压变小,压差低,调整为bypass模式供电,FB_WPA连通VBAT,相当于VBAT直接为4GPA供电. APT功耗表现是优于VBAT直连的,大部分实网场景下PA输出的是中\低功率,使用LX_WPA供电的场景更多.
+参考FAQ: FAQ202071993

@@ -1,0 +1,300 @@
+### 问题: 如何在代码中判断USB或AC充电器是否已连接？
+解决方案: 如果需要在代码中判断USB或AC充电器是否已连接,可通过接收相关广播来判断,具体广播介绍如下: ACTION_POWER_CONNECTED:收到该广播表示电源已连接. ACTION_POWER_DISCONNECTED:表示电源已断开.
+参考FAQ: FAQ38690
+### 问题: 为什么SC7715手机的安全设置里“启用小部件”功能无效？
+解决方案: 安全设置里"启用小部件"功能其实是锁屏界面小部件功能的开关,目前SC7715手机中该功能无效,是因为SC7715手机默认将ro.config.low_ram配置为true,而google原生设计为如果读取到前面这个配置项为true,则会禁用锁屏界面小部件功能. 如果客户有开启锁屏界面小部件的需求,可将项目配置文件中ro.config.low_ram这个配置项设置为false即可.
+参考FAQ: FAQ38692
+### 问题: 如何让状态栏数据连接图标显示在信号图标的左边？
+解决方案: 平台版本中默认数据连接图标显示在信号图标的右边,如果需要让状态栏数据连接图标显示在信号图标的左边,可按照下面方式修改: 定位到\frameworks\base\packages\SystemUI\res\layout\signal_cluster_item_view.xml中,然后将该文件中id为mobile_data_type的FrameLayout移动到id为mobile_signal_type的FrameLayout的前边.具体如下: <FrameLayout android:id="@+id/mobile_data_type" ... </FrameLayout> <FrameLayout android:id="@+id/mobile_signal_type" ... </FrameLayout>
+参考FAQ: FAQ38693
+### 问题: 如何将手机屏幕操作录制为视频格式？
+解决方案: Google在Android 4.4之后(API level 19以上),支持通过screenrecord这个shell命令录制屏幕操作.具体用法如下: 录制视频: adb shell screenrecord /sdcard/demo.mp4 导出视频: adb pull /sdcard/demo.mp4 备注:google设计为默认只能录制180s视频,不可以录制声音,只能录制屏幕画面,视频格式只支持mp4格式. 该命令还有一些参数可以通过 --help命令查看,比如期望录制10s的屏幕操作,使用下面的命令即可: adb shell screenrecord --time-limit 10 /sdcard/demo.mp4
+参考FAQ: FAQ38695
+### 问题: 如何通过文本形式分享联系人信息
+解决方案: 请参考如下代码: String number1 = "10086"; String name1 = "cmcc"; String number2 = "10010"; String name2 = "cucc"; Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("sms", "", null)); HashMap<String, String> dataMap = new HashMap<String, String>(); dataMap.put(number1,name1); dataMap.put(number2,name1); intent.putExtra("share_by_sms", dataMap ); startActivity(intent); 上述代码将 号码为10086 姓名为 cmcc和 号码为10010姓名为 cucc的两条联系人通过SMS分享.
+参考FAQ: FAQ38741
+### 问题: 能否NV里存储的imei结构直接得出手机imei号
+解决方案: 使用NVeditor.exe打开nvitem.prj nv_type中的NV_IMEI,存储的手机imei号总共为15位,每两位作为一个字节存储;由于其存储原则为高字节在后,低字节在前,这15位imei号在NV里的存储形式看上去就表现为斜向的,如 将首位A去掉,即从imei[0]=0x3A的3开始依次斜下,即可得出imei号352273017386340 如果要修改imei号,即可按照上述存储的规则,用NVeditor.exe在对应位置进行修改
+参考FAQ: FAQ38777
+### 问题: 入库产品ro.operator相关配置注意点
+解决方案: 不同的运营商对软件有不同的要求,ro.operator是用来区分运营商,从而采用不同的规范. ro.operator=cucc和ro.operator=cmcc分别对应联通和移动的方案. 对浏览器来说,联通和移动的规范对书签、主页和网页的载入方式的要求都有所不同, 所以对联通入库要设置ro.operator=cucc,对移动入库要设置ro.operator=cmcc.
+参考FAQ: FAQ38773
+### 问题: 如果要添加sim lock锁网新算法modem侧代码应该怎么修改
+解决方案: 目前7715,7730/8830底层使用的是动态加密算法,即通过imei+dummy1+dummy2+dummy3再用sha256哈希加密算法算出密码,该密码算法的实现对应于sim_lock的nv控制类型:0X02=s_sim_lock_nv_control_key. 如果要添加新的算法,modem侧需做以下修改: 1. 打开Mnphone_simlock.c文件 分别在MNRSF_GetUnlockKey(void)和MNRSF_GetlockKey(void)函数对应增加一种新的sim_lock的nv控制类型(比如0X03=s_sim_lock_nv_control_key),该类型用于走所要添加的加、解锁网算法新代码分支 . 2.用NVeditor.exe打开nv文件,将对应nv项里 control_key_type设置为0x03, sim_lock_status=0x1. 注:NV network_locks项,相关网段将根据具体情况进行配置.
+参考FAQ: FAQ38784
+### 问题: 请问7715平台支持哪些容量的flash组合？有没有相关介绍资料可查？
+解决方案: 常见的有4GB+4Gb, 2GB+2Gb,4Gb+4Gb,2Gb+2Gb,具体可参考展讯验证过的secondsouce list.
+参考FAQ: FAQ38839
+### 问题: 为何使用USB充电满后系统待机功耗高
+解决方案: 由于电脑USB连接手机后,手机内核会上一个USB的wakelock,因此充满电后有如下几个条件存在: 1. 当系统充满电后该wakelock不会释放,因此系统不会深睡 2.充满电停充后,系统供电改为电池供电 因此此时大约有几时mA的电在消耗,如果在电脑USB连接手机时弹框中选择"charge only",则不会有wakelock,那么系统是可以深睡的,当系统充满电停充后,功耗降为一般的待机功耗只有几个mA左右.
+参考FAQ: FAQ38857
+### 问题: 为什么软件打包后下载不了，提示空间不够，Download size is over its partition?
+解决方案: 下载工具选择的pac包中的SC7715.xml或选择的工程对应的配置文件SC7715.xml中的system分区大小要大于system.img的大小,其它分区也是一样.
+参考FAQ: FAQ38858
+### 问题: 自动测试之LCD测试原理与问题排查方法
+解决方案: 1.自动测试之LCD测试原理 PC端工具软件发送LCD测试命令和测试数据给手机系统,然后手机系统将测试数据输出至LCD数据总线上. 此后,控制测试盒负责把数据采集下来,并上传至PC进行对比分析.若下发的所有数据与采集上来的数据一致,则说明测试PASS. 2.LCD测试问题排查方法 如常见的LCD问题的log: LCD测试正在进行 LCD begin AA LCD Compare16 Fail,should be AAAA, in fact AAEA 测试时间:0.69秒 LCD测试失败 该log表明,LCD测试中有1bit出错,可检查是夹具接线是否有误或夹具顶针接触是否良好,须按照夹具接线图查一下夹具接线.
+参考FAQ: FAQ38866
+### 问题: 如何使用Agilent精密电源模拟充电查看充电电流大小
+解决方案: 1. 模拟电池,查看充电时流入电池的电流 A. 将电源的一路端口设置电压为3.9V(最好不要超过4.2V)连接手机电池的正负极 B. 插入充电器,查看Agilent上的电流读数,此数值即为流入电池的电流值; 2. 模拟充电器,查看充电器端的输出电流 A. 使用一根充电线(一般是USB线),将其剪断,然后将D+、D-两根线(一般是绿、白两根)直接短接,将VBUS线(红线)、GND线(黑线)与电源一路端口的正、负极连接 B. 设置电源上的输出电压5.2V(根据不同平台设置在OVP范围内即可),将USB口连上手机充电,查看Agilent电源上的电流读数,此即为充电器上的输出电流; 3.既模拟充电器,又模拟电池 由于Agilent 66319D精密电源有两路Input/Outputd端口,因此只要将1、2两种方法组合一下,一个端口作为模拟电池端、一个作为模拟充电器端口,分别设置好各路的电压即可.
+参考FAQ: FAQ38864
+### 问题: 背景通话，为什么无法进入音乐 播放器播放音乐，无法开启录音，无法开启FM？
+解决方案: SoundRecorder、MusicPlayer、FM等APP需要获取AudioFocus. 但在通话的时候,PHONE会具有最高的优先级获取AudioFocus,所以此时SoundRecorder等APP获取不到 AudioFocus,就不能开始播放音乐、录音等操作.
+参考FAQ: FAQ38872
+### 问题: 音乐播放器显示文件信息出现乱码
+解决方案: 此为正常现象,原因是由于在当语言切换到其他语言后手机默认的编码方式也切换到该语言的编码方式,而歌曲中 的信息是中文编码,二者不匹配,故在扫描到DataBase进行编码转换时会出错
+参考FAQ: FAQ38876
+### 问题: 暂停录音，待机电流大
+解决方案: 该问题产生的原因是因为在暂停录音的时候,底层没有停止audio 的设备(实际上底层还在继续录音),所以待机电流会 比较大.
+参考FAQ: FAQ38878
+### 问题: 音乐播放器的频谱中的值怎么得到
+解决方案: Android增加的音效类中,有一个android.media.audiofx.Visualizer类, 通过Visualizer.OnDataCaptureListener中的方法onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) 来获取频谱信息; 通过onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) 直接获取wavedata. 也可以直接使用Visualizer的getFft接口. public int getFft (byte[] fft) 相关用法请参考android开发文档. http://developer.android.com/reference/android/media/audiofx/Visualizer.html
+参考FAQ: FAQ38879
+### 问题: 为何打开HDR后，闪光灯不能用？
+解决方案: HDR和闪光灯是互斥的. HDR,是英文High-Dynamic Range的缩写,意为"高动态范围". 简单的说就是让照片无论高光还是阴影部分细节都很清晰.当拍摄光比比较大的作品时,缩小光比,营造一种高光不过曝,暗调不欠曝.拍照的时候提供三张图像,第一张要求欠曝光,第二张是正常曝光,第三张是过曝光,最后再合成为一张图片. 如上的定义,若开启闪光灯,必然对拍出来的三张照片有影响,也就失去HDR的意义了,所以打开HDR的时候,是不能打开闪光灯的.
+参考FAQ: FAQ38881
+### 问题: 如何确定一个手机的界面是单层还是多层？
+解决方案: 如何确定一个手机界面的是单层,还是有多个单层图形组合叠加而成,可以通过以下方法来确认: 1、使用adb工具抓取一个游戏界面的图层,方法如下: 手机连上USB后,输入如下命令: adb root adb shell mkdir /data/dump_bmp touch /data/dump_bmp/d_test //若要停止抓取界面图层,可以rm -rf /data/dump_bmp 2、 将抓取的图层与我们看到的游戏界面进行对比,看该游戏的界面是单独的图层,还是由多个图层合成. 这里以地铁酷跑和手机的界面为例子来说明: (1)地铁酷跑 这与我们看到的游戏界面一样,所以该游戏属于单层. (2)手机界面 从上面的图层可以看到第一个图层是由后面的三个图层组合而成,所以手机的界面属于多层图.
+参考FAQ: FAQ38873
+### 问题: 屏幕刷新方式修改，导致屏幕下虚拟按键显示不全
+解决方案: 修改了屏幕刷新方式.需要将NavigationBarView.java中mRotatedViews 中rot0 和rot90互换
+参考FAQ: FAQ38896
+### 问题: 关于版本里modem_bins下的bin文件
+解决方案: 关于idh.code\device\sprd\scx15_sp7715XXX\modem_bins下的文件 wcnmodem.bin,wcnnvitem.bin等与发布的modem版本里sc7715_modem_builddir 和sc7715_wcn_modem_builddir目录下的bin文件是对应的.具体可参看大小与文件名进行对应. 这些bin文件仅在编译ota包时用,在编译ota包时需将对应版本的modem bin文件拷贝到该目录下替换.
+参考FAQ: FAQ38893
+### 问题: 如何编译使用4.4原生版本
+解决方案: scx15_sp7715gaplus.mk 版本不支持.如果需要类似原生版本.使用UUI的工程搭配Launcher3来实现快速的NativieUI
+参考FAQ: FAQ38899
+### 问题: 为什么从google play下载APP会生成两个桌面快捷图片
+解决方案: 在Google play的setting菜单中,可以关闭添加桌面快捷方式的选项.让APP和launcher自己创建.就不会造成生成两个桌面快捷图标
+参考FAQ: FAQ38918
+### 问题: android 6.0 关机、重启 没有关机动画如何解决
+解决方案: 在下面文件中添加allow语句 device/sprd/scxxxx/common/sepolicy/system_server.te +allow system_server bootanim_exec:file {execute read open execute_no_trans}; make bootimage 重新烧写bootimg即可 注意:如果出现无法开机等问题,说明bootimage与sysemimage不匹配导致,请在make bootimage后make snod从新打包下systemimage,或从新make工程进行验证
+参考FAQ: FAQ90554
+### 问题: 屏幕旋转时候切换反应慢
+解决方案: 对于GSENSOR,一般都有set_bandwidth和set_range这两个接口函数进行设置Gsensor的灵敏度.所以,请咨询原厂如何设置这两个的参数已提高灵敏度 Gsensor以poll机制工作的,还可以调整延时时间以调整采样频率.
+参考FAQ: FAQ38932
+### 问题: 7715是否以持双摄头同时录像
+解决方案: 7715上只有一个硬件DCAM模块,无法同时进行操作
+参考FAQ: FAQ38960
+### 问题: NV初始化过程所做工作
+解决方案: NVITEM_ERROR_E NVITEM_Init(void); 函数功能: 初始化NVITEM系统,包括RunningNV和FixNV. 1、如果打开了断电保护,则会检查一下download和protect区域的数据有效性,恢复出错部分并判断FixNV有无更新,如果有就更新BackupNV部分; 2、打开RunningNV设备成功,读取NV分区的第一个sector NPB,如果RunningNV和DownloadedNV中的时间戳不一致则则把DownloadedNV分区的item复制到RunningNV里面; 3、如果打开RunningNV设备失败,则清空RunningNV的数据,并复制DownloadedNV分区的item到RunningNV. void NVITEM_Uninit(void); 函数功能:释放RunningNV和FixNV资源.
+参考FAQ: FAQ38970
+### 问题: 为什么MediaScan首次扫描T卡耗时长？
+解决方案: 1. MediaScan接收Media_Mount消息(T卡挂载到手机),去扫描T卡.开机后,需一段时间,T卡才挂载到手机. 2. 遍历文件系统,处理各种多媒体及非多媒体文件,得到文件信息.因此T卡文件越多,耗时越长. 3. 删除数据库中旧T卡文件信息. 4. 音频和视频文件,需解析元数据(歌曲名、歌手、专辑等等). 5. 图片需解压为bitmap,得到宽高. 6. 最后,将文件信息插入数据库. PS:首次耗时长,以后再开机,数据库中已有文件信息,耗时很短.
+参考FAQ: FAQ38989
+### 问题: 展讯平台SVLTE产品中新增了哪些新的AT命令
+解决方案: 展讯平台中针对SVLTE的产品形态,主要新增了如下几个特有的AT命令,简要叙述下相关命令的作用,具体的使用方法和用途可以参考展讯官方发布的AT手册: 1.AT+ VIRTUALSIMINIT:该命令主要是用来初始化LTE Modem侧虚拟的SIM卡; 2.AT+ LTESETRSRP :该命令是用来设置LTE侧的RSRP 3.AT+ SPTESTMODEM :该命令是用来配置Modem的产品形态,并不是只有SVLTE产品才会使用到该命令,所有的LTE产品都需要通过这个AT来配置不同的Modem产品形态 4.AT+ LTEBGTIMER : 控制Modem侧后台搜索网络的定时器,目前AP侧不使用 5.AT+ RSIMRSP :只在SVLTE中使用,目前只有CP侧内部在使用,AP侧不使用
+参考FAQ: FAQ39001
+### 问题: 如何在UBOOT中清除RTC时钟？
+解决方案: 在uboot的fdl2中对rtc进行清除,这样每次download完版本后,驱动中设定的默认时间才会成功. 修改如下: --- a//u-boot/nand_fdl/fdl-2/src/fdl_main.c +++ b//u-boot/nand_fdl/fdl-2/src/fdl_main.c int main(void) #else sprd_clean_rtc(); #endif - + sprd_clean_rtc(); do { #ifdef CONFIG_EMMC_BOOT
+参考FAQ: FAQ39010
+### 问题: 为何Android4.4的屏幕背光自动调节响应速度慢？
+解决方案: 影响Android4.4的屏幕背光自动调节响应速度的因素有二个: 1 light sensor的报值,如果手机在光线比较暗的环境下面进行测试,由于light sensor采集到光线强度的值较小,FW层进行调制的时候会比较长; 2 Android4.4的FW层为了避免黑暗和光亮切换时出现闪屏的情况,4.4版本开始在暗/亮屏时增加了平滑暗/亮的算法,该算法调整过程需要时间; 经过对比试验,我们发现Google Nexus4.4.4版本手机,打开自动背光 20s完成切换,所以参考机器与客户手机的影响时间在此范围里即正常.
+参考FAQ: FAQ39015
+### 问题: 展讯哪些平台可以兼容SR2351芯片？
+解决方案: SR2351是一种4合一的transceiver,WIFI/BT/FM/GPS,可以支持SC7715,SC7730,SC8830,SC5735平台
+参考FAQ: FAQ39575
+### 问题: Chargepump 的电容由0603，10V耐压能不能换成0402，6.3V耐压？
+解决方案: Chargepump 的电容不能由0603,10V耐压换成0402,6.3V耐压,在实验验证中会发现: 当0603,10V的电容在2V的直流偏置时,容值几乎不变; 而当0402,6.3V的电容在同等条件下则会下降22%,再加上电容+/—10%公差,实际电容容值会更小,失真会更大.
+参考FAQ: FAQ39058
+### 问题: 7731G原理图BB芯片的 EMMC_RST脚需要接到MEMORY芯片上吗？
+解决方案: 根据最新版V1.0.3原理图EMMC_RST需要接到 串0R 到NFD10_RSTN,不能不接
+参考FAQ: FAQ39486
+### 问题: 7731G只有一个EMCKE0接到MCP的LPDDR2部分的N1脚，N2脚需要接吗？
+解决方案: 7731G的EMCKE0脚需要同时连到N1和N2脚,这样就可以支持大容量的DDR2
+参考FAQ: FAQ39487
+### 问题: 7731G VBATSENSE和VBAT之间串的电阻是0欧还是33欧？
+解决方案: 目前的参考设计VBATSENSE和VBAT之间串的电阻是0欧,这点和7715不一样,请注意
+参考FAQ: FAQ39488
+### 问题: 7715平台RGB的原理图接法可以调换吗？
+解决方案: 我们平台的RGB顺序是: 0~7 B 8~15 G 16~23 R 这个顺序软件不能更换 因此原理图接法就不能更换
+参考FAQ: FAQ39489
+### 问题: 7731G平台下载是不是要用不剪断的VBUS的USB线下载
+解决方案: 是的,这点和展讯早期平台不一致,制作夹具的时候,PCB板上最好要留出VCHGE测试点
+参考FAQ: FAQ39494
+### 问题: 7731G升级工具的版本要求
+解决方案: 升级工具必须使用UpgradeDownload_R2.9.9008及以后版本
+参考FAQ: FAQ39496
+### 问题: 7731G平台VBAT端输入电容要尽量靠近芯片
+解决方案: 是的,这点非常重要.尤其是VBATDRV管脚的输入端,电容越近越好.
+参考FAQ: FAQ39501
+### 问题: 7731G VDDMEM电压是多少？
+解决方案: 7731G的VDDMEM电压是1.2v
+参考FAQ: FAQ39502
+### 问题: 7731G PBINT支持长按复位吗？
+解决方案: 7731G PBINT支持长按复位,时间是7秒
+参考FAQ: FAQ39504
+### 问题: GMS版本，浏览器无法正常显示俄罗斯地区比较流行编码格式的txt文件，问题如何解决？
+解决方案: 客户加装了GMS包,用的是GMS包的google webview,而不是平台的webview,导致问题. 平台webview已经支持encodings KOI8-R, Windows-1251, ISO-8859-5编码,但是客户GMS版本用的是google webview,而GMS包没有代码,无法修改. 建议客户加装支持俄文的文本阅读软件.
+参考FAQ: FAQ92792
+### 问题: SC9820A平台内置充电方案充电过程电流是多少？
+解决方案: Charge CTL HW HW HW SW(CC) SW(CV) SW(Recharge) VBAT <1.1V 1.1V~2.05V 2.05V~3.05V 3.05V~4.18V 4.18V~4.2V 4.15V Icharge adapter 3mA 70mA 450mA 450mA~2.3A 　 　 USB 3mA 70mA 450mA 450mA~500mA 　 　
+参考FAQ: FAQ92797
+### 问题: Makefile中include和-include的区别
+解决方案: 通常我们在Makefile中可使用"-include"来代替"include",来忽略由于包含文件不存在或者无法创建时的错误提示("-"的意思是告诉make,忽略此操作的错误.make继续执行).像下边那样: -include FILENAMES... 使用这种方式时,当所要包含的文件不存在时不会有错误提示、make也不会退出;除此之外,和第一种方式效果相同.以下是这两种方式的比较: 使用"include FILENAMES...",make程序处理时,如果"FILENAMES"列表中的任何一个文件不能正常读取而且不存在一个创建此文件的规则时make程序将会提示错误并退出. 使用"-include FILENAMES..."的情况是,当所包含的文件不存在或者不存在一个规则去创建它,make程序会继续执行,只有真正由于不能正确完成终极目标的重建时(某些必需的目标无法在当前已读取的makefile文件内容中找到正确的重建规则),才会提示致命错误并退出.
+参考FAQ: FAQ39105
+### 问题: 如何修改默认IMEI
+解决方案: 用nvEditor打开工程后修改nv_type->NV_IMEI项即可,如果是卡2修改nv_type->NV_IMEI2,以此类推. 修改后重新down nv bin文件时注意backup页中不要勾选备份nv项,否则会导致新修改无法生效.
+参考FAQ: FAQ40762
+### 问题: 7731 RGB Driver最高支持多大电流？
+解决方案: RGB Driver Current sink, up to 28mA.
+参考FAQ: FAQ39133
+### 问题: 7731 KPLED 最大支持多大电流?
+解决方案: CURRENT SINK KPLED up to 80mA
+参考FAQ: FAQ39136
+### 问题: 7731 FLASH_IB 最大支持多大电流?
+解决方案: FLASH_IB up to 470mA
+参考FAQ: FAQ39137
+### 问题: 7731 VIBR  最大支持多大电流?
+解决方案: VIBR up to 170mA
+参考FAQ: FAQ39138
+### 问题: 为什么在某些SIM卡上新建联系人，只能设置一个手机却可设置多个其他号码
+解决方案: USIM卡中,每一条联系人的电话号码信息可以存在ADN文件中以及ANR文件中,每一条联系人可以有一条ADN信息,以及多条ANR信息.一些USIM卡中存在AAS文件用于描述ANR的类型.展讯平台读取USIM卡联系人信息时,不读取AAS文件,对于ADN文件中的号码应用统一命名为"手机",对于ANR文件中的号码应用命名为"其他号码".
+参考FAQ: FAQ39155
+### 问题: 控件动画(Animation of View) 为什么有时候无效
+解决方案: 程序中实现了控件动画,为什么有些手机上有效果,有些手机上没效果? 在android4.1、android4.4版本上,系统设置中有个设置选项[开发者选项 | 动画程序时长缩放],如果该值为关闭状态,那么控件动画会没有效果. 如果设置成其他值,就会出现动画效果. 建议设置为1.0f. 4.0.3及以前版本没有该设置项. 该设置选项不一定是立马生效. 因为每个应用进程只在启动的时候读一次. 所以该设置项设置后要杀掉应用进程,然后重启应用进程才有效. 或者重启手机后,该设置项才生效. 该设置项的默认值在如下位置: 文件:WindowManagerService.java (frameworks\base\services\java\com\android\server\wm): 变量 float mAnimatorDurationScale = LC_RAM_SUPPORT ? 0.5f : 1.0f;
+参考FAQ: FAQ39160
+### 问题: 7731 SD卡预留电容的大小范围？
+解决方案: Reserved cap on SDIO signals,keep Cbus<40PF.
+参考FAQ: FAQ39175
+### 问题: 7731VDDUSB电源最大能提供多少电流？
+解决方案: 60mA
+参考FAQ: FAQ39178
+### 问题: 7731支持并口的摄像头吗？
+解决方案: 不支持
+参考FAQ: FAQ39179
+### 问题: 7731 VSIM引脚最大提供多大的电流
+解决方案: 200mA
+参考FAQ: FAQ39181
+### 问题: 展讯SC7701平台CET测试单卡待机，PP=2 BA=0的电流标准是多少？
+解决方案: 小于3mA
+参考FAQ: FAQ39198
+### 问题: 展讯SC7701平台CET测试GSM最大功率发射的电流标准是多少？
+解决方案: 小于280mA
+参考FAQ: FAQ39200
+### 问题: 展讯SC7701平台CET测试DCS最大功率发射的电流标准是多少？
+解决方案: 小于220mA
+参考FAQ: FAQ39201
+### 问题: 如何区分不同RTCP包的类型？
+解决方案: 解析RTCP包主要在ARTPConnection.cpp文件中parseRTCP函数里,每种RTCP包都有一个PT(Packet Type)字段,表示RTCP包的类型: (1)如果PT值为200则为SR包,表示是发送端报告 (2)如果PT值为203则为BYE包,表示将退出会话 (3)如果PT值为201则为RR包,表示是接收端报告 (4)如果PT值为202则为SDES,源描述信息 (5)如果PT值为204则为APP包,由应用程序自己定义 对于移动终端来说,主要解析SR包用于音视频时间戳的同步
+参考FAQ: FAQ40821
+### 问题: 在没有接TP的情况下，如何使LCD常亮不进睡眠
+解决方案: 需求: 在调试LCD时,有时需要充分的时间去了解LCD第一次初始化的状态.但调屏的时候,经常只有一片板子,没有TP.如何让屏保持常亮,不进入自动睡眠呢? 做法: adb shell svc power stayon true
+参考FAQ: FAQ39208
+### 问题: [7715] 连接手机，选择MTP模式，如何能不需要自己安装mtp驱动？
+解决方案: 首先,MTP(Media Transfer Protocol),媒体传输协议,是基于PTP(Picture Transfer Protocol)协议的扩展,主要用于传输媒体文件.如果选择MTP模式连接的话,电脑上和手机上都可以读取内置和外置SD卡. 其次,如果在WIN7以上的系统,不需要安装MTP驱动,在Win XP以下的系统,如果希望支持MTP的话,必须安装微软Windows Media Player 11以上版本才行,最新的wmp版本自带了MTP驱动; 具体请参考网络教程:http://www.inexus.co/forum.php?mod=viewthread&tid=893&fromuid=1262
+参考FAQ: FAQ39209
+### 问题: SC7731G  电压高于4.2V 为什么不能开机？
+解决方案: 引起SC7731G掉电问题的是布局上VBAT_BUCK、VBAT_DRV的几颗去耦大电容离芯片太远,当内部DCDC大电流工作时,VBAT的纹波太大造成芯片内部误判过压而掉电.经过手工改在芯片正背面放置这几颗电容,问题解决.
+参考FAQ: FAQ39212
+### 问题: 展讯平台充电的电压档次和相应的电流级别
+解决方案: 电池电压处于1.1V~2.7V, 充电电流约为100mA 电池电压处于2.7V~3.1V,充电电流约为300mA 电池电压处于3.1V~3.5V,充电电流约为300mA 电池电压大于3.5V,充电电流软件可设600mA/座充, 500mA/USB 电池电压达到4.2V+/-1%,转为恒压充电, 直至充电电流减少到130mA一下,持续几十分钟后充电管关断, 充电结束.
+参考FAQ: FAQ39226
+### 问题: 展讯平台对于充电电源的要求
+解决方案: 对于座充: Vchg处于5.0V~5.25V; Ichg为(恒流电流+0.2)A. 对于USB: Vchg处于4.75V~5.25V; Ichg为0.3A~0.5A
+参考FAQ: FAQ39261
+### 问题: 国标充电器,UAB充电器,非国标充电器辨识区别
+解决方案: 一般手机侧的USB-DP内部都有1.5K的上拉 对于国标充电器:DP和DM是连在一起的. USB充电器:DP和DM都有15K的下拉. 非国标充电器:DP和DM是未连在一起的
+参考FAQ: FAQ39262
+### 问题: RemoteViews如何响应点击事件？
+解决方案: 首先需要创建一个Intent,在该Intent中加入所需数据. 然后通过调用RemoteViews中的setPendingIntentTemplate方法,其中包含两个参数,当前RemoteViews的id以及通过Intent创建的PendingIntent. 当用户点击RemoteViews时,就会触发PendingIntent.做相应处理.
+参考FAQ: FAQ39274
+### 问题: RTCP协议消息有哪些类型？
+解决方案: RTCP协议消息有如下几种类型: (1)SR(Sender Report):发送端报告,所谓发送端是指发出RTP数据报的源端; (2)RR(Receiver Report):接收端报告,所谓接收端是指仅接收但不发送RTP数据报的终端; (3)SDES(Source Description):源描述,主要功能是作为会话成员有关标识信息的载体,如用户名、邮件地址、电话号码等,此外还具有向会话成员传达会话控制信息的功能; (4)BYE:通知离开,主要功能是通知会话中的其他成员自己将退出会话; (5)APP:由应用程序自己定义,主要解决RTCP的扩展性问题.
+参考FAQ: FAQ39289
+### 问题: 修改AudioPolicyManagerBase.cpp后需要更新哪几个库文件
+解决方案: 查看与AudioPolicyManagerBase.cpp同目录的makefile可知,AudioPolicyManagerBase.cpp会编译成静态库文件libaudiopolicy_legacy.a 这个静态库文件又会被其他动态库文件引用. 下面是编译路径和生成的动态库文件路径 /hardware/libhardware_legacy/audio/ /system/lib/hw/audio_policy.default.so /vendor/sprd/open-source/libs/audio/apm/ /system/lib/libaudiopolicy.so /vendor/sprd/open-source/libs/audio/apm/ /system/lib/hw/audio_policy.sc7715.so
+参考FAQ: FAQ39296
+### 问题: 为什么SC7715版本，icu4c的data（system/usr/icu/icudt**.dat）文件偏大
+解决方案: 平台版本中默认将全语言版本的icu放入了system/usr/icu中,实际在idh包中可看到external/icu4c/stubdata目录中有icudt51l-all.dat, icudt51l-default.dat, icudt51l-zh.dat三个文件,其中版本默认是将icudt51l-all.dat全语言版本的icu放入手机中 修改方法: 在external/icu4c/stubdata/android.mk,修改如下字段,选择all/default/zh LOCAL_SUFFIX_NEEDED := all PS:实际由于cts测试标准,default已经废弃,直接用zh剪裁版本即可
+参考FAQ: FAQ39297
+### 问题: 不需要全语言时，如何剪裁SC7715平台icu4c？
+解决方案: external/icu4c/stubdata/icu_dat_generator.py脚本中定义了打开语言种类及输出文件名,如下: languages = [ # Group 0. 'en', # Group 1. 'ar', 'zh', # Group 2. #'bg', #'ca', ...] //默认定义输出到icudt51l-zh.dat output_file = os.path.join(stubdata_dir, ICU_DATA + "-zh.dat") 只要将不需要的语言注释掉,就会生成只开启的语言种类的dat文件,将文件名改为默认使用的名称放到手机目录即可 PS:手机默认使用dat文件信息请参考external/icu4c/stubdata/android.mk
+参考FAQ: FAQ39309
+### 问题: 使用SYSTEM_UI_FLAG_LOW_PROFILE的注意点
+解决方案: View.SYSTEM_UI_FLAG_LOW_PROFILE:状态栏显示处于低能显示状态(low profile模式),状态栏上一些图标显示会被隐藏 如果是应用自己设置了这个参数,一定要自己添加相应的退出处理,因为这个属性是对整个系统设置的. 缺少相应的处理,就会发生退出应用后发现状态栏仍处于低能显示状态.
+参考FAQ: FAQ39313
+### 问题: audio HAL层配置文件及作用汇总
+解决方案: audio HAL层配置文件及作用汇总如下: 1) tiny_hw.xml 作用:和驱动交互,设置路由 2) codec_pga.xml 作用:codec 的pga 参数 3) audio_hw.xml 作用:配置modem、voip、I2S、audio mode、DUMP等功能 4) audio_para 作用:音频参数 5) audio_policy.conf 作用:定义了厂商android系统的音频设备(primary、蓝牙、USB等音频设备)
+参考FAQ: FAQ39325
+### 问题: 耳机如何控制音乐播放器播放、暂停及切换歌曲
+解决方案: 当检测到耳机按键时,经framework最终转化为一条广播,通过监控 Intent.ACTION_MEDIA_BUTTON,就可已收到耳机的按键事件. 通过 Intent.EXTRA_KEY_EVENT 中带的触发此事件的具体按钮事件,来改变音乐的相应状态. KeyEvent.KEYCODE_MEDIA_STOP: 停止 KeyEvent.KEYCODE_HEADSETHOOK: 改变播放状态 KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE: 改变播放状态 KeyEvent.KEYCODE_MEDIA_NEXT: 下一首 KeyEvent.KEYCODE_MEDIA_PREVIOUS: 前一首 KeyEvent.KEYCODE_MEDIA_PAUSE: 暂停 KeyEvent.KEYCODE_MEDIA_PLAY: 播放 当有两次按下的KeyEvent.KEYCODE_HEADSETHOOK,并且间隔小于300ms时就会切换下一首歌曲.
+参考FAQ: FAQ39331
+### 问题: 大容量的DDR 在SC7731平台上如何连接？
+解决方案: 参考设计DDR的CKE1没有接,将导致大容量的DDR不能调试,比如 samsung emmc+lpddr2 , 料号:KMKJS000VM-B309 容量:8Gb+4GB ,此料多了一个 N2 pin CKE1e ,需要与 N1 pin CkE0 并接在一起,然后再连接到SC7731G 的 R1 管脚.
+参考FAQ: FAQ39336
+### 问题: NAND的寻址
+解决方案: NAND的结构可分为block,page,column.Block地址,page地址,和Column的行和列地址和数据线的低8位复用.
+参考FAQ: FAQ39378
+### 问题: NAND FLASH FTL软件中遇到坏块如何处理？
+解决方案: Q1.哪些接口可以获取NAND中已有坏块的数量? A1: uint32 SCI_FTL_IOCtl(...) { case:SCI_FTL_Get_MapInfo ...... } Q2.如果读写过程中遇到坏块如何处理? A2: FTL层以上的代码不需要关心,FTL中会自动记录并用保留块替换,分区的逻辑地址上是连续的,并且write接口有效,read接口无效. Q3.Boot中用FTL接口可以直接访问flash,那Kernel中可以吗? A3: 答案是可以的,只不过在kernel中习惯使用BSD接口访问,实际是一样的,BSD是对FTL接口封装,在kernel启动过程中,会将FTL接口挂接到BSD的设备上,此后就通过分区name调用BSD接口访问FLASH了. BSD挂接的函数接口:SCI_FTLMnt_Init(),其通过sprdftl_nand_PartitionMntTable.c的sysPartMntTbl表实现FTL到BSD的挂接操作.
+参考FAQ: FAQ45634
+### 问题: [日历]日历新建活动界面，如何修改日期和时间的控件大小显示。
+解决方案: 修改 packages\apps\Calendar\res\layout\edit_event_1.xml 文件中start_date\start_time\end_date\end_time控件的android:layout_weight属性值即可.
+参考FAQ: FAQ45691
+### 问题: [日历]在当前日期新建日程，进入日视图，长按日程的蓝色块，显示两个新建活动，是问题吗？
+解决方案: 不是问题. 这个设计和原生日历一样:在周视图界面新建的同时在那个位置显示"+",在日视图界面新建的同时在长按的位置显示"+ 新建活动",这样可以显式提示用户是在哪个时间要新建日程,故不是问题.
+参考FAQ: FAQ45698
+### 问题: 联通DM测试需要关注生产平台自测试结果吗？
+解决方案: 不需要关注. 终端厂商的帐号没有权限查看生产平台的注册信息,所以厂商无需对生产平台进行自测. 如果是测试平台,登录定制终端测试平台后进行"测试结果查询"是可以看到已注册终端的.
+参考FAQ: FAQ45701
+### 问题: SC7715 FFOS平台多国语言支持情况及添加配置方法
+解决方案: (1.支持多语情况可以参看SC7715 FFOS的feature list表,如下: (2. 发布的IDH包里,device/sprd/scx15/languages.json文件配置了语言, 目前配置和语言资源都只有en_us和孟加拉语两种, { "en-US" : "English (US)", "bn-BD" : ")" } 很多语言资源包在idh包中没有提供,需要到mozilla网址下载. 语言资源包可以通过mozilla网址下载:http://hg.mozilla.org/gaia-l10n 配置语言方法,可以参看如下网址说明: https://developer.mozilla.org/en-US/Firefox_OS/Building#Building_multilocale
+参考FAQ: FAQ45726
+### 问题: 为什么接受客户传送的uboot压缩包无法编译
+解决方案: 原因: uboot包在如果用window打包后,就会出现一些链接失效,造成编译失败. 解决: 1.建议使用linux直接压缩而不要使用windows来压缩. 2.如果已经用windows压缩了,需要手动恢复一些链接,其实也在当前目录. uboot使用了两个目录: 在u-boot/arch/arm/include/asm/下 proc -> proc_armv/ arch -> arch_sc8830/ 使用命令 cd u-boot/arch/arm/include/asm/ ; ln -s proc_armv proc ;ln -s arch_sc8830 arch 即可.
+参考FAQ: FAQ45715
+### 问题: 自带EGO后台软件的code源码链接缺少库文件
+解决方案: 在VC的安装包内找到 \VC98\MFC\Lib 这个目录, 将这个目录下的全部文件复制到 C:\Program Files\Microsoft Visual Studio\VC98\MFC\Lib 目录下即可
+参考FAQ: FAQ39597
+### 问题: 展讯充电器恒流充电电流设置范围
+解决方案: 最低电流:300mA 芯片默认电流:300mA 最大电流:1800mA STEP:100mA/bit 软件默认电流:600mA(可设置)
+参考FAQ: FAQ39603
+### 问题: 展讯USB恒流充电电流设置范围
+解决方案: 最低电流:300mA 芯片默认电流:300mA 最大电流:500mA STEP:100mA/bit 软件默认电流:500mA(可设置)
+参考FAQ: FAQ39605
+### 问题: 手机侧语音信号的处理流程
+解决方案: 手机侧语音信号的处理流程为:采样—量化—信源编码—信道编码—调制,调制后的数据经过天线向基站发送.
+参考FAQ: FAQ39610
+### 问题: GSM规范中要求多大的采样频率对MIC进来的语音信号采样？
+解决方案: GSM规范中也是要求GSM手机的采样率为8KHz
+参考FAQ: FAQ39612
+### 问题: GSM规范中为什么要求是8KHz对语音信号进行采样？
+解决方案: GSM规范中为什么规定用8KHz采样,是因为人耳对1-4KHz的声音信号很敏感,根据香农采样定理,就用8KHz采用
+参考FAQ: FAQ39613
+### 问题: 手机中的语音参数编码器将MIC进来的语音信号分成多大的语音块进行采样？
+解决方案: 手机中的参数编码器将从MIC拾进来的人的语音分成20ms为单位的语音块,然后按照8KHz的频率进行采样
+参考FAQ: FAQ39615
+### 问题: 展讯平台对于充电器的选择要求
+解决方案: 建议适当提高充电器的VCHG电压,但是充电器的输出电压也不要超过5.25V,否则会造成充电管的发热量过大.不论USB或座充线,充电器在最大输出电流时板端的VCHG电压不低于4.8V
+参考FAQ: FAQ39614
+### 问题: 展讯平台充电模块的layout要求
+解决方案: 1.尽可能的增大承载电流的走线宽度 2.PNP管要尽可能的增大铺铜层,一般铜层加到三极管的C极, 且第二层最好是GND, 3.充电采样电阻同样也承载功率,走线也要相应增加宽度, 以利于散热.
+参考FAQ: FAQ39617
+### 问题: 如何查看应用进程在后台的优先级？
+解决方案: 方法: 1.手机连接电脑,进入cmd窗口 2.adb shell 3.ps(查看应用进程的PID号) 4.cat /proc/PID/oom_adj(会返回一个值,即其应用的优先级,数值越小,其优先级也高.后台越不容易被杀,当数值小于0时,后台应用常驻,就没有办法释放CPU占用.如果此应用占用CPU过高,要针对性来查看此应用),如图,第三个红色区域的数字12,则是deckcolck的后台优先级. 测试场景:启动应用卡,内存相关的测试场景
+参考FAQ: FAQ39647
+### 问题: DCDC中PWM和PFM的区别？
+解决方案: PWM:Pulse Width Modulation;PFM:Pulse Frequency Modulation.简单的记忆方式是PWM模式下DCDC工作的频率恒定,但是脉冲的宽度可变,因为中间是W;PFM模式下DCDC工作频率可变,但是脉冲宽度不变,因为中间是F.PWM和PFM,中间字母代表的就是可变的.
+参考FAQ: FAQ39683
+### 问题: DCDC中PWM模式和PFM模式切换的点？
+解决方案: DCDC中PWM模式和PFM模式根据负载的大小来切换,目前展讯设计的平台中切换点是50mA.
+参考FAQ: FAQ39684
+### 问题: SC7715 平台外放播放MP3，为什么突然音量变小？
+解决方案: SC7715 平台外放播放MP3使用内部音频PA时,音频PA默认使用VBAT供电.当检测到VBAT超过4.2V时,音频PA会进入OVP状态,PA关闭,导致播放MP3声音小. patch将寄存器40038640 bit8 置1,表示当检测到VBAT超过4.2V,音频进入OVP模式后,会自动切换到LDO模式,此时音频PA不使用VBAT供电,使用LDO供电,就规避了声音小问题 . 充电时由于电池内阻、连接器及走线上的内阻导致大电流充电时会有浮压,导致芯片更容易检测到超过4.2V的情况.
+参考FAQ: FAQ39715
+### 问题: android4.4如何单独编译webviewchromium.jar
+解决方案: webviewchromium.jar是external/chromium_org中的java文件经过编译生成的.要想单独编译此包,在配置好编译环境后,只要在代码的根路径下执行如下命令即可: make webviewchromium 编译生成的文件路径是:out\target\product\项目名\system\framework\webviewchromium.jar
+参考FAQ: FAQ39798
+### 问题: 浅谈service和thread区别
+解决方案: 相同之处:service和thread都可以执行耗时操作 不同之处:1、service是工作在主线程中(UI线程),thread是工作在非主线程中 2、service是可控的,thread是不可控的,thread不与activity、service所依附,独立,当在一个activity中开启一个耗时的thread,当activity销毁掉,thread同样可以执行,下一次启动无法控制之前的线程,而service则可以,另一方面,不能在activity中对同一thread进行控制 3、可以在service里启动broadcast,在thread中不行
+参考FAQ: FAQ39805
+### 问题: 如何单独编译libwebviewchromium.so
+解决方案: libwebviewchromium.so是/external/chromium_org目录下的c代码经过编译生成的,要想单独编译该库文件,配置好编译环境后,只需要在该路径下执行"mm"命令即可. 编译生成的文件路径是:out\target\product\项目名\system\lib\libwebviewchromium.so
+参考FAQ: FAQ39813
+### 问题: 如何获取sd卡的路径
+解决方案: 请参考如下代码: public String getSdPath() { File sdDir = null; boolean sdCardExist = android.os.Environment.getExternalStorageState() .equals(android.os.Environment.MEDIA_MOUNTED); if (sdCardExist) {// 判断sd卡否存 sdDir = android.os.Environment.getExternalStorageDirectory();// 获取根目录 } return sdDir.toString(); }
+参考FAQ: FAQ39840
+### 问题: kernel中如何配置l2tp/ipsec编译项
+解决方案: 在kernel/arch/arm/configs相应的sp****-native_defconfig中打开如下选项: CONFIG_XFRM_USER=y CONFIG_NET_KEY=y CONFIG_INET_AH=y CONFIG_INET_ESP=y CONFIG_INET_IPCOMP=y CONFIG_INET_XFRM_TUNNEL=y 配置完成后,重新编译,然后把boot.img烧到手机中就能起作用了.
+参考FAQ: FAQ39910

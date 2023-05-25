@@ -1,0 +1,300 @@
+### 问题: 如何修改连接设置中的互联网帐户列表
+解决方案: 打开联网帐户自适应功能后(ACCOUNT_AUTO_ADAPT_SUPPORT),该列表项是根据当前sim卡plmn值自动从资源文件R_NETWORK_ACCOUNT中查找匹配显示的.且更换SIM卡后所有帐号重新添加,手动添加的帐号并不会保存; 关闭ACCOUNT_AUTO_ADAPT_SUPPORT时,该列表显示R_NETWORK_ACCOUNT文件中的前面若干项(可通过修改MMICONNECTION_MAX_SETTING_NUM、s_customed_res_index调整),且手动添加的帐号更换SIM卡后不会丢失; R_NETWORK_ACCOUNT文件需要使用ResOver工具修改,具体方法请参考该工具说明文档.
+参考FAQ: FAQ00040
+### 问题: 非信令调试时，为何Mobile Tester工具中没有显示实际的Band信息？
+解决方案: 在非信令调试时,Mobile Tester会从NV如下路径中读取Band信息: -WCDMA_CalibrationParam -W_calibration_params  -W_calibration_params  -W_band_information 如果校准成功后,CFT校准工具会将校准的Band信息写入Calibration参数中,但通常一开始硬件调试时,还没有校准,就需要手动改下此处的Band信息, 1stband_infor:是实际的第一个频段信息;2ndband_infor:是实际的第二个频段信息,依次类推. 举例来说,如果实际硬件频段是Band2和Band5,则需要在1stband_infor中的band_num写为0x2;2ndband_infor中的band_num写为0x5.
+参考FAQ: FAQ05413
+### 问题: 如何设置WCDMA校准的期望功率？
+解决方案: SR3130/SR3131支持通过NV设置校准的期望功率,一般建议客户将Target Power设置为22.5dBm,在NV中的路径如下: -WCDMA_DownloadParam -W_download_params  -w_all_tx_compensation_band_sequence -band[0]  -max_tx_power max_tx_power设置为0x2D0即代表[HEX2DEC(2D0)]*(1/32)=22.5dBm,其最小单位为1/32dBm,如果target power需要设置为23dBm则将其写为0x2E0即可;需要注意的是:如果要将校准后信令下的最大功率锁定到此期望值,还需要将功率检测打开,即将hdt_ enable置1,在NV中如下路径: -WCDMA_DownloadParam -W_download_params  -w_cal_config  -hdt_enable
+参考FAQ: FAQ05414
+### 问题: monkey和monkeyrunner的区别
+解决方案: Monkey: Monkey工具直接运行在设备或模拟器的adb shell中,生成用户或系统的伪随机事件流.也就是说,Monkey测试是随机生成的事件,无法自行定义.每次测试的流程都不一样,主要用于压力测试. 命令格式:adb shell monkey [options] monkeyrunner: monkeyrunner工具则是提供了一组API,用于编写python脚本来控制Android设备或者模拟器的动作.从而进行某一个操作顺序的压力测试.可以发送keystrokes、截图.主要用于功能、框架级别测试和单元测试.可以直接运行在windows或者Linux环境中.由于需要指定操作顺序,因此Monkeyrunner需要API自行开发测试脚本 运行的命令为:monkeyrunner MyTest.py [format] [outfile] format为指定输出文件格式(可以为txt或HTML) outfile为输出文件路径
+参考FAQ: FAQ15350
+### 问题: 调试时如何方便的在代码中打印堆栈信息
+解决方案: 打印堆栈是调试的常用方法,一般在系统异常时,我们可以将异常情况下的堆栈打印出来,这样十分方便错误查找.实际上还有另外一个非常有用的功能:分析代码的行为.android代码庞大复杂,完全的静态分析常常无从下手,因此通过打印堆栈的动态分析能够改善.通常的方法是使用exception的printStackTrace()方法: try { ... } catch (RemoteException e) { e.printStackTrace(); ... } 当然也可以只打印堆栈不退出,这样就比较方便分析代码的动态运行情况.Java代码中插入堆栈打印的方法如下: Log.d(TAG,Log.getStackTraceString(new Throwable())); Log.d(TAG,new RuntimeException());
+参考FAQ: FAQ15428
+### 问题: 7715工程模式支持的暗码进入方式
+解决方案: 7715工程模式目前支持的进入方式如下: WIFI、通信相关、系统属性 *#*#83781#*#* 与Modem进行交互,获取、设置相关属性 手机相关信息 *#*#4636#*#* 查看手机信息、电池信息、数据流量情况、WLAN信息 GPS测试相关 *#*#2266#*#* 测试GPS相关信息,主要模块为SGPS,包含NMEAlog等信息
+参考FAQ: FAQ28342
+### 问题: 如何解决使用外置fm基本功能正常但是没有声音的问题
+解决方案: 7715工程默认是使用2351的FM,该FM的音频是走digital通道的,而外置的FM的音频一般走line in(模拟信号),需要做下面修改(以7715ga工程为例): 将 ./device/sprd/scx15_sp7715ga/system.prop:ro.digital.fm.support=1 改为 ./device/sprd/scx15_sp7715ga/system.prop:ro.digital.fm.support=0
+参考FAQ: FAQ15471
+### 问题: rtsp流媒体未解码队列中数据缓冲时间是多少？
+解决方案: 在RTSPSource.cpp文件中有个静态常量值kMinDurationUs,此值标识了在未解码队列中数据的缓冲时间,默认值是2秒.只有当音频队列和视频队列中缓冲的数据都达到kMinDurationUs,才会对音视频数据解码进行播放,如果任一队列中数据少于此值则继续缓冲.
+参考FAQ: FAQ21939
+### 问题: DDR2_BUFOUT串联一个0.01uF电容到VDDMEM作用？
+解决方案: 增加这个电容对DDR scan 会有 1% ～ 2% 的提高
+参考FAQ: FAQ21949
+### 问题: NAND方案，“设置->存储”中看到的用户可用存储空间不准确
+解决方案: "设置->存储"中看到的用户可用空间是在编译时决定的,所以默认空间和实际使用的NAND容量可能不一样.在恢复出厂设置之后,程序可以通过读NAND ID来了解NAND size,所以就能看到准确的容量了. NAND方案中用户可用空间大小的默认定义在项目定义的BoardConfig.mk中由BOARD_USERDATAIMAGE_PARTITION_SIZE定义 比如修改 device\sprd\sp8830ec\BoardConfig.mk BOARD_USERDATAIMAGE_PARTITION_SIZE := 1850000000 如果想要在编译时就定义准确的userdata分区大小,把这个1850000000改成实际的大小就可以了,注意这个数字不能超过实际userdata分区能分配到的大小,否则下载到最后会失败.
+参考FAQ: FAQ15565
+### 问题: 蓝牙共享网络操作方法
+解决方案: 使用蓝牙共享网络时,如问题描述中的手机B,和A配对后还需要在已配对的蓝牙设备中,点击"互联网访问"和手机A建立连接,如图:
+参考FAQ: FAQ15568
+### 问题: FMARK自适应
+解决方案: 1. 同一款屏,前期不带FMARK,后期加入FMARK功能,需要做自适应 2. 首先将FMARK脚设置成GPIO功能,检测电平中断 3. 如果发现有中断,将PIN脚功能设置成FMARK功能,并设置LCDC使能FMARK.
+参考FAQ: FAQ15704
+### 问题: WCDMA下的蓝牙通话采用16K还是8K
+解决方案: WCDMA通话音频有WB和NB两种模式, 最新代码实现方式是,不管网络侧音频是WB还是NB,根据蓝牙耳机能力来判断,如果是蓝牙支持WB,codec解码后直接将采用转换为16K, 如果蓝牙只支持NB,codec解码后直接转换为8K.
+参考FAQ: FAQ15750
+### 问题: SC7715支持哪些类型的Memory？
+解决方案: SC7715支持NAND Flash,支持eMMC4.5,支持LP DDR1、LPDDR2、DDR3;支持以下几种Memory的组合: 1)NAND+LP DDR1或NAND+LP DDR2或NAND+DDR3 2)eMMC+LP DDR1或eMMC+LP DDR2或eMMC+DDR3
+参考FAQ: FAQ15785
+### 问题: SC7715支持几个UART，参考平台是如何分配的？
+解决方案: SC7715提供了3个UART接口,其中UART0/UART2可支持硬件流控. 在展讯的参考设计中,UART0部分的管脚复用为SPI接口,用于跟SR2351芯片连接; UART1与UART2主要用于Debug Log. 另外,U1TXD还是一个Stapping Pin,将该管脚拉低然后再给系统上电,芯片会进入USB下载模式.
+参考FAQ: FAQ15792
+### 问题: SC7715支持哪些接口类型的LCD？最大分辨率为多少？
+解决方案: SC7715可支持MCU接口和RGB接口的LCD,最大分辨率可支持到FWVGA(854×480). 其中,MCU接口可支持8/9/16/18/24 bit;RGB接口可支持16/18/24 bit.
+参考FAQ: FAQ15799
+### 问题: SC7715最大可支持多少像素的Camera？
+解决方案: 对于JPEG格式的image Sensor,SC7715最大可支持到5M像素;对于YUV格式的image Sensor,SC7715最大可支持到2M像素. 另外,SC7715只支持8bit CCIR模式的Camera,两个CCIRPD控制信号可用于双Camera的设计.
+参考FAQ: FAQ15802
+### 问题: Camera硬件设计注意事项？
+解决方案: 1、Camera的各个电源要按照参考设计接相应的对地电容; 2、为了更好的RF 性能,需要增加EMI滤波器或者预留对地电容; 3、PWDN/RST/I2C等信号预留测试点; 4、Camera信号尽量走内层,以减小对外辐射; 5、数据线、同步信号线跟PCLK信号走线做等长控制; 6、CLK信号走线需要包地保护.
+参考FAQ: FAQ15804
+### 问题: 为什么打完电话后马上测试待机功耗会发现待机功耗增加？
+解决方案: 手机经过打电话之类的操作后手机温度会升高,会影响32K晶体的频偏,为了减少32K因温度导致的频偏问题, 每次打完电话后展讯平台会花一定的时间做32K校准,这个时候测试待机功耗会出现明显增加的情况. 这种情况是正常的.
+参考FAQ: FAQ15805
+### 问题: SC7715芯片Auxiliary ADC的分辨率和大、小量程分别为多少？
+解决方案: SC7715芯片Auxiliary ADC的分辨率为12 bit;大量程的最大输入电压为3V;小量程的最大输入电压为1.2V.
+参考FAQ: FAQ15809
+### 问题: drm平台支持的媒体类型？
+解决方案: 目前支持的类型分别为:video、audio、image; 对apk、txt、html等不支持.
+参考FAQ: FAQ15817
+### 问题: android支持的drm播放方式有哪几种？
+解决方案: Android支持的DRM播放方式分为两种: 一种是基于基本码流的(Elementary Stream Based,简称ES Based)播放方式. 目前Widevine DRM、Marline DRM都属于这一种类型. 另一种是基于容器的(Container Base)播放方式,目前OMA DRM支持这种方法. 这两种不同的方式在播放流程上不尽相同,展讯平台目前用的也是这种.
+参考FAQ: FAQ15818
+### 问题: drm文件的权限续订原理
+解决方案: 在解析drm文件的时候,会得到drm文件相应的rights-issues,这是权限文件在服务器上的地址. 续订的时候会请求服务器下载相应的dr或者drc文件,然后本地在得到这些权利文件后,会进行相应的解析, 然后保存到权限数据库. 另外,有时我们也可以从存储介质中得到drm文件相应的权限文件,这时我们在文件管理器中也可以把这些文件存到数据库中, 但如果是数据库中已经有这一条记录了,原来的权限会被直接覆盖.
+参考FAQ: FAQ15831
+### 问题: drm的权限都有哪些？
+解决方案: drm的权限名称分别为: 1.使用次数; 2.开始起效时间; 3.权限结束时间; 4.播放的总时间,以秒为单位;
+参考FAQ: FAQ15820
+### 问题: drm的权限消费方式？
+解决方案: 如果只是单一权限,比如说限制使用多少次,那就每打开一次,减一次,直到权限次数为0; 如果是复合权限,比如说有限制使用多少次,又有开始时间和结束时间,那权限是同时消费的,意思是使用次数会每次减1, 开始时间和结束时间也会计算,但最终判断无权限是根据最长的权限来计算的;也就是说只要有一个权限没用完就可以继续使用,但所有的权限是共同消费的.
+参考FAQ: FAQ15823
+### 问题: drm文件的后缀
+解决方案: drm文件的后缀分别有:.dm、.dcf、.dr、.drc; 其中.drc是二进制的权限文件,便于网络传输, 目前展讯方案也已经实现对此文件的解析.
+参考FAQ: FAQ15834
+### 问题: drm的分发方式
+解决方案: 分发方式有四种: 转发锁定(FL)、组合分发(CD)、分组分发(SD)、 超级分发(Super distribution). 其中超级分发是在分组分发的基础上衍生的一种方式.
+参考FAQ: FAQ15835
+### 问题: drm的mimetype类型
+解决方案: drm的mimetype分别有: 1.DRM_MIMETYPE_MESSAGE:　　"application/vnd.oma.drm.message" 2.DRM_MIMETYPE_CONTENT: "application/vnd.oma.drm.content" 3.DRM_MIMETYPE_RIGHTS_XML: "application/vnd.oma.drm.rights+xml" 4. DRM_MIMETYPE_RIGHTS_WBXML:"application/vnd.oma.drm.rights+wbxml"
+参考FAQ: FAQ15837
+### 问题: drm针对特定文件类型的权限
+解决方案: drm的文件类型文件有SD、CD、FL; 对这些不同类型的文件要求也不一样,分别是: 1.FL类型的文件不允许转发,但使用次数和使用时间无限制; 2.CD类型的文件不允许转发,但使用次数和使用时间都有限制; 3.SD类型的文件允许转发,但使用次数和使用时间有限制.
+参考FAQ: FAQ15838
+### 问题: 平台应用对drm特定文件类型处理方式
+解决方案: drm特定的文件类型有CD、SD、FL; 展讯的平台应用对它们的处理方式也不一样,如下: 文件类型 视频 图库 音乐 文件管理器 FL 不可共享 不可共享不可编辑 不可用作铃声 不可分享不可复制不可设置为 CD 不可共享 不可共享不可编辑 不可用作铃声 不可分享不可复制不可设置为 SD 可共享 可共享不可编辑 不可用作铃声 不可分享不可复制不可设置为
+参考FAQ: FAQ15840
+### 问题: drm的权限数据库设计原理
+解决方案: drm的权限数据库一共有一个rights表,36个字段, 其中关键的是后32个字段,这32个字段,代表8个action,4个权限名称; 在代码中这32个字段是和一个二维数组对应.
+参考FAQ: FAQ15841
+### 问题: drm的时间权限格式
+解决方案: 要求分别如下: 1.对绝对时间要求的格式为: %Y-%m-%dT%H:%M:%S,例如:2010-01-01T08:00:00 2.对间隔时间要求的格式为: P%dY%dM%dDT%dH%dM%dS　例如:P99Y99M99DT99H99M99S
+参考FAQ: FAQ15850
+### 问题: 实时流协议（RTSP）是什么？
+解决方案: RTSP(Real Time Streaming Protocol),实时流传输协议,是TCP/IP协议体系中的一个应用层协议,由哥伦比亚大学、网景和RealNetworks公司提交的IETF RFC标准.该协议定义了一对多应用程序如何有效地通过IP网络传送多媒体数据.RTSP在体系结构上位于RTP和RTCP之上,它使用TCP或RTP完成数据传输.HTTP与RTSP相比,HTTP传送HTML,而RTSP传送的是多媒体数据.HTTP请求由客户机发出,服务器作出响应;使用RTSP时,客户机和服务器都可以发出请求,即RTSP可以是双向的.
+参考FAQ: FAQ15889
+### 问题: 实时传输协议(RTP)是什么？
+解决方案: 实时传输协议RTP(Realtime Transport Protocol)是针对Internet上多媒体数据流的一个传输协议, 由IETF(Internet工程任务组)作为RFC1889发布.RTP被定义为在一对一或一对多的传输情况下工作,其目的是提供时间信息和实现流同步.RTP的典型应用建立在UDP(User Datagram Protocol,用户数据包协议)上,但也可以在TCP(Transfer Control Protocol,传输控制协议)或ATM(Asynchronous Transfer Mode,异步传输模式)等其他协议之上工作.RTP本身只保证实时数据的传输,并不能为按顺序传送数据包提供可靠的传送机制,也不提供流量控制或拥塞控制,它依靠RTCP提供这些服务.
+参考FAQ: FAQ15891
+### 问题: AudioFocus中的OnAudioFocusChangeListener参数的隐藏作用
+解决方案: OnAudioFocusChangeListener是作为监听器来监听声音焦点的改变的,但它还有一个隐藏作用就是绑定当前获得焦点的应用,如果在申请/释放AudioFocus时不传入统一的OnAudioFocusChangeListener,而使用null来代替就有可能出现申请/释放AudioFocus的应用不一致,应该释放AudioFocus的应用没释放,不应该释放AudioFocus的反而释放了.所以,每个要使用AudioFocus的程序都要小心实现这个函数,保证AudioFocus实现的一致性.
+参考FAQ: FAQ15897
+### 问题: 会话起始协议（SIP）是什么？
+解决方案: SIP(Session Initiation Protocol)是一个应用层的信令控制协议.用于创建、修改和释放一个或多个参与者的会话.这些会话可以是Internet多媒体会议、IP电话或多媒体分发.会话的参与者可以通过组播(multicast)、网状单播(unicast)或两者的混合体进行通信.
+参考FAQ: FAQ15900
+### 问题: 实时传输控制协议(RTCP)是什么？
+解决方案: 实时传输控制协议RTCP(Realtime Transport Control Protocol)负责管理传输质量在当前应用进程之间交换控制信息.在RTP会话期间,各参与者周期性地传送RTCP包,包中含有已发送的数据包的数量、丢失的数据包的数量等统计资料,因此,服务器可以利用这些信息动态地改变传输速率,甚至改变有效载荷类型.RTP和RTCP配合使用,能以有效的反馈和最小的开销使传输效率最佳化,故特别适合传送网上的实时数据.
+参考FAQ: FAQ15908
+### 问题: 远程过程调用协议（RPC）是什么？
+解决方案: RPC(Remote Procedure Call Protocol)是一种通过网络从远程计算机程序上请求服务,而不需要了解底层网络技术的协议.RPC协议假定某些传输协议的存在,如TCP或UDP,为通信程序之间携带信息数据.在OSI网络通信模型中,RPC跨越了传输层和应用层.RPC使得开发包括网络分布式多程序在内的应用程序更加容易.
+参考FAQ: FAQ15950
+### 问题: 使用内部D类音频功放什么时候串联的磁珠能换成0ohm电阻？
+解决方案: 展讯平台的内部D类音频功放有一定的EMI抑制能力, 如果音频功放走线和放置合理不会产生EMI干扰响天线. 如果使用展讯平台内部D类音频功放输出串联的是0ohm电阻,出现对天线的EMI干扰.串联的0ohm电阻必须换成磁珠变成EMI滤波器.
+参考FAQ: FAQ16059
+### 问题: 安全外壳协议（ssh）是什么？
+解决方案: SSH 为 Secure Shell 的缩写,由 IETF 的网络工作小组(Network Working Group)所制定;SSH 为建立在应用层和传输层基础上的安全协议.SSH 是目前较可靠,专为远程登录会话和其他网络服务提供安全性的协议.利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题.SSH最初是UNIX系统上的一个程序,后来又迅速扩展到其他操作平台.SSH在正确使用时可弥补网络中的漏洞.SSH客户端适用于多种平台.几乎所有U NIX平台—包括HP-UX、Linux、AIX、Solaris、Digital UNIX、Irix,以及其他平台—都可运行SSH.
+参考FAQ: FAQ15960
+### 问题: 为何点击视频列表的缩略图不直接播放视频？
+解决方案: 在视频播放器中,进入视频列表(即AlbumPage),点击某个视频的缩略图,此时会进入PhotoPage,在此界面中,用户可以进行分享、查看详细信息等操作. 点击视频中间的播放键,会跳转到MovieActivity界面,在此activity中,才开始正式播放视频.
+参考FAQ: FAQ16004
+### 问题: Mocor SPML不同语言混合排版显示不对齐如何优化？
+解决方案: 采用SPML显示方案会有修改字库情况,在修改某个字库后,与其他语言排版显示时会有不对齐情况.不同语系采用不同字库,若要达到混合语言排版显示对齐,请确保制作字库过程中设置参数一致. 如果制作点阵字库,需要确认参数设置Max Bearing Y Delta一致;如果制作矢量字库,在参数设置Max Bearing Y Delta一致情况下,Shrink Percent [50%-100%]参数也需要一致. Max Bearing Y Delta数值建议调整为3个像素,Shrink Percent [50%-100%]数值建议选用90%-95%之间的数值,具体数值需要结合显示效果确定.
+参考FAQ: FAQ16021
+### 问题: MIC通路上串1K电阻的目的？
+解决方案: MIC通路上串1k电阻将提高MIC通路上的抗静电能力,降低被静电损坏的风险.
+参考FAQ: FAQ16053
+### 问题: 使用内部音频功放和外部音频功放组成双speaker方案需要注意什么？
+解决方案: 使用内部音频功放和外部音频功放组成双speaker方案需要注意保障两个speaker发现的声音尽量一致,设计时需要注意: 1. 展讯内部音频功放的增益是3dB,所以外部功放设置也按照3dB设计 2.展讯内部音频功放不支持AGC功能,选择的外部功放也不能有AGC功能
+参考FAQ: FAQ16099
+### 问题: 使用32k-less方案后，拔出主电池后，为何即使加了小电池RTC时钟也还是不准？
+解决方案: 使用32k-less方案的时候,26MHz RTC时钟由VBAT供电,所以电池拔出后RTC就不工作了,VBATBK上只需加一个1uF电容就可以了
+参考FAQ: FAQ16104
+### 问题: 如何让一个activity打开时，直接解除非加密类的锁屏
+解决方案: 可以给当前activity加上FLAG_DISMISS_KEYGUARD的属性,如下: getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD); 加上这个属性后,该activity在打开时,就可以直接解除非加密类的锁屏.
+参考FAQ: FAQ16157
+### 问题: 如何让一个activity打开时，自动点亮屏幕
+解决方案: 可以给当前activity加上FLAG_TURN_SCREEN_ON的属性,如下: getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON); 加上这个属性后,该activity在打开时,就可以像按了power键一样,自动点亮屏幕.
+参考FAQ: FAQ16160
+### 问题: 如何让一个activity打开时，屏幕保持常亮
+解决方案: 可以给当前activity加上FLAG_KEEP_SCREEN_ON的属性,如下: getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); 加上这个属性后,该activity在打开时,就可以保持屏幕常亮.
+参考FAQ: FAQ16163
+### 问题: VC模拟器工程如何实现多任务编译?
+解决方案: 方法如下: make p=工程名 m=simulator run=1 job=** -j** 说明: run=1 -- 模拟器工程和库一起编译; job=** -- 用几个核编译; -j** -- 几个模块一起编译 通过上面指令,编译成功后可以直接通过vc运行
+参考FAQ: FAQ16213
+### 问题: 为什么7715的手机按键亮屏了，继续按的话，会黑屏之后直接开机了？
+解决方案: 我们平台芯片增加了7s reset功能,当power键被长按超过7秒即会进入reset mode. 当power被按下,正常开机,而如果一直继续按键,超过7秒就会reset 重启,而uboot则会认为是异常开机,所以不会显示logo,而是直接进入系统.
+参考FAQ: FAQ16262
+### 问题: 音频参数Audio Mode与Music Mode的区别
+解决方案: AudioTester调试音频参数时,会看到两个选项:Get Audio mode information,Get Music mode information. 其中: Audio Mode中的音频参数保存在NV中,供CP侧使用,具体场景为打电话,VOIP,Loopback.调试后的参数需要合入CP版本中. Music Mode中的音频参数保存在AP侧Audio_para中,供AP侧场景使用,一般为听音乐,提示音等.调试后的音频参数需要合入AP版本中.
+参考FAQ: FAQ19444
+### 问题: 如何在手机环境中使用grep find diff等linux常用命令
+解决方案: 在展讯的手机平台中,集成了busybox小工具,可以通过busybox使用grep find diff等linux常用命令 adb shell后,通过busybox <cmd>的方式使用这些命令 比如 busybox find -name 'filename' 将找到文件名为filename的文件 busybox diff a.txt b.yxy 将比较两个文本文件 可以通过 busybox --help来查看当前手机中集成的busybox支持的命令
+参考FAQ: FAQ19493
+### 问题: Audio状态查询工具tinymix如何使用？
+解决方案: tinymix是user层用于查询audio driver状态的工具,具体用法如下 Usage: tinymix [-D card] [control id] [value to set] [card]:默认打开声卡0, 声卡的编号可以用如下命令获取 adb shell;ls -l /proc/asound 名字和意义如下 sprdphone--正常播放music,录音等 VIRTUAL AUDIO--通话时候由Ap向CP混音用 saudiovoip--VOIP使用 all-i2s--蓝牙播放向蓝牙混音用 [control id]:tinymix 输出信息的编号 [value to set] 想设置的值
+参考FAQ: FAQ19470
+### 问题: 7715耳机检测中断
+解决方案: 7715耳机检测是通过Eic5的,公式为(head_insert_eic_en & AUDIO HEAD_INSERT)| AUDIO HEAD_INSERT2 其中: AUDIO HEAD_INSERT表示Mic检测 AUDIO HEAD_INSERT2表示左声道检测 head_insert_eic_en可以使能是否通过Mic检测 通过公式可知: 如果head_insert_eic_en=0,则仅仅通过左声道来检测耳机的插拔; 如果head_insert_eic_en=1,则Mic与左声道都可以检测耳机插拔,两者是或的关系. 目前不支持仅仅Mic检测的方式
+参考FAQ: FAQ19502
+### 问题: 7715和7730的RX线是不是也都按照150欧姆控制？
+解决方案: 这个无法严格规定 原则是这样 但是 实际的差分走线无法做到这么严格的阻抗控制 要求客户差分走线尽量短 器件尽量靠近放置
+参考FAQ: FAQ16382
+### 问题: SC7715手机上如何查看手机CPU、Memory占用情况
+解决方案: 进入手机工程模式可以查看手机当前CPU、Memory占用,步骤为: 1、输入暗码:*#*#83781#*#* 2、进入DEBUG&LOG -> System Info -> Memory Info And Usage -> Usage Top 5 Process,Cpu Info And Usage -> Cpu Usage分别可查看 内存、CPU占用情况 上面的方法等同于在命令行中输入 # adb shell # cd system/bin # top 对应的CPU和RSS值工程模式中查看的CPU、Memory占用情况.
+参考FAQ: FAQ27007
+### 问题: WriteIMEI工具界面如何显示英文
+解决方案: WriteIMEI工具默认界面显示为中文,当有海外客户需要使用此工具时,就有必要要显示为英文,展讯平台工具是支持中英两种语言切换的,只要工具根目录下的bin\目录下,找到WriteIMEI.ini,其中有Language一项,将值改为1即可,0为中文、1为英文.
+参考FAQ: FAQ28982
+### 问题: 为什么使用DCXO方案相对TCXO方案不校准AFC更难注网？
+解决方案: AFC 校准主要是为了保证手机的时钟频率能和网络正确同步.如果手机频率误差过大,手机就不能跟网络同步,也就找不到网.对于TCXO晶体,线性度和一致性都较好.如默认参数合适,不校准一般性也能找网.对于DCXO线性度和一致性较差,不做校准找不到网可能性较大或者找网时间变很长,所以必须做AFC校准
+参考FAQ: FAQ16517
+### 问题: 如何修改某个主题的资源详情
+解决方案: 在主题包下的description.xml 中定义了各个选项: <?xml version="1.0" encoding="utf-8"?> <elements > <title>Hello Color</title> <designer>Owner</designer> <author>SPD-GUI</author> <size>1.0.0</size> <version>1.0.0</version> <uiVersion>1.0.1</uiVersion> <description>Default Stytle</description> </elements> 分别包含了名称,设计师,制作者,大小,版本,更新时间,资源简介这七个选项. 针对自定义的主题,修改对应的选项即可成功描述该主题的特性.
+参考FAQ: FAQ16527
+### 问题: drm传输编码方式
+解决方案: 目前支持的传输编码方式有两种,分别为: 1.binary; 2.base64;
+参考FAQ: FAQ16562,含图片
+### 问题: D类功放输出的喇叭功率怎么测试？
+解决方案: D类功放输出用示波器测试的时候抓到的是方波,需要在喇叭的后端加一个低通滤波器,截止频率30KHZ左右就可以了,通过这个滤波器就可以还原成正弦波,就方便计算喇叭功率了
+参考FAQ: FAQ16581
+### 问题: 什么是ramp参数？
+解决方案: RAMP参数就是由一系列PA功率控制字组成的,按功率模板要求下形成的上升沿和下降沿波形的数组
+参考FAQ: FAQ16584
+### 问题: 为什么GSM系统需要RAMP参数？
+解决方案: GSM系统在时隙开始和结束时需要开关PA,但是GSM的PA是不是直接打开和关闭的,因为阶跃开关的PA一定会在400kHz,600kHz等频偏上产生干扰.对于GSM,信号带宽是200kHz,从而400kHz,600kHz等频偏上的干扰恰好是GSM邻信道,会产生较大影响,需要抑制.所以需要ramp参数控制PA在功率模板要求下输出上升沿和下降沿波形,降低对邻信道干扰
+参考FAQ: FAQ16585
+### 问题: 移动梦网新闻内容界面，为什么点击底部的新闻链接没有跳转？
+解决方案: 进入移动梦网(wap.monternet.com),点击某一条新闻进入新闻内容界面(如:http://3g.i139.cn/pams2/l/s.do?p=15&j=d&c=1272&r=25924319&blockId=61652#?blockId=51555),此时下滑到网页的低端,点击更多,可以查看到有一个"新闻"链接按钮,点击"新闻"链接按钮时却没有跳转,还停留在新闻内容界面,这是为什么呢?审查网页元素发现,"新闻"按钮的网页链接就是本新闻内容界面(如:<a style="display: block;" id="more1" href="#?blockId=51555">新闻</a>),所以没有跳转,这跟网页原本的设计有关.
+参考FAQ: FAQ16614
+### 问题: 如何下载一个已有的productinfo文件？
+解决方案: 修改工程对应的XML文件,增加一项用来下载proudctinfo,然后选择正确的proudctinfo.bin单独下载这一项即可. sample: <File backup="0"> <ID>ProductInfo</ID> <IDAlias>ProductInfo</IDAlias> <Type>CODE</Type> <Block> <Base>0x90000002</Base> <Size>0x2000</Size> </Block> <Flag>1</Flag> <CheckFlag>0</CheckFlag> <Description>Producing phases information section</Description> </File>
+参考FAQ: FAQ16621
+### 问题: 为何注音输入法7键在输入的时候少了一个字符ㄝ
+解决方案: 注音输入是有规则的,有些字符是在特定组合下才能使用,ㄝ本身无法做为起头字符,所以第一个字符无法输入ㄝ, ㄝ当第二个字符是可以的,例如一ㄝ(耶) ㄝ当第三个字符是可以的,例如ㄒ一ㄝ(些)
+参考FAQ: FAQ16651
+### 问题: SC7715平台调试音频后音频参数的保存位置
+解决方案: 7715连接音频工具调试音频后,音频参数会临时存放在 /data/local/media/audio_para文件中.
+参考FAQ: FAQ29746
+### 问题: Android4.4 如何修改蓝牙默认名称
+解决方案: 蓝牙名称默认是使用PRODUCT_MODEL, 如device/sprd/scx15_sp7715ga/scx15_sp7715gaplus.mk PRODUCT_MODEL := xxxx(设备名称) 如果不想修改PRODUCT_MODEL,可以直接修改代码: Btif_dm.c (external\bluetooth\bluedroid\btif\src): btif_default_local_name为默认name即可 static char btif_default_local_name[DEFAULT_LOCAL_NAME_MAX+1] = {'\0'};
+参考FAQ: FAQ29760
+### 问题: drm文件的生成原理
+解决方案: android4.4加入了守护进程fuse,使得native层不能随意写外置SD卡的内容,但可以读,当然用一些方法可以绕过fuse 去写SD卡,但这会给系统带来很多隐患,会出现各种莫名其妙的问题; 从网络下载得到的drm文件,后缀为.dr和.dcf就不用考虑了,不用做转化,但后缀为.dm的文件要处理成为.dcf文件后, 各种应用才能去处理;由于fuse的守护,没法直接在native层写外置SD卡,所以目前展讯的方案是:让app驱动native层做 数据的转换,native层把数据上报给上层,由上层来对文件存储;简单来说就是由app驱动native去读数据,app层对文件存 储.
+参考FAQ: FAQ16688
+### 问题: dcf文件的加密和解密
+解决方案: 用的加密算法是:AES128CBC 在dcf文件加密和解密用的是openssl的EVP对称加密算法, 例如:用EVP_EncryptUpdate实行对数据的加密,用EVP_DecryptUpdate实际对数据的解密, 代码中还有很多这样的例子,都是对称的关系.
+参考FAQ: FAQ16694
+### 问题: 如何修改连接设置中互联网账户列表显示的最大账户数
+解决方案: 连接设置中的互联网账户列表显示根据插入SIM 卡的mcc/mnc 信息匹配到的互联网账户,但该列表长度受MMICONNECTION_MAX_SETTING_NUM 宏限制.如需增加该列表显示数目,需要做以下修改(设最多需要支持显示N个账户): 1. MMICONNECTION_MAX_SETTING_NUM(@mmiconnection_export.h) 改为N 2. s_customed_res_index[](@mmiconn_manager_wintab.c) 改为{0, 1, ..., N - 1}
+参考FAQ: FAQ16712
+### 问题: 为什么user版本的system.img会比eng版本的大
+解决方案: 为了在开机及应用加载的时候提高速度,user版本编译的时候会将系统中的APK进行odex优化(即将apk中的class.dex抽出生产odex文件并放在apk同一目录,生成后的odex文件比dex文件大),而eng版本没有进行odex优化. eng版本如果需要强制打开odex优化,可以找到编译开关 WITH_DEXPREOPT,去掉前面对是否为user版本的判断,强行打开该编译开关. BoardConfig.mk (device\sprd\sp8810ea):WITH_DEXPREOPT=true Main.mk (build\core): WITH_DEXPREOPT := true
+参考FAQ: FAQ16724
+### 问题: 添加闹钟后更改系统日期闹钟无效
+解决方案: 该问题的主要原因是deskclock接收到重新设置的系统时间的广播,将当前即将起闹的闹钟设置为silent状态,由于闹钟的时间是以Long型保存,该参数包括日期等信息,假设设置的闹钟为周五,修改系统的时间为周三,那么当时的闹钟依然是周五,所以会有此问题,此为android原生架构设计.
+参考FAQ: FAQ16773
+### 问题: 如何计算rtsp流媒体视频帧率？
+解决方案: 帧率 = 时钟频率/(相邻两个视频帧RTP时间戳的增量) (1)时钟频率可从SDP中获取,如: m=video 2834 RTP/AVP 96 a=rtpmap:96 H264/90000 其时钟频率为90000(通常视频的时钟频率) (2)相邻两个视频帧RTP时间戳的增量,即相邻两帧的RTP timestamp差值(可通过每帧最后一个RTP的marker标志区别帧,但最好通过查看RTP timestamp相同的包区别帧)
+参考FAQ: FAQ18039
+### 问题: 为何通过gmail日程活动没有从手机同步到电脑
+解决方案: 默认情况下,创建日程活动的账户为本地账户,本地账户下的日程活动无法同步到gmail账户下,需要将手机的日程活动通过gmail同步到电脑,在创建日程活动的时候,账户需要选择gmail账户.
+参考FAQ: FAQ16820
+### 问题: 给4×4的快捷联系人添加联系人的时候，界面显示不完整
+解决方案: 这只是android界面设计的一种风格,使用导航抽屉(Navigation Drawer)的形式展现界面,当抽屉打开的时候使用了较短的竖线表示,抽屉关闭用较长的竖线,不是显示不完整.
+参考FAQ: FAQ16838
+### 问题: 如何在应用程序中获取系统当前的时区
+解决方案: private static final String TIMEZONE_PROPERTY = "persist.sys.timezone"; TimeZone zone = TimeZone.getTimeZone(SystemProperties.get(TIMEZONE_PROPERTY));
+参考FAQ: FAQ16841
+### 问题: 生成的bin文件中b256k_p4k和b128k_p2k的区别
+解决方案: b256k_p4k和b128k_p2k是根据NAND的不同块大小和页大小而生成的对应镜像, b256k_p4k是指快大小为256K,页大小为4K的nand, b128k_p2k是指快大小为128K,页大小为2K的nand, 下载时请根据实际使用的NAND来选择对应的文件. 如果不知道如何选择,可以将2个文件放在同一路径下,任选一个,工具会自动选择.
+参考FAQ: FAQ16858
+### 问题: 展讯Android4.4平台代码chipram目录的作用
+解决方案: 在Android4.4平台上,fdl1和spl-16k的代码从u-boot目录被剥离出来,并被包含在新增的chipram目录中.这是因为fdl1和spl-16k都是运行在芯片内部的IRAM中,代码差异只取决于芯片和mcp的选择(即nand方案与emmc方案的区别),而u-boot的代码差异还和板级配置和部分外设相关,区分开后更有利于工程的配置管理. 可以用下面命令单独编译chipram生成fdl1和spl-16k. make chipram 新增工程相关的chipram配置可以参考《Android4.4编译系统介绍》这篇文档.
+参考FAQ: FAQ16861
+### 问题: whtled并联背光调节亮度无效
+解决方案: whtled并联背光不能调节亮度的原因有两种可能: a. 背光模式的编译宏选择错误,和uboot里不匹配 b.WHTLED_CTRL1的[14]被置起 排查及解决方法: 1.命令"grep update_status out/target/product/xxx/obj/KERNEL/System.map "得到的结果可以清楚判定当前是哪种背光方式被编入,修改kernel/drivers/video/backlight/sprd_backlight.c中的宏为相应的模式即可 2.WHTLED_CTRL1的地址是0x400388d8 .第二种情况WHTLED_CTRL1的问题可以通过 "adb shell lookat -l 20 0x400388d4 "来判定.如果是WHTLED并联背光,WHTLED_CTRL1的应该全部为0.
+参考FAQ: FAQ18173
+### 问题: TP造成底电流大解决方法
+解决方案: LDO 倒灌方式检测出 TP 造成电流偏大,拿掉TP电流正常. 由于 VDDSIM2 控制我们 IIC_INT 、IIC_SDA、IIC_SCL、IIC_RST 管脚的LDO域, 进入深度睡眠后此LDO被关闭,造成电流大. 修改代码如下: kernel/arch/arm/mach-sc/pm-scx35.c void pm_ana_ldo_config(void){ ... //add sim2 ldo slp on sci_adi_clr(ANA_REG_GLB_LDO_SLP_CTRL1, 1<<3);
+参考FAQ: FAQ16999
+### 问题: 如何打开安卓4.4上蓝牙log
+解决方案: 在external\bluetooth\bluedroid\conf\bt_stack.conf文件里,TraceConf设置为true,将TRC_XXX都设置为最高等级6.
+参考FAQ: FAQ17006
+### 问题: 修改了ContactsCommon下面的代码，如何编译生效
+解决方案: ContactsCommon是Contacts和Dialer的公共模块,编译完ContactsCommon,还需要编译Contacts或者Dialer.
+参考FAQ: FAQ27792
+### 问题: SC7730如何修改相机照片详情中制作商、型号
+解决方案: 相关代码:Cmr_oem.c (vendor\sprd\open-source\libs\libcamera\sc8830\src) 如果有定义以下属性,就使用属性值. ro.product.manufacturer ro.product.model 如果没有定义如上属性,就是要下面宏的值: #define EXIF_DEF_MAKER "Spreadtrum" #define EXIF_DEF_MODEL "spxxxx"
+参考FAQ: FAQ38667
+### 问题: 如何在代码中增加Hprof文件的导出
+解决方案: 答: 可以使用如下方法将hprof文件输出到sd卡: Debug.dumpHprofData("/sdcard/input.hprof"); 然后将输出的文件使用sdk中的hprof-conv转化为MAT可分析的格式即可: hprof-conv <infile> <outfile> 需要注意:如果在应用中输出到sd卡,则建议在AndroidManifest中增加对sd卡的写操作权限.
+参考FAQ: FAQ17387
+### 问题: 为什么锁屏界面滑动到相机后只能拍照却无法查看已拍照片？
+解决方案: 这是android 4.4上增加的新特性:安全相机.当手机开启了安全锁(图形,密码,pin码)或者sim卡pin码锁.则从锁屏界面滑动到相机时,会进入相机的安全模式,也就是只能拍照和录像.但无法查看已拍照片.如果需要查看已拍照片,需要解锁后进入相机或者图库才可以看.具体实现请参考KeyguardActivityLauncher类的launchCamera方法.
+参考FAQ: FAQ17395
+### 问题: 电池电压ADC校准的目的
+解决方案: 因为手机基带芯片并不知道手机电池电压多少,只能读电池电压的ADC值,所以必须借助外部精密电源,不同的电压就有不同ADC值反映给基带芯片,通过ADC校准可以让手机准确显示电量,提供准确的充电限制电压4.2V和关机电压
+参考FAQ: FAQ17423
+### 问题: 7715关机写IMEI号失败
+解决方案: 7715平台calibration模式下,USB枚举过程的IO超时时间目前设定为2000ms,由于不同PC、主板的枚举时间不一致,因而存在连接超时或者通信异常的情况,可以通过修改U-BOOT中的超时时间来解决,具体为: 修改u-boot/include/configs/目录中对应工程头文件中的CALIBRATE_IO_MS,将 #define CALIBRATE_IO_MS 2000 修改为 #define CALIBRATE_IO_MS 10000 另外,内核中的loglevel对写IMEI号时间有一定影响,建议在写IMEI号过程,将u-boot中的loglevel设为平台默认的1.
+参考FAQ: FAQ17642
+### 问题: 如何获取MCC和MNC
+解决方案: MNPHONE_GetCurrentPLMNInfoEx函数从网络中获取MCC和MNC; MMIAPIPHONE_GetSimHPLMN函数从sim卡中获取MCC和MNC.
+参考FAQ: FAQ18782
+### 问题: 为什么仪器校准综测后，手机工程模式查看到综测校准信息仍为Failed？
+解决方案: 导致Fail原因是由于综测工具相关选项未勾选导致,具体请参考附件图片勾选相应选项即可:
+参考FAQ: FAQ17880
+### 问题: 广播接收者注册的两种方式
+解决方案: 广播接收者的注册方式分为静态注册和动态注册两种. 静态注册方式中,用来描述广播接收者的Broadcast Receiver组件必须要在配置文件中AndroidManifest.xml中注册,并注明其可以接收的广播类型,此种注册方式在apk安装扫描AndroidManifest.xml文件时将其广播接收者注册到系统ActivityManagerService中 动态注册方式中,需要在代码中手动的调用Context接口的成员函数registerReceiver将Broadcast Receiver注册到ActivityManagerService中. 注:动态注册的方式中需确保其所在activity对象未被销毁才可接收到广播,同时在activity退出时需调用unRegisterReceiver方法将之前注册的广播取消,避免造成内存泄漏
+参考FAQ: FAQ17892
+### 问题: 如何设置默认主题为Hellocolor
+解决方案: 在项目配置中定义PRODUCT_DEFAULT_THEME = HelloColor. 或者(如果项目配置中没有定义PRODUCT_DEFAULT_THEME)修改vendor/sprd/UniverseUI/ThemeRes/universeui.mk中的PRODUCT_DEFAULT_THEME := SimpleStyle的修改为PRODUCT_DEFAULT_THEME = HelloColor.
+参考FAQ: FAQ17973
+### 问题: 如何设置默认主题为SimpleStyle。
+解决方案: 在项目配置中定义PRODUCT_DEFAULT_THEME = SimpleStyle. 或者(如果项目配置中没有定义PRODUCT_DEFAULT_THEME)修改vendor/sprd/UniverseUI/ThemeRes/universeui.mk中的PRODUCT_DEFAULT_THEME定义成SimpleStyle.写法如下: PRODUCT_DEFAULT_THEME := SimpleStyle
+参考FAQ: FAQ17974
+### 问题: 如何设置使得主题预览图片减半
+解决方案: 主题预览的图片都在主题下的previews文件夹下. 一般情况下这下面的图片都会在主题预览的时候显示.当存储空间比较小的时候可以选择只显示部分图片. 修改方法:在某个项目的AndroidProduct.mk(如device/sprd/scx35_sp7730ga/AndroidProducts.mk)中定义如下: TARGET_LOWCOST_SUPPORT := true
+参考FAQ: FAQ17975
+### 问题: 如何用第三方Launcher替换掉系统默认的Launcher
+解决方案: 在新的Launcher源码的Android.mk文件里添加: LOCAL_OVERRIDES_PACKAGES := Launcher2#4.4为Launcher3或者SprdLauncher2 这样原来的模块Launcher2就不会加入到系统进行编译.
+参考FAQ: FAQ17979
+### 问题: Dolphin平台电池电压2.05V~3.05V 充电电流为多少？
+解决方案: dolphin平台电池电压2.05V~3.05V 充电电流在D+和D-短接时为450mA D+和D-没有短接为70mA.
+参考FAQ: FAQ18094
+### 问题: 安卓4.4通过adb查看蓝牙搜索到设备的地址名字等信息
+解决方案: 连接上adb cd /data/misc/bluedroid 里面bt_config.xml remote字符段记录了搜索到设备的信息,包含地址,名字,以及设备类型.如下所示 <N2 Tag="Remote"> <N1 Tag="68:17:29:78:48:d4"> <N1 Tag="Timestamp" Type="int">1325376173</N1> <N2 Tag="Name" Type="string">Intel PROSet/Wireless Software</N2> <N3 Tag="DevClass" Type="int">16711940</N3> <N4 Tag="DevType" Type="int">1</N4> <N5 Tag="AddrType" Type="int">0</N5> </N1>
+参考FAQ: FAQ18242
+### 问题: 常见视频分辨率介绍
+解决方案: 我们常说的视频文件分辨率通常指的是该视频图像像数的宽度和高度值,常见分辨率值如下: 1080P: 1920 x 1080 720P: 1280 x 720 D1: 720 x 480 VGA: 640 x 480 QVGA: 320 x 240 CIF: 352 x 288 QCIF: 176 x 144
+参考FAQ: FAQ18151
+### 问题: [Calculator] 进入计算器，计算器最多可输入是15位，但是当输入第12位或更多时会显示不全。
+解决方案: 可以通过滑动光标看到全部15位数字,android原生也是这样处理的,不是问题.
+参考FAQ: FAQ18219
+### 问题: 如何确认重启类型
+解决方案: 通过androidboot.mode值来判断重启类型. 可以在如下两个地方检查androidboot.mode: 1. slog中misc/cmdline.log文件. 2. 重启之后kernel.log文件的Kernel command line.
+参考FAQ: FAQ18222

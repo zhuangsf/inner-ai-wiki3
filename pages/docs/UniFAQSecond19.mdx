@@ -1,0 +1,362 @@
+### 问题: 如何除去拨打电话时界面显示的“Main Card:”和“Vice Card”
+解决方案: \packages\apps\InCallUI\src\com\android\incallui的CallCardFragment.java getCallStateLabelFromState()方法中作如下修改: case Call.State.ACTIVE: card_slot = this.getString(R.string.gsm_card_slot); } - callStateLabel = card_slot + label; + callStateLabel = label; /* @} */ case Call.State.DIALING: card_slot = this.getString(R.string.gsm_card_slot); } - callStateLabel = card_slot+context.getString(R.string.calli
+完整回答请参考FAQ: FAQ76148
+### 问题: 有未接来电，点击下拉状态栏清除通知按钮，如何使拨号菜单上的未接来电标记不清除
+解决方案: 原因: 点击下拉状态栏清除通知按钮清空数据库. 在\packages\services\Telecomm\src\com\android\server\telecom 中的MissedCallNotifier.java showMissedCallNotification()方法,做如下修改为: ......... Notification.Builder builder = new Notification.Builder(mContext); builder.setSmallIcon(android.R.drawable.stat_notify_missed_call) .setColor(mContext.getResources().getColor(R.color.theme_color)) .setWhen(call.getCreationTimeMillis()) .setC
+完整回答请参考FAQ: FAQ76150
+### 问题: SIM卡热插拔如何判断
+解决方案: 根据卡的状态判断是插卡还是拔卡,具体代码可参考frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/UiccCard.java: 
+    public void update(Context c, CommandsInterface ci, IccCardStatus ics) {
+	...
+            RadioState radioState = mCi.getRadioState();
+            if (DBG) log("update: radioState=" + radioState + " mLastRadioState="
+                    + mLastRadioState);
+            // No notifi
+完整回答请参考FAQ: FAQ76156
+### 问题: 如何关闭拉丁输入法(AOSP)中的拼写检查功能
+解决方案: 前言: 拼写检查是拉丁输入法自带的一个功能,我们可以在设置-》语言和输入法-》拼写检查工具 中手动进行开启和关闭. 它的用法是在任意输入界面中进行输入一个有误的单词,比如Sanvjb后按空格键,就会发现该单词的下面会出现一条 红线,此时再点击该单词,会弹出一个菜单,其中就包含词典中匹配到的几种正确写法. 分析: 该功能原生上是默认开启的,如果想要关闭的话,需要进行如下修改 diff --git a frameworks/base/services/core/java/com/android/server/TextServicesManagerService.java b/services/core/java/com/android/server/TextServicesManagerService.java index 5add88e..54e6dfd 100644 --- a/servi
+完整回答请参考FAQ: FAQ76202
+### 问题: 切换多用户到新用户模式下，蓝牙开启失败
+解决方案: 在Main Log 中查询是否存在如下异常信息: 07-07 20:50:23.207 7332 7395 E bt_userial_vendor: init_transportzzzz: Cannot open /dev/sttybt0: Permission denied 如果存在则是说明由于 /dev/sttybt0 权限不够导致的问题. 解决方案:在对应的product下面合入下面的修改验证 --- a/scx35_sp7731gea_hd/init.board.rc +++ b/scx35_sp7731gea_hd/init.board.rc @@ -36,6 +36,7 @@ on boot chown wifi shell /system/etc/connectivity_calibration.ini chmod 660 /productinfo/connectivity_
+完整回答请参考FAQ: FAQ76222
+### 问题: sc7731怎样使用OTA工具差分升级u-boot-spl-16k.bin/u-boot.bin
+解决方案: 1.默认是支持升级uboot 2.差分包升级方式支持spl升级如下修改 文件releasetools.py if OPTIONS.uboot_update: #spl.bin -- partion_spl = PartitionIncrementalUpdater("/spl", "u-boot-spl-16k.bin", target_radio_dir, source_radio_dir, spl_merge=False) ++ partion_spl = PartitionIncrementalUpdater("/spl", "u-boot-spl-16k.bin", target_radio_dir, source_radio_dir, spl_merge=True) partion_spl.AddToOutputZip(output_zip) #uboot.bin partion
+完整回答请参考FAQ: FAQ76276
+### 问题: android.hardware.camera2.cts.RobustnessTest#testBadSurfaceDimensions fail的处理方法
+解决方案: testBadSurfaceDimensions case,从android cts 5.1_r3版本开始,测试逻辑有所调整,mOrderedPreviewSizes取HAL_PIXEL_FORMAT_YCbCr_420_888里所有小于屏幕LCD像素宽高的尺寸.如果当前设备的屏幕像素宽高为720x480,则列表里最大的尺寸为720x480;如果当前设备的屏幕像素宽高为480x320,则列表里最大的尺寸为352x288. LCD尺寸不同,这个问题的fix也不同,如下case 1和case 2介绍.大部分手机都是case 1的情况. Case 1: LCD尺寸大于等于VGA(480x640),比如480x720 mOrderedPreviewSizes取HAL_PIXEL_FORMAT_YCbCr_420_888里所有小于屏幕LCD像素宽高的尺寸,mOrderedPreviewSizes列表
+完整回答请参考FAQ: FAQ76411
+### 问题: 如何修改拉丁输入法（AOSP）的默认振动时长
+解决方案: 前言: 敲击拉丁输入法(AOSP)的键盘时的震动与否,以及震动时长均可以手动设置,路径是 设置-》语言和输入法 -》Android键盘(AOSP)下,偏好设置中可以选择振动与否,高级中可以设置是否振动. 分析: 键盘振动的开启和关闭的修改如下,导入apk重置手机后生效. diff --git apackages/inputmethods/LatinIME/java/res/values/config-common.xml b/java/res/values/config-common.xml index 36fd30a..0790993 100644 --- a/java/res/values/config-common.xml +++ b/java/res/values/config-common.xml @@ -41,7 +41,7 @@ <!-- Suppress showing k
+完整回答请参考FAQ: FAQ76215
+### 问题: 7731G平台在SPL中如何操作GPIO
+解决方案: 以GPIO230为例: REG32(0x402E0000) |= 0x8; 使能GPIO GPIO230对应是TRACECLK,在芯片spec中查找pin地址为0x402a0000+0x20 REG32(0x402a0000+0x20) = 0x803A;配置成GPIO状态 在芯片spec中查找gpio地址,gpio230在GPIO224～GPIO239这一档,对应地址为0x40280700 设置GPIO data的偏移量为0x00,设置GPIO mask的偏移量为0x04,设置GPIO 输入输出状态的偏移量为0x08 REG32(0x40280700+0x4) |= 0x40; 打开GPIO mask 操作GPIO: REG32(0x40280700+0x8) |=0x40; 设置GPIO为输入状态 REG32(0x40280700) |=0x40; 设置GPIO为高电平 REG32(0
+完整回答请参考FAQ: FAQ91286
+### 问题: android.security.cts.BannedFilesTest#testNoSu FAIL
+解决方案: 12-02 16:46:35 I/20151118140652: android.security.cts.BannedFilesTest#testNoSu FAIL junit.framework.AssertionFailedError: /system/xbin/su at junit.framework.Assert.fail(Assert.java:61) at junit.framework.Assert.assertTrue(Assert.java:20) at junit.framework.Assert.assertFalse(Assert.java:34) at android.security.cts.BannedFilesTest.testNoSu(BannedFilesTest.java:65) 12-02 16:46:35 I/20151118140652: a
+完整回答请参考FAQ: FAQ76399
+### 问题: android.mediastress.cts.NativeMediaTest等三项报错
+解决方案: android.mediastress.cts.NativeMediaTest#test1080pPlay 报错 Test failed to run to completion. Reason: 'Instrumentation run failed due to 'junit.framework.AssertionFailedError''. Check device logcat for details android.mediastress.cts.NativeMediaTest#test480pPlay 报错 Test failed to run to completion. Reason: 'Instrumentation run failed due to 'junit.framework.AssertionFailedError''. Check device logcat
+完整回答请参考FAQ: FAQ76423
+### 问题: 如何开启通知栏切换输入法选项？
+解决方案: 原生android (AOSP) keyboard输入法中长按空格键是可以切换输入法的.但这个是具体输入法应用内部的实现.其他第三方输入法可能没有此功能(触宝就没有切换系统其他输入法的功能) 系统设计对于有导航栏的项目,系统是默认关闭此feature; 如要打开,请按如下代码修改: --- a/services/core/java/com/android/server/InputMethodManagerService.java +++ b/services/core/java/com/android/server/InputMethodManagerService.java @@ -1620,7 +1620,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub mImeSwitcherNo
+完整回答请参考FAQ: FAQ76415
+### 问题: 第三方闪光灯应用卡顿
+解决方案: 原因:闪光灯是由中断控制的,由于并没有真正的拍照等动作,中断有时候未必回来. 解决方法: 在kernel/drivers/media/sprd_dcam/common/dcam_v4l2.c中将如下 case CAPTURE_SET_FLASH: mutex_lock(&dev->dcam_mutex); dev->dcam_cxt.flash_status = streamparm->parm.capture.reserved[0]; mutex_unlock(&dev->dcam_mutex); DCAM_TRACE("V4L2: s_parm, status %d \n", dev->dcam_cxt.flash_status); break; 修改为: case CAPTURE_SET_FLASH: mutex_lock(&dev->dcam_mutex); if ((dev->d
+完整回答请参考FAQ: FAQ76452
+### 问题: android5.1user版本下生成corefile方法
+解决方案: 1、先修改如下: device/sprd/scx35/init.sc8830.rc @@ -204,6 +204,13 @@ on property:ro.debuggable=1 write /proc/sys/fs/suid_dumpable 1 write /sys/module/smsg/parameters/debug_enable 1 +on property:ro.debuggable=0 + mkdir /data/corefile + chmod 777 /data/corefile + write /proc/sys/kernel/core_pattern /data/corefile/core-%e-%p + write /proc/sys/fs/suid_dumpable 1 2、修改external/sepolicy/Android.mk中 109 sepolic
+完整回答请参考FAQ: FAQ76550
+### 问题: 如何获取sprdroid5.1单双多卡的信息？
+解决方案: 可以通过以下两种方法获取: 1. adb shell getprop |grep persist.radio.multisim.config 可以通过prop的值来确定当前软件支持双卡类型. 2. 也可以通过代码来获取 import com.android.internal.telephony.TelephonyProperties; /** * Returns the multi SIM variant * Returns DSDS for Dual SIM Dual Standby * Returns DSDA for Dual SIM Dual Active * Returns TSTS for Triple SIM Triple Standby * Returns UNKNOWN for others */ public String getMultiSimConifg { Str
+完整回答请参考FAQ: FAQ76674
+### 问题: AP/CP IPV6支持不匹配导致不能上网
+解决方案: 该问题通常发生在客户升级展讯大版本,NV没有相应更新导致. Slog或者 Modem Log 中搜索如下Trace 11651-16 ATC: ATC_RecNewLineSig,link_id:2,sim:0,len:40,line:AT+CGDCONT=1,"IPV4V6","internet","",0,0 //"IPV4V6" 表示 AP支持 IPV6 //"IPV4V6" standard for AP support IPV6 14013-108 ATC: ATC_RecNewLineSig,link_id:2,sim:0,len:15,line:AT+SIPCONFIG=1 14013-114 ATC: BuildInfoRsp, link_id:2, sim:0, string: +SIPCONFIG: 1, 5, 64423522, 706ef0c1, 706ef001 
+完整回答请参考FAQ: FAQ76756
+### 问题: 应用最好指定一个默认的主题（theme）
+解决方案: 主题(theme),是一整套的界面风格. 使用的主题不一样,应用界面显示会相差很远. 应用中只要有自己的背景图片,指定了文本颜色等客制化的元素,就和特定的主题(theme)绑定了. 这种情况,如果更换了主题,界面就可能显示不正常了,例如定制的文本颜色和背景接近,看不见了. 如果应用没有指定任何主题(theme),android会指定一个系统默认的主题. 使用android默认的系统主题,有可能造成较多的显示问题. android不同大版本之间,系统默认的主题是不一样的,例如android2.3.5和android4.0的默认主题相差就很远. 所以为了保证应用在各android版本上能正常显示,应用需要指定默认使用的主题,让所有没有指定主题的activity都用应用指定的主题. 应用指定默认主题的方法是,在应用的AndroidManifest.xml文件中,在<application >的属
+完整回答请参考FAQ: FAQ76713
+### 问题: 客户新建board如何挂载oem分区
+解决方案: 在device/sprd目录下, 1.scx35目录下修改配置文件device.mk、emmc/BoardConfigEmmc.mk、emmc/emmc_device.mk 将是否加载oem分区判断条件由board名更换为宏 --ifneq (,$(filter $(strip $(TARGET_BOARD)),scx35_sp7731gea_hd scx35_sp7731gea_hdr scx35_sp7731gea scx35_sp8730seea_qhd scx35_sp8730seea)) ++ifeq ($(strip $(BOARD_HAVE_OEM_PARTITION)),true) 2.在客户新建board(使用的board)目录下,加入宏定义来决定是否生成oem分区 在board_name/board-name_common.mk文件最后加入宏定义 BOARD_HAVE_
+完整回答请参考FAQ: FAQ76818
+### 问题: 应用（app）主动隐藏导航栏(hide NavigationBar)
+解决方案: 特定的应用,为了充分使用整个屏幕,可能需要隐藏状态栏和导航栏. 有如下方法可以隐藏导航栏. A. 在4.0及以上版本使用 SYSTEM_UI_FLAG_HIDE_NAVIGATION 如下代码,设置同时隐藏 status bar 和 navigation bar. int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN; getWindow().getDecorView().setSystemUiVisibility(uiOptions); 注意: 该方法只能短暂隐藏虚拟键,之后用户的任何操作都会导致虚拟键取消隐藏(任何触摸操作都会). B. 设置标志为 SYSTEM_UI_FLAG_IMMERSIVE 、SYSTEM_UI_FLAG_IMMERSIVE_STICKY两种 这是
+完整回答请参考FAQ: FAQ76845
+### 问题: 如何解决因配置SD卡热插拔引脚导致的不识别SD卡？
+解决方案: 原因:软件版本默认通过一个GPIO口来实现sd卡热插拔功能,如果硬件设计为不支持T卡热插拔,而此GPIO仍然在软件层面配置,系统可能因误判该GPIO的电平状态而发生软件移除T卡的操作. 方法一: 打开/kernel/arch/arm/boot/dts/sprd-scx35_sp7731gea.dts(自建的工程文件需要在自己工程文件下修改) 查找sdio0{}这项,并将其中的detect_gpio=<71>;这项更改为detect_gpio=<-1>;或直接注释、删去,保存后重编bootimage 方法二: Android5.1的版本上直接在代码/kernel/drivers/mmc/host/sdhost.c中的sdhost_probe()函数中,将host->detect_gpio赋值为-1. Android4.4的版本上直接在代码/kernel/drivers/mmc/host/sp
+完整回答请参考FAQ: FAQ76923
+### 问题: android4.4 再次开机如何取消系统检测提示界面
+解决方案: 实际上显示该界面时,系统正在对某些需要dex优化的应用做dexopt,这个过程需要时间.系统会对dalvik-cache下的文件进行crc校验,如crc不匹配或者检测到系统异常关机则删除dalvik-cache下的所有dex文件,导致再次开机时需要重新dexopt. 优化解决方法: 相关文件位置: frameworks/base/services/java/com/android/server/pm/PackageManagerService.java frameworks/base/cmds/app_process/app_main.cpp system/core/toolbox/crc.c 1.编译user版本WITH_DEXPREOPT设为true ,提前对app odex处理使开机时不需要dexopt build/core/main.mk ifneq (true,$(DISABLE
+完整回答请参考FAQ: FAQ77012
+### 问题: android 5.1 camera 前后摄插值方案
+解决方案: 客户需求:小尺寸的sensor想要拍照出大尺寸的照片,一般采用插值方案. 平台插值是有限制的,建议sensor最大拍照尺寸插值到目标尺寸不超过4倍,目前平台支持的最大拍照尺寸13M,所以不要超过13M. 下面使用3M sensor插值到5M拍照尺寸为例 1.后摄插值 直接修改\device\sprd\scxXX_XXX(对应工程)\Boardconfig.mk 平台默认已经配好2M,3M,5M,8M,13M的拍照尺寸,因此只需修改定义后摄尺寸的宏即可实现自动插值 CAMERA_SUPPORT_SIZE := 5M 2. 前摄插值 详见附件 前摄插值5M方案 其他插值尺寸类似 首先要在Boardconfig.mk中修改定义前摄尺寸 FRONT_CAMERA_SUPPORT_SIZE := 5M 并确认/vendor/sprd/modules/libcamera/Camera.mk中有如下定义
+完整回答请参考FAQ: FAQ76994
+### 问题: 5.1平台如何解决长按power键弹出dialog后来电，dialog不消失挡住来电UI的问题
+解决方案: 可在PstIncomingCallNotifier.java(/packages/services/telephony/src/com/android/services/telephony/)中的sendIncomingCallIntent(Connection connection)方法中作如下修改: private void sendIncomingCallIntent(Connection connection) { Bundle extras = null; mPhoneProxy.getContext().sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS) );//添加广播以关闭dialog if (connection.getNumberPresentation() == TelecomManager.PRE
+完整回答请参考FAQ: FAQ77054
+### 问题: 横屏状态，导航栏（navigationBar）无法设置透明
+解决方案: 正常情况,用如下代码,可以让窗口上的导航栏透明. Window window = getWindow(); window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION); 但是在手机横屏状态,上述代码无效,状态栏不透明. 这是为什么呢? 原来,在android原生逻辑中,手机横屏状态,禁止导航栏透明. 相关限制的代码在如下位置: 文件 NavigationBarTransitions.java (frameworks\base\packages\systemui\src\com\android\systemui\statusbar\phone): 函数 public void transitionT
+完整回答请参考FAQ: FAQ76995
+### 问题: android.hardware.cts.CameraGLTest - testSetPreviewTextureBothCallbacks Fail
+解决方案: 出问题的关键log: 08-25 05:50:22.606 23827 23844 I TestRunner: failed: testSetPreviewTextureBothCallbacks(android.hardware.cts.CameraGLTest) 08-25 05:50:22.606 23827 23844 I TestRunner: ----- begin exception ----- 08-25 05:50:22.606 23827 23844 I TestRunner: junit.framework.AssertionFailedError: Timeout waiting for new frame from SurfaceTexture! 08-25 05:50:22.606 23827 23844 I TestRunner: at junit.frame
+完整回答请参考FAQ: FAQ77176
+### 问题: camera sensor使用其他I2C接口
+解决方案: camera sensor默认使用I2C0接口,如有特殊需求,可做如下修改: (注意:因I2C的工作特性,必须确保camera需工作时,其对应的I2C总线上没有其他设备在工作.) kernel\arch\arm\boot\dts目录下对应的工程dts配置文件, 将I2C0下的sensor_main@0x3c、sensor_sub@0x21节点配置移动到需要的I2C设备节点里面,重新编译bootimage模块. i2c0: i2c@70500000 { compatible = "sprd,i2c"; interrupts = <0 11 0x0>; reg = <0x70500000 0x1000>; #address-cells = <1>; #size-cells = <0>; sensor_main@0x3c { compatible = "sprd,sensor_main"; re
+完整回答请参考FAQ: FAQ77138
+### 问题: 7701平台如何获取SIM卡GID1值
+解决方案: 由于7701平台没有封装GID1获取接口,所以只能利用SIM卡文件读写的接口MN_SIM_CRSMEx ,用异步方式来获取.参考用例如下: 1、首先调用如下接口: PUBLIC MNSIM_RESULT_E MMISIM_ReadGID1(MN_DUAL_SYS_E dual_sys) { MN_CRSM_COMMAND_TYPE_E command=MN_CRSM_READ_BINARY; uint8 p1=0; uint8 p2=0; uint8 p3=1; uint16 file_id= 28478; //6F3E file uint8 data[255] = {0}; // uint8 path_len=2; uint8 path_len=4; MNSIM_RESULT_E result =MNSIM_SUCCESS; // uint8 Sim_file_path[2]={0x7f
+完整回答请参考FAQ: FAQ77204
+### 问题: 摄像头没装好导致打开失败，重新装好后打开还是失败，必须恢复出厂设置后才能成功，如何解决？
+解决方案: 首次打开照相机时会进行sensor遍历,将identify成功的sensor索引写到一个文件(sensor.file)上.下次打开相机则只要直接读取这个文件即可,这样能提高打开相机的速度. 那么在摄像头没装好的情况下,首次打开相机进行identify遍历,由于没有匹配到适合的sensor,则sensor.file会将索引值保存为0xff.把摄像头安装好重新开机,这时从sensor.file中读到索引值为0xff,导致无法识别摄像头. 针对这种情况,在函数sns_load_sensor_type中加入索引值为0xff判断,使得一切重新开始.这样修改后,装上摄像头重新开机即可,无须再恢复出厂设置. 修改文件: idh.code/vendor/sprd/open-source/libs/libcamera/oem/src/sensor_drv_u.c 函数: sns_load_sensor_ty
+完整回答请参考FAQ: FAQ82200
+### 问题: RAW sensor 效果参数文件不生效原因分析
+解决方案: 首先是param.c导入代码介绍: isp_raw_para_update_from_file() strcpy(file_name, "/data/"); strcat(file_name, "sensor_"); strcat(file_name, sensor_name); strcat(file_name, "_raw_param.c"); //通过这几句将需要导入的文件名传给file_name fp = (FILE *)fopen(file_name,"rb"); //rb即read as binary,即以二进制文件形式读取 通过上面所述可以看出要想正常读到param.c我们保证如下两个方面: 1,我们实际push到/data下的文件要跟这边的file_name匹配; 对于不少客户,为了区分相同sensor下不同模组,会将param.c这个文件做客制化,比如额外添加模组的信息以
+完整回答请参考FAQ: FAQ77230
+### 问题: LCM driver中如何设定HS-TRAIL参数？
+解决方案: 有些客户需要修改HS-TRAIL,修改的方法如下: drivers/video/sprdfb/dsi_1_21a/mipi_dsih_dphy.c的mipi_dsih_dphy_configure函数中 0x63 TCLK——TRAIL 0X73 TDATA——TRAIL 格式如下: data[0] = 0x84; mipi_dsih_dphy_write(phy, 0x73, data, 1); data 是7位的,其中bit7是控制位,它为0时,data是默认值,默认值为0001110即0X0E bit7为1时后面的data就是可配1XX XXXX,需要去配置,公式如下: hstxthstrail = (set value + 1) x TXDDRCLKHS + Constant_time 其中bit0-6表示set value数值 TXDDRCLKHS 这个值是根据mipi data
+完整回答请参考FAQ: FAQ79425
+### 问题: 如何将下拉通知栏的宽度修改为适应屏幕宽度？
+解决方案: 请在/frameworks/base/packages/SystemUI/res/values/dimens.xml文件中,找到如下内容: <!-- Width for the notification panel and related windows --> <dimen name="match_parent">-1px</dimen> <dimen name="standard_notification_panel_width">416dp</dimen><!-- includes notification_side_padding on each side --> <dimen name="notification_panel_width">@dimen/match_parent</dimen> 将上述内容中的 <dimen name="standard_notification_
+完整回答请参考FAQ: FAQ79409
+### 问题: 7731 Android6.0 gpio控制外部IC方式闪光灯驱动如何实现
+解决方案: 需配置使用如下驱动: obj-$(CONFIG_CAMERA_FLASH_GPIO_CTRL) += flash_gpio.o 通过GPIO来控制外部IC的FLASH和CTRL脚.来控制外部IC输出电流. 需要根据硬件实现配置GPIO号(GPIO_CAM_FLASH_EN),并且将对应的pin脚配置为GPIO功能,pin脚配置在u-boot64/board/spreadtrum/sp7731xxx/pinmap-sp8830.c中配置. #define GPIO_CAM_FLASH_EN 131 int sprd_flash_on(void) { printk("sprd_flash_on \n"); gpio_request(GPIO_CAM_FLASH_EN,"cam_flash_en"); gpio_direction_output(GPIO_CAM_FLASH_EN, SPRD_F
+完整回答请参考FAQ: FAQ78191
+### 问题: 日历设置中如何修改为默认开启采用家里时区？
+解决方案: 只修改general_preferences.xml文件是不够的,需要同时修改general_preferences.xml和CalendarUtils.java文件,修改如下: --- a/res/xml/general_preferences.xml +++ b/res/xml/general_preferences.xml @@ -33,7 +33,7 @@ android:dialogTitle="@string/preferences_week_start_day_dialog" /> <CheckBoxPreference android:key="preferences_home_tz_enabled" - android:defaultValue="false" + android:defaultValue="true" //默认修改为开启 android:title="@
+完整回答请参考FAQ: FAQ77309
+### 问题: 动态壁纸滑动卡顿如何优化？
+解决方案: 动态壁纸为了功耗考虑,降低为了最低频率64M,而此时又有launcher进入,launcher其实已经是256M或者更高频率了,前面两者交替刷新,频率来回变化,都需要时间,可能会导致卡顿,即使把launcher加入最高频率应该对此问题效果也不好,建议去掉动态壁纸的限制,重新编译生成了libboost.so,具体方法如下: 1、在/vendor/sprd/open-source/libs/mali/tools/main.c中,注释掉以下语句: 125 //64M 126 { 127 .level = 5, 128 .data_list = 129 { - 130 "com.android.wallpaper.holospiral", - 131 "com.android.galaxy4", - 132 "com.android.magicsmoke", - 133 "com.android.
+完整回答请参考FAQ: FAQ77316
+### 问题: 点击设置中的选项，屏幕顶部会有一条细线
+解决方案: 点击设置中的选项,会发现经常出现一条白线,之前已经验证LCD driver部分没有问题,那问题点出在上层传下来的layer或者layer合成的问题. 首先dump下各层layer观察是否layer中存在白线的现象,dump layer的步骤为: 1、adb shell setprop dump.hwc.path /data/dump_layer/ 2、adb shell setprop dump.hwc.flag 1 3、复现现象 4、adb shell setprop dump.hwc.flag 0 5、adb pull /data/dump_layer ./ 图1 问题样机的layer截图 图2 没有问题的样机layer截图 dump下layer发现并没有白线出现,说明问题出在合成部分.对比没有出现白线的机器layer,如图1和图2所示,发现在settings上部statusbar覆盖
+完整回答请参考FAQ: FAQ77325
+### 问题: ISP1.0和ISP2.0如何控制录像帧率在一定的范围内，但高于preview的帧率
+解决方案: 1. SprdCamera3OEMIf.cpp文件setCameraPreviewMode函数如下修改 void SprdCamera3OEMIf::setCameraPreviewMode(bool isRecordMode) { struct cmr_range_fps_param fps_param; CONTROL_Tag controlInfo; mSetting->getCONTROLTag(&controlInfo); fps_param.is_recording = isRecordMode; if (isRecordMode) { fps_param.min_fps = controlInfo.ae_target_fps_range[0]; fps_param.max_fps = controlInfo.ae_target_fps_range[1]; fps_param.
+完整回答请参考FAQ: FAQ77371
+### 问题: 如何控制GPIO来输出方波
+解决方案: 如何用一个GPIO管脚产生输出方波? 1. 选择可以使用的GPIO管脚, 参考机首选开发小板上连接串口或者JTAG的GPIO引脚, 比较方便引线. 比如我选择GPIO229, 使用的是SP7731G-1_PCB_V1.0.4的参考机, 测量点如下: 也可以查看并选择当前没有被使用的GPIO: #cat /sys/kernel/debug/gpio 其中没有被列出的GPIO或者第二列属性为sysfs的GPIO方便引线均可拿来使用. 软件配置: 1. 代码修改需要在pinmap中将对应的引脚配置为GPIO功能, 例如上图中MTRST_N引脚配置如下: +{REG_PIN_MTRST_N, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(3)|BIT_PIN_NUL|BIT_PIN_SLP_WPD|BIT_P }; 更新bootloa
+完整回答请参考FAQ: FAQ77403
+### 问题: Android5.1 SC7731/SC9830 有关Camera测光权重的修改方法
+解决方案: Camera APP提供了三种测光模式:帧平均(Frame-average),中心测光(Center-weighted)和点测光(Spot-metering). 若某种测光模式下的效果不能满足客户的预期要求,可以针对不同的测光模式,修改相应的权重表来改善. 代码文件:isp_ctrl.c 代码路径:vendor/sprd/modules/libcamera/isp1.0/ 三种测光模式对应的数组: 帧平均:ISP_AEAWB_weight_avrg 中心测光:ISP_AEAWB_weight_center 点测光:ISP_AEAWB_weight_spot 数组将整个画面分成32X32块,允许设置每一块所占的权重大小. 1. 帧平均模式默认设置每一块占的权重相同. 2. 中心测光模式设置了中心10X10的区域权重最高,而靠近边角的权重较低. 3. 点测光可以设置一块8X8的矩形区域的权重.
+完整回答请参考FAQ: FAQ77498
+### 问题: Android 5.1版本的FM 模块如何打开50K搜台功能？
+解决方案: 50K搜台功能的开启会涉及到上层和Kernel层的两个开关,打开方法如下 1.上层的开关需要在功能配置文件中设置persist.surpport.50ksearch的属性值为1,如果默认的配置文件 没有这个属性,那么就需要我们进行添加和配置. 首先我们需要找到我们自己的工程,我以sp7731geaplus_dt为例子. 它对应的配置文件为 device\sprd\scx35_sp7731gea\sp7731geaplus_dt.mk 我们在该文件和它引用的文件中搜索persist.surpport.50ksearch 这个字段,如果存在这个字段我们做如下修改 -persist.surpport.50ksearch=0 +persist.surpport.50ksearch=1 如果没有这个字段,查看是否有PRODUCT_PROPERTY_OVERRIDES这个语句,如果有我们做如下修改 P
+完整回答请参考FAQ: FAQ77604
+### 问题: 5.1 toolbar标题设置滚动效果
+解决方案: MarqueeToolbar.java 将附件MarqueeToolbar.java放入应用工程中,布局文件中直接设置MarqueeToolbar如: <com.sprd.contacts.MarqueeToolbar android:layout_width="match_parent" android:layout_height="?android:attr/actionBarSize" android:background="@color/actionbar_background_color" android:id="@+id/selection_toolbar" style="@style/ContactsToolbarStyle" /> 代码中获取到toolbar,设置到actionbar中即可 final Toolbar toolbar = getView(R.id.selec
+完整回答请参考FAQ: FAQ77616
+### 问题: adb shell dumpsys SurfaceFlinger使用
+解决方案: 在日常的开发过程中,有的时候需要分析android的各个图层,包括坐标 大小 方向等信息,便于我们进行问题的分析. 一般有如下两种方法: 一 dump 图层的方法,这个方法由于每个图层都进行dump,造成系统响应变慢,可能无法抓到现象. 二 就是今天介绍的通过adb shell dumpsys SurfaceFlinger dump 出图层的信息,掌握图层的基本状态,便于进一步分析问题. 具体的信息如何获得呢? 先看使用adb shell dumpsys SurfaceFlinger 输出的信息内容 1) 各个图层的信息 + Layer 0xb7d56418 (com.android.mms/com.android.mms.ui.ConversationList) Region transparentRegion (this=0xb7d56578, count=1) [ 0, 0, 0, 
+完整回答请参考FAQ: FAQ77626
+### 问题: email无法保存不支持格式的附件，怎样才能支持？
+解决方案: 原生Email不支持保存文件到外部, 如果是不支持的文件,保存下来也没意义,因为打不开. 不支持的文件类型列表在 packages\apps\Email\emailcommon\src\com\android\emailcommon\utility\AttachmentUtilities.java public static final String[] UNACCEPTABLE_ATTACHMENT_EXTENSIONS = new String[] { // File types that contain malware "ade", "adp", "bat", "chm", "cmd", "com", "cpl", "dll", "exe", "hta", "ins", "isp", "jse", "lib", "mde", "msc", "msp", "mst", "pif", "
+完整回答请参考FAQ: FAQ77650
+### 问题: 竖屏开机改为横屏开机 NavigationBar改为底部显示
+解决方案: 竖屏开机如要改为横屏开机,NavigationBar 开机在侧面显示,如需改到底部显示.则需要如下修改 修改如下:可实现NavigationBar在底部显示 diff --git a/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java b/policy/src/com/android/internal/policy/imp old mode 100644 new mode 100755 index 4f1b848..f52e349 --- a/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java +++ b/policy/src/com/android/internal/policy/impl/PhoneWindowManag
+完整回答请参考FAQ: FAQ77674
+### 问题: 访问m.cmvideo.cn流媒体点播过程中，中来冲突事件（来电、短彩信、闹钟、提醒）后，画面静止
+解决方案: 访问m.cmvideo.cn播放的是mp4格式的视频,浏览器原生是支持直接播放的,所以不会调用系统的媒体播放器, 播放视频的逻辑就是切换到后台恢复后,视频会处于暂停状态,需要手动播放, 这是"和视频"网页播放脚本的实现,不需要修改. 客户"要求终端返回播放器界面,要求从中断时刻恢复流媒体播放"的用例,应该是feature phone时代的测试要求,不适合smart phone. 客户如果希望用例的效果,就不能使用浏览器播放mp4视频, 可以修改external/chromium_org/net/base/mime_util.cc 去掉"video/mp4"这一项, // List of proprietary types only supported by Google Chrome. static const char* const proprietary_media_types[] =
+完整回答请参考FAQ: FAQ77706
+### 问题: 长按未设置快速拨号的数字键，如何弹出是否设置该数字的快速拨号菜单
+解决方案: 1. 首先实现对话框逻辑 在src/com/android/dialer/dialpad/DialpadFragment.java文件中,添加如下代码: // Add for FastDialFragment public static class FastDialDialogFragment extends DialogFragment { private int mTitleResId; private int mMessageResId; private static final String ARG_TITLE_RES_ID = "argTitleResId";[这里是根据其他相关逻辑,做出的标题字段预留,不会对代码造成损害] private static final String ARG_MESSAGE_RES_ID = "argMessageResId"; public sta
+完整回答请参考FAQ: FAQ77719
+### 问题: CallSetting中设置电话号码时，为何输入以国家码为前缀的号码时弹出错误响应对话框
+解决方案: 在EditPhoneNumberPreference 文件中读取phonenumber值时未对号码进行"+"处理造成的,这里以中国[+86],11位电话号码[021-5076-3600]为例: 在/src/com/android/phone/EditPhoneNumberPreference.java文件中,合入如下代码: 1. 在onDialogClosed()方法中合入如下逻辑 protected void onDialogClosed(boolean positiveResult) { // A positive result is technically either button1 or button3. if ((mButtonClicked == DialogInterface.BUTTON_POSITIVE) || (mButtonClicked == DialogInte
+完整回答请参考FAQ: FAQ77743
+### 问题: 如何在非UUI版本中加入SIM卡名称编辑功能
+解决方案: 具体修改如下: packages/apps/Settings/res/xml/dual_sim_settings.xml:          android:title="@string/sel_sub_title" >
+         <intent
+             android:action="android.intent.action.MAIN"
+-            android:targetClass="com.android.phone.SelectSimCard"  //此为非UUI版本调用的界面
++            android:targetClass="com.sprd.phone.StandbySet"  //此为UUI版本调用的界面,因此改为此界面即可
+             android:targetPackage="com
+完整回答请参考FAQ: FAQ77772
+### 问题: 7731 5.1平台使用定焦YUV camera sensor时，闪光灯预闪时长怎样调整？
+解决方案: 7731 5.1平台上,如果使用定焦的YUV camera,需要自行修改代码设置闪光灯预闪时长,并根据实测结果调整. 在软件中,使用定焦YUV camera的预闪时长完全由软件逻辑控制,如按照缺省代码逻辑执行,有可能发生预闪打开时间很短就被关闭,无法体现预闪效果.缺省代码逻辑中没有增加时长设置,是因为使用YUV camera sensor时的预闪所需时间取决于sensor特性,需要根据sensor实际需要及实测结果动态调整. 最后需要注意,支持对焦的YUV camera sensor,或raw sensor(无论支持对焦与否),都不适用当前所描述的改动. 所需修改请参见以下修改,所在文件(libcamera所在路径取决于所用的基线版本): libcamera/oem/src/cmr_setting.c: static cmr_int setting_set_pre_lowflash (st
+完整回答请参考FAQ: FAQ77819
+### 问题: 5.1平台如何解决USSD交互界面，在软键盘弹出后编辑框挤压消失的原生问题
+解决方案: 修改PhoneUtils.java(packages/services/telephony/src/com/android/phone/) import android.view.View; import android.view.WindowManager; import android.widget.EditText; +import android.widget.TextView; import android.widget.Toast; import com.android.internal.telephony.Call; @@ -1037,7 +1038,8 @@ public class PhoneUtils { // get the input field. final EditText inputText = (EditText) dialogView.findViewBy
+完整回答请参考FAQ: FAQ77832
+### 问题: SD卡驱动能力如何调节?
+解决方案: 1、打开文件/u-boot64/board/spreadtrum/sp7731gea/pinmap-sp8830.c(注意客户自建工程情况不同) 2、找到关键字SD0相关的项,然后修改BITS_PIN_DS(1)中的数字为(0-15) {REG_PIN_SD0_D3, BIT_PIN_SLP_AP|BIT_PIN_WPUS|BITS_PIN_DS(1)|BITS_PIN_AF(0)|BIT_PIN_WPU|BIT_PIN_SLP_WPD|BIT_PIN_SLP_Z},//SD0_D3 {REG_PIN_SD0_D2, BIT_PIN_SLP_AP|BIT_PIN_WPUS|BITS_PIN_DS(1)|BITS_PIN_AF(0)|BIT_PIN_WPU|BIT_PIN_SLP_WPD|BIT_PIN_SLP_Z},//SD0_D2 {REG_PIN_SD0_CMD, BIT_PIN_SL
+完整回答请参考FAQ: FAQ77901
+### 问题: Wifi_BT_GPS ENGPC模式下调用流程
+解决方案: 本FAQ简要介绍ENGPC模式下,Wifi/BT/GPS测试的关键调用流程.详细流程还请参阅源代码. ENGPC是运行于AP端的可执行程序,它是一个命令和数据中转站,负责接收PC Tool发来的命令,同时会把AP和Modem返回的数据和结果返回给PC Tool,如下图示意. PC tool 《-----》AP端的ENGPC《-----》CP0/CP2 Eng_pcclient.c是ENGPC程序的核心函数.这里重点介绍wifi/BT/GPS等测试模式的调用流程. Eng_pcclient.c –> Vdiag.c:: Vdiag_wthread //Eng_pcclient.c main函数中创建Vdiag_wthread 线程,接收PC tool送来的命令 -> Eng_diag.c ::Eng_diag() -> eng_diag_user_handle() //所有diag命令在这个
+完整回答请参考FAQ: FAQ77976
+### 问题: CTS Verifier：Wi-Fi Direct Test 测试FAIL
+解决方案: (1)检查测试的cts verifier的版本是不是正确的,google官网发布的测试区包区分x86和arm,选择arm; (2)可以先测试下系统设置中的wifi直连功能是否正常,如果无法正常连接,请直接抓取下slog,请开启CP2 log,确保slog不为0kb.(记得开启*#*#83781#*#*里pc log的CP2 log) ; (3)如果第2步正常,可以开始Wi-Fi Direct Test 测试,测试步骤如下: ->测试机B:Wi-Fi Direct Test -> GO Negotiation Responder Test, ->测试机A:Wi-Fi Direct Test -> GO Negotiation Requester Test -> GO Negotiation Test (push button) ->测试机A:稍后,扫描发现测试机B,点击连接测试机B ->测试
+完整回答请参考FAQ: FAQ78054
+### 问题: CTS Verifier：BLE测试FAIL
+解决方案: BLE测试项需要有两台设备共同完成测试,一台做客户端,另一台做服务器端,我们记待测试的设备为A:BLE Client Test,辅助设备为B:BLE Server Test. 蓝牙开启状态,设备A进入BLE Client Test测试,辅助设备B进入BLE Server Test测试,BLE ServerTest 第一项中的Adding+会自动检测(如果Adding service to BLE server未检测通过[未打钩]则是问题) 接下来开始操作设备A:BLE Client Test 的每一项,从第一步开始根据用例提示,一步接一步操作,具有连续性,每操作一步成功后server端会自动勾选.第一步:添加server端的蓝牙地址后,点击Connect,Client会提示连接成功的提示,server端会自动检测是否连接,连接上则自动勾选server端的第二步.注:第四步需要等到第七步完成
+完整回答请参考FAQ: FAQ78070
+### 问题: android.hardware.cts.SensorTest#testValuesForAllSensors测试FAIL
+解决方案: (1)错误堆栈: 12-29 16:06:47.530 6205 6223 I TestRunner: failed: testValuesForAllSensors(android.hardware.cts.SensorTest) 12-29 16:06:47.530 6205 6223 I TestRunner: ----- begin exception ----- 12-29 16:06:47.530 6205 6223 I TestRunner: junit.framework.AssertionFailedError: Version must be positive version=0 Light Sensor 12-29 16:06:47.530 6205 6223 I TestRunner: at junit.framework.Assert.fail(Assert.ja
+完整回答请参考FAQ: FAQ78074
+### 问题: android.hardware.cts.SensorTest#testBatchAndFlushWithMultipleSensors测试FAIL
+解决方案: (1)错误堆栈: 12-29 16:06:11.364 5933 5950 I TestRunner: failed: testBatchAndFlushWithMultipleSensors(android.hardware.cts.SensorTest) 12-29 16:06:11.364 5933 5950 I TestRunner: ----- begin exception ----- 12-29 16:06:11.364 5933 5950 I TestRunner: junit.framework.AssertionFailedError: junit.framework.AssertionFailedError: WaitForEvents | sensor='BMA2x2 3-axis Accelerometer', samplingPeriod=0us, maxRep
+完整回答请参考FAQ: FAQ78075
+### 问题: 每次新建联系人都要选择账户，而不是记住之前的选择，怎么修改这种行为
+解决方案: 平台修改了新建联系人的流程,导致每次新建联系人都要选择账户,而不是记住之前的选择. 原生android跟其他平台的对比机则是能够记住的,要想达到这种效果,可以修改packages/apps/Contacts/src/com/android/contacts/editor/ContactEditorFragment.java文件的以下两处: 1. 将selectAccountAndCreateContact方法的以下代码解除注释 // If there is no default account or the accounts have changed such that we need to // prompt the user again, then launch the account prompt. if (mEditorUtils.shouldShowAccountChangedN
+完整回答请参考FAQ: FAQ78077
+### 问题: CTS Verifier：Widget Framework Test如何测试？
+解决方案: 该项测试为测试窗口小部件,点击"Widget FrameWork Test",弹出提示框,进入测试界面,点击确定.点击home键返回到主屏,在主屏长按,进入widgets编辑: 选择"CTS verifier",拖拽至手机空白界面: 点击"start Test"开始测试: "step1:verify dimensions"即为检查verify尺寸大小.这一步只要width,height有值即可通过,注意值的大小. "step2:verify resizeability":更改verify尺寸大小,width,heigth值会根据尺寸大小的改变而变化,width,heigth有变化则通过测试,反之不通过. "step3:verify collections"即滚动菜单中有从1到50个的List ltem.有50个则通过测试,没有50个则不能通过. "step4:verify category
+完整回答请参考FAQ: FAQ78076
+### 问题: [日历]日历设置中一周起始日的默认值如何修改？
+解决方案: 目前日历设置中一周起始日的默认值为:语言区域的默认设置,如果要修改为默认值为 周一,修改方案如下: 1、 --- a/res/values/strings.xml +++ b/res/values/strings.xml @@ -509,7 +509,7 @@ <!-- Title of popup for week start day setting--> <string name="preferences_week_start_day_dialog">Week starts on</string> <!-- DO NOT TRANSLATE --> - <string name="preferences_week_start_day_default">-1</string> + <string name="preferences_week_start_day_default">2</s
+完整回答请参考FAQ: FAQ78102
+### 问题: [日历]日历中如何修改周六周日的数字颜色（与工作日数字颜色不同）？
+解决方案: 周六周日的数字颜色值可自行修改为想要的值,修改方案如下: 1、colors.xml文件中颜色值可以自定义. --- a/res/values/colors.xml +++ b/res/values/colors.xml @@ -172,4 +172,5 @@ <color name="recurrence_bubble_text_normal">#ff737373</color> <color name="calendar_name_text_color">#FFffffff</color> + <color name="advan_blue">#0000FF</color> // 定义周六周日颜色值 </resources> 2、 --- a/src/com/android/calendar/month/MonthWeekEventsView.java +++ b/src/com/and
+完整回答请参考FAQ: FAQ78104
+### 问题: 遇到GTS 3.0_r2测试:com.google.android.xts.wifi.WifiHostTest出错，如何处理？
+解决方案: 在GTS 3.0_r2测试中如遇到 com.google.android.xts.wifi.WifiHostTest出错 com.google.android.xts.wifi.WifiHostTest -- testNetworkScoreManager fail junit.framework.AssertionFailedError: testNetworkScoreManager failed. at junit.framework.Assert.fail(Assert.java:50) 相关log 12-11 15:00:30 D/TestDevice: Uninstalling com.google.android.xts.wifi 12-11 15:00:32 I/20151118140652: com.google.android.xts.wifi.WifiHostTest
+完整回答请参考FAQ: FAQ78128
+### 问题: WIFI CTS 测试 android.net.wifi.cts.WifiManagerTest.testSignal 不通过，该如何检查？
+解决方案: WIFI CTS 测试报错,错误信息如下: Compatibility Test Package: android.net android.net.wifi.cts.WifiManagerTest -- testSignal failed junit.framework.AssertionFailedError: expected:<8> but was:<3> at android.net.wifi.cts.WifiManagerTest.testSignal(WifiManagerTest.java:369) 该问题,一般是由于对wifi信号强度及格数显示有修改引起的. 所以遇到该问题,需要以下检查: 1.检查代码中 MIN_RSSI 和 MAX_RSSI 的值 是否有过改动 2.检查调用 calculateSignalLevel() 函数时传入的参数中信号等级是否有过改动 3.检查 
+完整回答请参考FAQ: FAQ78132
+### 问题: 如何使桌面文件夹内应用显示时支持滑动？
+解决方案: res/layout/user_folder.xml
+<com.android.launcher3.Folder
+    ......
+    android:background="@drawable/quantum_panel">
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+-       android:layout_height="match_parent">
++       android:layout_height="wrap_content"
++       android:scrollbars="vertical" 
++       android:fadingEdge="vertical">
+  
+完整回答请参考FAQ: FAQ79260
+### 问题: 在设置中应用SettingsTheme主题后，如何修改Actionbar的字体颜色？
+解决方案: 请做如下修改: packages/apps/Settings/res/values/themes.xml下的
+    <style name="SettingsActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@drawable/ab_background</item>
+   --   <item name="android:textColor">@android:color/white</item>
+   ++   <item name="android:titleTextStyle">@style/acbar_titleStyle</item>
+        <item name="android:displayOptions">
+完整回答请参考FAQ: FAQ79238
+### 问题: 如何修改状态栏电池图标的高度？
+解决方案: 以将电池图标向下调整为例,可在布局文件中修改电池图标的高度: 请在frameworks/base/packages/SystemUI/res/layout/status_bar.xml文件中修改: 修改前:  <com.android.systemui.BatteryMeterView
+         android:id="@+id/battery"
+         android:layout_width="10.5dp"
+         android:layout_height="16dp"
+         android:layout_marginBottom="0.33dp"
+         android:layout_marginStart="4dip"
+         /> 修改后: <com.android.systemui.BatteryMet
+完整回答请参考FAQ: FAQ79411
+### 问题: 如何通过adb shell查看emmc各分区的名称？
+解决方案: 通过以下命令可以查看emmc各分区的名称,通过分区名称可以了解该分区所存储的image内容 命令: $ls -l /dev/block/platform/sdio_emmc/by-name/ 输出内容: lrwxrwxrwx root root 2012-01-01 08:23 boot -> /dev/block/mmcblk0p16 lrwxrwxrwx root root 2012-01-01 08:23 cache -> /dev/block/mmcblk0p18 lrwxrwxrwx root root 2012-01-01 08:23 fbootlogo -> /dev/block/mmcblk0p15 lrwxrwxrwx root root 2012-01-01 08:23 logo -> /dev/block/mmcblk0p14 lrwxrwxrwx root root
+完整回答请参考FAQ: FAQ78144
+### 问题: WIFI Direct 如果一直搜索不到设备，多长时间后停止搜索？
+解决方案: WIFI Direct 中 Device Dicsovery 阶段是 P2P 设备搜索周围其他支持 P2P 的设备的阶段, 在这个阶段内P2P 设备发送 probe_req 搜索其他设备, 并监听其他 P2P 设备发来的 probe_req ,同时回复 probe_resp 给其他P2P设备. 当收到其他P2P设备回复的 probe_resp 时,就发现了新的P2P设备. 但是如果一直没有收到其他设备发来的 probe_resp ,那本端P2P设备不会一直搜索下去,而是在搜索一段时间后将停止搜索. 这个搜索超时的时间是120秒,这个值是在framework中设置的 位于:frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p\WifiP2pServiceImpl.java 中 /* Set a two minute 
+完整回答请参考FAQ: FAQ78147
+### 问题: 7731 Android6.0 FLASH_IB控制方式驱动如何实现
+解决方案: 需配置使用如下驱动: obj-$(CONFIG_CAMERA_FLASH_COMMON) += flash_common.o 该方式通过写FLASH寄存器来控制输出的电流值. kernel\drivers\media\sprd_dcam\common\Parse_hwinfo.h #define SPRD_FLASH_LOW_VAL 0x3 #define SPRD_FLASH_HIGH_VAL 0xF #define SPRD_FLASH_LOW_CUR 110 #define SPRD_FLASH_HIGH_CUR 470 可供客户选择的寄存器配置值及其对应的输出电流值如下,最大电流输出470ma: 0x00//对应设定电流20mA 0x01//对应设定电流50mA 0x02//对应设定电流80mA 0x03//对应设定电流110mA 0x04//对应设定电流140mA 0x05//对
+完整回答请参考FAQ: FAQ78192
+### 问题: 如何添加一款对焦马达驱动
+解决方案: (1)参考平台内置ov5648驱动, 在上电时添加马达初始化. LOCAL unsigned long _ov5648_PowerOn(unsigned long power_on) { …… if (SENSOR_TRUE == power_on) { Sensor_PowerDown(power_down); // Open power Sensor_SetVoltage(dvdd_val, avdd_val, iovdd_val); _dw9174_SRCInit(2); Sensor_SetMCLK(SENSOR_DEFALUT_MCLK); …… } else { …… _dw9174_SRCDeinit(); } SENSOR_PRINT("SENSOR_OV5648: _ov5648_Power_On(1:on, 0:off): %d", power_on); return 
+完整回答请参考FAQ: FAQ78196
+### 问题: 拍照慢问题优化方法
+解决方案: (1) 对焦慢导致拍照慢 如果对焦的速度很慢,可以调试isp参数优化对焦时间. (2) 将相机默认设置为连续对焦模式解决拍照慢 在自动对焦模式下,拍照时会先去做对焦然后拍照,所有时间稍慢.将相机应用默认设置为连续对焦模式模式后,预览时会自动对焦,对焦好后点击拍照.拍照的速度会快一些. (3) 优化sleep时间 拍照过程会先stop preview,然后start preview.因此会多次调用 _xxx_StreamOn和_xxx_StreamOff, 适当的减小这两个函数中的sleep时间. (4) 减少跳帧数 修改红色部分,减小到0或1. SENSOR_INFO_T g_xxx_mipi_raw_info = { …… SENSOR_AVDD_1500MV, // dvdd 0, // skip frame num before preview 1, // skip frame nu
+完整回答请参考FAQ: FAQ78199
+### 问题: system分区大于2G的情况下如何做升级包
+解决方案: 更改build/tools/releasetools/add_img_to_target_files.py 然后再运行 "make otapackage"命令 改动下面的包含汉语解释的四行,一个是添加了参数,去掉两行,加上一行. 函数AddImagesToTargetFiles() def AddImagesToTargetFiles(filename): OPTIONS.input_tmp, input_zip = common.UnzipTemp(filename) if not OPTIONS.add_missing: for n in input_zip.namelist(): if n.startswith("IMAGES/"): print "target_files appears to already contain images." sys.exit(1) try: in
+完整回答请参考FAQ: FAQ78253
+### 问题: 5.1上OTA升级包制作时的签名key使用
+解决方案: 做升级包时user版本和userdebug版本使用的key是不一样的,user版本使用的是releasekey,userdebug版本使用的是testkey,具体做包命令是: 1 userdebug版本: 整包 ./build/tools/releasetools/ota_from_target_files –k build/target/product/ security/testkey target.zip update_full.zip update_full.zip即是OTA升级整包 差分包 ./build/tools/releasetools/ota_from_target_files -i A-target.zip –k build/target/product/ security/testkey B-target.zip A-B_update.zip A-target.zip
+完整回答请参考FAQ: FAQ78258
+### 问题: android4.4 来电先关闭系统对话框
+解决方案: 由于系统对话框优先级高于来电,所以当显示系统对话框时来电,只在状态栏上显示来电图标 如果需要全屏显示来电界面的话,需要先关闭系统对话框 合入以下修改即可: diff --git a/src/com/android/phone/CallNotifier.java b/src/com/android/phone/CallNotifier.java old mode 100644 new mode 100755 index 34a3d39..e0256ab --- a/src/com/android/phone/CallNotifier.java +++ b/src/com/android/phone/CallNotifier.java @@ -62,6 +62,7 @@ import android.util.EventLog; import android.util.Log; import 
+完整回答请参考FAQ: FAQ78420
+### 问题: 关于RGB三色灯，怎样单独调整每个灯亮度
+解决方案: 分别调整R　G　B灯的亮度方法,如下所示,(红色部分是修改的代码) kernel/drivers/leds/leds-sprd-bltc-rgb.c static void sprd_leds_bltc_rgb_set_brightness(struct sprd_leds_bltc_rgb *brgb) { unsigned long brightness = brgb->value; unsigned long pwm_duty; pwm_duty = brightness; //if(pwm_duty > 36) // pwm_duty = 36; //sci_adi_write(brgb->bltc_addr, (pwm_duty<<8)|PWM_MOD_COUNTER,0xffff); sci_adi_write(brgb->sprd_bltc_base_addr + BLTC_
+完整回答请参考FAQ: FAQ78427
+### 问题: 7731如何将armlog通过Uart1输出
+解决方案: 在pinmap中将uart1的控制权切给cp0 Code修改: 修改AP端的u_boot.bin u-boot/board/spreadtrum/sp7731gea_****/pinmap-sp8830.c {REG_PIN_CTRL2,0}, {REG_PIN_U1TXD, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(0)|BIT_PIN_NUL|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE},//BB_U1TXD {REG_PIN_U1RXD, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(0)|BIT_PIN_WPU|BIT_PIN_SLP_WPU|BIT_PIN_SLP_IE},//BB_U1RXD 修改为: {REG_PIN_CTRL2
+完整回答请参考FAQ: FAQ78431
+### 问题: 怎样将按键的eic模式改成矩阵模式
+解决方案: 一、替换和增加以下文件: u-boot64/board/spreadtrum/sp7731gea/sprd_kp.c u-boot64/board/spreadtrum/sp7731gea/key_map.h u-boot64/include/linux/keypad.h u-boot64/include/linux/key_code.h /ishare/uploadeditor/file/20160108/20160108102528_936.zip 二、GPIO 配置成按键模式: {REG_PIN_KEYOUT0, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(0)|BIT_PIN_NUL|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE},//KEYOUT0 {REG_PIN_KEYOUT1, BIT_PIN
+完整回答请参考FAQ: FAQ78428
+### 问题: 如何实现当插入USB数据线后不让弹出USB计算机连接页面？
+解决方案: 请做如下修改: 1.packages/apps/Settings/src/com/sprd/settings/SprdUsbReceiver.java中
+
+private void recoverFunction() {
+//        String mCurrentfunction = getCurrentFunction();
+//        if (UsbManager.USB_FUNCTION_MTP.equals(mCurrentfunction)
+//                || UsbManager.USB_FUNCTION_PTP.equals(mCurrentfunction)) {
+//            return;
+//        }
+
++  //        Intent sprdIntent = new Intent
+完整回答请参考FAQ: FAQ79231
+### 问题: 更换不同分辨率的LCD后，如何在DTS中配置相关内存？
+解决方案: 以kernel/arch/arm/boot/dts/sprd-scx35l_sp9830aea_5m_h100.dts为例: /* memory reserved for SMEM */ /memreserve/ 0x87800000 0x400000; /* Offset:120M, Size:5M+256K */ /* memory reserved for LTE modem */ /memreserve/ 0x89600000 0x4000000; /* Offset:150M, Size:64M*/ /* memory reserved for fb */ /memreserve/ 0x9F82D000 0x4B1000; /* 480*854*4*3, 4K alignment*/ /* memory reserved for ION */ /memreserve/ 0x9FC
+完整回答请参考FAQ: FAQ78473
+### 问题: 如何配置三键耳机的按键
+解决方案: 通过dts配置: kernel/arch/arm/boot/dts/XXXXX.dts, headset_detect { compatible = "sprd,headset-detect"; ... nbuttons = <3>; headset_buttons_media { adc_min = <0>; adc_max = <106>; code = <226>; type = <0>; }; headset_buttons_up { adc_min = <107>; adc_max = <272>; code = <115>; type = <0>; }; headset_buttons_down { adc_min = <273>; adc_max = <900>; code = <114>; type = <0>; }; }; 1. 如果dts中默认配置的只有单键,那可以按以
+完整回答请参考FAQ: FAQ78482
+### 问题: 如何在系统启动时不加载modem bin
+解决方案: VDDSIM1是一个AP、CP都用控制权的LDO,该LDO一般用于给第二张SIM卡供电,因此一般由CP控制的. 但是在某些单SIM卡方案中,VDDSIM1可能改为给LCD/TP供电,这样LDO的控制权就要交给AP了. 在AP调试LCD/TP的时候,如果发现该LDO有不受控制的情况,则可以尝试先不加载modem bin, 如果不加载modem bin后AP能够正确控制该LDO,则证明问题是处在CP侧,并进一步找CP侧人员进行分析. 不加载modem bin的方法不仅仅局限与调试VDDSIM1,所有AP、CP共用的资源出现问题时, 都可以先通过此方法来初步定为是AP还是CP的问题,找到正确的方向. 下面介绍系统启动时不加载modem bin的方法,请重点关注第3点. 1. 在uboot加载kernel之前,有一个while循环用于把各个modem bin从EMMC加载到内存中. 如代码片段一,
+完整回答请参考FAQ: FAQ78501
+### 问题: 如何打印出系统休眠时不被屏蔽的所有中断源
+解决方案: 一般情况下,如果AP被某个中断源唤醒而进行resume流程,在kernel.log中是可以通过搜索关键字wake up by来确定中断源的. 但是在遇到毛刺电平等特殊情况下,AP被唤醒后却又无法从中断控制器中读取到中断源,也就无法打印出wake up by这句log. 如果AP不断被毛刺中断唤醒引起功耗问题,同时又无法通过关键字wake up by来确定中断源, 就需要通过以下方法把AP休眠时不被屏蔽的中断源全部打印出来,然后逐个排查这些可疑的中断源. 该方法的原理是: 如果驱动程序认为在AP休眠时不要屏蔽某个中断源, 那么该驱动程序在通过request_irq()函数注册中断处理函数时需要在参数中指定IRQF_NO_SUSPEND标志位. 在AP休眠时,suspend流程中会轮询每一个中断源, 如果中断源没有指定IRQF_NO_SUSPEND标志位,则调用irq_disable()函数将
+完整回答请参考FAQ: FAQ78533
+### 问题: 当闹钟铃声设置为无，关机闹钟铃声响默认铃声
+解决方案: 将闹钟的铃声设置为无时,其铃声路径为null,关机闹钟获取到铃声路径为null时,会将铃声路径设置为一个默认铃声路径,不做静音处理,若需要修改为静音处理,只需要做如下修改即可: --- a/vendor/sprd/open-source/apps/alarm/apps/alarm/alarm.c +++ b/vendor/sprd/open-source/apps/alarm/apps/alarm/alarm.c int musicProcess(char *filename, int op) LOGE("%s:%s now one mp3 is playing, please close it first!\n", __FILE__, __func__); return -5; } - if(filename == NULL) - filename=BOOT_ALARM_DEFAULT_
+完整回答请参考FAQ: FAQ78780
+### 问题: 如何配置MIPI HS-TRAIL和CLK-TRAIL时间？
+解决方案: MIPI D-PHY的timing一般无需更改,但某些情况下LCD Vendor排查问题时可能会要求调整HS-TRAIL和CLK-TRAIL timing,此时可以通过设置MIPI D-PHY寄存器 0x63 和 0x73 来进行配置: kernel/drivers/video/sprdfb/dsi_1_21a/mipi_dsih_dphy.c #ifdef GEN_2 dsih_error_t mipi_dsih_dphy_configure(dphy_t * phy, uint8_t no_of_lanes, uint32_t output_freq) { ... data[0] = 0x83;//0x44;//0x44;//0x40; //0x40: ok for 200 clock lane lpx /*about 52ns*/ mipi_dsih_dphy_write(phy, 
+完整回答请参考FAQ: FAQ79054
+### 问题: 如何修改月视图日期和农历的字体大小
+解决方案: 修改月视图日期和农历的字体的默认最小值,参考修改如下: --- a/src/com/android/calendar/month/SimpleWeekView.java +++ b/src/com/android/calendar/month/SimpleWeekView.java public class SimpleWeekView extends View { protected static int DAY_SEPARATOR_WIDTH = 1; - protected static int MINI_DAY_NUMBER_TEXT_SIZE = 14; + protected static int MINI_DAY_NUMBER_TEXT_SIZE = 16; protected static int MINI_WK_NUMBER_TEXT_SIZE = 12; protect
+完整回答请参考FAQ: FAQ90836
+### 问题: 如何在开机阶段打印每个进程的CPU占用率
+解决方案: 虽然linux中有top命令可用于监控每个进程的cpu占用率,但是在开机阶段还无法通过adb使用shell. 如果在开机阶段发现CPU(VDDARM)功耗过高,则可以通过以下方法打印出开机阶段每个进程的CPU占用率. 其原理是仿照kernel进程调度器的代码,在每个tick的处理函数中,把"过去这个tick是由哪个进程占用的"记录下来, 并且每隔一秒钟把过去一秒钟(100个tick)内的所有进程号和进程名打印出来. 修改的代码位于kernel/kernel/sched/cputime.c +/* + * 该结构提用于记录每个tick是由哪个进程占用的. + * 因为tick是由4个Local Timer产生并通过GIC中断控制器分别绑定到4个CPU, + * 所以tick的中断处理函数是在4个CPU上并发执行的,需要使用PerCPU变量来分别统计每个CPU上的tick. + */ +str
+完整回答请参考FAQ: FAQ79060
+### 问题: 如何解决使用自动化测试小工具（AutoTester）测试camera,相机打开时会提示fail,而正常开机进入camera app却可以正常打开的问题.
+解决方案: 判断是否符合此FAQ解决范围: 请参考 FAQ75864: 如何抓取autotest测试时log ,进行操作并抓取slog 在main log中搜索"autotest" 或 "Sensor_GetInforTab"关键字,查看如下信息 " sensor_open_common: 0, start,id 1 autotest 1 " " Sensor_GetInforTab: at 1 " 如果 "autotest 1" 和 "at 1",说明当前测试工具使用auto test模式打开sensor,即用如下方式解决该问题,否则属于其他问题引起,不属于此FAQ解决范围. 对auto test介绍: auto test 值不同时,使用底层sensor驱动列表也不同,sensor驱动列表在如下目录定义(具体位置根据基线版本来定) \vendor\sprd\open-source\libs\libc
+完整回答请参考FAQ: FAQ79114
+### 问题: 如何更换系统默认字体
+解决方案: 更换系统字体可以通过修改frameworks/base/data/fonts下的两个文件 1. fonts.xml 该文件最上方的family中的字体即为默认字体.因而如果更换默认字体也需将你的字体family置于最上方.(有绿色注释<!-- first font is default --> ) 2. system_fonts.xml 按照fonts.xml中的说明,虽然从5.1起系统framework读取字体只会参考fonts.xml,但由于一些app可能是基于较老的版本,故也要一并修改system_fonts.xml.同样是第一个family为默认字体,它将会处理所有没有指定字体名称的字体请求.应将您所需要的字体family放在该文件familyset的最上方. -------------------------------------------------------------
+完整回答请参考FAQ: FAQ79037
+### 问题: 如何通过adb shell发送按键消息来进行程序调试？
+解决方案: 在触屏不能正常使用时、调试没有屏幕的机器或调试样机上没有的按键功能时可以使用下面命令来发送按键消息给Android系统进行调试. 命令:adb shell input keyevent 按键值 例如:adb shell input keyevent 82//表示发生menu按键消息给android系统 可以启动另一个命令窗口通过logcat来监控调试模块,获取调试log进行调试 常用按键消息列表: KEYCODE_CALL 拨号键 5 KEYCODE_ENDCALL 挂机键 6 KEYCODE_HOME 按键Home 3 KEYCODE_MENU 菜单键 82 KEYCODE_BACK 返回键 4 KEYCODE_SEARCH 搜索键 84 KEYCODE_CAMERA 拍照键 27 KEYCODE_FOCUS 拍照对焦键 80 KEYCODE_POWER 电源键 26 KEYCODE_N
+完整回答请参考FAQ: FAQ79151
+### 问题: 蓝牙HCI链路控制指令
+解决方案: 命令 OCF 概述 Inquiry 0x0001 蓝牙设备进入查询模式,搜索临近设备 Inquiry Cancel 0x0002 退出查询模式 Periodic Inquiry Mode 0x0003 蓝牙设备在指定周期内自动查询 Exit Periodic Inquiry Mode 0x0004 退出自动查询模式 Create Connection 0x0005 按指定蓝牙设备的BD_ADDR创建ACL链路 Disconnect 0x0006 终止现有连接 Add SCO Connection 0x0007 利用连接句柄参数指定的ACL连接创建SCO Cancel Create Connection 0x0008 Accept Connection Request 0x0009 接收新的呼入连接请求 Reject Connection Request 0x000A 拒绝新的呼入连接请求 
+完整回答请参考FAQ: FAQ79160
+### 问题: 蓝牙HCI链路策略指令
+解决方案: 命令 OCF 简介 Hold Mode 0x0001 改变LM状态和本地及远程设备为主模式的LM位置 Sniff Mode 0x0003 改变LM状态和本地及远程设备为呼吸模式的LM位置 Exit Sniff Mode 0x0004 结束连接句柄在当前呼吸模式里的呼吸模式 Park State 0x0005 改变LM状态和本地及远程设备为休眠模式的LM位置 Exit Park State 0x0006 切换从休眠模式返回到激活模式的蓝牙设备 QoS Setup 0x0007 指出连接句柄的服务质量参数 Role Discovery 0x0009 蓝牙设备连接后确定自己的主从角色 Switch Role 0x000B 角色互换 Read Link Policy Settings 0x000C 为指定连接句柄读链路策略设置.链路策略设置允许主机控制器指定用于连接句柄的LM连接模式 Write 
+完整回答请参考FAQ: FAQ79161
+### 问题: 蓝牙HCI主机控制器与基带指令
+解决方案: Set Event Mark 0x0001 使能主机过滤HCI产生的事件 Reset 0x0003 复位蓝牙控制器、链路管理器、基带链路管理器 Set Event Filter 0x0005 使能主机指定不同事件过滤 Flush 0x0008 针对指定的蓝牙句柄,放弃所有作为当前待传输数据,甚至当前是属于多个在主机控制器里的L2CAP指令的数据块 Read PIN Type 0x0009 主机读取指定主机的PIN类型是可变的还是固定的 Write PIN Type 0x000A 主机写入指定主机的PIN类型是可变的还是固定的 Create New Unit Key 0x000B 创建新的单一密钥 Read Stored Link Key 0x000D 读取存放在蓝牙控制器中的单个或者多个密钥 Write Stored Link Key 0x0011 写入存放在蓝牙控制器中的单个或者多个密钥
+完整回答请参考FAQ: FAQ79162
+### 问题: 如何通过adb 修改查看当前GPIO口状态，及修改。
+解决方案: 1.读取gpio 以GPIO90为例: 可在adb下输入lookat 寄存器地址 从spec中可以查到16 gpios for one address gpio80～gpio95 的地址为:0x4028_0280 1) 0x402A0234的bit5, bit4是否为1, 都为1,选择GPIO功能(此地址为pin SPI0_CSN地址) 2) 0x40280280 的bit 10, 当前GPIO的数据,输出1,或0 3) 0x40280284 的bit 10,dataMask,必须为1 4) 0x40280288 的bit 10, Output功能,必须为1 2如何使用adb修改gpio状态,以gpio80为例 lookat -s 0x1 40280284 //这个是打开gpio80的mask,运行读写 lookat -s 0x1 40280288 //这个是设置gpio80为输出状态; 
+完整回答请参考FAQ: FAQ89944
+### 问题: 如何修改实现插拔耳机时可以弹出提示语？
+解决方案: 定位至:/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBarPolicy.java中,增加期望的提示语,具体修改如下: 1) import android.widget.Toast;
+
+ 2) 在updateHeadSet()函数中作如下修改: private final void updateHeadSet(Intent intent) {
+        int state = intent.getIntExtra("state", -1);
+        int mic = intent.getIntExtra("microphone",-1);
+        boolean visiable = (state == 1) ? true : f
+完整回答请参考FAQ: FAQ79383
+### 问题: 如何解决当勾选联系人中的All calls to voicemail选项后，闪现来电界面问题
+解决方案: 该问题是呼叫无应答直接转语音信箱逻辑,处理不及时造成的,可以通过添加如下方案完成:来电时,通话解面创建前,phone进程中的CallNotifier会对来电信息进行处理,触发相关逻辑,如:直接挂断、显示来电界面等.方案通过获取来电信息缓存实体,直接挂断电话,语音信箱业务自动触发,可以完成类似无条件转接至语音信箱的逻辑 在com/android/phone/CallNotifier.java文件中做如下处理 onNewRingingConnection(AsyncResult r) { PhoneUtils.hangupRingingCall(ringing); return; } + final CallerInfoCache.CacheEntry entry = + mApplication.callerInfoCache.getCacheEntry(c.getAddress()); +
+完整回答请参考FAQ: FAQ79276
+### 问题: 支持USB摄像头（uvc标准），软件需要怎么配置
+解决方案: 支持UVC需要做如下配置: (1)Kernel 有效的修改打开kernel defconfig的UVC的编译的宏,如下: diff --git a/arch/arm/configs/spxxx-dt_defconfig b/arch/arm/configs/spxxx_pad_hd-dt_defconfig index cfd492b..5c99e1a 100644 --- a/arch/arm/configs/spxxx-dt_defconfig +++ b/arch/arm/configs/spxxx-dt_defconfig @@ -1895,13 +1899,80 @@ CONFIG_VIDEO_V4L2=y # CONFIG_VIDEO_FIXED_MINOR_RANGES is not set CONFIG_VIDEOBUF_GEN=y CONFIG_VIDEOBUF_VMAL
+完整回答请参考FAQ: FAQ81345
+### 问题: 什么是wireless extensions（wext）接口
+解决方案: Linux无线驱动接口有两种标准接口,wext(Wireless Extensions无线扩展接口)和nl80211接口. 在linux-2.6.18版本之前,linux内核代码中并没有提供无线驱动接口以及无线驱动协议栈.wext是由个人开发者定义的一套供用户层软件访问无线驱动以及驱动事件通知用户层的接口.当时无线驱动的协议栈软件比较多,如开源项目hostap,madwifi,mac80211,ieee80211协议栈以及无线芯片厂商自己实现的协议栈,基本都使用wext接口.wext接口也逐渐成为一套标准的接口.在linux-2.6.18版本,wext和mac80211协议栈并入内核,成为linux kernel的一部分.wext接口随着802.11协议从802.11,802.11b,802.11a/g的发展,,其API也不断增加,伴随着就是其wext的版本号不断变化. wext的接口实现
+完整回答请参考FAQ: FAQ79299
+### 问题: 如何通过Sim卡国家码设置系统语言
+解决方案: 当手机插入Sim卡会走到MccTable中更新系统语言,此时可以通过修改getLocaleForLanguageCountry方法设置系统语言 修改思路为: 1. 先判断是否是第一次开机,如果是第一次开机则正常流程走后面的获取mcc国家码,进行更新 2. 如果不是第一次开机,则查看当前系统语言和Sim卡语言是否匹配,不匹配则强制更新,匹配则return,不进行语言更新 具体的修改方法如下: diff --git a/src/java/com/android/internal/telephony/MccTable.java b/src/java/com/android/internal/telephony/MccTable.java index 95f9943..4e0cc54 100644 --- a/src/java/com/android/internal/telephony/MccT
+完整回答请参考FAQ: FAQ79332
+### 问题: 如何在不插卡不联网情况下不更新时区
+解决方案: 由于不插卡和不联网情况下,手机还是会连接基站,通过基站获取信息,更新时区等信息 所以现在在不插卡和不联网的情况下需要设置不更新时区,可以按照如下修改: 1. 首先判断当前手机是否有Sim卡: private boolean simAttach(){
+        TelephonyManagerSprd tm = (TelephonyManagerSprd)TelephonyManager.from(this);
+        for (int i = 0; i < tm.getPhoneCount(); i++) {
+            if(tm.hasIccCard(i)){
+                return true;  
+            }
+        }
+        return false;
+} 2. 修改GsmServic
+完整回答请参考FAQ: FAQ79335
+### 问题: 如何在TelephonyManager中添加公共接口
+解决方案: 在TelephonyManager添加接口有三个步骤: 1. frameworks\base\telephony\java\android\telephony\TelephonyManager.java中定义接口方法名字和方法体,如: public int IWillDoSomeThing(int phoneId) {
+    try {
+        int number = getITelephony().IWillDoSomeThing(phoneId);
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+} 2. frameworks/base/telephony/java/com/android/internal/telephony/ITelephony.
+完整回答请参考FAQ: FAQ79338
+### 问题: 7731 5.1平台 如何更改耳机通话中，耳机中间键的功能
+解决方案: 请参考如下进行修改: CallsManager.java(packages/services/Telecom/src/com/android/server/telecom) 该类中的onMediaButton(int type)方法定义了headset中间按键长按和短按动作的处理,示例代码如下: boolean onMediaButton(int type) { if (hasAnyCalls()) { if (HeadsetMediaButton.SHORT_PRESS == type) { Call ringingCall = getFirstCallWithState(CallState.RINGING); if (ringingCall == null) { mCallAudioManager.toggleMute(); return true; } else { ringingC
+完整回答请参考FAQ: FAQ79357
+### 问题: 7731 5.1平台如何在来电小窗口content text中添加归属地和来电用户的姓名
+解决方案: 请参考如下修改: StatusBarNotifier.java(packages/apps/Incallui/src/com/android/incallui/) 修改该类下的buildAndSendNotification方法,如下: final int contentResId = getContentString(call); final String contentTitle = getContentTitle(contactInfo, call); String contentTextLocation=contactInfo.location; String contentTextName=contactInfo.name; if(TextUtils.isEmpty(contentTextLocation)) contentTextLocation="Unknown"; else
+完整回答请参考FAQ: FAQ79358

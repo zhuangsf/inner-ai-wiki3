@@ -1,0 +1,300 @@
+### 问题: 用FACTORYDOWNLOAD下载软件后手机里默认的IMEI如何修改？
+解决方案: 默认的IMEI号是在NV里设置好的,跟工具无关,如果需要修改,可以在NV_type---NV_IMEI设置.
+参考FAQ: FAQ106961
+### 问题: 手机本地"/sdcard/"、"/storage/sdcard0/"、"/storage/emulated/0/"这些目录有什么关系?
+解决方案: 1、内部存储中的所谓内置T卡,其实是data分区下的一部分: "/storage/emulated/" 挂载到 "/data/media" 2、android 4.2开始支持多用户特性: 默认用户的sdcard目录: /storage/emulated/0 新建的第一个用户的sdcard目录: /storage/emulated/10 新建的第二个用户的sdcard目录: /storage/emulated/11 3、外置T卡文件系统目录在"/mnt/media_rw/XXXX",挂载到 "/storage/XXXX" 4、"/sdcard/"、"/storage/sdcard0/"都是之前android版本的挂载点,为了向前兼容程序,这些挂载点都保留了,都指向/data/media,也就是其目录下内容和/storage/emulated/0下一样.
+参考FAQ: FAQ106970
+### 问题: 展锐Android 4.4平台针对入网安全能力测试的支持能力说明
+解决方案: 展锐Android 4.4平台可以支持入网安全能力4级,基于SC9830取得泰尔实验室4级认证报告.
+参考FAQ: FAQ107186
+### 问题: 使用32K-Less方案，拔掉主电池后，RTC是否还可以继续工作？
+解决方案: 32K-Less方案,拔掉主电池后,RTC时钟由正常的26M分频切换到PMU内部RC振荡器,RTC时间可以正常工作.但,前提是VBAT_BK必须持续供电.
+参考FAQ: FAQ107188
+### 问题: 什么是dm-verity？
+解决方案: 作为verify boot的一部分,用来保护system和vendor分区的完整性. 确保system和vendor分区在被恶意修改后,校验时能够发现错误,分区就会挂载失败,从而不会运行非法代码,保护手机安全. google关于dm-verity的介绍地址:https://source.android.com/security/verifiedboot/dm-verity
+参考FAQ: FAQ107172
+### 问题: Android8.1中，About Phone界面IP Address是什么网络的IP地址？
+解决方案: 1,关于手机中IP地址菜单的具体位置: Settings——>About Phone——>Status——>IP Address 2,关于手机中IP地址显示的是什么网络的IP地址: 此处的IP地址显示的是当前手机正在使用的网络的IP地址,如果当前使用移动网络,则IP地址是移动网络的IP地址, 如果当前使用的是WiFi网络,则IP地址是WiFi网络的ID地址. 3,当WiFi打开或者关闭的过程中,会出现网络的切换,对应的IP地址也会发生变化,属于正常现象.
+参考FAQ: FAQ106991
+### 问题: Android8.1中，开源许可声明内容对应的文件位置？
+解决方案: Android8.1中,开源许可声明内容对应的文件是NOTICE.html, 它是各个模块的开源许可声明的内容拼接成的一个文件,在手机的如下位置: /data/user_de/0/com.android.settings/cache/NOTICE.html
+参考FAQ: FAQ106992
+### 问题: Simba R5.0.0001校准之前怎么增加写入SN？
+解决方案: 见如下详细描述:
+参考FAQ: FAQ106994
+### 问题: 【移动DM2.0】休眠测试，休眠关闭后如何恢复DM上报？
+解决方案: 休眠测试,休眠关闭后,需要通过重启或者热插拔重新触发DM上报.
+参考FAQ: FAQ107009
+### 问题: Android 8.1 Camera CTS testImmediateZoom
+解决方案: 做了插值后,对放大能力有更高的要求,再测试testImmediateZoom时,也会要求对sensor图像做放大处理,插值太大时,会导致数据不返回,这时可以把zoom功能关闭来解决. 修改vendor/sprd/modules/libcamera/<>/SprdCamera3Setting.h 把MAX_DIGITAL_ZOOM_RATIO这个宏的值改为1.0f来解决
+参考FAQ: FAQ107017
+### 问题: 如何屏蔽NFC设备节点
+解决方案: 进行NFC功能调试时,有时需要屏蔽NFC的设备节点,只需修改dts文件,配置NFC设备status状态为disabled即可.
+参考FAQ: FAQ107025
+### 问题: SC7731E平台哪些外部中断（EIC）支持async input模式？
+解决方案: 在SC7731E平台,EXTINT0-7都是仅支持dbnc,EXTINT8-15是支持多个sync mode的. 指纹需要使用支持async input模式的中断以便于深睡唤醒,所以指纹识别的外部中断可以使用EXTINT8-15对应的引脚.
+参考FAQ: FAQ107173
+### 问题: 什么是CCSA入网安全能力？
+解决方案: CCSA(China Communications Standards Association)入网安全能力技术要求是指由中国通信标准化协会提出的移动智能 终端安全能力技术要求,对应的通信行业标准为:YD/T 2407-2013《移动智能终端安全能力技术要求》. 该技术要求将移动智能终端的安全能力自低到高划分为5个等级(最低等级1级,最高等级5级),在不同的等级中分别定义了 移动智能终端需要支持的安全能力集合,移动智能终端必须支持该集合中所约束的所有安全能力才能标识为该级别. 在现阶段,CMCC要求Level 4,CUCC要求Level 1,CTA要求Level 1并鼓励厂家主动提高安全能力级别.
+参考FAQ: FAQ107177
+### 问题: SC9820E（KaiOS）平台是否支持NFC
+解决方案: SC9820E(KaiOS)平台是支持NFC功能的. 参考设计方案分别为三星(SEN81DGX)和NXP(PN80S).
+参考FAQ: FAQ107063
+### 问题: 【移动DM2.0】VoLTE开关业务无法配置该如何处理？
+解决方案: 1、检查VoLTE开关业务配置界面输入的IMEI号是否是移动SIM卡对应卡槽的IMEI号,VoLTE配置业务仅对移动SIM卡有效; 2、根据IMEI号查看是否相应心跳数据中有volte数据上报; 3、由于移动测试网站VoLTE开关业务配置界面由定时任务同步数据,该任务每一小时启动一次,所以请在心跳正常上报一小时后再进行相关查询配置.
+参考FAQ: FAQ107075
+### 问题: SC9820E对Memory容量最小要求多大？
+解决方案: 如果不做针对性的裁剪工作: 1. 当使用MOCOR操作系统时,Flash最小要求4Gb(512MB), DDR最小要求2Gb; 2. 当使用KAIOS操作系统时,Flash最小要求32Gb(4GB), DDR最小要求4Gb;
+参考FAQ: FAQ107158
+### 问题: 展锐Android 6.0平台针对入网安全能力测试的支持能力说明
+解决方案: 展锐Android 6.0平台可以支持入网安全能力4级,基于SC9832A取得泰尔实验室4级认证报告.
+参考FAQ: FAQ107212
+### 问题: 如何确认dm-verity功能是否已经开启？
+解决方案: dm-verity功能仅在user版本开启,为了方便userdebug版本的bug调试,在userdebug版本上没有开启该功能. 查看system和vendor分区的挂载方式: user版本,adb shell mount命令后查看system和vendor分区的挂载方式为dm,参考如下: /dev/block/dm-0 on /system type ext4 (ro,seclabel,relatime,data=ordered) /dev/block/dm-1 on /vendor type ext4 (ro,seclabel,relatime,data=ordered)
+参考FAQ: FAQ107176
+### 问题: 低电时如何禁止闪光灯
+解决方案: 在device/sprd/<>/system.prop文件中添加如下变量 persist.sys.cam.battery.flash=15 15代表手机电量低于15%就会关闭闪光灯功能 贵司也可以根据自己的需求调整这个数值
+参考FAQ: FAQ107145
+### 问题: 如何确认指纹sensor的spi口？
+解决方案: 看原理图.根据指纹sensor的SPI的CLK或CS,能找到与之相连的SPI口.
+参考FAQ: FAQ107168
+### 问题: 平台浏览器保存离线网页功能，离线网页保存在哪个路径下？
+解决方案: 1. 平台浏览器保存离线网页功能,离线网页保存路径: 保存在外部存储空间(不一定指可移除的SD卡) /sdcard/Android/data/com.android.browser/snapshotpage/ 等价于: /storage/self/primary/Android/data/com.android.browser/snapshotpage/ 因为: lrwxrwxrwx 1 root root 21 1970-01-01 08:00 sdcard -> /storage/self/primary 2. 代码中保存离线网页的入口函数为: Controller.saveWebArchive();
+参考FAQ: FAQ107194
+### 问题: 如何确认是否开启了FBE功能？
+解决方案: 1、Settings -> Security & location -> Encryption & credentials -> Encrypt phone 菜单项显示Encrypted 2、getprop 命令查看磁盘加密相关属性值 [ro.crypto.state]: [encrypted] [ro.crypto.type]: [file]
+参考FAQ: FAQ107189
+### 问题: WCDMA测试手机信号显示有异常
+解决方案: cell power对应WCDMA的信号强度RSSI,而手机设置显示的是RSCP而不是RSSI!例如当设置仪器cell power为-60dbm时,说明信号强度RSSI=-60dbm,而rscp=Ec/No+RSSI,如果ECN0_2 = -3,则rscp=Ec/No+RSSI= -63,那么看手机设置下显示信号强度为-63,这种显示没有异常.
+参考FAQ: FAQ107199
+### 问题: 展锐Android 5.1平台针对入网安全能力测试的支持能力说明
+解决方案: 展锐Android 5.1平台可以支持入网安全能力4级,基于SC9830取得泰尔实验室4级认证报告.
+参考FAQ: FAQ107209
+### 问题: 展锐Android 8.1平台针对入网安全能力测试的支持能力说明
+解决方案: 展锐Android 8.1平台可以支持入网安全能力5级(最高级),基于SC9850取得泰尔实验室5级认证报告.
+参考FAQ: FAQ107215
+### 问题: WCDMA当前驻留小区A信号强度低于同频小区B，为何不立刻切换到小区B？
+解决方案: 当前驻留小区A信号强度低于同频小区时,并不立刻切换到小区B,只有驻留某小区的信号强度低于网络给的门限值,并且持续一段时间才会切换到小区B,这样可以防止乒乓效应,另外只有小区B的RSCP和Ec/No达到驻网门限才可能切换到小区B,只有小区B的Srxlev和Squal都大于0时才会切换到B小区,以下是RSCP门限是-119以及Ec/No门限-20时的Srxlev和Squal的计算公式: Srxlev = Qrxlevmeas -119 - (Q_Rxlev_Min -60 * 2 + 1)-max(UE_TXPWR_MAX_RACH ?P_MAX, 0)0 Squal = Qqualmeas -20 - 2 * MinCellQualityLevel -15
+参考FAQ: FAQ107214
+### 问题: 手机连接了蓝牙耳机和线控耳机，播放音乐时声音从哪个设备输出？
+解决方案: 如果手机连接了蓝牙耳机,又插入了线控耳机,用户再去播放音乐,此时音频输出和蓝牙耳机/线控耳机的连接顺序有关,如果两者都连接了,声音总是从最近连接的那个设备输出.
+参考FAQ: FAQ107224
+### 问题: SC9832E、SC9820E、SL8541E、SL8521E平台如何设计双MIC阵列和回采信号？
+解决方案: 方案: 1. 选择第三方4路ADC芯片,2路MIC分别接2路ADC输入,1路参考信号来自耳机左右声道混音(喇叭功放输入) 接一路ADC输入. 2. ADC芯片与CPU通过1组I2S信号传输
+参考FAQ: FAQ119470
+### 问题: 为什么电池参数测试的内阻比电池厂提供的大很多
+解决方案: 电池厂商提供的数据为交流内阻法得到的结果,该方法反映的是电池的欧姆阻抗,而不能反映电池极化现象.主要适用的场合是电池功能测试和放电电流小于0.1C的场景. 而我们采用的方法是使用直流内阻法,因为在大电流工作的状态下,会引起电池的电化学极化内阻和浓度差极化内阻,这部分内阻在大电流场景下可能相当于交流内阻,甚至可能会大数倍. 整机环境放电电流一般都会大于0.1C,所以为了后期电量显示精度,直流内阻法显然更加合适.
+参考FAQ: FAQ107245
+### 问题: 6531E SIM卡的GCF case(27.17.1.5.7 & 27.17.1.5.8)失败问题的解决方法
+解决方案: 失败的case: 27.17.1.5.7 27.17.1.5.8 失败原因: 因为我们同时需要支持USIM卡,又要过SIM卡的GCF case,这两个要求有冲突. 解决方法: 1)通过AT命令发送 AT+SPUSIMTEST=1 然后重新开机过case即可. 2)修改PICS,将A.25/130设置成yes,这两个case就不用过了. A.25/130目前我们6531E 的PICS设置是No.
+参考FAQ: FAQ107258
+### 问题: 在android.bp编译文件中如何增加链接库
+解决方案: 在调试第三方驱动过程中,有时需要增加第三方的库文件. 以下黄色部分code是增加静态链接库libsmartir_consumerir_v_2_0_2.a的方法; 绿色部分code是增加静态链接库liblog.so的方法: cc_library_shared { name: "consumerir.default", relative_install_path: "hw", proprietary: true, srcs: ["consumerir.c"], header_libs: ["libhardware_headers"], static_libs: ["libsmartir_consumerir_v_2_0_2"], static_executable: true, shared_libs: [ "liblog", ], }
+参考FAQ: FAQ107260
+### 问题: 支持volte的产品，如何设置紧急电话只走cs域？
+解决方案: 支持volte的产品,紧急电话(ECC)可以通过PS也就是volte进行PS呼叫,也可以CSFB进行CS呼叫,由于某些运营商支持volte但是不支持PS ECC, 故方案兼容,需要配置ECC仅仅使用CSFB 将nv中的PS_NV_PARAMS\NV_PARAM_TYPE_MN_CFG\volte_feature_switch 设置为0x23既可以仅仅使紧急电话都走cs
+参考FAQ: FAQ107343
+### 问题: "AGPS辅助定位"的星历数据下载消耗流量多吗？
+解决方案: 很少,几K就可以了
+参考FAQ: FAQ107355
+### 问题: 如何根据armlog判断终端是否有调度CBS数据接收？
+解决方案: 可以在trace信息中搜索关键字"WL1C_MSG_CBS_START_IND",如果看到如下trace ,则表示物理层在调度CBS接收,其中CBS TYPE为0就表示接收的类型为CBS,若为2则表示在接收BCH. srch: recvd WL1C_MSG_CBS_START_IND in 3, CBS TYPE 0
+参考FAQ: FAQ107354
+### 问题: 什么是AGPS辅助定位
+解决方案: AGPS辅助定位方式,是通过网络下载当前地区的可用卫星星历数据,并将之发送给定位模块,定位模块只搜索特定的卫星,从而提高搜星和定位速度.
+参考FAQ: FAQ107361
+### 问题: AGPS有定位功能吗
+解决方案: 没有. AGPS作用是下载定位模块所需的辅助数据,如星历等;AGPS本身没有定位功能,实现定位还需要靠定位模块.
+参考FAQ: FAQ107363
+### 问题: 没有GPS芯片，能否使用"AGPS辅助定位"实现定位
+解决方案: 当然不行. "AGPS辅助定位",只是辅助加速定位,而不是一项独立可用的定位服务.
+参考FAQ: FAQ107364
+### 问题: 6531E如何通过arm log查看当前网络状态及信号强度？
+解决方案: 查看当前网络状态可以搜索消息APP_MN_NETWORK_STATUS_IND,其中参数plmn_status=1表示注册上GSM网络; 3 注册上GSM网络和GPRS网络;4为 紧急呼叫状态;0为no service 状态.如下图: 信号强度可以查询消息APP_MNSCELL_RSSI_IND, 其中参数rxlev表示当前服务小区的信号强度.rxlev-110即为dbm为单位的信号强度.如下图:
+参考FAQ: FAQ107268
+### 问题: 6531C/6531E 软件怎样实现卡槽SIM1跟SIM2进行调换？
+解决方案: 请修改NV.nv_type\NV_SIM_CFG\sim_slot_cfg,默认值是0x10203,修改成0x01000203即可.
+参考FAQ: FAQ107366
+### 问题: 为什么有时候手机定位还是很慢
+解决方案: 信号问题、环境问题、基带问题等,一切皆有可能.
+参考FAQ: FAQ107369
+### 问题: 既然已有GPS，为什么还要Beidou
+解决方案: GPS的L1、L5是民码,大众可用. 中美科技战升级之际,芯片已被扼住咽喉,定位系统这一"隐私"岂可掌握在他人之手?
+参考FAQ: FAQ107373
+### 问题: GNSS和GPS什么关系？
+解决方案: 所有的卫星定位系统都是可以称之为GNSS,GPS是GNSS的子集.
+参考FAQ: FAQ107379
+### 问题: 6531E平台PDP超时时间及重试机制是什么?
+解决方案: APP调用激活PDP接口后,MS向NW发送激活PDP请求,并同时启动定时器,时间是30秒.时间超时后都没有收到网络的响应的话,就会重传,最大重传次数是4次.即发送5次PDP激活请求都没有响应的话,底层会向上层发送PDP激活失败的消息. 去激活请求,超时时间8秒,最大重传次数4次.
+参考FAQ: FAQ107380
+### 问题: SC9820E/SC9832E 三选二热插拔卡座检测管脚接法。
+解决方案: 三选二热插拔卡座,此卡座支持2张SIM卡或者1张SIM卡加1张T卡,只有一个检测管脚.此检测管脚要同时接到3个固定管脚SC9820E/SC9832E A12 (BUA_SIM1_DET)//SC9820E/SC9832E A14 (BUA_SIM2_DET)//SC9820E/SC9832E AB28 (BUA_TF_DET);同时注意有的卡座有烧卡风险,T卡电源要增加开关电路,具体请参考《SPRF Smart Phone TF Hot Plug Design_Guide_v1.0》.
+参考FAQ: FAQ107408
+### 问题: SC9863A 三选二热插拔卡座检测管脚接法。
+解决方案: 三选二热插拔卡座,此卡座支持2张SIM卡或者1张SIM卡加1张T卡,只有一个检测管脚.此检测管脚要同时接到3个固定管脚SC9863A A12 (BUA_SIM1_DET)/SC9863A A14 (BUA_SIM2_DET)/SC9863A AB28 (BUA_TF_DET);同时注意有的卡座有烧卡风险,T卡电源要增加开关电路,具体请参考《SPRF Smart Phone TF Hot Plug Design_Guide_v1.0》. .
+参考FAQ: FAQ107409
+### 问题: SC7731E三选二热插拔卡座检测管脚接法。
+解决方案: 三选二热插拔卡座,此卡座支持2张SIM卡或者1张SIM卡加1张T卡,只有一个检测管脚.此检测管脚要同时接到3个固定管脚SC7731E K4 (BUA_SIM1_DET)/SC7731E K3 (BUA_SIM2_DET)/SC7731E K1 (BUA_TF_DET);同时注意有的卡座有烧卡风险,T卡电源要增加开关电路,具体请参考《SPRF Smart Phone TF Hot Plug Design_Guide_v1.0》.
+参考FAQ: FAQ107415
+### 问题: 是否可以通过手机某个菜单修改kernel log level?
+解决方案: 可以通过以下步骤修改: #1 输入暗码进入EngineerMode(样机上的暗码是*#*#83781#*#*) #2 进入Debug&Log页面, 可以看到有个Kernel Log Level开关. 默认是关闭状态,代表log level 1. 如果把开关设置为开, 则可以把kernel log level修改为7. 注:如果看不到这个开关菜单, 可以升级大版本, 或者提CQ来解决.
+参考FAQ: FAQ107422
+### 问题: 如果某个项目不支持GPS，对应的晶体类型如果是选择TSX的话，NV中需要配置成DCXO。
+解决方案: 如果某个项目不支持GPS,但是使用的晶体类型如果是TSX的话,在NV中需要把晶体类型配置成DCXO,具体配置路径如下: -RF_init_common -AFC_cali_config -Crystal_type_config =0x1
+参考FAQ: FAQ107435
+### 问题: IMS承载建立失败的常见原因
+解决方案: 1. 网络不支持IMS功能,UE请求的PDN连接被拒,或者网络激活的并不是IMS承载 2. 终端未正确配置IMS承载APN,需要按照运营商规范设置;
+参考FAQ: FAQ107470
+### 问题: Android浏览器有哪些插件，这些插件分别实现了哪些功能？
+解决方案: 1. Android浏览器插件的目录: vendor/sprd/plugins/packages/apps/SprdBrowser/addons$ ls CMCCAddon CUCCAddon Custom DrmAddon StorageAdd 2. Android浏览器插件的功能: 这些包都是sprd基于android原生浏览器实现的扩展功能,这些模块启动后都跑在Browser进程中. CMCCAddon : 主要是CMCC的入库需求,如主页,useragent,搜索引擎等 CUCCAddon : 主要是CMCC的入库需求,如主页,useragent,搜索引擎等 DrmAddon: 用于实现drm功能 StorageAdd: 和存储相关的功能插件 Custom: 导航页功能插件
+参考FAQ: FAQ107480
+### 问题: Android浏览器如何将页面导航页设置为默认主页？
+解决方案: 将导航页设置为默认主页在\vendor\sprd\platform\packages\apps\SprdBrowser\res\values\string.xml中 将主页homepage_base字段设置为content://com.android.browser.site_navigation/websites: <string name="homepage_base" translatable="false"> content://com.android.browser.site_navigation/websites</string>
+参考FAQ: FAQ107481
+### 问题: 什么是Direct Boot模式？
+解决方案: Android设备在开机第一次解锁前处于Direct Boot模式,用户解锁后便退出该模式,直至设备重启. 为支持此模式,系统为数据提供两个存储区域: 凭据加密存储:默认存储区域,仅在用户解锁设备后可用. 设备加密存储:在Direct Boot模式和用户解锁设备后均可使用. Direct Boot模式是设备安全性与便利性的折中,在保护用户数据的同时确保用户不会错失重要通知.在这种模式下,操作系统是正常运行的,但对应用私有数据的访问会受到限制,并且只有升级到Direct Boot award的应用可以运行.
+参考FAQ: FAQ107484
+### 问题: 应用如何请求在Direct Boot模式下运行？
+解决方案: 应用必须先向系统注册其组件,然后才能在Direct Boot模式下运行或访问设备加密存储. 应用通过将组件标记为"加密感知"来注册系统. 若要将某个组件标记为加密感知,需要在manifest中增加directBootAware="true"属性. 为了实现系统应用的快速迁移,可以在应用级别设置属性,defaultToDeviceProtectedStorage属性仅适用于系统应用;directBootAware属性则适用于所有应用.
+参考FAQ: FAQ107486
+### 问题: 在泰尔实验室送测入网安全能力测试时出现失败项后怎么办？
+解决方案: 出现失败项后请参考如下步骤: 1、请打开LOG选项后抓取问题场景对应的LOG: 打开方法:权限配置应用中勾选LOG开关. 2、请提交CQ,模块选择:Android_CCSA/FDE/DmVerity
+参考FAQ: FAQ107796
+### 问题: 关机状态下紧急呼叫的流程是什么？
+解决方案: AP先开启modem,然后下发ATD打电话,此时有两种可能,已经搜到网了,modem正在normal attach的过程中,此时会终止normal attach,进行紧急attach,在紧急attach的过程中会建立紧急的PDN, 随之发送invite到网测,建立语音的专有承载,把电话打起来. 还有另外一种场景,此时normal attach已经成功,则直接建立紧急PDN,后续流程跟第一种方式类似.
+参考FAQ: FAQ107489
+### 问题: 仪器时连接不上
+解决方案: 1. 可能是开机驻留到了现网(非仪器网络)上导致attach被现网拒绝 2. 或者是硬件没有校准导致无法驻留到仪器小区的频段 请检查与仪器的cable线连接是否正常,硬件是否完成校准
+参考FAQ: FAQ107548
+### 问题: 打一路volte call需要哪些承载？
+解决方案: 一般需要三路(除非有些营运商支持在attach过程中建立ims承载),一路是attach过程中的数据默认承载, 另一路是attach完成的时候会建立ims的信令承载, 另外打起电话的时候会建立语音的专有承载(该承载在打电话的起始时候建立,在电话结束去激活),另外两路在整个attached期间保持.
+参考FAQ: FAQ107490
+### 问题: SRVCC和CSFB区别?
+解决方案: (1)SRVCC:由于网络环境变化,4G信号衰减较快,当信号强度衰减到门限值(网络一般设定-115dbm)时,已经不能很好地支持VOLTE电话时,终端将测量值报给网络,由网络发起切换,终端和网络同步将呼叫从PS域切换到CS域. (2)CSFB:由于VOLTE电话发生失败,为了提高呼叫成功率,到CS域下对呼叫重新进行尝试.或4G终端不支持VOLTE呼叫,在进行呼叫时直接回落到CS域进行呼叫.
+参考FAQ: FAQ107590
+### 问题: NemoG是否支持SAIC功能，是否有证据证明
+解决方案: NemoG平台支持SAIC算法.全称是Single antenna interference cancellation. SAIC技术是和集成到终端内的 天线一起工作的, 它基于GSM调制 原理, 可以尽可能地抑制来自不同干 扰源的同频/邻频信道干扰. SAIC算法是对同频造成的干扰的优化,是接收机性能的提升,在实网下确实是看不出来区别的.一般有标准的GCF case14.4测试手机同频干扰的性能. 下图是nemoG 通过测试case14.4的具体数据:
+参考FAQ: FAQ107582
+### 问题: NemoG是否支持VAMOS功能
+解决方案: NemoG 不支持VAMOS功能,根据芯片定义,也不能通过修改软件支持VAMOS认证的标准.
+参考FAQ: FAQ107592
+### 问题: 如何确认指纹gpio口是否注册成功？
+解决方案: 执行cat sys/kernel/debug/gpio看gpio状态,如果有则注册成功. 例如: gpio-131 ( |sunwave_rst ) out hi gpio-349 ( |sunwave_irq ) in lo 其中gpio-后跟gpio口,sunwave_rst/sunwave_irq是注册的gpio名.
+参考FAQ: FAQ107600
+### 问题: 为什么移植指纹驱动后没有创建设备节点？
+解决方案: 首先,要排除是否编译配置问题: A.在out目录查看该指纹驱动是否有编译到,out目录位于: out/target/XXX/obj/KERNEL/drivers/input/fingerprint/. B.若未编译到,则查看使用的defconfig/kconfig/mk等配置. 其次,若编译配置都正常,则看kernel log来排查驱动代码.kernel log可通过cat /proc/kmsg或者ylog.
+参考FAQ: FAQ107602
+### 问题: 如何配置指纹中断为eic模式？
+解决方案: 需要配置dts和pinmap: 1)将dts中指纹中断口设为eic类型及对应的eic口,案例如下: focaltech,irq_gpio = <&ap_eic_async 13 0>;//这里中断类型是eic且中断口是13 2)参照原理图,将pinmap中指纹中断对应的function修改为eic的,案例如下: {REG_MISC_PIN_IIS1DI, BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_WPD|BIT_PIN_SLP_AP|BIT_PIN_SLP_WPD| BIT_PIN_SLP_IE},//FTID_INT {REG_PIN_IIS1DO, BITS_PIN_AF(2)}, 此案例eic对应的function是2,gpio对应的function是3,故此处修改为2.
+参考FAQ: FAQ107603
+### 问题: 什么是TTFF？影响GNSS TTFF的因素都有什么？
+解决方案: TTFF(Time To First Fix)是表示首次定位时间,从用户开始发起定位到手机定位成功之间的时间即是首次定位时间.通常它主要由两部分组成,即卫星捕获的时间以及卫星星历的获取时间. 卫星捕获时间主要受测试环境的影响,与信号强度相关.卫星星历的获取有几种方式,对冷/温启动而言,主要从GNSS卫星信号中解调得到,时间主要与星历播发周期(通常是30秒)、信号强度相关;对热启动而言,由于星历在本地已经有备份,TTFF主要受卫星捕获的时间影响,所以热启动TTFF很短,在信号环境好的情况下通常只需要1秒.
+参考FAQ: FAQ107626
+### 问题: GNSS各卫星系统的卫星编号
+解决方案: 
+参考FAQ: FAQ107737
+### 问题: 影响GNSS定位精度的因素都有什么
+解决方案: 利用GNSS进行定位时,会受到各种各样因素的影响,从而造成定位误差.GNSS系统的主要误差来源可分为三类:与GNSS卫星有关的误差;与信号传播有关的误差;与接收设备有关的误差.与卫星相关的误差主要有卫星星历的误差、卫星钟差等;与传播过程相关的误差主要有对流层延迟、电离层延迟以及多路径效应;与接收设备相关的误差主要有接收机钟差,接收机噪声以及由于接收机和卫星存在相对运动引入的相对论效应. 同时,卫星的几何构型(和卫星的分布和卫星的数量相关)也会对GNSS定位精度造成影响,通常可以通过NMEA中的HDOP值来分析卫星的几何构型是否良好. 根据上述的各种影响因素,可以了解到卫星信号的强弱、卫星数量的多少以及接收机所处的环境是否有遮挡,是否存在反射信号等主动因素有密切关系.
+参考FAQ: FAQ107628
+### 问题: GNSS定位和网络定位有什么区别
+解决方案: GNSS定位是指利用捕获到的GNSS卫星信息根据测距原理进行解算来确定接收机的精确位置. 网络定位主要包括基站定位和WIFI定位.基站定位利用设备搜集周围所有收到信号的基站和其ID,查询定位服务器可知基站位置.再通过计算基站信号传播到终端的角度、时间和强度等信息,就可以确定终端的位置.而WIFI定位则是通过设备周围每个WIFI热点的信号强弱来计算出设备的大致地理位置.每个热点的位置可以通过查询服务器获取.
+参考FAQ: FAQ107629
+### 问题: GNSS是否支持长时预报星历功能
+解决方案: 展锐GNSS方案支持基于终端(Client Based)的长时预报星历功能(SpreadOrbit).长时星历预报是一种基于历史卫星位置信息进行轨道拟合的技术,可以不用等待从卫星进行电文解调的工作,直接通过拟合得到的轨道参数计算卫星位置,从而达到缩短TTFF时间的目的.
+参考FAQ: FAQ107632
+### 问题: GNSS定位的基本原理是什么
+解决方案: GNSS定位的基本原理就是通过测量四颗或四颗以上已知位置的卫星与GNSS接收机的距离通过距离交会的方式来确定接收机的位置.如图1所示,图中的GNSS接收机为当前要确定位置的设备,卫星S1、S2、S3、S4为本次定位要用到的四颗卫星, ρ1, ρ2, ρ3, ρ4为测量得到的卫星到接收机的距离,由于存在各种误差的影响,并不是真正的几何距离,我们称之为伪距. CB为接收机钟差, c为光速.上面方程中有4个未知数,接收机位置(X,Y,Z)以及接收机的钟差.通过解算方程就能得到接收机的位置.
+参考FAQ: FAQ107633
+### 问题: 4PIN 电阻PCB封装更新
+解决方案: 参考设计4pin封装的0.068欧姆/0.02欧姆电阻,封装进行了优化,具体请看说明《4-Pin Land Pattern Design and Application of Current Sensor_V1.0》.
+参考FAQ: FAQ107642
+### 问题: Android平台是否都可以通过在源码路径/system/ca-certificates/下预置证书？
+解决方案: 不能. Android平台新增sts测试,类似于cts,有针对预置证书的检查,具体case为: testNoAddedCertificates, testNoRemovedCertificates 这两个case会检查预置证书是否有增删,如果有改动case会失败.
+参考FAQ: FAQ107663
+### 问题: 什么是TSX？
+解决方案: 1. 手机中GPS电路对时钟精度要求为0.5ppm,而普通的Crystal精度数量级仅为10ppm.重点是温度的变化存在的巨大频飘.所以当产品有GPS Feature时,我们不得不采用昂贵的TCXO方案以避免温漂的影响; 2. 而TSX则通过AFC校准+算法、利用普通晶体达到这个精度; 3. AFC校准时,通过强制PA发热,GPS模块获取到Crystal的温度、仪表获取到频偏,从而得到了温度变化与频偏的简单关系.并存放在NV中供GPS频飘补偿算法使用. 4. 所以,TSX晶体只是普通Crystal下嵌了一颗NTC电阻,而其精髓则是平台修正温度-频漂的算法.简单理解,TCXO是模拟方式克服频飘,而TSX方案则是通过数字方式来克服频飘的.
+参考FAQ: FAQ107689
+### 问题: SC9820E平台对MEMORY（EMMC/NAND+DDR）支持的最大最小容量分别是多少？
+解决方案: 目前SC9820E上的最小MEMORY支持,针对不同产品形态有不同设定: 针对手机形态产品: 9820E Mocor5: 最低 4Gb+2Gb[Nand/EMMC+LPDDR2] 9820E KaiOS: 最低32Gb+4Gb[Nand/EMMC+LPDDR2] 针对儿童手表和模块形态产品: 最低 1Gb+1Gb[Nand/EMMC+LPDDR2],需客户自行剪裁适应. SC9820E理论上对DDR的支持最大4GB,对NAND/EMMC的支持无上限.
+参考FAQ: FAQ107695
+### 问题: VideoPlayer默认图标的路径是在哪里？
+解决方案: 可以在packages/apps/Gallery2/res 目录下搜索icon_video,找到项目对应的分辨率下面的icon_video.png就是默认图标.
+参考FAQ: FAQ107720
+### 问题: android自带视频播放器是否可以打开video trim 视频裁剪功能？
+解决方案: android自带视频播放器的视频裁剪功能是原生功能,具有不完善之处,原生的视频裁剪涉及到底层音视频裁剪库,该裁剪库不稳定,修改风险很大,不建议客户使用.
+参考FAQ: FAQ107725
+### 问题: 如何通过adb shell快速查看kernel log的loglevel
+解决方案: 在调试过程中,有时需要确认终端kernel log的loglevel,可以通过如下命令快速查看: adb shell cat proc/sys/kernel/printk 输出结果如下: 1 4 1 7 其中第一项代表当前的loglevel,即上述结果对应的loglevel为1.
+参考FAQ: FAQ107732
+### 问题: 如何替换dm-verity功能默认签名的key？
+解决方案: system和vendor分别用不同的key签名.客户项目需要替换默认的key. 在目录/vendor/sprd/proprietories-source/packimage_scripts/signimage/sprd/config下:rsa4096_system.pem & rsa4096_system_pub.bin 和rsa4096_vendor.pem & rsa4096_vendor_pub.bin key生成的方法: vendor/sprd/proprietories-source/packimage_scripts/signimage/sprd/config目录下: ./genkey.sh system生成system的key ./genkey.sh vendor生成vendor的key
+参考FAQ: FAQ107756
+### 问题: 什么是验证启动（Verifying boot）？
+解决方案: 验证启动功能旨在保证设备软件(从硬件信任根直到系统分区)的完整性.在启动过程中,无论是在每个阶段,都会在进入下一个阶段之前先验证下一个阶段的完整性和真实性. 当用户对软件进行了不应进行的更改时,可以使用该功能向他们发出警告,比如当用户获得一台二手设备后告知他们软件经受了不应进行的更改.此外,该功能还可以提供进行远程认证时使用的其他设备完整性信号.该功能再加上加密功能以及可信执行环境 (TEE) 信任根绑定功能,三者共同为用户数据添加了另一道防范恶意系统软件的保护屏障. 如果在任意阶段验证失败,用户都会收到醒目的通知.
+参考FAQ: FAQ107757
+### 问题: 7731E平台支持的主要通信功能
+解决方案: 7731E平台通信功能概述: 协议版本: WCDMA 支持R9 GSM支持 R6 UMTS上下行速率: UMTS DL Cat14 21.1M bps UMTS UL Cat6 5.76M bps 支持CBS over WCDMA/GSM 支持HS-FACH 支持CPC 支持Receiver Type 3i 支持Enhanced F-DPCH & SRBoHS 支持Fast Dormancy (Rel8) 支持CELL & URA-PCH 支持VAMOS I
+参考FAQ: FAQ107780
+### 问题: TYPE C USB&模拟耳机兼容设计注意事项
+解决方案: 1. 需要增加两个switch,一个切换左右声道和USB,一个根据mic侦测切换耳麦和耳机地. 2. 左右声道&USB switch供电:必须用VBAT或取电于VBAT的LDO,否则会造成BC1.2充电器类型枚举错误,从而充电电流不对.具体CQ咨询. 3. SWITCH的控制IO选择:所选IO默认(atreset&afterreset)状态需能使switch处于USB通路,以保证能够正常烧录code. 4. switch电源取自VBAT,影响关机漏电,所选型号待机漏电要尽可能小,建议50ua以内. 5. 注意Switch音频指标要佳. 6. switch EOS性能满足设计要求.
+参考FAQ: FAQ107778
+### 问题: android浏览器如何预置导航页面？
+解决方案: 导航页的定制: 浏览器第一次启动时会创建导航页数据库,首先会去plugin中查找,看plugin中是否定制导航页: /sprdroid7.0_trunk_k310/vendor/sprd/plugins/packages/apps/SprdBrowser/addons/Custom/res/values/strings.xml: <string-array name="predefined_websites" ... /> 如果没有使用plugin,则使用默认值: \sprdroid7.0_trunk\vendor\sprd\platform\packages\apps\SprdBrowser\res\values\strings.xml: <string-array name="predefined_websites_default" ... /> 具体实现代码在: SiteNavigationProvider.java 用户也可以增加或者删除导航页.这些数据都会储存在数据库中;
+参考FAQ: FAQ107822
+### 问题: Headmicbias的RC电路的R是0ohm
+解决方案: 因为SC2721和SC2720内部已经集成一个1.2kohm的电阻,所以外部可以不需要该电阻.
+参考FAQ: FAQ107789
+### 问题: 2G和3G语音声码器对AMR_WB的支持情况
+解决方案: 所有产品在2G下都不支持AMR WB,但支持AMR NB,FR,EFR;3G下除了部分7701平台产品以外都会支持AMR WB,是否支持可以依据下面NV项获取: NV_PARAM_TYPE_PREV_UMTS_COMMON_CAP\amr_wb_support 0x1 支持 0x0 不支持
+参考FAQ: FAQ107799
+### 问题: Android 浏览器如何查看User Agent？
+解决方案: 用浏览器登录:ua.yeswap.com,即可看到当前浏览器使用的User Agent等详细信息.
+参考FAQ: FAQ107824
+### 问题: 如何抓取DUT CP侧的CAP包
+解决方案: 需要从CP侧分析网络连接、吞吐率等问题时,通常需要抓取CP侧的CAP包.而很多场景中CP侧的CAP包是没有抓取的,需要客户进行设置,设置方法如下: 方法1: 使用AT指令进行设置.通过超级终端或相关工具输入:at+spcaplog=1,返回ok后表示设置成功,log中便会开启 CP侧CAP的抓取. 方法2: 通过手机界面设置.拨号界面输入暗码*#*#83781#*#*进入工程模式,按照路径Debug&log->log Manager->scene进入Log场景设置,选取"数据业务"场景.该场景默认抓取 CP侧的CAP包.
+参考FAQ: FAQ107825
+### 问题: 设置-无障碍-触摸和按住延迟中设置后，待机界面长按应用图标响应时间为什么没有变化
+解决方案: 在android原生机器中确认,待机界面长按应用图标响应时间与设置-无障碍-设置触摸和按住延迟没有必然联系. 由于待机界面长按应用图标比较特殊.长按应用图标会弹出应用信息,还有后续移动应用图标等一些特效,android原生设计此处长按判断时间为300ms: Launcher3\src\com\android\launcher3\CheckLongPressHelper.java ... ... public static final int DEFAULT_LONG_PRESS_TIMEOUT = 300; 所以此处不是bug,为android原生设计.
+参考FAQ: FAQ107832
+### 问题: LTE下UE的操作模式有那几种？
+解决方案: 有四种,如下: PS1:只能注册EPS业务,且语音业务优先 PS2:只能注册EPS业务,且数据业务优先 CS/PS1:可同时注册EPS业务和非EPS业务,且语音业务优先 CS/PS2:可注册EPS业务和非EPS业务,且数据业务优先
+参考FAQ: FAQ107858
+### 问题: 基于TD-LTE的语音解决方案主要有哪些？
+解决方案: 主要包括以下3种: 1) CSFB: 当用户驻留LTE网络时,如果需要发起或者接收电话,用户需要从LTE模式转回到2G/3G网络中完成通话. 2) VCC: 是指当UE在支持VoIP业务的网络之间移动时,如何保持语音业务的连续性,即将承载在源网络的VoIP语音业务平滑切换到目标网络CS域,反之依然. 3)VoLTE: 是基于IMS的语音业务.VoLTE的语音作为IP数据传输,无需2G/3G网,全部业务承载于LTE网络上,可实现数据与语音业务在同一网络下的统一.
+参考FAQ: FAQ107859
+### 问题: 手机模式有那几种？
+解决方案: 手机有三种模式,即: Class A:手机支持同时附着(Attach)在 PS 域和 CS 域,并支持并发 PS 与 CS 业务; Class B:手机支持同时附着在 PS 域和 CS 域,不支持并发 PS 与 CS 业务; Class C:手机只附着在 PS 域.
+参考FAQ: FAQ107860
+### 问题: SC9820A digital Power input VIO1/VCAM 电压域是否可以改成2.8V
+解决方案: 不可以.
+参考FAQ: FAQ107866
+### 问题: 信号强度对实网功耗的影响
+解决方案: 信号强度源于实际网络的参数配置,可能会引发不同的信令流程,也因此带来功耗的差异: [待机] 1. 引起本系统测量行为.对于paging图形来说,paging宽度会变宽; 2. 引起异系统测量行为.对于当前架构来说,可能会造成paging变宽,同时两个paging中有异常唤醒. 3. 引起本系统或异系统重选.在paging过程中,有长时间信令行为(重选过程,包括同步、SIB等). 4. 引起全网络测量,长时间的测量、同步、BCH等行为. [通话/数据业务] 信号强度不同,会导致: 1. 发射功率不同,PA/射频的功耗差异; 2. 数据损坏而导致重传变多(如果需要重传),导致功耗变高. 根据实际经验,信号强度弱是实网下功耗超标的一个重要原因.
+参考FAQ: FAQ107867
+### 问题: Android平台手机预置的证书在手机什么路径下？支持多少位密钥？
+解决方案: 预置证书在手机目录/system//etc/security/cacerts下,支持2048为密钥,已经全部去掉了1024位密钥.
+参考FAQ: FAQ107869
+### 问题: Android平台如何预置证书？
+解决方案: google 提供两种方法: 1. 网络安全配置(Network Security Config) ,当app需要信任某个证书时,可将证书文件放置在app源码路径下,在xml中配置信任该证书即可,具体操作见google说明:https://developer.android.google.cn/training/articles/security-config 2. 如果你认为你的CA在所有的Android设备上都可以被信任,则可以通过给google提公开issues来解决,google确认可以预置后,会将该证书添加到Android源码中,后续会发布到正式版本里.公开issues提交:https://code.google.com/p/android/issues/entry
+参考FAQ: FAQ107873
+### 问题: 紫光展锐SC9850 LTE基本支持能力
+解决方案: 1. 支持2×2/4×2 MIMO;不支持4×4 MIMO; 2. 最高可支持cat7 (ULCA+DLCA); 3. UL CA仅支持带内连续CA; 4. 支持FDD+TDD CA,不支持TDD+FDD CA; 5. 支持UL/DL 64QMA;不支持DL 256QAM;
+参考FAQ: FAQ107874
+### 问题: 紫光展锐SC9820E/SC9832E LTE基本支持能力
+解决方案: 1. 支持2×2/4×2 MIMO;不支持4×4 MIMO; 2. 最高可支持cat4, 不支持CA; 3. 支持DL 64QMA;不支持DL 256QAM; 4. 不支持UL 64QAM/256QAM;
+参考FAQ: FAQ107877
+### 问题: 如何清除LTE下选网时的先验信息
+解决方案: 非双L手机: AT+SFUN=5 //关机 AT+SPCLEANINFO=4 //清先验信息.4代表lte AT+SFUN=4 //开机 双L手机: AT+SPACTCARD=0 //sim卡号.0代表卡1,1代表卡2 AT+SFUN=5 //关机 AT+SPCLEANINFO=4 //清先验信息.4代表lte AT+SFUN=4 //开机
+参考FAQ: FAQ107884
+### 问题: SC9863A平台支持几路数字DMIC？
+解决方案: 需要注意MEMSMIC只有1对,原理图图中标明G0和G1,分别代表Group0和Group1 但是一对信号也可以同时接两个数字MIC,不同的是采样时隙不同,一个上升沿采样,一个下降沿采样.
+参考FAQ: FAQ107917
+### 问题: 如何锁LTE频点?
+解决方案: 在spreadtrum Logel工具中,可以通过AT命令来锁频点,最多可以锁2个频点 锁频AT命令如下: AT+SPACTCARD=0 //sim卡号.0代表卡1,1代表卡2.非双L手机不需要这一步 AT+SFUN=5 //关机 AT+SPCLEANINFO=4 //清先验信息.4代表lte AT+SPFRQ=0,4,37900 //锁一个lte频点,此处举例是37900 AT+SPFRQ=0,5,1650 //再锁一个lte频点,此处举例是1650.只想锁1个频点时不需要这一步 AT+SFUN=4 //开机 清除锁频AT命令如下: AT+SPACTCARD=0 //sim卡号.0代表卡1,1代表卡2.非双L手机不需要这一步 AT+SPFRQ=1 //清除锁频
+参考FAQ: FAQ107916
+### 问题: SC7731E平台是否支持HD+分辨率的屏？
+解决方案: SC7731E平台最大支持到HD+分辨率的屏.
+参考FAQ: FAQ107961
+### 问题: SC7731E平台是否有PMU的Design Guide？
+解决方案: SC7731E平台搭配的PMU是SC2720,没有单独的PMU Design Guide文档,PMU Design Guide包含在 平台的S7731E Hardware_Design_Guide文档里面,请参考Haedware Design Guide.
+参考FAQ: FAQ107962

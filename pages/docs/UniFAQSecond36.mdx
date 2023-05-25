@@ -1,0 +1,422 @@
+### 问题: 库仑计FGU的采样精度
+解决方案: 搭配SC2720平台: 电压检测: 14bit,有效bit位12个,量程0-6v,分辨率1.46mV,采样周期500ms,精度+/-0.5% 电流检测: 14bit,有效bit位13个,量程-60mV-60mv,分辨率7.32uA,采样周期500ms,精度+/-0.5% 搭配SC2721平台: 电压检测: 14bit,有效bit位12个,量程0-6v,分辨率1.46mV,采样周期500ms,精度+/-0.5% 电流检测: 14bit,有效bit位13个,量程-60mV-60mv,分辨率7.32uA,采样周期500ms,精度+/-0.5% 搭配UMP510G/5平台: 电压检测: 14bit,有效bit位12个,量程0-6v,分辨率1.46mV,采样周期250ms,精度+/-0.5%,实际芯片处理时,需要与fgu电流对齐,digital输出是以500ms为周期 电流检测: 14bit,有效b
+完整回答请参考FAQ: FAQ202173354
+### 问题: W307/W317 VoLTE 白名单配置方法
+解决方案: W307/W317 VoLTE 白名单配置方法 一、预置APN配制方法请参考如下文档: UWS6130预置APN列表更新说明V1.0.pdf 二、白名单配置方法如下: W307 / W317 平台 VoLTE 白名单在 AP 侧配置,存储在 ims_toggle_config_table.h 文件中. 用户可根据运营商的对应 MCC 及 MNC 在 ims_toggle_config_table.h 自定义配置如下信息: 1. 是否默认开启 VoLTE 2. 状态栏是否显示 VoLTE 图标 3. UI 界面是否显示 VoLTE 菜单 各字段解释说明如下: typedef struct { uint16 mcc; // 指定运营商对应的 MCC uint16 mnc; // 指定运营商对应的 MNC BOOLEAN is_volte_icon_on; // 是否显示 VoLTE 图标,手表
+完整回答请参考FAQ: FAQ202173360
+### 问题: android10上非sensorhub平台添加新sensor的方法
+解决方案: 非sensorhub平台一般是采用的是input方式上报event和数据. 具体的修改方法(以距离传感器ltr_558als为例进行说明) 一,以ko的方式加载 1, bsp/modules/input/misc/ltr_558als/
+    仿照该sensor添加对应的sensor
+2, dts的文件的添加参考:
+    bsp/kernel/kernel4.14/arch/arm/boot/dts/sp9832e-1h10-gofu-overlay.dts
+    ltr-558als@23{
+ 		compatible = "LITEON,ltr_558als";
+ 		reg = <0x23>;
+ 		gpios = <&ap_gpio 52 GPIO_ACTIVE_HIGH>;
+ 		sensitive = <1000 40 35 1200 1000 48>;
+完整回答请参考FAQ: FAQ202173366
+### 问题: AndroidR Wifi Only版本跑BBAT/Cali问题
+解决方案: device/sprd/mpool/module/engpc/ diff --git a/module/engpc/main.mk b/module/engpc/main.mk index dc44d631..9ed427eb 100644 --- a/module/engpc/main.mk +++ b/module/engpc/main.mk @@ -96,4 +96,4 @@ PRODUCT_COPY_FILES += vendor/sprd/proprietories-source/autotest/autotest.rc:vend #engpc support cali mode when product have no modem PRODUCT_PROPERTY_OVERRIDES += \ - ro.vendor.modem.support=1 + ro.vendor.mo
+完整回答请参考FAQ: FAQ202173368
+### 问题: 关于W307项目定位相关接口说明
+解决方案: 1. GPS: 使用GPS模块定位可以通过使用mmigps_api.c中的相关接口,在开机时调用MMIGPS_Download()接口对GPS信息进行开机初始化,通过MMIGPS_Open()接口,启动GPS,进行GPS扫描定位,最后通过APP_MN_GPS_FIX_IND获取得到的定位数据完成定位. 2. WIFI: 关于WIFI,需要先调用MMISRVWIFI_BackgroundOnReq()将wifi启动,收到启动的CNF后,调用MMISRVWIFI_BackgroundScanReq()进行扫描AP,相继收到扫描到的AP,即可连接使用. 3.CELL: 目前在W307项目中还未封装CELL(小区定位服务)的相关接口,目前在117项目上封装了部分CELL定位功能: 在mmiphone_cell.c中通过MMIPHONE_GetNeighborCellInfo()获取小区定位信息. 
+完整回答请参考FAQ: FAQ202173370
+### 问题: 关于预置APN中的认证信息配置相关问题解答
+解决方案: 鉴权方式对应的数字如下 MN_PAP = 0, MN_CHAP = 1, MN_PAP_CHAP = 2, MN_AUTH_NONE = 3, 配置预置 APN 认证信息验证方法请参考如下文档: 32403 UWS6130预置APN列表更新说明V1.0.pdf 32320 UWS6131预置APN列表更新说明V1.0.pdf 31001 UMS9117 预置APN列表更新说明V1.1.pdf 在开机驻网前 MMI 侧会调用接口 MNGPRS_SetPdpContextPcoCipherEx 将认证信息配置给 modem 侧. 需要注意的是:如果认证类型为 NONE,即使配置了用户名和密码,modem 侧也不会将认证信息带给网络. 可通过搜索"mngprs_config_pco"查看配置的认证类型,举例如下: 191183-1 14:34:18.295 14:34:18.295 Time: 
+完整回答请参考FAQ: FAQ202173376
+### 问题: UMS9230USB眼图参数调整方法
+解决方案: UMS9230在软件上进行了修改,从之前host、device共用同一套参数修改为host、device分开调用. 硬件上调试还是使用adb或者串口,但是命令有所不同: adb shell //adb调试时使用 su cat /sys/devices/platform/soc/soc:aon/64570000.hsphy/hsphy_host_eye_pattern //读取host节点的参数 cat /sys/devices/platform/soc/soc:aon/64570000.hsphy/hsphy_device_eye_pattern //读取device节点的参数 echo 0xXXXXXXXX > /sys/devices/platform/soc/soc:aon/64570000.hsphy/hsphy_host_eye_pattern //修改host节点参数,0xXX
+完整回答请参考FAQ: FAQ202173383
+### 问题: 音频通路设置问题
+解决方案: 音频播放优先级:BT > EARPHONE > SPEAKER 平台默认来电铃声、闹铃声音通过SPEAKER播放. 1.情景模式下,设置来电响铃、闹铃声音通过蓝牙耳机播放: 修改文件mmiset_ring.c中的PlayFixedRing函数: .... else { modify audio_srv.all_support_route = MMISRVAUD_ROUTE_SPEAKER | MMISRVAUD_ROUTE_EARPHONE | MMISRVAUD_ROUTE_BLUETOOTH; } if(MMISET_RING_TYPE_KEY_LOCK == ring_type) .... 2.非情景模式下,设置来电响铃、闹铃声音通过蓝牙耳机播放: 修改文件mmiset_ring.c中: modify LOCAL BOOLEAN s_is_need_earfree_mode = TR
+完整回答请参考FAQ: FAQ202173393
+### 问题: SR3595D切换SR3595D1 PVT参数更新方法指导
+解决方案: 部分项目需要将SR3595D切换为SR3595D1,两颗芯片在NV中的部分配置不同,为实现兼容需要采用单软多RF的方案,切换方法参考FAQ202172802 该FAQ针对切换完成之后,针对SR3595D1进行PVT优化,优化后的vramp参数如何保存进行说明 概述: SR3595D1的相关参数都是保存在hw_rf743.nv文件中的,开机之后系统识别到SR3595D1之后就会将hw_rf743.nv的参数自动合入到NV工程中. 所以优化好的vramp参数必须更新到hw_rf743.nv中,否则就会被.NV中的原始参数覆盖无法生效. 操作方法 一.按照 FAQ202172802 切换好SR3595D1之后,保证全部频段校准PASS 二.测试SR3595D1机器的PVT/ORFS性能,如有问题调整vramp进行优化 三.将优化好vramp导出 1.连接Pandora使手机进入校准模式 2.NV
+完整回答请参考FAQ: FAQ202173405
+### 问题: CPU芯片的power input的作用是什么？
+解决方案: CPU芯片的power input是用来给CPU芯片内部电路供电的,由于CPU芯片内部模块众多,因此需要不同的电源输入.大体来说分为两类: 1,digital power input,数字电路电压输入,这部分比较纯粹,基本都是给IO模块使用,不涉及CPU内部其他模块,这个也是我们常说的电压域概念.如果某电压域的IO口不需要使用,那么该电压域的power input管脚可以悬空. 2,analog power input,模拟电路电压输入,这部份会比较复杂一些,一个ball上的供电有可能会给CPU内部多个模块供电,而不仅仅是pinname上标注的一个模块.比如有的pinname标注了AVDD1V8_CSI,而实际上在CPU内部除了给CSI模块使用,还给其他模块在用,因为pinname不方便写太长因此没有标注出来.因此analog power input的管脚,需要严格按照参考设计来接,即使某
+完整回答请参考FAQ: FAQ202173414
+### 问题: 条形码显示问题
+解决方案: 某些应用需显示条形码,为了能方便扫码枪扫描,如支付宝要求条形码最小在160*80,然而可能因LCD panel的密度太细造成画出的线太密无法辨识, 或是将宽度乘上两倍而超过LCD可显示大小,此时可考虑先将条形码生成bimap array的图片,再透过函式GRAPH_ScaleImage去缩放适合萤幕显示的大小 GRAPH_ScaleImage参考代码: LOCAL void DrawScaleImage( GUIICONLIST_SCALE_PARAM_T *user_data_ptr, GUI_SIZE_T *cur_size_ptr ) {... if (PNULL != src_bitmap.bit_ptr) { scale_in.src_format = buf_format; scale_in.src_chn.chn0.ptr = src_bitmap.bit_ptr; scal
+完整回答请参考FAQ: FAQ202173423
+### 问题: Camera应用，app层是否有设置预览角度的接口？
+解决方案: 一、Camera API1框架,APP有设置预览方向的接口,接口为:setDisplayOrientation(int degrees). 物理竖屏设备(手机),谷歌的适配代码: public static void setCameraDisplayOrientation (Activity activity, int cameraId, android.hardware.Camera camera) {
+      android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+      android.hardware.Camera.getCameraInfo(cameraId, info);
+      int rotation = activity.getWindowMa
+完整回答请参考FAQ: FAQ202173437
+### 问题: 长按开关机键来关机
+解决方案: 亮屏状态下: 会在函数HandleMSGKbd—>MMK_HandlePublicKey中的case MSG_KEYLONG_RED下处理关机. 灭屏状态下: 可以修改函数HandleMSGKbd—>MMK_DefaultMSGKbd—>DefaultBackLight下: case KEY_LONG_PRESSED: switch (keycode) { case KEY_UPSIDEKEY: case KEY_DOWNSIDEKEY: case KEY_CAMREA: if (!is_flip) { MMIDEFAULT_TurnOnBackLight(); } break; add case KEY_RED: add { add if(MMIAPIPHONE_GetStartUpCondition() != STARTUP_CHARGE) //关机充电时,长按KEY_RED不关机 a
+完整回答请参考FAQ: FAQ202173450
+### 问题: 关机状态下，取消闹铃界面
+解决方案: 1.关机状态下取消闹钟: 修改mmimain.c中的函数APP_Task: 注释掉以下代码: #if 0 case RESTART_BY_ALARM: // 注册REF服务 APP_RegisterRefService(); MMIAPIPHONE_SetStartUpCondition(STARTUP_ALARM); // MMI所有的APP初始化 APP_Init(restart_condition); #ifndef SUBLCD_SIZE_NONE MMISUB_Init(); #endif // 闹铃界面初始化 MMIAPIPHONE_AlarmInit(); MMI_RestoreFreq(); break; #endif 2.关机充电状态下取消闹钟: 修改mmiphone.c文件下HandlePsAndRefMsg函数如下: case MISC_MSG_RTC_ALARM: 
+完整回答请参考FAQ: FAQ202173451
+### 问题: 各种bin文件编译签名流程
+解决方案: 1) 在引导阶段加载启动的镜像文件: u-boot-spl-16k.bin, sml.bin, tos.bin ,u-boot.bin,teecfg.bin,和下载阶段加载的镜像文件fdl1.bin, fdl2.bin,都采用展锐自己的签名验签方案; 签名过程是在编译阶段完成的,相关key是在:bsp/tools/androidr/packimage_scripts/config 下的*.pem 该key的生成:使用openssl工具生成,命令如下: a.)生成私钥:openssl genrsa -out xxx_4096.pem 4096 b.) 然后根据生成的私钥生成对应的公钥:openssl genrsa -in xxx_4096.pem -pubout -out xxx_4096_pub.pem 其中7731e/9832e/9863a/ums312/ums512/roc1 用的是 
+完整回答请参考FAQ: FAQ202173487
+### 问题: 信令模式下如何测试GSM/WCDMA的单分集灵敏度
+解决方案: 在3GPP中对LTE的分集天线进行了规定,因此LTE分集天线状态为强制打开,进行LTE 分集灵敏度测试时可以随意切换,而WCDMA/GSM未在3gpp中进行定义,其分集天线均为动态打开.WCDMA和GSM打开分集天线的条件由主集接收到的信号强度和SNR决定. 1、GSM分集天线现在已设置为常开状态,客户需升级4G_MODEM_20A_W21.18.5之后的版本才生效.检验GSM分集是否为常开的方法: 使用logel工具打点查看寄存器0xDC40的值,如图所示该寄存器值为1100,只需关注第二个1,1代表分集打开,0代表分集关闭. 2、目前对于WCDMA单分集灵敏度测试的方法只能采取在工程模式中开启Diversity only模式的方法进行.通过CMW500正常连接后,切换到单分集测试,进入工程分集测试.模式→Hardware→Antenna Settings→选择WCDMA/GSM天线为D
+完整回答请参考FAQ: FAQ202173500
+### 问题: LTE 校准提示AGC Gain Overlap Delta Fail 如何处理
+解决方案: AGC校准中需要检查不同增益档位切换时的增益来检查线性度,客户校准提示AGC Gain Overlap Delta Fail ,则代表客户的线性度不好需要优化. 工具默认的overlap的spec为-9±6,即(-15,-3).需要检查LOG看是偏上限还是下限. 当overlap超上限Fail 时,会导致Tput掉0不掉线,RSRP测试异常等问题; 当overlap超下限fail时,会导致AGC Max gain 偏低,灵敏度不达标等问题. 一般该问题需通过调试匹配优化,但客户校准FAIL的band带外置LNA时需要检查NV设置以及芯片是否支持LNA,比如3595D1不支持LNA. 如果客户在做了上述调试后无果,可以尝试放宽门限.需要打开对应平台的SEQ文件进行修改,具体修改方式如下: 搜索overlap找到以下地方 <GainDeltaLimit Description="The lim
+完整回答请参考FAQ: FAQ202173501
+### 问题: Android 8.1/Android 10工程编译打包说明
+解决方案: ***客户Android 8.1/Android 10(老版本)工程编译打包说明*** Modem工程确认 vendor/sprd/release/IDH/Modem/FM***/Doc下Modem版本说明的文档,请根据文档确认modem bin. 查看vendor/sprd/release/IDH/<工程名>/SHARKLE_UNCACHE_SIGN/flash.cfg,[FlashParam]中某些modem bin的名称需要更改,如Modem_WLTE_DELTANV对应的bin,实际是sharkle_pubcp_customer_Smart_Phone_halo_deltanv.bin,一般都是多了"_customer"其他需要更改名称的bin还有Modem_WLTE,NV_WLTE等,具体看实际工程. 更改.sign的modem bin路径 .sign配置打包时自动签名的Mode
+完整回答请参考FAQ: FAQ202173528
+### 问题: Network account菜单下的IMS隐藏
+解决方案: 在已将ims类型预置APN置为不可见,即在APN预置表中将visible项置为0的基础上,在mmiset_func.c文件中替换如下接口: PUBLIC ERR_MNPHONE_CODE_E MMIAPISET_SetVolteInfo(uint8 simid, BOOLEAN volte_on) { ERR_MNPHONE_CODE_E ret = ERR_MNPHONE_NO_ERR; #ifndef WIN32 if (MMI_DUAL_SYS_MAX > simid) { ret = MNPHONE_SetIMSAvailableEx(simid, volte_on); if (ERR_MNPHONE_NO_ERR == ret) { if (TRUE == volte_on) { s_volte_mode_info |= (1 << simid); } else { s_volt
+完整回答请参考FAQ: FAQ202173554
+### 问题: 长短信自动转换成彩信
+解决方案: (1)如果没有打开MMS_SMS_IN_1_SUPPORT,那么SMS和MMS的编辑是两个不同的入口,编辑界面是分开的,且是不同的数据结构,当短信达到六页时要转换成MMS,需要切换至MMS的编辑界面,当用户删除字符不到六页,又需要能切回到短信编辑界面,这个是需要重新实现的. (2)如果打开MMS_SMS_IN_1_SUPPORT,可以通过修改代码支持长短信转彩信, mmimms_editwin.c文件中的 HandleMMSEditMainMenuWin函数: 增加MSG_NOTIFY_EDITBOX_MAXTEXT 消息的处理 若代码中原本就有以下代码,则可以将#if 0去掉,若原来没有这些代码,就将此代码新加上 此处是当短信输入达到最大值后转成彩信的处理 //#if 0 case MSG_NOTIFY_EDITBOX_MAXTEXT: if(!MMIMMS_GetIsMMSMode()
+完整回答请参考FAQ: FAQ202173556
+### 问题: 联系人列表上新增功能菜单
+解决方案: 要在电话本联系人列表上增加功能菜单项,需要将该菜单做为联系人列表中的一个子项来处理. 可以参考以下修改方案,修改的准确行数可能与实际代码不完全一致. 修改代码都用MMI_ADD_PB_NEW_DEF 包含,可通过查找MMI_ADD_PB_NEW_DEF查看修改. 请修改mmipb_view.c 文件: (1)增加菜单项id,text 在 696 行添加 #define MMI_ADD_PB_NEW_DEF 1 //该功能宏开关,这个宏需要添加到.mk文件中 #ifdef MMI_ADD_PB_NEW_DEF #define MAX_NEW_PB_MENU 3 //新增菜单数量 //新增菜单menu ID typedef enum { ID_NEW_PB_MENU_1 , ID_NEW_PB_MENU_2, ID_NEW_PB_MENU_3, ID_NEW_PB_MENU_MAX }NEW_
+完整回答请参考FAQ: FAQ202173559
+### 问题: 如何获取短信内容
+解决方案: (1)收到新短信时MMI会收到APP_MN_SMS_IND消息,在mmismsapp_main.c 中HandlePsMsg里会调用MMISMS_HandleSMSMTInd处理该消息,在MMISMS_HandleSMSMTInd 中通过调用OperateMtIndAsSms对收到的短消息进行处理. 在OperateMtIndAsSms中的 MMIFW_TriggerEvent(&event_info); 会触发事件,在SMSAPPNewEventCallback 会处理SMS_NEWSMS_EVENT ,当前是会显示的一个弹框,一条新信息,可以在此处进行指定号码判断及获取短信内容.其中mt_sms_ptr->origin_addr_t.party_num 是当前的发件人号码,mt_sms_ptr.user_data_t.length是短信内容长度,mt_sms_ptr.user_data
+完整回答请参考FAQ: FAQ202173560
+### 问题: 自动搜网界面显示
+解决方案: 平台原有的plmn list列表显示为两行并且有图标: 网络名称 图标(2G/3G/4G(区分可用 /不可用网络)) MCC MNC 而智能机的显示为一行,且没有图标,不可用网络用字符显示,当前网络显示在第一行 网络名称(Forbidden) 要修改为智能机的显示可按以下修改: 在mmiset_func.c文件 AppendPlmnListItem函数中: (1)修改item style item_t.item_style = GUIITEM_STYLE_ONE_LINE_TEXT; (2)将图片相关代码全部去掉 { item_data.item_content[1].item_data_type = GUIITEM_DATA_IMAGE_ID; #ifndef MMI_RES_LOW_COST item_data.item_content[1].item_data.image_id = 
+完整回答请参考FAQ: FAQ202173561
+### 问题: 第三方APK，不走MFNR算法
+解决方案: 1,搜索整个拍照流程 搜索log "CAM|cmr|Cam3",将log复制出来. 2,继续搜索关键log 搜索"CAM_PhotoModule".因为是第三方APK,可能不存在平台APK点击拍照键"OnshutterButtonClick"这个关键字. 查看log,搜索到 onShutterButtonFocus、takePicture start! 、saveFinalPhoto等app层操作的log,保存记录下 3,继续搜索log 搜索log "CAM2PORT_SprdAndCam2Set",查看app层是否下发一些设置,如水印等 查看log,搜索到ANDROID_SPRD_AUTO_3DNR_ENABLED、CONTROL_SPRD_3DNR_ENABLED等关键log,记录下 4,继续搜索log "onShutterButtonFocus|takePicture start!|
+完整回答请参考FAQ: FAQ202173583
+### 问题: SL8521E平台怎样查看当前音频功放配置类型
+解决方案: 我们一般是在NV参数里看功放类型,也可以直接连音频工具去读取参数. 对于通话模式,可以直接在音频工具上将HANDSFREE模式下在Inner PA里CLASS D选为CLASS AB即可. 对于MUSIC下,可以直接在音频工具上将HANDSFREE模式下CLASS D选为CLASS AB即可 如果在NV里直接修改,以handsfree通话模式为例, CLASS D: AUDIO\DSP_CODEC_CONFIG\Handsfree\AudioStructure\resv\resv[0]=0x2b2 CLASS AB: AUDIO\DSP_CODEC_CONFIG\Handsfree\AudioStructure\resv\resv[0]=0x2a2 对于音乐模式,NV如下: CLASS D: audio_arm\audio_arm\Handsfree\AudioStructure\rese
+完整回答请参考FAQ: FAQ202173602
+### 问题: Mocor平台添加副屏的显示规格
+解决方案: 1. 在mk文件新增宏SUBLCD_SIZE的选项,如新增176X220规格 SUBLCD_SIZE = 176X220 #Option1: NONE #Option2: 96X96 #Option3: 176X220 #新增选项 2.在mk文件中新增宏SUBLCD_DEV_SIZE的选项,如新增176X220规格 SUBLCD_DEV_SIZE = 176X220 #Option1: NONE #Option2: 96X96 #Option3: 176X220 #新增选项 3. 在lcd_cfg.h中定义屏幕参数 #if defined (SUBLCD_DEV_SIZE_176X220) #define SUBLCD_WIDTH 176 #define SUBLCD_HEIGHT 220 #endif 4.在mmi_subwintab.c中增加副屏Idle界面时间日期等的坐标值,以下添加
+完整回答请参考FAQ: FAQ202173614
+### 问题: Android11安兔兔显示的光圈值修正
+解决方案: 验证基线:MOCORDROIDR_Trunk_20A_W21.14.4 验证平台:UMS512 安兔兔版本:9.1.8 在如下目录 vendor/sprd/modules/libcamera/hal3_2v6/SprdCamera3Setting.cpp 修改: const float kavailable_lens_info_aperture[] = {1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0}; //安兔兔获取的是这里的最大值 + const float kavailable_lens_info_aperture_back[] = {1.8, 2.0, 2.2};//camera0 光圈值2.2 + const float kavailable_lens_info_aperture_front[] = {1.8, 2.0, 2.2, 2.4};//camera
+完整回答请参考FAQ: FAQ202173626
+### 问题: 如何配置DTS中的camera信息
+解决方案: 验证基线:MOCORDROIDR_Trunk_20A_W21.14.4 dts文件路径:bsp\kernel\kernel4.14\arch\arm64\boot\dts\sprd\[board.dts] 以sp9863a-1c10为例: bsp\kernel\kernel4.14\arch\arm64\boot\dts\sprd\sp9863a-1c10-overlay.dts ums512 硬件CSI和dts中phyid(例如sprd,phyid = <2>;)的对应关系: phyid 硬件CSI LANE数 0 CSI0 4LANE 1 CSI2_M+CSI2_S 4LANE 2 CSI1 2LANE 3 CSI2_M 2LANE 4 CSI2_S 2LANE ①sprd,phyid = <0>; //这里需要确定前摄硬件上接的是哪个CSI >ums512 硬件CSI和dts中phy
+完整回答请参考FAQ: FAQ202173629
+### 问题: Camera理论需要的mipi lane数
+解决方案: Camera理论需要的mipi lane数: (不同平台的速率不同,可根据芯片手册确认) Camera 有效像素 * ADC色彩深度 * 帧率 * (1+20%) < lane数 * mipi速率 例:5M摄像头,有效像素为2592 * 1944,30fps帧率,10位ADC色彩深度,最少几lane 2592 * 1944 * 10 * 30 * (1+20%)= 1813617050 bps = 1813617Kbps =1813 Mbps = 1.8Gbps 同时可逆推1lane、2lane、4lane各支持多大的sensor(全尺寸输出,非remosaic): 设各lane速率为1.5Gbps 1lane: 1.5*1*10^6/300/1.2≈4m 2lane: 1.5*2*10^6/300/1.2≈8m 4lane: 1.5*4*10^6/300/1.2≈16m 以ums512为
+完整回答请参考FAQ: FAQ202173643
+### 问题: 视频录屏过程中存在失焦情况
+解决方案: 问题描述:固定位置,支架录像,概率性失焦 问题分析:由于af trigger需满足move->stable->trigger->finished条件,故需要查看视频录像过程的对焦情况 1,打开 Trigger log adb shell setprop debug.isp.aft.mlog save 2, 搜索关键log caf_monitor_trigger|if_af_start_notify|if_af_end_notify|aft_proc_internal_calc|ae_stats_move_proc_new 3,对焦过程中和对焦完成后情况分别如下: (1), 对焦完成后,face、pd、afm、img、gyro、g 其后的move状态、stable状态都置为0 Line 12117: M250A49 11-17 13:34:19.417 3430 16776 I aft_sp
+完整回答请参考FAQ: FAQ202173669
+### 问题: 手表项目如何加速主菜单滑动
+解决方案: 请参考修改代码如下 @watch_slidepage.h -- #define SLIDE_CHANGE_PAGE_THR 30 ++ #define SLIDE_CHANGE_PAGE_THR 5 -- #define SLIDE_PAGE_TPDRAP_INTERVAL 25 ++ #define SLIDE_PAGE_TPDRAP_INTERVAL 5 @watch_slidewin.h -- #define SLIDEWIN_AUTOSLIDE_STEP 40 ++ #define SLIDEWIN_AUTOSLIDE_STEP 100 -- #define SLIDEWIN_AUTOSLIDE_INTERVAL 10 ++ #define SLIDEWIN_AUTOSLIDE_INTERVAL 3 -- #define SLIDWIN_TPUP_THRES (128 >> 1) 
+完整回答请参考FAQ: FAQ202173679
+### 问题: 插双卡选择SIM1上网时，SIM2无法接通电话之解决方案
+解决方案: 请按以下方法 (二者择一) 修改nv后验证:
+
+1. 
+修改的地方为MS_Code\BASE\base_nv\Classmark\nv_classmark.nvm中的如下Item  ITEM_CONTENT = 0x7:
+
+  BEGIN_ITEM
+    ITEM_NAME    = model_name[39]
+    ITEM_ID      = 3
+    ITEM_TYPE    = 1 (CHAR)
+    ITEM_LENGTH  = 1
+    ITEM_CONTENT = 0x7
+    ITEM_INDEX   = 122
+    ITEM_PARENT  = 82
+    ITEM_DESC    = GPRS TBF Mask. BIT0 SIM1, BIT1 SIM2, BIT2 SIM2, BIT3 SIM3.
+  END_ITEM
+完整回答请参考FAQ: FAQ202173681
+### 问题: 如何修改通话默认音频输出
+解决方案: 假设需要默认设置為speaker,可参考修改以下两处 1. MMICC_ConstructVoiceCodec @ mmicc_audio.c ... ++ audio_srv.default_route = MMISRVAUD_ROUTE_SPEAKER; handle = MMISRVMGR_Request(STR_SRV_AUD_NAME, &req, &audio_srv); 2. MMICC_EnableVoiceCodec @ mmicc_audio.c ... if(!GPIO_CheckHeadsetStatus() #ifdef BLUETOOTH_SUPPORT && !MMIAPIBT_GetActivatedHS(&addr) #endif ) { -- MMISRVAUD_SetDefaultRouteByHandle(handle, MMISRVAUD_ROUT
+完整回答请参考FAQ: FAQ202173682
+### 问题: 如何关闭通话中的拨号音
+解决方案: 請修改以下兩文件
+
+MMIAPICC_SendDtmf @ mmicc_wintab.c
+...
+    if(is_process_win_focus || is_dialWin_focus
+-----#ifdef MET_MEX_SUPPORT
+        || MMIMEX_IsOutCalling()
+-----#endif	
+        ) 
+    {        
+        //send the dtmf
+--        MMICC_SendSingleDtmf(msg_id);
+    }
+-----#endif
+
+
+CC_HandleCcWinMsg @ mmicc_wintab.c
+...
+        if ( !MMICC_IsExistOperatedCall() && MMICC_IsAllowSendD
+完整回答请参考FAQ: FAQ202173683
+### 问题: MFNR每条YUV含义及融合过程解读
+解决方案: MFNR是5帧融合去噪: 1.先选出最清晰的帧作为参考帧big_index0. 2.融合时是用小尺寸small融合的,融合得到weight,再将小尺寸weight放大到大图尺寸,最后分别与big_index0融合,得到result_idx1至result_idx4 以9863A平台为例,dump出的YUV如下: 712754_1280x960_small_index0.yuv //small_index0-5是5帧正常尺寸big的下采样图, 712754_1280x960_small_index1.yuv 712754_1280x960_small_index2.yuv 712754_1280x960_small_index3.yuv 712754_1280x960_small_index4.yuv 712754_3264x2448_big_index0.yuv //big_index0-
+完整回答请参考FAQ: FAQ202173688
+### 问题: 如何从log查看手机app模式转换
+解决方案: 可搜索关键词:mCurrentModeIndex Line 95158: M0A23C6 12-22 23:55:33.752 2551 2551 I CAM_CameraActivity Drea: onModeSelected mCurrentModeIndex=0,change to 12 //从Auto拍照切到慢录 Line 112083: M0A986D 12-22 23:55:37.568 2551 2551 I CAM_CameraActivity Drea: onModeSelected mCurrentModeIndex=12,change to 20 //从慢录像到夜景 app模式如下 enum sprd_camera_app_mode { CAMERA_MODE_AUTO_PHOTO = 0, CAMERA_MODE_MANUAL, CAMERA_MODE_CONTI
+完整回答请参考FAQ: FAQ202173690
+### 问题: 浮动提示窗口
+解决方案: 客户开发应用,需要使用浮动的提示窗口,目前Mocor平台的提示窗口没提供类似的控件,需要客户自行开发.目前平台GUI提供多层的功能, 可以考虑使用平台提供的多层功能,创建静态layer,然后在此layer上绘制,例如 void DisplayInfo(MMI_WIN_ID_T win_id ) { GUI_RECT_T win_rect = {0}; GUI_RECT_T old_win_rect = {0}; GUI_LCD_DEV_INFO dev_layer_handle; MMI_STRING_T text_str = {0}; GUISTR_STYLE_T text_style = {0}; GUISTR_STATE_T state = GUISTR_STATE_ALIGN|GUISTR_STATE_ALIGN_BY_DIR; win_id =MAIN_IDLE_WIN_ID; 
+完整回答请参考FAQ: FAQ202173696
+### 问题: User Agent 相关问题解答
+解决方案: 1. 能否解答下修改UA的意义是什么 User Agent(用户代理)指浏览器的信息,包括硬件平台、系统软件、应用软件和用户个人偏好.通过修改UA字段来告诉服务器,访问者的详细信息. 2. 能否给出复现UA的操作方式(目前不清楚UA是在那儿查看的,没法确定修改后如何确认效果是否OK) 可以使用wireshark工具来分析logel抓取的cap包,通过检查UA字段来查看设置是否生效. 3. 如何客制化IMS SIP User Agent 与 XCAP User Agent? 当前平台不支持xcap ua与ims ua分别配置,配置xcap ua与配置ims ua方法相同,IMS UA可参考如下 FAQ自行配置. 若要配置xcap ua与ims ua一致,请在配置IMS UA时不要添加"3gpp-gba"字段即可. 客制化修改 SIP User Agent 可参考如下 FAQ : [FAQ20
+完整回答请参考FAQ: FAQ202273700
+### 问题: 如何根据网络要求设置 MTU ？
+解决方案: 当前默认 MTU 不基于网络配置,默认 MTU 为1500. 如需基于网络配置 MTU ,请替换文件 mmipdp_api.c 中的如下接口后复测: PUBLIC void MMIAPIPDP_ActiveInternalPdp(MN_DUAL_SYS_E dual_sys, MMICONNECTION_LINKSETTING_DETAIL_T *link_info, MMI_INTERNAL_PDP_CTX_TYPE pdp_ctx_type) { #ifndef WIN32 uint32 pdp_id = 0; BOOLEAN context_param[7] = {TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE}; MN_GPRS_PDP_ADDR_T pdp_addr = {0}; ERR_MNGPRS_CODE_E err = ERR_MNGPRS_
+完整回答请参考FAQ: FAQ202273701
+### 问题: 如何解决在浏览器添加的 apn 参数没有向网络请求验证用户名/密码的流程？
+解决方案: 如何解决在浏览器添加的 apn 参数没有向网络请求验证用户名/密码的流程? 请修改如下接口中标出"//修改点"的部分后复测. PUBLIC void MMIAPIPDP_ActiveInternalPdp(MN_DUAL_SYS_E dual_sys, MMICONNECTION_LINKSETTING_DETAIL_T *link_info, MMI_INTERNAL_PDP_CTX_TYPE pdp_ctx_type) { #ifndef WIN32 uint32 pdp_id = 0; BOOLEAN context_param[7] = {TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE}; MN_GPRS_PDP_ADDR_T pdp_addr = {0}; ERR_MNGPRS_CODE_E err = ERR_MNGPRS_NO_ERR; SCI_
+完整回答请参考FAQ: FAQ202273704
+### 问题: 录像大致流程
+解决方案: 录像的整个流程过程如下: Line 164803: M024D6B 01-04 10:10:27.982 5833 5833 I CAM_VideoModule: onShutterButtonClick --点击录像键 Line 164805: M024D6D 01-04 10:10:27.986 5833 5833 I CAM_VideoModule: startVideoRecording: Thread[main,5,main] --开始录像 Line 165081: M024E81 01-04 10:10:28.329 5833 6106 V CAM_VideoModule: New video filename: /storage/emulated/0/DCIM/Camera/VID_20220104_101028.mp4 --创建录像文件 Line 170818: M0264
+完整回答请参考FAQ: FAQ202273721
+### 问题: VTS测试vts_treble_vintf_ven出现接口函式has an empty hash报错
+解决方案: 测试命令: vts -m vts_treble_vintf_vendor_test -t DeviceManifest/SingleManifestTest#InterfacesAreReleased/0 测试报错信息: Getting: vendor.sprd.hardware.hdcp@1.0::IHDCP/default test/vts-testcase/hal/treble/vintf/SingleManifestTest.cpp:74: Failure Failed vendor.sprd.hardware.hdcp@1.0::IHDCP has an empty hash. This is because it was compiled without being frozen in a corresponding current.txt file. 分析信息: 新增的ven
+完整回答请参考FAQ: FAQ202273722
+### 问题: 6533g平台如何调节信号条显示
+解决方案: 信号条调整 simdetectiondef.h
+
+/*
+0	-113    1	-111    2	-109    3	-107    4	-105
+5	-103    6	-101    7	-99     8	-97     9	-95
+10	-93     11	-91     12	-89     13	-87     14	-85
+15	-83     16	-81     17	-79     18	-77     19	-75
+20	-73     21	-71     22	-69     23	-67     24	-65
+25	-63     26	-61     27	-59     28	-57     29	-55
+30	-53     31	-51
+*/
+-----#define	SIGNAL_STRENGTH_NONE			0
+----
+完整回答请参考FAQ: FAQ202273727
+### 问题: 6533G 产线相关的几个问题
+解决方案: 1、下载方式
+(1) USB 下载方式 
+a)空FLASH进入USB下载模式
+当FLASH是空的时候,POWER键开机和CHARGE开机都会进入USB下载模式.
+
+b)非空FLASH进入USB下载模式
+当FLASH非空时,有点复杂,需要在开机状态下,插入USB线,在USB Mass Storage和Charge选择界面长按0键,大概2秒后会提示进入USB下载模式,此时可以开始下载.
+如果一开机就死机了,是无法进USB下载模式的,只能通过Debug Host接口来下载.
+ 
+(2)Debug Host下载方式
+ 6533G的Debug Host类似于UART,下载只需要三根线,TX,RX,和GND
+ 6533G的大部分调试都是通过Debug Host接口来进行的.在产线上可以使用摩莎卡来接多台手机的Debug Host.
+
+2. 下载夹具VBAT测试点需不需要供电?
+完整回答请参考FAQ: FAQ202273728
+### 问题: flash抓帧异常问题
+解决方案: 答: 问题描述:暗处AUTO flash拍照,会概率出现图片全黑现象 问题分析: 全黑图片log分析如下: 1.全黑图片未出现flash_status=17,主闪未打闪: M241143 12-31 06:12:09.367 5867 6319 D cmr_setting: 3363, setting_set_flashdevice: flash_status=1 //开flash M241367 12-31 06:12:09.978 5867 6319 D cmr_setting: 3363, setting_set_flashdevice: flash_status=16 //关flash M241D8E 12-31 06:12:12.669 5867 6319 D cmr_setting: 3363, setting_set_flashdevice: flash_status=1 M
+完整回答请参考FAQ: FAQ202273729
+### 问题: 如何查看是否走软硬件3DNR流程
+解决方案: 答:在log搜索mSprd3dnrType,例如: Line 80706: M026A90 05-27 03:12:08.485 548 548 D Cam3OEMIf: 10010, SetCameraParaTag: mSprd3dnrType: 8 //下发3dnrtype(查看对应代码,8代表拍照是sw3dnr) mSprd3dnrType的0-9是对应下面的0-9,就可以查看是各个模式下走的是硬件3DNR,还是软件3DNR. CAMERA_3DNR_TYPE_NULL = 0, CAMERA_3DNR_TYPE_PREV_HW_CAP_SW, //1 – 预览硬件,拍照软件(超级夜景) CAMERA_3DNR_TYPE_PREV_NULL_CAP_HW, //2 – 预览不处理,拍照硬件(自动夜景) CAMERA_3DNR_TYPE_PREV_HW_VIDEO_HW, //3 –
+完整回答请参考FAQ: FAQ202273730
+### 问题: 为什么基于SC2721G或SC2721GT的平台不支持使用E-Mark线材进行充电？
+解决方案: 首先介绍什么是E-Mark:全称 Electronically Marked Cable,是指封装有E-Marker芯片的USB Type-C有源电缆,所有全功能的Type-C电缆都应该封装有E-Marker. 为什么SC2721G不持支呢? 这需要对Type-C的CC机制有详细的了解.在充电时,Type-C连接器通过CC脚来识别对端设备.首先是检测Cable插入方向;其次是检测电源角色是Source、Sink还是Dual Role Port,确定供受关系;最后再确认电源为供,机子为受,进行充电. 以使用SC2721G芯片的的SC9863A平台为例,通过实测波形图讲解CC机制. (1)当CC为低电平时,识别机子为Sink(受),这时才会开始充电. (2)使用E-Mark线. 开机状态下(手机开机之后)CC为高电平(将近4V)(CC在开机状态下为高电平和TYPE-C协议相关),此时插入E-M
+完整回答请参考FAQ: FAQ202273740
+### 问题: APP应用的全部功能对sensor方面的具体要求
+解决方案: 注意app并不与sensor直接接触,app直接与hal进行数据的交换,app功能是否打开可以通过featrueList进行配置,可通过此TAG获取不同功能的支持能力,tag再hal中进行填充 public static final Key<int[]> ANDROID_SPRD_FEATURE_LIST = new Key<int[]>( "com.addParameters.sprdCamFeatureList", int[].class); int[] mSprdFeatureCapabilities = getCameraCharacteristics(cameraId).get( SprdCameraCharacteristics.ANDROID_SPRD_FEATURE_LIST); private enum FeatureTagID { BEAUTYVERSION, //fa
+完整回答请参考FAQ: FAQ202273753
+### 问题: camera app自动对焦
+解决方案: App值需下发CONTROL_AF_TRIGGER的两个值CONTROL_AF_TRIGGER_START和CONTROL_AF_TRIGGER_CANCEL两个值来开启对焦和取消自动对焦即可 //下发对焦,通过deferredCallbackSetter回调对焦状态 Camera2RequestSettingsSet trigger = new Camera2RequestSettingsSet(mPersistentSettings); trigger.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START); mSession.capture( trigger.createRequest(mCamera, CameraDevice.TEMPLATE_PREVIEW, mPreview
+完整回答请参考FAQ: FAQ202273754
+### 问题: 关于acc的坐标系及accelerometer_XXX.cpp中的position的说明
+解决方案: 机器的坐标系是基于acc传感器的,acc传感器有一个绝对坐标系,但是acc传感器相对于机器的位置是相对的 acc传感器贴在主板正面,acc芯片旋转0度,旋转90度,旋转180度,旋转270度. acc传感器贴在主板背面,acc芯片旋转0度,旋转90度,旋转180度,旋转270度. 共8种情况 所以accelerometer_XXX.cpp中的position有8个值可以选(0,1,2,3,4,5,6,7)分别会与上述情况一一对应.(具体对应关系不必关心) 只要调节position的值即可,总有一个值会符合下面情况, 当机器平放时 X: 0.xx或-0.xx Y: 0.xx或-0.xx Z:9.XX 当机器立起来,垂直桌面时 X: 0.xx或-0.xx Y: 9.XX Z:0.xx或-0.xx 当机器横放,垂直桌面时 X: 9.XX Y: 0.xx或-0.xx Z:0.xx或-0.xx 此时
+完整回答请参考FAQ: FAQ202273755
+### 问题: 关于屏幕旋转的问题
+解决方案: 使用sensorhub架构的平台中,有虚拟传感器device orientation.该传感器基于acc的数据合成的,当机器位置发生变化(机器由竖屏旋转成横屏)时.该传感器会上报一个数值, 该传感器是算法合成的,当出现问题的时候可能也和具体厂商的acc传感器相关. 1.发生概率性(概率也是很低的)屏幕不旋转,应该是device orientation没有上报状态.一般性无解(只要是虚拟传感器总有局限性). 要么接受,要么注释掉SensorList_hub.cpp中的device orientation传感器,采用谷歌的虚拟算法(还有概率性问题,不在我司支持范围内) {.name = "Device Orientation", .vendor = "Sprd Group Ltd.", .version = SENSOR_VERSION, .handle = SENSOR_HANDLE_DEV
+完整回答请参考FAQ: FAQ202273756
+### 问题: DreamCamera2 APP，全景模式拍照过程中快速移动，预览界面边缘泛红问题
+解决方案: 答:这是正常现象,用于提示用户当前拍照移动过快,不建议去除. 屏蔽泛红提示case如下: src/com/sprd/camera/panora/WideAnglePanoramaUI.java
+    private void createContentView() {
+        long start = System.currentTimeMillis();
+    .................................................
+        mCaptureProgressBar.setIndicatorWidth(20);
+
+-       mPreviewBorder = mCaptureLayout.findViewById(R.id.pano_preview_area_border);
++       //mPrevie
+完整回答请参考FAQ: FAQ202273759
+### 问题: DreamCamera2 APP，预览帧率接口是？
+解决方案: 答:DreamCamera2 APP,预览帧率设置接口为:setPreviewFpsRange(int min, int max); 如下是不同模式的预览帧率设置位置: ①常规拍照模式 路径:vendor/sprd/platform/packages/apps/DreamCamera2/src/com/android/camera/PhotoModule.java protected void updateCameraParametersInitialize() {
+    // Reset preview frame rate to the maximum because it may be lowered by
+    // video camera application.
+    int[] fpsRange = CameraUtil
+            .getPho
+完整回答请参考FAQ: FAQ202273761
+### 问题: Flash tuning调试方法，如何根据log去debug
+解决方案: Flash常用log关键字: 1. camera_isp_flash_set_charge: M29A40E 09-10 17:43:46.745 486 4108 D cmr_oem : 5143, camera_isp_flash_set_charge: led_idx=1, flash_type=1, idx=15 >led_idx,这个代表LED种类,比如冷灯还是暖灯 >flash_type,主闪还是预闪 >idx,这个就是具体的档位 2. ae_set_flash_notice: M29BCC4 09-10 17:43:50.081 486 4108 D ae_sprd_adpt: 1885, ae_set_flash_notice: ae_flash_status FLASH_PRE_BEFORE, cameraId:0 >ae_flash_status :AE适配层负责fla
+完整回答请参考FAQ: FAQ202273769
+### 问题: flash calibration相关问题
+解决方案: 1. flash的标定原理: 获取预闪、主闪每档电流下RGB统计值、CT值之间的映射关系. 2. flash标定后全部偏色,flash参数异常; flash无法矫正;矫正后偏色分析 需要检查标定数据是否正常,数据都保存在data/vendor/cameraserver下,具体情况具体分析,一般情况下,flash标定之后不会出现全部偏色的问题. 需要注意一点的是,AE3.0有个参数为data_type. data_type为0 表示使用旧 AEM 格式, 1 表示使用新 AEM 格式(oe_thd & ue_thd),针对SC9863A及其以前的平台,不支持新AEM格式,这个地方要改为0(一般默认是1),否则也会导致flash标定结果异常(画面完全偏绿). 3. flash版本与工具版本的对应关系,flash矫正失败的原因分析 flash标定的alg_version在ae_sprd_flas
+完整回答请参考FAQ: FAQ202273771
+### 问题: flash CCM的调用规则
+解决方案: flash CCM调用的逻辑有两个参考点: 第一是根据有几颗LED来判断启用第7或者第8组.若只有一颗LED,则会参考第8组的CCM,若有两颗LED,则第7、8组会一起启用. 第二点是根据环境亮度会参考当前环境在normal下的CCM,大致方向是亮度越高,当前环境CCM权重越高,亮度越低,第7或8组权重越高. log关键字:flash_weight---需要打开smart logV(Smart_ctrl.c) log举例: smart_ctrl: 945, smart_ctl_calc_component_flash: flash_weight=(202, 256) 第一个weight,202(flash /(flash + enviroment)),总权重flash+environment=256,flash权重占比202/256,当前环境权重占比为:54/256; 第二个weight,
+完整回答请参考FAQ: FAQ202273772
+### 问题: Flash User空间大概的拍照流程
+解决方案: ->按下拍照按钮 CAM_PhotoModule: onShutterButtonClick: mCameraState=1 mContinuousCaptureCount=1 ->flash mode下发 updateWorkParameters: flashInfo.mode=1,value=1 ->HAL接收拍照请求 Cam3HWI : 1659, processCaptureRequest: camId=0, bufs_num=1, frame_num=76, cap_intent=1, pic_req=1, first_regular_req=0 ->判断两次预闪之间的时间,若小于3s,则不需要再进行一次预闪,直接主闪拍照. Cam3OEMIf: 11009, processZslSnapshot: lst_preflash_time = 0, now_time=68673360
+完整回答请参考FAQ: FAQ202273775
+### 问题: AE3.0  log中各数据的含义
+解决方案: AE3.0 log中各数据的含义: 搜索"aec_alg_status_printf"可查看ae库输出信息: ae.m,1,unstb,near_unstb,face_unstb,unlock,50Hz,fps[15.00, 30.00]:30.00 cur-(s 1894(0.020003s),g 1200,dmy 0),nxt:idx:254,(s 946(0.010000s),g 1257,dmy 2210) bv:797,cur_l:(f:76,c:91,n:73),y_l:167,tar_l[38,42]40 ae.m,ae.s0,ae.s1:摄像头标记信息,分别代表多摄模式下的不同摄像头; 1:AE算法内部的帧号 unstb:AE是否稳定信息,stb稳定,unstb不稳定 near_unstb:接近稳定信息,处于快稳定的状态 face_unstb:有人脸情况下的人脸计算稳定信息
+完整回答请参考FAQ: FAQ202273776
+### 问题: AE3.2  final target计算方法
+解决方案: AE3.2 final target计算方法: AE Target 计算公式: 有人脸/Touch时:final_target=(mulaes_target×wgt1+fae(tae)_target×wgt2+compensation_target×wgt3)/(wgt1+wgt2+wgt3) 无人脸/Touch时:final_target=(mulaes_target×wgt1+compensation_target×wgt3)/(wgt1+wgt3) compensation_targe计算公式: compensation_target=(hm_tar×hm_weight+ns_tar×ns_weight+ai_tar×ai_weight)/(hm_weight+ns_weight+ai_weight) 1、在参数中直接查看AE各小模块的weight设置 2、在debugtool中导入
+完整回答请参考FAQ: FAQ202273777
+### 问题: 如何做PDAF线性度测试
+解决方案: PDAF线性度测试步骤如下: 1)测试环境,手机用支架固定,对准条形图,距离条形图20cm左右,如下图 2)手动推马达分别推到macro 和 inf 位置之间,等间距的位置,比如inf=195,macro=545(从模组OTP获取), 可取中间的6个位置:245 、 295 、 345 、 395 、 445 、 495 手动推马达命令: Android R adb shell setprop debug.isp.af.idpos id:pos(id:相机的ID值0/1/2/3/4,后摄0,pos:马达位置) Android9/10 adb shell setenforce 0 adb shell setprop vendor.cam.af_mode ISP_FOCUS_MANUAL adb shell setprop vendor.cam.af_set_pos pos (其中pos指马达
+完整回答请参考FAQ: FAQ202273786
+### 问题: CAF和PDAF常用log关键字
+解决方案: CAF: af_sprd_adpt_v1: 2172, caf_monitor_trigger: lib trigger af 1 //trigger结束,1:caf ;2:PDAF ;3:face af;4:tof af_sprd_adpt_v1: 1269, if_af_start_notify: notify_start: mode[1], type[1]!! //对焦开始 AFv1Lib : 3444, _af_scan_init: Scan table From 327 382 to 654 743, otp bIsExist 2 // bIsExist 2:无OTP,或有OTP但AF otp解析失败,水平或向下327-743,向上382-654 AFv1Lib : 3009, _af_algo_set_otp_calibrate: Apply OTP Data Scan tab
+完整回答请参考FAQ: FAQ202273788
+### 问题: 失焦问题如何debug
+解决方案: 1.使用AF_TOOLS解析同一场景失焦和不失焦图片的exif信息表格:AF_Result_list.xlsx文件 如果同一场景失焦和不失焦的图片final pos相同或只相差几个code,认为非AF问题 2.使用AF_TOOLS解析exif信息txt文件,查看是否完成对焦 AF_mode 7表示对焦完成,其他值为未完成 Stop Req 0,表示此次对焦正常完成,1表示此次对焦被强制取消 可能是上层取消或aft取消 3.查看曲线是否单调递增或递减 1)模组没做下旋,远焦没有峰值易失焦——建议模组做下旋 2)扫描范围没有包含peak——调整pos_l1/l2/l3/l4等参数至扫描范围包含问题场景peak 3)拍摄距离超出模组景深范围——建议拍摄距离不要小于模组景深最小值 4.查看是否有手抖严重或人脸场景有人脸移动 1)gsensor focusing Data为对焦结束前的gsensor
+完整回答请参考FAQ: FAQ202273790
+### 问题: 如何通过NV获取样机GSM各Band校准状态
+解决方案: NV中存在校准标志位,可以通过标志位的值来确认样机校准状态. gsm_research\gsm_calibration_param_remaining\adc\adc_reserved[7]=0X0 样机未校准时,adc_reserved[7]=0X0. Bit0:TEST_FLAG_CALI_PCS_AGC Bit1:TEST_FLAG_CALI_PCS_APC Bit2:TEST_FLAG_CALI_DCS_AGC Bit3:TEST_FLAG_CALI_DCS_APC Bit4:TEST_FLAG_CALI_EGSM_AGC Bit5:TEST_FLAG_CALI_EGSM_APC Bit6:TEST_FLAG_CALI_GSM850_AGC Bit7:TEST_FLAG_CALI_GSM850_APC 假设从样机NV中读到的adc_reserved[7]=0X1000AA,则需要将
+完整回答请参考FAQ: FAQ202273794
+### 问题: General ON/OFF time mask Debug 专题1——CMW Run挂测
+解决方案: LTE所有频段,不管是FDD还是TDD,CH bandwidth为20MHz的,(此处特别强调20M,是因为带宽越大,积分后的平均能量越大,即底噪越高,越容易Fail)在使用CMW Run挂测General ON/OFF time mask,OFF power余量一直不高,如图1,一般OFFpower 常温常压(NTNV)较好数值为-52dBm左右. 一般遇到这类问题,我们会按照下述步骤排查. 1、更换安立系产品验证是否真的是case本身存在问题,即使用MT8820和MT8821C手动测试General ON/OFF time mask,观察图示OFF before 段是否有存在spur,如无spur,before 和after底噪光滑,OFF power数值约-70dBm,则说明非case本身问题.如存在Spur,下回分解 2、看整个time mask 是否存在左移(提前打开)或右移(滞
+完整回答请参考FAQ: FAQ202273801
+### 问题: 8910平台，CMUX功能的使用方式
+解决方案: 1、什么是 CMUX CMUX( Connection Multiplexing ),即连接(串口)多路复用,其功能主要在一个真实的物理通道上虚拟多个通道,每个虚拟通道上的连接和数据通讯可独立进行. 2、相关AT AT+CMUX,具体需参考UIS8910_AT_Command_Manual.pdf 3、需要工具 cmuxapp_V1.3.6,请咨询CPM同事获取. 4、操作方式 step1、开机后,插上USB线 step2、从PC的设备管理器找到对应串口的COM口 step3、用串口工具SSCOM打开此COM口,发送AT看是否可收到回应,能收到回应,表示串口是通的,SSCOM工具关闭此串口 step4、用cmux app工具选择此COM口 step5、安装setup_com0com_W7_x64_signed.exe软件,使PC电脑设备管理器能虚拟多对虚拟串口((x1,y1),(x2,y2
+完整回答请参考FAQ: FAQ202273802
+### 问题: 部分属性在非root权限下无法显示
+解决方案: 在非root权限下不能访问某些属性,是因为不selinux限制了,需要修改:
+system/sepolicy/private/property_contexts
+
+修改有两种方法:
+1.可以显示所有以ro.odm开头的property:
+diff --git a/private/property_contexts b/private/property_contexts
+index a4fab1f22..6f5736d40 100644
+--- a/private/property_contexts
++++ b/private/property_contexts
+@@ -1,7 +1,7 @@
+ ##########################
+ # property service keys
+ #
+-#
++/
+ net.rmnet             
+完整回答请参考FAQ: FAQ202273804
+### 问题: Camera低电量不打开闪光灯。电量阀值是多少？
+解决方案: camera 监听电量变化的广播,在 低于CameraUtil.getLowBatteryNoFlashLevel()这个值的时候,关闭闪光灯打闪 CameraActivity.java if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED) && mCurrentModule.isFlashSupported()) { final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0); mIsBatteryLow = level <= CameraUtil.getLowBatteryNoFlashLevel(); Log.i(TAG, "action_battery_changed level = " + level + " , isBatteryLow
+完整回答请参考FAQ: FAQ202273806
+### 问题: PDAF的三种类型及差异
+解决方案: PDAF主要有以下三种类型: •Sheild PD 遮蔽掉像素一半的感光区域(黑色部分),只获得一半信号. Shield pixel越多,对焦越快,但信号损失越严重,目前SP密度控制在1%~3%. •Dual PD 将同一个像素底部的感光区域(即光电二极管)一分为二,在同一个像素内即可完成相位信息捕获.dual PD 也有叫 2PD 、全像素双核对焦,这种像素覆盖率 100%,暗环境对焦效果好,对焦体验最佳,但拍照容易过曝 •Super PD Sensor(2*1PD) 将相邻像素共用一 个 microlens 得到相位差信息,一般在 Green 上处理. 二合一的 PD 越多,对焦速度越快但信号损失越严重,目前密度控制在1%~3% 总结: 从对焦效果来说,Dual PD>2*1 PD>shield PD,这种优势尤其体现在暗环境下对焦的稳定性上,比如10lux/5lux/1lux这些极暗
+完整回答请参考FAQ: FAQ202273811
+### 问题: PDAF驱动中tail输出LINED_UP和CROSS_PATTERN的配置差异
+解决方案: 路径形如vendor/sprd/modules/libcamera/sensor/sensor_drv/classic/Sony/imx598 依据LINED_UP和CROSS_PATTERN分别配置: ①添加pd_seprator_helper配置-- LINED_UP static const cmr_int hi1336_pd_coordinate_tab[] = {0,1,1,0}; // LINED_UP时配置,表示tail的输出形式 struct pdaf_block_descriptor hi1336_pd_seprator_helper = { .block_width = 1, //依据sensor spec中的tail输出形式配置block_width与block_height .block_height = 4, .coordinate_tab = hi1336_pd
+完整回答请参考FAQ: FAQ202273812
+### 问题: 如何在Camera预览界面去掉来电震动
+解决方案: 1: 在DreamCamera2目录的manifest.xml文件下添加如下权限: <uses-permission android:name="android.permission.STATUS_BAR_SERVICE"/> 2: public void onResumeTasks(Bundle state) { /// 在预览的时候设置为禁止震动情景模式 mAudioManager=(AudioManager)getSystemService(AUDIO_SERVICE); if (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) { mAudioManager.setRingerModeInternal(AudioManager.RINGER_MODE_SILENT); mOriginalRinger
+完整回答请参考FAQ: FAQ202273830
+### 问题: RPM6743-31 TimeMask测试时，OFF power before存在尖峰问题
+解决方案: 1、 客户反馈问题现象跟随PA(RPM6743-31)走,更换其他PA后问题未再复现; 2、 通过CMW500run脚本测试,未能复现问题,猜测因为脚本抓取的是Time Mask瞬时数值;手动测试TimeMask性能并等待一段时间,OFF Power before fail; 3、 根据以往调试经验,Reg00控制内部PA和输入开关,Reg02控制HB开关切换和所有输出开关的启动电路.当Reg02=0x00时会彻底关闭LB、MB和HB的输出开关.输出开关从彻底关闭到启动至稳定状态,需要的时间最长,约2~4us.在某些组合下,会比PA启动时间长,即存在输出开关尚未完全启动稳定,但PA已经打开的情况.因此该问题可通过修改Reg02解决.而检查样机NV,发现Reg02已设置为高隔离状态(mipi_ctrl_word[0]=0x20F); 4、 将MIPI_WR_Num改为0x104,并在PA_O
+完整回答请参考FAQ: FAQ202273834
+### 问题: 动态加载中修改sensor指定寄存器
+解决方案: 可尝试在sensor enable时对寄存器进行改写,并添加Log打印.如下示例所示,在light_enable中改写指定寄存器 int stk_light_enable(int mode, void *pdat, int len)//该接口在sensor enable时会被调用 { …… if(ret == 0){ shub_extern_call->debug_trace("stk i2c failed\n"); } ++ buf[0] = 0x02; ++ buf[1] = 0x31; ++ ret = shub_extern_call->extern_i2c_write(i2c_handle[PRO_TYPE], &buf[0], &buf[1], 1);//进行改写 ++ if(ret == 0){ ++ shub_extern_call->debug_trace("stk i2
+完整回答请参考FAQ: FAQ202273845
+### 问题: 动态加载编译bin文件大小问题
+解决方案: 编译后只有几个字节,可能是没有补充对patch_table_sensor结构体实例的__attribute__修饰符 ,导致链接文件在编译时没有检测到相关字段 检查动态加载代码中patch_table_sensor结构体实例是否如下 #pragma arm section rwdata = "extern_call" struct patch_table_sensor extern_sensor_call = { …… InitMain, }; #pragma arm section rwdata 请补充__attribute__修饰符进行如下修改 //#pragma arm section rwdata = "extern_call" struct patch_table_sensor extern_sensor_call __attribute__((section("sensor_d
+完整回答请参考FAQ: FAQ202273846
+### 问题: V2 平台LTE校准报AGC Gain Overlap  Delta 超出门限该如何处理
+解决方案: 对于校准AGC,Simba工具端除了check Max\Min gain外,当LNA是四段增益时,还需要确认相邻两段增益之间的差值(overlap)具体数据在校准log目录下:LTE\AGC下面,如下表: 表中ctrl word的bit8:11控制字变化代表了LNA的状态切换,一共四档增益,三段overlap: 1.目前展锐平台对于LTE校准AGC Gain Overlap Delta 的SPEC是[-15,-3],R8.21.2604之前的工具版本对于部分平台的标准是[-13,-5],若校准不过,可更新工具版本 2.更新之后的版本,若仍存在问题,分如下两种情况: 1)项目处于调试阶段,大部分主板校准都会fail,并且校准PASS主板余量也不足,此时需要优化该接收链路的匹配; 2)当项目处于量产阶段,只有小部分主板校准偏下限fail,并且校准fail的主板与校准PASS的主板灵敏度测试满足
+完整回答请参考FAQ: FAQ202273847
+### 问题: UMS512及UMS9230软件删除UCP1301配置的方法
+解决方案: ums512及ums9230,平台样机默认使用ucp1301作为外置PA,如果硬件上删除了ucp1301,需要按照一下修改代码,否则可能会由于声卡注册失败导致无法开机 1.删除CONFIG宏 A11/A12,有两种方法(任选一种即可): 1) 进入 kuconfig disable 宏 CONFIG_SND_SOC_SPRD_PA_UCP1301 2) 在xxxx_diff_config文件中加入 DEL:CONFIG_SND_SOC_SPRD_PA_UCP1301 (A12该宏控修改为CONFIG_SND_SOC_UNISOC_PA_UCP1301) 文件路径示例: A11及之前:kernel4.14/sprd-diffconfig/androidq/sharkl5Pro/arm64/ums512_20c10_diff_config A12:kernel5.4/ sprd-diffcon
+完整回答请参考FAQ: FAQ202273850
+### 问题: 删除副mic配置
+解决方案: 修改方法: 对于A11,A12,如果非平台目录下(比如客制化目录device/sprd/平台名(sharkl5Pro)/工程名(ums512_1h10)/module/audio/system/etc/)有device_for_input_source.pfw文件,修改此文件,否则,修改平台目录device/sprd/mpool/module/audio/msoc/平台名(sharkl5Pro)/system/etc/parameter-framework/Settings/device_for_input_source.pfw,将文件中所有back_mic = 1改为back_mic = 0及builtin_mic = 1,对于A13,该pfw文件平台目录变更为/vendor/sprd/modules/audio/engineconfigurable_apm/平台名(qogirl6)/s
+完整回答请参考FAQ: FAQ202273853
+### 问题: 双mic录音录像支持
+解决方案: 在audio_hw.c中增加如下标红内容: static int start_input_stream(struct tiny_stream_in *in) { .... if((AUDIO_DEVICE_NONE==in->devices) &&(AUDIO_HW_APP_CALL_RECORD!=in->audio_app_type)){ LOG_W("start_input_stream invalid mic"); return -3; } //修改为双mic if((AUDIO_HW_APP_NORMAL_RECORD==in->audio_app_type) && (in->devices&(AUDIO_DEVICE_IN_BUILTIN_MIC|AUDIO_DEVICE_IN_BACK_MIC)&(~AUDIO_DEVICE_BIT_IN))) { in->devices |
+完整回答请参考FAQ: FAQ202273854
+### 问题: LTE B41 全带宽（194MHz）测AMPR (NS04)注意事项——CMWRun挂测
+解决方案: CMW Run目前客户端常用的几个版本:1.8.9, 1.9.6, 1.9.10,在测试B41全带宽AMPR时皆会出现这样的问题,在同一回退场景下,低信道的功率比中信道和高信道低2dB左右.容易出现个别频点或调制方式下低信道功率余量不足.如下图1所示.这并非是case本身性能存在问题,而是CMWRun测试的SPEC未正确按照协议设定,下面将简述与协议矛盾点. 图1 B41全带宽AMPR测试截图 图1中存在两点run设置不合理的地方: 1、RB Num25,RB_Pos:HIGH,这本身就非合理场景,FRB的设置下,RB_pos应为Low,也就是RB_start=0 2、图中可见,功率上下限低信道CH39675和中间信道CH40620完全一致,但是根据协议规定,低信道要比中间信道额外多回退2dB,见下图2.由于B41全带宽频率起止点为2496MHz~2600MHz,低信道在FRB,RB_st
+完整回答请参考FAQ: FAQ202273862
+### 问题: DreamCamera2 APP，如何修改照片角度和录像角度？
+解决方案: 在横屏设备中,可能存在需要修改照片角度和录像角度的需求,下面给出DreamCamera2 APP中,修改照片和录像角度的参考case. ①Camera APP中,照片角度可通过 ANDROID_JPEG_ORIENTATION tag设置. DreamCamera2 APP的图片角度可以通过以下 mJpegRotation 来修改. src/com/android/camera/PhotoModule.java
+@Override
+public boolean capture() {
+.................................
+boolean isFrontCamera = info.isFacingFront();
+mJpegRotation = CameraUtil.getImageRotation(sensorOrientation,  
+devi
+完整回答请参考FAQ: FAQ202273863
+### 问题: ums512 单软多硬（多套音频参数）修改方案
+解决方案: 针对AndroidR 以UMS512平台为例,方案如下: 1、 修改audio_config.xml device\sprd\sharkl5Pro\ums512_1h10\module\audio\system\etc\audio_params 目录下没有就从mpool:device\sprd\mpool\module\audio\msoc\sharkl5Pro\system\etc\audio_params处复制一个过来 <audioparam> <sprd path="/vendor/etc/audio_params/sprd"/> - <vendor01 path="/vendor/etc/audio_params/01"/> + <p01 path="/vendor/etc/audio_params/p01"/> + <p02 path="/vendor/etc/audio_par
+完整回答请参考FAQ: FAQ202273867
+### 问题: DreamCamera2关键LOG梳理
+解决方案: 为了便于客户问题分析,本文将对常见的APP及相关LOG进行梳理.主要分为打开、关闭相机,起预览、拍照、录像等.本文将根据流程先后顺序进行梳理,对主要LOG进行说明. 1. 打开相机 //启动相机 S311E15 02-08 20:59:13.774 1077 1770 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.camera2/com.android.camera.CameraLauncher bnds=[540,912][789,1239]} from uid 10167, pid 1850 //APP 打开相机 M311F11 02-08 20:59:13.876 
+完整回答请参考FAQ: FAQ202273888
+### 问题: 如何设置双击音量键或电源键启动相机
+解决方案: 双击电源键和双击音量键启动相机 路径:frameworks\base\packages\SystemUI\res\values\config.xml 宏开关: config_cameraDoubleTapPowerGestureEnabled // 双击电源键启动 config_cameraDoubleTapVolumeUpGestureEnabled //双击音量键启动 编译与生效:要求代码版本和pac版本一致,否则卡在重启界面;建议全编 生成路径: out\target\product\s9863a1h10_go\system\framework Push路径: adb push framework-res.apk /system/framework/ adb push framework.jar /system/framework/ 双击音量键启动camera逻辑位置: framew
+完整回答请参考FAQ: FAQ202273889
+### 问题: 如何编译camera framework
+解决方案: 1. 如果修改文件路径是:frameworks/base/core/java/android/hardware/camera2/ 则使用如下命令进行编译: make framework-minus-apex 编译出framework.jar后,先用下面的命令remount: adb root; adb remount 然后把framework.jar push到system/framework/下面,同时还要删除这个目录下面的oat,arm,arm64三个目录(不删除会一直卡在开机动画),最后再运行下面的命令重启zygote,这样新替换的framework.jar就生效了. adb shell stop; adb shell start; 2.如果修改的是 :framework/av/services/camera/libcamera 在framework/av/services/came
+完整回答请参考FAQ: FAQ202273890
+### 问题: Android如何新增裸分区
+解决方案: 下面在s9863a1h10上以新增logo_new分区为例: 1.在ini文件中配置分区对应的文件 :~/9863a_a10/vendor/sprd/release/pac_config$ git diff s9863a1h10.ini
+diff --git a/s9863a1h10.ini b/s9863a1h10.ini
+index 8aa8008..731717b 100644
+--- a/s9863a1h10.ini
++++ b/s9863a1h10.ini
+@@ -74,6 +74,7 @@ Recovery=1@./out/target/product/s9863a1h10/recovery.img
+ Super=1@./out/target/product/s9863a1h10/super.img
+ UserData=1@./out/target/product
+完整回答请参考FAQ: FAQ202273896
+### 问题: 专业模式下shutter问题
+解决方案: 基本信息: OS: AndroidR 基线:SPRDROID11_TRUNK_20A_W21.30.2 芯片:SC9863A 代码已合入分支:sprdroidr_trunk_20a_u01、sprdroid_camera_trunk、11.0_camera_trunk、sprdroidr_trunk_21a 1, 先搜索专业模式下预览调节shutter值的整个关键log,由于与ae曝光有点关系,故需要加上ae流程的相关log "cmr|Cam3|CAM|ae_sprd_adpt" //cmr、Cam3、CAM、ae_sprd_adpt分别表示oem、hal、app、ae适配层的log 2, 复制以上log,缩小排查范围,因与曝光时间有关,故继续曝光时间相关的log updateParametersExposureTime|receivePreviewFrame|translateLocal
+完整回答请参考FAQ: FAQ202273898
+### 问题: SC7731E USB眼图参数如何合入代码？
+解决方案: 根据USB20_HS_Device_Mode_Test_SOP_V1.0.pdf(通过uni-support发布),SC7731E平台用于眼图调整的寄存器位是0x20E0302C的bit[31:30]和0x20E03030 bit[13:8]. 调整好眼图参数后,如果要将参数合入到代码中,可参考如下修改. drivers/usb/phy/phy-sprd-musb.c
+
+
+static int sprd_hsphy_init(struct usb_phy *x)
+{
+...
+	/* for SPRD phy sampler sel */
+	reg1 = readl_relaxed(PHY_REG_BASE + REG_AP_AHB_OTG_CTRL1);
+	reg1 |= BIT_AP_AHB_USB20_SAMPLER_SEL;
+	writel_relaxed(reg1
+完整回答请参考FAQ: FAQ202273916
+### 问题: Camera APP 拍照，照片内存太小问题
+解决方案: 图片内存的大小受 图片编码质量 和 编码压缩率 影响.而图片压缩率不是固定值,和图片内容相关,一般可以通过修改图片编码质量来改变图片内存大小. 修改图片编码质量可通过谷歌官方TAG:JPEG_QUALITY控制,APP不下发该TAG的值时,图片编码质量默认为85 ,TAG 的使用可参考展锐 DreamCamera2 APP. DreamCamera2 APP log分析见如下: 07-17 01:34:09.083  446 15158 D cmr_snp : 2987, snp_set_jpeg_enc_param: quality 70 slice height 1200 //图片编码质量为70(下发的TAG值为70),DreamCamera2 APP Camera settings 的 Picture quality 对应normal
+
+07-17 01:34:17.574  4
+完整回答请参考FAQ: FAQ202273917
+### 问题: LTE校准限制APT index最小值
+解决方案: LTE链路搭配增益较大的PA,若使用耐受功率相对小的SAW(eg:29dBm max的物料),量产时有可能会存在小概率烧SAW的现象. 1、根本原因是物料本体耐受功率偏低导致,与平台无关.需要SAW厂家处理或更换好点的SAW; 2、若是量产阶段,平台开发一套限制APC校准最大发射功率,也可解决小概率烧SAW现象; 3、如下CP0或之后版本已包含此功能: 4G_MODEM_20A_W21.46.2, 4G_MODEM_21A_RLS1_W21.49.5, 4G_MODEM_21A_SS_W21.46.2, 4G_MODEM_21A_W21.29.5_P1, 4G_MODEM_21A_W21.44.5 4、NV中使能标志位和控制字限制如下: ①LTE_optimize\LTE_download_dsp_compensation_cc0_optimize\LTE_Flag_config\ res
+完整回答请参考FAQ: FAQ202273930
+### 问题: 关于Google Pay在globalactions中不显示卡包问题说明
+解决方案: 1. 当前问题出现的前提: 完整集成NFC功能,并打开设备NFC开关 可在google play商店下载Google Pay应用 2. 问题现象描述: Google Pay在"设置 -> 已连接的设备 -> 连接偏好设置 -> NFC -> 感应式付款"中无法设置成默认支付应用 长按power键打开的globalactions界面中不显示Google Pay卡包 3. 问题现象解释和分析: 3.1 Google Pay在"设置 -> 已连接的设备 -> 连接偏好设置 -> NFC -> 感应式付款"中无法设置成默认支付应用 //gms log显示平台支持GooglePay的TapAndPay feature,但是缺少相关token,对"com.google.android.gms.tapandpay.hce.service.TpHceService"组件做了禁用,导致Google Pay不
+完整回答请参考FAQ: FAQ202273931
+### 问题: 人脸场景下，不触发face af
+解决方案: 问题描述:对着人脸,出现人脸识别框,但不触发face af,解析图片,也未出现人脸对焦绿框. 问题分析: 用af_tools.exe解析图片,确实未出现人脸绿框 查看log,搜索如下关键字: fd_data_process|face_num=|aft_proc_log_print|IMG_20220216_220121.jpg 其中IMG_20220216_220121.jpg是拍摄的其中一张图片,将搜索出来的内容复制出来,进一步查看分析 从log上 face_is_stab为0,stab未到达稳定,无法进行整个trigger流程. 再看face stab参数设置不合理,将fstab.diff_cx_thr、fstab.diff_cy_thr、fstab.diff_area_thr与fstab.converge_cnt_thr分别设置成25.6,25,6,51.2,768,而默认参数设置成
+完整回答请参考FAQ: FAQ202273932
+### 问题: 相机快门音量大小适配
+解决方案: 1.通过调节音量曲线实现 a.查看拍照时快门声音的音频流log信息: 10-06 21:55:10.565 875 875 D AS.AudioService: adjustStreamVolume() stream=3, dir=0, flags=4112, caller=android 10-06 21:55:11.033 875 5084 D AS.AudioService: Volume controller visible: false 10-06 21:55:11.038 875 2273 D AS.AudioService: forceVolumeControlStream(-1) 10-06 21:55:11.143 29655 29655 I CAM_PhotoModule: takePicture start! 结合代码可以看出stream3对应的是music,在aud
+完整回答请参考FAQ: FAQ202273934
+### 问题: 按键重启配置问题
+解决方案: 按键重启是由硬件触发的,主要是PMIC中的PBINT管脚(一般接电源键)和EXT_RSTN管脚(一般接音量上键)来触发. 目前支持单键(电源键)触发和双键(电源键+音量上键)触发. 主要由PMIC中的寄存器POR_7S_CTRL来配置是选择单键触发还是双键触发. 在uboot中pbint_7s_rst_cfg这个函数来配置POR_7S_CTRL寄存器 int pbint_7s_rst_cfg(uint32_t en, uint32_t sw_rst, uint32_t short_rst) { pbint_7s_flag = sci_adi_read(ANA_REG_GLB_POR_SRC_FLAG); debugf("pbint_7s_flag=%d \n",pbint_7s_flag); sci_adi_set(ANA_REG_GLB_POR_7S_CTRL, BIT_PBINT_7S
+完整回答请参考FAQ: FAQ202273935
+### 问题: WIFI温补功能配置
+解决方案: 在wifi_board_config.ini文件[Section 14: rf_tlv_config]结尾需添加如下部分: 0x0B,0x0B,0x0,0x20,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x43,0x0,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x2,0x2,0x1,0x1,0x0,0x0,0x0,0xFF,0xFF,0xFE,0xFE,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0xFD,0x6,0x6,0x6,0x6,0x6,0x6,0x5,0x4,0x4,0x3,0x2,0x1,0x0,0x0,0x0,0xFF,0xFE,0xFD,0xFC,0xFC,0xFC,0xFC,0xFC,0xFC,0xFC,0xFC,0xFC,0xFC,0xFC,0x
+完整回答请参考FAQ: FAQ202273938
+### 问题: add2line工具定位发生Native Crash的行号
+解决方案: Native Crash 问题的分析主要依赖 Android tombstone 和 corefile 等日志信息.本文介绍使用Linux系统的addr2line工具定位发生Native Crash的行号. C9F367E 02-17 05:18:01.218 25291 25291 F DEBUG  : Native Crash TIME: 820012901
+C9F367F 02-17 05:18:01.218 25291 25291 F DEBUG  : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+..............................
+C9F3699 02-17 05:18:01.254 25291 25291 F DEBUG  : backtrace:
+C9F369A
+完整回答请参考FAQ: FAQ202273939
+### 问题: flash echo test测试
+解决方案: 1.使用adb命令进入对应路径操作: adb root adb remount adb shell cd /sys/devices/virtual/misc/sprd_flash/ 2. 输入对应命令 如上图示例:echo 0x0000(0000 0000 0000 0000) > test flash_idx: 表示前后闪光灯,0表示后置闪光灯 1 表示前置闪光灯 element:表示亮度等级,支持0-31档,共32档 idx:代表LED种类,1(0001)表示LED0,单色温闪光灯默认1,2(0010)表示LED2 cmd:代表具体操作 0表示打开预闪 1表示关闭预闪 2表示打开手电筒 3表示关闭手电筒 4表示打开主闪 5表示关闭主闪 6表示设置预闪挡位 7表示设置手电筒亮度 8表示设置主闪挡位 3.举例; >>手电筒亮度测试 echo 0x0012 > test //打开后摄手电筒 
+完整回答请参考FAQ: FAQ202273994
+### 问题: android10 tls和openssl版本信息
+解决方案: 1、openssl的版本是多少?1.1.0 可以参考源码里的定义: external/boringssl/src/include/openssl/base.h #define OPENSSL_VERSION_NUMBER 0x1010007f external/boringssl/src/crypto/crypto.c unsigned long OpenSSL_version_num(void) { return OPENSSL_VERSION_NUMBER; } 2、 tls协议版本是1.3吗? android10支持tls1~tls1.3,可以参考: https://developer.android.com/reference/javax/net/ssl/SSLSocket 3、tls1.3是否向下兼容1.2 tls1.3相比就版本,增减了许多内容,可以理解为不能兼容.通信时,在握
+完整回答请参考FAQ: FAQ202273997
+### 问题: SC7731E平台不支持zsl模式下hdr拍照
+解决方案: 1、HDR模式下抓取log,搜关键字'hdr',如下log显示,hdr的buffer下发失败,jpg模式下hdr拍照导通异常. M01B31A 02-28 00:05:22.809 377 9970 E cmr_prev: 1895, cmr_preview_get_hdr_buf: search hdr buffer failed M01B31B 02-28 00:05:22.809 377 9970 E cmr_oem : 1192, camera_grab_handle: failed to get hdr buffer 1 M01B344 02-28 00:05:22.828 377 10001 I cmr_oem : 2594, camera_snapshot_state_handle: close hdr before jpeg enc done 2、7731E平台不支持zsl
+完整回答请参考FAQ: FAQ202274000
+### 问题: UMS9620/9230平台camera宏适配
+解决方案: 1. 平台camera宏配置在9230和9620上有些许改动: SOC级配置目录: device/sprd/mpool/module/camera/msoc/qogirl6 通用配置文件:qogirl6.mk(包含宏开关) Board级配置目录 device/sprd/qogirl6/ums9230_1h10/module/camera/ 宏和属性主要配置文件:md.mk camera sensor配置文件:sensor_config.xml 光学变焦配置文件:zoom_config.json zoom_config.json文件非必需,如不存在则倍率使用sensor_drv_u.c中的默认值. 注意:相同的宏在mpool目录和Board目录可以配置不同的值,Board目录下的配置值优先级高于mpool目录下的配置值. 2. 在sprdcamera3setting.cpp文件中初始化fea
+完整回答请参考FAQ: FAQ202274001
+### 问题: 通过双击电源键或双击音量上键启动安全相机，如何加载相机所有模式
+解决方案: diff --git a/src/com/android/camera/app/CameraAppUI.java b/src/com/android/camera/app/CameraAppUI.java old mode 100644 new mode 100755 index e23745a15..91232c366 --- a/src/com/android/camera/app/CameraAppUI.java +++ b/src/com/android/camera/app/CameraAppUI.java @@ -2685,7 +2685,9 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener, private boolean handleModeListBackPress() { if 
+完整回答请参考FAQ: FAQ202274004
+### 问题: 配置QS（下拉状态栏的快捷按钮菜单）中 NfcTile（Nfc按钮）的显示及功能
+解决方案: 实际上,AOSP支持NfcTile和AirplaneModeTile(飞行模式)、BluetoothTile(蓝牙)等以相同的机制在下拉状态栏的QS中添加Nfc按钮,用来快捷控制设备Nfc的开启和关闭. AOSP包含完整的实现,具体的代码路径在: /frameworks/base/packages/SystemUI/src/com/android/systemui/qs/tiles/NfcTile.java /frameworks/base/packages/SystemUI/src/com/android/systemui/qs/tileimpl/QSFactoryImpl.java 但是,为什么我们拿到的原始版本,在下拉状态栏的QS菜单中没有可添加的Nfc按钮呢?是因为原始版本不考虑NFC的完整集成,而在不支持NFC的设备上显示NfcTile没有意义,上述代码逻辑包含这部分逻辑. 另外
+完整回答请参考FAQ: FAQ202274006

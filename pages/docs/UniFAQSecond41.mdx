@@ -1,0 +1,470 @@
+### 问题: Camera NDK 如何添加TAG
+解决方案: 调用Camera NDK 接口打开Camera需要下发TAG ,比如下发ACAMERA_STATISTICS_FACE_DETECT_MODE.在HAL有一个一一对应的TAG. 可以在startPreview 里面在setRepeatingRequest之前 用 ACaptureRequest_setEntry_u8 下发 int CameraHelper::startPreview() { //下发TAG uint8_t fdMode = ACAMERA_STATISTICS_FACE_DETECT_MODE_SIMPLE; camera_status_t ret = ACaptureRequest_setEntry_u8(mPreviewRequest, ACAMERA_STATISTICS_FACE_DETECT_MODE, /*count*/ 1, &fdMode); if (re
+完整回答请参考FAQ: FAQ202275857
+### 问题: camera更换sensor，app打不开
+解决方案: 例如sensor A支持最大拍照尺寸为2592*1944 Cam3Setting: 1073, getLargestPictureSize: camId=0, max_width=2592, max_height=1944 sensor B支持最大拍照尺寸为3264*2448 Cam3Setting: 1073, getLargestPictureSize: camId=0, max_width=3264 , max_height=2448 操作步骤:最开始默认装的sensor B,之后替换成了sensor A 现象:app卡在modecover界面不动 关键log: Line 71305: M010FB0  04-11 19:57:17.023  5362  5468 I CAM2PORT_CamCapabs: Unsupported photo size:Size: (3264 x 2
+完整回答请参考FAQ: FAQ202275858
+### 问题: CtsOmapiTestCases失败排查方法
+解决方案: 项目带NFC的: 1.这个文件确保没有注释
+frameworks/native/data/etc/android.hardware.se.omapi.uicc.xml
+
+2.确保SE Hal实现正常添加
+    没有Hal实现会打印以下log
+	Line 75937: M012553  07-05 08:42:42.267  2108  2108 I SecureElementService: Check if terminal eSE1 is available.
+	Line 75941: M012557  07-05 08:42:42.269  2108  2108 D SecureElement-Terminal-eSE1: SE Hal V1.2 is not supported
+	Line 75945: M01255B  07-05 08:42:42.271  21
+完整回答请参考FAQ: FAQ202275864
+### 问题: DreamCamera2 APP，二维码模式预览时无法识别二维码
+解决方案: 一、问题描述 DramCamera2二维码模式预览时无法识别二维码,需要考虑是否是二维码模式的callback size(和预览size大小一致)和屏幕size差异过大引起. 屏幕size可以通过adb命令:adb shell wm size获取,adb命令获取屏幕size参考结果:Physical size: 1080x2160. callbacksize大小可以根据log关键字"configureStreams: :hal3: camId=0"获取. 1.1复现场景 打开DreamCamera2二维码模式,预览界面扫码,无法识别二维码. 1.2复现log DreamCamera2源码中没有添加扫码失败的log,但是扫码成功的log为Found barcode,如果扫码失败则不打印 12-17 03:10:24.887 531 995 I Cam3HWI : 1122, configur
+完整回答请参考FAQ: FAQ202275868
+### 问题: A12版本修改CallFireWall代码后如何使之生效
+解决方案: A12及之后的版本,由于CallFireWall为货架化apk,修改CallFireWall仓库下的代码后还需进行如下操作,否则修改无法生效
+
+1.编译user版本apk
+   source build/envsetup.sh
+   choosecombo  
+   依次选择①release ②点击回车 ③user ④选择相应的版本 如gms
+   make CallFireWall
+   
+   注:验证apk是否为user版本的方法:
+
+   jarsigner -verify -verbose -certs apk路径 >1.log
+
+   查看log中的是否有release字符,有的话就是user版本;userdebug版本会有debug字符
+
+2.使用编译好的user版本CallFireWall.apk替换vendor/unisoc_decouplin
+完整回答请参考FAQ: FAQ202275881
+### 问题: 如何去掉电话本联系人界面的title
+解决方案: 电话本界面显示的title 并不是win title,而是tab title ,当前电话本界面是使用tab 控件,用于控制多页切换(如全部联系人及群组), 而tab控件本身就是带有title的,用于标识当前是哪页,所以这个title无法去除. 如果需要去掉title,那电话本的实现就不能用TAB 控件,需要重新实现电话本界面. 修改方案如下: 修改mmipb_view.c 文件: (1)新增函数 MMIPB_CreateAllContactWin PUBLIC void MMIPB_CreateAllContactWin(MMI_HANDLE_T applet_handle) { MMIPB_LIST_HANDLE* win_tab_infor_ptr = PNULL; win_tab_infor_ptr = (MMIPB_LIST_HANDLE *)SCI_ALLOC_APP(sizeo
+完整回答请参考FAQ: FAQ202275884
+### 问题: 新增非super分区，如何支持OTA升级
+解决方案: 新增非super分区支持ota升级: 参考如下改动,改动的工程是当前使用的工程: 1 检查正常开机模式的fstab里面有没有对该分区添加slotselect选项(最后一个参数): ext4 ro,noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc wait,avb=socko,slotselect 2 分区表加分区(修改当前对应的工程) s/device/sprd/sharkl3$ git diff diff --git a/s9863a1h10_go/s9863a1h10_go.xml b/s9863a1h10_go/s9863a1h10_go.xml index 0c5d982d..dcabec3b 100755 --- a/s9863a1h10_go/s9863a1h10_go.xml +++ b/s9863a1h10_go/s
+完整回答请参考FAQ: FAQ202275889
+### 问题: 读取AP侧的UART、SPI、I2C寄存器状态的方法
+解决方案: 当UART、SPI、I2C出现异常后,通常需要读取其寄存器状态来判断其异常原因,寄存器状态的读取通常有两种方式: 方法1:使用adb命令读取 优缺点:执行简单,但不具备时效性,可能读状态的时候,寄存器已经被重新置位了. 适用场景:适合分析异常现象一直能保持住的场景 操作步骤: 1.需要先检查APB EN上该总线的使能位是否被打开,如果在没有打开的状态下直接读取,系统会进dump; 2.如果这个位是disable状态需要保持其他位不变,将该位置1; 3.重新读取APB EN寄存器的状态,确保指定位已经成功置位,且其他位没有受影响;要多读几次,保证该位一直是置位状态; 4.根据所选模块的寄存器组对应地址,得出实际需要读的地址范围,计算出需要读的寄存器个数(num=offset_max/4+1);因为寄存器地址不一定都是连在一起的,不能直接将寄存器组看到的寄存器组的个数当作最终输入参数. 示例:
+完整回答请参考FAQ: FAQ202275893
+### 问题: 结构 MN_MM_NET_TIME_INFO_T 中夏令时参数相关含义
+解决方案: daylight_saving_time_flag 表示 daylight_saving_time 域是否有效,daylight_saving_time 表示夏令时 24.008 协议规定如下 If the local time zone has been adjusted for Daylight Saving Time, the network shall indicate this by including the IE Network Daylight Saving Time. 所以MN_MM_NET_TIME_INFO_T.local_time_zone或者MN_MM_NET_TIME_INFO_T.ut_lt_zone.time_zone是综合了Daylight Saving Time信息的. 例如modem上报的daylight_saving_time 是1,time_zon
+完整回答请参考FAQ: FAQ202275896
+### 问题: 通过回读blackbox获取开机log
+解决方案: 1:用下载工具ResearchDownload 加载发生问题的对应版本的pac 包 2:使用下载工具回读发生问题的手机的blackbox分区 Main page 只勾选fdl1 和fdl2 在flash operations界面 勾选Blackbox 并将文件保存路径修改到任意文件夹中. 回读到的分区是不能直接打开和读写的,它需要通过ResearchDownload烧机工具来替换设备中原有的分区,然后再使用其他方式把该分区的数据导出. 3:只替换blackbox分区为步骤2中导出的分区,刷到能正常开机usedebug版本的手机(正常的手机必须和出问题的手机刷的是一个版本的userdebug版本,blackbox 一定要替换为步骤1.2回读的img). 4、与正常烧机步骤一样,烧完后直接重启手机就行,这样设备中的blackbox就是前面发生问题设备的blackbox. 5、刷完blackbo
+完整回答请参考FAQ: FAQ202275900
+### 问题: 三方应用调用谷歌原生相机无法录制视频
+解决方案: 一、问题描述 1.1复现场景 ①.进入Youtube等第三方应用点击录像 ②.进入谷歌开源原生Camera2录像预览界面,点击录像直接闪退到Youtube或者其他第三方的应用的界面. 1.2复现log C005417 10-19 19:42:14.604 10806 10806 E AndroidRuntime: FATAL EXCEPTION: main C005417 10-19 19:42:14.604 10806 10806 E AndroidRuntime: Process: com.android.camera2, PID: 10806 C005417 10-19 19:42:14.604 10806 10806 E AndroidRuntime: java.lang.RuntimeException: No valid video file descriptor//异常点:在
+完整回答请参考FAQ: FAQ202275922
+### 问题: camera af_mode下发流程及其参数调用
+解决方案: 1,capture预览、拍照和video预览 af_mode都是2,走的是capture流,调用的参数在AFT中调用的是normal,AF中调用的是c2_tuning[0]. 2,video录像 af_mode为3,走的是video流,调用的参数在AFT中调用的是video,AF中调用的是c2_tuning[1]. 3,当video录像时拍照,拍摄下来的图片正好是video预览时对焦结束的图片,则这张图片走的是capture流,录像后重新对焦了,则拍下来的图片走的是video流 4,具体的分析,可见如下的log Line 5248: M4ABC89 10-18 16:10:56.964 605 8568 I af_sprd_adpt_v1: 2898, af_sprd_set_af_mode: af state = caf, focus state = af idle, set af_mo
+完整回答请参考FAQ: FAQ202275923
+### 问题: 在kernel中根据寄存器的物理地址直接设置寄存器状态
+解决方案: 设置方法:调用ioremap接口获取到虚拟地址进行操作 代码上的修改:直接在需要设置的文件中添加以下内容 #include <asm-generic/io.h> void __iomem*addr; int ret; addr = ioremap(要进行读写控制的基地址, 从基地址开始的可读性地址范围); if (addr) { writel_relaxed(要写入的值, addr);//设置寄存器的值 ret = readl_relaxed(addr);//读取寄存器的值,返回给ret iounmap(addr); } 示例: 以ums9230为例:让iic_inf5对应引脚(SCL0和SDA0)在camera工作时保证I2C功能可以正常使用(需要给两个pin设置上拉),camera下电后拉低两个pin防止漏电. 参考文档: 《UMS9230 Device Specification》 
+完整回答请参考FAQ: FAQ202275926
+### 问题: 【A12】FM收音机插入耳机播放，打开外放无声
+解决方案: 1、问题定位 查找log中是否有以下log: W APM::AudioPolicyEngine: setForceUse() invalid usage 8 2、问题分析解决 有以上log说明engine configurable配置失败 执行adb shell dumpsys media.audio_policy,dump出文本,搜索Config source,pull 出手机中对应的配置文件 查看pull出的文件以下配置是否正确,这里示例文件是:audio_policy_configuration.xml 将以下节点内容进行如下修改 <globalConfiguration speaker_drc_enabled="false" engine_library="configurable" call_screen_mode_supported="true" /> push回手机,重启测试
+完整回答请参考FAQ: FAQ202275935
+### 问题: 中国广电运营商需要配置的相关参数
+解决方案: 1. 文件ims_toggle_mnc_table.h中增加如下信息:
+     460,15  ,0,1,1,0,
+2. 新增如下预置APN,配置及工具转换方法参考如下文档:
+
+平台预置APN配置方法参考如下文档:
+Mocor平台预置APN列表更新指南V1.2.pdf
+https://unisupport.unisoc.com/file/index?fileid=31001
+
+    <apn carrier="CBNET"
+        mcc="460"
+        mnc="15"
+        apn="cbnet"
+        protocol="IPV4V6"
+        roaming_protocol="IPV4V6"
+        type="default,supl"
+    />
+    <apn carrier="
+完整回答请参考FAQ: FAQ202275940
+### 问题: 在4G模式下, 如何获取到 3G 或者 2G 的临近小区信息？
+解决方案: 在4G模式下, 如何获取到 3G 或者 2G 的临近小区信息? 1.获取4g邻小区(4G邻小区)信息可调用如下接口: em_get_4g_inter_neig_cell_info(int32 card_id, ITEM_T *item_ptr, uint32 index) 其中index对应的参数如下: 0 <cell_0_earfcn>,<cell_0_PCID>,<cell_0_Rsrp>,<cell_0_Rsrq>,<cell_0_rat>- 1 <cell_1_earfcn>,<cell_1_PCID>,<cell_1_Rsrp>,<cell_1_Rsrq>,<cell_1_rat>- ...... 7 <cell_7_earfcn>,<cell_7_PCID>,<cell_7_Rsrp>,<cell_7_Rsrq>,<cell_7_rat> <eafrcn> :小区的频点号. <
+完整回答请参考FAQ: FAQ202275942
+### 问题: SC2721G可支持的最大电池电压及面临的风险事项
+解决方案: SC2721G平台,可支持的最大电池电压受限于该平台的AICL(Auto Input Current Limited)机制. AICL机制如下: 线性充电方案下,为了防止电池电流从VBAT 倒灌入 VCHG ,平台将监测 VBUS 电压,当 VBUS 低于一定值时关闭充电路径,防止电流 从 VBAT 倒灌 到 VBUS. 但AICL 参数的最高电压也只有 4.5V ,极端 Corner 芯片可能偏差至 4.3V ;当 AICL 门限值只有 4.3V时、电池电压充电到 4.5V 后,系统无法检测到 VBUS 被拔出,充电电路始终打开、 VBUS 存在电压外灌情况. 软件可通过定时比较VCHG 与 VBAT 电压来主动关闭充电通路, 但从 VBUS 拔出至软件 Active 之间仍旧会有此问题. 所以在选用最大可支持电池电压时: 1. 硬件的角度考虑, SC2721G 支持的电池安全电压为 4
+完整回答请参考FAQ: FAQ202275952
+### 问题: DramCamera2 app，异步flush锁死问题解决方案
+解决方案: 一、问题描述 1.1复现场景 ①.不停切换模式,一般为脚本测试; ②.出现相机卡死. 1.2复现log M491599 01-01 03:04:54.856 3631 3717 I CAM_CameraActivity Drea: stopPreview cost: 201 //app异步stopPreview(flush) ........................... M494800 01-01 03:04:59.562 540 1064 I Cam3HWI : 3001, flush: :hal3: E camId=0 //只打印了flush: :hal3: E,没有打印flush: :hal3: X,表示camea hal flush流程没有执行完,return buffer没有完成 M494960 01-01 03:04:59.702 3631 3631 I CAM_Ca
+完整回答请参考FAQ: FAQ202275956
+### 问题: UWS6130E平台 Sensor Hub 电源使能引脚连接注意事项
+解决方案: 客户经常遇到基于UWS6130E平台Sensor Hub 电源使能引脚使用GPIO131导致不开机问题,现对该LDO使能的连接做一下说明: 该不开机问题是机器进入了USB下载模式,原因是BB与Sensor Hub通信的URAT1被Sensor Hub拉低(从1.8V拉到1.6V甚至1.4V), 在开机过程中,EXT_RST_B的上升沿会采样U1TXD,如果U1TXD为低,则会进入USB下载模式(无超时退出机制),造成无法开机. 当使用GPIO131时,由于该GPIO默认为低:按开机键之后将触发硬件上电,UART1的电源域为VDD1V85,则VDD1V85上电到EXT_RST_B的这段时间内,GPIO131为低电平, 不会使能LDO为Sensor Hub供电,进而造成URAT1将会被Sensor Hub拉低.在EXT_RST_B的上升沿检测到U1TXD异常(低于1v8),则会进入下载模式,造
+完整回答请参考FAQ: FAQ202275958
+### 问题: UMP9620/UMP9621/UMP9622的32K时钟源说明
+解决方案: UMP9620/UMP9621/UMP9622三颗芯片的时钟接口主要是32K,用于开机、同步、关机.主要是分为如下的两种情况: a:32K crystal 时钟方案; b:32Kless l时钟方案; RTC mode的管脚在UMP9620上,如果检测到是32K crystal 时钟方案,则从UMP9620上启动,如果检测到是32Kless方案,则从UMP9622上启动.RC和52M driver 32K的电路均在UMP9622上. 场景一:32K crystal 时钟方案; 当UMP9620检测到32K crystal (通过UMP9620- RTC mode管脚的上下拉状态判断)时,UMP9620开启32K OSC电路,提供32K时钟给UMP9621.但是UMP9622无论什么场景都是从其自身内部的RC OSC启动,时钟源在下图所示的1位置,等待一段时间后切换到2的位置.然后采用52M
+完整回答请参考FAQ: FAQ202275975
+### 问题: 在没有FGU的情况下，如何通过ISENSE和VBATSEN串联的68毫欧电阻获取充电电流
+解决方案: 可以通过CH16 PROG2ADC获取,PPROG2ADC读取的电压,实际充电电流与读到的电压的关系如下: 对于外部是X的电阻,目前软件设置的电流档位A , AUXADC读到的电压是B,则B/1.2*A*(68m/X)就是实际充电电流,这里获取的是实时值,不如FGU的准确 1.在使用的 PMIC或项目的dts中: io-channels = <&pmic_adc 16>; io-channel-names = "prog2adc"; 2.获取该通道: prog2adc = devm_iio_channel_get(&pdev->dev, "prog2adc"); if (IS_ERR(prog2adc)) { dev_err(&pdev->dev, "Failed to get prog2adc channel\n"); return PTR_ERR(prog2adc); } 3.基于该通
+完整回答请参考FAQ: FAQ202275985
+### 问题: 连拍后再拍照，拍照键点击无响应问题解决方案
+解决方案: 一、问题描述 1.1复现场景 ①.先连拍30张照片(长按拍照键),连拍结束后立刻点击拍照(点击拍照键); ②.重复操作①. 1.2复现log M0538E5 10-18 11:28:39.617 16281 16281 I CAM_PhotoModule: onShutterButtonClick mPaused:false,mCameraState:1 isShutterEnabled=true mCaptureCount = 0 //点击拍照 …………………………. M0538E6 10-18 11:28:39.618 16281 16281 I CAM_PhotoModule: burst capture is running, can not perform onShutterButtonClick! //异常点:连拍的状态不对,处于running中,导致无法下发拍照命令 1.3复
+完整回答请参考FAQ: FAQ202275989
+### 问题: 升级失败报hash值不匹配
+解决方案: [报错信息] 升级失败,搜ylog中update_engine关键字,过滤其中ERROR信息看到,报错有如下字样: The hash of the source data on disk for this operation doesn't match the expected value. [分析思路] 1.确认是哪个分区的hash值不匹配. 可以根据此报错前面的信息,看是在校验哪个分区时出了问题,如下面这个例子即是l_modem: E update_engine: [ERROR:partition_writer.cc(614)] Unable to open ECC source partition l_modem, file /dev/block/by-name/l_modem_a: Success (0) E update_engine: [ERROR:delta_performe
+完整回答请参考FAQ: FAQ202276013
+### 问题: 如何使用ResearchDownload工具从pac包提取镜像？
+解决方案: 1、选择ResearchDownload工具的Load Package按钮,在弹出的对话框中选择要提取镜像的pac包; 2、打开Download Settings按钮,取得列表框中FileName项对应的目录; 3、在windows文件浏览器中找到该目录,目录里面的文件就是要提取的img文件,把需要提取的img文件拷贝出来; 注意:如果super.img在ResearchDownload中显示后缀为super.img.flag,则目录下就找不到super.img,需要换较低版本的ResearchDownload加载pac包,再重复上述操作. 新版本的ResearchDownload按照下面解决方法操作也可以: l 原因: 为防止解压后临时文件过大,下载工具在解压pac包时有解压策略,当大于设定值时,解压的文件会有flag后缀标记 l 解决方法 Bin/BinPac.ini – [Setti
+完整回答请参考FAQ: FAQ202276017
+### 问题: 编译OTA时报AssertionError: Failed to find mmcblk0boot0
+解决方案: [问题现象] make otapackage时报错,log中可看到有类似如下Traceback: Traceback (most recent call last): File "/home/power/work/t618_11.0/IDH/out/host/linux-x86/bin/add_img_to_target_files/internal/stdlib/runpy.py", line 174, in _run_module_as_main File "/home/power/work/t618_11.0/IDH/out/host/linux-x86/bin/add_img_to_target_files/internal/stdlib/runpy.py", line 72, in _run_code File "/home/power/work/t618_11.0/IDH/ou
+完整回答请参考FAQ: FAQ202276018
+### 问题: 制作升级包时提示UnicodeDecodeError
+解决方案: [问题现象] 使用targetfile做差分包或者pac包做差分包时,提示类似: UnicodeDecodeError: 'ascii' codec can't decode byte 0xe5 in position 9851: ordinal not in range(128) [解决方案] 这种一般是版本中有字符相关的问题,如出现中文字符等. 可根据出现问题前的Traceback看是在读取哪种类型的文件,再解包targetfile后去检查是否有字符问题. 如下面这个trace指向在读取prop文件时出问题,那么就可以检查下system system/etc vendor vendor/ect system_ext system_ext/etc等目录下的build.prop中是否有非法字符. 2022-11-01 17:23:25 - common.py - WARNING : Fai
+完整回答请参考FAQ: FAQ202276019
+### 问题: 如何回读spl及spl_bak分区
+解决方案: 一些设备无法开机时,可能需要回读spl及spl_bak分区.方法可参考: 1. researchdownload 打开一个pac包.最好和机器里同一版本,如不是同一版本,确认分区没有修改过. 2. Settings -> Main Page -> 只勾选FDL1/FDL2 2个分区,其他的分区都不要勾选,如下图(请特别注意UserData和EraseMetadata项是否有勾选,如勾选请参考FAQ202274788去除): 3. Flash Operations -> ReadFlash -> 勾选Active ReadFlash -> 然后选中待回读分区,这里选择splloader: 4. splloader size默认是0xffffffff,会读取失败,需要修改成0x100000,如下图1的位置,2为回读文件存放位置,可自行修改.然后点图中3的位置OK: 5. 点击Start dow
+完整回答请参考FAQ: FAQ202276021
+### 问题: Android系统第一次开机显示“NIFO：LICENSE MAGIC ERROR!”是什么原因？
+解决方案: 此显示是带sw license功能的android产品,license相关调试信息显示,开机第一次显示是属于正常,第二次若还有同样显示,说明机器里面可能没有烧写license. 此debug信息可以通过修改代码注释,客户若不需要,修改方法如下,以android10代码为例, 直接注释掉halo_status_lcd_printf(halo_status);这句: /bsp/bootloader/u-boot15/common/loader/loader_nvm.c void vlx_nand_boot(char *kernel_pname, int backlight_set, int lcd_enable) 1621 { ...... 1673 uboot_consume_time = backlight_on_time - uboot_start_time; 1674 printf("
+完整回答请参考FAQ: FAQ202276026
+### 问题: 如何去掉userdata分区的加密
+解决方案: 1、 修改对应工程fstab、fstab_xxx文件如:device/sprd/mpool/module/fs/fstab.mk 移除 /dev/block/by-name/userdata /data 所在行$(UNISOC_FSTAB_FLAG_KEYDIRECTORY)和 $(UNISOC_FSTAB_FLAG_FILEENCRYPTION)两项. 即: UNISOC_FSTAB_FLAG_FILEENCRYPTION ?= fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized 和 UNISOC_FSTAB_FLAG_KEYDIRECTORY ?= keydirectory=/metadata/vold/metadata_encryption 在fstab中有定义 移除 /data分区中所在行的这2项即可. 2
+完整回答请参考FAQ: FAQ202276034
+### 问题: 从log中如何分析当前帧的AWB信息?
+解决方案: awb3.0版本时: log:D awb_adpt: 1544, awb_sprd_ctrl_calculation_v3: AWB result : (2086,1024,1292) 7165K , fram_count : 0 , camera_id : 0, wb mode: 0; AWB lib 32x32: (2086,1024,1292) 7165K awb3.2版本时: log:I awb_adpt: 1705, awb_sprd_ctrl_calculation_v3_2: AWB result : (2592,1024,1531) 5787K , fram_count : 0 , camera_id : 0, wb mode : 0; AWB lib 64x64: (2592,1024,1531) 5787K. awb4.0版本时: log: I awb_adpt: 20
+完整回答请参考FAQ: FAQ202276036
+### 问题: 如何分析人脸解锁录入数据偏暗问题？
+解决方案: 该问题可以通过以下两种方法辨认是否与tuning 参数有关; (1)输入以下指令,可以抓取人脸录入的yuv,观察录入的信息是否出现大量暗图,如异常录入数据示例: adb root adb remount adb shell setprop persist.vendor.faceid.log 4 adb shell setprop persist.vendor.far.log 4 adb shell setprop persist.vendor.facelive.log 4 adb shell setprop persist.vendor.faceid.dump 3 adb shell setprop persist.vendor.faceid.enrollface 1 adb shell setprop persist.vendor.faceid.authicateface 1 复现问题,
+完整回答请参考FAQ: FAQ202276038
+### 问题: 平台端otp checksum出现fail情况，如何分析相关log?
+解决方案: 在下述的函数中,都会调用_general_otp_section_checksum,实现对module段otp data数据总和进行check, 以cmr_int _general_otp_parse_module_data_1v1(cmr_handle otp_drv_handle) 中调用_general_otp_section_checksum为例子说明,如截图段: 在该函数中,调用checksum的形式: ret = _general_otp_section_checksum(otp_cxt->otp_raw_data.buffer, 0x00, 89, 0x59, module_info->otp_version); static cmr_int _general_otp_section_checksum(cmr_u8 *buffer, cmr_uint offset, cmr_
+完整回答请参考FAQ: FAQ202276041
+### 问题: 指纹申请TA内存失败时如何扩大TOS预留内存空间
+解决方案: 1.问题现象: 当菜单中无指纹选项,从kernel-log中发现类似如下报错信息: trusty_tapp_init cannot map brk failed to load trusty_app: trusty_app heap creation error trusty_tapp_init: map failed! ta_manager_write_ta:653: ta_manager_write_ta, trusty_tapp_init failed! a_manager_handle_msg:786: ta_manager_handle_request failed -5! 表示指纹堆栈内存不足错误,TOS没有足够的预留空间保证指纹功能能正常申请到TA内存,所以导致指纹功能失效,指纹所需TA空间大小为指纹的堆栈大小+.elf文件大小. 2.解决方法(以A12上的sharkl3项目
+完整回答请参考FAQ: FAQ202276044
+### 问题: UIS8910FF平台PVT以及开关谱调试
+解决方案: 问题描述:UIS8910FF平台客户测试PVT以及开关谱Fail,需要进行ramp调试 问题处理:选择T/RX----TXON by PCL,如下图所示: 1、需要使用UIS8910FF平台特有的pandora工具——Pandora_R22.0.0002_UIS8910;非信令连接 entermode success之后,设置相应频段以及PCL等级等信息之后点击active,之后选择T/RX----TXON by PCL,如下图所示;同时设置8960仪表,进行非信令测试,看其对应的PVT以及开关谱性能: 2、之后点击ramp,load板子里面对应功率等级的ramp曲线参数,手动修改对应 up /down 的ramp参数,然后再点击save,仪器上就能看到当前开关谱以及PVT图,Ramp的数值变化会改变PVT和开关谱参数,调试ramp的值要兼顾这个两个指标.(注:UIS8910FF平台只能手
+完整回答请参考FAQ: FAQ202276048
+### 问题: OTA升级失败，报错Unsupported key type 6
+解决方案: [问题现象] ylog中的android log中搜update_engine升级log,可以看到有如下报错: M00BC00 07-21 04:02:40.326 556 556 E update_engine: [ERROR:payload_verifier.cc(190)] Unsupported key type 6 M00BC03 07-21 04:02:40.332 556 556 E update_engine: [ERROR:payload_verifier.cc(137)] None of the 1 signatures is correct. Expected hash before padding: M00BC0D 07-21 04:02:40.385 556 556 E update_engine: [ERROR:payload_verifier.cc(140)]
+完整回答请参考FAQ: FAQ202276050
+### 问题: 7s复位
+解决方案: 当前android平台大部分都是双键复位(power按键 + vol up按键),也即需要同时长按两个按键7s对系统复位,如果需要改成只长按power按键复位,可以修改如下配置 bsp/bootloader/u-boot15/include/configs/uis7862s_1h10.h(根据自己项目选择头文件) ---#define CONFIG_7S_RST_2KEY_MODE 1 //0:1Key--Normal mode; 1:2KEY +++#define CONFIG_7S_RST_2KEY_MODE 0 //0:1Key--Normal mode; 1:2KEY 按键7s时长也能更改,规格书上值显示范围为0-15之间,对应2s-16s,但是建议留一些余地.不要设置太长或太短 ---#define CONFIG_7S_RST_THRESHOLD 7 //7S, hold key
+完整回答请参考FAQ: FAQ202276054
+### 问题: 7s reset配置
+解决方案: 当前android平台大部分都是双键复位(power按键 + vol up按键),也即需要同时长按两个按键7s对系统复位,如果需要改成只长按power按键复位,可以修改如下配置 bsp/bootloader/u-boot15/include/configs/uis7862s_1h10.h(根据自己项目选择头文件) ---#define CONFIG_7S_RST_2KEY_MODE 1 //0:1Key--Normal mode; 1:2KEY +++#define CONFIG_7S_RST_2KEY_MODE 0 //0:1Key--Normal mode; 1:2KEY 按键7s时长也能更改,规格书上值显示范围为0-15之间,对应2s-16s,但是建议留一些余地.不要设置太长或太短 ---#define CONFIG_7S_RST_THRESHOLD 7 //7S, hold key
+完整回答请参考FAQ: FAQ202276056
+### 问题: Face ID功能删除方法
+解决方案: 不支持人脸功能时,以A12 Sharkle项目为例: 1.如果对展锐平台faceid没有做过修改,要关闭faceid HAL的方法如下: device/sprd/sharkle/sp9832e_1h10_go/product/var.mk: $(call md-disable, security/faceid) 保持以上语句即可,其他faceid相关的命令不需要修改. device/sprd/sharkle/sp9832e_1h10_go/product/sp9832e_1h10_go2g/var.mk device/sprd/sharkle/sp9832e_1h10_go/product/sp9832e_1h10_go2g_nosec/var.mk device/sprd/sharkle/sp9832e_1h10_go/product/sp9832e_1h10_gofu/var.mk -
+完整回答请参考FAQ: FAQ202276062
+### 问题: DreamSoundRecorder录音后录音文件如何展示在音乐播放器NewMusic中
+解决方案: 在vendor/sprd/platform/packages/apps/DreamSoundRecorder/src/com/sprd/soundrecorder/data/DataOpration.java中添加 cv.put(MediaStore.Audio.Media.IS_DRM , "0");
+
+如下所示:
+
+ public static Uri addToMediaDB(File file, Context context,
+                                     long duration, String requestedType, int tagNumber) {
+          if (file == null) return null;
+          ContentValues cv = new Content
+完整回答请参考FAQ: FAQ202276064
+### 问题: 后台录音app如何录制通话过程中的音频
+解决方案: 1、如果应用需要通话录音,需要申请 android.permission.CAPTURE_AUDIO_OUTPUT 权限,且UID改成 "android.uid.system",即只能是系统应用.
+
+2、如果录音应用为第三方应用,无法修改应用代码,可在FW层做修改,参考代码如下:
+
+/frameworks/av/services/audiopolicy/service/AudioPolicyService.cpp文件
+
+diff --git a/services/audiopolicy/service/AudioPolicyInterfaceImpl.cpp b/services/audiopolicy/service/AudioPolicyInterfaceImpl.cpp
+
+index 64d61b15e5..e6664a75d7
+--- a/services/aud
+完整回答请参考FAQ: FAQ202276065
+### 问题: 7s按键复位配置
+解决方案: 当前android平台大部分都是双键复位(power按键 + vol up按键),也即需要同时长按两个按键7s对系统复位,如果需要改成只长按power按键复位,可以修改如下配置 bsp/bootloader/u-boot15/include/configs/uis7862s_1h10.h(根据自己项目选择头文件) ---#define CONFIG_7S_RST_2KEY_MODE 1 //0:1Key--Normal mode; 1:2KEY +++#define CONFIG_7S_RST_2KEY_MODE 0 //0:1Key--Normal mode; 1:2KEY 按键7s时长也能更改,规格书上值显示范围为0-15之间,但是建议留一些余地.不要设置太长或太短 ---#define CONFIG_7S_RST_THRESHOLD 7 //7S, hold key down for
+完整回答请参考FAQ: FAQ202276067
+### 问题: 随卡配置实现FDN激活时断开数据连接
+解决方案: 根据卡的mccmnc创建如下路径,例如卡的mccmnc=46001,创建配置路径如下,
+在该路径下添加"config_support_fdn_no_data" 和"config_fdn_num_for_data".
+另外,需要在该配置中为number赋值,赋string任意值即可,此处xxx表示.
+
+/vendor/sprd/platform/frameworks/base/core/res/res/values-mcc460-mnc01/config.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <bool name="config_support_fdn_no_data" translatable=
+完整回答请参考FAQ: FAQ202276090
+### 问题: 如何实现手动搜网结果显示RAT图标和信号格？
+解决方案: 手动搜网结果是否显示RAT图标和信号格可通过"config_enableNewAutoSelectNetworkUI"进行配置.
+
+1.在原生代码中,"config_enableNewAutoSelectNetworkUI"默认值为false,手动搜网结果不显示信号格和RAT图标.
+2.在pixel中,"config_enableNewAutoSelectNetworkUI"默认值为true,手动搜网结果显示信号格和RAT图标.
+3.平台与pixel保持一致,将"config_enableNewAutoSelectNetworkUI"的默认值修改为true,相关代码如下所示,即已支持手动搜网结果显示信号格和RAT图标.
+/vendor/sprd/platform/frameworks/base/core/FrameworkResOverlay/res/values/config.
+完整回答请参考FAQ: FAQ202276097
+### 问题: 手动搜网结果合并后如何选网？
+解决方案: 手动搜网后需要选网.手动搜网结果合并后有两种方式实现选网,第一种:以最高RAT进行选网;第二种:modem根据plmn最优选网.
+
+1.如果以最高RAT进行选网,手动搜网结果合并后即满足.
+2.如果需modem根据plmn最优选网,则可通过将如下方法中的所有数字改为负1实现.
+
+建议使用第二种实现方法.例如,搜网结果中最高RAT为4G,但是此时4G不可用,会造成选网失败,选第二种方法就可避免这种问题.
+但是,第二种实现方法风险是时间会大大增加,需客户自行确认修改方向.
+
+/packages/apps/Settings/src/com/android/settings/network/telephony/CellInfoUtil.java
+    /** UNISOC: Wrap a cell info into an operator info @{ */
+    pu
+完整回答请参考FAQ: FAQ202276098
+### 问题: 如何定时获取当前小区信息？
+解决方案: 1. 通过AT指令查询: 2g at+spengmd=0,0,0 3g at+spengmd=0,6,1 4g at+spengmd=0,6,0 2. 通过调用指定接口获取:MNPHONE_GetCurrentPLMNInfoEx 查询的当前驻留小区的信息的结构体如下: typedef struct MN_PHONE_CURRENT_PLMN_INFO_T { MN_PHONE_PLMN_STATUS_E plmn_status; // plmn statue BOOLEAN plmn_is_roaming; // if plmn is roaming plmn uint16 mcc; uint16 mnc; uint16 mnc_digit_num; uint16 lac; uint32 cell_id; MN_GMMREG_RAT_E rat; MN_PHONE_CURR_CELL_C
+完整回答请参考FAQ: FAQ202276107
+### 问题: 6533G输入字符大小写自动转换问题
+解决方案: 以multiline input为例(电话本内姓名编辑使用该控件),当输入一个字符完毕时会执行到函数multiline_inputbox_multitap_input_complete,可以通过修改该函数实现需求 void multiline_inputbox_multitap_input_complete(void) { int index = 0; ...... gui_multi_line_input_box_confirm_multitap_character(&MMI_multiline_inputbox); //添加下面判断及转换 if((MMI_multiline_inputbox.text[MMI_multiline_inputbox.text_length - 4] == '.') || (MMI_multiline_inputbox.text[MMI_multiline
+完整回答请参考FAQ: FAQ202276119
+### 问题: UMS9117平台屏蔽4G信号
+解决方案: 1. 请将接口 InitTestMode 中 MN_PHONE_POWER_TD_LTE_FIVE_MODE_ONE_ACTIVE 替换为 MN_PHONE_POWER_WCDMA_AND_GSM; 2. 请将接口 HandleNetworkTypeWindow、MMISET_ResetNetWorkType 中 MN_PHONE_POWER_TD_LTE_FIVE_MODE_ONE_ACTIVE 替换为 MN_PHONE_POWER_WCDMA_AND_GSM; 3. 请将接口 GetSelectIndexByNetworkType 、GetNetworkTypeBySelectIndex分别替换为如下接口: LOCAL uint16 GetSelectIndexByNetworkType(NETWORK_MODE_TYPE_E network_type) { uint16 cur_se
+完整回答请参考FAQ: FAQ202276133
+### 问题: simlock5.2方案离线部署simlock的步骤
+解决方案: 1.终端手机下载已插入公钥的pac包 2.准备与内置到代码中公钥对应的私钥DB文件 3.使用simlockDagagen工具将锁卡xml文件转为加密bin文件 4.启动simba工具并配置simba参数 4.1 打开simba工具,点击文件在Simba_版本号\Bin\Project\Provision目录下选择SimlockV5.2&Imei.seq 4.2 点击启动,进入simba配置界面 4.3 进入simba配置页面后,点击序列图标,配置simba参数 4.3.1 点击序列,进行配置页面 4.3.2勾选EnterMode和SimlockAloneV52测试项 4.3.3选中SimlockAloneV52测试项,点击常用标签,分别配置keyFile,AuthstartkeyFile,AuthEndkeyfile,SimlockKeyFile,KeyName,SImlockFile k
+完整回答请参考FAQ: FAQ202276141
+### 问题: 【A12】删除unisoc预置apk（USCPhotosProvider.apk）
+解决方案: USCPhotosProvider.apk包名:com.sprd.providers.photos USCPhotosProvider作用:适配Google photo显示特殊图片标识而开发的Provider USCPhotosProvider主要功能:提供Google Photo显示特殊图片标识功能支持显示HDR/FDR/AI图片/有声图片/景深图片/人像图片的标识显示(仅支持列出的),定义在vendor/sprd/platform/packages/providers/USCPhotosProvider/app/src/main/java/com/sprd/providers/photos/SpecialType.java下 删除方法: 以下目录下删除USCPhotosProvider, device/sprd/mpool/module/performance/mversion/ful
+完整回答请参考FAQ: FAQ202276164
+### 问题: W117 手表项目中RPC错误码含义
+解决方案: 介绍几种常见的错误码: RPC_DEAL_SUCESS(0): 表示RPC返回值正常; RPC_ERR_MAP_CHN(-44): 表示映射通道失败,出现这种问题大概率是rpc没进行初始化,就已经开始调用rpc中的api了; RPC_ERR_CHN_NO_READY(-26): 表示RPC没有ready,出现这种问题是rpc没有握手成功,就已经开始调用rpc中的api了; RPC_ERR_OVERLEN(-47): 表示数据超长,出现这种问题大概率是数据超长了,现在限制大小为4K; RPC_ERR_DATA_SEND(-27): 表示发送数据错误,出现这种问题是调用接口时,cmux 写失败; RPC_ERR_TIMEOUT(-29): 表示RPC调用超时,出现这种问题是超过一定时间没有收到MODEM侧返回的数据,超时限制为5s; RPC_ERR_INVALID_API(-30): 表示mo
+完整回答请参考FAQ: FAQ202276176
+### 问题: LTE  ext LNA 的Switch Configuration  GPIO 配置原则？
+解决方案: 部分客户为优化RX射频前端性能,有在射频band外添加外置LNA的需求,而NVaide的配置文档中Switch Configuration —LTE GPIO描述NV配置原则有: Note 1:由于FDDBand是频分双工,TX/RX GPIO必须同开同关,因此RX control选择GPIO&MIPI,TX control也必须选择GPIO&MIPI,TDD Band无此要求. Note 2:TX GPIO区域(包括TX ON和TX OFF),必须保证该Band的RXGPIO 控制(包括Switch和Tuner)均配置成打开状态.同时RX OFF也必须配置Tuner为打开状态. 按照NVaide Switch Configuration"TX GPIO区域(包括TX ON和TX OFF),必须保证该Band的RXGPIO 控制(包括Switch和Tuner)均配置成打开状态"的原则配置e
+完整回答请参考FAQ: FAQ202276181
+### 问题: Android10平台如何修改支持多应用同时录音
+解决方案: 在AudioPolicyService::isVirtualSource中增加对应的audio source.
+
+例如:假设应用层申请的音源类型为MediaRecorder.AudioSource.MIC,在AudioPolicyService::isVirtualSource中增加对应的audio source:
+
+frameworks\av\services\audiopolicy\service\AudioPolicyService.cpp
+
+/* static */
+bool AudioPolicyService::isVirtualSource(audio_source_t source)
+{
+    switch (source) {
+        case AUDIO_SOURCE_VOICE_UPLINK:
+        case AUDIO_SO
+完整回答请参考FAQ: FAQ202276199
+### 问题: 如何判断当前是哪个应用发起的PDP激活操作？如何确认应用进行PDP激活操作使用的APN是什么？
+解决方案: 如何判断当前是哪个应用发起的PDP激活操作?如何确认应用进行PDP激活操作使用的APN是什么? 可以通过在log中搜索"MMIAPIPDP_Active"并查看附近的log来确认是哪个应用发起的pdp激活操作. 可以通过在log中搜索"APP_MN_ACTIVATE_PDP_CONTEXT_CNF"并查看结果码来确认激活pdp的结果,其中result为0或269表示pdp激活成功. 下面以log为例,此搜索方法对任意logel工具抓取的log通用,均可以通过以下方法确认激活PDP的应用及结果,举例如下: 1. 搜索"MMIAPIPDP_Active"和"APP_MN_ACTIVATE_PDP_CONTEXT_CNF"显示如下信息: 0 51937-1 10:08:46.904 -- Time: 2374 mmipdp info MMIAPIPDP_Active: priority:3, a
+完整回答请参考FAQ: FAQ202276201
+### 问题: MOCOR5_SFPHONE_17F_RLS1是否支持DHCP、SIP、RTP、SDP及其相关协议？
+解决方案: MOCOR5_SFPHONE_17F_RLS1支持与DHCP、SIP、RTP、SDP相关的协议如下所示: IETF RFC 2131 and RFC 2132 (DHCP protocol) IETF RFC 2617 (HTTP Digest authentication) IETF RFC 3261 (SIP: Session Initiation Protocol) IETF RFC 3264 (An Offer/Answer Model with the Session Description Protocol (SDP)) IETF RFC 3361 (Dynamic Host Configuration Protocol (DHCP-for-IPv4) Option for Session Initiation Protocol (SIP) Servers) IETF RFC 
+完整回答请参考FAQ: FAQ202276203
+### 问题: u-boot_autopoweron-sign.bin和u-boot-sign.bin的区别
+解决方案: u-boot_autopoweron-sign.bin用于测试上电自动开机的. u-boot15/BspUBoot.mk $(MAKE) ARCH=$(SRCARCH) DEVICE_TREE=$(BSP_UBOOT_TARGET_DTB) CROSS_COMPILE=$(UBOOT_TOOLCHAIN) AUTOBOOT_FLAG=true O=$(BSP_UBOOT_OUT) -j$(BSP_OBJ) u-boot15/config.mk 63 ifeq ($(AUTOBOOT_FLAG), true) 64 PLATFORM_CPPFLAGS += -DCONFIG_AUTOBOOT 65 endif bsp/bootloader/u-boot15/common/cmd_cboot.c 305 #if defined CONFIG_AUTOBOOT 306 if (reboot_mo
+完整回答请参考FAQ: FAQ202276210
+### 问题: Android平台Simba工具entermode失败问题解决方法
+解决方案: 在使用Simba工具烧license或者做校准测试的时候可能会出现entermode失败的情况,这里从工具界面的报错来列举一些常见的原因和对应的解决方法 一般此类问题需要用的分析log是loglevel7的串口log、设备目录下\cache\ylog文件夹下的log以及工具log 先说明下正常进校准,Simba工具界面的内容: 第一次枚举,包括端口的plugin和plugout 第二次枚举,包括一次端口的plugin entermode,正常返回Mode = 0x81 正常流程入下图 第一次枚举都没有出现 如果第一次枚举都没有出现,可以: 1.电脑安装最新的平台PC驱动,链接:https://unisupport.unisoc.com/tool/index?fileid=102570 2.检查串口log,看看是否在uboot阶段就没走完、出现重启等情况,或者可以找uboot相关同事看看 第
+完整回答请参考FAQ: FAQ202276217
+### 问题: PWM功能说明
+解决方案: 1、 哪些GPIO支持PWM输出: 在对应平台的xxx GPIO SPEC xxx.xlsx或xxx GPIO Introduction xxx.xlsx中搜索PWM关键字,可以搜到哪些GPIO支持PWM功能.UMS9260x和UMS9230x都由四个GPIO可以输出PWM(相互独立,可同时使用),PWM功能有的在GPIO的function0,有的在function1, 使用时需在pinmap中按GPIO SPEC设置对应的功能. 2、 PWM波的周期和占空比如何设置: 对应平台规格书第5章AON Subsystem中的PWM小节中想相关说明介绍,如下截图: PWM波的周期Tpwm和占空比Duty ratio由如下四个寄存器决定: 1) cgm_pwmX_sel_cfg或cgm_pwmX _cfg:配置PWM时钟源,X取值0,1,2,3,对应4路PWM,可选时钟频率32khz, 26Mhz
+完整回答请参考FAQ: FAQ202276221
+### 问题: A11，A12 APN设置页面中显示 xcap APN
+解决方案: xcap类型APN都是默认隐藏的,在ApnSettings列表界面显示 xcap 类型APN选项,需要找出对应mcc/mnc的CarrierId的配置文件中进行配置. 1、在/packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb文件中搜索需要显示 xcap APN的mcc/mnc(如73002),找到对应的canonical_id值(如73002,canonical_id: 1428),到/packages/apps/CarrierConfig/assets/目录中,通过canonical_id值找到对应的carrier config文件(如carrier_config_carrierid_1428_Movistar.xml),如果没有,需要自己新建carrier config文件
+完整回答请参考FAQ: FAQ202276227
+### 问题: UMW2652和UMW2631的区别
+解决方案: UMS9230平台搭载UMW2652和UMW2631的区别有以下几点:
+  1、UMW2652自带WCN基带模块,自身可以处理WCN的IQ信号;而UMW2631不带WCN基带模块, 
+     WCN的IQ信号需交给UMS9230处理;
+  2、时钟方面有差别:
+     a、UMW2652既支持Buffer mode也支持XO mode;
+     当选择Buffer mode时,PMU的U5(DCXO_LOWCUR)脚需悬空;
+     当选择XO mode时,PMU的U5(DCXO_LOWCUR)脚需接UMW2652的WCN_LP_MODE
+     b、UMW2631只支持Buffer mode,PMU的U5(DCXO_LOWCUR)脚需悬空;
+     注:Buffer mode:26M时钟接在PMU上,再由PMU提供26M时钟给WCN芯片,或者由外部 
+   
+完整回答请参考FAQ: FAQ202276236
+### 问题: CMW500信令测试BLE的操作方法
+解决方案: 1、将CMW500与待测机器用USB线连接,待测机器的USB调试按钮需打开;
+2、待测机器输入＊#＊#83781#＊#＊,进入工程模式,选择Connectivity界面,点击BT Settings进入BLE的设置界面,
+  点击Controller BQB Mode,显示controller bqb disabled时表示BLE没有激活,显示controller bqb enabled表示BLE处于激活,可以进行BLE的相关测试.
+3、CMW500仪器Burst Type选择Low Energy,然后选择EUT Control,在HW Interface中选择USB to RS232 adapter;
+  在CMW500上安装UNISOC专用的USB驱动,安装完成后,按下CMW500任务栏中的Refresh Devices,选择SPRD LTE AT或SPRD WCN AT口;
+
+完整回答请参考FAQ: FAQ202276237
+### 问题: 如何将设备从语音优先修改为数据优先
+解决方案: [如何修改] board中添加属性配置,如Android10 8541E需要在device/sprd/sharkle/sl8541e_***/sl8541e_***.mk中添加: + PRODUCT_PROPERTY_OVERRIDES += \ + persist.vendor.radio.cemode=0 或 + PRODUCT_PROPERTY_OVERRIDES += \ + persist.vendor.radio.cemode=2 注意: 不同android版本CEMODE的具体属性名不同: Android4.4/Android8.1 : persist.radio.cemode Android9.0/Android10/Android11: persist.vendor.radio.cemode [修改依据] 在radio on时,RIL会读取persist.vendor.r
+完整回答请参考FAQ: FAQ202276238
+### 问题: arm64位系统如何减小swiotlb所占的reserved memory大小？
+解决方案: 将swiontlb模块默认占用的64M reserved memory修改为256k. 方法:修改对应board dts文件的bootargs.以8581a为例,如下: diff --git a/arch/arm64/boot/dts/sprd/uis8581a.dts b/arch/arm64/boot/dts/sprd/uis8581a.dts
+index 348c56a..a5116c8 100644
+--- a/arch/arm64/boot/dts/sprd/uis8581a.dts
++++ b/arch/arm64/boot/dts/sprd/uis8581a.dts
+@@ -34,7 +34,7 @@
+ 
+ 	chosen: chosen {
+ 		stdout-path = "serial1:115200n8";
+-		bootargs = "earlyco
+完整回答请参考FAQ: FAQ202276242
+### 问题: Activity启动时,Displayed Time与Fully drawn Time表示的含义
+解决方案: 对于Activity来说,启动时,首先执行的是onCreate()、onStart()、onResume()这些生命周期函数,但即使这些生命周期方法回调结束了,应用也不算已经完全启动,还需要等View树全部构建完毕,一般认为,setContentView中的View全部显示结束了,APP也就完全启动了. Display Time ActivityTaskManager: Displayed xxxActivity: +2s133ms DisplayTime是在onWindowsDrawn方法被调用时打印的log,该方法调用的时机为Activity启动后(Resume状态),到Window全部显示.但是要注意,这里并不包括Window内部数据的加载. reportFullyDrawn ActivityTaskManager: Fully drawn xxxActivity: +2s943ms
+完整回答请参考FAQ: FAQ202276246
+### 问题: 如何关闭fec向前纠错功能
+解决方案: 方法如下: 方法一: 在对应工程的dconfig中关闭CONFIG_DM_VERITY_FEC; 方法二: 是代码中注释掉fec逻辑,去掉verity_fec_decode这个逻辑的调用: drivers/md/dm-verity-target.c中两处: 1: /* * Verify hash of a metadata block pertaining to the specified data block * ("block" argument) at a specified level ("level" argument). @@ -347,13 +477,15 @@ if (likely(memcmp(verity_io_real_digest(v, io), want_digest, v->digest_size) == 0)) aux->hash_verified = 1; 
+完整回答请参考FAQ: FAQ202276252
+### 问题: SP10T开关AW13510TQNR NV配置注意事项：多band共同综测时出现功率异常
+解决方案: 客户项目只有LTE B1/3/5/8/34/38/39/40/41(120M) Simba工具版本:Simba_R8.22.2551 1、 问题一、AFC校准fail. 由于AFC校准是在GSM制式下进行,而客户项目只有LTE频段,因此需要使用SC9820E+SR3593A(LTE Only).seq进行校准;或在SL8521E+SR3593A.seq中添加AFC校准测试项. 2、 问题二、同时勾选B1/3/5进行校准,出现功率异常;单独校准各band,功率正常. 客户天线开关采用AW13510TQNR.根据器件规格书,开关切换由Reg00和Reg01共同控制, 其中RF1(B1)和RF6(B3)由Reg00控制;RF10(B5)由Reg01控制.而在NV中对于该器件只配置了Reg00寄存器,因此在配置该器件寄存器时,需要参照同时AW13510TQNR规格书同时配置Reg00和Reg01两
+完整回答请参考FAQ: FAQ202276261
+### 问题: DreamCamera2应用TopPanel如何去掉前置闪光灯（后置闪光灯保留不变）。
+解决方案: 去掉前置photo设置中的flash项,代码如下: path:平台版本/vendor/sprd/platform/packages /apps/res /values/dream_camera_arrays_photo_part.xml <integer-array name="photo_front_auto_setting"> <item>@array/pref_camera_picturesize_front_key_array</item> <item>@array/pref_camera_jpeg_quality_key_array</item> <item>@array/pref_camera_composition_line_key_array</item> <item>@array/pref_camera_face_detect_key_array</item> <item
+完整回答请参考FAQ: FAQ202276262
+### 问题: simlock5.2方案使用服务器部署simlock的步骤
+解决方案: 使用服务器部署simlock数据,是将私钥放置在服务器侧,提高安全性. 1.终端手机下载已插入公钥的pac包 2.准备与内置到代码中公钥相匹配的私钥DB文件 3.使用simlockDatagen工具将锁卡xml文件转为加密bin文件 4.修改service配置文件 ServerCommMgr.ini & SimlockKey.ini 4.1 修改 Server工具的配置文件 ServerCommMgr.ini,该文件位于CSSimLock_Server_版本号\Server 路径下 4.2 修改配置文件 ServerCommMgr.ini端口和DB文件路径 4.2.1修改端口与客户端保持一致;暂不支持加密狗,对应项修改为0 4.2.2修改DB文件路径参数时,路径参数要包含DB文件名称 4.3 修改配置文件SimlockKey.ini,该文件位于CSSimLock_Server_版本号\Se
+完整回答请参考FAQ: FAQ202276271
+### 问题: W117长短信接收时，如何判断是否有丢失？
+解决方案: 长短信的结构体为:
+
+typedef struct
+
+  {
+
+    uint8 dest_address[MAX_ADDR_LEN]; //sender address
+
+    uint16 content[MAX_SMS_LEN];
+
+    uint16 content_length;
+
+    uint16 record_id;
+
+    uint16 head_ref;
+
+    uint8 longsms_max_num;
+
+    uint8 longsms_seq_num;
+
+  } NEW_MSG_T;
+
+首先可以通过属性head_ref值判断是否是同一条长短信,同一条长短信的head_ref值相同.
+
+ 如果想知道长短信接收是否有丢失,应用层自己可以在一段时间内看longsms_max_num和longsms_seq_
+完整回答请参考FAQ: FAQ202276277
+### 问题: 前后闪光灯共用一个flash_ic方案
+解决方案: 一、 问题描述 因之前的真闪IC如OCP8137等都是只能单独控制1路前闪光灯或者后闪光灯,目前AW/OCP等公司都推出了用1个闪光灯真闪IC控制LED1/LED2两路的芯片,如AW公司的aw36514/aw36515和OCP公司的ocp81373/ocp81375等,其中,LED1/LED2可以通过I2C设置内部寄存器设置来实现前后闪光灯/手电筒的功能,需要对前后闪光灯设备共用一个flash的驱动程序中实现,下面以AW36515为例. 图1.1 AW36515典型外围电路图 二、问题分析 因之前的展讯平台的闪光灯代码都是单路的驱动程序,只能单独控制前闪光灯/手电筒或者后闪光灯/手电筒,但是目前aw36515等真闪IC需要同一驱动程序中分别对前闪光灯/手电筒和后闪光灯/手电筒进行控制. 三、解决方案 首先,需要增加前闪光灯/手电筒的设备注册,在aw36515的闪光灯驱动函数的probe函数
+完整回答请参考FAQ: FAQ202276307
+### 问题: SC6533G平台RF前端设计和射频逻辑修改
+解决方案: 如下图是我们平台参考设计SC6533+RTM7292的参考设计,注意RFCTL_0和FCTL_1分别接在RTM7292的CTRL0和1上. 而RTM7292的逻辑真值表如下, 故建议客户在做原理图设计时,如果用的是其它家的PA,那接的PIN的真值表要与上表一致,这样子就不需要NV中的RF逻辑了.否则是需要修改RF逻辑的,且此平台的RF逻辑只能在软件当中修改,具体方法如下: 在\platform\edrv\rfd\xcv_8809e2\src\drv_xcv.c中函数rfd_XcvRfInit的结尾部分配置,如下: xcvBuildSpiCmd (confCmd, 0x39, 0x2849b); // GPIO_BS_RX RX2_RX2_RX3_RX3:850~1900 //now works xcvBuildSpiCmd (confCmd, 0x3A, 0x0049b); // 18'b
+完整回答请参考FAQ: FAQ202276344
+### 问题: romcode阶段log含义
+解决方案: romcode阶段的log是在spl阶段之前打印的,一般默认是uart0口出的,所以如果有一些平台没有相关的log打印,可以切换一下物理口,看是否有打印 EIF:EMMC_INIT_FAIL,EMMC初始化失败 EIS:EMMC_INIT,EMMC初始化完成 ERS:EMMC_READBL_SUCESS,从EMMC中读取SPL成功 ERF:EMMC_READBL_FAIL,从EMMC中读取SPL失败 MCI:EMMC_INIT,EMMC初始化 MCF:EMMC_INIT_FAIL,EMMC初始化失败 NIS:NAND_IDENTIFY_SUCESS,初始化NAND成功 NIF:NAND_IDENTIFY_FAIL,初始化NAND失败 NRS:NAND_READBL_SUCESS,从NAND中读取SPL成功 ROM:ROM_VER,进入开机流程 RBS:BOOT_SUCCESS,Bootlo
+完整回答请参考FAQ: FAQ202276346
+### 问题: SC6533G Assert 分析
+解决方案: 1. 离线GDB分析 1.1. 离线GDB分析的三套件 1. Dump的.elf文件,或者一组dump的.bin文件; 2. 死机对应的软件,在编译生成的elf文件; 3. 死机对应的软件,在编译生成的.lod文件; 以上三个缺一不可! 1.2 建立离线分析环境 步骤如下: 1． 加载要分析的*.core (或*.elf)文件. Coolwatcher关闭的情况下,启动coolhost.exe程序,主界面如下: 图1 coolhost主界面 § Port 端口号,默认使用7720; § 点击Start TCP Server按钮; § 点开DATA tab页,右键点击Add菜单项,如下图,选择*.core(*.elf)文件和lod文件,如图2所示.注意,先选择*.core(*.elf)文件. 图2 加载elf文件 注意: 1. 该*.core(*.elf)文件用elfdump命令dump出来
+完整回答请参考FAQ: FAQ202276366
+### 问题: SD卡dump的bin如何进行死机分析
+解决方案: SD卡dump的bin是不能直接用来进行Assert分析的,需要通过coolwatcher工具把bin文件转换成elf文件,GDB离线分析目前仅支持elf格式. 版本:SC6533G W22.39.3之后的软件版本,支持使用SD卡抓死机的Dump信息.这个版本之前的软件是不支持的. SD卡dump的Bin文件转换成Elf文件的方法如下: SD卡抓到的dump信息是一组bin文件,类似于图(1)的一些bin文件,没有.elf文件. 需要使用coolwatcher工具来把这些bin文件合并成.elf文件. elfdump("D:/Bugs/6533g/dump/6533g.elf","C:/CSDTK/cooltools/s8809e2.xml") 这样就可以生成.elf文件,这个.elf文件可以用于离线分析. 关于ELF的离线分析,可以参考FAQ:FAQ202276366 注意:如果你的co
+完整回答请参考FAQ: FAQ202276367
+### 问题: PPE标定出现报错“Run PhasePixelGain_Processing fail”的解决办法
+解决方案: 问题现象:当打开拍摄标定raw图,导入PD信息 bin文件以及将设置 phase_map_corr_en = 1后,点击calibrate会出现报错 分析思路: 需要满足 (block_pos_block_block_end_row - block_pos_block_start_row)/(gain_map_grid?64:32)<=128, 且(block_pos_block_block_end_col - block_pos_block_start_col)/(gain_map_grid?64:32)<=128,否则不满足接口限制 (表达式1?表达式2:表达式3,其中?表示对表达式1做真假检测,如果是0,为假,则返回表达式3的值,即32;如果为1,为真,则返回表达式2的值,即64) 从表中通过公式 计算 (3096-24)/32=96<128 ( 4184-24)/32=130>12
+完整回答请参考FAQ: FAQ202276368
+### 问题: video calling开关默认状态配置方法
+解决方案: 1.Android 11 通过"KEY_CARRIER_VIDEO_CALLING_SETTING_ENABLED_BOOL" 实现运营商定制,默认为true,即默认video calling开关状态为开启. 默认关闭video calling开关的方法: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行相关配置: <boolean name="carrier_video_calling_setting_enable_bool" value="false"/> 2.Android12及Android13 通过"KEY_VIDEO_CALLING_ON_BY_DEFAULT_BOOL" 实现运营商定制,默认为true,即默认video calling开关状态为开启. 默认关闭video calling开关的方法: 在 /packages/ap
+完整回答请参考FAQ: FAQ202276376
+### 问题: Android 13 的IMS User Agent 配置方法
+解决方案: [推荐·方案二] 方案一: 随board配置:"ro.config.sipua" PRODUCT_PROPERTY_OVERRIDES += \ ro.config.sipua=XXX (XXX为想要配置的UserAgent) 例如:device/sprd/mpool/module/telephony/msoc/sharkl3/sharkl3.mk 方案二: 随运营商mccmnc: (1)在项目.mk文件中添加: PRODUCT_PROPERTY_OVERRIDES += \ persist.vendor.radio.imsua.setting=1 (2)配置vendor/sprd/telephony-res/ims_user_agent下的imsUserAgent.xml 有相同UserAgent的plmn放到同一value值下,现最多支持4个. 如需扩展,修改vendor/sprd/m
+完整回答请参考FAQ: FAQ202276380
+### 问题: SC7701B REFPARAM_GetCaliMarkerValue获取的校准标志位含义
+解决方案: REFPARAM_GetCaliMarkerValue返回值每bit含义: 0---PCS AGC 1---PCS APC 2---DCS AGC 3---DCS APC 4---EGSM AGC 5---EGSM APC 6---850AGC 7---850APC 8---AFC 9---ADC 10---PCS Final test 11---DCS Final test 12---GSM Final test 13---GSM850 Final test 14---TD_AFC 15---TD APC 16---TD AGC 17---TD Final Test 18---ANT Test 19---CMMB Test 20---reserved 21---reserved 22---reserved 23---reserved 24---reserved 25---reserved
+完整回答请参考FAQ: FAQ202276408
+### 问题: VOWIFI下状态栏运营商名称定制显示
+解决方案: /frameworks/base/core/res/res/values/strings.xml (1)可在以下添加一个item项目,取个别名, <string-array name="wfcSpnFormats" translatable="false"> 248 <item>@string/wfcSpnFormat_spn</item> 249 <item>@string/wfcSpnFormat_spn_wifi_calling</item> 250 <item>@string/wfcSpnFormat_wlan_call</item> 251 <item>@string/wfcSpnFormat_spn_wlan_call</item> 252 <item>@string/wfcSpnFormat_spn_wifi</item> 253 <item>@string/wfcSpnFo
+完整回答请参考FAQ: FAQ202276415
+### 问题: A12 预置联系人
+解决方案: 随卡配置多个预置联系人: (1)预置联系人请将 string 替换为 array, /frameworks/base/core/res/res/values/symbols_ex.xml <java-symbol type="string" name="config_preload_name" /> <java-symbol type="string" name="config_preload_number" /> 替换为: <java-symbol type="array" name="config_preload_name" /> <java-symbol type="array" name="config_preload_number" /> (2)需要配置为true,如不配置无论是否插卡都不会显示预置联系人 /vendor/sprd/platform/packages/provid
+完整回答请参考FAQ: FAQ202276416
+### 问题: MOCOR系统文件管理器重入问题
+解决方案: 在复制文件时,会执行进入文件管理器功能接口: MMIFMM_OpenExplorerWin,该接口会为文件管理器主窗口MMIFMM_MAIN_WIN_TAB提供参数main_win_p作为窗口的usr data, 之后进入文件复制窗口,其窗口函数HandleCopyFileToFolderWinMsg内的copy_win_info->list_data_ptr就是上面主窗口的usr data 蓝牙接收完文件后,会执行函数MMIAPIFMM_OpenExplorerExt, 该函数会执行MMIFMM_OpenExplorerWin, 该函数会首先关闭之前打开的文件管理器主窗口: ...... MMIFMM_MAIN_WIN_DATA_T *main_win_p = PNULL; MMIAPIFMM_InitFolders(); //close previous windows MMK_Clo
+完整回答请参考FAQ: FAQ202276421
+### 问题: LTE制式下，如何读取当前RFIC工作温度
+解决方案: 在高低温环境下,往往需要通过回读RFIC当前工作温度来统一标准,从而更加准确的判断一些高低温Fail的case具体Fail在哪个温度.回读RFIC工作温度需要以下两步: Step1:pandora工具和UE保持连接状态(信令或者非信令),在寄存器回读界面回读reg b1,如下图1,在type输入0x2,0x1,0xb1,点击Debug,紫色框里就是regb1的回读数值. Step2:根据Regb1的回读数值到对应的NV工程中的temp_indicator下查找当前RFIC的指示温度 例:如图1中b1寄存器的回读数值时5c5c,与NV中temp_indicator[11] 5B数值接近,意味着当前RFIC芯片温度约62℃ 图1 NOTE: RFIC 温度指示寄存器回读功能在高温掉话场景下使用时要特别注意,如发现UL指标异常,需不断点击reg b1观察其回读数值是否存在很大差异,如同一环境温度
+完整回答请参考FAQ: FAQ202276425
+### 问题: A12 上如何制作user root版本
+解决方案: 需要修改3个地方: ---------------------------------------------------- 1. 通过修改build/core/main.mk 修改adb root权限 ADDITIONAL_DEFAULT_PROPERTIES += ro.secure=0 ADDITIONAL_DEFAULT_PROPERTIES += ro.adb.secure=0 ADDITIONAL_DEFAULT_PROPERTIES += ro.debuggable=1 ---------------------------------------------------- 2. packages/modules/adb/daemon/main.cpp, return drop改成return false std::string prop = android::base::G
+完整回答请参考FAQ: FAQ202276435
+### 问题: V2平台GPRS\EDGE多UP功率回退--NV2.0
+解决方案: 对于GPRS\EDGE多UP功率回退的配置,现将配置位置开放到NV中,根据NV_value配置取相应的PCL等级的factor/gain值发射对应的功率(NV value为回退的PCL数量) NV位置如下图所示 具体定义如下: Register_value[117]对应GSM900M Register_value[118]对应GSM DCS Register_value[119]对应GSM PCS Register_value[120]对应GSM850M 示例 对应回退的具体PCL如下表: 注: 1．当Register_value[117]使能标志位打开后,所有band均要配置,否则调用无值会没有回退 2. Register_value[117]使能标志位打开,软件会自动调用[117]-[120]的回退,此时PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_NAS_CUS
+完整回答请参考FAQ: FAQ202276442
+### 问题: 9117三合一喇叭，后台播放音乐，切换到会议模式时，音乐声音会变小，希望音乐声音大小不变该如何修改？
+解决方案: 对于9117平台,三合一喇叭方案 请尝试合入以下修改: mmiset_ring.c #ifdef VIRTUAL_VIBRATE_FUNC PUBLIC MMISRV_HANDLE_T MMISRVAUD_StartVibrate(uint16 pri, uint16 duation, uint16 interval, uint16 times, MMISRVAUD_VIBRATE_CB callback) { MMISRV_HANDLE_T handle = 0; BOOLEAN res = FALSE; ..... audio_srv.default_route = MMISRVAUD_ROUTE_SPEAKER; audio_srv.volume = MMIAPISET_GetMultimVolume(); //修改,振动的音量为当前的媒体音量 audio_srv.volume_ty
+完整回答请参考FAQ: FAQ202276449
+### 问题: CTS Verifier测试 Notification Listener Test 测试 Fail
+解决方案: 从ylog中的android.log分析 id.cts.verifie 打印有 Accessing hidden method 的信息一般与测试的预置条件相关. M006B89 12-12 20:02:09.432 7137 7137 W id.cts.verifie: Accessing hidden method Landroid/app/NotificationManager;->getEffectsSuppressor()Landroid/content/ComponentName; (blocked,test-api, linking, denied) 测试前需根据官网建议设置相关条件, 参考官网说明 https://source.android.com/compatibility/cts/verifier 建议先移除原测试样机中的CtsVerifier.apk后重新根据如下步骤
+完整回答请参考FAQ: FAQ202276451
+### 问题: 关闭MIPI Data Lane每行回到LP状态
+解决方案: 1)默认情况下,mipi信号再每行都会回到LP状态,如果HFP和HBP porch值太大,每行可能会两次回到LP状态; 2)关闭 MIPI Data Lane每行回到LP状态 uboot:
+/bsp/bootloader/u-boot15/drivers/video/sprd/dsi/core/mipi_dsi_r1p0.c
+
+     static void dsi_dpi_hporch_lp_en(struct dsi_context *ctx, int enable)
+     {
+     	struct dsi_reg *reg = (struct dsi_reg *)ctx->base;
+     	union _0x38 vid_mode_cfg;
+     
+     	vid_mode_cfg.val = read32(&reg->VID_MODE_CFG
+完整回答请参考FAQ: FAQ202276455
+### 问题: UMW2651、UWE5623的WIFI 2*2信令测试时分集连接不上仪器
+解决方案: 一、问题信息 由于WIFI按协议建立连接时是11B、11G、11A这3个模式的低速率去完成 而这3个模式协议本身只有1路SISO、没有MIMO,所以建立连接只由1路来完成 UMW2651、UWE5623的WIFI 2*2时,只有主集1路负责建立连接,主集信令能单独信令测试,分集单独连接不上仪器 二、测试方法 在wifi_board_config.ini里 1.先改为主集测试信令 TxChain_Mask = 1 RxChain_Mask = 1 2.再改为分集测试信令 TxChain_Mask = 2 RxChain_Mask = 2 3.最后,改回2*2 MIMO用于生产 TxChain_Mask = 3 RxChain_Mask = 3 // TxChain_Mask represent the 2G chain, 1 primary (SISO); 2 diversity (SISO
+完整回答请参考FAQ: FAQ202276456
+### 问题: W307如何获取当前手表使用的DNS服务器地址？
+解决方案: 在使用的文件中,include文件app_tcp_if.h
+根据netid,使用如下接口获取dns服务器地址:
+/*****************************************************************************/
+// Description: get spare dns addresses on given net interface
+// Global resource : none
+// Author: 
+// Note :  PARAM1: dns1_ptr (OUT) -- address pointer for primary spare dns
+//         PARAM2: dns2_ptr (OUT) -- address pointer for secondary spare dns
+// 
+完整回答请参考FAQ: FAQ202276458
+### 问题: camera增加自定义tag修改位置（安卓13版本）
+解决方案: 对于安卓12的vendor tag hal的定义比较分散,并且只有 com.addParameters.xxx一种 section类型的定义方式,不方便客制化其他类型的 tag,所以在 A13上进行了 hal中 tag变量定义的规范化改变. 首先在A13上 展锐平台的扩展目录: vendor\sprd\modules\libcamera\include\SprdCamera3Tags.h
+vendor\sprd\modules\libcamera\hal3_2v6\common\SprdCamera3HalTypes.h
+vendor\sprd\modules\libcamera\hal3_2v6\common\SprdCamera3VendorTagDefs.h
+vendor\sprd\modules\libcamera\hal3_2v6\common\SprdCamera3Ven
+完整回答请参考FAQ: FAQ202276459
+### 问题: android13中锁屏界面充电信息显示
+解决方案: 平台支持在锁屏界面针对不同充电速度显示不同的充电提示语,快充、慢充对应的充电功率在相关配置文件中配置.相关代码逻辑如下:
+
+>>根据充电速度mChargingSpeed显示对应提示语
+SystemUI/src/com/android/systemui/statusbar/KeyguardIndicationController.java
+811      protected String computePowerIndication() {
+...
+823              switch (mChargingSpeed) {
+824                  case BatteryStatus.CHARGING_FAST:
+825                      chargingId = hasChargingTime
+826         
+完整回答请参考FAQ: FAQ202276461
+### 问题: camera对焦和测光分离
+解决方案: 在平台的DreamCamera2的专业模式中,轻触屏幕会出现一个一半黄,一半白的圆框,通过触摸移动可分别移动两个不同颜色的圆框, 这个功能是ae测光 af对焦分离功能,黄色圈是af对焦区域选择,白色圈是ae测光区域选择,在app中是默认开启的功能,代码中在如下位置使能: path:/DreamCamera2/src/com/android/camera/util/CameraUtil.java 1946     isAEAFSeparateEnable = isEnable(TARGET_CAMERA_AEAF_SEPARATE, true);//这里默认取值由true改为false即可默认关闭
+
+3479   private static boolean isAEAFSeparateEnable = false;
+
+3480   private final static Stri
+完整回答请参考FAQ: FAQ202276462
+### 问题: camera图标打开后一段时间会自动关闭
+解决方案: 在平台的DreamCamera2有两个功能,美颜和滤镜都是在toppanel上的,点击这两个功能会在下面出现许多可以调节的选项,但是当不对屏幕进行点击操作,5s后这些调节选项会自动消失隐藏,这是平台默认的设计逻辑. 下图红框位置为调节选项: 以美颜为例具体在如下代码位置: path: DreamCamera2/src/com/android/camera/CameraActivity.java 349   private static final int CAMERA_REQUEST_PENDING_TIME = 5000;
+
+684         case MSG_UNRESPONSE:
+685           getCurrentModule().unResponse();
+686           break;
+
+2215   public boolean dis
+完整回答请参考FAQ: FAQ202276464
+### 问题: log确认ALSC table调用值
+解决方案: 问题描述: ALSC3.2算法,在log中如何确认当前问题场景调用的table index? 解决方案: 提高alsc log等级, 抓取log后,搜索关键字:"slsc output", 可看到如下打印,其中pair_idx就是问题环境下插值使用的table,pair_ratio就是插值table的拟合系数: Line 15018: M1753BC 12-19 21:58:46.653 453 24437 D android.hardware.camera.provider@2.4-service: [ALSC]: L 360, lsc_calculation_core: slsc3 End, slsc output pair_idx=[2,3], pair_ratio=[0.269885,0.730115] 补充: ALSC打印log提高等级命令: adb shell setprop 
+完整回答请参考FAQ: FAQ202276468
+### 问题: ALSC排查问题固定table表的方法及信息确认
+解决方案: 问题描述: ALSC3.2算法,如何固定table表?固定table表后如何确认成功? 解决方案: 1.需通过下发如下命令固定tabel表 adb shell setprop debug.isp.alsc.bypass.otp 1 关闭otp校正 adb shell setprop debug.isp.alsc.table.index X 固定index,X为标定时对应index(X可设置为0-7) 2.固定table表后提高log等级打印log,搜索关键字"eng_alsc_table_index",确认是否固定成功 Line 1797: M171DF0 12-19 21:58:45.204 453 24331 D android.hardware.camera.provider@2.4-service: [ALSC]: L 82, alsc_get_eng_cmd: eng_alsc_
+完整回答请参考FAQ: FAQ202276482
+### 问题: MFNR3&MFNR3.2&MFNR4&MFNR5的dump YUV命令汇总
+解决方案: MFNR3&3.2的dump命令: adb shell setprop persist.vendor.cam.mfnr.save.func func_new adb shell setprop persist.vendor.cam.mfnr.save.capimage yes adb shell setprop persist.vendor.cam.mfnr.save.capweight yes adb shell setprop persist.vendor.cam.mfnr.save.capimage.path /data/vendor/cameraserver/ adb shell setenforce 0 MFNR4的dump命令: adb shell setprop persist.vendor.cam.mfnr.v4.dump 1 adb shell rm –rf /data/
+完整回答请参考FAQ: FAQ202276485
+### 问题: LTE PDET线性度如何查看
+解决方案: 如图,可以看到Trace log可以看到提示PDET非线性. V2平台: 以channel39060为例 Trace log中搜索 "Chan:39060, Apt:35"字样可得到如下参数信息 黄色区域参数对应为NV PDT校准文件的数据,共对于26~17dBm 10组值,校准时会预扫描此段功率段,为后面"插值"做准备 而PDET校准算法是通过Trace log中绿框部分"插值结果"进行的线性度判断,共8组数据涵盖24~20dBm,这也是PDET功能生效的范围. 如下表,绿框内对应数据列出.同一个range的数值前后做差计算,所得即为PDET校准的线性度.对range0、1、2每段进行对比判断,取每段线性度最佳的range数值存入NV校准结果里.前6段计算都是间隔0.5dbm,而最后一段间隔为1dbm,所以最后一段线性度为前面线性度的2倍.理想线性度应为0.4,当线性度小于0.1即可判定
+完整回答请参考FAQ: FAQ202276489
+### 问题: 通过输出的CP Log查看当前Modem log等级一种方法
+解决方案: 回答: 一、首先需要明确平台Modem log等级控制是基于AT+SPLOGLEVEL 这个工程指令控制的,内部也是基于此配置各种Log等级过滤类型Logfilter 二、如果提供从开机开始抓的完整Log,且对于Log等级有疑问,可通过关键字查询 loglevel, 如:LOG_FilterRuntime2Shmem:,返回信息如下 Debug版本默认Level为3的情况,适用于大多数场景抓Log LOG_FilterRuntime2Shmem: currLogLevel:-1=>3, modSwithes:{ffffffff, ...}=>{ffffffff, ...} Log等级比较低时,如用户user版本所有Log关闭时"-1",还有"0","0"时等级低的情况,比如此时不会产生有效L2/L4的Trace log, LOG_FilterShmem2Runtime: currLogLe
+完整回答请参考FAQ: FAQ202276517
+### 问题: Camera的sensor_config.xml中resource_cost的配置
+解决方案: 一、问题描述 Camera的sensor_config.xml中resource_cost的配置.resource_cost会影响到相机的打开,配置错误可能会导致黑屏、相机报错或无法连接等问题. 二、问题答案 path: /device/sprd/平台版本/平台版本/modules/camera/sensor_config.xml 1. 当前单摄,后单摄时 前后摄的Resource_cost都配置为100 2. 当前单摄,后双摄时 前摄ID1的Resource_cost配置为100 后摄ID0的Resource_cost配置为55 后摄ID2的Resource_cost配置为45 3. 当前单摄,后三摄时(后三摄同时打开) 前摄ID1的Resource_cost配置为100 后摄ID0的Resource_cost配置为55 后摄ID2的Resource_cost配置为45 后摄ID3的Re
+完整回答请参考FAQ: FAQ202276520
+### 问题: V4平台GSM如何打开全PCL温度补偿
+解决方案: 随着射频指标的不断加严,因此为了Cover所有PCL的发射功率,因此需要对GSM TX功率全PCL温度补偿. 以GSM900为例,NV位置如下: GSM_optimize\GSM_calibration_param_optimize\rf_param_dsp_use\GSM900\temperature_gsm_tx_compensate_pcl\ GSM900/850:PCL5-19分别对应NV中tx_compensate_value[0]- [14] DCS1800/PCS1900:PCL0-15分别对应NV中tx_compensate_value[0]- [15] GSM900/850 NV中tx_compensate_value[15]不生效. 每档PCL 温补参数调用规则为: T ≤ -50 degree: 温补参数调用temperture_gmsk_tx_compensatio
+完整回答请参考FAQ: FAQ202276528
+### 问题: 手表307项目Esim一号双终端业务
+解决方案: 手表307项目上,实现一卡双终端的移动入库测试修改,修改仅用于验证以下测试用例: 测试条件:主设备副设备开启Esim一号双终端业务,307作为副设备 测试步骤: 1. 使用副设备(手表)语音呼叫辅助设备A(手机A),建立正常通话; 2. 同时使用辅助设备B(手机B)呼叫主设备时,主设备能够显示来电,并正常接听后30s挂断. 备注:需要关闭WATCH_REJECT_MT_INCALL Index: mmicc_app.c =================================================================== --- mmicc_app.c (revision 102430) +++ mmicc_app.c (working copy) @@ -1712,10 +1712,17 @@ SCI_TRACE_LOW("CC_CallSetupIndF
+完整回答请参考FAQ: FAQ202276544

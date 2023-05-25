@@ -1,0 +1,308 @@
+### 问题: 正确清除Slog的方法有哪些？
+解决方案: slog清除的正确方法 1.输入*#*#83781#*#*,进入工程模式->debug&log->log settings->Slog UI->点击左下角的删除图标->提示"Really clear all logs?"->点击Delete即可 2.进入文件管理器->长按slog文件夹->弹出选项菜单->选择"清空"->提示"是否删除当前文件夹中所有文件?"->点击"确定"->提示"操作成功",slog被清除 提醒:切勿进入文件管理器,直接把SD上的slog文件夹直接删除,可能会出现slog文件夹未生成,导致slog丢失的现象.如果误操作删除slog文件夹,请重新开关机,正常情况下,slog文件夹会重新生产.
+参考FAQ: FAQ34243
+### 问题: SC7731G 充电过压保护是怎样的?
+解决方案: 芯片内部集成硬件过压保护功能,当超过9.2V时,关断VCHG,停止充电 也可通过软件方式设置VCHG保护电压,软件可编程过压保护范围5.6V ~ 9.2V,确保充电安全
+参考FAQ: FAQ34245
+### 问题: SC7731G 的充电流程是怎样的？
+解决方案: Charge CTL HW HW HW SW(CC) SW(CV) Recharge VBAT <1.1V 1.1V~2.05V 2.05V~3.05V 3.05V~4.18V 4.18V~4.2V 4.15V Icharge 5mA 70mA 450mA 450mA~2.3A
+参考FAQ: FAQ34246
+### 问题: 如果LCM背光驱动使用外部串联背光IC,White LED部分的DRIVER_SET上对地电阻能否省掉？
+解决方案: 6.2K/1%精度的对地电阻不能省掉,这个电阻是AUXADC设置内部背光驱动,马达,按键背光驱动和FLASH LED驱动电流源电阻.
+参考FAQ: FAQ34252
+### 问题: MIC电路上串联1K电阻的作用是什么？
+解决方案: MIC电路上串联1K电阻主要是为ESD考虑.
+参考FAQ: FAQ34253
+### 问题: 如何关闭lightsleep
+解决方案: echo 0 > /sys/module/cpuidle_scx35/parameters/light_sleep_en 在\kernel\arch\arm\mach-sc\cpuidle-scx35.c把大概42行的 static int light_sleep_en = 1; 改成 static int light_sleep_en = 0;
+参考FAQ: FAQ34254
+### 问题: Headmic_in上串联1K电阻的作用是什么？
+解决方案: Headmic_in上串联1K电阻是为ESD考虑.
+参考FAQ: FAQ34256
+### 问题: SC7731G内部音频功放是什么类型？
+解决方案: SC7731G内部音频功放可以通过NV配置成CLASS D Mode或CLASS AB Mode
+参考FAQ: FAQ34260
+### 问题: SC7731G 内部音频功放功率有多大？
+解决方案: CLASS D Mode : 4.2V,800MW,on 8 ohm load CLASS AB Mode:4.2V,500MW,on 8 ohm load
+参考FAQ: FAQ34262
+### 问题: 电池温度检测电路上串联510欧姆电阻的作用是什么？
+解决方案: 电池温度检测电路上串联510欧姆电阻主要是为ESD/EOS 考虑.
+参考FAQ: FAQ34274
+### 问题: SC7731G VDDARM和VDDCORE 输入电压仅支持0.9V吗？
+解决方案: 是的
+参考FAQ: FAQ34275
+### 问题: SC7731G VCAM和VLCD端输入电压仅支持1.8V吗？
+解决方案: 是的
+参考FAQ: FAQ34279
+### 问题: 在手机死机、挂死等情况下，如何实现手机不掉电重启？
+解决方案: 目前平台有两种方法在手机出现:死机、定屏、黑屏、挂死等情况下,可以实现手机不掉电重启,这样就可以从slog中查看重启前,手机内存中的一些信息. 1、使用magic key:同时按下音量+、音量- ,再按下power键2次.magic key造成一次panic,引起手机重启.在slog的cmdline中可以看到androidboot.mode=panic. 2、使用7S reset重启:按下power键,长按7秒.7S reset在一些user版本中被关闭,没有magic key有效.在slog的cmdline中可以看到androidboot.mode=unknowreboot.
+参考FAQ: FAQ34321
+### 问题: android4.4 缅甸语显示出现圈圈？
+解决方案: 缅甸语出现圈圈的显示效果为字库问题, 可以更换external/sil-fonts/Padauk-book.ttf 、Padauk-bookbold.ttf 这两个字库 建议尝试更换为Zawgyi-one字库
+参考FAQ: FAQ34330
+### 问题: 如何打印虚拟机应用进程中线程的调用栈信息
+解决方案: 可以用ps命令查看想打印调用栈的虚拟机进程的pid,然后发送3信号给该进程,就可以打印出该进程下各个线程的调用栈,命令如下
+
+kill -3 <pid>  
+
+输出的trace会保存在 /data/anr/traces.txt文件中.
+需要注意的是:
+1.这里说的应用进程都是虚拟机进程,也就是通过Zygote fork出来的进程,对于不是虚拟机进程该功能不可用
+2.如果没有 /data/anr/这个目录或/data/anr/traces.txt这个文件,需要手工创建一下,并设置好读写权限.
+3.或者先对system server进程打印调用栈,这个时候就会生成traces.txt,然后再打印其他进程的调用栈即可.
+参考FAQ: FAQ34350
+### 问题: 带GMS包升级软件后开机，设置向导界面选择“跳过”选择WLAN列表界面，一直跳不过
+解决方案: 该问题与插入sim卡有关,国内建议第一次开机不插sim卡. 如果插入了sim卡,GMS包会通过数据业务不断自动连接google网站,而国内连接不了google的服务器,而不能逃过.
+参考FAQ: FAQ34365
+### 问题: 如何打印native进程中线程的调用栈信息
+解决方案: 像mediaserver这种native进程,对其发送3信号就不会打印出线程的调用栈,这个时候可以使用debuggerd命令.debuggerd是android的一个daemon进程,负责在进程异常出错时,将进程的运行时信息dump出来供分析.debuggerd同时也是一个实用工具:可以在不中断进程执行的情况下打印当前进程的native堆栈.使用方法是: debuggerd -b <pid> 该命令执行后,会将native层调用栈打印到终端上,也可以重定向到某个文件中:debuggerd -b <pid> >> data/anr/debuggerd.log. 需要注意的是,debuggerd不仅可以打印出native进程的调用栈信息,也可打印出虚拟机进程的native层的调用栈信息.
+参考FAQ: FAQ34353
+### 问题: 如何从radio log判断rild重启了？
+解决方案: radio log中有如下输出(非刚开机时): //rilj与rild的socket连接断开 08-05 12:39:14.010 1352 1379 I RILJ : Disconnected from 'wrild' socket //rild重新start了,注意在刚开机时也会有如下log 08-05 12:39:34.500 1710 1710 D use-Rlog/RLOG-RILD: [w] Rild: rilArgv[1]=-m,rilArgv[2]=w,rilArgv[3]=-n,rilArgv[4]=1 08-05 12:39:34.500 1709 1709 D use-Rlog/RLOG-RILD: [w] Rild: rilArgv[1]=-m,rilArgv[2]=w,rilArgv[3]=-n,rilArgv[4]=0
+参考FAQ: FAQ34371
+### 问题: DivX视频格式介绍
+解决方案: DivX(Digital Video eXpress 数字视频体验)格式,这是由MPEG－4衍生出的另一种视频编码(压缩)标准,也即我们通常所说的DVDrip格式,它采用了MPEG4的压缩算法同时又综合了MPEG-4与MP3各方面的技术,说白了就是使用DivX压缩技术对DVD盘片的视频图像进行高质量压缩,同时用MP3或AC3对音频进行压缩,然后再将视频与音频合成并加上相应的外挂字幕文件而形成的视频格式.其画质直逼DVD并且体积只有DVD的数分之一.这种编码对机器的要求也不高,所以DivX视频编码技术可以说是一种对DVD造成威胁最大的新生视频压缩格式,号称DVD杀手或DVD终结者.
+参考FAQ: FAQ34375
+### 问题: FM在火狐系统上切台比安卓慢的原因
+解决方案: 安卓系统的FM界面包含FM开关,上/下一台,从当前频率向上/下切台,同时还可以进行自动搜台和频率添加等功能. 而火狐系统的FM界面比较简单,可能是出于用户体验的考虑,只有FM开关和左右切台控件. 由于火狐系统没有搜台列表,每次切台都需要从当前频率搜台,搜到台之后还需要设台,从而完成一次切台操作.这多出来的一步本来就已经比安卓的FM切台慢了,如果所处的环境FM信号不好的话可能会更长(最长3秒). 火狐FM的切台实际相当于安卓的从当前频率向上/下搜台,由于多出来了比较耗时的一步,所以比安卓的慢.
+参考FAQ: FAQ34743
+### 问题: 更新mali.ko库后，reboot失败
+解决方案: 在更新玛丽驱动,编译生成mali.ko后push到手机重启才能生效,有时候遇到这样的情况: push mali.ko system/lib/modules adb reboot 发现手机一直停在开机动画界面起不来. 这时需要进行手动加载下mali.ko: adb root adb shell insmod system/lib/modules/mali.ko 就能起来了.
+参考FAQ: FAQ34402
+### 问题: SC7731G EXTINT中断和普通GPIO中断的区别？
+解决方案: SC7731G EXTINT中断有硬件去抖功能,而普通GPIO没有硬件去抖功能.
+参考FAQ: FAQ34406
+### 问题: SC7731的VDDCORE电压默认值设置是多少？
+解决方案: SC7731的VDDCORE电压默认值设置是: 正常状态时0.9V, sleep状态0.8V.
+参考FAQ: FAQ34407
+### 问题: SC7731的I2C的内部集成的上拉电阻值是多少？
+解决方案: SC7731的I2C的内部集成的上拉电阻值是: 1.8K/4.7K/20K.可以通过软件配置.
+参考FAQ: FAQ34408
+### 问题: SC7731有几组UART接口？哪些有硬件流控？
+解决方案: SC7731有四组UART接口,其中UART0和UART3有硬件流控,可以根据外设需求选择合适的UART.
+参考FAQ: FAQ34410
+### 问题: SC7731的所有LDO都支持LDO输出校准吗？
+解决方案: SC7731只有18个LDO能够输出校准,VDDAO,AVDDVB,AVDDPA,AVDDAMP,VBATBK不支持LDO输出校准.
+参考FAQ: FAQ34411
+### 问题: SC7731的32k晶体选择需要注意？
+解决方案: SC7731的32k晶体选择需要注意: 1. 32k晶体的CL必须是7pf 2. 优先选择second source列表中推荐的器件
+参考FAQ: FAQ34419
+### 问题: SC7731 DDR接的ZQ电阻的要求？
+解决方案: SC7731 DDR接的ZQ电阻的要求: 1. 必须用240ohm电阻,精度1% 2. 如果DDR只有一个die,240ohm电阻只需接到ZQ0上,ZQ1悬空.如果DDR有两个die,ZQ0和ZQ1分别各接一个240ohm电阻.
+参考FAQ: FAQ34420
+### 问题: 在framework中添加图片等资源的步骤
+解决方案: 具体步骤为: 1.在frameworks/base/core/res/res的对应文件夹中添加图片资源 2.修改frameworks/base/core/res/res/values/public.xml文件,如果添加的是图片资源, 则必须在资源类型为drawable的的末尾添加 <public type="drawable" name="star" id="0x0108009e" /> id是递增的,需要在上一个drawable类型的资源id加1,并且要保证在此文件中唯一 注意:不能在同种类型的资源列表的中间添加资源,只能在末尾添加 3.在frameworks/base/core/res/res目录下执行mm编译 4.在源代码根目录执行make update-api
+参考FAQ: FAQ34431
+### 问题: AAC音频格式有哪些？
+解决方案: AAC(Advanced Audio Coding)实际上是高级音频编码的缩写,AAC音频格式有ADIF和ADTS: (1)ADIF:Audio Data Interchange Format即音频数据交换格式.这种格式的特征是可以确定的找到这个音频数据的开始,不需要在音频数据流中间开始的解码,即它的解码必须在明确定义的开始处进行,故这种格式常用在磁盘文件中. (2)ADTS:Audio Data Transport Stream即音频数据传输流.这种格式的特征是它是一个有同步字的比特流,解码可以在这个流中任何位置开始,它的特征类似于mp3数据流格式. 简单地说,ADTS可以在任意帧解码,也就是说它每一帧都有头信息.ADIF只有一个统一的头,所以必须得到所有的数据后解码.且这两种头的格式也是不同的,目前一般编码后的和抽取出的都是ADTS格式的音频流.ADTS是帧序列,本身具备流特征,在音频流的传输与处理方面更加合适.
+参考FAQ: FAQ34437
+### 问题: CTS Verifier：GPS Test总是测不过
+解决方案: GPS Test测试搜星定位,测试前执行如下步骤: (1)在设置里面开启"高精度" (2)在室外空旷地带进行,附近不要有障碍物和遮挡;如果选择在室内,需要使用GPS信号转换设备; 整个测试过程10分钟左右结束.
+参考FAQ: FAQ34455
+### 问题: com.android.cts.browser.BrowserBenchTest下的测试项testOctane fail
+解决方案: com.android.cts.browser.BrowserBenchTest#testOctane FAIL 测试报告提示如下错误: Test failed to run to completion. Reason: 'Instrumentation run failed due to 'junit.framework.AssertionFailedError''. Check device logcat for details testOctane这个CASE测试时只允许存在一个原生的浏览器,不允许安装第三方浏览器.如果安装了,测试时会弹出选择提示框,从提示框选择"总是使用原生的浏览器",则此项测试PASS. 这是CASE本身实现问题,属于android原生问题,google允许waive.
+参考FAQ: FAQ34457
+### 问题: CTA入网无委BT测试开关设置
+解决方案: 功能机:#*8378#1#,进入第10项bluetooth info ,点击第2项 enter eut mode,进入蓝牙测试模式 智能机: android4.4以前版本,输入暗码 *#*#83780#*#*->进入BT eut或暗码暗码*#*#83789#*#*->无线测试->BTUT测试->显示BTUT测试成功 android4.4版本,输入暗码 *#*#83781#*#*->connectivity->bt eut
+参考FAQ: FAQ34464
+### 问题: 如何调整Opera Mini浏览器显示网页的字号
+解决方案: Opera Mini支持调整显示网页字号: Menu -> Tools -> Settings -> Font size可选择大/中/小字号 大/中/小字号对应的具体平台字号值是在_OD_MapOpDevFontSizeToPlatform(@OpDevFont.c)函数中定义的,平台默认分别映射为MMI_DEFAULT_BIG_FONT/MMI_DEFAULT_NORMAL_FONT/MMI_DEFAULT_SMALL_FONT,可根据显示需求调整该处的为其他字号值. 注意: 选择Font size返回网页后,需要重新刷新页面,调整字号才会生效.
+参考FAQ: FAQ34483
+### 问题: 7715平台上如何实现GSM Only的设置
+解决方案: 7715的modem是支持WCDMA的,如果需要修改为仅支持GSM Only的方式,可以通过如下的方式修改: Step1:将AP侧默认的网络模式配置成gsm only: RILConstants.java (frameworks\base\telephony\java\com\android\internal\telephony) 将 int PREFERRED_NETWORK_MODE = NETWORK_MODE_WCDMA_PREF; 修改为 int PREFERRED_NETWORK_MODE = NETWORK_MODE_GSM_ONLY; Step2. 用户界面中网络模式切换的UI入口菜单自行去掉即可. 因为如果用户再手动操作网络模式的切换的话,还是有可能导致会驻留到3G上,不过,这个也需要看项目的实际需求定义了,毕竟这个模式切换的操作是终端用户主动做的手动设置.
+参考FAQ: FAQ34496
+### 问题: SIM卡联系人不能设置所有来电转至语音信箱
+解决方案: 由于每次开机,SIM卡联系人都会从数据库删除,并重新从SIM卡里读出插入到数据库中,SIM联系人的uri可能会发生变化,因此不能保存SIM联系人的所有来电转至语音信箱的状态,所以SIM卡联系人不能设置所有来电转至语音信箱.
+参考FAQ: FAQ34613
+### 问题: FM无法从蓝牙耳机发声
+解决方案: 目前硬件平台不支持FM声音走蓝牙通道,所以FM声音无法从蓝牙耳机发出.
+参考FAQ: FAQ34642
+### 问题: 如何修改音源文件的音量
+解决方案: 在同样的软/硬件环境下,使用不同的音源文件声音的大小有时差别很大.这种情况下可能就需要修改音源文件的音量. 下面以修改拍照音camera_click.ogg为例. 我们一般会使用一款叫"Audacity"的软件来实现修改音源文件音量的目的. 1、用软件打开camera_click.ogg文件后,选择"特效"-->"增幅" 2、拖动或手动填入数字修改到希望的db,必要时可勾选允许破音.完成后点击确定 3、可反复修改试听确定修改后的音量是否满足要求.音量修改完成后就可以重新导出文件.
+参考FAQ: FAQ34665
+### 问题: android4.4如何进行bt eut
+解决方案: 首先拨号界面*#*#83781#*#*进入,然后进入CONNECTIVITY页面,点击BT eut,显示打开,则表明已经进入bt eut test mode.
+参考FAQ: FAQ34696
+### 问题: application中的android:label和默认activity中的android:label的区别
+解决方案: application中的android:label="@string/app_label"设置的是应用列表中应用的名称. 默认activity中的android:label="@string/app_label"设置的是Launcher主菜单上应用图标下面的名称.
+参考FAQ: FAQ34697
+### 问题: MediaStore转化key值的规则
+解决方案: 该功能主要是MediaStore的keyfor函数来实现, 将一个name转换成一个名为key值,可用于分组,排序和搜索. 这个转换规则: 1.删除特殊字符,类似()[ ]"!?., 2.删除首尾空格 3.转换一切为小写 4.删除开头的冠词"the ", "an " 和 "a " 5.删除末尾的多余冠词", the", ", an" 和 ", a" 6.删除的口音.这一步使得我们collationkey数据,这是不可读的
+参考FAQ: FAQ34718
+### 问题: 用onScreenHint类来显示提示信息
+解决方案: 一般我们常用Toast显示提示信息,但Toast不足的是不能根据具体情况调用cancle()让其立刻消失,这样易造成多次调用,屏幕上重叠多个Toast.在camera的源码中的有一个onScreenHint类,使用onScreenHint,相比之下就较为灵活,可以调用show()立刻显示,调用cancel()立刻消失,可以避免在屏幕上重叠多个消息. 简单使用: 1.创建类OnScreenHint的实例 直接调用提供的静态方法public static OnScreenHint makeText(Context context, CharSequence text),text为要显示的信息. 2.消息的重置、显示以及消失 任何时候调用setText(CharSequence s)可重置想显示的内容,调用show()立刻显示消息到屏幕上,调用cancel()清除屏幕上的消息.
+参考FAQ: FAQ34714
+### 问题: 火狐与安卓系统FM驱动的区别
+解决方案: 安卓系统的FM驱动是把FM注册为一个misc设备,设备结点为Trout.而火狐系统中FM的驱动使用的是V4L2的架构,结点为radio.实际的搜台设台操作函数没有变化,只是用了不同的封装. 使用V4L2架构后可以使上层的应用程序变的通用,比如设备名和在调用ioctl时传入的命令,这些在V4L2中已经都规定好,底层和上层开发人员不需要太多的沟通,只需要按照V4L2的约定完成即可.
+参考FAQ: FAQ34747
+### 问题: gmail不能同步日历和联系人信息怎么进行初步排查
+解决方案: 1.GMS中的日历默认支持同步信息,如果出现同步问题,请排查网络端的问题. 2.平台自带日历不能直接同步信息,此时需要排查是否内置了GMS中的GoogleContactsSyncAdapter功能.
+参考FAQ: FAQ34809
+### 问题: kernel如何加入静态库文件到ko模块
+解决方案: kernel一般要求开源,不建议使用.a模式,所以一些外设的算法等实现一般是so动态库的方式放在android hal层. 但是有些特殊的要求需要直接将.a直接link到.ko中,主要的修改如下: 1.基本思路如下:直接将.a文件作为.o使用,但是需要注意依赖关系,即需要一个copy动作将.a放在进行链接的目录下$(obj) 2.相应的示例如下: a). 将.a文件与.c/mk放在同一个目录下 b). 在mk中添加如下语句 ko-objs := xxx.a //在mk中添加需要链接的.a c). //由于链接接动$(obj)目录下,所以需要建立如下依赖关系,在link.a时将其copy到$(obj)下 $(obj)/xxx.a:$(srctree)/drivers/input/touchscreen/xxx/xxx.a cp $(srctree)/drivers/input/touchscreen/xxx/xxx.a $(obj)/xxx.a
+参考FAQ: FAQ34810
+### 问题: 锁屏设置里的密码/pin码设置，输入字符颜色如何修改
+解决方案: 设置-安全-屏幕锁定里选择PIN码或者密码后,在输入密码字符时, 字符的颜色如何修改. packages/apps/Settings/res/layout目录下的choose_lock_password.xml以及confirm_lock_password.xml文件, 将其中EditText控件的android:textColor修改为目标颜色即可 比如目前定义为黑色 android:textColor="#ff000000" 修改为如下即为白色 android:textColor="#ffffffff"
+参考FAQ: FAQ34821
+### 问题: 如何去掉亮度自动调节功能
+解决方案: \frameworks\base\core\res\res\values\Config.xml 文件中 <bool name="config_automatic_brightness_available">true</bool> 修改为 <bool name="config_automatic_brightness_available">false</bool> 即可
+参考FAQ: FAQ34827
+### 问题: 为什么电量控制小部件中，位置开关有四种状态
+解决方案: 位置信息会在"关闭"、"准确度高"、"耗电量低"以及"仅限设备"这四种模式下切换. 具体每种模式的作用,可以参考设置-位置信息-模式菜单下的详细介绍. 电量控制小部件中,位置开关的状态,是与这四种状态相对应的.
+参考FAQ: FAQ34828
+### 问题: 如何添加自定义字体
+解决方案: 相关字体ttf文件放到/vendor/sprd/open-source/res/user_fonts目录下, 同时需要修改该目录下的fonts.mk文件, 添加一条字体copy的命令, 具体命令参考原有的如下命令即可. PRODUCT_COPY_FILES := \ vendor/sprd/open-source/res/user_fonts/DroidSans.ttf:system/user_fonts/DroidSans.ttf \ vendor/sprd/open-source/res/user_fonts/DroidSerif-Regular.ttf:system/user_fonts/DroidSerif-Regular.ttf 添加后,重新编译版本,在system/user_fonts目录下会添加相关的ttf文件. 同时在设置-显示-字体菜单下,预备字体目录里也会出现新添加的字体.
+参考FAQ: FAQ34830
+### 问题: 如何确认设备当前的时钟是否正在打开状态?
+解决方案: 在调试屏的时候,经常需要去看寄存器是当前值.但是很多情况下,模块的时钟会被关掉,因为省功耗. 如果时钟关掉,通过lookat 去查看或修改的寄存器值就不准确. 那么如何确认设备的时钟是否关掉呢? 可以通过 # adb shell ls /d/sprd-clock/ 查看相应的clock使用情况. mcu屏模块时钟是否已经打开,可以通过以下命令查看 # adb shell cat /d/sprd-clock/ext_26m/clk_mcu/usecount 查看usecount,1代表打开,0代表关闭 背光模块PWM时钟是否已经打开 # adb shell cat /d/sprd-clock/ext_26m/clk_mcu/usecount 当然还有其它的模块,可以通过这个接口去查看.
+参考FAQ: FAQ34826
+### 问题: 5735默认如何添加user版本的lunch选项？
+解决方案: 在量产阶段的时候是需要自己新加一个user的lunch选项.前提是需要添加的project已经存在. 增加方法如下: 打开 device/sprd/scx35_sp5735ea/venorsetup.sh 在这个文件最后新增加一行 add_lunch_combo scx35_sp5735eaplus_user 保存退出 运行source build/envsetup.sh 执行lunch 你就可以看到你新加的user选项.选择这个选项,进行编译即可.
+参考FAQ: FAQ34847
+### 问题: 5735 user-debug版本如何编译默认关闭slog?
+解决方案: \vendor\sprd\open-source\tools\slog\slog.conf 这个文件的开头有个enable字段,将这个修改成disable后编译出来的版本slog就是默认关闭的
+参考FAQ: FAQ34848
+### 问题: 5735如何查看、修改眼图寄存器值？
+解决方案: 有种简单方法可以快速调整眼图效果,根本的修改方法为修改对应代码中的寄存器值. 1、查看寄存器值:连上手机,查看寄存器值,输入命令adb shell lookat 0x7130008,会显示对应的值为0x44073e33 2、调整此值:输入命令adb shell lookat -s 44075e33 0x71300008,这样就调整了此寄存器值了,可以查看当前值为多少,adb shell lookat 0x7130008,看下是否修改成功了,然后在此值调整效果,找到最佳眼图,看下张角、斜边率等参数
+参考FAQ: FAQ34849
+### 问题: 5735如何修改DDR3的驱动能力？
+解决方案: 进入chipram/include/configs/sp5735.h文件,找到#define MEM_IO_DS DDR3_DS_40R宏定义, 如果需要将驱动能力改小,则将宏改为#define MEM_IO_DS LPDDR2_DS_40R,然后再make chipram,此项修改需要谨慎,建议修改必须在spreadtrum工程师指导下进行.
+参考FAQ: FAQ34850
+### 问题: 如何理解top工具打印出的内存数据信息？
+解决方案: top命令作为Linux系统中常用的性能分析工具,可以分析有关内存的使用状况,如下图所示. 这里要说明的是不能用windows的内存概念理解这些数据,如果按windows的方式该手机系统目前是很危险的:256MB的内存总量只剩下3.5M的可用内存.Linux的内存管理有其特殊性,这里只是简单说点和我们传统概念(windows)的不同. 图中内存使用总量(used)指的是现在系统内核控制的内存数,空闲内存总量(free)是内核还未纳入其管控范围的数量.纳入内核管理的内存不见得都在使用中,还包括过去使用过的现在可以被重复利用的内存,内核并不把这些可被重新使用的内存交还到free中去,因此在linux上free内存会越来越少,但不用为此担心. 如果出于习惯去计算可用内存数,这里有个近似的计算公式: free + buffers + cached,按这个公式此台手机的可用内存:3596K+0+47088k = 49.5MB.
+参考FAQ: FAQ36053
+### 问题: 如何判断号码是否为飞信号码？
+解决方案: 飞信号码一般是以12520开头加上正常手机号码. 在代码中使用正则表达式匹配对输入的号码进行判断是否为飞信号码,demo如下: private static String PRE_FEIXIN = "12520"; public static boolean isFeixinNumber(String number) { Pattern pattern = Pattern.compile("[0-9]*"); if( pattern.matcher(number).matches()){ if(number.startsWith(PRE_FEIXIN)) return true; } return false; }
+参考FAQ: FAQ34855
+### 问题: 如何使用命令行直接查看APK的md5值？
+解决方案: 使用md5sum filename命令即可查看md5值,如下图所示 注:一般集成第三方APK内置到system/app目录的时候,需要查看此md5值前后是否发生了变化.
+参考FAQ: FAQ34857
+### 问题: 如何查看GPU占用多少内存？
+解决方案: 系统运行时可以通过下面设备节点来查看GPU当前占用了多少内存以及使用GPU的各个进程各占用了多少内存 adb root adb shell cat sys/kernel/debug/mali0/memory_usage 可以看出进程ID和进程占用的内存大小.通过PS可以看出进程ID:711对应system.ui,ID:145对应surfaceFlinger.占用的大小分别是:0x00200000和0x00140000,即2M和1.25M.加在一起就是GPU当前占用的内存3.25M.
+参考FAQ: FAQ34851
+### 问题: 如何查看手机当前运行态CPU使用几个核？
+解决方案: 1、进入cpu信息目录, # adb root # adb remount 进入到cpu信息目录,如下所示: cpu0~3表示4个核,cpufreq表示cpu频率,这里想看当前手机几个核在运行,可以输入如下所示命令查看: 显示结果为0,表示当前只有1个核在运行,同理可实验其他情景,如后台播放音乐,再cat online看下结果.
+参考FAQ: FAQ34860
+### 问题: 怎么配置开启单卡？
+解决方案: 展讯官方发布的IDH软件包中默认都会有单卡和双卡的工程makefile的. 可以参考device/sprd/scx15_sp7715xxx/scx15_sp7715xxbase.mk. 通常情况下,scx15_sp7715xxbase.mk为单卡的工程make,scx15_sp7715xxplus.mk为双卡的工程make.
+参考FAQ: FAQ34878
+### 问题: 如何增加设置中预备字体？
+解决方案: 预备字体是在 设置-〉个人设备-〉显示-〉字体 中设置 预备字体在手机中存放位置为: /system/user_fonts/下 增加方法为 1.拷贝字体到如下路径(android4.1、4.4存放路径不同) android 4.1 device/sprd/common/res/user_fonts android4.4 vendor/sprd/open-source/res/user_fonts 2.修改上述路径下的font.mk 参照其他字体在font.mk中的写法,加入此次加入的字库信息
+参考FAQ: FAQ34891
+### 问题: monkey测试中如何查找包名
+解决方案: monkey测试中如果想要进行apk级的测试添加whitelist或者是想添加某个应用到blacklist时,都需要知道包名(package name) 那么如何找到包名呢? 首先必须是userdebug版本,并且或得root权限 可通过命令adb root来获取 然后进入shell中,所有的包名都可以在data/data目录下找到
+参考FAQ: FAQ34975
+### 问题: 5735平台用WriteIMEI工具写入IMEI后不重启情况下屏幕画面出现花屏
+解决方案: 在设置中勾上"写完关机",pad正常作业流程是写完号需要关机的,否则会出现花屏;
+参考FAQ: FAQ35038
+### 问题: build/envsetup.sh 中定义的常用函数命令
+解决方案: 名称 说明 croot 切换到源码树的根目录 m 在源码树的根目录执行 make mm Build 当前目录下的模块 mmm Build 指定目录下的模块 cgrep 在所有 C/C++ 文件上执行 grep jgrep 在所有 Java 文件上执行 grep resgrep 在所有 res/*.xml 文件上执行 grep godir 转到包含某个文件的目录路径 printconfig 显示当前 Build 的配置信息 add_lunch_combo 在 lunch 函数的菜单中添加一个条目
+参考FAQ: FAQ35055
+### 问题: 5735平台30W 摄像头是否可以插值到500W
+解决方案: 不支持插值这么大的,插值最大到4倍;
+参考FAQ: FAQ35058
+### 问题: 7715平台UpgradeDownload-2.9.9008烧写映像文件出现Read Dluid failed
+解决方案: 7715平台UpgradeDownload-2.9.9008烧写映像文件出现Read Dluid failed: 必须先使用factorydownload_R2.9.9008下载过,校准过,才可以使用UpgradeDownload-2.9.9008工具升级下载.如果是研发使用建议使用researchdownload工具;
+参考FAQ: FAQ35060
+### 问题: DT版本如果让kernel log从串口输出？
+解决方案: 目前Android4.4 部分项目逐渐开始release dt(device tree)版本给客户使用,客户想使用串口来调试,但是发现修改了u-boot中的loglevel后kernel log还是无法从串口输出. DT版本将板级相关的信息全部统一到*.dts文件中来维护,因此开启串口功能也需要修改dts文件,具体修改方法如下: 方案一、修改loglevel 打开类似kernel\arch\arm\boot\dts\sprd-scx35_sp7731gea.dts的文件 在这个文件中搜索loglevel 找到之后将loglevel=1 修改成loglevel=7或者更大 保存编译bootimge. 方案二、修改kernel配置文件 1.kuconfig 2.->kernel hacking -->kernel low-level debugging functions(同时打开这两项) ---->early printk(同时打开这两项)
+参考FAQ: FAQ35075
+### 问题: 传递文件名带有特殊符号‘#’的文件的Uri的使用
+解决方案: 文件的发送方,应用程序A,生成Uri用的是Uri.parse(),这个方法parse文件的时候,遇到'#'符号,会把它当做fragment的分隔符,而不是当做整体的文件名. 传递本地文件,用Uri.fromFile()就可以解决.这里会是把包含"#"的整个字符串作为文件名处理. 总结:用Uri.fromFile()而不用Uri.parse()生成本地文件的Uri.
+参考FAQ: FAQ35087
+### 问题: 如何修改浏览器不直接显示TXT文件内容
+解决方案: 纯文本MIME为"text/plain",做到文本文件不直接显示在浏览器中,而是点击下载之后,通过文本阅读器打开,需要修改文件external/chromium_org/net/base/mime_util.cc: 1. secondary_mappings[]里去除 { "text/plain", "txt,text" }, 2. supported_non_image_types[]里去除 "text/plain" 3. unsupported_text_types[]里添加 "text/plain" 注意:这样修改浏览网页时,遇到文本文件,不直接展开显示,需要先下载到本地,再用别的文本阅读器打开. 而,如果用HtmlViewer或Browser打开本地的文本文件,会出现打不开内容为空白的想象,需要在AndroidManifest.xml里屏蔽掉HtmlViewer或Browser对"text/plain"浏览的支持. 所以,请谨慎修改.
+参考FAQ: FAQ35095
+### 问题: Root过的手机忘记锁屏图案和密码如何恢复？
+解决方案: 有的时候我们会不小心忘记手机的锁屏密码,这个时候我们怎么办呢? 如下的操作只有在经过Root过的手机才有权限操作 1. adb shell 2. su 3. cd data/system 4. rm password.key //以PIN和密码方式锁屏的文件 rm gesture.key //以Patten方式锁屏的文件 一般来讲锁屏有滑动,PIN,图案,密码,无 5种方式,所以需要密码的就三种,通过删除存储密码的文件就可以达到解锁的目的,如果又重新设定密码,则删除的文件会重新创建的
+参考FAQ: FAQ35121
+### 问题: 新建联系人，按POWER键上锁再解锁，选择取消联系人仍被保存
+解决方案: ContactEditorFragment.java的onStop()函数会调用save()将联系人保存, if (!getActivity().isChangingConfigurations() && mStatus == Status.EDITING) { save(SaveMode.RELOAD); } 将此段代码去掉即可.
+参考FAQ: FAQ35103
+### 问题: 为什么设置彩信有效期为最大，编辑彩信发送后显示有效期为3天？
+解决方案: 彩信发送是通过运营商服务器转发给目标手机,当手机终端设置彩信有效期为最大时,表明彩信的最大有效期将由运营商服务器决定.当运营商服务器设置有效期最大为3天时,那么目标手机收到的彩信有效期就显示为3天.
+参考FAQ: FAQ35135
+### 问题: FLV的文件格式
+解决方案: FLV包括文件头(Flv Header)和文件体(Flv Body)两部分.文件头部分记录了FLV的类型、版本、是否有音频或视频等信息,一般占9个字节,当然头部可以扩展.文件体则由一系列的Tag及Tag Size对组成,每个Tag后面的Tag Size占4个字节,用来记录之前Tag的长度.文件体部分的Tag可以分成三类:Audio Tag、Video Tag和Script Tag,分别代表音频流,视频流和脚本流(脚本Tag一般只有一个,是FLV的第一个Tag,用于存放FLV的播放时长,视频宽高等信息).其中每个Tag都由两部分组成:Tag Header和Tag Data.Tag Header里存放的是当前Tag的类型、当前Tag数据区的长度等信息,例如Tag头部第一个字节值为8表示音频Tag,9表示视频Tag,18则表示脚本Tag.
+参考FAQ: FAQ35183
+### 问题: 进入workspace的“搜索”app，进行搜索，默认调用的搜索引擎用的是百度，要求改成Google 搜索引擎，如何修改
+解决方案: 可以修改BrowserSettings.java public String getSearchEngineName(){} return mPrefs.getString(PREF_SEARCH_ENGINE, SearchEngine.BAIDU); 改为 return mPrefs.getString(PREF_SEARCH_ENGINE, SearchEngine.GOOGLE);
+参考FAQ: FAQ35226
+### 问题: android4.4如何修改recovery模式的字库
+解决方案: recovery界面的字库属于点阵字库,修改方式有两种,具体如下: 1.通过图片资源的方式来修改字体的 创建一个png图片,存放ASCII码从0x20到0x7f这96字符,第一行存正常显示字符 第二行存粗体显示字符. 图片的路径为bootable/recovery/res/images/font.png,重新编译烧录即可 2.通过修改点阵字库方法 这个方法前提是1中的font.png不存在 1)用字库工具生成新的所需字库 2)打开文件graphics.c ,替换"font_10x18.h"为新生成的字体文件 3)根据字体文件"font_xxxx.h" 中cwidth和cheight 的数值,修改文件 screen_ui.cpp中的char_width和char_height值为固定值 并注释掉gr_font_size函数调用处 4)编译系统,烧录,运行 注:字库制作工具网上有很多,也可以向FAE获取
+参考FAQ: FAQ35229
+### 问题: 漫游状态，未勾选连接设置中的数据漫游选项，为何仍能上网
+解决方案: 数据漫游选项是用来限制国际漫游的(网络MCC与插入SIM卡MCC不同),国内跨网漫游并不受影响,具体代码请见MMIAPIPDP_Active接口中返回MMIPDP_RESULT_NOT_PERMIT_ROAMING错误的判断逻辑.
+参考FAQ: FAQ35236
+### 问题: 如何修改主菜单中的文字颜色
+解决方案: 主菜单中的文字颜色是通过s_theme_font_color_arry数组中的颜色资源值COLOR_RES_MAINMENU_FONT定义的,改变颜色需要修改工程对应资源目录下的color_table.xls颜色资源表,将该表第二列修改为需要的颜色值,然后重新编译资源并生成pac文件. 注意:s_theme_font_color_arry中的颜色资源均需要在color_table.xls中修改,直接修改common_mdu_def.h中添加资源时使用的值是无效的.
+参考FAQ: FAQ35238
+### 问题: 如何指定某张SIM卡拨打电话
+解决方案: 请参考如下代码: public void dialByPhoneId(int phoneId, String number){ Intent intent = new Intent(Intent.ACTION_CALL_PRIVILEGED, Uri.fromParts("tel", number, null)); intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); intent.putExtra(TelephonyIntents.EXTRA_PHONE_ID, phoneId); intent.putExtra(TelephonyIntents.NOT_NEED_SIMCARD_SELECTION, true); startActivity(intent); } 其中number 是要拨打的号码,phoneId为0代表卡1,1代表卡2.
+参考FAQ: FAQ35239
+### 问题: android4.4 Launcher中如何修改应用图标大小
+解决方案: Launcher中图标的大小,代码中会根据不同分辨率的机器,适配图标大小、hotseat图标大小.如果各个应用设置的图标太大或者太小,会自动进行缩放. 先定位到DynamicGrid.java文件中: 拿平台的7715举例,自动适配的是: deviceProfiles.add(new DeviceProfile("Nexus 4", 359, 518, 4, 4, 60, 13, (hasAA ? 5 : 4), 56)); 如果需要修改桌面图标的大小,只需要第6个参数,和最后一个参数即可!
+参考FAQ: FAQ35701
+### 问题: android4.4 Launcher中如何修改桌面应用图标行数和列数
+解决方案: Launcher中主界面图标的行数和咧数,代码中会根据不同分辨率的机器,适配不同的行数列数. 先定位到DynamicGrid.java文件中: 拿平台的7715举例,自动适配的是: deviceProfiles.add(new DeviceProfile("Nexus 4", 359, 518, 4, 4, 60, 13, (hasAA ? 5 : 4), 56)); 如果需要修改桌面图标的行数和列数,只需要修改第4、5个参数即可.
+参考FAQ: FAQ35700
+### 问题: SprdLauncher1中如何去除主菜单应用列表下面的hotseat图标
+解决方案: SprdLauncher1中主菜单应用列表下面加了hotseat图标,如果为了保持跟原生Launcher一致,可以去除主菜单应用列表下面的hotseat图标 修改如下: 如果在主菜单界面隐藏hotseat图标,使用setVisibility无效,需要调整此布局排版顺序. <include layout="@layout/apps_customize_pane" ...... <include layout="@layout/hotseat" ...... 把这两个界面调换位置. 然后在显示应用菜单列表的地方,隐藏hotseat图标: void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero) { ...... mHotseat.setVisibility(View.GONE); ...
+参考FAQ: FAQ35698
+### 问题: 7715开机花屏
+解决方案: 在u-boot/property目录下,看平台使用的是nand还是emmc,分别找文件normal_emc_mode.c和normal_nand_mode.c下的函数 lcd_display_logo,在 set_backlight(255); 这行修改为: mdelay(100*1000); set_backlight(255); 这个问题发生的主要原因是当屏还没初始化好,然后就已经量背光了,这样做的意思是,让背光推迟一点量.
+参考FAQ: FAQ35315
+### 问题: MCU LCD显示慢
+解决方案: 整个显示都很正常,log也去掉了,但是感觉屏就是一帧一帧的在刷, 解决办法是: 将屏驱动中的结构体panel_spec调价下面红色部分的项. .width = 240, .height = 320, .fps = 60, .type = LCD_MODE_MCU, .direction = LCD_DIRECT_NORMAL, .info = { 原因是可能跟一些mcu的lcd驱动IC有一定关系,这个fps是设置pclk的关键指标.
+参考FAQ: FAQ35316
+### 问题: 7715 耳机没有接DET中断线，现用耳机MIC做中断,软件上该如何修改？
+解决方案: 这个问题事实上是软件上不能修改,因为7715在耳机探测上跟8830之类的不一样,7715只能用detect脚探测. 原因是: 在spec的1778页有公式: head_insert_eic_en & AUDIO HEAD_INSERT)| AUDIO HEAD_INSERT2 其中AUDIO HEAD_INSERT2代表耳机探测,这个是或的关系,没有其他设置可以把它关掉.
+参考FAQ: FAQ35318
+### 问题: 7715 使设置为闪光级别为0，但是拍照再常亮，电流变大
+解决方案: 每次拍照调用sprd_flash_high_light,然后执行sprd_flash_close函数,常亮是调用sprd_flash_on,关闭执行sprd_flash_close函数,逻辑分析sprd_flash_close可能没有清楚寄存器,根据平台函数分析,ctrl clr需要清楚最大级别等级,即 int sprd_flash_on(void) { .... sci_adi_clr(SPRD_ADISLAVE_BASE + SPRD_FLASH_OFST, SPRD_FLASH_CTRL_BIT|0xF); .... } 1,结合提供的寄存器方式发现没有 |0xf之前,colse时寄存器在执行sprd_flash_high_light后确实一直非0,SPRD_FLASH_CTRL_BIT|0xF后寄存器值为0, 2,通过设置SPRD_FLASH_LOW_VAL=0x0, SPRD_FLASH_HIGH_VAL=0x3能保证我们的Led在正常安全范围
+参考FAQ: FAQ35321
+### 问题: 7715 ADB连接电脑调试异常
+解决方案: 这个是个硬件问题,软件上主要是对adb的版本进行更新就可以了. 如果遇到这个问题,就请告之硬件对usb充电那块的三极管进行更换.
+参考FAQ: FAQ35322
+### 问题: 为什么操作STK菜单时，有时会弹出对话框时会有铃声播出？
+解决方案: 上述现象是正常的,在STK菜单中,与sim卡交互操作时会上报一种消息"PLAY TONE". 如想自定义显示内容或者修改提示音,可以参考如下代码: ToneDialog.java//ToneDialog.java (idh.code\packages\apps\stk\src\com\android\stk) 显示内容: TextMessage toneMsg = null; tone音相关: ToneSettings settings = null;
+参考FAQ: FAQ35328
+### 问题: 用连续自动对焦实现快速拍照
+解决方案: 可用连续自动对焦方式取代点击触发对焦拍照,实现快速拍照 使能此功能的配置方法: 以工程sp7715ea为例, device/sprd/scx15_sp7715ea/BoardConfig.mk #select continuous auto focus TARGET_BOARD_CAMERA_CAF := false 改成 TARGET_BOARD_CAMERA_CAF := true
+参考FAQ: FAQ35331
+### 问题: 后摄像头是否支持90度旋转安装
+解决方案: 同前摄像头一样的实现方法,后摄像头也能支持90度旋转安装, 修改方法: 在对应的BoardConfig.mk文件中增加 TARGET_BOARD_BACK_CAMERA_ROTATION := true 但不建议采用,说明如下: 1.摄像头预览和拍照的的视场角明显变小, 以16:9的液晶屏全屏预览为例: 预览使用了4:3摄像头全部像素的27/64(3/4*9/16),拍照使用了全部像素的9/16(3/4*3/4) 2.数码变焦(DigitalZoom)功能范围变小 3.前摄像头做90度旋转安装是利于视频通话中,非全屏显示时更大的左右视野;后摄像头则用作相机功能
+参考FAQ: FAQ35332
+### 问题: 如何确定dolphin平台supplicant控制套接字？
+解决方案: 有时要基于此套接字编写测试脚本,而每个平台具体套接字定义可能都不一样,按如下方法查询dolphin平台控制套接字: adb shell su cat /data/misc/wifi/wpa_supplicant.conf 文件中的ctrl_interface值即是
+参考FAQ: FAQ35353
+### 问题: 当更换2351外围器件如6627时，ini文件哪些参数应首先作调整？
+解决方案: 打开vendor目录下的2351_connectivity_configure.ini文件, 找到section 6: wifi_tx = 1 bt_tx = 2 wifi_rx = 4 bt_rx = 4 如上值应据被调换元件的数据手册作相应配置
+参考FAQ: FAQ35354
+### 问题: 当出现scan不到ap列表时如何确定UI上的AP扫描命令是否已发至kernel？
+解决方案: 有时ui层的操作因阻塞在用户空间并未下达到kernel,为查看scan命令是否发到kernel,在shark/dolphin平台可在kernel log中搜索关键字:trigger scan.
+参考FAQ: FAQ35356
+### 问题: android如何强制全编译
+解决方案: 如Contacts模块已经编译过,修改其资源(图片等),一般编译就是mm或mmm packages/apps/Contacts,但是有时会出现问题描述中的现象,一般的做法就是到out目录下把Contacts对应生成的编译中间文件删除,但这个方法比较麻烦且容易出现漏删中间文件.简单的做法就是编译命令后加-B选项,表示强制全编译,如mm -B或mmm package/apps/Contacts -B
+参考FAQ: FAQ35369
+### 问题: jni函数映射表签名信息如何生成
+解决方案: java提供了一个javap的工具能帮助生成函数或变量的签名信息,使用方法如下: javap -s -p classname classname表示编译后的class文件,s表示输出内部数据类型的签名信息,p表示打印所有函数和成员的签名信息
+参考FAQ: FAQ35373
+### 问题: 5735平台Wifi连上ap后，再关闭wifi，按power键进入sleep时间较长
+解决方案: 1):原因分析: 这是因为ConnectivityManager里面的一个锁导致的.这个锁的作用是当断开wifi时会切换到其它可用网络,这里一般就是指gprs之类的数据连接网络. 这个锁是为了能够让其它可用网络可以用,但这时因为没有数据连接网络,所以这个锁就是直到超时才会释放.这个锁的持续时间现在是60s. 2):解决方法: 可以缩短这个时间,方法如下: framework/base/core/res/res/values/config.xml <integer name="config_networkTransitionTimeout">60000</integer> 比如,将这个值改成30000即30秒即可;
+参考FAQ: FAQ35398
+### 问题: 如何设置开机默认日期
+解决方案: 1.在kernel/arch/arm/configs/core3_defconfig文件中修改年份的宏定义CONFIG_RTC_START_YEAR, 例如:CONFIG_RTC_START_YEAR=2014. 2.在kernel/drivers/rtc/rtc-sprd.c文件中修改mktime, 例如:mktime(CONFIG_RTC_START_YEAR, 1, 1, 0, 0, 0) 格式为:年,月,日,时,分,秒.(注意:月份是从1开始编号的) 3.在packages/apps/Settings/src/com/sprd/settings/timerpower/Alarms.java文件alarm_flag_setup()方法中,修改c.set(2012, 0, 1, 0, 0, 0), 例如:c.set(2014, 0, 1, 0, 0, 0),格式为:年,月,日,时,分,秒.(注意:月份是从0开始编号的)
+参考FAQ: FAQ35395
+### 问题: 为什么蓝牙听歌会出现偶尔卡顿现象？
+解决方案: 出现此问题一般是因为采用userdebug版本来验证的,如果某时刻log输出较多较频繁的话,容易造成蓝牙听歌卡顿. 验证蓝牙听歌性能,一般采用USER版本来验证.
+参考FAQ: FAQ35429
+### 问题: 怎样测试SD卡的IO性能？
+解决方案: 一般情况下,SD卡的IO性能和class数有关系,手动测试SD卡的IO性能如下: 1、插入SD卡到手机上,连上USB. 2、adb shell进去; 3、输入: dd if=/dev/zero of=/mnt/sdcard/temp1.txt bs=1024 count= 200000 实例: shell@scx15_sp6815ea:/ # dd if=/dev/zero of=/mnt/sdcard/temp1.txt bs=1024 count= 200000 ard/temp1.txt bs=1024 count=200000 < 200000+0 records in 200000+0 records out 204800000 bytes transferred in 74.948 secs (2732561 bytes/sec) 每次测试的结果可能不一样,但差异不大,一般情况下,需要多测试几次,求下平均值.
+参考FAQ: FAQ35430
+### 问题: 为什么做屏驱动自适应时，添加多款屏驱动后会开机黑屏或者开不了机？
+解决方案: 如果添加某几款屏是正常的,但是再继续添加更多的屏,就出现该问题,需检查下编译生成的u-boot.bin文件是否过大. 展讯智能手机平台启动流程是由SPL加载u-boot到SDRAM,然后再去执行u-boot;SPL加载u-boot的大小是在程序编译时就已经确定了,详见u-boot目录下(MocorDroid4.4平台已移至目录chipram下)的宏定义CONFIG_SYS_NAND_U_BOOT_SIZE,例如SC7715 MocorDroid4.4平台上,其定义值为0x8A000即552KB大小.如果编译出的u-boot.bin超过此定义值,会导致u-boot代码或数据没有完全加载到SDRAM中,因而手机在启动时出现问题. 出现此问题时,请适当减少编译进u-boot的代码,考虑到涉及启动时的memory map,不建议随意更改CONFIG_SYS_NAND_U_BOOT_SIZE.
+参考FAQ: FAQ35426
+### 问题: 什么是DRM？
+解决方案: DRM,英文全称Digital Rights Management,是数字版权保护技术. 是一种为了防止数字内容的接近零成本地复制和传播,从而破坏整个数字内容产业链而才采用的一种技术手段来保护数字内容免遭非法复制、传播. 6815\7715平台也内置了这种技术,在\idh.code\kernel\drivers\gpu\drm\ 目录下.
+参考FAQ: FAQ35431

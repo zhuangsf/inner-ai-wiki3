@@ -1,0 +1,313 @@
+### 问题: 无卡开机后的选网流程是什么？
+解决方案: 无卡开机之后,根据当前UE的设置读取UE支持的无线接入技术(lte/wcdma/td/gsm),然后选择一个rat(无线接入技术)开始any 选网: 如果接入层上报可以驻留,就会受限驻留在这个网络; 如果接入层上报驻留失败,会再选择下一个rat的进行any 选网,直到受限驻留在手机支持的无线接入技术上; 如果UE支持的所有无线接入技术都驻留失败,就会启动无网定时器,等待无网定时器超时之后再any选网; 参考协议: 3GPP 23.122 名词缩写的含义见协议3GPP 21.905
+参考FAQ: FAQ105846
+### 问题: eMMC RCLK(DS)信号如何连接?
+解决方案: 1. 平台和eMMC器件都支持HS400模式时则需要将BB和eMMC的RCLK/DS信号互联,请查阅平台和eMMC器件规格书获得支持信息; 2. RCLK(Read CLK) 又叫DS(Data Strobe), 顾名思义RCLK就是读操作时的CLK.当eMMC工作在HS400模式时eMMC的DATA甚至CMD Resp输出均是参考eMMC RCLK输出,而非参考BB emmc_clk输出;其他模式(HS200, High-speed)仍然参考emmc_clk. 3. eMMC5.0之后才引入的HS400,之前的emmc是没有这个信号的; 4. 平台可以从emmc寄存器读取到emmc的支持情况,并自动工作在合适的工作模式下,如HS400, HS200, DDR52, SDR52...; 5. 双方均支持HS400、而DS不连接时,必需在软件中限定只工作在HS200模式,否则会导致无法开机.
+参考FAQ: FAQ106892
+### 问题: gdb调试中，如何在断点后面执行某个条件
+解决方案: 断点后执行条件 有的时候需要在断点后自动执行某些命令,这个时候可以利用如下命令: 命令格式: commands breakpointnum 其中,breakpointnum 是断点号,commands表示想要执行的gdb命令,然后在显示的终端里输入想要执行的命令即可,这里命令可以是gdb自带的命令,也可以是自己定义的命令,表示在某个断点断下来后执行这条命令.
+参考FAQ: FAQ105785
+### 问题: gdb调试中，如何执行条件断点
+解决方案: 条件断点 有的时候我们希望在某些条件下才执行断点,这个时候可以利用条件断点. 命令格式: Break if (condition) 其中,condition 是一个布尔表达式,如果条件满足则执行断点 也可以通过condition 命令来修改断点断下来的条件: 命令格式: condition breakpointnum express 其中,breakpointnum 表示断点号,express是一个布尔表达式 举例说明如下: b frameworks/native/services/surfaceflinger/FrameTracker.cpp:92 if mNumFences==100 表示在mNumFences==100的时候断下这个断点
+参考FAQ: FAQ105863
+### 问题: MOCOR 紧急广播方案的支持程度如何？
+解决方案: 平台目前提供根据SIM卡或是漫游网路的MCC,默认启用接收紧急广播功能 1. 1. 默认添加该区域定义所需开启的频道 2. 2. 可设置默认是否开启 3. 3. 设置是否可以让使用者关闭 4. 4. 定义该频道显示的标题 5. 5. 提示框中显示的标题 6. 6. 告警铃声的响铃长度 除了以上提及外,详细功能请参考 patch 中代码 需求类似功能可依据此方案修改與擴充,請與TAM尋求patch提供
+参考FAQ: FAQ105958
+### 问题: SC9863A平台SDIO支持SDR104,为什么只能支持到最大195M？
+解决方案: 主要是为了避免RF 的EMI干扰,所以限定频率只能到195M.
+参考FAQ: FAQ105875
+### 问题: SC7701B平台video recording最大支持多少resolution和 frame rate
+解决方案: 7701平台支持video recording: AVI/320x240/15fps 3gp/320x240/12fps
+参考FAQ: FAQ105891
+### 问题: SC9820A是否支持SPI Camera
+解决方案: SC9820A平台不支持SPI Camera
+参考FAQ: FAQ105892
+### 问题: SC9850K前后摄支持多大像素
+解决方案: 后摄: 2个Lane支持 800万像素(需要sensor也支持2lane 800万像素) 4 Lane支持1300万 前摄 : 1 Lane 支持200万像素 2 Lane支持500万像素
+参考FAQ: FAQ105902
+### 问题: SC9850K平台是否支持CABC功能
+解决方案: 不支持. CABC:内容适应背光技术(Content Adaptive Brightness Control - CABC)
+参考FAQ: FAQ105903
+### 问题: SC9820E/SC9832E 一共有几个PWM通道，每个通道频率范围是多少
+解决方案: 1.一共只有3路PWM. 2.各路PWM输出时钟的周期最小0.0208us(48MHz),最大2.04s(0.5Hz).占空比调节0~100%
+参考FAQ: FAQ105906
+### 问题: SC9820E/SC9832E RGB_LED是否可以并联使用
+解决方案: 可以并联使用,每一路电流最大能输出27.7mA
+参考FAQ: FAQ105909
+### 问题: SC7731E RGB_LED是否可以并联使用
+解决方案: 可以并联使用,每路电流最大为54.6mA,4路支持最大电流为218.4mA
+参考FAQ: FAQ105910
+### 问题: SC9820A平台是否支持3线2data的SPI屏？
+解决方案: 不支持
+参考FAQ: FAQ105914
+### 问题: SC98320E/SC9832E VDDSD LDO有没有过流保护功能
+解决方案: 自带过流保护
+参考FAQ: FAQ105916
+### 问题: SC7731E平台用RGB_LED做指示灯时，系统能否进入休眠状态
+解决方案: 系统可以进入睡眠,只需要PMU的RGB模块工作即可
+参考FAQ: FAQ105917
+### 问题: SC7701B 屏分辨率最大支持多少
+解决方案: HVGA
+参考FAQ: FAQ105918
+### 问题: SC7701B T卡最大支持多大容量
+解决方案: 支持:SD(<=2GB)、SDHC(2GB-32GB) 不支持的:SDXC(32GB-2TB)
+参考FAQ: FAQ105919
+### 问题: 样机插入SIM卡开机注册， SIM卡注册成功的标志是什么?
+解决方案: SIM卡开卡成功,是APP_MN_SIM_READY_IND 注册网络成功,看APP_MN_NETWORK_STATUS_IND这条消息里面的plmn_status域, 这个值如果是1,表示成功注册CS域;如果是2,表示成功注册PS域;如果是3,则表示CSP/PS都成功注册.其他状态异常.具体的枚举值可以参考MN_PLMN_STATUS_E
+参考FAQ: FAQ106035
+### 问题: sc2721如何选择使用ADC通道号
+解决方案: 通过原理图我们可以获取任意一个adc对应的通道号,sc2721的adc驱动将每个物理通道分解为两个逻辑通道,一个是大量程一个是小量程. 例如我们需要使用adc通4的大量程那么我们就要选择adc逻辑通道9 我们需要在dts中配置通道数 io-channels = <&pmic_adc 9>; //通道逻辑编号 io-channel-names = "adc_temp"; //通道名称,以便于驱动获取 以上配置之后我们便可以通道adc电压读取接口读取到adc_temp电压了.
+参考FAQ: FAQ106065
+### 问题: sc2720通道如何配置量程
+解决方案: sc2720与sc2721不同,在通道选择上无法通过逻辑通道来区分大小量程,比如我们使用通道3,那我们就需要配置dts中对应的通道如下即可 io-channels = <&pmic_adc 3>; io-channel-names = "adc_temp"; 量程区分需要在sc2720.dtsi中进行配置 sprd,channel-scale = <0 0>, <1 0>, <2 0>, <3 0>; 以上默认是使用的小量程,如果需要使用大量程需要将括号中第二个参数修改为1 如下:<3 1> 这样通道3就切换到大量程了
+参考FAQ: FAQ106070
+### 问题: sc2720如何选定adc通道4大量程
+解决方案: 驱动中默认使用的adci4仅作为小量程使用,如果需要添加量程可以使用如下办法 驱动中增加配置: sprd_2720_adc.c中 static void sprd_adc_scale_init(struct sprd_pmic_adc *padc) { int i; for (i = 0; i < ADC_CHANNEL_MAX; i++) padc->channel_scale[i] = 0; padc->channel_scale[4] = 1; //这里加一行 padc->channel_scale[5] = 3; ...... } dts中增加配置 sprd,channel-scale = <0 0>, <1 0>, <2 0>, <3 0>; 在后面增加<4,1>
+参考FAQ: FAQ106071
+### 问题: SC7731E平台是否可以通过hub来支持两个或以上otg设备吗？
+解决方案: 单个USB OTG外设可以支持,不支持通过USB HUB来扩展,因为USB controller不支持.
+参考FAQ: FAQ106104
+### 问题: 替换升级包签名key后的ota升级
+解决方案: 1替换releasekey后,不用任何改动,然后把改动之前全编过的工程清空,重新全编译,然后编好的各img打pac烧入手机.再编译生成ota升级包进行升级试验,这时候签名校验没问题. 2如果想快速验证,则在全编之后的工程里面替换releasekey,然后把这个目录删除: out/target/product/sp*****/obj/PACKAGING/ota_keys_intermediates 然后单独编译recoveryimage,烧入手机,然后再make otapackage,用产生的升级包放入sd卡 直接按组合键进入recovery从sd卡升级试验,也能签名校验通过.注意不要开机,一旦开过机recoveryimg被恢复回去,recovery存储的key即复原为原生的了.
+参考FAQ: FAQ106263
+### 问题: 6531E GCF测试时，如何发送GPRS数据？
+解决方案: GCF测试前,设置为开机进行自动GPRS attach操作: modem版本用AT+SAUTOATT=1设置; feature phone版本在settings->Connections->Data connection settings->选择Always connect. 开机后,MS成功注册上GSM和GPRS网络,仪器会提示"Please activate PDP Context # num". MS发送AT+CGDCONT,AT+CGEQREQ,AT+CGEQMIN,AT+CGACT命令激活PDP. PDP激活成功后,仪器提示"Initiate data transfer of 2000 octets from the MS". 此时输入AT+SGPRSDATA=2000,1 发送GPRS数据.
+参考FAQ: FAQ106127
+### 问题: 7701参考设计“nand flash configuration”table中各缩写的含义
+解决方案: PL:large page size. PS:small page size. ADDR3/4/5:指address cycle分别是3/4/5. B16/B8:指flash位宽分别是16bit/8bit.
+参考FAQ: FAQ106132
+### 问题: sc7715上的whtled是否可以用来做RGB指示灯
+解决方案: 不可以,whtled只可同时打开/关闭,每路电流也是一样的.
+参考FAQ: FAQ106133
+### 问题: SC9863A能否支持HDMI接口
+解决方案: SC9863A无HDMI接口,可以用MIPI转HDMI的IC来实现,但由于只有一组MIPI接口,故无法同时接LCD.
+参考FAQ: FAQ106138
+### 问题: SC9863A有没有以太网接口
+解决方案: SC9863A没有以太网接口,但可以外接转换IC,用USB(需要switch)或SPI来转接以太网,注意速率是否满足需求.
+参考FAQ: FAQ106143
+### 问题: SC7731E平台的指纹识别模块接的SPI-HS属于SPI几？
+解决方案: SC7731E一共有两组SPI,一组是SPI0(和I2S0复用),一组是SPI1(就是指纹模块使用的SPI-HS),所以指纹模块使用的是SPI1,软件配置成SPI1.
+参考FAQ: FAQ106146
+### 问题: 如何关闭thermal机制
+解决方案: 关闭thermal机制办法 1.在工程模式里关闭 工程模式-> DEBUG& LOG -> thermal->关闭thermal相关action 2.在代码里关闭 在对应的工程如:device/sprd/isharkl2/sp9853i_1h10/system.prop 增加 persist.sys.thermal.goven=0
+参考FAQ: FAQ106154
+### 问题: 如何关闭IPA机制
+解决方案: 如何关闭IPA机制 1.在工程模式 工程模式-> DEBUG& LOG -> thermal->关闭IPA 2.adb 在线关闭,无须重启 echo 0 〉/sys/class/thermal/thermal_zone0/thm_enable 3.代码里关闭 在对应工程如device/sprd/sharkle/sp9832e_1h10/system.prop 增加 persist.sys.thermal.ipa=0
+参考FAQ: FAQ106167
+### 问题: 如何抓取modem log level为“5”的log？
+解决方案: modem log级别为5的设置方法为:
+ 
+	在armlog工具的AT命令窗口输入at+sploglevel=1,5,"",""   设置成功后会在窗口中返回"ok".
+ 
+
+ 
+	log等级定义了调试信息的多少,等级5为最高等级.
+参考FAQ: FAQ106407
+### 问题: 截图如何默认保存在内部存储
+解决方案: 目前的设计是当插入SD卡时,截图默认存储在SD卡中,未插SD卡时,则存储在内部存储中. 若插入SD卡后,需要截图默认存储在内部存储中,可参考以下修改: /frameworks/base/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java中 private static final boolean SAVE_SPRD_EXTERNAL_STORAGE = true; //将此变量改为false即可
+参考FAQ: FAQ106397
+### 问题: modem log中查看CA Scell的状态
+解决方案: CA Scell在RRC配置之后,默认是去激活的状态,然后由基站下发的激活去激活MAC CE来控制Scell状态的变化. 收到激活去激活MAC CE在log中有以下打印: MAC_SubHeader_DL_MSG: LCID=27, Length=1. 如果Scell index对应的bit位置1,则表示对应的Scell进入激活态;如果置0,则表示进去激活态. Scell状态变化在log中有以下打印: L2 SCell Info: SCell 1 is now activated L2 SCell Info: SCell 1 is now deactivated
+参考FAQ: FAQ120116
+### 问题: SC6531E放电时间不均匀如何处理？
+解决方案: 先测试电池放电参数,提取OCV表和内阻表(建议三块以上电池取平均),再根据《6531平台充电放电表制作指导.pdf》更改放电表.6531平台充电放电表制作指导
+参考FAQ: FAQ106147
+### 问题: 如何解压dtb
+解决方案: 1、从dtb反编译到dts 命令:dtc -I dtb -O dts -o XXX.dts AAA.dtb 会将AAA.dtb转化成XXX.dts 例如: ./out/target/product/sp9832e_1h10_go/obj/KERNEL/scripts/dtc/dtc -I dtb -O dts -o ./out/target/product/sp9832e_1h10_go/sp9832e-1h10-gofu.dts ./out/target/product/sp9832e_1h10_go/obj/KERNEL/arch/arm/boot/dts/sp9832e-1h10-gofu.dtb 会将sp9832e-1h10-gofu.dtb转化成sp9832e-1h10-gofu.dts 2、从dts编译dtb 命令:dtc -I dts -O dtb -o XXX.dtb AAA.dts 会将AAA.dts转化成XXX.dtb
+参考FAQ: FAQ106189
+### 问题: SC7701B项目产线遇到1%左右机器下载不良如何处理？
+解决方案: 首先,确认PCB是否仿真PASS; 其次,确认DDR扫描参数是否有合入sdram_phy_sc7702.c; 最后确认PATCH00341516 是否有正确合入?(如果VDD_CORE=1.0V表示没有合入,VDD_CORE=1.2V表示已合入) 注意事项: a. 更换了MCP需要重新做DDR扫描(不需要重新仿真),并写入代码; b. 在编译时先编译fdl1_nf模块,再全部编译(用new命令),才能生效; c. 扫描参数如何合入参考"770X DDR扫描及数据使用说明". 770X DDR扫描及数据使用说明
+参考FAQ: FAQ106243
+### 问题: 无网timer超时的找网策略
+解决方案: 目前的策略是:
+第1次无网时,10s后开始重新找网;
+第2次到第9次无网时,启动无网timer,20s后开始重新找网;
+第10次到第18次无网时,启动无网timer,40s后开始重新找网;
+第19次到后续无网时,启动无网timer,60s后开始重新找网;
+
+如果中间有一次找到网驻留,那么重置无网timer的次数,只有连续无网的情况下才会使用以上策略进行找网.
+参考FAQ: FAQ106256
+### 问题: simba工具校准综测站如何增加写号功能？
+解决方案: 1、打开Simba工具,调用需要校准的项目的Seq配置文件; 2、在校准Seq文件内增加写号项;具体如下图: 3、配置所需写号的相关内容,以及保存Seq文件;如下图:
+参考FAQ: FAQ106270
+### 问题: documentsui的launcher图标消失
+解决方案: - documentsui功能正常,在设置应用中的快捷方式还存在,只是在launcher上的快捷方式消失了.
+- 只有最新测试的GMS版本才发生了问题,之前的GMS版本都没有问题. 需要客户了解: google发布的GMS Express Plus for Go,根据此要求,在最新发布的gms包中将DocumentsUI应用图标隐藏,launcher桌面只能显示files go apk,不能显示其他同类型的应用.
+参考FAQ: FAQ106274
+### 问题: SC7703平台是否需要产线校准ADC？
+解决方案: SC7703有efuse校准和产线校准两种方式,但是Efuse方式精度不稳定(-/+100mV).建议使用产线校准 SC7701和SC7702也需要做产线ADC校准(SC7701和SC7702芯片没有efuse校准)
+参考FAQ: FAQ106273
+### 问题: documentsui的monkey测试报错ConcurrentModificationException
+解决方案: LinkedList发生变化导致foreach时发生ConcurrentModificationException. ConcurrentModificationException的错误通常有几种处理方法: 1.修改逻辑,看是否可以避开多个线程同时修改一个对象 2.使用线程安全的类进行替代 3.捕获异常,对异常进行处理 4.在遍历时对对象加锁保护 具体采用哪个方法,需要针对上下文进行权衡,选出影响最小的方案
+参考FAQ: FAQ106283
+### 问题: 下载通知中增加暂停提示
+解决方案: 在网络不好、会频繁切换网络的情况,下载会在下载中和暂停之前来回切换,伴随的现象就是,会不断播放提示音,查看下拉通知栏会发现下载提示不见了. 这样的结果导致用户体验很差.可以修改下载通知的设计达到既能够起到提醒作用,又不会很打扰用户使用的效果. 修改的主要内容: 1.暂停时通知不消失 2."正在下载"和"暂停"之间切换时没有提示音 3.在下载项的文件名前增加下载状态(正在下载/暂停)的显示 4.由于网络环境变化导致的PS下载暂停,状态栏下载标识应改为静止图标. 5.上述修改只限于网络原因引起的下载暂停,在下载列表中手动暂停下载不在上述讨论之列,即手动暂停通知会消失. 修改代码较多,可以参见Bug 865123和Bug 879491,如果客户需要补丁可以联络FAE进行获取.
+参考FAQ: FAQ106296
+### 问题: SIMBA工具电流测试如何控制电源双通道
+解决方案: 打开SEQ,选择ColtageCurrentTest,勾选Dualchannelpowersupplymode即可.平台默认第二通道输出5V电压.
+参考FAQ: FAQ106324
+### 问题: 前后双摄是否可以使用相同ID的driver IC
+解决方案: 可以使用,但是需要注意软件配置,在前副摄初始化代码中虚拟一个ID即可
+参考FAQ: FAQ106336
+### 问题: 通话结束的两个原因的含义是什么
+解决方案: 参考 TS 24.008 H.2.1 Cause No. 34 "no circuit/channel available" This cause indicates that there is no appropriate circuit/channel presently available to handle the call. H.2.3 Cause No. 41 "temporary failure" This cause indicates that the network is not functioning correctly and that the condition is not likely to last a long period of time; e.g., the mobile station may wish to try another call attempt almost immediately.
+参考FAQ: FAQ112837
+### 问题: 如何使用Simba工具实现定制化号段写入？
+解决方案: 方法1:将对应的定制化号段以条形码的形式打印出来,使用扫码枪录入 此时的"常用"设置中配置为"ManualInput",即手动输入. 方法2:配置seq,实现自动化生成 例如,假设需要写入号段为111～12345的SN,且此SN需要统一前缀110,总长度15位.则配置截图如下: 配置完成后,需点击右上角"保存"按钮,再切换到测试界面. 写入pass界面如下图: 可以看到写入的SN1总长度为15位;前缀为110;尾号为111～12345范围内,顺序加1.
+参考FAQ: FAQ106391
+### 问题: Launcher设置中“将图标添加到主屏幕”功能说明
+解决方案: 在Launcher设置界面,有一个"将图标添加到主屏幕"功能选项开关,开启此功能,应用安装完成后,会自动在待机界面创建一个快捷方式图标. 该功能目前适用于以下两种情况:  配置PackageManager.INSTALL_REASON_USER的应用, 很少有应用配置此属性,目前仅应用分身支持;  通过Google Play商店安装应用,Google Play商店中安装应用是否自动在桌面创建快捷方式,具体代码实现是在 packages/apps/Launcher3/src/com/android/launcher3/SessionCommitReceiver.java.
+参考FAQ: FAQ106446
+### 问题: armlog中如何分析LTE扫频流程？
+解决方案: 分为两种情况 l1)有先验信息时,先搜先验频点,如果有可驻留小区,驻留到该小区;如果没有可驻留小区,或者没有先验信息,则进行全频段搜,详见2)部分.下面以先验信息成功驻网为例.下图左侧消息,红色的是trace,蓝色的是internal message,绿色的是air message l2)全频段搜,有可驻留小区,驻留到该小区;没有可驻留小区,通知NAS选网失败.下图以选网失败为例
+参考FAQ: FAQ106456
+### 问题: 是否支持AMR-WB语音编码格式
+解决方案: GSM制式下不支持AMR-WB,LTE、WCDMA制式下均支持AMR-WB语音编码格式
+参考FAQ: FAQ106459
+### 问题: 如何查看当前驻留的LTE小区信息？
+解决方案: 从armlog中,查看层间消息MNM_PHONE_SIGNAL_QUALITY_IND,可以看到当前驻留的LTE的服务小区. 也可以通过手机工程模式中的Netinfo查看.
+参考FAQ: FAQ106458
+### 问题: 展讯平台支持哪些2G 加密算法？
+解决方案: 2G制式下支持如下加密算法:A5/0、A5/1、A5/3、GEA0、GEA1、GEA2、GEA3 针对A5/2,因为已被破解,所以协议要求不再要求支持A5/2加密算法.
+参考FAQ: FAQ106460
+### 问题: LTE qpsk/16QAM/64QAM 承载bit计算
+解决方案: QPSK 利用IQ调制,采用星座图,数字00,01,10,11, IQ两路用1/√2,-1/√2等组合表示,承载2个bit, 这里承载可以简单理解成能表示的二进制数字的最大个数; 16QAM原理与QPSK相同,只不过多了两路不相干调制罢了,可以表示0x0000～0x1111,自然承载是4bit; 同理64QAM,就是6bit, 2^6=8*8=64
+参考FAQ: FAQ106486
+### 问题: SC7701不支持SPI串口屏的原因是什么？
+解决方案: SC7701芯片在设计时LCDC(lcd controller)是没有连到SPI 的(有连到并口),这样导致刷屏时不会自动传送数据到屏的,只能软件上自己去搬运数据(需增加对应操作的代码),但这样做会大量占用CPU资源,导致其他异常表现. 所以SC7701平台不支持SPI串口屏,因为数据无法通过DMA直接传输到屏控制器; SC7701仅支持MCU并口屏.
+参考FAQ: FAQ106494
+### 问题: SC9863A平台搭配SC2703L芯片最大支持多大充电电流？
+解决方案: SC2703L芯片最大充电电流为2.5A.
+参考FAQ: FAQ106513
+### 问题: Simba工具电流测试时phasecheck配置
+解决方案: 因为电流测试里poweroff手机已经关机,所以更新站位失败.需要在电流测试完后再重新进模式,再更新站位即可. 配置方法:在电流测试后鼠标右键、新增测试项、nonrf.dll、changemode、entermode添加完成
+参考FAQ: FAQ106517
+### 问题: 温升调试说明
+解决方案: 温升调试目前有两种方案:1.通过板端NTC电阻采集PCB板上的温度,达到预设的温升调控入口温度会调整背光亮度,充电电流,音量,CPU 主频,CPU核数,以满足温度要求,其中CPU相关的优化是系统内部自动执行,xml文件里面只执行背光,音量,充电电流的优化.如果NTC电阻不贴,板端温度会是固定不变的,不会触发温升调控.2.不采集PCB板的温度,直接提取CPU内部温度数值,满足条件会进行温升调控.所有的优化项目都在xml文件里面根据预设的策略进行优化. 两种方案相比,第一种方案最精准.因为采集的是板端真实温度.第二种方案由于采集的是CPU的结温,CPU的温度高,变化快.和PCB板的温度差异较大.会存在偏差
+参考FAQ: FAQ106544
+### 问题: 如何直接从命令行中启动uiautomatorviewer
+解决方案: 在电脑中找到uiautomatorviewer.bat文件所在路径,将该路径配置在环境变量path中(建议配置为用户变量).
+参考FAQ: FAQ106576
+### 问题: uiautomator2.0 case调试时如何获取当前应用的包名/activity名
+解决方案: 1.在命令行窗口输入 adb shell dumpsys activity |findstr 0|findstr adb shell dumpsys window w | findstr \/ | findstr name= 即可查看当前应用的包名和类名
+参考FAQ: FAQ106577
+### 问题: 拨打VOLTE电话为什么会发生CSFB?
+解决方案: 在4G网络下支持VOLTE的终端,拨打电话时优先使用VOLTE方式,为了提高呼叫成功率,当VOLTE不能打通电话时,终端会发生CSFB回落到CS域拨打电话. 网络端也有相同的策略,对于支持VOLTE的终端,网络优先发起VOLTE寻呼,如果VOLTE寻呼无响应,则尝试再发起CS寻呼. 一般来说发生CSFB主要受终端和网络之间的连接情况影响.当终端和网络之间的连接出现异常时,VOLTE电话的消息发不出去,或终端接收不到网络的VOLTE寻呼,则会发生CSFB. 分析CSFB问题需要提供MO和MT时间点对应的log.对于MO发生CSFB的情况,分析比较容易,在log中可以明显看到VOLTE消息发不出去.对于MT发生CSFB的情况,需要检查在可能收到VOLTE寻呼的时间点底层链路是否正常,是否存在漏寻呼的可能.如果检查底层链路正常,也有可能存在网络当时资源不足,从而直接发起CS寻呼导致终端发生CSFB的情况,需要使用对比机作为MT,进行对比测试再进一步分析
+参考FAQ: FAQ106588
+### 问题: 阿拉伯语百分号显示的与英文不一样?
+解决方案: 通过调查unicode标准,阿拉伯语百分号的显示与英文显示不一样是正常的. 具体unicode标准可登陆unicode的官网获取查看http://www.unicode.org/
+参考FAQ: FAQ106592
+### 问题: 如何修改代码关闭selinux
+解决方案: 参考如下修改: 修改文件:system\core\init\init.cpp 修改内容: static bool selinux_is_enforcing(void) { + return false; if (ALLOW_PERMISSIVE_SELINUX) { return selinux_status_from_cmdline() == SELINUX_ENFORCING; } return true; }
+参考FAQ: FAQ106599
+### 问题: 如何获取当前版本是否为GMS版本
+解决方案: GMS版本都会有如下属性 ro.com.google.gmsversion 该属性表示GMS发布的版本号. 例如如下属性,表示android8.1版本2018年5月发布的go版本. ro.com.google.gmsversion]: [8.1_201805.go] 因此可以作为当前是否为GMS版本的依据. 使用方法示例: static final String GMSVersion = SystemProperties.get("ro.com.google.gmsversion"); public boolean isGmsVersion() { if (GMSVersion != null && !GMSVersion.isEmpty()) { return true; }else { return false; } } 使用isGmsVersion方法判断.
+参考FAQ: FAQ106607
+### 问题: 为什么Gallery和Video Player应用的app info是一样的？
+解决方案: 原生android自带的gallery中是显示所有视频和图片的,所以在launcher界面看到的只有Gallery应用入口.因为后来有客户提出新需求,需要有一个专门显示视频文件的应用,所以添加了一个专门显示视频文件的入口,也就是launcher界面上看到的Video Player应用,但是Gallery 应用和 Video Player是共用一个apk文件的,只不过入口方式不一样,所以他们的app info也是一样的.
+参考FAQ: FAQ106613
+### 问题: 蓝牙通话声音全是噪声
+解决方案: 需要确认音频nv中的BT配置格式是否正确: audio\audio\BTHSNRECD8K\AudioStructure\extend2\extend2[117]=0x10f9 (PCM 格式) audio\audio\BTHSNRECD8K\AudioStructure\extend2\extend2[118]=0xa45 (从最高位开始传数据) audio\audio\BTHSD16K\AudioStructure\extend2\extend2[117]=0x7c (IIS格式) audio\audio\BTHSD16K\AudioStructure\extend2\extend2[118]=0x66 (从最高位开始传数据)
+参考FAQ: FAQ106615
+### 问题: 支持T卡热插拔以及预防烧卡保护
+解决方案: 1.未插入为为高电平(依靠AP内部上拉或者VDD1V8上拉),插入后接入地.这种卡槽可以使用,按附件增加保护措施 2.未插入为低电平,插入后弹开,依靠AP内部或者VDD1V8上拉变为高电平.这种卡槽可以使用,按附件增加保护措施 3.未插入为低电平,插入后DET短路到VDDSD,变为高电平.这种卡槽严禁使用 4.卡槽设计,T卡在内,SIM卡在外,不需要设计烧卡保护 预防保护烧卡原理及接法,请参考附件 /ishare/uploadeditor/file/20180629/20180629142425_358.rar
+参考FAQ: FAQ106614
+### 问题: 耳机输出反向nv配置方法
+解决方案: 通话耳机输出反向,将audio\audio\Headset\AudioStructure\dl_DA_device_internal=0xe02a的值改为0xc02a
+参考FAQ: FAQ106616
+### 问题: 无耳机输出方案音频注意事项
+解决方案: 无耳机输出,需要注意AMPG_VCOM需要接地,否则会出现上行无声,下行声音异常等问题.
+参考FAQ: FAQ106618
+### 问题: SC9820E/SC9832E 评审内容及入口条件
+解决方案: SCH 评审(原理图,要求RF框图) PCB 评审(原理图,PCB) PCB SI/PI 仿真(原理图,PCB,叠层文件,要求PMU割地) PCB重要信号和小电源仿真(原理图,PCB,叠层文件)
+参考FAQ: FAQ106619
+### 问题: SC7731E 评审内容及入口条件
+解决方案: SCH 评审(原理图,不用出RF框图) PCB 评审(原理图,PCB) PCB SI/PI 仿真(原理图,PCB,叠层文件,要求PMU割地) PCB重要信号和小电源仿真(原理图,PCB,叠层文件)
+参考FAQ: FAQ106621
+### 问题: SC9850K/SC9850KL 评审内容及入口条件
+解决方案: SCH 评审(原理图,要求RF框图) PCB 评审(原理图,PCB) PCB SI/PI 仿真(原理图,PCB,叠层文件,要求PMU割地) PCB重要信号和小电源仿真(原理图,PCB,叠层文件)
+参考FAQ: FAQ106625
+### 问题: SC7701/SC7715/SC7731G/SC7731C/SC9832A/SC9820A/SC9820W等老平台 评审内容及入口条件
+解决方案: SCH 评审(原理图,不用出RF框图) PCB 评审(原理图,PCB) PCB SI/PI 仿真(原理图,PCB,叠层文件)
+参考FAQ: FAQ106626
+### 问题: SC9860/SC9863 评审内容及入口条件
+解决方案: SCH 评审(原理图,要求RF框图) PCB 评审(原理图,PCB) PCB SI/PI 仿真(原理图,PCB,叠层文件,要求PMU割地) PCB重要信号和小电源仿真(原理图,PCB,叠层文件)
+参考FAQ: FAQ106639
+### 问题: SC932E 是否支持usb hub
+解决方案: 不支持
+参考FAQ: FAQ106699
+### 问题: SC2703的闪光灯驱动 WLED_IDAC可以通过多大电流?
+解决方案: 40mA
+参考FAQ: FAQ106684
+### 问题: SC9820E usb支持OTG吗？
+解决方案: 支持
+参考FAQ: FAQ106701
+### 问题: SC9820E 支持SPI接口的LCD屏吗？
+解决方案: 支持
+参考FAQ: FAQ106702
+### 问题: 双MIC设计，对MIC本身的SNR有有无要求？
+解决方案: 有要求,MIC选型时建议:SNR(main mic) & SNR(aux mic) need same, SNR(main mic) -SNR(aux mic) <±3dB.
+参考FAQ: FAQ106718
+### 问题: 双MIC设计，对MIC本身的灵敏度Sensitivity有无要求？
+解决方案: 有要求,建议MIC选型时:Sensitivity(main mic) & Sensitivity(aux mic) need same, Sensitivity(main mic) - Sensitivity(aux mic) <±1.5dB(most important).
+参考FAQ: FAQ106719
+### 问题: 双MIC设计，对MIC本身的频响Frequency response有无要求？
+解决方案: 有要求,MIC选型时建议:Frequency response should be <±3dB.
+参考FAQ: FAQ106720
+### 问题: 双MIC设计，对MIC的摆放位置有什么要求？
+解决方案: 双MIC设计,对MIC的摆放位置是有要求的,MIC位置需遵循如下几点: 1. Aux MIC is recommended to top middle of the bottom, not side face of bottom. Because Aux MIC may be sheltered on some handset condition. 2. Aux Mic should not be shielded by user. 3. Isolate the Aux Mic and Recevier. 4. Main mic near the bottom of the phoneset. 5. Aux mic near the top & back of the phoneset.
+参考FAQ: FAQ106721
+### 问题: android8.1，如何去除Launcher3中idle界面阴影效果
+解决方案: android8.1,去除Launcher3中idle界面阴影效果,修改以下对应分辨率中资源图片为全透明即可: packages/apps/Launcher3/res/drawable-xxxx/workspace_bg.9.png
+参考FAQ: FAQ106737
+### 问题: 9820E平台是否有预充保护时间？
+解决方案: 9820E平台使用PMIC为SC2721G. SC2721G芯片有预充保护时间,电压和时间阈值为2.05V和30min.即电压小于2.05V,充电时长大于30min后,断电. 注意:因为VBAT电压小于2.05V,RTC电路不能正常工作,此时的CLK是charger内部自己RC产生的4K,偏差会比较大.
+参考FAQ: FAQ106748
+### 问题: simba校准7731E时8960上时间为什么比较慢？
+解决方案: 有客户反馈用simba校准7731E在8960上时间比较长(7731E平台机在8960上GSM 4个band+EDGE 4个band+W 4个band,校准时间 131S),而7731G用CFT同样的配置,时间较短,这里存在一个误区:认为7731G和7731E是同一个系列的芯片,但是实际上二者是两种完全不同的芯片,所以二者完全没有可比性; 且7731E校准的点数比较多,再加上8960仪表本身的限制(10ms/step),而其他仪表基本可以做到2ms/step,所以校准时间较长. 建议: 在做校准时,不要选择common(即使选择FDT时间上还是和CMW500是有很大差异的),同时,如果有其他仪表(比如国产类的都可以),还是使用其他仪表来做校准,用8960来做综测,避免浪费资源的同时也可以节省产线成本.
+参考FAQ: FAQ106756
+### 问题: 如何启用文件级加密（FBE）
+解决方案: 通过将 fileencryption=contents_encryption_mode[:filenames_encryption_mode] 标记添加到 userdata 分区最后一列的 fstab 行中,可以启用 FBE. contents_encryption_mode :参数定义用于文件内容加密的算法,只能是 aes-256-xts. filenames_encryption_mode :参数定义用于文件名加密的算法,有两个可能的值:aes-256-cts 和 aes-256-heh.如果未指定 filenames_encryption_mode,则使用 aes-256-cts 值.
+参考FAQ: FAQ106795
+### 问题: PMU VCHG悬空是否能检测到USB？
+解决方案: 可以,但非常规做法. 1. PMU VCHG有两个方面用途:充电 和 USB枚举触发. 2. 充电方面:PMU VCHG主要用于检测充电器插入,检测VBUS电压并作出保护;此外,线性充电方式下,当电池电压接近0V时,VCHG管脚还提供从VBUS到VBAT的小电流路径(详见PMU充电章节). 3. USB检测:VCHG输入变高后,唤醒睡眠下的系统,平台关于USB的电源、时钟才会打开,开始进行USB枚举过程.这样做主要目的是降低手机功耗.当然,也可以使用其他中断来触发这个过程,亦或系统进行定时轮询、不需要信号触发.比如,当产品为PCIE的数据卡时,可以通过上电后直接进行USB枚举过程,此时PMU VCHG可以悬空处理.
+参考FAQ: FAQ106883
+### 问题: 如何查看CP2版本
+解决方案: 为了快速定位解决问题,提交CQ时需要提供CP2版本号,查看方法如下: 方法一:关于手机界面确认: 设置—关于手机—基带版本 (可以看到cp0和cp2的版本号,如 Marlin2_17A_W18.20.3 ) 方法二:工程模式确认: 工程模式—debug&log—systeminfo—vertioninfo—cp2 version 如图所示:
+参考FAQ: FAQ106856
+### 问题: Type-C接口如何检测OTG设备,原理图如何设计？
+解决方案: 1. 标准的Type-C接口通过两个CC脚(A5/B5)来检测插入设备的类型; 2. 当产品使用Type-C接口时,将连接器A5/B5接入A-Die的对应管脚,请参考对应CS图纸; 3. 当产品使用Micro-B接口是,将USB_ID管脚连接BB带Debance功能的中断输入.
+参考FAQ: FAQ106898
+### 问题: SC7731E平台使用Agilent 8960仪表测试效率和其他仪器相比，效率很低，原因是什么？
+解决方案: 硬件原因: Agilent 8960属于老一代测试仪表,CPU主频以及内存和当前主流仪器对比差距明显,测量数据处理速度慢; 仪表测量方案原因: Agilent 8960校准和综测方案老旧,和当前最新的测试方案对比差距明显. SC7731E平台Transfer特性原因: 因Transfer特性,需要比其他平台多增加一些频点进行校准,所以测试时间较其他展讯平台测试时间略有增加
+参考FAQ: FAQ106899
+### 问题: 展锐Android 7.0平台针对入网安全能力测试的支持能力说明
+解决方案: 展锐Android 7.0平台可以支持入网安全能力5级(最高级),基于SC9832取得泰尔实验室5级认证报告.
+参考FAQ: FAQ107213
+### 问题: SC9863A平台支持的DDR类型有哪些？
+解决方案: SC9863A平台支持LPDDR3/LPDDR4/4X.
+参考FAQ: FAQ106928
+### 问题: SC9863A平台最高支持的LCD分辨率是什麽？
+解决方案: SC9863A平台最高支持的LCD分辨率是FHD+ (2160×1440).
+参考FAQ: FAQ106930
+### 问题: SC9863A平台是否支持5G wifi?
+解决方案: SC9863A支持5G wifi的参考设计为:SC9863_C_CS_A_SCH_V0.0.1_SC2721G_SR3595D_SC2355A_5M_eMMC_LPDDR3. 通过外挂 SC2355A芯片支持5G wifi.
+参考FAQ: FAQ106931
+### 问题: SC9853A平台sensor hub支持的传感器类型有哪些？
+解决方案: SC9853A平台sensor hub支持的传感器类型有气压传感器(Pressure-Sensor),光传感器(L-Sensor),接近传感器(Prox-Sensor),加速度传感器(A-Sensor),陀螺仪传感器(Gyro-Sensor),磁传感器(Mag-Sensor).
+参考FAQ: FAQ106935
+### 问题: SC9863A平台参考设计中Board ID脚的作用是什么？
+解决方案: BOARD_ID_ADC的用于射频频段的单软多硬识别; BOARD_ID0&BOARD_ID3用于不同的时钟方案识别; BOARD_ID1&BOARD_ID2用于不同的memory类型识别.
+参考FAQ: FAQ106936
+### 问题: SC9863A平台是否两SIM卡可以同时支持4G？
+解决方案: 支持.
+参考FAQ: FAQ106939
+### 问题: SC9863A平台支持的CA类型有哪些？
+解决方案: SC9863A平台可支持的CA类型如下: 1. intra-band continuous CA 2. inter-band discontinuous CA 3. intra-band discontinuous CA 4. support DL 2CA,support UL 2CA 具体可以实现哪种CA依赖于硬件设计.
+参考FAQ: FAQ106940
+### 问题: SC9863A平台是否支持插充电器开机？
+解决方案: SC9863A平台采用了SC2703L芯片的参考设计支持无电池插充电器开机.
+参考FAQ: FAQ106941
+### 问题: SC9863A平台是否支持SDR104的T卡？
+解决方案: 支持.由于此类T卡需要800mA电流,所以使用此类T卡,需要外加LDO.
+参考FAQ: FAQ106945

@@ -1,0 +1,324 @@
+### 问题: 怎么从log中确认语音编码是否使用了EVS？
+解决方案: (1)从空口消息中找到打电话的第一条消息INVITE: IMS -> [1]INVITE (2)点击后可以在trace窗口中找到对这个INVITE消息的解析,其中在SDP部分看到EVS编码,这说明终端是开启了EVS编码,向网络发送有EVS编码协商请求: IMS: msg -> [1]INVITE Content-Type: application/sdp Content-Length: 898 v=0 o=07044969407 1862815852 1862815852 IN IP6 240A:2:4805:347F:4410:3071:7377:1304 s=- c=IN IP6 240A:2:4805:347F:4410:3071:7377:1304 b=AS:50 b=RS:600 b=RR:2000 t=0 0 m=audio 59000 RTP/AVP 96 98 100 10
+完整回答请参考FAQ: FAQ116318
+### 问题: 在支持sensorhub的平台上是否有显示手机所使用的sensor的型号信息的接口？
+解决方案: 在支持sensorhub平台 如sp9863平台,软件上有相关的sys接口用来查看手机所贴的sensor的型号信息,修改如下: 把所使用的sensor的chip id及其型号信息添加到kernel4.4/drivers/iio/sprd_hub/shub_core.c的如下函数的表中: static const struct id_to_name_tag name_list[] = {                  {0x0000, "don't know"},                  {0x0011, "icm20600,Acc and Gyro DEVICE"},                  {0x003d, "st,lis3mdl"},                  {0x0069, "st,lsm6ds3"},                  {0x006
+完整回答请参考FAQ: FAQ116391
+### 问题: 如何设置不同场景的ddr频率限制
+解决方案: ddr的场景频率设置在dts中 1 根据版本/分支的差异所在的dts文件会有区别 不支持dtbo.img的项目在common.dtsi中 比如 arch/arm64/boot/dts/sprd/芯片名-common.dtsi 有如下段 ddr_dfs: scene-frequency { compatible = "sprd,dfs"; freq-num = <8>; sprd-scene = "boost", "lcdon", "lcdoff", "camlow", "camhigh", "camveryhigh"; sprd-freq = <933 311 233 400 622 933>; }; 在支持dtbo.img的项目,则存在于各个客户自建board的dts中 比如 arch/arm64/boot/dts/sprd/客户项目名-overlay.dts 有如下段 &ddr_dfs
+完整回答请参考FAQ: FAQ116394
+### 问题: LTE 其中某个band没有分集接收功能，使用CFT金板制作工具GSCLC该如何设置？
+解决方案: CFT金板制作工具GSCLC界面操作,不能单独勾选disable某一个band的分集,但是可以修改GSCLC.ini配置文件,disable某个band的分集; 例如:某项目支持LTE Band1,Band3,Band5,Band8 但是Band8不支持分集,其他Band分集功能是支持的,可进行如下设置: 修改\CFT_R19.0.0002\Bin路径下GSCLC.ini配置文件,将: [MISC] LTE DIV Disable Band = 设置成 LTE DIV Disable Band = 8 例如:某项目支持LTE Band1,Band3,Band5,Band8 但是Band1,Band8不支持分集,其他Band分集功能是支持的,可进行如下设置: 修改\CFT_R19.0.0002\Bin路径下GSCLC.ini配置文件,将: [MISC] LTE DIV Disable Ban
+完整回答请参考FAQ: FAQ116436
+### 问题: 智能手机硬件由哪些组成?
+解决方案: 如今的智能手机已经成为人们的必备物品,因为手机便于携带,且适用人群多,功能强大且操作相对电脑简单. 从硬件上讲,手机的硬件组成跟电脑也有几分相似.手机硬件主要由以下几部分组成: (一) CPU 　　相当手机的大脑,核心的运算能力.强劲的CPU可以为手机带来更高的运算能力,也会增加手机玩游戏看电影的速度体验,CPU主要参数有2,核心数和主频,当然,这些参数也不是越大越好,合理够用即可,因为多核心高主频也意味着更耗电. (二) RAM 　　相当电脑的内存,也叫做运行内存简称运存.RAM越大,手机运行速度更快,多任务机制更流畅,打开多个应用也不卡机,目前手机主流价位的新机运存都在4GB以上. 但需说明的是,手机不能像电脑那样随便更换内存条(RAM)的. (三) ROM 　　一般等同于电脑硬盘,用于安装Android系统及存放照片、视频等文档,ROM越大,能存放的东西越多,就好像电脑硬盘越大存放的
+完整回答请参考FAQ: FAQ116618
+### 问题: 电池规格书中容量 与  FGU算法中电池有效容量CNOM  不一致
+解决方案: "电池有效容量Cnom",是库仑计电压电量显示算法中的关键参数,需要通过电池参数测试得出,测试方法参考文档"The Test Method of Battery Parameters for CT-3008".该参数在.dts&.dtsi文件中配置. 我们常见的电池规格书中,常有如下几种容量:Nominal Capacity 典型容量 /Minimum Capacity 标称容量; 以Minimum Capacity 标称容量的测试方法为例:"电芯标准充电后搁置0.5h-1.0h,用恒流放电至2.75V, 记录电芯放电电量". 而FGU算法中的"电池有效容量Cnom"的测试方法为: 1.将电池充电,充满条件与软件配置相同,例如软件设置充电截止电流4.35V 充电截止电流80mA; 2.以400mA恒流放电,单次放电容量固定,例如50mAh. 3.放至电池过放,统计3.4V以上电量. 由于"
+完整回答请参考FAQ: FAQ116548
+### 问题: SC9863A修改microSD卡（TF卡）驱动能力方法
+解决方案: 示波器测试TF卡信号之后,如果碰到上升沿/下降沿、过冲等问题需要修改I/O驱动能力,调试阶段建议使用adb lookat命令修改寄存器,以SD0_CLK为例. 查找SC9863A寄存器见规格书《SC9863A Device Specification》中IO_MUX_G4_PIN_RF寄存器, 基地址0x402A0000(Set 0x402A0800/Clear 0x402A1000). 偏移量0x05B4(set 0x0DB4/CLR 0x15B4) SD0_CLK0寄存器, bit[22:19] 4bit一共16个档位,0x0--0xF,对应的电流请参考《SC9863A_GPIO_Spec_V1.1.xlsx》. 调试OK后,修改pinmap文件BITS_PIN_DS(6)为之前测试最优驱动档位,然后合入软件出新版本验证.注:DS--Drive Strength,DS(0)最弱,DS(
+完整回答请参考FAQ: FAQ116539
+### 问题: WIFI发射频谱模板要求
+解决方案: WIFI发射频谱模板要求 一、 802.11B的发射频谱模板要求 1.对于IEEE 802.11B的DSSS、CCK方式,发射频谱模板如图1所示 图1 DSSS/CCK 发射频谱模板 2.IEEE 802.11B发射频谱模板的要求如下 IEEE标准 频偏(f-fc)MHz 功率谱密度差值 dBr 802.11B (DSSS、CCK 方式) fc -22 MHz< f < fc -11 MHz, < -30 fc +11 MHz < f < fc + 22 MHz f < fc-22 MHz, < -50 f > fc + 22 MHz 注释: 1)fc 为信道中心频率,f为待测频点 2)测试条件: 100kHz RBW,30kHz VBW 二、802.11G的发射频谱模板要求 1.对于IEEE802.11G的OFDM、DSSS-OFDM方式,发射频谱模板如图所示 图2 OFDM发射频谱模板
+完整回答请参考FAQ: FAQ116551
+### 问题: 如何迁移CTS Verifier测试结果
+解决方案: 可以通过如下方式把测试结果进行迁移,备份恢复到另一台机器,然后出报告. adb backup -f com.android.cts.verifier.backup -apk com.android.cts.verifier # 从原始测试机备份 adb restore com.android.cts.verifier.backup # 迁移到目标测试机中 以android-cts-verifier-9.0_r7举例: 1.执行以下命令,手机按照提示备份操作: adb backup -f com.android.cts.verifier.9.0_r7.backup.uncomplete -apk com.android.cts.verifier 2.在新机器先安装 cts-v 9.0_r7的 CtsVerifier.apk,然后执行,手机根据提示完成恢复操作: adb restore com
+完整回答请参考FAQ: FAQ116905
+### 问题: CtsNetTestCases-android.net.cts.ConnectivityManagerTest#testOpenConnection测试项fail
+解决方案: 错误堆栈如下: 
+java.net.ConnectException: Failed to connect to google-ipv6test.appspot.com/31.13.72.17:80
+at com.android.okhttp.internal.io.RealConnection.connectSocket(RealConnection.java:143)
+at com.android.okhttp.internal.io.RealConnection.connect(RealConnection.java:112)
+at com.android.okhttp.internal.http.StreamAllocation.findConnection(StreamAllocation.java:184)
+at com.android.okhttp.internal
+完整回答请参考FAQ: FAQ116915
+### 问题: wifi activescanning/passivescanning简介
+解决方案: 加入一个无线网络,那么我们需要找到它的网络名称,即SSID.这个SSID其实是接入点(Access Point)回应工作站扫描时所带的参数,还有其它的网络参数,包括BSSID(可理解为接入点的MAC地址)、信号强度、加密和认证方式等. 扫描类型分两种,一种是主动扫描(active scanning),另一种是被动扫描(passivescanning). 1、 主动扫描(activescanning) 我们先来说说主动扫描.即我们的手机(工作站STA)以主动的方式,在每个信道上发出Probe Request帧,请求某个特定无线网络予以回应.主动扫描是主动寻找网络,而不是静候无线网络声明本身的存在.使用主动扫描的工作站将会以如下的程序扫描信道表所列的频道: (1)跳至某个信道,然后等候来帧指示(indicationof an incoming frame)或者等到ProbeDelay定时器超时
+完整回答请参考FAQ: FAQ116991
+### 问题: 如何分析定位File table overflow 导致的重启，WCN Assert问题
+解决方案: 一:典型log 349 424 E WCND : open /proc/mdbg/loopcheck failed, error: File table overflow 734 905 W System.err: java.io.FileNotFoundException: /proc/meminfo (File table overflow) 二:产生原因 当系统打开的文件个数达到系统设置的上限时,再申请创建fd的进程就会出现File table overflow 异常 三:分析思路 1:首先确认对应项目系统可以打开的fd个数上限,这个上限和内存有关系: 例如在pike2 512M项目上最大值为44912 sp7731e_1h20:/proc/sys/fs # cat file-max 44912 2:单个进程可打开的fd个数上限,android9.0已经改为了32768,8.1以及之
+完整回答请参考FAQ: FAQ117070
+### 问题: 如何在int.rc中配置一个service？
+解决方案: 在int.rc中配置一个service需指定这个service的name,以及这个service需要执行的对象的路径,如有需要,可指定启动的参数. 修改内容包含两个部分 1. rc 文件修改 service的格式如下: service <name> <path> <args>
+    <options>
+    <options>
+    ... ... 对此主要注意的方面有: 1) rc 新增服务名字、路径、参数 2) 配置服务是否开机自启动 3) 自定义服务启动阶段 4) 配置服务退出后是否可自启 5) 配置服务的生存周期 简单举例: 添加一个自定义服务 unisoc_test_service, 其对应路径为/system/bin/unisoc_test_service,我们要求他在手机启动的main阶段执行,只执行一次(退出后不进行重启),传入参数为unisoc_test,且在
+完整回答请参考FAQ: FAQ117156
+### 问题: SC9820E平台如何更改背光的频率和电流?
+解决方案: 如sprdroid4.4_sfphone_17f_rls1/kernel/drivers/video/backlight/sc2721_bltcled_bl.c背光驱动文件内 static struct sprd_bl_devdata sprdbl = { .x_duty = 0xFF, .x_mode = 0xFE, .output_current = 0x1F, //这里配置的电流最大 如果遇到频率太低导致的闪屏或者整体太亮需要降低亮度可按如下介绍在dts文件内重新配置mode和current 1、则三路通道mod默认均是0xfe ,pwm_freq=32k/(prescale+1)/(mod+1)=32k/(0+1)/(254+1)=125.5HZ, 如果嫌这个频率太低,可以降低mod(时钟源不可改,预分频已经最大是0),比如配置mod为0x63即99, 这样计算而得pwm_freq
+完整回答请参考FAQ: FAQ117208
+### 问题: LTE B38 only NV特殊配置
+解决方案: 当LTE支持B38且不支持B41时,NV标志位需要修改: SC9820/9832/9850/9853 platerform:LTE_DownloadParam\LTE_Download_RF_Common\LTE_DownloadParam_version SC9863 plateform:LTE_optimize\LTE_download_rf_common_cc0_optimize\LTE_DownloadParam_version NV description: Bit[9:8]: B38/B41 select, 00=B38 only, 01=B38&41 or B41 only;其他位数保持默认. sample: 如SC9832E+SR3593A平台,LTE TDD频段为B38/40,则 LTE_DownloadParam\LTE_Download_RF_Common\LTE_D
+完整回答请参考FAQ: FAQ119090
+### 问题: 进camera时先正常，然后短暂花屏后绿屏，如何解决
+解决方案: 进camera,画面预览大概如下,最后稳定在绿屏画面 1、从花屏现象看,像是lsc grid 不匹配导致的花屏 2、bypass lsc 模块,发现花屏消失,定位是lsc 导致的. 3、抓log 如下,发现tuning参数中的grid 与OTP中的不一致 . 01-10 02:38:53.286 344 26742 I general_otp_drv: 1651, _general_otp_parse_slave_lsc_1v0: lsc_img_width = 1600, lsc_img_height = 1200, lsc_grid = 64 01-10 02:38:53.466 344 607 D lsc_ctrl: 477, _lsc_parser_otp: init_lsc_otp, full_img_width=1600, full_img_height=1200, lsc_o
+完整回答请参考FAQ: FAQ117334
+### 问题: [GCF&PTCRB测试]卡协议3GPP TS 31.121中case 5.2.2b (Access Control Class 1)测试注意事项
+解决方案: case 5.2.2b (Access Control Class 1)测试注意事项: 1. 测试前需要在工程模式中打开"Load APN"开关,这样可以避免AP在开机读取到SIM卡后发起IPCHANGE,向modem下发ATTACH APN,重新做一次reattach导致case fail. 2. 注网后做PDP激活,Anite仪表提示的AT命令是: AT+CGDSCONT=6,5 at+cgeqos=6,1,128,128,384,384 AT+CGTFT=6,1,0,"253.41.204.67.127.185.0.2.2.12.41.255.254.102.180.199.255.255.255.255.255.255.255.255.255.255.255.255.255.255.255.255",17,,"31160.31160",,,,2 AT+CGACT=1,6 需要替换为
+完整回答请参考FAQ: FAQ117331
+### 问题: VoLTE中，SIP协议和Diameter协议分别用在什么场合？
+解决方案: 现在大多数4G的手机(包括我们展讯方案的4G手机)和网络都支持VoLTE功能,其VoLTE/IMS主要采用的协议有SIP、Diameter以及其他协议. 下图是3GPP Rel5/6的协议和主要接口,重点罗列了SIP和Diameter部分. SIP:一般用于CSCF与UE、AS、MGCF等实体间的呼叫控制. Diameter:通常用于CSCF与HSS、PDF等之间的信息交互,还用于CCF/OCS与CSCF、MRFC、BGCF、MGCF、AS之间的计费信息交互. 相关缩写词: CSCF:Proxy Call Session Control Function UE:User equipment AS:Application Server HSS:Home Subscriber Server PDF:Policy Decision Function CCF:Charging Collection
+完整回答请参考FAQ: FAQ117264
+### 问题: wifi hotspot 菜单横竖屏切换时 停止运行
+解决方案: diff --git a/src/com/android/settings/wifi/tether/WifiTetherSettings.java b/src/com/android/settings/wifi/tether/WifiTetherSettings.java index cbf6174..e50b71c 100644 --- a/src/com/android/settings/wifi/tether/WifiTetherSettings.java +++ b/src/com/android/settings/wifi/tether/WifiTetherSettings.java @@ -197,10 +197,11 @@ public class WifiTetherSettings extends RestrictedDashboardFragment          
+完整回答请参考FAQ: FAQ117291
+### 问题: 拨打联系人电话，需要显示位置信息
+解决方案:   修改文件:vendor/sprd/platform/packages/apps/SprdDialer/java/com/android/incallui/CallCardPresenter.java   diff --git a/java/com/android/incallui/CallCardPresenter.java b/java/com/android/incallui/CallCardPresenter.java index 3e31250..80c0f66 100644 --- a/java/com/android/incallui/CallCardPresenter.java +++ b/java/com/android/incallui/CallCardPresenter.java @@ -948,6 +948,7 @@ public class CallCardPr
+完整回答请参考FAQ: FAQ117292
+### 问题: 此平台如何设置网络的 MTU
+解决方案: -----#1 ,如何定制移动数据MTU?   代码所在文件:frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnection/DataConnection.java   方法名称:checkSetMtu(ApnSetting apn, LinkProperties lp)   涉及CarrierConfig参数:mtu_config_for_IPV6 、 mtu_config   #2 ,如何修改默认值?   文件:frameworks/base/telephony/java/com/sprd/telephony/CarrierConfigManagerEx.java   修改代码 sDefaultsEx.putInt(KEY_MTU_CONFIG_FOR_IPV6, 0);//可将0改成期待值
+完整回答请参考FAQ: FAQ117293
+### 问题: [GCF&PTCRB测试]2G协议3GPP TS 51.010-1中case 46.1.2.7.3-1和46.1.2.7.3-2测试注意事项
+解决方案: case 46.1.2.7.3-1:Negotiation initiated by the SS (using XID, for IOV-UI) / GEA1 case 46.1.2.7.3-2:Negotiation initiated by the SS (using XID, for IOV-UI) / GEA2 测试的时候,Anite仪表会提示做PDP5激活,此时发PDP5 AT命令会fail,需要改发PDP3激活: AT+CGDCONT=1,"IP","%S","%A",0,0 AT+CGEQREQ=1,3,128,128,0,0,1,1500,"1E3","4E3",1,0,0 AT+CGEQMIN=1,3,128,128,0,0,1,1500,"1E3","4E3",1,0,0 AT+CGACT=1,1 然后仪表提示上传数据,AT命令如下: at+sgprsdata=100
+完整回答请参考FAQ: FAQ117300
+### 问题: android9.0开启刘海屏功能后如何调整状态栏高度
+解决方案: 1:抓取userdebug版本的开机log,搜索刘海信息,计算刘海高度 例如: S001152 04-02 11:57:42.301 849 875 I DisplayManagerService: Display device added: DisplayDeviceInfo{"Pantalla integrada": uniqueId="local:0", 720 x 1560, modeId 4, defaultModeId 4, supportedModes [{id=1, width=540, height=960, fps=51.002193}, {id=2, width=720, height=1440, fps=51.002193}, {id=3, width=720, height=1280, fps=51.002193}, {id=4, width=720, heigh
+完整回答请参考FAQ: FAQ117335
+### 问题: 为什么关机充电按POWER键不亮屏，一分钟之后按才亮屏？
+解决方案: 1、我们可以看到[ 31.036245]按键的意图是让屏点亮,但是按照睡眠流程的代码逻辑,只要睡眠流程不结束(或者退出),就没有机会走亮屏流程. 2、从打印的耗时问题点在Syncing filesystems之后、Freezing user space processes之前,之后流程很顺利. 3、因此重点怀疑两个问题点: 1)通知进行休眠准备过程:__pm_notifier_call_chain(PM_SUSPEND_PREPARE, -1, &nr_calls) 2)禁止usermodehelper过程:__usermodehelper_disable(UMH_FREEZING) 4、经过验证问题耗时卡在__usermodehelper_disable过程,原因是: 开机过程有进程使用request_firmware机制下载firmware,期间会调用到usermodehelper_r
+完整回答请参考FAQ: FAQ117383
+### 问题: 设备连不上PC工具或者Enter Mode失败情况下的常规check项
+解决方案: 项目 检查内容 检查标准 硬件状态 1.检查PC端设备驱动是否安装并正常加载 关机状态下连USB,进入充电模式前会枚举一次端口,右键计算机(—>管理)—>设备管理器—>端口—>SPRD U2S DIAG(comX) 2.检查USB连接线是否完好,USB口是否稳定 开机状态连USB选MTP模式,不会反复弹出发现存储设备,右键计算机(—>管理)—>设备管理器—>端口—>,识别到的端口设备(一般8个)稳定显示不会闪烁消失 3.确认机器完全关机再连USB,发指令 可以选择扣掉电池再重新装上 4.工具端的点击连接或进模式之后尽快连上USB enter mode工具端有时间限制,可改大timeout,连接过程中不要操作设备或PC的其他USB口,PC不要同时连多台设备 软件状态 1.软件需使用userdebug版本 软件需使用userdebug版本 2.Uboot进模式是否正常 发现端口—>端口消失,b
+完整回答请参考FAQ: FAQ117439
+### 问题: 待机电流偏大问题如何快速定位和正确抓取log?
+解决方案: 底电流是指:待机测试过程中,能达到的最小电流;一般底电流超标优先排查硬件外设、pinmap配置,比如先去除屏或者TP或者sensor之后是否正常. 待机平均电流是指:测试待机一段时间一般5-10min平均电流;遇到有异常唤醒一般等待一个周期,不要只测含唤醒1-2min的平均电流导致平均电流偏大; 测试准备: 1、待机电流测试,开机后关闭log、GMS应用、移动DM等所有后台应用,灭屏后等待3-5min开始测试.(首次开机Google&location的两个勾去掉) 2.实网待机异常,先测试飞行模式电流是否符合标准,再测有无数据连接的单双卡等场景. 如何初步定位智能机待机电流偏大问题和log抓取 1、待机底电流异常,优先排查拆除所有无关外设,看电流是否有改善,检查pinmap配置是否正确,如果还无法定位需硬件分解电流; 2、待机过程有异常唤醒,电流唤醒时间ms级且电流唤醒时VDDARM电压一
+完整回答请参考FAQ: FAQ117455
+### 问题: 电池参数测试需要提前准备哪些资料？
+解决方案: 电池参数测试主要有OCV,有效电池电量和电池内阻 电池参数的准确性是项目电量显示精准的基础,理论上每个项目不同的规格和供应商的电池都需要经过测试实际OCV值导入软件,才能保证电池电量显示精确度,避免出现电量显示不准问题; 1、自己有仪器如:NEWARE CT-3008-5V3A-/CT-3008-5V6A或Keithley 2308/2306等,可以参考文档《The Test Method of Battery Parameters for Spreadtrum Platform with CT-3008_V1.0 .pdf》《The Test Method of Battery Parameters for Spreadtrum Platform_V1.0.pdf》搭建环境自行测试(文档索取可以提交CQ或者联系CPM); 2、需要展锐支持测试的,需要提供项目实际使用电池3PCS或者4PC
+完整回答请参考FAQ: FAQ117459
+### 问题: WiFi热点重命名，输入表情符号出现system crash
+解决方案: 修改方案: diff --git a/service/java/com/android/server/wifi/HostapdHal.java b/service/java/com/android/server/wifi/HostapdHal.java index 4104382..72ede63 100644 --- a/service/java/com/android/server/wifi/HostapdHal.java +++ b/service/java/com/android/server/wifi/HostapdHal.java @@ -306,7 +306,7 @@ public class HostapdHal { // hex string or "double quoted". // However, it seems that whatever is handing
+完整回答请参考FAQ: FAQ117533
+### 问题: 关于wifi热点问题，如何处理才能插入客户的sim卡就可以连接成功
+解决方案: 修改方案: diff --git a/wpa_supplicant_8_lib_sprd/wpa_supplicant.conf b/wpa_supplicant_8_lib_sprd/wpa_supplicant.conf index a2bcfae..a9b78df 100644 --- a/wpa_supplicant_8_lib_sprd/wpa_supplicant.conf +++ b/wpa_supplicant_8_lib_sprd/wpa_supplicant.conf @@ -6,3 +6,9 @@ fast_reauth=1 #p2p_disabled=1 bgscan="learn:300:-75:400:/data/misc/wifi/wpa_supplicant/network1.bgscan" bss_expiration_age=90 + +network=
+完整回答请参考FAQ: FAQ117535
+### 问题: 如何配置通过插入的卡以支持各个国家的运营商
+解决方案: 当机器上插入不同的运营商卡,只要apn配置文件中有为该运营商配置apn,就可以正常使用并驻网． apn配置文件的路径如下: vendor/sprd/telephony-res/apn/apns-conf_8.xml 因此要确认是否支持某个运营商正常注网,只需要在该apn配置文件中查看是否有为该运营商对应的mccmnc配置apn即可． 例如 对于claro运营商,该运营商的mcc/mnc包括722/310,可以在apn配置文件查询到所有匹配mcc="722" mnc="310"的apn如下: <apn carrier="AR-Cloar Web" mcc="722" mnc="310" apn="igprs.claro.com.ar" user="clarogprs" password="clarogprs999" protocol="IPV4V6" roaming_protocol="IP
+完整回答请参考FAQ: FAQ117543
+### 问题: 开启自动接听后，如何默认打开扬声器
+解决方案:   自动接听是直接发送at指令给modem,然后modem自动接听,不经过ap侧.   修改文件 packages/apps/InCallUI/src/com/android/incallui/AnswerPresenter.java   diff --git a/src/com/android/incallui/AnswerPresenter.java b/src/com/android/incallui/AnswerPresenter.java index 1180c6b..0e25942 100644 --- a/src/com/android/incallui/AnswerPresenter.java +++ b/src/com/android/incallui/AnswerPresenter.java @@ -123,6 +123,9 @@ public class Answer
+完整回答请参考FAQ: FAQ117544
+### 问题: 连接AIS WIFI热点问题
+解决方案: diff --git a/service/java/com/android/server/wifi/WifiServiceImpl.java b/service/java/com/android/server/wifi/WifiServiceImpl.java index 7f19e73..d85cbc2 100644 --- a/service/java/com/android/server/wifi/WifiServiceImpl.java +++ b/service/java/com/android/server/wifi/WifiServiceImpl.java @@ -528,17 +528,30 @@ public class WifiServiceImpl extends IWifiManager.Stub { mContext.registerReceiver( new B
+完整回答请参考FAQ: FAQ117549
+### 问题: B07版本monkey测试一次重启
+解决方案: 合入以下patch: diff --git a/src/com/android/settings/wifi/WifiEnabler.java b/src/com/android/settings/wifi/WifiEnabler.java index 7718898..df7eb7c 100644 --- a/src/com/android/settings/wifi/WifiEnabler.java +++ b/src/com/android/settings/wifi/WifiEnabler.java @@ -219,6 +219,8 @@ mMetricsFeatureProvider.action(mContext, MetricsEvent.ACTION_WIFI_OFF, mConnected.get()); } + //to avoid click frequently + 
+完整回答请参考FAQ: FAQ117550
+### 问题: 实现无SIM卡的时候不更新时区
+解决方案: 可以参考如下修改,当网络触发时区更新的时候,先判定一下当前的卡状态,如果是无卡状态这不更新时区． frameworks/opt/telephony/src/java/com/android/internal/telephony/ServiceStateTracker.java private void setAndBroadcastNetworkSetTimeZone(String zoneId) { // Determine if the Icc card exists + boolean iccCardExist = false; + if (mUiccApplcation != null) { + iccCardExist = mUiccApplcation.getState() != AppState.APPSTATE_UNKNOWN; + } + if (!iccCardExis
+完整回答请参考FAQ: FAQ117552
+### 问题: 进入WLAN热点界面，开启热点过程中切换横竖屏时，设置报错
+解决方案: diff --git a/src/com/android/settings/wifi/tether/WifiTetherSettings.java b/src/com/android/settings/wifi/tether/WifiTetherSettings.java index cbf6174..e50b71c 100644 --- a/src/com/android/settings/wifi/tether/WifiTetherSettings.java +++ b/src/com/android/settings/wifi/tether/WifiTetherSettings.java @@ -197,10 +197,11 @@ public class WifiTetherSettings extends RestrictedDashboardFragment          
+完整回答请参考FAQ: FAQ117557
+### 问题: 开启手机热点的同时可以开启隐藏热点开关，但实际并没有隐藏
+解决方案: diff --git a/src/com/android/settings/wifi/tether/SprdWifiTetherSettings.java b/src/com/android/settings/wifi/tether/SprdWifiTetherSettings.java index 432b916..1b15993 100644 --- a/src/com/android/settings/wifi/tether/SprdWifiTetherSettings.java +++ b/src/com/android/settings/wifi/tether/SprdWifiTetherSettings.java @@ -157,6 +157,7 @@ public class SprdWifiTetherSettings extends RestrictedDashboard
+完整回答请参考FAQ: FAQ117558
+### 问题: 如何获取手机的位置信息
+解决方案: TelephonyManager开放了如下接口可以获取的位置信息 1. getCelllocation 这个方法可以直接过去celllocation的信息,但是灭屏之后不会再更新位置信息 2. getAllCellInfo,这个方法可以每次都去查询当前的位置信息. public List<CellInfo> getAllCellInfo() { try { return getITelephony().getAllCellInfo(); } catch (RemoteException ex) { return null; } catch (NullPointerException ex) { return null; } } 如下日志中的mCi值,就是基站信息. mTac 是位置区域 CellIdentityLte.java 这是LTE网络下的信息, // 28-bit cell ide
+完整回答请参考FAQ: FAQ117559
+### 问题: 添加网络时Security 加密方式多了PSK-SHA256，EAP-SHA256等6种
+解决方案: 合入以下patch: 1.frameworks/base/ diff --git a/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java b/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java index 78c42c8..abbfe9c 100644 --- a/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java +++ b/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java @@ -47,6 +47,7 @@ import andr
+完整回答请参考FAQ: FAQ117565
+### 问题: wifi热点名字输入表情会变成乱码并报错
+解决方案: 合入以下patch: diff --git a/service/java/com/android/server/wifi/HostapdHal.java b/service/java/com/android/server/wifi/HostapdHal.java index 4104382..72ede63 100644 --- a/service/java/com/android/server/wifi/HostapdHal.java +++ b/service/java/com/android/server/wifi/HostapdHal.java @@ -306,7 +306,7 @@ public class HostapdHal { // hex string or "double quoted". // However, it seems that whatever is ha
+完整回答请参考FAQ: FAQ117566
+### 问题: Hide ussd dialog when incoming call
+解决方案: 1. Hide ussd dialog when incoming call 1.1问题描述 1. Launch Dialer and input one USSD code. 2. While the USSD code is running, receive an MT call. 3. Accept the call. Expected result: The USSD section must go to background if the phone receives a voice call. 现象: The USSD section remains in main screen. 1.1.2修改方案 修改config_hide_ussd_dialog_incommingcall为true即可 vendor/sprd/platform/packages/services/Tel
+完整回答请参考FAQ: FAQ117568
+### 问题: Android8.1Dialer模块Monkey测试ANR（Input dispatching timed out）
+解决方案: 1.1 问题原因 快速输入 每次输入都会去数据库查询. 1.2 修改方案    添加延迟,把查询分割为时间段. 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_ZTE_CUS_W18.51.5 1.4 修改方案 方案: diff --git a/src/com/android/dialer/dialpad/DialpadFragment.java b/src/com/android/dialer/dialpad/DialpadFragment.java index 031f7b4..7eafa3c 100644 --- a/src/com/android/dialer/dialpad/DialpadFragment.java +++ b/src/com/android/dialer/dialpad/DialpadFragment.java @@ -356,6 +
+完整回答请参考FAQ: FAQ117572
+### 问题: Observed DUT fails to display the Participant Number in Ongoing VT call
+解决方案: rootCause:android默认视频电话接通后不显示号码 solution: 视频电话接通后, 号码的view需要显示 vendor/sprd/platform/packages/apps/SprdDialer/java/com/android/incallui/video/impl/VideoCallFragment.java diff --git a/java/com/android/incallui/video/impl/VideoCallFragment.java b/java/com/android/incallui/video/impl/VideoCallFragment.java index fd7f8e7..9ad69c1 100644 --- a/java/com/android/incallui/video/impl/VideoCallFragment.java 
+完整回答请参考FAQ: FAQ117822
+### 问题: 设置中能搜索到wifi preference中没有的设置项
+解决方案: 合入以下patch: diff --git a/src/com/android/settings/wifi/ConfigureWifiSettings.java b/src/com/android/settings/wifi/ConfigureWifiSettings.java index 422e2e3..066fae5 100644 --- a/src/com/android/settings/wifi/ConfigureWifiSettings.java +++ b/src/com/android/settings/wifi/ConfigureWifiSettings.java @@ -24,7 +24,9 @@ import android.net.NetworkInfo; import android.net.NetworkScoreManager; import android
+完整回答请参考FAQ: FAQ117591
+### 问题: radio link failure导致的通话失败有“嘟嘟嘟”提示音
+解决方案: 1. radio link failure导致的通话失败有"嘟嘟嘟"提示音 1.1.1问题描述   Steps to Reproduce: Description: [前提条件] 在弱信号区域 [测试步骤] 测试机拨打电话,在未呼通自动挂断查看现象; [实际结果] 概率出现发出嘟嘟嘟声 [预期结果] 不会发出嘟嘟   分析日志,radio link failure导致的通话失败有"嘟嘟嘟"提示音 从下行音频分析,下行的音频并没有这个声音 想知道相关的提示音是哪里进行播放的,能否不播放 1.1.1 修改方案 基于版本: MOCORDROID8.1_Trunk_18A_PIKE2_ITEL_CUS_W18.26.5 电话挂断后会根据挂断原因去播放对应的tone, 代码逻辑请参考:packages/services/Telecomm/src/com/android/server/telecom/
+完整回答请参考FAQ: FAQ117592
+### 问题: Enhanced 4G LTE mode toggle should be OFF by default
+解决方案: 1. Enhanced 4G LTE mode toggle should be OFF by default 1.1问题描述 Enhanced 4G LTE mode toggle should be OFF by default 1.1.1修改方案 基于版本: 目前平台volte开关默认打开,如下代码显示: frameworks/base/telephony/java/android/telephony/CarrierConfigManager.java         /**          * Default Enhanced 4G LTE mode enabled. When this is {@code true}, Enhanced 4G LTE mode by          * default is on, otherwise if {@code false}, En
+完整回答请参考FAQ: FAQ117593
+### 问题: 删除wifi信道
+解决方案: 合入以下patch: diff --git a/wifi/java/android/net/wifi/WifiStateMachine.java b/wifi/java/android/net/wifi/WifiStateMachine.java index 2a15a66..95bb027 100644 --- a/wifi/java/android/net/wifi/WifiStateMachine.java +++ b/wifi/java/android/net/wifi/WifiStateMachine.java @@ -1666,6 +1666,8 @@ public class WifiStateMachine extends StateMachine {          // wifi connection is terminated; ignore resetting o
+完整回答请参考FAQ: FAQ117595
+### 问题: 修改hotspot SSID和密码时，hotspot菜单显示不正常
+解决方案: 合入以下patch: diff --git a/src/com/android/settings/wifi/tether/WifiTetherSettings.java b/src/com/android/settings/wifi/tether/WifiTetherSettings.java index ddb062c..6667b7f 100644 --- a/src/com/android/settings/wifi/tether/WifiTetherSettings.java +++ b/src/com/android/settings/wifi/tether/WifiTetherSettings.java @@ -27,6 +27,7 @@ import android.net.wifi.WifiConfiguration; import android.net.wifi.Wif
+完整回答请参考FAQ: FAQ117596
+### 问题: apn参数中Bearer要求显示完整的18个，但是我们只有15个
+解决方案: 1. apn参数中Bearer要求显示完整的18个,但是我们只有15个 1.1问题描述 客户要求334020的ims要默认勾选bearer18个 apn参数中 Bearer要求勾选18个 HSPA, EVDO_B, eHRPD, LTE, HSPAP, GSM, TD_SCDMA, IWLAN, GPRS, EDGE, UMTS, IS95A, IS95B, 1xRTT, EVDO_0, EVDO_A, HSDPA, HSUP 但是我们的手机中仅显示15个 HSPA, EVDO_B, eHRPD, LTE, HSPAP GPRS, EDGE, UMTS, IS95A, IS95B, 1xRTT, EVDO_0, EVDO_A, HSDPA, HSUP 少了 GSM, TD_SCDMA, IWLAN, apn中配置 bearer_bitmask="1|2|3|4|5|6|7|8|9|10|1
+完整回答请参考FAQ: FAQ117597
+### 问题: Android8.1toast 数字镜像问题
+解决方案: 1.1 问题原因 阿拉伯语言下,格式户号码转换异常. 1.2 修改方案    转换格式话号码为ltr. 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.41.5_P3 1.4 修改方案 方案: --- vendor/sprd/platform/packages/apps/SprdContacts/src/com/android/contacts/editor/ContactEditorFragment.java +++ vendor/sprd/platform/packages/apps/SprdContacts/src/com/android/contacts/editor/ContactEditorFragment.java @@ -42,6 +42,8 @@ import android.provider.ContactsContrac
+完整回答请参考FAQ: FAQ117598
+### 问题: 不插入SIM卡情况下，如何让WIFI工作在指定信道
+解决方案: diff --git a/service/java/com/android/server/wifi/WifiInjector.java b/service/java/com/android/server/wifi/WifiInjector.java index 855b250..9fedc77 100644 --- a/service/java/com/android/server/wifi/WifiInjector.java +++ b/service/java/com/android/server/wifi/WifiInjector.java @@ -195,7 +195,7 @@ public class WifiInjector { mTrafficPoller = new WifiTrafficPoller(mContext, mWifiServiceHandlerThread.
+完整回答请参考FAQ: FAQ117599
+### 问题: Android8.0 新建联系人保存时，保存联系人时间耗时比较长
+解决方案: 1.1 问题原因 未正确初始化汉字转拼音排序数据,新建联系人时,时间耗费在等待初始化数据. 1.2 修改方案 启动App,立即初始化拼音排序 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.23.5_P2 1.4 修改方案 方案: vendor/sprd/platform/packages/providers/SprdContactsProvider中 src/com/android/providers/contacts/路径下:找到ContactsProvider2文件, 添加: scheduleBackgroundTask(BACKGROUND_TASK_INIT_HANZITOPINYIN); private static final int BACKGROUND_TASK_INIT_HANZITOPINYIN = 22; privat
+完整回答请参考FAQ: FAQ117816
+### 问题: android.content.cts.ContentProviderCursorWindowTest#testQuery的解决方案
+解决方案: 1. android.content.cts.ContentProviderCursorWindowTest#testQuery的解决方案 1.1 修改原理 Google增加Parcel格式检测的patch,读取Parcel字段的格式需要与构造Parcel字段的格式匹配.. 1.2 修改方案 在后续CTS版本上复测ContentProviderCursorWindowTest case, 如果google仍未解决该问题,可以考虑提TR. 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.23.5_P2 1.4 修改路径 http://review.source.spreadtrum.com/gerrit/#/c/489562/ http://review.source.spreadtrum.com/gerrit/#/c/489564/ Curs
+完整回答请参考FAQ: FAQ117817
+### 问题: Android8.1 联系人中隐藏屏蔽号码菜单和隐藏添加黑名单菜单联
+解决方案: 1.1 问题原因 客户需求,要求联系人中隐藏屏蔽号码菜单和隐藏添加黑名单菜单. 1.2 修改方案    按照客户需求, 联系人中隐藏屏蔽号码菜单和隐藏添加黑名单菜单,修改相关代码. 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.23.5_P2 1.4 修改方案 方案: 在vendor/sprd/platform/packages/apps/SprdContacts/src/com/android/contacts/preference/DisplayOptionsPreferenceFragment.java文件 在其中添加: final boolean hideBlockedNumbers = true; + if (hideBlockedNumbers) { generalCategory.removePreference(findPr
+完整回答请参考FAQ: FAQ117609
+### 问题: WIFI的SSID显示乱码
+解决方案: 1.1 修改方案 1.1.1 修改方案 加入以下文件Android.mk和wifi_sett.c Android.mk: # Copyright 2006 The Android Open Source Project LOCAL_PATH:= $(call my-dir) include $(CLEAR_VARS) LOCAL_SRC_FILES:= wifi_sett.c common_C_INCLUDES += \ $(LOCAL_PATH)/include LOCAL_C_INCLUDES += $(common_C_INCLUDES) external/icu4c/common LOCAL_C_INCLUDES_Debug := \ $(LOCAL_PATH)/cpp/src \ $(LOCAL_PATH) \ external/icu4c/common \ external/i
+完整回答请参考FAQ: FAQ117610
+### 问题: 【system_server_crash】【system_server】
+解决方案: 1.1 修改方案 1.1.1 修改方案 修改方案:捕获异常,防止system_server重启,提高系统稳定性.   请合入如下patch.进行问题验证.   diff --git a/services/core/java/com/android/server/BluetoothManagerService.java b/services/core/java/com/android/server/BluetoothManagerService.java index 4d5f4ee..56d6b7d 100644 --- a/services/core/java/com/android/server/BluetoothManagerService.java +++ b/services/core/java/com/android/server/BluetoothManagerService.
+完整回答请参考FAQ: FAQ117611
+### 问题: 如何实现电话默认免提模式
+解决方案: 1.1问题描述 客户需求来电去电都要求免提 1.1.1修改方案 基于版本: MOCOR5_SFPHONE_17F_RLS1_W18.19.2 接听处: packages/apps/InCallUI/src/com/android/incallui/AnswerPresenter.java 在onAnswer方法最后加上: CallCommandClient.getInstance().speakerOnAfterAnswer(); 拨打处: packages/services/Telephony/src/com/android/phone/OutgoingCallBroadcaster.java onCreate方法中添加PhoneUtils.turnOnSpeaker(this, true, true); if (isFactoryMode) {//可将此判断去掉即可 PhoneUtil
+完整回答请参考FAQ: FAQ117612
+### 问题: sim toolkit显示为spn
+解决方案: 请到如下路径修改 vendor/sprd/platform/packages/apps/SprdStk/src/com/android/stk/StkLauncherActivity.java diff--gita/src/com/android/stk/StkLauncherActivity.java b/src/com/android/stk/StkLauncherActivity.java index 15b74e2..0c23176 100644 --- a/src/com/android/stk/StkLauncherActivity.java +++ b/src/com/android/stk/StkLauncherActivity.java @@ -206,13 +206,16 @@ public class StkLauncherActivity extends ListA
+完整回答请参考FAQ: FAQ117613
+### 问题: Android8.1 拨号中插找联系人不能准确找到联系人
+解决方案: 1.1 问题原因 新建联系人,代码是将多个用户名拼接到一起,然后转换成数字拼音,存在search_index表中,供用户搜索的.所以用户输入了俄语时,输入了fristName和middleName等多个名字时,转换的前提是多个名字相加去一起转数字,那么当搜索的时候,我们只输入一个拼音,可能就搜索不出来了. 1.2 修改方案    保存联系人时,将输入的每个名字都单独转数字.比如fristName转一次,middleName转一次.而不是FirstName+MiddleName以后一起转 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.23.5_P2 1.4 修改方案 方案: 在vendor/sprd/platform/packages/providers/SprdContactsProvider/src/com/android/provide
+完整回答请参考FAQ: FAQ117614
+### 问题: wifi账号和密码如何保存
+解决方案: 1.1 修改方案 1.1.1 修改方案 package com.wifi.demo; import android.app.Activity; import android.content.Intent; import android.content.Context; import android.net.wifi.ScanResult; import android.net.wifi.WifiConfiguration; import android.net.wifi.WifiInfo; import android.net.wifi.WifiManager; public class MainActivity extends Activity{ private WifiManager mWifiManager; public static final int TYPE_NO_PASSW
+完整回答请参考FAQ: FAQ117615
+### 问题: 去掉IP Call功能
+解决方案: 参照如下修改.谢谢!本地验证ok vendor/sprd/platform/packages/apps/SprdDialer$ git diff java/com/android/dialer/sprd/calldetails/CallOperationsViewHolder.java java/com/android/dialer/app/dialpad/DialpadFragment.java diff --git a/java/com/android/dialer/app/dialpad/DialpadFragment.java b/java/com/android/dialer/app/dialpad/DialpadFragment.java index e92da00..6d95b57 100644 --- a/java/com/android/dialer/app/dialpa
+完整回答请参考FAQ: FAQ117617
+### 问题: 建立一路通话，遮挡传感器黑屏，再次来电，测试机不会自动亮屏
+解决方案: 1. 建立一路通话,遮挡传感器黑屏,再次来电,测试机不会自动亮屏 1.1问题描述 [预置条件]插入SIM 卡 [操作步骤]1.测试机建立一路通话             2.遮挡屏幕,是测试机灭屏             3.是使用配合机再向测试机呼入一通来电 [预期结果]再次来电测试机自动亮屏 [实际结果]测试机不会亮屏 1.1.1修改方案 基于版本: 由于已经有一通电话,且遮挡传感器,此时psensor将使屏幕处于黑屏状态,此时如果再来电,屏幕将不会亮.原生设计也是如此.psensor没有释放. 监听第二通来电状态,当发现有两通call时,且call的状态从incall--->incoming时,则强制释放psensor,以达到亮屏目的: 1.将 vendor/sprd/platform/packages/apps/SprdDialer/java/com/android/incallu
+完整回答请参考FAQ: FAQ117618
+### 问题: Android8.1 联系人导出时耗时很长也没有导出所有联系人
+解决方案: 1.1 问题原因 插入联系人无法继续插入是正常行为,是由于usim卡中的email邮箱已满 1.2 修改方案    当插入失败后重新插入去除emial字段至usim中 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_W18.41.5_P3 1.4 修改方案 方案: 在vendor/sprd/platform/frameworks/opt/telephony/src/java/com/android/internal/telephony中找到IccProviderExImpl.java文件 在其中添加: if(index<0 && index == IccPhoneBookOperationException.EMAIL_CAPACITY_FULL){ index = addIccRecordToEf(efType, tag, number, null
+完整回答请参考FAQ: FAQ117621
+### 问题: 添加首选网络类型
+解决方案: 以添加 3G only的网络模式为例, 需要到packages/services/Telephony/res/values/strings.xml 文件中 参考如下修改,谢谢 + <string name="network_3G_only" translatable="false">3G only</string> <string-array name="enabled_networks_4g_choices" translatable="false"> <item>@string/network_4G</item> <item>@string/network_3G</item> + <item>@string/network_3G_only</item> <item>@string/network_2G</item> </string-array> <string-array name=
+完整回答请参考FAQ: FAQ117624
+### 问题: WIFI删除（热点管理模式、白名单机制及交互、手动添加白名单设置）等菜单及功能
+解决方案: 1.1 修改方案 1.1.1 修改方案 1.device/sprd/pike2/sp7731e_XXX/sp7731e_XXX.mk ifeq ($(strip $(BOARD_HAVE_SPRD_WCN_COMBO)), pike2) PRODUCT_PROPERTY_OVERRIDES += \     ro.softap.whitelist = false \ //修改该ro.softap.whitelist值为false即可.   endif 2.diff --git a/src/com/android/settings/wifi/WifiApDialog.java b/src/com/android/settings/wifi/WifiApDialog.java index 4c05d52..024fe14 100644 --- a/src/com/android/setting
+完整回答请参考FAQ: FAQ117627
+### 问题: 使用谷歌电话应用，无法拨打电话
+解决方案: Description: 设备安装谷歌拨号器应用GoogleDialerGo,输入号码点击拨号按钮拨打不出去,附件提供log,项目比较急,请帮忙优先处理,多谢! 解决方案: 替换默认dialer需要在代码里配置属性,使此dialer设置成default dialer package. 将"com.android.dialer"换成"com.google.android.dialer" packages/services/Telecomm/res/values/config.xml 30 <!-- Package name for the default in-call UI and dialer [DO NOT TRANSLATE] --> 31 <string name="ui_default_package" translatable="false">com.android.diale
+完整回答请参考FAQ: FAQ117630
+### 问题: APP监听modem状态
+解决方案: 展讯平台已经实现了该功能,参考如下代码,上层会去监听Modemd的状态变化会回调 handleModemStateMsg private void createSocketThreads(){ 69 SocketThread modemStatThread = new SocketThread("modemStatThread", MODEM_SOCKET_NAME, ""){ 70 @Override 71 protected void handleInputMsg(String info){ 72 handleModemStateMsg(info); 73 } 74 }; 75 modemStatThread.start(); private static final String MODEM_STAT_CHANGE = 33 "com.android.modemassert.MODE
+完整回答请参考FAQ: FAQ117631
+### 问题: Android8.0 联系人->选择一个联系人->按Center 键->再按Center键 无拨号动作
+解决方案: 1. Android8.1 联系人->选择一个联系人->按Center 键->再按Center键 无拨号动作 1.1 问题原因 没有焦点导致无法拨打电话 1.2 修改方案    增加焦点, 给ListView增加焦点,并默认选中0项 1.3 基于版本 基于版本:MOCOR5_SFPHONE_17F_RLS1_W18.28.5 1.4 修改方案 方案: 在/packages/apps/Contacts中的路径src/com/android/contacts/detail 下找到ContactDetailFragment.java文件,在ContactDetailFragment类中,给 Listview增加焦点并默认选中0项:              mView.setVisibility(View.VISIBLE);         mListView.requestFocus();  
+完整回答请参考FAQ: FAQ117633
+### 问题: 在设置菜单关闭WiFi，WiFi开关按钮会在中间停顿一下
+解决方案: 1.1 修改方案 1.1.1 修改方案 diff --git a/src/com/android/settings/wifi/WifiSettings.java b/src/com/android/settings/wifi/WifiSettings.java index ad403c8..a8d17e0 100644 --- a/src/com/android/settings/wifi/WifiSettings.java +++ b/src/com/android/settings/wifi/WifiSettings.java @@ -411,7 +411,7 @@ public class WifiSettings extends RestrictedSettingsFragment return; } setProgressBarVisible(true); - mWifiTrac
+完整回答请参考FAQ: FAQ117635
+### 问题: 新通话记录形成的动画如何去掉
+解决方案: 1.1.1问题描述   拨号盘已存在通话记录,然后拨打新号码形成新记录,新通话记录出现时有个动画 尝试将CallLogFragment里添加mRecyclerView.setItemAnimator(null).但是没有生效 请帮忙看看 1.1.1 修改方案 基于版本: MOCORDROID8.1_Trunk_18A_PIKE2_ITEL_CUS_W18.26.5 将RecyclerView的动画时间长度设置为0. 代码逻辑请参考: vendor/sprd/platform/packages/apps/SprdDialer/java/com/android/dialer/app/calllog/CallLogFragment.java diff --git a/java/com/android/dialer/app/calllog/CallLogFragment.java b/java/c
+完整回答请参考FAQ: FAQ117638
+### 问题: 请帮忙修改wifi热点默认密码
+解决方案: 1.1 修改方案 1.1.1 修改方案 修改获取默认 hostap的配置的对应密码 diff --git a/service/java/com/android/server/wifi/WifiApConfigStore.java b/service/java/com/android/server/wifi/WifiApConfigStore.java index f57e9ec..9f6ac58 100644 --- a/service/java/com/android/server/wifi/WifiApConfigStore.java +++ b/service/java/com/android/server/wifi/WifiApConfigStore.java @@ -285,7 +285,7 @@ public class WifiApConfigStore { config.a
+完整回答请参考FAQ: FAQ117651
+### 问题: 平台上的WAPI feature功能要怎么去除？
+解决方案: 1.1 修改方案 1.1.1 修改方案 通过属性ro.support.wapi的值,如果是false则不支持wapi,上层根据该值去除对应配置. diff --git a/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java b/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java index 78c42c8..abbfe9c 100644 --- a/packages/SettingsLib/src/com/android/settingslib/wifi/AccessPoint.java +++ b/packages/SettingsLib/src/com/android/settingslib/wifi/Acc
+完整回答请参考FAQ: FAQ117652
+### 问题: 拨打电话时候，下半部分灰色界面不要做灰色，直接做上半部那个蓝色，做整个蓝色
+解决方案: 修改背景颜色全部为蓝色,平台原来设置为下半部分为灰色,修改colors_ex.xml中的incall_background_color(#6e6e6e灰色)颜色为 primary_call_info_background(#0c98de蓝色) diff --git a/res/values/colors_ex.xml b/res/values/colors_ex.xml index 7e8b4bf..283b57e 100644 --- a/res/values/colors_ex.xml +++ b/res/values/colors_ex.xml @@ -30,6 +30,6 @@ <color name="conference_call_manager_secondary_text_color">#999999</color> <color name="conference_call
+完整回答请参考FAQ: FAQ117654
+### 问题: 根据sim卡切换语言
+解决方案: 1.1 修改方案 基于版本: MOCORDROID8.1_Trunk_18A_RLS2_SHARKLE_W18.39.7_P1 客户希望只有插入泰国卡的时候才根据卡来切换语言,其他所有过的卡都默认显示英文.7.0 8.0上都对外开放的根据mcc mnc获取语言的接口 getLocaleFromMcc有任何customer的定制都可以在如下逻辑中去定制. 407 public static Locale getLocaleFromMcc(Context context, int mcc, String simLanguage) { 408 boolean hasSimLanguage = !TextUtils.isEmpty(simLanguage); 409 String language = hasSimLanguage ? simLanguage : MccTable.defaultL
+完整回答请参考FAQ: FAQ117656
+### 问题: Android8.0 导入含250个联系人的vcf文件一段时间后退出联系人程序
+解决方案: 1.1 问题原因 contactsprovider发生OOM 1.2 修改方案 修改逻辑防止OOM发生 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A_PIKE2_ITEL_CUS_W18.26.5 1.4 修改方案 方案: 在vendor/sprd/platform/packages/providers/SprdContactsProvider中的路径src/com/android/providers/contacts下找到HanziToPinyin.java文件,在public class HanziToPinyin类中,添加判断              int total = totalCount < 5 ? totalCount:5; 在for循环 for (int i = 0; i < tokenListsSize; i++) { 上面修改token
+完整回答请参考FAQ: FAQ117662
+### 问题: 如何修改wifi hotspot name
+解决方案: 1.1.1 修改方案 diff --git a/service/java/com/android/server/wifi/WifiApConfigStore.java b/service/java/com/android/server/wifi/WifiApConfigStore.java index af65892..d15358d 100644 --- a/service/java/com/android/server/wifi/WifiApConfigStore.java +++ b/service/java/com/android/server/wifi/WifiApConfigStore.java @@ -235,8 +235,10 @@ public class WifiApConfigStore { */ private WifiConfiguration getDefaul
+完整回答请参考FAQ: FAQ117663
+### 问题: 解锁界面来电，按Home键无效
+解决方案: 1.1 修改方案 frameworks/base/services/core/java/com/android/server/policy/PhoneWindowManager.java   3568        if (keyCode == KeyEvent.KEYCODE_HOME) { ...... 3590            if (!down) { ...... 3604                /* SPRD:bug 740854 If an incoming call is ringing, HOME is totally disabled*/ 3605                TelecomManager telecomManager = getTelecommService(); 3606                if(telecomManager
+完整回答请参考FAQ: FAQ117669
+### 问题: 获取当前wifi的信号
+解决方案: 1.1 修改方案 1.1.1 修改方案 Android linux版本没有专门的获取信号强度接口,封装好接口提供给客户 1.diff --git a/wifi/wifi.c b/wifi/wifi.c index b51d650..4720b3b 100644 --- a/wifi/wifi.c +++ b/wifi/wifi.c @@ -745,7 +745,7 @@ int wifi_connect_on_socket_path(const char *path) if (!property_get(supplicant_prop_name, supp_status, NULL) || strcmp(supp_status, "running") != 0) { ALOGE("Supplicant not running, cannot connect"); - return -1; 
+完整回答请参考FAQ: FAQ117673
+### 问题: 灭屏30秒之后关闭数据bug
+解决方案: 1.1 修改方案 1.1.1 展讯平台手机有一个30秒超时的机制去关闭数据,但是这个广播并么有区分subID,所以到时双卡都可以接收到广播,双卡都关闭了,影响云卡的加载 diff --git a/src/java/com/android/internal/telephony/dataconnection/DcTrackerEx.java b/src/java/com/android/internal/telephony/dataconnection/DcTrackerEx.javaindex 9a381ea..410c835 100644--- a/src/java/com/android/internal/telephony/dataconnection/DcTrackerEx.java+++ b/src/java/com/android/internal/telephony/datac
+完整回答请参考FAQ: FAQ117674
+### 问题: 云卡项目设置网络模式
+解决方案: switch (type) { case RILConstants.NETWORK_MODE_WCDMA_PREF: if (isPrimary) { mode = "22"; } else { mode = "14"; } break; case RILConstants.NETWORK_MODE_GSM_ONLY: mode = "10"; break; case RILConstants.NETWORK_MODE_WCDMA_ONLY: if (isPrimary) { mode = "18"; } else { mode = "11"; } break; case RILConstants.NETWORK_MODE_LTE_GSM_WCDMA: mode = "6"; break; case RILConstants.NETWORK_MODE_LTE_ONLY: mode = "3
+完整回答请参考FAQ: FAQ117675
+### 问题: 拨号界面显示问题
+解决方案: 这不是一个Bug,Google设计如此,Nexus 6P 8.1表现也如此,Google对紧急拨号做了一些限制,如下代码,Google的意图应该是避免用户随意拨打紧急号码,只有用户在非常确认情况下拨打,不建议修改此问题. 可以通过命令方式拨打电话,验证一下: //跳转到拨号盘,需要用户点击拨打 adb shell am start -a android.intent.action.CALL -d tel:119 //直接拨打出去 adb shell am start -a android.intent.action.CALL -d tel:10086 //代码 NewOutgoingCallIntentBroadcaster.java ... ... if (Intent.ACTION_CALL.equals(action)) { if (isPotentialEmergencyNumbe
+完整回答请参考FAQ: FAQ117676
+### 问题: Android8.1短信联系人复制,多个字符的联系人复制后,只显示一个字符
+解决方案: 1.1 问题原因 copy过程,读取数据库字段不全 1.2 修改方案 加上所有name有关的字段,查询并保存 1.3 基于版本 基于版本:MOCOR5_SFPHONE_17F_RLS1_W18.28.5 1.4 修改方案 方案: Packages/apps/Contacts/中src/com/sprd/contacts/ 路径下:找到BatchOperationService.java文件,添加 import android.provider.ContactsContract.Data; 在BatchOperationService类中的private Map<String,MatrixCursor> query(ContentResolver resolver)中修改查询条件的第二个参数为 new String[] {RawContacts.CONTACT_ID, Data.MIMETY
+完整回答请参考FAQ: FAQ117680
+### 问题: 辅助机A设置一个ssid为数字的热点，测试机B扫描辅助机A的热点二维码成功后自动重启
+解决方案: 1.1 修改方案 1.1.1 修改方案 Wifi扫描数字二维码自动重启,合入以下patch diff --git a/service/java/com/android/server/wifi/WifiConfigurationUtil.java b/service/java/com/android/server/wifi/WifiConfigurationUtil.java index 938fc90..38eeea3 100644 --- a/service/java/com/android/server/wifi/WifiConfigurationUtil.java +++ b/service/java/com/android/server/wifi/WifiConfigurationUtil.java @@ -322,30 +322,30 @@ public class WifiCo
+完整回答请参考FAQ: FAQ117683
+### 问题: 8.0的base 支不支持印度运营商JIO卡的OTA,通过IPV6网络
+解决方案: Bug描述: 客户要求,是否支持印度运营商JIO卡通过IpV6网络 处理状况: 已解决 问题分析: 问题原因:是否支持ipv4/ipv6是需要在对应的apn中配置 解决方案:配置Apn config文件,将针对JIO运营商配置Ipv6, 请参考如下配置,增加 protocol="IPV4V6" roaming_protocol="IPV4V6"; 文件路径:vendor/sprd/telephony-res/apn/apns-conf_8.xml 11026 <apn carrier="MTNL INTERNET" 11027 mcc="404" 11028 mnc="68" 11029 apn="mtnl.net" 11030 mmsc="http://wap.google.com" 11031 protocol="IPV4V6" 11032 roaming_protocol="IPV4
+完整回答请参考FAQ: FAQ117687
+### 问题: DUT shows VoWiFi symbol in status bar even after removing the SIM card
+解决方案: 1.1.1 问题描述   Steps to Reproduce: 1.      Power up the device with Smartfren sim card in SUB1. 2.      Wait till device latches to the network and registers on VoLTE 3.      Go to Call Settings>>Calling Accounts>> Smartfren>> Enable Wi-Fi Calling>> Set the Mode to Wi-Fi Preferred. 4.      Connect to any Wi-Fi network and wait till device registers on VoWIFI. 5.      Remove the inserted SIM card 6. 
+完整回答请参考FAQ: FAQ117688
+### 问题: Android8.0 联系人存储默认存储在sim卡
+解决方案: vendor/sprd/platform/packages/providers/SprdContacts中  src/com/android/contacts/editor/ 路径下:找到ContactEditorFragment.java 文件,在selectAccountAndCreateContact()方法中,final List<AccountWithDataSet> accounts = AccountInfo.extractAccounts(mWritableAccounts); 之前,添加判断 for(AccountInfo accountInfo : mWritableAccounts){                         if(null!= mWritableAccounts && mWritableAccounts.size()>2){         
+完整回答请参考FAQ: FAQ117690
+### 问题: 出国内单，要加微信，没触屏。验证菜单无法通过
+解决方案: 1.1 修改原理 Input中按键down过程中可以使用其他按键进行移动操作 1.2 修改方案 1.3 基于版本 基于版本:MOCOR5_SFPHONE 1.4 修改路径 修改的文件路径: framework/base/services/java/com/android/server/am/ActivityManagerService.java framework/base/services/java/com/android/server/am/MouseObserverController.java framework/base/services/input/InputReader.cpp 1.5 修改方案 diff --git a/services/java/com/android/server/am/ActivityManagerService.java b/services/jav
+完整回答请参考FAQ: FAQ117691
+### 问题: 切换其他语言时自定义勿扰模式中的item内容无法切换
+解决方案: 1.1 修改原理 在Settings 中当切换语言后,重新获取字符串． 1.2 修改方案 1.3 基于版本 基于版本:MOCORDROID8.1_Trunk_18A 1.4 修改路径 修改的文件路径: Settings/src/com/android/settings/notification/ZenModeRuleSettingsBase.java Settings/src/com/android/settings/notification/ZenModeSettings.java 1.5 修改方案 diff --git a/src/com/android/settings/notification/ZenModeRuleSettingsBase.java b/src/com/android/settings/notification/ZenModeRuleSettingsBase.ja
+完整回答请参考FAQ: FAQ117695
+### 问题: 通话录音
+解决方案: 从问题现象来看,应该是因为保存的联系人名称不满足创建文件的文件名规范,导致创建录音文件失败, 录音文件会优先保存带联系人名称的,这种场景下,无法使用联系人名称保存,改成使用联系人对应的号码保存录音问题. 请使用下面的代码验证: 修改vendor/sprd/platform/packages/apps/SprdDialer下面的PhoneRecorderHelper文件 diff --git a/java/com/android/incallui/sprd/PhoneRecorderHelper.java b/java/com/android/incallui/sprd/PhoneRecorderHelper.java index a19467a..474afeb 100644 --- a/java/com/android/incallui/sprd/PhoneRecorderHelper.
+完整回答请参考FAQ: FAQ117697
+### 问题: GSM 抓取IQ 数据的方法
+解决方案: 1. GSM 模式下,如何使用Arm Logel工具在线抓取IQ数据? [Answer]:1. 手机进入工程模式后,把Log Setting选项中"Modem To PC"选项打开,保证手机的Modem Log开关是正常打开的; 2. 手机在电脑上正确安装驱动后,打开Arm Logel工具,配置好端口.Arm Logel工具和手机正常连接.(1,2两步请参考如何使用Arm Logel工具在线抓取Modem Log的方法) 3. 在Arm Logel的工具条选项中选中"AT" 图标,打开AT命令窗口; 4. 发送AT命令" AT + SPDSP = 1,1,0,0 " 来打开抓取IQ数据的功能;或者在AT命令窗口下拉菜单中选择第一个" GSM RX Data IQ" 选项-->点击发送,来打开抓取IQ数据的功能; 发送" AT + SPDSP = 1,0,0,0 " 关闭抓取IQ功能; 5.
+完整回答请参考FAQ: FAQ118005
+### 问题: 为什么客户版本移除平台默认支持的faceid功能之后vts测试失败？
+解决方案: sharkle、sharkl3、pike2的9.0平台版本默认是支持faceid功能的,所以客户拿到idh之后,包含faceid功能相关的开源code以及闭源库.当客户项目不需要faceid功能,需要移除平台默认支持的该功能时,除了关闭FACEID_FEATURE_SUPPORT宏开关之外,还需要将faceid功能相关的闭源库face.default.so也删除,否则在vts测试时,会因为缺少该闭源库的依赖库libfaceid_ca.so(开源code编译)而导致VtsVndkDependency#testElfDependency测试失败. 解决方法有两种: 1、将闭源库face.default.so删除,闭源库路径为:out/target/product/***/vendor/lib(64)/hw/face.default.so 注意:要删除的闭源库,一定是作为source的闭源库,而
+完整回答请参考FAQ: FAQ118053
+### 问题: BAND38&BAND41 COBAND NV设置
+解决方案: B38&B41 COBAND NV设置 NV ITEM B38 only B41 100M only B41 120M only B41 194M only B38&B41 100M 不共路 B38&B41 100M 共路 LTE_bandinfo\LTE_download_rf_common_bandinfo\LTE_Band_Support_info\Band_no6\band_num 0x26 0x29 0x29 0x29 0x29 0x29 LTE_bandinfo\LTE_download_rf_common_bandinfo\LTE_Band_Support_info\Band_no6\band_reserved\reserved[0] 0x0 0x64 0x78 0x0 0x64 0x64 LTE_bandinfo\LTE_download_rf_common_bandinf
+完整回答请参考FAQ: FAQ118279
+### 问题: 如何设置NV选择BAND28\BAND28A\BAND28B
+解决方案: 如何设置B28\B28A\B28B 1、 BAND选择NV设置: 1) B28: LTE_bandinfo\LTE_download_rf_common_bandinfo\LTE_Band_Support_info\Band_no6\band_reserved\reserved[0] = 0x0; 2) B28A: LTE_bandinfo\LTE_download_rf_common_bandinfo\LTE_Band_Support_info\Band_no6\band_reserved\reserved[0] = 0xA; 3) B28B: LTE_bandinfo\LTE_download_rf_common_bandinfo\LTE_Band_Support_info\Band_no6\band_reserved\reserved[0] = 0xB; 2、 校准工具设置: 1) 
+完整回答请参考FAQ: FAQ118280
+### 问题: CA中的PCC与SCC的概念和区别？
+解决方案: 有时候,客户会问到我们LTE CA中的两个概念,一个PCC,一个SCC.那么,他们的概念和区别是什么呢? PCC primary component carrier 主载波 SCC secondary component carrier 辅载波 Pcell UE建立初始连接的小区,一般对应PCC.Log中消息如下: ………………………… Scell 通过RRC重配置添加的小区,提供额外的频段资源,一般对应SCC.Log中消息如下: ………………………… PCC必须同时配置DL和UL,SCC可以只配置一个DL或UL; 终端只会在PCC载波上发起随机接入过程; PCC始终处于激活状态,而SCC则可以通过信令(RRC connection reconfiguration)添加和删除,而SCC的激活和去激活是通过MAC CE通知的; 特别说明的是,PCC和SCC只是相对的没有绝对关系, PCC一般
+完整回答请参考FAQ: FAQ118338
+### 问题: GTS 测试项:GtsExoPlayerTestCases--com.google.android.exoplayer.gts.DashTest#testWidevine23FpsH264Fixed fail
+解决方案: 测试fail堆栈: I/ModuleListener: [1/1] com.google.android.exoplayer.gts.DashTest#testWidevine23FpsH264Fixed fail:
+java.lang.IllegalStateException: android.media.UnsupportedSchemeException: Failed to instantiate drm object.
+	at com.google.android.exoplayer.gts.DashTest$DashHostedTest.buildDrmSessionManager(DashTest.java:890)
+	at com.google.android.exoplayer.gts.DashTest$DashHostedTest.buildDrmSession
+完整回答请参考FAQ: FAQ118492
+### 问题: 在广东某些地区,给10010发送查询话费短信，广东联通会出现返回的短信错误报crash
+解决方案: 此问题由于联通某些套餐 发送短信会返回 04-16 23:21:37.440 15074 15119 E AndroidRuntime: 3.充值;^M 04-16 23:21:37.440 15074 15119 E AndroidRuntime: 4.客户服务;^M 04-16 23:21:37.440 15074 15119 E AndroidRuntime: 5.业务办理;^M 04-16 23:21:37.440 15074 15119 E AndroidRuntime: 6.增值业务;^M 04-16 23:21:37.440 15074 15119 E AndroidRuntime: 7.省份专区;^M 04-16 23:21:37.440 15074 15119 E AndroidRuntime: 9.热点促销.^M 04-16 23:21:37.440 15074 151
+完整回答请参考FAQ: FAQ118399
+### 问题: 如何使状态栏不显示某第三方应用的通知图标
+解决方案: 针对第三方的通知图标,由于通常不能修改第三方的代码,如果需要屏蔽,可参考以下方案: 在systemui中通过notification的包名对该通知进行屏蔽 /frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/NotificationEntryManager.java --- a/packages/SystemUI/src/com/android/systemui/statusbar/NotificationEntryManager.java +++ b/packages/SystemUI/src/com/android/systemui/statusbar/NotificationEntryManager.java tryManager implements Dumpable, Notification
+完整回答请参考FAQ: FAQ118423
+### 问题: SC9820E 修改sim卡驱动能力方法
+解决方案: 示波器测试SIM卡信号之后,如果碰到上升沿/下降沿、过冲等问题需要修改I/O驱动能力,调试阶段建议使用adb lookat命令修改寄存器,以SIMCLK0为例.
+
+查找SC9820E寄存器见规格书《SC9820E Device Specification》中,
+IO_MUX_G6_PIN_RF寄存器组,
+其中的SIMCLK0_MISC是配置IO 驱动能力&功能启用时的电平及上下拉状态,休眠的状态的寄存器.
+
+基地址0x402A0000.
+
+偏移量0x0574 SIMCLK0_MISC寄存器,
+
+bit[22:19] 4bit一共16个档位,0x0--0xF,对应的电流请参考《SC9820A_GPIO_Spec_V1.1.xlsx》.
+
+调试时先使用ADB读取目前驱动能力,再根据实际情况更改至满足需求.
+-------------------------------
+完整回答请参考FAQ: FAQ118614
+### 问题: GSM四个频段简介
+解决方案: GSM有四个频段: GSM900: 890M~915 MHZ(上行),935M~960 MHZ(下行),频点范围0~124. DCS1800: 1710~1785MHZ(上行),1805~1880MHZ(下行),频点范围512~885. PCS1900: 1850~1910MHZ(上行),1930~1990MHZ(下行),频点范围512~810. GSM850: 824~849MHZ(上行),869~894MHZ(下行),频点范围128~251. GSM为什么会有四个频段?简单的说: 1)无线频谱是一种稀缺资源.为了避免干扰,各个国家的相关部门针对无线通信、广播、导航、雷达等多种无线应用进行相应的频谱划分.另外当新的无线应用出现时,保持老的无线应用不受影响的情况下,就需要寻找新的频谱安排.比如:无线通信系统的2G,3G,4G存在时,5G的频谱就需要新的安排.于是当一种全球制式无线通信应用,
+完整回答请参考FAQ: FAQ118641
+### 问题: GTS 测试：com.google.android.comms.MessagesTests#testMessagesInstalledCorrectly fail
+解决方案: Log堆栈: D/ModuleListener: ModuleListener.testStarted(com.google.android.nmgiarc.gts.CarrierServicesTests#testMessagesInstalledCorrectly) I/ModuleListener: [1/1] com.google.android.nmgiarc.gts.CarrierServicesTests#testMessagesInstalledCorrectly fail: junit.framework.AssertionFailedError: CS is not present 此问题常见原因如下:如果和google签订了acsa协议,需要内置CarrierServices,多数因为未配置或配置错误引起fail; 预置方法:gms.mk 或 gms_go.mk PR
+完整回答请参考FAQ: FAQ118650
+### 问题: GTS测试：com.google.android.placement.gts.CoreGmsAppsTest#testCoreGmsAppsPreloaded fail？
+解决方案: 主要测试GMS预置的core app是否符合mandatory要求,以下是代码示例 错误log堆栈一般如下: I/ConsoleReporter: [1/1 armeabi-v7a GtsPlacementTestCases 037760187I000023] com.google.android.placement.gts.CoreGmsAppsTest#testCoreGmsAppsPreloaded fail: java.lang.AssertionError: Mandatory core GMS packages for Go not found as system apps: com.google.android.包名 at org.junit.Assert.fail(Assert.java:88) at org.junit.Assert.assertTrue(Assert.j
+完整回答请参考FAQ: FAQ118651

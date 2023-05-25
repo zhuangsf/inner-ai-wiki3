@@ -1,0 +1,312 @@
+### 问题: TTI bundling技术如何理解
+解决方案: TTI bundling是在连续的多个子帧上发送的同一TB的多次重传(不同RV),而不需要等待基站侧回应ACK/NACK的技术.同一TTI bundling的多次传输由同一个HARQ process来处理,基站侧仅需回复一次ACK/NACK. 这种技术可以减少小区边界情况下上行传输的出错率,保证volte等场景下的QOS.
+参考FAQ: FAQ112613
+### 问题: hsupa 上行throughput 测试不满？
+解决方案: hsupa 最大上行速率 cat6 5.7mbps,cat7 11.5Mbps(支持16QAM) 测试时会出现上行速率偏低,主要是系统中有debug用的trace没有关闭占用资源,解决方法如下. 1.通过AT命令关闭(重启恢复) 关闭trace: AT+SPLOGLEVEL=1,0,"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF","FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" at+armlog=0 2.更换user版本软件测试.
+参考FAQ: FAQ112466
+### 问题: GSM1800/1900 PVT低功率下fail
+解决方案: 遇到GSM1800/1900 在低功率等级(PCL15)下PVT fail 底噪抬高如图 解决方法 1.修改NV Common_dsp_RFGPIO_config\gsm_mipi_config\gsm_mipi_switch\DCS\sw_off_word\sw_rx_off_word0=0x1900C 参照TXM 的datasheet将fail频段的sw_rx_off 改到TXM的isolation端口,如果改对应频段没有效果尝试GSM四频全部修改. 2.硬件加衰减 方法1修改不明显时可以在GSM_HB 输入增加衰减,推荐并150ohm,串36ohm,并150ohm.修改后需要检查这条通路上相关频段的饱和功率是否足够,衰减值可以上下微调.
+参考FAQ: FAQ112468
+### 问题: ESM information transfer flag 的值为1或者0以及如何查看
+解决方案: ESM information transfer flag的值为1表示后续网侧会来请求ESM information,如果为0,后续网侧不会请求ESM information; ESM information transfer flag可以在在armlog工具中查看空口消息:PDN_CONNECTIVITY_REQUEST中的如下信元: [PEER] pdn_connectivity_req_struct proce_ti = 0x1 esm_msg_type = 0xd0 esm_info_tran_flagP = 0x1 //这个标识设置1表示后续网测会来请求esm information, 如果为0, 后续网络不会来请求.
+参考FAQ: FAQ112467
+### 问题: 如何通过adb获取链接设备的状态
+解决方案: 当通过USB线链接设备之后,在开发者调试模式下,可以通过如下的命令,获取当前adb链接的状态: C:\Users\tianyuan.zhang\platform-tools-latest-windows\platform-tools>adb get-state device C:\Users\tianyuan.zhang\platform-tools-latest-windows\platform-tools> get-state命令会返回的状态集如下: "offline"|"bootloader"|"device"|"host"|"recovery"|"sideload"|"unauthorized"|"unknown"
+参考FAQ: FAQ112376
+### 问题: 是否支持16进制IMEI?
+解决方案: 不支持. 根据协议(TS23.003 6.2.1),IMEI仅支持10进制数(each element shall consist of decimal digits only)
+参考FAQ: FAQ112394
+### 问题: 是否支持三卡？
+解决方案: 目前只支持SIM0和SIM1两张卡,SIM2(三卡)未调试过,涉及到asic,chip drv,SIM drv等,暂不支持
+参考FAQ: FAQ112396
+### 问题: AT+CSQ的返回值rssi 如何换算dbm
+解决方案: <rssi>: integer type 0 -113 dBm or less 1 -111 dBm 2...30 -109... -53 dBm 31 -51 dBm or greater 99 not known or not detectable
+参考FAQ: FAQ112397
+### 问题: android P 非Go带GMS包版本，横屏时google搜索框默认隐藏，是否正常
+解决方案: android P 非Go带GMS包版本,默认使用SearchLauncherQuickStep,横屏隐藏google搜索框,竖屏显示google搜索框.此为android原生设计是正常现象.
+参考FAQ: FAQ114897
+### 问题: android P 非Go带GMS包版本，默认使用SearchLauncherQuickStep​，google搜索框位于屏幕底部，是否正常
+解决方案: android P 非Go带GMS包版本,默认使用SearchLauncherQuickStep,google搜索框位于屏幕底部.此为android原生设计是正常现象.
+参考FAQ: FAQ114896
+### 问题: NemoG(SC6531E)是否支持4.35V高压电池？
+解决方案: 硬件上是支持的,不用其他硬件改动. 需修改NV参数:charge_end_vol、bat_saftey_vol、recharge_voltage、dischg_bat_tab. 另外硬件上充电截止电压为CHGR_END_V,CHGR_CV-V两个寄存器的和,
+Vcc-cv = CHGR_END_V + CHGR_CV-V. 目前NV中只能设置 CHGR_END_V,需要在charge_sc6531efm.c中增加针对4.35V高压电池充电截止电压设置CHGR_CV-V的宏.
+参考FAQ: FAQ112419
+### 问题: 如何判断是由于网络不支持导致ims无法注册的?
+解决方案: 搜索armlog中attach之后的消息MSG_ID_GMMREG_NETWORK_FEATURE_IND, 该消息中的信元ims_voip如果是0表示网络不支持ims,如果是1则表示支持ims, 该信元为0即表示网络不支持ims_voip,手机也就不会发起ims注册.
+参考FAQ: FAQ112433
+### 问题: 9.0与8.0平台Clock有哪些差异？
+解决方案: 主要差异: 1. 用户数据(sharedpreferences)从/data/user/或/data/data变换到/data/user_de; 2. 修改targetsdk到28,并添加相应NotificationChannel; 3. alarms添加了状态分组; 4. 状态栏通知默认不再pop,目前的NotificationChannel等级默认为default,即make sound;只有高优先级的通知(等级为high)才会弹框提醒,包括响铃的闹钟和倒计时,也就是make sound & pop.
+参考FAQ: FAQ114425
+### 问题: 9.0 Clock是如何做到弹框提醒时无通知音的？
+解决方案: 在targetsdk＝26的时候加入了notificationchannel,android9.0 clock用了最新的sdk为28,所以默认是支持这一功能的; 但是channel默认是有提示音乐的,和系统默认通知音保持一致,这样有响铃响起的时候,会让用户觉得很奇怪,即先有提示音乐响起,很快是闹钟自己的铃声; 去掉此通知音的方法有两种: 1.用户在设置中clock的通道中手动设置通知音为null; 2.代码控制,在NotificationCompat.Builder中调用setSound(null),即可达到同样的功能和效果;
+参考FAQ: FAQ114235
+### 问题: 9.0中Clock sharedpreferences数据保存位置？
+解决方案: 1.之所以要修改clock的sharedpreferences,是因为终端用户如果用了加密,fbe或者fde,然后在用户没解锁之前,是没办法访问/data/data或者/data/user_ce的数据的,这部分数据被认为是隐私数据或者加密数据;但不管解不解密,都是可以访问/data/user_de的数据的.如果不修改位置,就会出现用户解锁前数据是在/data/user_de保存,解锁后数据是在/data/data下保存,导致数据不统一,关机闹钟界面异常等等;之所以换位置,就是基于以上考虑; 2.现在的数据路径为/data/user_de/0/com.android.deskclock
+参考FAQ: FAQ114236
+### 问题: gsm 突发脉冲序列
+解决方案: GSM TDMA信道上的一个时隙中的消息格式被称为突发脉冲序列. 可以分为五种突发脉冲序列: 1.普通突发脉冲序列(Normal Burst):用于携带TCHFACCHSACCHSDCCHBCCHPCHAGCH信道信息 2.接入突发脉冲序列(Access Burst):用于携带RACH信道的信息 3.频率校正突发脉冲序列(Frequency Correction Burst);用于携带FCCH信道信息 4.同步突发脉冲序列(Synchronization Burst);用于携带SCH信道信息 5.空闲突发脉冲序列(Dummy Burst):当系统没有任何具体的消息要发送时就传送这种突发脉冲序列(因为网络需要在BCCH信道上连续不断的发送消息)
+参考FAQ: FAQ114237
+### 问题: MM_RR_EPLMN_LIST_REQ
+解决方案: 1. EPLMN(Equivalent Public Land Mobile Network,等效PLMN),即对等公用陆地移动网,是与用户终端当前所选择的PLMN处于同等地位的PLMN,其优先级相同 2.MM_RR_EPLMN_LIST_REQ消息由NAS层的MM发给RR模块 3.MM_RR_EPLMN_LIST_REQ消息携带最多16个与当前所选择的PLMN等效的PLMN 4.RR模块收到该消息后,保存列表中的PLMN,用于后面的驻网等流程,判定系统消息所带的PLMN是否可能与EPLMN一致.
+参考FAQ: FAQ114240
+### 问题: 插入双卡后开机，下拉状态栏同时关闭Volte，偶尔会有一张卡的Volte图标延时消失
+解决方案: 我们的双卡去注册volte的实现方案是这样的,比如当前UE在卡2做业务,那么就会先去注册卡2,等卡2去注册完成之后,开启2s定时器,之后再到卡1去注册卡1的volte.所以会看到两张卡去注册volte后,会有一张卡volte图标延时消失.
+参考FAQ: FAQ112460
+### 问题: CMCC入库功耗测试VoLTE CALL场景测试条件及检验标准
+解决方案: 采用UXM仪表,电流源电压设置4V,仪表参数设置如下,稳定后测试3min功耗; 参数配置: 160ms CDRX周期,短周期为40ms TDDVoLTE配比为2:DSUDD,特殊子帧配比为7 Long DRX Cycle=40 Subframes On-duration Timer:8 PDCCHSubframes Retransmission Timer:4 PDCCHSubframes Inactivity Timer:4 PDCCHSubframes 最终平均VoLTE通话功耗为三部分加权得到,平均功耗=mute×20%+listen×40%+talk×40% ,平均功耗<140mA即通过CMCC标准.
+参考FAQ: FAQ112499
+### 问题: 功耗调试手段power trace使用方法
+解决方案: Power trace功能是SharkLE项目上新开发的功能,目前已覆盖SharkLE、Pike2项目;可由CM4每ms打印芯片上各个Power Domain状态,后续项目已与平台同事沟通将该功能作为默认功能开启. 使用方法: 下载Userdebug版本,接trace调试小板,插入USB手动输入ADB命令打开该功能(默认关闭); adb shell su //开启power trace echo 'powerdbg on' > dev/sctl_pm //关闭power trace echo 'powerdbg off' > dev/sctl_pm 通过修改Log工具中Capture Setting --- Power Trace Pt ---选择第一个串口; 选择View --- Common --- Power Trace Chart,点击capture log开始抓取log,也可通过此项回放power trace log;
+参考FAQ: FAQ112501
+### 问题: 如何通过ADB命令查看DDR频点并固定频点
+解决方案: 通过ADB命令查看DDR频点方法: //查看当前DDR频点: cat /sys/class/devfreq/scene-frequency/sprd_governor/ddrinfo_cur_freq //查看CP投票频点: cat /sys/class/devfreq/scene-frequency/sprd_governor/ddrinfo_cp_freq 固定DDR频点方法: //关闭HW DFS: echo 0 > /sys/class/devfreq/scene-frequency/sprd_governor/auto_dfs_on_off //固定DDR频点,400处可更换为要设定的频点 echo 400> /sys/class/devfreq/scene-frequency/sprd_governor/scaling_force_ddr_freq
+参考FAQ: FAQ112512
+### 问题: 如何通过Armlog调试CP DDR频点投票不符合预期的问题
+解决方案: 可在Armlog Trace中搜索Layer4相关打印,搜索关键字"DFS": Module: Module[1]: LTE DSP ; Module[2]: WCDMA ; Module[3]: GSM DSP ; Moduel[4]: TD DSP ; pre_freq:变频之前的频率 ; current_freq:变频之后,即当前的频率; L4打印可记录每个Module DDR频点投票情况,可通过查询各Module的投票trace,且是否变频成功,来判断是哪个模块投票有问题.
+参考FAQ: FAQ112515
+### 问题: 6531E(NemoG)是否支持SAIC？如何从DSP LOG中查看确认？
+解决方案: 在GSM系统中,为提高系统容量,会对频率进行复用,若布网不佳,同频复用小区间距离过小,复用频率小区间会产生同频干扰.除此之外,同频干扰还可能来自自身硬件设备或者其他环境因素.SAIC能有效消除同频干扰. 6531E(NemoG)的语音和数据业务处理都支持 SAIC,可以通过DSP LOG点0xDDA3进行确认,如果该点的值是0xAAAA,可以表明检测到同频干扰并进入SAIC分支进行处理.
+参考FAQ: FAQ112519,含图片
+### 问题: 简单比较BT和WIFI
+解决方案: 一,Wifi与蓝牙的相同点: 1、在同一个频段,都是2.4G的产品(WiFi有5G的产品和其他频段的),所以二者会有一定的干扰; 2、都是为了进行无线通讯设计; 3 、都是业界技术标准,只要符合标准的设备就可以互相通讯 二,Wifi与蓝牙的不同点: 1、距离:蓝牙一般在10米以内,而WiFi最远的产品可以达到5公里 2、技术:蓝牙使用的一般是跳频,而WiFi一般是直接序列扩频; 3、速度:蓝牙低速度,WiFi高速度; 4、目的:蓝牙是为不同的电子设备通讯而设计的,而WiFi是为无线局域网而设计的.
+参考FAQ: FAQ112523
+### 问题: SC2721对应不同平台的base地址是多少
+解决方案: SC9820E&SC9832E: 0x40388XXX SC9863: 0x41808XXX SC9850K: 0x403c8XXX SC2721各寄存器地址=base addr+相应offset addr
+参考FAQ: FAQ112531
+### 问题: SC6531E如何获取基站信息(本区及邻区)?
+解决方案: 可以调用如下接口获取当前小区及邻小区信息(mcc,mnc,lac,cell_id,bsic,arfcn,rxlev): ERR_MNPHONE_CODE_E MNPHONE_GetMeasReportEx( MN_DUAL_SYS_E dual_sys, APP_MN_NCELL_RSSI_CNF_T *ncell_meas_ptr, MN_PHONE_CELL_MEAS_T *scell_meas_ptr ); 也可调用AT命令实现 查询当前服务小区信息: AT+CCED=0,1 查询相邻小区信息: AT+CCED=0,2
+参考FAQ: FAQ112539
+### 问题: SC9863平台LPDDRX支持情况
+解决方案: SC9863寻址可以到6GB,但由于市面上最大的LPDDR3只有4GB,故 LPDDR3: 4GB LPDDR4/4X: 6GB 选物料时请参考memory verification list
+参考FAQ: FAQ112566
+### 问题: 已写SIMLOCK的机器 ，怎么使用同一加密狗清除SIMLOCK加密信息，做到对所有的卡开放
+解决方案: 对于写过SIMLOCK的机器,无法清除加密信息. 如果要对所有的卡开放,可以有下面两个方法: 方法一: 配置simlock.xml,将<support value="0"/>的值写成0.这样simlock的开关关掉,插入任意卡可以使用.但是需要注意的是,simlock数据校验还存在.也就是说,如果simlock nv被篡改,手机会因为校验失败而进入永久锁状态. 方法二: 替换modem版本为不支持simlock 安全方案的版本,并且相应地将NV配置里面simlock关闭(PS_NV_PARAMS \ NV_PARAM_TYPE_SIM_CFG1\is_support_gsm_only=0).这样不会对simlock数据做校验.也不会对是否是白名单卡做判断.
+参考FAQ: FAQ112569
+### 问题: 测试用的白卡怎样加入白名单？
+解决方案: 如果插入白卡的plmn是00101,99999,999999,则不需要做其他处理,直接使用即可; 如果插入的白卡的plmn是其他值,则将该卡的PLMN加入白名单(V2方案直接修改NV,V5/v6方案修改xml). 备注:如果加入的这些plmn在实网中也有,生产的时候需要注意将这些测试卡的plmn删除.
+参考FAQ: FAQ112570
+### 问题: VOLTE电话的基本流程？
+解决方案: MO VOLTE电话的基本流程如下,可在ArmLogel工具的空口消息页(Air Message)的NAS列看到有如下消息: --> INVITE(发起电话) <-- 100 <-- 183 --> PRACK <-- 200 <--180(振铃) <-- 200(对方接听电话) --> ACK "-->"代表终端发向网络;"<--"代表网络发给终端 如果是MT VOLTE电话,在NAS列看到的消息和以上消息是一样的,但消息的方向与MO VOLTE电话相反.
+参考FAQ: FAQ112574
+### 问题: 鉴权成功及云卡可用的判断标准是什么？
+解决方案: 鉴权成功之后如果 Attach 成功,会有主动上报网络状态(协议标准 AT): +CEREG: 1,"ABB0","00C1D37E",7 其中第一个参数 1 表示注册在 HPLMN,或者 5 处于漫游状态; 最后一个是当前网络制式,7表示 LTE.
+参考FAQ: FAQ112592
+### 问题: 在云卡网络可用的情况下，如何减少频繁收到鉴权？
+解决方案: 是否发起鉴权取决于网络的实现,终端无法主动减少.但在不影响业务情况下,减少多模切换过程,能够通过减少注册更新,来减少一些鉴权过程.
+参考FAQ: FAQ112593
+### 问题: 收到网络要求鉴权后，网络注册情况是否有变化？
+解决方案: 现网下,TAU/ATTACH/LU通常都会收到网络侧发起的鉴权请求,SR偶尔也会有鉴权过程; 收到鉴权后网络的行为取决于鉴权结果.鉴权成功后会接着做TAU/ATTACH/LU/SR等过程,即使鉴权成功了,也不代表TAU/ATTACH/LU/SR一定成功; 给网络返回鉴权失败(MAC/SYNC failure),网络会重试,但如果数据错误,则可能导致网络鉴权拒绝,进入无效IMSI状态;
+参考FAQ: FAQ112594
+### 问题: 收到网络要求鉴权后，还未开始进行鉴权流程时的状态是什么 ？该连接状态是否会上发给APP？此时网络是否无法使用？
+解决方案: 收到鉴权肯定是在连接态(AS链路的状态),连接态IDLE态不会通知到AP,只有注册状态和PDP状态会通知. 数据通路确实是无法使用的,不管ATTACH/TAU/SR哪个过程触发的鉴权,网络都是在鉴权成功后才建立业务承载,然后才能进行数据通信.
+参考FAQ: FAQ112595
+### 问题: 收到鉴权后，云卡是否会依然在IN_SERVICE状态下 或 一定从IN_SERVICE状态掉下？鉴权这个过程是否会影响业务的使用？
+解决方案: 鉴权过程和服务状态没有直接关系,鉴权过程本身不改变状态,改变状态的是触发鉴权流程的结果,比如ATTACH/TAU/SR的结果. 鉴权的结果会影响业务的使用.鉴权失败肯定无法使用,鉴权成功了,但是ATTACH/TAU/SR失败了也无法使用. 无法使用的时候会有状态通知到AP,比如注册状态变成非注册态或者通知PDP去激活等.
+参考FAQ: FAQ112596
+### 问题: SL8521E平台支持mipi接口的LCD吗?
+解决方案: 支持,还支持SPI接口LCD.
+参考FAQ: FAQ112655
+### 问题: 单台手机是否可以写两种不同密钥的SIMLOCK？
+解决方案: 不能,因SIMLOCK是写入NV和Chip efuse分区,一种密钥仅能写一次RSA Key.如果更换不同的密钥,则必须更换芯片.
+参考FAQ: FAQ112656
+### 问题: 【BBAT】功能机BBAT大工具测试pass后再开机出现蓝牙未关闭的问题
+解决方案: Root cause: 手机在执行bt search命令后会将search标记Is_BTSearchStart置成SCI_TRUE,但在bt close时没有将search标记置成SCI_FALSE,导致关闭蓝牙的消息CallBack有误. Solution: 在BT_CLOSE函数中增加对蓝牙search标记Is_BTSearchStart置成SCI_FALSE的操作. 代码修改 HandleBTAutotest()@autotest_device.c case BT_CLOSE: { if(Is_BTSearchStart == SCI_TRUE) { //boda, FALSE execute AppHandleBTMsg() ++ Is_BTSearchStart = SCI_FALSE; BT_CancelSearch(); SCI_Sleep(100); } .... }
+参考FAQ: FAQ112677
+### 问题: 双卡对tput 的影响
+解决方案: 双卡对tput 的影响主要是双卡的gap 对tput 的影响,原因:在gap 中需进行副卡的paging 接收,异频,异系统测量等处理,不能进行主卡数据业务的发送和接收,会造成tput 曲线周期性掉底. 影响的大小与gap 的频度和长短有关,频度越大,gap 越长,对tput 的影响越大. gap 的频度与长短与网测配置的副卡测量类型和paging 周期有关,而该配置与测试机的双卡类型 是w+w l+w 还是w+g 有关. 因此测试时建议采用相同双卡类型的对比机做对比,或单卡测试
+参考FAQ: FAQ112708
+### 问题: 手机支持LTE，如何通过nv配置仅仅支持TDD LTE或FDD LTE
+解决方案: 如需配置手机仅仅支持TDD,可以配置LTE_NV_EUTRA_CUSTOMER_SETTINGS->numOfEUTRAFDDBand 为0即可 如需配置手机仅仅支持FDD,可以配置LTE_NV_EUTRA_CUSTOMER_SETTINGS->numOfEUTRATDDBand 为0即可
+参考FAQ: FAQ112716
+### 问题: 云卡产品支持模式和实体卡有何区别?
+解决方案: 双L 版本: 云卡支持的模式: 单模:L (3),W (18);多模:L/W (24) 实体卡支持的模式:单模:L (3),W (11),G(10);多模:L/W (24),W/G (14),L/G (21),L/W/G (6) L+W 版本: 云卡支持的模式: 单模:L (3),W (18);多模:L/W (24) 实体卡支持的模式:单模:W (11),G (10);多模:W/G (14) note: L:LTE W:WCDMA G:GSM 括号中的数值即testmode应该配置的值,具体意义可以参考AT+SPTESTMODE/SPTESTMODEM
+参考FAQ: FAQ112720
+### 问题: SC9863A平台是否支持64QAM
+解决方案: 支持.
+参考FAQ: FAQ112724
+### 问题: SC9863A平台是否支持emFBI
+解决方案: 支持.
+参考FAQ: FAQ112725
+### 问题: SC9863A平台是否支持eSRVCC
+解决方案: 支持.
+参考FAQ: FAQ112726
+### 问题: 开启pin码解锁后热插拔是否需要再次输入PIN码？
+解决方案: 需要
+参考FAQ: FAQ112728
+### 问题: 热插拔默认打开的吗？不支持热插拔的话怎么关闭？
+解决方案: 打开的; 不支持热插拔的话把sim_hot_plug_cfg NV的值改为0x0即可
+参考FAQ: FAQ112729
+### 问题: simlock开启，且PIN码开启，是先进行simlock验证还是先进行PIN码验证？
+解决方案: 先解pin码,再解simlock
+参考FAQ: FAQ112731
+### 问题: SC6531E内置的REC输出端的底噪(IDLE NOISE) 性能参数是多少？
+解决方案: SC6531E REC底噪在通常增益(模拟增益0及以内)在20uv以内.
+参考FAQ: FAQ112730
+### 问题: SC6531E内置的喇叭功放（SPK PA）的底噪(IDLE NOISE) 性能参数是多少？
+解决方案: SC6531E内置的SPK底噪通常增益(模拟增益0及以内)在40uv以内.
+参考FAQ: FAQ112733
+### 问题: SL8521E的GPIO是否支持OD门
+解决方案: 不支持.
+参考FAQ: FAQ112734
+### 问题: 802.11ac与11ax协议的区别
+解决方案: 802.11ax是对11ac的进一步演进和扩展,支持2.4GHz和5GHz频段,11ac只支持5GHz频段 1.11ac采用OFDM的调制技术,11ax采用OFDMA(正交频分多址)调制方式 2.11ac只能支持同时向4个终端用户共享下行的MU-MIMO数据包,11ax可以同时向8个终端共享上行、下行的MU-MIMO数据包 3.子载波间隔:11ac子载波间隔为312.5kHz,11ax子载波间隔为78.125KHz,更小的子载波间隔有利于进行信道估计与均衡,抗衰落能力也更强,但也增加了实现的复杂度,同时,对载波频偏(Carrier Frequency Offset,CFO)也更加敏感
+参考FAQ: FAQ112740
+### 问题: UMW2650 是否支持wifi 5G?
+解决方案: 支持 注:UMW2650 support Dual band 2.4/5GHz 1x1 20/40/80 MHz IEEE 802.11 a/b/g/n/ac
+参考FAQ: FAQ112742
+### 问题: 因信号太弱而导致语音通话失败时，为什么展锐平台手机的界面提示与别的芯片平台手机不同？
+解决方案: 在弱场环境下,语音通话失败(包括起呼失败、掉话)时,基本上都是因为无线链路失败导致的. 对于这种原因导致的通话故障,3GPP协议并没有规定在手机界面上的提示方式,所以,各芯片平台、手机生产厂家可能采用不同的提示方式,例如,在GSM、WCDMA、TDS-CDMA网络制式下,出现这种故障时,展锐平台手机在结束本次通话的同时一般发出"嘟,嘟"的提示音,而有的芯片平台手机则直接结束本次通话,没有任何提示. 如果客户希望改变展锐平台手机目前的提示方式,那么,可联系展锐的客户接口人洽谈定制.
+参考FAQ: FAQ112744
+### 问题: 【BBAT】AW9523BTQR扩展按键接口BBAT测试方案说明
+解决方案: 1. AW9523BTQR扩展按键接口不建议在BBAT上测试,因第三方芯片使用的电压域是VBAT 3.8v,所以BBAT的测试盒硬件接口上无法支持,只能通过软件方式进行GPIO的loop方式进行回环测试; 2. 软件测试方案是采用in信号到out信号的GPIO loop测试方式,夹具上将in信号与out信号进行两两短接,依次设置为输入和输出进行读取,依次判断所有互联关系,需要软件上开发实现,具体测试方案参考附件(AW9523BTQR扩展按键BBAT测试说明). AW9523BTQR扩展按键BBAT测试说明
+参考FAQ: FAQ112769
+### 问题: TSX  layout注意事项
+解决方案: 1:TSX远离热源,且必须放在屏蔽罩中 热源 与TSX的距离 备注 2G/3G/4G PA 15mm左右 /　 transceiver 4-6mm 与TSX同层 BB/MEMORY 5mm以上 不与TSX放在同一个屏蔽罩中　 一般有源器件 0.5mm以上 / 2:TSX的时钟走线 (1). 时钟走线XO-N/XO-P尽量走表层,长度小于15mm;如必须换层,过孔不能超过两个 (2). 避免GPS_CLK走线与CP_CLK走线平行、邻层交叉 (3). 避免GPS_CLK与CP_CLK的过孔或焊盘相互耦合 3:TSX的温度检测走线 GPS_TSEN_VREFP、 GPS_TSEN_IN 、GPS_TSEN_VREFN三条走线需包地,与其他走线隔离 4:TSX的KEEPOUT区域必须保证0.5mm宽度 5:TSX的净空原则 TSX正下方净空N-1层,底层为GND;TSX正下方所有层应避免任何走线,原则上应避免TSX背面有大功耗器件
+参考FAQ: FAQ112801
+### 问题: 项目早期GPS OTA测试的重要性
+解决方案: 项目早期GPS OTA测试的重要性 一、GPS OTA为什么重要? GPS OTA参数基本代表了整机的性能,主要由传导、EMI环境、天线决定 即除了时钟参数外,GPS OTA参数直接体现了传导、EMI环境、天线整体的性能 GPS OTA测试FAIL,意味着传导、EMI环境、天线中某个因素存在问题 二、GPS OTA什么时候做? 很多项目在早期只做GPS传导测试,没有进行测试GPS OTA测试,到项目后期再测试Fail时,才会发现EMI环境或天线存在问题,可能要修改PCB或天线才能优化,而后期改版会影响整个项目进度 所以,在PCB第1版调试完成后,尽快进行GPS OTA测试,能趁早发现问题,及时优化. 同时,建议提前安排GPS天线调试,这样可以加速OTA测试的进度. 三、小结 项目早期,最好在第1版就测试GPS OTA,能趁早发现和解决问题,可以避免项目后期的改版
+参考FAQ: FAQ112982
+### 问题: SC7731E T卡支持速率
+解决方案: SC7731E T卡支持的模式: 模式 理论最大速率 理论最大时钟 实测最大速率 实测最大时钟 DefaultSpeed 12.5MB/s 25MHz 12MB/s左右 24MHz左右 HighSpeed 25MB/s 50MHz 24MB/s左右 48MHz左右 SDR12 12.5MB/s 25MHz 12MB/s左右 24MHz左右 SDR25 25MB/s 50MHz 24MB/s左右 48MHz左右 SDR50 50MB/s 100MHz 48MB/s左右 96MHz左右 DDR50 50MB/s 50MHz 48MB/s左右 48MHz左右 SDR104 不支持 不支持 不支持 不支持 T卡的速率和T卡的Class等级没有直接关联,初始化阶段,T卡会告诉Host T卡支持的模式,然后HOST按照T卡支持的最大速率工作.
+参考FAQ: FAQ112970
+### 问题: UMW2651芯片wifi/bt ini配置文件名称
+解决方案: UMW2651芯片wifi/bt ini配置文件名称 wifi: wifi_board_config.ini bt: bt_configure_rf.ini
+参考FAQ: FAQ112810
+### 问题: Android 9.0版本上如何恢复安卓原生的sound 设置
+解决方案: 具体步骤如下: 1.需要disabled 相关AudioProfile的相关组件. 开关是:packages/apps/Settings/res/values/config_feature_unisoc.xml <bool name="config_support_AudioProfile" translatable="false">false</bool> 2.需要使能功能开关ro.config.google.sound=1 9.0上属性访问控制更严格,需要定义到对应的system分区属性目录文件,而非vendor属性目录文件.如:product对应的system.prop等
+参考FAQ: FAQ112847
+### 问题: wifi无法下载问题排查
+解决方案: wifi无法下载问题排查之一,检查log中是否有validation失败. 如果网络ok但是validation失败也会引起无法下载的问题. ConnectivityService: NetworkAgentInfo [WIFI () - 106] validation failed DownloadManager:DownloadThread: [10] Stop requested with status HTTP_DATA_ERROR: failed to connect to /192.232.1.239 (port 8080) from /10.63.86.34 (port 35690) after 20000ms 如果有validation失败提示,可修改代码NetworkMonitor中的DEFAULT_FALLBACK_URL,或者临时用adb命令修改: adb shell settings put global captive_portal_mode 0
+参考FAQ: FAQ112854
+### 问题: drm下载无完成toast提示也不显示状态栏图标
+解决方案: 1.chrome下载drm,无下载完成toast提示. //这个toast是chrome弹出来的,对于drm没有弹出toast是设计的原因,这个问题保留原始设计. 2.chrome下载drm,在下载中和下载完成后也不显示状态栏图标. //下载应用已经发出了正在下载的通知,但是却没有通知显示.因为这个通知其实和下载应用没关系,而是由com.google.android.apps.restore进行通知的,但是在9.0中com.google.android.apps.restore并没有进行通知. //这个问题在android go版本上是没有问题的,因为在android go中notification listener service被禁用了,所以com.google.android.apps.restore不会再影响下载通知. //这个问题已经通报google,等待google解决.
+参考FAQ: FAQ112855
+### 问题: 升级版本后，TSX校准参数是否会被擦除，是否需要重新校准
+解决方案: TSX校准的参数:温度和频偏; 1. 如果备份升级后(手机烧入版本时勾选backup),不会擦除TSX的校准参数,因此不需要重新校准. 2. 如果手机烧入版本时未勾选backup,则会擦除TSX的校准参数,这时候需要重新校准.
+参考FAQ: FAQ112862
+### 问题: google改动引起的下载失败等问题
+解决方案: 2018中,google去除了content://downloads/public_downloads,改为全部使用content://downloads/all_downloads.
+因为这个修改,在某些应用中已经使用了public_downloads的部分,就需要配合进行修改,否则就会出现应用报错.
+会涉及到Download、DocumentsUI、camera、google photos等多个应用.
+
+在log中看是否会出现类似以下的错误:
+  DatabaseUtils: java.lang.IllegalArgumentException: Unknown URI: content://downloads/public_downloads/48
+ 如果有这样的错误,看报错误的是哪个应用,如果是开源的就将public_downloads修改为all_downloads,如果不开源就更新此应用到最新版本.
+参考FAQ: FAQ112860
+### 问题: 为什么CSQ和CESQ关于2G信号上报值不一样？
+解决方案: CSQ关于GSM信号值上报范围是0-31 CESQ关于GSM信号值上报范围是0-63 具体可以参考27.007协议8.69 /8.5
+参考FAQ: FAQ112890
+### 问题: GRR如何获取ETWS信息
+解决方案: 在idle态下,GRR通过Paging Request Type1消息获取ETWS信息;在dedicated态时,GRR通过Application Information消息获取ETWS消息;在Packet Transfer态时,GRR通过Packet Application Information消息获取ETWS消息.
+参考FAQ: FAQ112865
+### 问题: 如何确定网络是否支持CBS
+解决方案: 如果网络在系统消息4中配置了CBCH channel decription字段,就证明网络是支持CBS的.
+参考FAQ: FAQ112871
+### 问题: 手机与基站通信17
+解决方案: 前面章节主要描述了lte相关知识点,本章节简单介绍下如何查看5g 物理层协议. (1) 物理层协议均为200系列; The TS 38.200 series describes the Layer 1 (Physical Layer) specifications. (2) 物理层协议分布如下图 Figure 2: Relation between Physical Layer specifications 来源自ts38.201,第五章节有对每一个协议的主要描述内容作了介绍.
+参考FAQ: FAQ112903
+### 问题: 手机与基站通信19
+解决方案: 接上一章,本章讲PCHICH的时频域位置,时域位置是固定的,就是每个子帧第一个symbol,下图中橙黄色部分就是,不过要去除4个re参考信号. 频域位置是不固定的,这个很闹心,和网络的差别就在这里,灵活性太强.数据格式固定,不需要考虑过多环境问题. 频域位置和带宽和pci相关,要求就是均匀的分布在四个带宽位置,PCI决定了起始位置.下图供参考,了解下就可以了. 下面章节简单介绍pcfich在下行处理流程.
+参考FAQ: FAQ112905
+### 问题: 手机与基站通信20
+解决方案: 接上一章,本章讲PCFICH的物理层处理流程, 分步骤讲解 (1) 对输入的2bit信息进行信道编码,block code直译叫块码,是信道编码技术的一种,这里可以理解为用16个bit去描述一个Bits,从而输出32bits (2) Scrambling就是扰码,扰码基本作用就是把输入做有规律的随机化处理. (3) 接着就是qpsk编码了,qpsk是种数字调制方式,编码率很低 (4) 需要用16symbol来存储,用4个reg来存储. 小结:pcfich采用qpsk编码,2个bit大小,占用4个REG存储.
+参考FAQ: FAQ112906
+### 问题: 手机与基站通信23
+解决方案: 接上一章,本章描述PDCCH 编码格式,聚合等级,占用大小.PDCCH采用QPSK编码格式,时域位置在1-3个symbol,当带宽为1.4M的时候,为1-4个symbol.存储的个数由前面的PCFICH 指示. 存储基本单位叫CCE(Control Channel Element),一个CCE由9个REG组成,一个REG是四个连续的RE.RE是最基本单位,时域一个symbol,频域一个子载波.如果遇到RS参考信号,自然跳过,不计算在内. 那么一个PDCCH占用多少个CCE呢?PDCCH可以占用1,2,4,8这四类大小的CCE,这四类分别由PDCCH的格式决定的,四种格式分别是0,1,2,3. 值得注意的是,这个格式与DCI中的格式意思不一样,这个格式是讲聚合等级的,根据信道质量来安排.理解起来也很容易,信号质量好的时候,聚合等级自然低一些. 下一章讲频域位置计算.
+参考FAQ: FAQ112908
+### 问题: 手机与基站通信25
+解决方案: 接上一章,本章谈下PDCCH搜索,搜索过程是盲检过程,因为UE一般不知道当前PDCCH占用的CCE数目大小,传输的DCI格式信息,也不知道格式信息在哪里. 但是UE知道自己当前期待的信息,比如IDLE态期望获取寻呼paging消息,上连接态是期望收到rach rsp消息.UE用相应的rnti去和CCE信息做CRC校验,如果CRC校验成功,说明这个信息就是UE需要的,也可以进一步知道DCI格式,调制方式,然后就可以解除DCI内容了,这就是盲检. 如果依照CCE顺序去匹配,这肯定是最差的一种做法,因为带宽很大的时候,效率很低,学过算法的知道,这是线性查找.所以定义了一些约束,把不同格式的PDCCH的位置做了限制,从而降低盲检的复杂度. 约束就是把搜索分公共搜索空间和UE特定搜索空间.公共搜索空间就是所有UE都需要监听的区间,寻呼消息,系统消息等; 这些其实都是些概念性的,蜻蜓点水.下一章节描述下最后一个下行信道PDSCH.
+参考FAQ: FAQ112910
+### 问题: 判断手机支持VAMOS的能力
+解决方案: 展锐当前大部分手机平台仅支持Vamos I,不支持VamosII, Vamos全称为:Voice Services Over Adaptive Multi-user channels on One Slot 在给定的频点和给定的时隙上,非VAMOS系统只能分配给单个用户使用,VAMOS系统则可以分配给两个用户使用,这两个配对的用户复用给定的时频资源. vamos功能可以扩展网络的用户容量,将用户容量提高一倍.
+参考FAQ: FAQ112920
+### 问题: WCN 模块VDDWCN电源走线注意事项
+解决方案: VDDWCN(1.2V)电源网络主要给芯片内部锁相环(PLL)供电,要求星型走线,退耦电容尽量芯片管脚放置 应避免其他电源线或信号线的干扰
+参考FAQ: FAQ112936,含图片
+### 问题: UMW2650芯片WIFI是否支持多用户MIMO技术
+解决方案: UMW2650芯片wifi supports MU-MIMO DL 注:wifi只支持下行多用户MIMO,最多4个用户数,不支持上行多用户MIMO
+参考FAQ: FAQ112937
+### 问题: UMW2650芯片是否支持BT 5.0
+解决方案: support Bluetooth specification 5.0
+参考FAQ: FAQ112938
+### 问题: nv editor工具中可以查看具体哪几个nv项表示手机支持rx diversity功能
+解决方案: 可以在NV editor中搜索如下两个NV项: WCDMA_DownloadParam\W_download_params\w_rf_port_config\w_rf_diversity_path\diversity_enable WCDMA_DownloadParam\W_download_params\tranceiver_initial_registers\trx_path_config 这两个NV参数都为0x1 就是支持rx diversity功能
+参考FAQ: FAQ113002
+### 问题: GPRS下接收paging的开关
+解决方案: 单卡时只有主卡,双卡时才有主卡和副卡之分.另外,GPRS下收Paging包括主卡paging和副卡paging,理论上GPRS时主卡paging包含在数据包里则不需要特地接收Paging,而接收副卡Paging也会造成主卡一定程度速率损失.根据客户不同的需求可以动态的控制GPRS下收主、副卡paging. 目前有两种方式控制GPRS下收主、副卡paging: (1) 通过NV设置card_log_highbyte(char): 通过设置第二个bit位置控制副卡,通过设置第五个bit位控制收主卡paging的开关,即1代表开,0代表关 (2) 通过AT命令设置AT+SPBPM=value 其中Value: 0 主副卡都不收 1 只收副卡 2 只收主卡 3 主副卡都收
+参考FAQ: FAQ113038
+### 问题: CTS verifier中的USB Accessory Test 该怎么测试
+解决方案: 本测试需要1台辅助机,一根数据线, 一个OTG接口 测试步骤: 1.先将辅助机安装CtsVerifierUSBCompanion.apk, 2.测试机进入usb accessory test,并插入usb线, 3.辅助机进入CtsVerifierUSBCompanion.apk,先点击START ACCESSORY TEST COMPANION,再插入OTG数据线 ,约2秒后测试机会弹出如下提示,点击"OK" 4.继续等待2秒会弹出如下对话框,分别点击测试机和辅助机上的"OK" , 5.点击ok后,大约30s后,测试自动标记pass,
+参考FAQ: FAQ113041
+### 问题: 多次测试谷歌性能测试脚本android go performance，结果中跑的app数量不同如何处理？
+解决方案: 1. 使用ubantu系统电脑测试,送测的3PL实验室也是如此. 2. 测试电脑的adb版本需要经常更新. 3. 检查电脑USB端口和USB数据线,确保测试机和电脑连接稳定. go performance性能测试环境因素影响较大,小次数挂测只要有一次成功,就不影响送测.
+参考FAQ: FAQ113050
+### 问题: Google performance测试中如何解决pipe error带来的断开问题？
+解决方案: app/app_performance.sh 和app/test_app.sh 中需要注释掉如下一行,解决pipe error 带来的断开问题: #set -eu -o pipefail
+参考FAQ: FAQ113051
+### 问题: Google performance测试中如何解决一直在循环安装无法测试的问题？
+解决方案: app_performance.sh 注释掉如下判断: #if [[ "$installed" != "Success" ]]; then # dlog "Failed to install ${package}.apk" # return # fi
+参考FAQ: FAQ113053
+### 问题: 如何抓更长时间的log
+解决方案: 客户如果用到了user版本,内部存储可用到的最大存储空间为50M,而拨打一次电话所产生的log要比50M多,所以可以将ylog->settings->log setting->modem log setting->limit total internal partition size改为100M,但是效果可能不是很明显,最多可以存的下一次通话的log信息,所以为了存更多log,有两种方法: 1、 可以使用debug版本进行测试; 2、 可以在源程序目录下,slogmodem的初始配置文件在device/sprd/<family>/<board> 下,或者在device/sprd/<family>/<board>/log_conf下找到相应配置文件,将对应子系统的内部存储改为0,0表示该子系统log可以占用内部存储剩余的最大存储空间,再进行编译,重新下载到手机,也可以达到存储log量较大的情况
+参考FAQ: FAQ113054
+### 问题: LPDDR2/3 VREF电压两种接法有什么差异？
+解决方案: SC9832E/SC9820E/SL8541E/SL8521E平台,LPDDR2/LPDDR3 的VREF电路有两种: 1.VDDMEM 2个10K电阻分压. 2.BB直接输出. 两种接法除deepsleep场景下功耗略有不同外,其他无差别. 当使用BB直接输出的VREF时,deepsleep场景下分压电路可关闭,可节省功耗60uA,而外置分压电路在deepsleep时不能被关闭. 推荐使用BB直接输出的VREF.
+参考FAQ: FAQ113097
+### 问题: 哪些平台支持lcd的圆角功能并且怎么打开？
+解决方案: 1、 目前SC9850K、SC9832E、SC7731E、SC9863A在android8.1上都支持圆角显示,SC9832E、SC7731E、SC9863A在android9.0上都支持圆角功能. 2、 在u-boot15/include/configs/目录下找到自己所使用的工程文件 以sp9832e_1h10_32b.h工程为例: 增加: #define CONFIG_ROUND_CORNER_SUPPORT #define CONFIG_CORNER_RADIUS 20 (注:CONFIG_CORNER_RADIUS为圆角半径,单位pixel) kernel/arch/xxx/boot/dts/[xxx:arm|arm64|x86]目录下找到自己工程使用的设备树文件 以sp9832e-1h10-gofu.dts为例 增加: &dispc0{ sprd,corner-radius=<20>; } (注:corner-radius 为圆角半径,单位pixel)
+参考FAQ: FAQ113121
+### 问题: SC9863A平台LPDDR4 chip的 ODT_CA引脚上的跳线电阻有什么作用？
+解决方案: LPDDR4 chip的 ODT_CA引脚用来使能CA BUS(CK_T,CK_C,CS, CA[5:0]的ODT电阻. 当ODT_CA=low时,禁用CA BUS ODT功能. 当ODT_CA=high时,可通过MR11的OP[6:4]来禁用或设置ODT值. 目前SC9863A上推荐禁用CA BUS ODT功能,即推荐下拉电阻R0515,R0516贴片,上拉电阻R0510,R0514空贴. 如果误贴R0510,R0514可能会把CA BUS ODT功能误打开.
+参考FAQ: FAQ113122
+### 问题: 什么是早媒体？
+解决方案: MO端拨打电话的过程中,电话未接通之前,网络会向终端播放一些提示音,如"您拨打的电话正在通话中,请稍后再拨"、"您拨打的是空号",以及音频彩铃和视频彩铃.这些提示音媒体数据和彩铃媒体数据都是在电话接通之前网络发送给终端的,所以称为早媒体数据.网络向终端发送早媒体会通过P-Early-Media头域控制,告知终端后续将打开或关闭早媒体数据推送.
+参考FAQ: FAQ113127
+### 问题: 什么是视频彩铃，怎样关闭视频彩铃？
+解决方案: 视频彩铃业务是中国移动推出的一项增值业务,当被叫签约此业务时,如果主叫拨打被叫,在被叫振铃以后,主叫的界面上会开始播放一段包含声音的视频. 当被叫签约视频彩铃后,无论主叫给被叫打语音电话或视频电话,主叫都会播放视频彩铃.对于语音电话,播放视频彩铃时实际是将语音电话在振铃状态下临时升级为视频电话,待被叫接通后再降级为语音电话;对于视频电话,播放视频彩铃时在振铃状态下是视频电话,接通后仍是视频电话. 目前在中移动网络下,视频彩铃功能是默认开启的.如果终端不需要支持视频彩铃功能,将以下NV值设置为0即可: PS_NV_PARAMS->NV_PARAM_TYPE_IMS_SAPP_SETTINGS->sip_catSupport = 0
+参考FAQ: FAQ113132
+### 问题: 如何通过修改NV来支持AMR-HR/AMR-FR
+解决方案: 使用NV工具打开NV工程文件,修改NV工程PS_NV_PARAMS/NV_PARAM_TYPE_PREV_MS_CLASS_MARK路径下的full_rate_v3_supported和half_rate_v3_supported值为0x1即可支持AMR-HR/AMR-FR.
+参考FAQ: FAQ113160
+### 问题: CSFB电话如何查看网络配置的2G频点
+解决方案: 层间消息窗口搜索MSG_ID_DL_DCCH_MSG_TYPE消息,查看消息内容中的redirectedCarrierInfo字段,就能看出网络下发的2G频点.详细内容如下图所示:
+参考FAQ: FAQ113161
+### 问题: WCDMA如何关闭HSDPA+
+解决方案: 在NV的PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY大项里修改:
+HS_DSCH_Category = 10
+rlc_mac_ehs_supported = 0
+hsdsch_cell_fach_Supported = 0
+
+这样修改之后,UE支持UL 5.76Mbps + DL 14Mbps, 且不支持efach功能
+参考FAQ: FAQ113296
+### 问题: 插双卡，卡Loaded有什么顺序吗？
+解决方案: 卡loaded顺序是按照卡的插入先后来的,不是根据主副卡顺序来; 开始时间按照热插拔的时间先后进行操作; 复位结束时间是根据具体卡的响应时间进行操作; 例如有的卡回应稍微慢,有的开启的服务多,所以卡的初始化略有差异.
+参考FAQ: FAQ113320
+### 问题: 手机插移动卡时，手机状态栏信号图标显示为E网，插联通卡显示为4G
+解决方案: 移动与联通在实网下支持的band是不同的,大部分情况下,移动主要是LTE-TDD band,联通主要是LTE-FDD band, 如果UE支持的band只包含LTE-TDD band,不包含LTE-FDD band,那么此时插入联通卡,联通卡就上不了LTE,但是移动卡能上LTE; 同样,如果UE支持的band只包含LTE-FDD band,不包含LTE-TDD band,那么此时插入移动卡,移动卡就上不了LTE,联通卡能上LTE;
+参考FAQ: FAQ113351
+### 问题: LTE是否支持long drx cycle
+解决方案: LTE下支持long drx cycle
+参考FAQ: FAQ113356
+### 问题: LTE PCT测试VOLTE开关是否需要关闭
+解决方案: LTE PCT测试,对于非VOLTE的PCT case是需要关闭VOLTE的,需要在工程模式下将VOLTE关闭.
+参考FAQ: FAQ113357
+### 问题: LTE 加解密相关是否支持
+解决方案: LTE针对高层协议的加解密都是支持的: 对应层加解密也是跟协议分层类似,在NAS, RRC, L2分别都有对应层的完整性以及加解密的相关操作,目前都支持.
+参考FAQ: FAQ113366
+### 问题: 原因值2一般是什么情况会携带给UE？
+解决方案: 在发起LAU, ATTACH等流程的时候,网测假设携带这个原因值, 根据这个原因值得解释来看,IMSI未知,一般是对应的sim卡是无效卡.
+参考FAQ: FAQ113367
+### 问题: 仪表连接不上LTE，常见原因
+解决方案: 1. 手设置的模式不对,没有携带LTE 2. 搜到现网去了 3. UE attach request的相关参数跟仪表期望的不匹配,一般仪表log会提示 4. 射频异常,比如辅助天线没有插 5. 手机是否有校准过 等等
+参考FAQ: FAQ113369
+### 问题: SC9820E/SC9832E SPI速率
+解决方案: SPI1速率最高48MHz,SPI0/2速率最高24MHz
+参考FAQ: FAQ113572
+### 问题: SC9820E 有几路UART?如何选择？
+解决方案: 1. SC9820E芯片虽然有4个UART接口(UART0~3),但芯片内部却只有2个UART Controller,所以,也就只能有两个UART接口同时工作了; 2. UART0: 上电芯片ROM CODE log只能从UART0出,所以为了Debug方便,即使不被使用也需要预留测点.UART0~3中只有UART0是支持流控的,所以要使用流控UART, 必须使用UART0; 3. UART1: 上电阶段UART1 TX拉低,系统将进入下载模式,所以不建议客户使用UART1连接外设.因为UART1是默认log输出口,所以,仅预留测点即可; 4. UART2可以作为普通UART口连接外设. 5. UART3不建议使用. 6. 总结:UART0, UART1必须留测点;连接外设时,使用UART0和UART2、或者同时使用UART0和UART2.
+参考FAQ: FAQ113544
+### 问题: FDE默认开启的条件是什么？
+解决方案: 如果当前设备采用的数据加密方式为FDE,基于Google CDD 说明,如果设备的AES速率超过50Mib/s,则需默认开启. 如果设备的AES速率超过50Mib/s却没有默认开启数据加密,将无法通过CTS测试.
+参考FAQ: FAQ113663

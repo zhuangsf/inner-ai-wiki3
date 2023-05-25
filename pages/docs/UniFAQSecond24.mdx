@@ -1,0 +1,346 @@
+### 问题: 预判是Launcher3的问题时，需要打开哪些debug以初步提供有效log信息？
+解决方案: 默认情况下,Launcher的debug信息都是关闭的.如此时直接提供slog,针对Launcher应用而言,有用的信息非常有限,经常需要打开一些debug开关重新复现来提供显示更多细节的log,若恰巧项目又十分紧急,这样的做法其实不那么理想却又不得不做,为了避免这种情况发生,根据常见问题总结,打开如下debug可显著提升处理效率: Launcher3/src/com/android/launcher3/Launcher.java
+
+-    static final boolean LOGD = false;
++    static final boolean LOGD = true;
+-    static final boolean DEBUG_RESUME_TIME = false;
++    static final boolean DEBUG_RESUME_TIME 
+完整回答请参考FAQ: FAQ86952
+### 问题: android:layout_gravity属性有时候不起作用
+解决方案: 在应用开发过程中,在某个控件的属性设置android:layout_gravity属性,来实现该控件在父控件的位置.一般属性有如下: android:layout_gravity="right" android:layout_gravity="left" android:layout_gravity="center_horizontal" android:layout_gravity="center_vertical" android:layout_gravity="bottom" android:layout_gravity="top" 但是有时候不起效果.为什么呢. 原因: 因为android:layout_gravity只LinearLayout 中起作用,且使用的属性只和父控件LinearLayout 的布局方向有关系.一般使用的对应关系是 当作为父layout的LinearLay
+完整回答请参考FAQ: FAQ87032
+### 问题: show_ime_with_hard_keyboard属性使用说明
+解决方案: 问题:有个别需求提出在有外接物理键盘的时候也要显示输入法软盘,该怎么做呢 原因:默认在有外接键盘的时候,上层会自动屏蔽软键盘的显示. 在Configuration.java中正常情况下,Configuration的keyboard值是nokeys,而当系统检测到外接键盘(蓝牙键盘等等)插入时,就会更新系统的Configuration,并将其中的keyboard置为非nokeys(比如Configuration.KEYBOARD_QWERTY),然后系统会将新的Configuration通知给所有程序,包括输入法.当输入法程序检测到新的Configuration时,它会执行更新操作,然后发现已经有外接设备就会隐藏自己,这样输入法就不见了. 具体的使用到KEYBOARD_NOKEY在WindowsManagerService.java中的方法computeScreenConfiguration
+完整回答请参考FAQ: FAQ87037
+### 问题: EventLogTags中的变量是如何定义的？
+解决方案: 我们在代码中经常可以看到如下的代码段: EventLog.writeEvent(EventLogTags.AM_RESTART_ACTIVITY, r.userId, System.identityHashCode(r), task.taskId, r.shortComponentName); 代表的是将AM_RESTART_ACTIVITY的log写入event.log中,但是在EventLogTags.java中搜索不到AM_RESTART_ACTIVITY的定义,那么这是怎么一回事呢? 下面我们将以AM_RESTART_ACTIVITY为例来讲解该变量的定义方式 在frameworks\base\services\core\java\com\android\server\am目录下有一个文件 EventLogTags.logtags 该文件定义了am中需要使用的所有的log tag,
+完整回答请参考FAQ: FAQ87046
+### 问题: widget选择界面，如何不显示个别widget？
+解决方案: 在初始化widget界面数据时,可以通过包名或类名来过滤部分widget,已达到不显示的效果. 以browser为例,具体修改如下: Launcher3/src/com/android/launcher3/model/WidgetsModel.java
+
+    public void setWidgetsAndShortcuts(ArrayList<Object> rawWidgetsShortcuts) {
+        ......
+            if (mAppFilter != null && !mAppFilter.shouldShowApp(componentName)) {
+                if (DEBUG) {
+                    Log.d(TAG, String.format("%s is filtered
+完整回答请参考FAQ: FAQ87055
+### 问题: settings应用中添加一级菜单用于调用三方应用的界面
+解决方案: 下面以在setting应用中添加call settings为例,添加其他一级菜单用于启动三方应用的界面的基本方法都一样 1.packages/apps/Settings/res/xml/dashboard_categories.xml方法中添加dashboard-tile标签,这个标签就是呈现的一级菜单;在其中加入intent意图用于指向要启动的三方应用界面,android:targetClass是要启动的activity的全程,android:targetPackage是三方应用的包名 ++<dashboard-tile ++ android:id="@+id/call_settings" ++ android:title="@string/call_settings" ++ android:icon="@drawable/ic_launcher_phone" > ++ <intent 
+完整回答请参考FAQ: FAQ87045
+### 问题: 不同Gsensor 的IC如何实现兼容
+解决方案: Kernel层: 1.所有Gsensor的驱动同时编译,由于IC的 i2C slave address 唯一,所以使用到的Gsensor代码能正常注册. 2.代码中设置相同的节点名字,包括设备节点名和input节点名. 2.在ioctl系统调用或者sysfs节点操作中增加"get_chip_id" command,提供给Hal层使用. Hal层: 1. sSensorList同时加入所有Gsensor的信息 . 2. 构造函数中的设备节点名需和驱动设备节点名字保持一致,即: "AccSensor::AccSensor() : SensorBase(DEV_PATH_NAME, ACC_INPUT_NAME)" 驱动注册相同的 DEV_PATH_NAME,ACC_INPUT_NAME,这里open的时候需保持一致. 3. 在cpp文件中通过ioctl 系统调用或者sysfs节点中的"get_
+完整回答请参考FAQ: FAQ87062
+### 问题: 在没有开启GPS开关的情况下，打卡SGPS会出现FileNotFoundException 异常
+解决方案: 由于没有打开Settings下的GPS开关在打开SGPS时会出现打开文件异常,需要在打开文件时捕获如下异常. 如下是log 中报错信息: E/SgpsUtils( 2148): Exception ->java.io.FileNotFoundException: /data/cg/supl/supl.xml: open failed: ENOENT (No such file or directory) W/System.err( 2148): java.io.FileNotFoundException: /data/cg/supl/supl.xml: open failed: ENOENT (No such file or directory) W/System.err( 2148): at libcore.io.IoBridge.open(IoBridge.java:456) W/Sy
+完整回答请参考FAQ: FAQ87068
+### 问题: 不带GPS项目过滤掉GPS test、Device Only Mode Test、High Accuracy Mode Test测试项
+解决方案: 修改文件路径:\frameworks\base\core\java\android\app\ApplicationPackageManager.java 修改前: public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) { return queryIntentActivitiesAsUser(intent, flags, mContext.getUserId()); } 修改后: public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) { if ("com.android.cts.verifier".equals(mContext.getPackageName())) { List<ResolveInfo> so
+完整回答请参考FAQ: FAQ87070
+### 问题: 5.1版本如何判断SIM卡为PIN码加锁状态
+解决方案: 可通过TelephonyManager里面的getSimState来获取当前SIM卡的状态,然后对比是否是SIM_STATE_PIN_REQUIRED状态即可. 代码如下: TelephonyManager telephonyManager = TelephonyManager.getDefault();
+boolean isPin =( telephonyManager.getSimState(phoneId) == TelephonyManager.SIM_STATE_PIN_REQUIRED);//phoneId为0表示卡1,为1表示卡2 扩展: 想知道是否为PUK码加锁的判断,可同样获取SIM卡状态后对比SIM_STATE_PUK_REQUIRED状态即可: 代码如下: TelephonyManager telephonyManager = TelephonyManager.ge
+完整回答请参考FAQ: FAQ87270
+### 问题: 实现Tshark 5.1 双卡信号格颜色不同
+解决方案: Tshark 5.1版本默认使用原生无颜色的信号格,如果更改为两个卡信号格颜色不同,具体的修改如下: frameworks\base\packages\systemui\src\com\android\systemui\statusbar\policy\NetworkControllerImpl.java @Override public int getCurrentIconId() { int[][] colorfulSbIcons = SystemUIPluginsHelper.getInstance() - .getColorfulSignalStrengthIcons(mSubscriptionInfo.getSubscriptionId()); + .getColorfulSignalStrengthIcons(mSubscriptionInfo.getSimSlotIndex(
+完整回答请参考FAQ: FAQ87287
+### 问题: 5.1上如何预置wifi ssid？
+解决方案: 5.1上如何预置wifi ssid? android5.1上预置wifi ssid的文件路径和android4.4相比有所变化. android4.4上预置的方法如下: external/wpa_supplicant_8/wpa_supplicant_8_lib/wpa_supplicant.conf network={ ssid="XXX WIFI" key_mgmt=NONE priority=1 } android5.1上预置的方法如下: external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant_template.conf network={ ssid="XXX WIFI" key_mgmt=NONE priority=1 } 另外,每种加密方式的预置内容不同,示例如下: open: network={ ssid="XXX WIF
+完整回答请参考FAQ: FAQ87286
+### 问题: android5.1上wifi高级选项中“网络通知”功能是如何判断有可用的公用网络的？
+解决方案: wifi高级选项中"网络通知"功能的代码实现是在文件frameworks\opt\net\wifi\service\java\com\android\server\wifi.从其中逻辑可以看到: checkAndSetNotification{ ...... if ((state == NetworkInfo.State.DISCONNECTED) || (state == NetworkInfo.State.UNKNOWN)) { //首先当前网络状态不能是连接状态 ...... for (int i = scanResults.size() - 1; i >= 0; i--) { ScanResult scanResult = scanResults.get(i); //A capability of [ESS] represents an open access point //th
+完整回答请参考FAQ: FAQ87297
+### 问题: 5.1分支上如何实现将/data/slog/目录内容拷贝到/sdcard/slog/目录
+解决方案: 5.1上实现将将/data/slog/目录内容拷贝到/sdcard/slog/目录的方法如下,slog会在sdcard挂载后完成拷贝动作,/data/slog/目录下的log会被拷贝到以时间戳命名的log文件夹下. 修改: diff --git a/tools/slog/slog.c b/tools/slog/slog.c index 455852a..299a8e0 100644 --- a/tools/slog/slog.c +++ b/tools/slog/slog.c @@ -62,6 +63,41 @@ static int handle_gms_push(void); #ifdef ANDROID_VERSION_442 extern void operate_bt_status(char *status, char* path); #endif + +static void 
+完整回答请参考FAQ: FAQ87277
+### 问题: slog的时间戳说明
+解决方案: 关于slog中相关log的时间戳解释如下: 1.kernel log kernel log中,01-06 08:47:39.514是slog在读取到kernel log时对时间进行的转换,包含了时区,而下面例子中的UTC时间是相对当前本地时区的零时区时间,因此会有2015-01-06 00:47:39.513991699 和01-06 08:47:39.514 出现时区差的情况.而方括号中间的时间11947.578155是由kenrel 的启动参数time 决定的,即在kernel log中加入时间戳,而这个时间戳是系统启动的秒数. eg: 01-06 08:47:39.514 <6>[11947.578155] c2 PM: suspend entry 2015-01-06 00:47:39.513991699 UTC 2.android log(包含main/system/events
+完整回答请参考FAQ: FAQ87273
+### 问题: slog自动重启的机制说明
+解决方案: 所谓的slog自动重启的机制,即用户通过slogui进行相关的log选项的设置后,会修改到slog.conf文件.Slog会监听slog.cof文件的变化一旦该文件有变化会触发slog 重新启动,然后重新加载解析slog.conf文件用以根据客户的设置抓取对应的log信息. slog每次重启的时候会根据slog自身的一个属性slog.step值进行判断是新产生一个文件,还是将log输出到现有的log文件当中.如果手机发生了重启,则会重新生成一个log文件记录log信息,如果手机没有重启,则会将log信息记录到现有的log文件中,而每次记录log时,都会在开始打印"记录log时间戳标记",用以记录本次抓取log开始的时间. 这样就会出现一种现象,有的log文件中会出现多个eg中给出的时间标记,且包含较早时间点的log信息.这种情况就发生在slog重启但手机没有重启的时候,会把log信息记录在
+完整回答请参考FAQ: FAQ87307
+### 问题: 如何在libcore目录下的文件中添加debug log
+解决方案: /libcore/luni 目录包含了java的核心库文件.有时我们需要在 该目录下的文件中添加一些debug log.但是该目录下无法使用 android.util.Log和android.util.Slog包的接口.即我们通常使用的log接口. 这种情况下,可以使用该/libcore/目录下的Logger类接口; 使用方法和android.util.Log 类似. 1:首先引入包 import java.util.logging.Logger; import java.util.logging.Level; 2:实例化一个Logger对象 final Logger mylogger = Logger.getLogger("mydebug"); 3:调用Logger 类的相关接口,例如 mylogger.log(Level.INFO, "mydebug log add here"); 输
+完整回答请参考FAQ: FAQ87319
+### 问题: 如何在System的exit方法中将调用接口的栈信息打出来
+解决方案: 有时我们看到进程打印了如下信息后,就died了. 760 760 I art : System.exit called, status: 0 这个是由于应用调用了System.exit(0)接口主动进程退出了. 但由于使用这个接口时经常没有log提示,导致不知道是哪里调用的System.exit. 这种情况下可以在system的exit中添加debuglog将调用栈信息打印出来. 一种方法如下: --- a/luni/src/main/java/java/lang/System.java +++ b/luni/src/main/java/java/lang/System.java @@ -31,7 +31,8 @@ */ package java.lang; +import java.util.logging.Logger; +import java.util.logging.Level;
+完整回答请参考FAQ: FAQ87320
+### 问题: 怎么定制在文件管理器中长按分享图片和视频的可选分享应用的顺序？
+解决方案: 在文件管理器中长按分享图片或者视频的流程,通过调用Intent.createChooser()方法,这个方法返回一个Intent对象,action为android.intent.action.CHOOSER,同时设定EXTRA_TITLE,然后启动选择分享应用的Activity,这个Activity的实现在/frameworks/base/core/java/com/android/internal/app/ChooserActivity.java,继承于ResolverActivity.java,最终怎样显示候选分享应用是由ResolverActivity最终实现的,在ResolverActivity内部类ResolveListAdapter的rebuildList()获取候选分享应用列表,在这里可以添加对应的排序算法 具体实现方法参考如下方法(实现将mms和email这两个应用分别排列
+完整回答请参考FAQ: FAQ87342
+### 问题: 怎么定制ActionBar上的分享列表中的可选分享应用的顺序？
+解决方案: 当在Gallery,Camera,Video,Music等应用中通过ActionBar上的分享按钮分享时,最终处理逻辑由ShareActionProvider实现,排序逻辑在ActivityChooserModel中 ActivityChooserModel对于通过intent从包管理器中获得的符合intent条件的活动记录(以ActivityResolveInfo类型保存在数组列表中mActivites)的排序方法采用了策略模式,排序方法被封装成对象,在没有通过setActivitySorter方法设置排序方法时,采用默认排序方法,由DefaultSorter对象封装.DefaultSorter对象提供的排序方法是依据活动记录中的weight值进行排序,被排序的活动记录的weight值还依据记录在HistoricalRecord(HistoricalRecord中的活动通过读私有的XML
+完整回答请参考FAQ: FAQ87354
+### 问题: 设置/应提示和通知/应用通知，打开任意一个应用，“允许快速查看”，这一项是什么意思？
+解决方案: 原因: 设置/应提示和通知/应用通知,打开任意一个应用,"允许快速查看", 每个应用都会发送浮动通知"Heads-up notifications",Android M上更名为"peeking" 1、具体通知样式为在当前应用最上面弹出一条通知,显示几秒后自动最小化到通知中. 2、具体通知发送代码如下:     private void sendNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setContentTitle("My notification");
+        builder
+完整回答请参考FAQ: FAQ87353
+### 问题: AndroidM如何获取当前终端的SIMLOCK状态？
+解决方案: AndroidM平台,默认支持通过Fw的接口,获取到具体版本的simlock状态,具体如下所示: TelephonyManager tm = (TelephonyManager)TelephonyManager.from(context); isNetworkLock = tm.getSimLockStatus(TelephonyManager.UNLOCK_NETWORK); isNetworkSubsetLock = tm.getSimLockStatus(TelephonyManager.UNLOCK_NETWORK_SUBSET); isServiceProviderLock = tm.getSimLockStatus(TelephonyManager.UNLOCK_SERVICE_PORIVDER); isCorporateLock = tm.getSimLockStatus(T
+完整回答请参考FAQ: FAQ87386
+### 问题: IS_SUPPORT_AUTO_ROAM 的值是如何获得的，如何设置使其为true?
+解决方案: IS_SUPPORT_AUTO_ROAM 用判断手机是否支持自动漫游功能. IS_SUPPORT_AUTO_ROAM 是通过读取 SystemProperties 获得的 private static final boolean IS_SUPPORT_AUTO_ROAM = SystemProperties.get("ro.support.auto.roam").equals("enable"); 可以按以下方法设置使其为true 需要在system.prop文件中添加 ro.support.auto.roam=enable , system.prop文件的路径,与编译的工程有关,路径为: /device/sprd/编译的工程/system.prop 举例: 如编译的工程是 sp9830aef_5m_volte 则在 /device/sprd/sp9830aef_5m_volte/syst
+完整回答请参考FAQ: FAQ87486
+### 问题: wifi设置界面中左上角缺少后退键如何解决？
+解决方案: MOCORDROID6.0_Trunk_W16.11.2, 之后部分版本中,存在wifi设置界面中,左上角缺少后退键的问题. 可升级版本至 MocorDroid6.0_Trunk_W16.22.1 之后版本,即可解决. 也可合入以下修改解决. 1. 修改 packages/apps/Settings/AndroidManifest.xml diff --git a/AndroidManifest.xml b/AndroidManifest.xml index 8f390c8..ec7fbc0 100644 (file) --- a/AndroidManifest.xml +++ b/AndroidManifest.xml @@ -136,6 +136,7 @@ <activity android:name=".SubSettings" android:taskAffinity="com.a
+完整回答请参考FAQ: FAQ87488
+### 问题: 如何查看CP2版本
+解决方案: 以下方法只针对marlin 芯片适用.这里基本总结全了看基于marlin的CP2 版本 1. 工程模式里 *#*#83781#*#* -》DEBUG&LOG-》System Info -》Version Info-》CP2 Version 对应的AT命令如下: echo "at+spatgetcp2info\r" > /proc/mdbg/at_cmd cat /proc/mdbg/at_cmd 2.看开机时的main log 'Platform Version: MARLIN_15C_W16.11.2_Debug 03-08-2016 09:46:33 Project Version: MARLIN HW Version:AA' 3. 看CP2 log,不过这个需要专业CP2 研发同事才能知道对应版本是多少 打开wifi,每次wifi扫描结束会打印CP2 版本: 14:1520-11:M
+完整回答请参考FAQ: FAQ87480
+### 问题: 如何设置对话框样式的Activity
+解决方案: 在AndroidManifest.xml文件中,为<application>元素添加android:theme属性,或者在activity元素添加该属性. 示例: <application android:allowBackup="true" android:icon="@drawable/ic_launcher" android:label="@string/app_name" > <activity android:name=".MainActivity" android:label="@string/app_name" android:theme="@android:style/Theme.Dialog" > <intent-filter> <action android:name="android.intent.action.MAIN" /> <category android:n
+完整回答请参考FAQ: FAQ88008
+### 问题: wifi产线上非信令下RX会概率性丢包
+解决方案: 屏蔽环境,强信号下,一般不会出现这么高的丢包. 1.要么可能是出现坏点,即手机在某个功率档上很容易丢包,排查下来也没有坏点. 2.看射频和phy相关的调整优化.比如关闭lna让射频evm更好,另外调整其他寄存器相关 最终如下修改: static int wifi_rx_start(char *rsp) { int ret; char cmd[100] = {0}; ENG_LOG("ADL entry %s(), rx_start = %d, tx_start = %d", __func__, g_wifi_data.rx_start, g_wifi_data.tx_start); wifi_status_dump(); if(1 == g_wifi_data.rx_start) goto ok; if(1 == g_wifi_data.tx_start) goto err; sprint
+完整回答请参考FAQ: FAQ87593
+### 问题: Android6.0平台由文件管理器选择任意图片经Google Photo相册打开后通过蓝牙分享失败的问题分析?
+解决方案: /ishare/uploadeditor/file/20160629/20160629095419_621.rar 1).Android6.0原生问题, 造成问题原因: 文件管理器选择的图片经Google 相册打开进行分享时,Google 相册应用对传递的图片Uri 进行了再次封装,使得蓝牙 OPP不能正确从Google 相册应用解析图片Uri; 异常 Uri 如下: BluetoothOppUtility: getSendFileInfo: uri=content://com.google.android.apps.photos.contentprovider/-1/1/file%3A%2F%2F%2Fstorage%2Fsdcard0%2FScreenshot_2012-01-01-08-17-08.png/ORIGINAL/NONE/1946866063 2).针对此种Case, 在
+完整回答请参考FAQ: FAQ87654
+### 问题: Android6.0 蓝牙无法同步通话记录的原因?
+解决方案: 1).属于Android6.0 原生问题; 2).问题分析: 通过查看6.0代码,发现在同步通话记录时,在接口 VCardFilter.Apply() 处理中会对以 "X-" 开头的字段进行过滤,进而导致发送给对端设备的通话记录中的关键字段 "X-IRMC-CALL-DATETIME" 缺失,造成对端解析不到无法识别. 3).修改方案如下: BluetoothPbapVcardManager.java public String apply(String vCard, boolean vCardType21){ if (filter == null) return vCard; String lines[] = vCard.split(SEPARATOR); StringBuilder filteredVCard = new StringBuilder(); boolean filtere
+完整回答请参考FAQ: FAQ87652
+### 问题: FM 录音保存路径设置为SD卡，之后拔掉SD后开机，重新进入FM播放并点击录音，提示"Your SD card is missing！"?
+解决方案: 1).造成问题的原因: 拔掉SD后开机重新打开FM,FM的录音保存路径仍然是SD卡,在点击开始录音时检测到SD卡不存在,进而导致问题出现; 2).修改方案: 拔掉SD后开机打开FM,如果FM的录音保存路径是SD卡,将其保存路径修改为内部存储. 具体修改: diff --git a/src/com/android/fmradio/FmUtils.java b/src/com/android/fmradio/FmUtils.java --- a/src/com/android/fmradio/FmUtils.java +++ b/src/com/android/fmradio/FmUtils.java @@ -228,20 +228,28 @@ public class FmUtils { return Environment.getInternalStoragePath().getPath(
+完整回答请参考FAQ: FAQ87653
+### 问题: Google chrome浏览器无法通过蓝牙分享图片的问题分析
+解决方案: 属于应用本身的问题: 1).首先需要查看 chrome 的版本,目前碰到的出现问题的版本是51.0.27, 此版本在对比机上同样存在该问题; 2).而对比 46.0.24 版本的 chrome 可分享成功,发现传递给蓝牙模块的Uri 存在差异, 具体请参见如下: /*chrome: 51.0.27 06-24 12:22:05.137 3817 3817 D BluetoothLauncherActivity:: extra_text = null 06-24 12:22:05.137 3817 3817 D BluetoothLauncherActivity:: stream = content://com.android.chrome.FileProvider/images/screenshot/1466742123531-2085958035.jpg 06-24 12:22:05.1
+完整回答请参考FAQ: FAQ87659
+### 问题: 通过蓝牙进行文件分享时，在蓝牙设备选择界面出现触点无反应的分析手段
+解决方案: 1).Log分析: 查看在反馈的时间段内,底层是否有搜索到周边 大量蓝牙设备 并进行上报,其关键字类似如下: 01-01 08:32:00.012 1533 1574 I bt-btif : HAL bt_hal_cbacks->device_found_cb 而目前SPRD平台的设计是当扫描到一个设备时,会通知UI进行一次刷新,当短时间内搜索到大量设备时就会进行多次刷新. 进而出现点击设备不中的现象.可尝试在搜索结束后,再点击其中的设备,观察是否还会出现无反应的现象. 2).规避方案: 降低列表刷新的频率 public void onDeviceAttributesChanged() { setTitle(mCachedDevice.getName()); int summaryResId = getConnectionSummary(); if (summaryResId != 0) 
+完整回答请参考FAQ: FAQ87660
+### 问题: Google keyboard是否可与原生android keyboard(AOSP)共存?如何替换？
+解决方案: Google keyboard 可以理解为android keyboard(AOSP)的升级版(两者区别请参考FAQ87680),所以两应用内部实现有很大一部分是相同的,同时存在的同一系统中可能会引起未知的问题.所以GMS包中的Goole keyboard与原生的android keyboard(AOSP)输入法是不能共存的. 按照正常的GMS包应用配置流程即可替换掉系统内编译出的LatinIME,其原理是在Google keyboard的Android.mk中加入了LOCAL_OVERRIDES_PACKAGES := LatinIME (注:LOCAL_OVERRIDES_PACKAGES可以控制某些模块不加入编译) 而想要使用Android keyboard(AOSP)输入法而不使用Google keyboard的话,可能会造成某些GTS测试项fail,并不建议替换. 如果一定要替换
+完整回答请参考FAQ: FAQ87683
+### 问题: 如何让某个处于广播队列后面的广播优先被执行?
+解决方案: AMS中存在两种BroadcastQueue,通常我们称之为广播的前台队列和后台队列,而在每一BroadcastQueue对象中会存在两个list用来保存待处理的广播,也就是下面的mParallelBroadcasts和mOrderedBroadcasts /** * Lists of all active broadcasts that are to be executed immediately * (without waiting for another broadcast to finish). Currently this only * contains broadcasts to registered receivers, to avoid spinning up * a bunch of processes to execute IntentReceiver componen
+完整回答请参考FAQ: FAQ87703
+### 问题: 连接蓝牙键盘后出现Physical keyboard选项，其支持的物理键盘layout语言都有哪些？
+解决方案: 目前支持的物理键盘layout有如下37种, Arabic、Belgian、Brazilian、Croatian、Czech、Danish、English(UK)、English(US)、English(US),Colemak style、English(US),Dvorak style、English(US),International style、Estonian、Finnish、French、French(Canada)、German、Greek、Hebrew、Hungarian、Icelandic、Italian、Latvian、Lithuanian、Norwegian、Protugese、Russian、Russian,Mac style、Slovak、Slovenian、Spanish、Spanish(latin)、Swedish、Swiss French、Swiss Germ
+完整回答请参考FAQ: FAQ87699
+### 问题: 6.0 最近任务横屏显示问题
+解决方案: 最近任务涉及到的Activity文件是 frameworks/base/packages/SystemUI/src/com/android/systemui/recents/RecentsActivity.java 在android6.0,frameworks/base/packages/SystemUI/AndroidManifest.xml中默认给这个Activity增加了属性 android:screenOrientation="behind"如下: <activity android:name=".recents.RecentsActivity" ... android:screenOrientation="behind" ... </activity> 该属性表示最近任务的横竖屏显示由它背后的Activity决定,如Launcher一般是强制竖屏显示的,那么在桌面状态下进入到最近
+完整回答请参考FAQ: FAQ87730
+### 问题: 切换到Guest账户下，一些自定义的广播接收器无法接收，是什么原因？
+解决方案: 问题发生场景如下: 在PhoneWindowManager中注册一个receiver,然后在app中发送对应的广播,在默认用户模式下,receiver可以成功接收广播,而在Guest用户模式下,receiver无法接收广播 问题原因: 自andorid4.2以后,android系统中引入了多用户的概念,对于广播而言,也由于多用户的出现做了区分,对应用户模式下发送的广播只能被对应用户模式下注册的receiver接收 PhoneWindowManager是在系统启动时在WindowManagerService中实例化的,所以始终运行在默认user(userId=0)下,但是app运行在哪个user下取决于当前所处的用户模式,当在owner模式下,那么userId=0,所以广播可以正常接收,但是在guest模式下实例化的PhoneWindow,它运行在guest用户下,此时userId>0,所以
+完整回答请参考FAQ: FAQ87767
+### 问题: 如何实现安装的应用不显示在Launcher和Settings应用列表中
+解决方案: 对于某些应用可能需要不显示图标这个特殊的需求,实现实例代码如下: PackageManager pm = context.getPackageManager(); pm.setApplicationEnabledSetting(packageName, mState, 0) ; @pram:packageName就是想要被禁止或者显示的应用包名,可以在data/data下面看到包名 @pram:mState表示需要实现的状态,有两个值: PackageManager.COMPONENT_ENABLED_STATE_ENABLED // 显示 PackageManager.COMPONENT_ENABLED_STATE_DISABLED // 不显示 注: 1. setApplicationEnabledSetting需要CHANGE_COMPONENT_ENABLED_STATE权限,如果
+完整回答请参考FAQ: FAQ87770
+### 问题: 如何将UPLMN界面上的网络制式修改为2G/3G/4G格式
+解决方案: 进入手机设置中的UPLMN界面,一般可以看到类似如下格式的显示: 46001:U/E/G 46001:E 46001:G 其实如上的U、E、G分别表示4G、3G、2G,如果想要修改为4G/3G/2G格式只需要修改: 文件:UplmnSettings.java(packages/services/Telephony/src/com/sprd/phone) 将setType()方法中的所有"U"、"E"、"G"改成"4G"、"3G"、"2G"即可,例如:           mOrder[position] = 3;
+-            mStrUorG[position] = "U/E/G";
++            mStrUorG[position] = "4G/3G/2G";//"";
+         } else if(isUtran) {
+            
+完整回答请参考FAQ: FAQ87771
+### 问题: 如何将UPLMN界面上的PLMN改为运营商名称
+解决方案: 进入手机设置中的UPLMN界面,一般可以看到类似如下格式的显示: 46001:U/E/G 46001:E 46001:G 如果想要将如上的46001改为对应的运营商名字,实现实例代码如下: private String getOperatorName(String uplmn) { if(uplmn.length() < 4){ return uplmn; } String mcc = uplmn.substring(0, 3); String mnc = uplmn.substring(3); int mncShort = Integer.parseInt(mnc); String plmnNumeric = mcc + mncShort;//4601 return TeleUtils.updateOperator(plmnNumeric, "numeric_to_operator");
+完整回答请参考FAQ: FAQ87772
+### 问题: AndroidM 如何实现首次插入或更换SIM卡，先弹出APN框，再弹出数据连接框
+解决方案: 注意:需求开关和配置说明: CarrierConfigManager.java (\frameworks\base\telephony\java\android\telephony) // Feature开关,配置为true功能开启,配置为false功能关闭 public static final String KEY_FEATURE_DATA_AND_APN_POP_BOOL = "feature_data_and_apn_pop_bool"; // 配置哪几张卡不弹出pop,为String类型,","隔开,客户根据需要配置对应的sim卡的mccmnc值 public static final String KEY_FEATURE_DATA_AND_APN_POP_OPERATOR_STRING = "feature_data_and_apn_pop_operator_string"; 
+完整回答请参考FAQ: FAQ87776
+### 问题: 蓝牙PSKEY下发流程
+解决方案: 在打开蓝牙时会进行pskey下发操作,会读取system/etc/connectivity_configure.ini中参数,通过HCI(HCI_PSKEY)命令发送给CP2. 通过hci log,可以看到下发pskey的内容: Opcode: 0xfca0 Vendor Specific Command: 0x 00 01 01 01 80 ba 8c 01 00 1f 00 00 1e 00 00 00 00 f6 00 00 00 d0 00 00 00 aa 00 00 00 84 00 00 00 44 00 00 00 0a 00 00 00 00 c8 0f 00 00 f8 0f 00 00 da 0f 00 00 cc 0f 00 00 fc 0f ff ff 8d fe db 7d 7b 83 ff a7 ff 7f 00 e0 f7 3e 2c d6 5b da 45
+完整回答请参考FAQ: FAQ87791
+### 问题: Android6.0中蓝牙传输提速方案
+解决方案: packages/apps/Bluetooth diff --git a/src/com/android/bluetooth/btservice/AdapterService.java b/src/com/android/bluetooth/btservice/AdapterService.java index dedba38..6cf51ba 100644 --- a/src/com/android/bluetooth/btservice/AdapterService.java +++ b/src/com/android/bluetooth/btservice/AdapterService.java @@ -1954,17 +1954,18 @@ public class AdapterService extends Service { // will be rescheduled (i
+完整回答请参考FAQ: FAQ87798
+### 问题: 在MTP模式下是否可以显示SLog文件夹？
+解决方案: MTP模式不支持Slog文件夹的显示.不过,可以通过代码进行修改,实现此功能,sample code: diff --git a/AndroidManifest.xml b/AndroidManifest.xml index 51c3cce..c64185c 100644 --- a/AndroidManifest.xml +++ b/AndroidManifest.xml @@ -1196,6 +1196,9 @@ <data android:scheme="file" /> </intent-filter> + <intent-filter> + <action android:name="android.hardware.usb.action.USB_STATE" /> + </intent-filter> </receiver> <receiver android:name="co
+完整回答请参考FAQ: FAQ87806
+### 问题: 如何通过adb开启或者关闭modem Log？
+解决方案: If you want to use "slogctl modem on " to turn on Modem Log , Please add the new modification . /tools/slog/slogctl.c --------------------------------------------------------------------------------------------------- @@ -91,7 +91,7 @@ void update_5_entries(const char *keyword, const char *status, char *line) { else if ( !strncmp("modem", keyword, 5) ) { - if ( !strncmp("modem", name, 5) ) //此处修改,
+完整回答请参考FAQ: FAQ87816
+### 问题: 备份app概率性重启手机的问题
+解决方案: 1 问题现象:在安装较多应用的情况下,使用备份应用数据功能会概率性发生重启. 2 典型log: watchdog: Blocked in monitor com.android.server.am.ActivityManagerServiceEx on foreground thread (android.fg) "android.fg" prio=5 tid=12 Blocked - waiting to lock <0x0c41a819> (a android.util.ArrayMap) held by thread 63 "Binder_8" prio=5 tid=63 Native at android.net.LocalSocketImpl$SocketInputStream.read(LocalSocketImpl.java:101) - locked <0x0d175d8c
+完整回答请参考FAQ: FAQ87840
+### 问题: 通过dropbox里的system_server_lowmem@***文件可以获取哪些信息?
+解决方案: 1:生成该文件时间点的内存总体使用情况以及各个进程的内存占用情况. 例如: Subject: Low on memory -- 160MB total / 40MB system / 20MB systemui 5MB phone 5MB modemassert 5MB validator / 5MB bluetooth / 30MB camera2 15MB weibo ... sys P 31193 kB: system (pid 678) fixed pers P 3215 kB: com.android.phone (pid 781) fixed 需要注意的是 Low on memory 一行统计的数据是个区间值不是精确的.下面的每个进程以kB为单位的是精确值.例如system 实际占用内存 31193 kB,在 Low on memory 一行中统计为40MB 2:该时间点最近运
+完整回答请参考FAQ: FAQ87838
+### 问题: 如何预置jar包到framework中供第三方应用使用？
+解决方案: 1、 在/vendor/sprd/partner/prebuilt_apps/目录下添加如下目录: /vendor/sprd/partner/prebuilt_apps/scanner/ /vendor/sprd/partner/prebuilt_apps/scanner/bit32/ 将文件存放目录结构: /vendor/sprd/partner/prebuilt_apps/scanner/ScanerAPISDK.jar 四个库文件存放在/vendor/sprd/partner/prebuilt_apps/scanner/bit32/目录下 2、 在/vendor/sprd/partner/prebuilt_apps/Android.mk文件中添加: ##################################### include $(CLEAR_VARS) LOCAL_MO
+完整回答请参考FAQ: FAQ87837
+### 问题: 如何禁止用户安装任何应用？
+解决方案: 参照以下方式:(禁止除adb push 和ota升级之外的任何安装方式,允许移动应用) diff --git a/services/core/java/com/android/server/pm/PackageManagerService.java b/services/core/java/com/android/server/pm/PackageManagerService.java index 3973979..d0c7f1a 100755 --- a/services/core/java/com/android/server/pm/PackageManagerService.java +++ b/services/core/java/com/android/server/pm/PackageManagerService.java @@ -8602,7 +8608,7 @@ publi
+完整回答请参考FAQ: FAQ87859
+### 问题: 如何提高某个无源码应用的进程优先级从而不被low memory kill？
+解决方案: --- a/services/core/java/com/android/server/am/ActivityManagerServiceEx.java +++ b/services/core/java/com/android/server/am/ActivityManagerServiceEx.java @@ -226,7 +226,7 @@ public final class ActivityManagerServiceEx extends ActivityManagerService { static { preProtectAreaList = new HashMap<String, ProtectArea>(); + preProtectAreaList.put("com.android.vending",new ProtectArea(0,0,ActivityManager.
+完整回答请参考FAQ: FAQ87864
+### 问题: 关键USB寄存器-GOTGCTL
+解决方案: GOTGCTL: The OTG Control and Status register controls the behavior and reflects the status of the OTG function of the core. Offset:0x0000 Hex_Data:0x2100C0 Binary_Data: 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 Bit_0:SesReqScs,Device only下工作,0,表示Session request failure Bit_1:SesReq,SRP-capable device下工作,0,表示No session request Bit_2:VbvalidOvEn,仅在Host 模式下,0,表示软件设置被disable,core 进行phy选择 Bit_3:Vbval
+完整回答请参考FAQ: FAQ87881
+### 问题: 关键USB寄存器-GINTSTS
+解决方案: GINTSTS: This register interrupts the application for system-level events in the current mode (Device mode or Host mode). Some of the bits in this register are valid only in Host mode, while others are valid in Device mode only. This register also indicates the current mode. to clear the interrupt status bits of type R_SS_WC, the application must write 1'b1 into the bit. The FIFO status interrupts
+完整回答请参考FAQ: FAQ87890
+### 问题: 关键USB寄存器-GOTGINT
+解决方案: GOTGINT: The application reads this register whenever there is an OTG interrupt and clears the bits in this register to clear the OTG interrupt. Offset:0x0004 Hex_Data:0x02000000 Binary_Data: 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 Bit_0:Reserved. Bit_1:Reserved. Bit_2:SesEndDet,Host and Device,只能被core在utmiotg_bvalid 信号被拉高后设置和写1清除该bit Bit_3:Reserved. Bit_4: Reserved. Bit_5: Reserved. B
+完整回答请参考FAQ: FAQ87883
+### 问题: 关键USB寄存器-GAHBCFG
+解决方案: GAHBCFG: This register can be used to configure the core after power-on or a change in mode. This register mainly contains AHB system-related configuration parameters. Do not change this register after the initial programming. The application must program this register before starting any transactions on either the AHB or the USB. Offset:0x0008 Hex_Data:0x04000021 Binary_Data: 1 0 0 0 0 0 0 0 0 0 
+完整回答请参考FAQ: FAQ87885
+### 问题: 关键USB寄存器-GUSBCFG
+解决方案: GUSBCFG: This register can be used to configure the core after power-on or a changing to Host mode or Device mode. It contains USB and USB-PHY related configuration parameters. The application must program this register before starting any transactions on either the AHB or the USB. Do not make changes to this register after the initial programming. Offset:0x000C Hex_Data:0x40001408 Binary_Data:100
+完整回答请参考FAQ: FAQ87886
+### 问题: 关键USB寄存器-GRSTCTL
+解决方案: GUSBCFG: This register can be used to configure the core after power-on or a changing to Host mode or Device mode. It contains USB and USB-PHY related configuration parameters. The application must program this register before starting any transactions on either the AHB or the USB. Do not make changes to this register after the initial programming. Offset:0x000C Hex_Data:0x40001408 Binary_Data:100
+完整回答请参考FAQ: FAQ87887
+### 问题: 关键USB寄存器-GHWCFG4
+解决方案: GHWCFG4: This register contains the configuration options selected using coreConsultant. Offset:0x0050 Hex_Data:0XFE008020 Binary_Data:11111110000000001000000000100000 Bit_[3:0]: Number of Device Mode Periodic IN Endpoints (NumDevPerioEps), This field is configured using parameter "OTG_NUM_PERIO_EPS" OTG_NUM_PERIO_EPS Values: 0 - 15 Default: 0 Enabled: OTG_MODE != 5 && OTG_MODE != 6 && OTG_EN_DED_
+完整回答请参考FAQ: FAQ87891
+### 问题: 如何关闭语音通话功能
+解决方案: 1. 将语音业务功能开关关闭 配置文件路径:修改为false即可 frameworks/base/core/res/res/values/config.xml <bool name="config_voice_capable">false</bool> 2. 设置来电MT时拒接,用户忙状态 RILSprd.java (\frameworks\opt\sprd\frameworks\opt\telephony\src\java\com\android\internal\telephony private void processUnsolicitedBase (Parcel p) { case RIL_UNSOL_RESPONSE_CALL_STATE_CHANGED: if (RILJ_LOGD) unsljLog(response); + // refuse to receive a c
+完整回答请参考FAQ: FAQ87915
+### 问题: Gallery2播放Video ，亮度到百分之百，视频播放关闭之后恢复原来的亮度，如何修改？
+解决方案: 需求:视频播放过程中亮度最大:100%,当退出视频播放后,屏幕亮度恢复为系统原来的亮度.请使用如下samplecode进行修改验证. 修改文件:/packages/apps/Gallery2 --- a/src/com/android/gallery3d/app/MovieActivity.java +++ b/src/com/android/gallery3d/app/MovieActivity.java @@ -1059,6 +1059,10 @@ public class MovieActivity extends Activity { Log.d(TAG, "initPlayerIfNeed() is Called!"); } /** @} */ + WindowManager.LayoutParams bgMax = getWindow().getAttributes(); + 
+完整回答请参考FAQ: FAQ88081
+### 问题: 屏蔽设置菜单的点击动画效果
+解决方案: 点击设置菜单项,会有一个波纹扩散效果,这其实是Android5.1加入的新特性,以ripple drawable作为背景的view,触摸时会有波纹扩散动画效果 但是有些低端机上,这个动画效果不是很理想还会影响性能,如果想去掉动画效果的话,只将view的背景修改为其他类型的drawable即可,如下: 修改文件packages/apps/Settings/res/drawable/dashboard_tile_background.xml diff --git a/res/drawable/dashboard_tile_background.xml b/res/drawable/dashboard_tile_background.xml old mode 100644 new mode 100755 index 105ff18..ac50e19 --- a/res/drawable/dash
+完整回答请参考FAQ: FAQ88421
+### 问题: SC7731G平台手机连接充电器有振动提示
+解决方案: 7731G平台由于需要使用电池记忆功能,因此可以将震动提示添加在batterysrv中; 代码路径:vendor\sprd\open-source\apps\batterysrv\battery.c if (pre_usb_online || pre_ac_online) { + system("echo 200 > /sys/class/timed_output/vibrator/enable"); // 200ms get_nv(); } ...... if (need_update) { + system("echo 200 > /sys/class/timed_output/vibrator/enable"); // 200 ms get_nv(); LOGD("get_nv\n"); } else { ....... 由于android5.1以及android6.0有SELinu
+完整回答请参考FAQ: FAQ88133
+### 问题: 如何去除锁屏界面剩余充电时间，改为显示当前电量？
+解决方案: 按照如下方案即可去掉锁屏界面在充电时显示的剩余充电时间,改为显示当前电量: 1. /frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/KeyguardIndicationController.java +    private int mLevel;
+    private String computeIndication() {
+        if (!TextUtils.isEmpty(mTransientIndication)) {
+            return mTransientIndication;
+        }
+        if (mPowerPluggedIn) {
+-            return computePowerIndication();
+完整回答请参考FAQ: FAQ88165
+### 问题: 在low_ram为true的情况下，怎么强制打开多用户功能
+解决方案: 在默认情况下,低内存的版本会关闭多用户功能,但是如果因为需求多用户功能而打开低内存的控制会影响其他很多的系统服务,例如说anr时间之类的,这是不想要的结果,那么怎么在low_ram为true的情况下打开多用户功能? 可以在frameworks/base中关于多用户功能判断地方的强制返回true,并设置多用户个数,具体修改如下: diff --git a/core/java/android/os/UserManager.java b/core/java/android/os/UserManager.java old mode 100644 new mode 100755 index 4c157c5..1fbbb8b --- a/core/java/android/os/UserManager.java +++ b/core/java/android/os/UserManager.java @
+完整回答请参考FAQ: FAQ88191
+### 问题: 如何使用adb命令发送keyevent
+解决方案: 可以使用adb shell command直接发送key event給Android设备, 比如: adb shell input keyevent 7 # for key '0' adb shell input keyevent 8 # for key '1' adb shell input keyevent 29 # for key 'A' adb shell input keyevent 54 # for key 'B' 支持的KEYCODE: 1 --> "KEYCODE_MENU" 2 --> "KEYCODE_SOFT_RIGHT" 3 --> "KEYCODE_HOME" 4 --> "KEYCODE_BACK" 5 --> "KEYCODE_CALL" 6 --> "KEYCODE_ENDCALL" 7 --> "KEYCODE_0" 8 --> "KEYCODE_1" 9
+完整回答请参考FAQ: FAQ88320
+### 问题: 如何使美式英语下锁屏界面的日期显示格式为（周、日、月）？
+解决方案: 按照如下修改: frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardStatusView.java     private static final class Patterns {
+       ......;
+       static void update(Context context, boolean hasAlarm) {
+            final String key = locale.toString() + dateViewSkel + clockView12Skel + clockView24Skel;
+            if (key.equals(cacheKey)) return;
+
+            dateView = DateFormat.g
+完整回答请参考FAQ: FAQ88333
+### 问题: android6.0 新增应用中的FmNative.java中对库文件fmjni的使用有哪些要求？
+解决方案: 其他模块使用fmjni库文件需要满足如下三个条件: (1)对应模块编译的Android.mk中添加LOCAL_JNI_SHARED_LIBRARIES := libfmjni (2)参照FmNative.java引用fmjni的文件路径,在自己的模块中增加如下文件夹路径src\com\android\fmradio\,且要文件命名为 FmNative.java.路径和文件名有这个要求的原因是libfm_jni.cpp中registerNatives()函数的参数classPathNameRx固定了路径 为"com/android/fmradio/FmNative" (3)FmNative.java方法直接使用,如果实际写的应用中Native的方法没有全部用到,编译的时候一些方法可能会被优化掉,需要在在Android.mk再增加LOCAL_PROGUARD_ENABLED := disabl
+完整回答请参考FAQ: FAQ88410
+### 问题: CTS测试中出现usb serial!=adb serial问题处理方法
+解决方案: 1、出现问题时执行lsusb -v -d VID:PID查看手机端设备描述符中的iserial值显示,其中VID为手机端VID,PID为手机端PID值; 2、CTS测试时所需此值显示为类似iserial 4 0123456789,其中,4为string index,0123456789为手机端序列号,这两项值与客户自己的手机有关; 3、若查看后未按照如上格式显示,则与udev rules有关; 4、解决方法如下: 1) sudo su; 2) 建立/etc/udev/rules.d/51-android.rules这个文件,按照规则添加rules,以展讯VID 1782为例: SUBSYSTEM=="usb", ATTR{idVendor}=="1782", MODE="0666", GROUP="plugdev" 如果客户定义了自己的VID,则需要将ATTR{idVendor}=="17
+完整回答请参考FAQ: FAQ88460
+### 问题: 如何用PWM控制闪光灯
+解决方案: 1.在pinmap文件中将目标GPIO改成PWM模式,配置成:BITS_PIN_AF(1); 2.目前的闪光灯驱动中没有现成的PWM实现,需要新增此驱动,提供参考如下: (1)在kernel/drivers/media/sprd_dcam/flash下面新建一个PWM驱动文件,类似于flash_gpio.c,也可选择其中一个文件直接修改; (2)参考背光的实现,见:kernel/drivers/video/sprd_pwm_bl.c,重新实现sprd_flash_on、 sprd_flash_close等函数; (3)开启PWM前需要先有个初始化,参考如下: void pwm_clk_init(int pwm_index) { struct clk *pwm_clk = NULL; struct clk* ext_26m = NULL; char pwm_clk_name[32]; spr
+完整回答请参考FAQ: FAQ88423
+### 问题: 怎样调整默认后台进程限制的限制策略？
+解决方案: andorid默认后台进行限制是在ActivityManagerService中进行管理的,mProcessLimit中保存着后台进程限制的个数 int mProcessLimit = ProcessList.MAX_CACHED_APPS; ProcessList.java中MAX_CACHED_APPS默认为32 static final int MAX_CACHED_APPS = 32; 可以通过setProcessLimit方法设置新的后台进程限制个数,settings中开发者选项中设置后台进程限制最终就是通过这个方法进行的 public void setProcessLimit(int max) { enforceCallingPermission(android.Manifest.permission.SET_PROCESS_LIMIT, "setProcessLimit()"
+完整回答请参考FAQ: FAQ88467
+### 问题: 当系统中同时有android原生的music和google gms包中的music应用时，为什么从FM点击录音列表，进入到google音乐播放器无法查看已经保存的录音文件？
+解决方案: 系统中同时有android原生的music和google gms包中的music应用,andorid6.0系统默认会为系统music应用赋予 STORAGE_PERMISSIONS,但是如果系统第一次启动时同时存在两个music应用,那么只有一个music应用会被默 认赋予这个权限,目前系统这两个music应用存在,导致被默认赋予STORAGE_PERMISSIONS权限的android原生 的music,所以google gms包中的music应用就没有默认赋予STORAGE_PERMISSIONS权限.而google Music在没有 STORAGE_PERMISSIONS时是无法查看录音文件的. 所以有如下三种建议可以解决这个问题: 1.从fm进到google music过程中没有做权限检查和申请,如果希望默认赋予权限,系统应用中只能保留一个music, 保证google music
+完整回答请参考FAQ: FAQ88493
+### 问题: 系统第一次启动时怎样在开机向导之后，进入Launcher之前加入其它界面？
+解决方案: 开机向导本质上是一个带有launcher属性的app,只不过它的优先级高于系统中的home界面的launcher,要在开机向导之后,进入Launcher之前加入其它界面,需要新实现一个带launcher属性的app,同时优先级介于开机向导和Launcher之间,该app只有一个activity,主要完成显示界面和逻辑的功能. android系统中同时有多个Launcher时,系统第一次启动的时候,还没有设置默认的Launcher,这时会查询到多个Launcher,这个时候会选择优先级最高的那一个,所以会系统第一次启动时,第一个显示的是开机向导,开机向导运行完后会disable package,接着会运行我们加入的app,这个应用会先于Launcher3启动,在应用的activity中完成了操作之后,需要disable这个package,所以之后Launcher3就是唯一一个enable的L
+完整回答请参考FAQ: FAQ88494
+### 问题: 为什么有些应用的widget没有在widget预览界面显示出来？
+解决方案: 这是由于该应用的widget的minWidth或minHeight超出了当前手机worksapce cell的width或height,即该应用对当前分辨率支持不够好,可通过在main.log中搜索 "can not fit on this device" 类似如下log来确认: E/AppsCustomizePagedView( 3875): Widget ComponentInfo{com.google.android.googlequicksearchbox/com.google.android.apps.sidekick.widget.PredictiveCardsWidgetProvider} can not fit on this device (450, 375) 这种情况,不一定改得好,可做如下修改尝试: Launcher3/res/values/dimens.xml - 
+完整回答请参考FAQ: FAQ88587
+### 问题: sendBroadcastAsUser(intent,UserHandle.CURRENT)发送报权限错误是什么原因？
+解决方案: sendBroadcastAsUser(intent,UserHandle.CURRENT)发送报权限错误是什么原因? 通过sendBroadcastAsUser(intent,UserHandle.CURRENT)发送广播时,报如下错误: 07-14 13:39:57.566 1486 1486 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{com.android.dialer/com.android.dialer.DialtactsActivity}: java.lang.SecurityException: Permission Denial: broadcast from com.android.dialer asks to run as user -2 bu
+完整回答请参考FAQ: FAQ88626
+### 问题: 测试CTS Verifier 的 Keyguard Disabled Features Test项目时会锁住手机，导致无法继续测试下去
+解决方案: 测试步骤问题.Keyguard Disabled Features Test项目正确的测试步骤: Keyguard Disabled Features Test 1. 进入Keyguard Disabled Features Test测试 2. 根据提示进行设置,下拉状态栏,进入Setting>Security>Device administrators,激活CTS Verifier设备管理器(如图左),点击Back键返回到CTS　Verifier测试界面,并记住提示锁屏密码默认设置为"testpassword"; 3. 点击PREPARE TEST 4. 点击Disable trust agents,根据提示进行操作,点击GO,查看Trust agents,默认为置灰,不可用(即符合测试结果),点击Back键返回到CTS　Verifier测试界面,点击Pass; 5. 点击Disable
+完整回答请参考FAQ: FAQ88627
+### 问题: android.permission.cts.FileSystemPermissionTest#testOtherRandomDirectoriesNotWritable FAIL
+解决方案: (1)错误堆栈: 07-14 10:59:59 I/0123456789ABCDEF: android.permission.cts.FileSystemPermissionTest#testOtherRandomDirectoriesNotWritable FAIL junit.framework.AssertionFailedError: Found writable directories: [/data/misc/hprofs] at junit.framework.Assert.fail(Assert.java:50) at junit.framework.Assert.assertTrue(Assert.java:20) at android.permission.cts.FileSystemPermissionTest.testOtherRandomDirectoriesNo
+完整回答请参考FAQ: FAQ88628
+### 问题: android.permission2.cts.NoReceiveSmsPermissionTest#testReceiveTextMessage FAIL
+解决方案: 这个CASE测试给本机发送短信,错误堆栈显示"Invalid destinationAddress",说明本机号码没有设置或者设置错误: 07-08 10:42:51 I/0123456789ABCDEF: android.permission2.cts.NoReceiveSmsPermissionTest#testReceiveTextMessage FAIL java.lang.IllegalArgumentException: Invalid destinationAddress at android.telephony.SmsManager.sendTextMessage(SmsManager.java:261) at android.permission2.cts.NoReceiveSmsPermissionTest.sendSms(NoReceiveSmsPermissionT
+完整回答请参考FAQ: FAQ88635
+### 问题: CTS Verifier测试 BYOD中Autentication-boud keys中指纹一项无法测试通过
+解决方案: CTS-Verifier里面的指纹认证测试项,测试指纹认证成功之后,和指纹绑定的密钥能否用来执行加密操作,如果指纹认证失败,密钥的认证标志无法解除,密钥将不能用来执行加密操作. 在指纹识别功能调试成功的情况下才能测试此项,而指纹认证和密钥处理是通过fingerprintd进程的hal_notify_callback进行处理,指纹认证成功之后,将回调hal_notify_callback解除密钥认证标志位; 一般情况下,出现指纹认证成功但是密钥仍不可使用的错误,是因为: hal_notify_callback这个回调函数在指纹验证成功之后,收到的数据全0,导致保存在keystore里面的数据一开始就是错误的,后面从keystore取数据便会报告找不到的错误. system\core\fingerprintd\FingerprintDaemonProxy.cpp void Fingerprin
+完整回答请参考FAQ: FAQ88636
+### 问题: android.permission.cts.FileSystemPermissionTest#testProcSelfOomAdjSane FAIL
+解决方案: 07-05 11:07:35.453 4729 4743 I TestRunner: failed: testProcSelfOomAdjSane(android.permission.cts.FileSystemPermissionTest) 07-05 11:07:35.453 4729 4743 I TestRunner: ----- begin exception ----- 07-05 11:07:35.454 4729 4743 I TestRunner: junit.framework.AssertionFailedError 07-05 11:07:35.454 4729 4743 I TestRunner: at junit.framework.Assert.fail(Assert.java:48) 07-05 11:07:35.454 4729 4743 I TestR
+完整回答请参考FAQ: FAQ88638
+### 问题: android.print.cts.PrintDocumentAdapterContractTest#testPrintOptionsChangeAndNoPrinterChange FAIL
+解决方案: 错误堆栈: 07-04 04:32:37.848 22503 22515 I TestRunner: failed: testSomePagesWantedAndAllPagesWritten(android.print.cts.PageRangeAdjustmentTest) 07-04 04:32:37.848 22503 22515 I TestRunner: ----- begin exception ----- 07-04 04:32:37.848 22503 22515 I TestRunner: 07-04 04:32:37.848 22503 22515 I TestRunner: android.support.test.uiautomator.UiObjectNotFoundException: UiSelector[CONTAINS_TEXT=Range] 07-04
+完整回答请参考FAQ: FAQ88639
+### 问题: android5.1以上版本如何在不修改代码情况下设置android log日志缓存区大小？
+解决方案: 进入"开发者选项"---》"日志记录器缓冲区大小"---》点击选向有64K、256K、1M,默认情况下是256K android6.0上新增加4M 、16M大小; 设置后可以通过下面命令确认是否设置成功: adb shell logcat -g 输出 root@sp9832a_2h11_volte:/ # logcat -g logcat -g event main: ring buffer is 256Kb (250Kb consumed), max entry is 5120b, max payload is 4076b system: ring buffer is 256Kb (232Kb consumed), max entry is 5120b, max payload is 4076b crash: ring buffer is 256Kb (0b consumed), max
+完整回答请参考FAQ: FAQ88677
+### 问题: 如何设置系统默认的日期格式
+解决方案: 当系统没有检测到默认的日期格式,会将Regional(MM-dd-yyyy)日期格式设置为默认日期格式 如果要修改默认的日期格式,需要按照如下修改: 1.frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java private void loadSystemSettings(SQLiteDatabase db) { ........ + + loadSetting(stmt,Settings.System.DATE_FORMAT, "MM-dd-yyyy"); MM-dd-yyyy必须是下列的MM-dd-yyyy、dd-MM-yyyy、yyyy-MM-dd格式之一 packages/apps/Settings/res/values/arrays.xml <
+完整回答请参考FAQ: FAQ88670
+### 问题: android:focusableInTouchMode和android:focusable的区别
+解决方案: 在app开发过程中会使用这两个属性,有时候会有点迷惑. 解释两者的含义和使用区别: 含义: 从字面意思来看 focusableInTouchMode:在触摸模式下该view能获得焦点 focusable :可获得焦点,也没什么特殊的说明 主要区别在于: 当前很多手机是触屏手机,如果app开发中使用某一个控件,比如button. 在点击的时候.即希望它响应onClick事件 也希望它获得焦点,(就是isFoucsed=true这种情况). 那么必须在该控件的属性中添加android:focusableInTouchMode="true",这时候添加android:focusable="true" 是不起作用的. (可以简单测试:使用adb shell input keyevent KEYCODE_DPAD_RIGHT等方向键来测试,这时候Button的isFoucsed()返回值是和andr
+完整回答请参考FAQ: FAQ88707
+### 问题: 如何设置整个系统的默认字体大小?
+解决方案: 在说明修改方案之前需要说明的是修改默认字体大小会导致CTS无法通过,CTS需要默认normal字体 1.查看packages/apps/Settings/res/values/arrays.xml <string-array name="entries_font_size"> <item msgid="6490061470416867723">Small</item> <item msgid="3579015730662088893">Normal</item> <item msgid="1678068858001018666">Large</item> <item msgid="490158884605093126">Huge</item> </string-array> <string-array name="entryvalues_font_size" translatable="f
+完整回答请参考FAQ: FAQ88753
+### 问题: 6.0版本如何不让系统语言随卡变化
+解决方案: Android 6.0上新的机制,系统语言默认会先从SIM卡里读取,通过卡的里语言来匹配. 如果不想让系统语言随卡里的语言匹配,可以将frameworks\base\core\res\res\values\Config.xml下的config_use_sim_language_file配置为false即可. 还有一种是通过网络来改变系统语言,如果也不想使用此功能,可以将frameworks/opt/telephony/src/java/com/android/internal/telephony/MccTable.java里updateMccMncConfiguration方法中的setWifiCountryCodeFromMcc调用方案注释掉即可. 修改如下: +++ b/src/java/com/android/internal/telephony/MccTable.java
+@@ 
+完整回答请参考FAQ: FAQ88830
+### 问题: 5.1 最近任务进入时，同步显示关闭任务按钮
+解决方案: 关闭任务按钮是最近任务界面每个任务右上角的小叉 该按钮会在最近任务界面显示完成后,慢慢的显示出来,属于一个动画效果 这个是android原生设计如此,但是会给人刷新慢的感觉 如果需要同步刷新的,请按以下修改即可: diff --git a/packages/SystemUI/res/layout/recents_task_view_header.xml b/packages/SystemUI/res/layout/recents_task_view_header.xml old mode 100644 new mode 100755 index f1d8ad0..03dc9bc --- a/packages/SystemUI/res/layout/recents_task_view_header.xml +++ b/packages/SystemUI/res/layout/recents_
+完整回答请参考FAQ: FAQ88864
+### 问题: listview界面无法监听到KEYCODE_DPAD_CENTER按键
+解决方案: 因为在framework层listview的onKeyDown和 onKeyUp的方法中 直接对截断了KEYCODE_DPAD_CENTER的处理,如下: case KeyEvent.KEYCODE_ENTER: if (event.hasNoModifiers()) { handled = resurrectSelectionIfNeeded(); if (!handled && event.getRepeatCount() == 0 && getChildCount() > 0) { keyPressed(); handled = true; } } break; 这里返回的值是true,所以在应用开发的listview控件的继承方法(onKeyDown和 onKeyUp)没法监听到KEYCODE_DPAD_CENTER事件. 那如何在自己开发的listview控件中监听到KEYCOD
+完整回答请参考FAQ: FAQ88915
+### 问题: 5.0 dpad事件不能让焦点移动到actionbar上
+解决方案: 轨迹球或外接键盘的方向键都会产生dpad事件,dpad事件包括上下左右四个方向时间和一个中键确认事件 5.1之后默认方向键已经不能让焦点移动到actionbar上,这是google的以下提交导致,将这个修改回退就可以支持actionbar获得焦点了: https://android.googlesource.com/platform/frameworks/base/+/02a7b78eab58840cf5c060e6861dfb9a539c3177%5E%21/#F0 diff --git a/core/res/res/layout/screen_action_bar.xml b/core/res/res/layout/screen_action_bar.xml index 5acb588..b3a3478 100644 --- a/core/res/res/layout/screen_a
+完整回答请参考FAQ: FAQ88981
+### 问题: Fragment 界面上如何实现自定义view的对话框AlertDialog
+解决方案: 在Fragment 的onCreateView方法中加载自定义view,并设置为对话框的view: @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) { final View parent = inflater.inflate(R.layout.call_button_fragment, container, false); // 如下是自定义的对话框布局 custom_message,包含了自定义的空间,根据需求决定 // 此处是一个 RadioGroup 包含了两个RadioButton,垂直布局 // 将该布局视图存到fragment的成员变量view + view = inflater.inflate(R.layout
+完整回答请参考FAQ: FAQ89007
+### 问题: SC7731如何配置i2c4
+解决方案: 1 .pinmap {REG_PIN_SIMCLK2, BIT_PIN_SLP_AP|BIT_PIN_WPUS|BITS_PIN_DS(1)|BITS_PIN_AF(1)|BIT_PIN_WPU|BIT_PIN_SLP_WPU|BIT_PIN_SLP_Z}, {REG_PIN_SIMDA2, BIT_PIN_SLP_AP|BIT_PIN_WPUS|BITS_PIN_DS(1)|BITS_PIN_AF(1)|BIT_PIN_WPU|BIT_PIN_SLP_WPU|BIT_PIN_SLP_Z}, 2.配置电压域电压 {REG_PIN_CTRL4,(1<<4)|0}, bit4 0:3.0V 1:1.8V 3.修改dts aliases { .. serial3 = &uart3; i2c0 = &i2c0; i2c1 = &i2c1; i2c2 = &i2c2; i2c3 = &i2c3; i
+完整回答请参考FAQ: FAQ89044
+### 问题: 如何adb debug gpio
+解决方案: 举例说明: adb shell操作 在/sys/class/gpio目录下有如下目录 root@sp9832a_3h10cmcc:/sys/class/gpio # ls ls export gpiochip0 gpiochip288 gpiochip304 unexport 第一步:申请gpio资源 如下申请gpio55,需要说明的是如果kernel在代码中已经占用了的gpio资源是不能再申请的 root@sp9832a_3h10cmcc:/sys/class/gpio # echo 55 > export echo 55 > export root@sp9832a_3h10cmcc:/sys/class/gpio # ls ls export gpio55 gpiochip0 gpiochip288 gpiochip304 unexport 第二步,I/O操作,如下包括gpio的 di
+完整回答请参考FAQ: FAQ89046
+### 问题: 桌面没有最大页面限制，如何实现？
+解决方案: 原生设计上是没有最大页面限制的,若要添加限制,请做如下修改: Launcher3/src/com/android/launcher3/Workspace.java
+
++    public static final int MAX_WORKSPACE_SCREEN_COUNT = 15;
+
+    public long insertNewWorkspaceScreenBeforeEmptyScreen(long screenId) {
+        // Find the index to insert this view into.  If the empty screen exists, then
+        // insert it before that.
++        if (mWorkspaceScreens.size() >= MAX_WORKSPA
+完整回答请参考FAQ: FAQ89066
+### 问题: 第三方如何获取SIM卡的IMSI号
+解决方案: TelephonyManager.java中有一个getSubscriberId()可以用来获取默认卡的IMSI.如果想获取两张SIM卡的IMSI,需要调用getSubscriberId(subId)来获取. 具体实现如下: import android.telephony.TelephonyManager;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+
+TelephonyManager tm = TelephonyManager.from(context);  //这个context请传入正确的Context对象.
+SubscriptionManager mSubManager = SubscriptionManager.from(context
+完整回答请参考FAQ: FAQ89100
+### 问题: 为何6.0平台上gts com.google.android.xts.media.MediaDrmTest测试会报错
+解决方案: 此gts测试会报错是因为对应的widevine library没有加载成功,6.0平台widevine library都是直接release so给客户, 如果测试有问题可以按照下面的步骤排查 1. 确认手机对应的文件是否存在 /system/framework/com.google.widevine.software.drm.jar /system/etc/permissions/com.google.widevine.software.drm.xml /system/vendor/lib/drm/libdrmwvmplugin.so /system/vendor/lib/libWVStreamControlAPI_L3.so /system/vendor/lib/libwvdrm_L3.so /system/vendor/lib/libwvm.so /system/vendor/lib
+完整回答请参考FAQ: FAQ89174
+### 问题: 如何使用WriteIMEI_R6.16.2801工具对手机烧写efuse
+解决方案: 首先确保打开secureboot版本正确,能够正常下载开机. 1.烧写efuse设置选项如下图所示: (1)代码调用vendor接口(engpc方式):勾选Old Secure Boot,Enable Old Secure (2)代码调用u-boot接口:勾选New Secure Boot功能,后面的下拉框选择Enter WG mode. 2.操作流程 (1)按上面两幅图设置好工具,并在工具上点击写入按钮. (2)确保手机处于关机状态,USB线拔出,电池拔出. (3)手机先插USB线,再上电池(确保两个动作之间间隔时间短,几乎同时).全过程不要按开机键或者音量键. (4)在PC端的设备管理器上会看到弹出一个USB口,叫做sprd u2s,4秒时间左右,该口消失,再等15秒左右,该口又会重新弹出. (5)写号完成,对于第一次写号的手机,工具上会提示绿色窗口,显示pass.对于异常流程,工具上
+完整回答请参考FAQ: FAQ89184
+### 问题: 在不接液晶屏的情况下，如何判断已经识别到了U盘？
+解决方案: 有客户做mifi产品,在无液晶屏情况下,调试otg功能时,可以使用串口控制台来判断是否正常识别了U盘. 连接串口线,收和发都要接.进入串口控制台后,通过df命令可以判断手机是否已经正常识别到了U盘. 例如 shell@sp9830aed_5m_h100:/ # df Filesystem Size Used Avail Free Blksize /dev 209.2M 48.0K 209.1M 209.1M 4096 /sys/fs/cgroup 209.2M 0.0K 209.2M 209.2M 4096 /mnt/asec 209.2M 0.0K 209.2M 209.2M 4096 /mnt/obb 209.2M 0.0K 209.2M 209.2M 4096 /storage 209.2M 0.0K 209.2M 209.2M 4096 /system 502.3M 485.6M 
+完整回答请参考FAQ: FAQ89406
+### 问题: [SC9832]通讯录：进入编辑联系人界面，点击照相机图标后点击“选择照片”，进入的图片预览界面照片显示不出来
+解决方案: 原因可能是检测到手机是低ram版本,如果是低ram的话,为了节省内存缩略图不显示. 修改方案是对低ram的版本也显示缩略图,修改代码如下: diff --git a/packages/DocumentsUI/src/com/android/documentsui/DirectoryFragment.java b/packages/DocumentsUI/src/com/android/documentsui/DirectoryFragment.java index 3c4ed16..35071e2 100644 --- a/packages/DocumentsUI/src/com/android/documentsui/DirectoryFragment.java +++ b/packages/DocumentsUI/src/com/android/documentsui/Director
+完整回答请参考FAQ: FAQ89415
+### 问题: 内置应用如何默认开启accessibility服务?
+解决方案: 1.首先要找到内置应用的服务包名和类名 如果没有源码不能确定,可以能过以下方式获得 2.Settings->accessibility->打开对应内置应用服务 3.userdebug或eng版本adb shell 4.cat /data/system/users/0/settings_secure.xml | grep enabled_accessibility_services 得到类似如下结果: <setting id="52" name="enabled_accessibility_services" value="com.micromax/com.notification.android.services.AccessibilityDispatcher" package="com.android.settings" /> value中的值就是内置应用的服务包名和类名 5.在fram
+完整回答请参考FAQ: FAQ89567
+### 问题: android6.0 FM怎么预置频道列表？
+解决方案: android6.0 FM 预置频道对应文件\packages\apps\FMRadio\res\values\arrays.xml 该文件中包含presetstationfreq和presetstationname两个字段,presetstationfreq为预置频道列表项,presetstationname为预置频道名. 具体项的添加规则可参考colors字段的语法.如要添加频道91.1对应频道名称Radio city. arrays.xml对应修改为 <string-array name="presetstationfreq"> <item>91.1</item> </string-array> <string-array name="presetstationname"> <item>Radio city</item> </string-array> 添加多个频道,要确保频道和名称
+完整回答请参考FAQ: FAQ89705
+### 问题: 为什么开启备份和重置菜单后Backup account菜单显示是灰色无法添加备份账号？
+解决方案: 原因分析: 开启备份和重置菜单中的Backup account菜单显示是灰色无法添加备份账号,客户可能是某些配置项没有配置 或者GMS包不全导致. 解决方案: 要使用google提供的backup需要满足下面的条件 1. gms.mk加入GoogleBackupTransport.apk与GmsCore.apk 开机之后确认有将GoogleBackupTransport.apk内置到system/priv-app目录下 2. 修改\frameworks\base\packages\settingsprovider\res\values\Defaults.xml 将<string name="def_backup_transport" translatable="false">android/com.android.internal.backup.LocalTransport</string
+完整回答请参考FAQ: FAQ89769
+### 问题: 为何Launcher3设置一些壁纸后，壁纸显示比预览图模糊？
+解决方案: 预览的时候,没有做格式转化,所以显示正常! 在设置壁纸的时候,默认是采用jpeg格式转换的,导致转换后损耗了一些,设置壁纸后,某些对比度比较高的壁纸就显示的模糊! 修改方案: 默认修改为采用png格式转换! android6.0之前的版本,请做如下修改: 定位到/packages/apps/Launcher3/的WallpaperCropActivity.java文件 1、String mOutputFormat = "jpg";//修改为"png" 2、 protected static String getFileExtension(String requestFormat) { String outputFormat = (requestFormat == null) ? "jpg"//修改为"png" : requestFormat; outputFormat = outputFo
+完整回答请参考FAQ: FAQ89659

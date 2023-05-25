@@ -1,0 +1,317 @@
+### 问题: 目前蓝牙PANU支持的协议版本
+解决方案: 目前蓝牙PANU支持的协议版本是V1.0.
+参考FAQ: FAQ73093
+### 问题: BT HDP协议的应用场景有哪些？
+解决方案: 蓝牙模块HDP协议,内含Heath Device Profile,支持大部分无线医疗及健康产品的应用,可应用的领域包括:血氧计、血压计、体温计、体重秤、血糖仪、心血管活动监控仪、便携式心电图仪等. 蓝牙HDP协议是专门为医疗数据的无线传输而定义的,它相比一般的蓝牙线缆替代(SPP)协议,有如下优点: 1.应用新的eL2CAP,使数据传输更安全可靠. 2.增加与频道相关的重传的流控机制,改善了QoS. 3.允许并行复用频道,例如可由一个医疗设备同时与多个远端的传感器通讯. 4.时间同步功能.它能提供精度达2ms的时间基准,来同步蓝牙传输网络中的不同节点.这使得所有的传感器可同步到一个共同的时间基准,其提供的生理参数带有相应的时间点的戳记.
+参考FAQ: FAQ73089
+### 问题: 目前蓝牙MAP支持的协议版本
+解决方案: 目前蓝牙MAP支持的协议版本是V1.1.
+参考FAQ: FAQ73098
+### 问题: 目前蓝牙PBAP支持的协议版本
+解决方案: 目前蓝牙PBAP支持的协议版本是V1.1.
+参考FAQ: FAQ73100
+### 问题: BT PAN协议的应用场景有哪些？
+解决方案: PAN协议(蓝牙个人局域网),使得设备可以连接以下设备:个人区域网用户 (PANU) 设备、组式临时网络 (GN) 设备或网络访问点 (NAP) 设备. 蓝牙个人区域网PAN有两种应用模型:一种被称为组网络(Group Ad-hoc Networking,GN);另一种被称为网络访问点(Networking AccessPoint,NAP).这两种实现模式分别有不同的网络结构和协议模型.NAP和GN是两种不同的服务.组网被设计用来允许一个或多个蓝牙设备组成一个局域网络,而网络访问点提供蓝牙设备进入Internet网络的能力.无论是NAP还是GN都必须提供与TCP/IP和其它网络协议的无缝实现.与GN网络比较而言,NAP除了要实现数据转发之外,还必须实现网桥,能够实现网络的路由,从而能通过网络访问外部网络.
+参考FAQ: FAQ73095
+### 问题: 目前蓝牙OBEX OBJECT PUSH支持的协议版本
+解决方案: 目前蓝牙OBEX OBJECT PUSH支持的协议版本是V1.1.
+参考FAQ: FAQ73103
+### 问题: 我司蓝牙芯片SC2341B(MARLIN) 支持的Headset Profile 协议版本?
+解决方案: HSP 1.2
+参考FAQ: FAQ73126
+### 问题: 我司SC2351C 四合一芯片支持的主要功能？
+解决方案: WiFi 802.11b/g and single stream (HT20)802.11n Bluetooth 2.1+EDR FM radio tuner GPS receiver
+参考FAQ: FAQ73144
+### 问题: SC7731 使用spi功能时应注意什么？
+解决方案: 在调试spi设备驱动的时候,会遇到设备驱动代码正确,pinmap配置也正确,但是还不能出spi的波形. 结果方法是: 在设备驱动probe最后一行加入sci_glb_set(REG_AP_APB_APB_EB,BIT_SPI1_EB); 如果是连接的是SPI0,则是BIT_SPI0_EB. 同理在remove最后一行加入sci_glb_clr(REG_AP_APB_APB_EB,BIT_SPI1_EB);
+参考FAQ: FAQ73151
+### 问题: SIM卡ICC_LOCK状态包括哪些
+解决方案: SIM卡ICC_LOCK状态包括: PIN_REQUIRED PUK_REQUIRED NETWORK_LOCKED PERM_DISABLED
+参考FAQ: FAQ73172
+### 问题: Phone中的registerForOn和registerForAvailable有何区别
+解决方案: 在BaseCommands.java中定义了两个方法:registerForOn和registerForAvailable,分别是对Radio状态的监听,而RadioState的状态包括: RADIO_OFF RADIO_UNAVAILABLE RADIO_ON 所以区别就是: registerForOn()定义的就是Radio状态为RADIO_ON registerForAvailable()定义的是Radio状态为RADIO_OFF或者RADIO_ON(不为RADIO_UNAVAILABLE) 所以如果CommandInterface注册的是registerForAvailable(),那Radio的关闭或者打开都会回调,如果注册的是registerForOn(),那只有在Radio在打开的时候才会回调
+参考FAQ: FAQ73174
+### 问题: 如何将下拉状态栏的数据快捷开关移到下一行显示，使第一行只有蓝牙、WLAN两个按钮？
+解决方案: 请在/frameworks/base/packages/SystemUI/src/com/android/systemui/qs/tiles/DataConnectionTile.java文件中 找到如下方法: @Override public boolean supportsDualTargets() { return true; } 请将上述方法的返回值修改false,即: @Override public boolean supportsDualTargets() { return false; } 或者直接将上述方法去掉.
+参考FAQ: FAQ73262
+### 问题: 如何使在下拉状态栏上点击按钮弹出的对话框显示在下拉状态栏的上方？
+解决方案: 可以为对话框Dialog添加窗口属性: WindowManager.LayoutParams.TYPE_SYSTEM_ERROR 或 WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL 这样弹框不会被下拉状态栏遮挡,从而显示在下拉状态栏的上方.
+参考FAQ: FAQ73263
+### 问题: 开启自动亮度调节，再手动调节手机亮度，手动调节亮度无效的原因
+解决方案: 此问题为google原生设计: 1.动亮度后,调节亮度的进度条,此时的作用为微调自动亮度的范围.屏幕有细微亮度变化. 是为了解决用户打开自动亮度后,但是觉得自动亮度有点暗,可以稍微调整自动亮度亮一点. 2.关闭自动亮度,调节亮度进度条,调节的为手机屏幕的亮度.屏幕有明显亮度变化.
+参考FAQ: FAQ80031
+### 问题: wifi/bt 共存下无法自动连接已保存的热点
+解决方案: 在wifi/bt共存的情况下,rf信道从bt切回wifi时,用的bt currunt channel.未针对wifi scan做处理.导致wifi连接态下扫描到的ap都在bt的current channel附近; 开关wifi时,wifi/bt共存使用的currunt channel,被初始化为1信道,因此可能导致扫描不到已保存ap; 解决方法:使用WCN_Trunk_W15.34.3,WCN_14D_W15.36.3及以后的cp2 版本.
+参考FAQ: FAQ73279
+### 问题: 在WIFI/BT共存下，手机可以连接几台蓝牙设备
+解决方案: 目前的解决方案,在WIFI/BT共存情况下,手机只支持一台蓝牙设备正常工作.
+参考FAQ: FAQ73375
+### 问题: 9830/7731 平台WIFI Miracast是否可被其他设备投影
+解决方案: 9830/7731 平台WIFI Miracast只可作为投影设备显示在其他设备上,而不能将其他设备的影像和声音投射到9830/7731平台的设备上.
+参考FAQ: FAQ73379
+### 问题: wifi/bt共存下bt通话，热点数量明显少于通话前
+解决方案: wifi/bt共存情况下,rf信道从bt切回wifi恢复时,用的bt currunt channel,未针对wifi scan做处理.导致连接态下扫描到的ap都在bt currunt channel附近. 解决方法:使用WCN_Trunk_W15.34.3,WCN_14D_W15.36.3及以后的cp2 版本
+参考FAQ: FAQ73281
+### 问题: 恢复出厂设置后，wifi mac地址是否应该改变
+解决方案: 在手机恢复出厂设置后,有时mac地址改变了,有时又没有改变.到底算不算问题呢? 1.当手机没有通过工具写过号 IMEIWRITER工具等;恢复出厂设置时,mac地址是会随机变化的. 此阶段一般研发经常碰到,这个要确认下手机里productinfo/目录下是否有wifimac.txt 文件,没有写入mac地址的就没此文件.属于正常情况 2.当手机经过产线写过厂家指定的mac地址等号后;恢复出厂设置时,mac地址是不会发生变化的,如果变化则确实是个问题.
+参考FAQ: FAQ73296
+### 问题: 联系人列表项在什么情况下显示“无姓名”
+解决方案: 在编辑联系人的时候,若联系人的名字、昵称、单位、电话和邮件都不填写,在联系人列表和联系人详情中,则会显示"无姓名". 这几个字段若存在多个,其显示的优先级是:名字>昵称>单位>电话>邮件.
+参考FAQ: FAQ73297
+### 问题: 通过资源ID获得资源名
+解决方案: 有时候,查问题需要知道使用的哪个资源(例如哪个图片文件等). 可以使用如下函数,根据资源ID获得资源的name. 如果是图片的话,是文件的全名,包括路径和名字. context.getResources().getResourceName(resid) 参数就是程序中经常使用的资源ID. 使用方法: 一. 程序中,可以通过上述调用,获得资源的name,再通过log输出. 二. 单步跟踪时,在调试变量的窗口中,强制执行一下上述语句,可以即时获得资源的name.
+参考FAQ: FAQ74092
+### 问题: 多国语言版本，资源翻译时，注意不能翻译的资源
+解决方案: 多国语言版本,资源翻译时,注意不能翻译的资源 多国语言版本,一般需要对资源做翻译. 有很多特定情况,资源不需要翻译,如果翻译了,反而会出错.例如: 一. 特定的名称. 例如包名,网名,语言选择中的语言名. 二. 协议中的字段、专业术语,专业缩写等. 三. 程序中使用过的数字,字符串等. 资源定义时,有如下情况的,请特别注意,不需要翻译: 一. 资源定义时明确不能翻译的. <string translatable="false" name="config_ethernet_iface_regex">eth\\d</string> 其中translatable="false",表示该资源不能翻译. 二. 资源定义时,注释中有说明的. <!-- Do not translate. --> <item>300000</item>
+参考FAQ: FAQ74106
+### 问题: MO、MT是什么意思
+解决方案: MO:Mobile Origination Call主叫,也就是去电.主要包括:拨号,启动UI界面,更新通话状态; MT:Mobile Termination Call 被叫,也就是来电.主要包括:响铃,启动UI界面,更新通话状态.
+参考FAQ: FAQ73309
+### 问题: values-es、values-es-rES、values-es-rUS什么情况下被调用
+解决方案: 以西班牙语为例,在\frameworks\base\core\res\res路径下,可以看到如下几个文件夹: 其中 es 代表的是西班牙语 es -rES代表的是具体某个地区的语言 es -rUS代表的是具体某个地区的语言 如果系统设置语言为es_ES时,系统调用资源时会优先从values-es-rES中寻找,如果没有找到,便会从values-es中寻找.
+参考FAQ: FAQ73310
+### 问题: 如何开通与设置语音信箱功能
+解决方案: 移动开通语音信箱之后的设置方法: 无条件始终转接: **21*13800210166# 占线时转接 : **67*13800210166# 无人接听时转接: **61*13800210166# 无法接通时转接: **62*13800210166# 取消语音信箱留言功能的设置方法: 无条件始终转接: ##21*13800210166# 占线时转接 : ##67*13800210166# 无人接听时转接: ##61*13800210166# 无法接通时转接: ##62*13800210166# 如果使用其他运营商的卡,具体请咨询该运营商客服.
+参考FAQ: FAQ73311
+### 问题: 什么是SIP
+解决方案: SIP(Session Initiation Protocol,会话初始协议)是由IETF(Internet Engineering Task Force,因特网工程任务组)制定的多媒体通信协议.它是一个基于文本的应用层控制协议,用于创建、修改和释放一个或多个参与者的会话.广泛应用于CS(Circuit Switched,电路交换)、NGN(Next Generation Network,下一代网络)以及IMS(IP Multimedia Subsystem,IP多媒体子系统)的网络中,可以支持并应用于语音、视频、数据等多媒体业务,同时也可以应用于Presence(呈现)、Instant Message(即时消息)等特色业务.可以说,有IP网络的地方就有SIP协议的存在.
+参考FAQ: FAQ73312
+### 问题: 拨号中的逗号和分号有什么作用
+解决方案: P or p : 代表Pause,符号为:"," W or w: 代表Wait,符号为:";" For example: 拨号 现象 20360600;1134 拨通20360600之后,界面会弹出一个dialog,让用户选择是否发送tone 1134,如果选择发送,手机将直接拨打1134 20360600,1134 拨通20360600之后,wait一会,直接拨1134(手机会自动拨出)
+参考FAQ: FAQ73313
+### 问题: android5.1上如何减少滑动解锁界面显示的的通知条数？
+解决方案: 当前默认锁屏界面最多显示3条通知,以改为2条通知为例,请按照如下修改: /frameworks/base/packages/SystemUI/res/values/config.xml -   <integer name="keyguard_max_notification_count">3</integer>
++   <integer name="keyguard_max_notification_count">2</integer>
+参考FAQ: FAQ73327
+### 问题: 2341B 芯片是否支持WIFI STA模式与P2P模式共存
+解决方案: 2341B 芯片是支持WIFI STA模式与P2P模式共存的,即设备在连接热点的情况下可以进行WIFI Direct或WIFI Miracast操作,但仅限于热点与其他P2P设备处于相同信道中,否则仍然不能共存.
+参考FAQ: FAQ73387
+### 问题: 展讯5.1与4.4 wifi扫描时间策略差异
+解决方案: 5.1相较于4.4,wifi扫描时间策略做了一些改动.主要是在wifi连接成功之后. 4.4:连接成功后300秒扫描一次,wifi 打开未连接或者手机停留在 setting--wlan 界面则15秒扫描一次. 5.1:连接成功后20秒扫描一次,其余情形与4.4一致
+参考FAQ: FAQ73394
+### 问题: 5.1下如何更改wifi扫描时间进行测试
+解决方案: 5.1下默认时间是连接AP后每20秒扫描一次,更改默认扫描时间间隔方式如下: 可以通过在/data/misc/wifi下添加如下文件: /data/misc/wifi/autojoinconfig.txt 其内容添加: ASSOCIATED_PARTIAL_SCAN_PERIOD: 300000 ASSOCIATED_FULL_SCAN_BACKOFF_PERIOD: 400000 注意!!冒号后面有3个空格多了少了都不识别!! 则扫描时间会处于300000ms到400000ms之间. note:该方法仅适用于5.1,对4.4平台不起作用,且4.4平台扫描机制与5.1有很大差异.
+参考FAQ: FAQ73403
+### 问题: 客户做wifi拉距、穿透等弱信号性能试验出现不达标时的处理流程
+解决方案: 1. 请首先确认该问题机是否符合OTA试验标准,经常有客户用射频有问题的机器做实验. 2. 请多用几台机器试验,由于都是弱信号下进行,产线装配导致的wifi 天线差异极有可能引起影响. 3. 若1、2都得到确认,请首先联系TAM,将客户样机送到展讯上海射频实验室在展讯标准环境下做拉距、穿透等试验.因为展讯都是做过相应试验才能让客户上量的.所以可能是客户测试环境差异导致.尤其是穿透试验,客户选择的障碍物的尺寸、厚度、材料可能都与展讯试验环境有差异. 4. 若依然存在问题请联系FAE.
+参考FAQ: FAQ73404
+### 问题: 【通话灭屏亮屏】为什么通话中蓝牙断开之后屏幕没有亮屏？
+解决方案: 答:蓝牙断开并不等于通话断开,而是蓝牙断开自身与手机断开链接,设计如此,属于正常现象.
+参考FAQ: FAQ73407
+### 问题: 【通话记录】为什么通话记录内不显示IP号码前缀？
+解决方案: 答:设计如此,如果在calllog里面显示ip前缀,则下次拨打电话会有问题的. 如果将IP号码显示在call log里,再次进行ip拨号,会不断的将ip号码append到Dial Number里, 比如第一次IP拨号:17951 13800138000, 那么第二次就会:17957 17951 13800138000. 反复多次,不但call log, incall 等UI界面显示有问题,并且号码也 拨不出去.
+参考FAQ: FAQ73408
+### 问题: android5.1上如何使下拉菜单日期中不显示年份？
+解决方案: 请按照如下修改: /frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/DateView.java     public void displayYear() {
+-        displayYear = true;
++        displayYear = false;
+        change = true;
+    }
+参考FAQ: FAQ73423
+### 问题: 在主菜单创建一个网页链接菜单后按返回键无法退出，如何修改？
+解决方案: 可以参考 \packages\apps\Browser\src\com\android\browser\BookmarkSearch.java 在onCreate startActivity(intent),并需要finish(). 请注意AndroidManifest.xml中Activity的属性是android:theme="@android:style/Theme.NoDisplay", 该属性设置为true后,activity启动时不会往WindowManagerServices中添加一个window,就不会有界面显示.
+参考FAQ: FAQ73432
+### 问题: CTS测试 android.provider.cts.Settings_SecureTest testUnknownSourcesOffByDefault测试项如何通过？
+解决方案: android.provider.cts.Settings_SecureTest testUnknownSourcesOffByDefault 需要注意: 设置 -> 安全 -> "允许安装未知来源"选项,不能勾选
+参考FAQ: FAQ73435
+### 问题: 同一apk下如何调用非本package的String资源
+解决方案: for example package A: com.android.services.telephony package B: com.android.phone 如果A包中的程序要使用B包中的string字符串资源,那么只需加入:import com.android.phone.R即可.
+参考FAQ: FAQ73490
+### 问题: iwnpi  wlan0  start 与stop必须成对出现
+解决方案: Start以后就已经将wifi 的 driver 起来了,要求start和stop是成对出现的. 因此需要客户在非信令测试工具上位机软件上做下保护,当发现start后没有stop的时候另一个start就不下发了.
+参考FAQ: FAQ73529
+### 问题: 执行完iwnpi RX Start、iwnpi get_rx_ok取得数据包个数后, 需要再次执行Rx start才能重新开始收包
+解决方案: 执行一次RX Star只能启动一次接收,执行get_rx_ok接收停止并计数.再次计数需重新执行RX start
+参考FAQ: FAQ73532
+### 问题: 支持语音拨打电话的蓝牙耳机听歌过程语音拨打电话为什么音乐外放
+解决方案: 支持语音拨打电话的耳机,蓝牙耳机听歌过程长按通话键会进入google语音播放界面.不同的google版本不同的现象.R2的版本进入google语音,音乐播放暂停,停止语音拨号,音乐继续从蓝牙耳机播出.R4的版本进入google语音,音乐外放,停止语音拨号,偶现音乐从手机端发出.R5版本进入google语音,音乐外放,停止语音拨号,声音从蓝牙耳机发出.原因是google语音会调用蓝牙的sco链路,在R4版本偶现google没有调用停止sco命令,导致audio无法将声音切给蓝牙.在R5版本进入google语音,音乐外放由于audio没有获得焦点,无法暂停音乐.所以此问题是google版本问题,更新google版本即可解决.
+参考FAQ: FAQ90340
+### 问题: ADC无法校准问题
+解决方案: 从eng_file_lock open /data/file_lock.test failed. errno:13, strerror(errno):Permission denied看是权限的问题 因为之前有遇到过类似的权限问题,所以尝试如下修改后正常 eng_debug.c int eng_file_lock(void) { //data目录改成productinfo目录 open("/productinfo/file_lock.test", OCREAT|O_RDWR, 0666"); }
+参考FAQ: FAQ73627
+### 问题: 如何解决dialog显示部分被软键盘遮挡
+解决方案: 在dialog执行show()之前加入newDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE );
+参考FAQ: FAQ73628
+### 问题: SR3592 IQ信号需要预留滤波电路吗？
+解决方案: TXIQ上要预留滤波器件,如下,可以放在BB侧,默认电容NF,电阻0Ohm.
+参考FAQ: FAQ73637
+### 问题: 验证板子DDR稳定性的方法有几个？
+解决方案: 推荐2种验证方式: 1. 用DDR扫描工具做DDR扫描 2. DDR压力测试,推荐压力测试条件: 高低温(-20℃/+65℃)、720p MP4文件循环播放24h.
+参考FAQ: FAQ73646
+### 问题: 获取指定语言的字符串资源
+解决方案: 通过以下方法可以获取,参数: id是字串id locale是想要的语言 String getStringByLocale(int id, Locale locale) {
+    Resources res = getResources();
+    Configuration conf = res.getConfiguration();
+    Locale restoreLocale = conf.locale;
+    conf.setLocale(locale);
+    res.updateConfiguration(conf, null);
+    // 获取指定语言的资源
+    String str = res.getString(id);
+    // 恢复原来的语言
+    conf.setLocale(restoreLocale);
+    res.updateConfiguration(conf, null);
+    return str;
+}
+参考FAQ: FAQ78604
+### 问题: gcf case26.8.1.4.1.1 测试步骤
+解决方案: 测试中使用AT+EVTS=1,"数字键",这个命令是长按功能. 取消按键请使用AT+EVTS=0,"数字键" 这个命令是取消长按功能. 使用界面按键只会发AT+VTS="数字键" 这个不能实现长按功能,timer超时就会自动发stop DTMF,导致case失败. 测试方法: A,B,C,D的DTMF start dtmf:at+sdtmf=1,"A",0 stop dtmf:at+sdtmf=0 所以测试的时候,请两个at命令准备好后一起发出去.
+参考FAQ: FAQ73665
+### 问题: gcf case34.2.4测试步骤
+解决方案: 1 准备工作:连接arm log工具 2 待手机就绪后,发送一条短信给CRTU-G,并在LOGEL工具窗口内搜索CPDATA消息, 这个字节就是tp_mr; 3 当该CASE要求输入查询前一条SMS的命令时,输入at命令 at+cmgc=8,回车, 输入0022xx(tp_mr+1)0000xx(tp_mr)000000,按CTRL+Z; 4 当该CASE要求输入删除前一条SMS的命令时,输入at命令 at+cmgc=8,回车, 输入0002xx(tp_mr+2)0002xx(tp_mr)000000,按CTRL+Z;
+参考FAQ: FAQ73666
+### 问题: gcf case34.2.5.3测试步骤
+解决方案: 测试前需要把手机和仪器进行设置: 1. 仪器A 25/37(ANITE)的参数Storing of short messages in the ME/TSPC_AddInfo_StoreRcvSMSME 改为NO/NO 2. 手机设为GSM only:工程菜单->App Set->-Network type -> GSM 3. 手机关闭call forward query:工程菜单->App Set->Call Forward Query -> Close 4. 手机关闭数据连接:Settings->Link->GPRS Service不勾选
+参考FAQ: FAQ73667
+### 问题: gcf测试 W only和双模设置
+解决方案: gcf测试W协议时,有些case需要设置网络模式. 8.2.6.44 此case需要设置双模下测试 8.3.1.9/8.3.1.10/8.3.1.30/8.3.1.31/8.3.1.39/8.3.2.1a/8.3.2.4/8.3.2.11/12.4.3.4 这些case请在w only下测试.
+参考FAQ: FAQ73668
+### 问题: gcf case16.1.2/16.2.2测试注意事项
+解决方案: 在测此case16.1.2/16.2.2前需要关闭短信重发机制 并在发短信步骤前输入设置PS域短信的AT命令: AT+CGSMS=0
+参考FAQ: FAQ73669
+### 问题: 7715 HSPA支持情况
+解决方案: 支持3GPP Release7, HSDPA高达21M,HSUPA高达5.76M. 注意,达到以上最大速率,请确保modem版本升级到MOCORTM_14A_W14.41_P15.37或更新版本,NV中trx_path_config需要修改为: WCDMA_Download_params\W_download_params\trx_path_config=0x4000
+参考FAQ: FAQ73802
+### 问题: 为何Hangouts应用界面会显示不全
+解决方案: Google Hangouts应用针对不用的dpi有其对应的apk,如果发现Hangouts应用某些页面有被截断很有可能是因为使用的Hangouts支持的dpi不正确,可以由下面的网址下载正确的Hangouts apk https://www.apkmirror.com/?s=Hangouts&post_type=apps_post
+参考FAQ: FAQ73849
+### 问题: 如何确认memory中lpddr的类型和容量
+解决方案: adb root adb shell 1.DDR类型 lookat 0x30000000 查看0x30000000 查看ddr类型,低8位,如果值是8则是lpddr3,4则是lpddr2 2.DDR容量 lookat 0x1c00 0x1c00 看cs个数(容量是各个cs容量之和) lookat 0x1c04 0x1c04看cs1大小(单位BYTE) lookat 0x1c08 0x1c08看cs2大小(单位BYTE)
+参考FAQ: FAQ73815
+### 问题: 为何谷歌商店登录不了
+解决方案: 通常无法登入的情况有两种 1. 某些参数设定错误,请检查Google CDD文件 例如 ro.product.device : HWY336-U device名称不能有空格,此名称是ok的 另外此种错误会有类似下面的log 07-31 14:17:18.515 977 4702 E CheckinTask: Checkin failed: https://android.clients.google.com/checkin (request #0): java.io.IOException: Rejected response from server: invalid hardware identifier: "Admire Curve" is not a valid device 2. 登入被google封锁,需要登入该帐号的gmail确认,如果有被封锁google会寄信给该帐号,需要自行上网去解锁
+参考FAQ: FAQ73850
+### 问题: SC7731G平台是否支持OTG功能？
+解决方案: 支持.但需要在原理设计时注意如下: 1. 需要增加5V(USB Vbus)的升压电路; 2. ID脚连接EXTINT或者GPIO管脚,推荐使用EXTINT管脚.
+参考FAQ: FAQ73861
+### 问题: SC7731G I2C走线芯片内部上拉是多少K？
+解决方案: 上拉分为3档,软件可以配置分别是1.8K,4.7K,和20K.
+参考FAQ: FAQ73862
+### 问题: SC7731G平台 PCB布板时MIPI走线阻抗是多少欧姆？
+解决方案: MIPI走线需要保持差分100欧姆阻抗.
+参考FAQ: FAQ73863
+### 问题: SC7731平台的WHTLED_IB0~WHTLED_IB3四路LED驱动能否单独控制？
+解决方案: IB0上有反馈管脚,四路一起调节,无法实现单独控制功能
+参考FAQ: FAQ73866
+### 问题: SC7731参考设计中的线性充电方案中三极管和MOS管之间串的电阻作用？
+解决方案: 主要是起到EOS的防护作用
+参考FAQ: FAQ73867
+### 问题: SC7731的按键实现有哪些方案？
+解决方案: 有两种方案,一中是矩阵方案,另一种是GPIO方案(利用中断实现).
+参考FAQ: FAQ73870
+### 问题: 如何修改下拉菜单运营商名字的颜色
+解决方案: 如需修改默认颜色,请在SubscriptionController.java (\frameworks\opt\telephony\src\java\com\android\internal\telephony) 接口addSubInfoRecord中设置具体的颜色int color = getUnusedColor()适配成默认的需求颜色即可;
+参考FAQ: FAQ73932
+### 问题: 如何获取当前机器的call/sms/data的默认使用那张SIM卡
+解决方案: SIM信息一般通过SubscriptionManager来管理. 获取call的默认SIM:getDefaultVoiceSubId 获取sms的默认SIM:getDefaultSmsSubId 获取data的默认SIM:getDefaultDataSubId
+参考FAQ: FAQ73933
+### 问题: android5.1蓝牙传输文件限速为多少
+解决方案: android5.1蓝牙传输文件限速为110kb/s
+参考FAQ: FAQ73937
+### 问题: android 5.1的蓝牙传输文件限速如何设置
+解决方案: 在packages/apps/Bluetooth/src/com/android/bluetooth/opp/BluetoothOppObexClientSession.java中 sendFile方法中 speed = SystemProperties.getInt("debug.bt.lowspeed", 110); 对限速大小进行设置.
+参考FAQ: FAQ73938
+### 问题: android 5.1如何将蓝牙发送文件限速功能去掉
+解决方案: packages/apps/Bluetooth/src/com/android/bluetooth/opp/BluetoothOppObexClientSession.java中 sendFile函数中将参数speed定义为 int speed = SystemProperties.getInt("debug.bt.lowspeed", 0); 则表示传输文件不进行限速.
+参考FAQ: FAQ73939
+### 问题: 插入sim卡，拨打112或911时，语音提示该号码是空号
+解决方案: phoneNumberUtils.java isCustomEmergencyNumber() { +++boolean isCustomEmergencyNumber; +++isCustomEmergencyNumber = "112".equals(number)|| "911".equals(number) ; return isEmergencyNumber(number) && (CUSTOM_EMERGENCY_NUMBER.indexOf(number) != -1 ) +++ ||isCustomEmergencyNumber ; }
+参考FAQ: FAQ74020
+### 问题: 什么是Factory Reset Protection (FRP)
+解决方案: Android Factory Reset Protection (FRP) 是Android 5.1以上的版本新加的功能, 能有效的保护你的装置. 主要是防范其他使用者在未得到装置拥有者的许可下执行回复出场设置. 举例来说, 你的手持装置遗失或遭到偷窃, 持有你手持装置的使用者必须要拥有你的Google帐号密码或是锁屏密码才能执行回复出场设置或使用手机. 如果此时透过硬键组合进入recovery mode回复出场设置, 开机向导会要求连网并输入之前使用的Google帐号密码才能继续使用装置. 注意: FRP要启动前提是装置必须登入Google帐号密码, 并请设定锁屏为图形/PIN/PASSWORD解锁.
+参考FAQ: FAQ74051
+### 问题: 如何知道一个进程的启动原因？
+解决方案: 可以在system.log中查看类似如下的log 09-08 16:05:46.805 637 677 I ActivityManager: Start proc 1432:com.android.bluetooth/1002 for service com.android.bluetooth/.btservice.AdapterService 此log的意思是启动了com.android.bluetooth的进程,进程的pid为1432, uid为1002,进程启动的原因是需要启动com.android.bluetooth/.btservice.AdapterService 如果是for service,则是因为service启动进程 如果是for activity,则是因为activity启动进程 如果是for broadcast, 则是因为broadcast启动进程 如果是for contentprovider,则是因为content provider启动进程
+参考FAQ: FAQ74042
+### 问题: 长按home键弹出圆圈显示空白，正常显示Google字样或搜索图标.
+解决方案: 此问题是由于同时内置google search与其他搜索服务例如:opera mini 所导致. 在systemui内的SearchPanelView.java内长按home键会调用maybeSwapSearchIcon, 此方法主要是搜索系统内的search service, 然后抓取系统内search service的图放置在圆圈上, 由于google search与opera mini同时存在系统内有两个search service, 所以导致系统无法决定要用哪个search service的图, 所以圆圈为空, 此为原生机制. 将opera mini或其他搜索服务移除后验证即可.
+参考FAQ: FAQ74056
+### 问题: wifi p2p里operating class是什么意思？
+解决方案: Operating class :listen state时使用的频率波段的类别. 定义:The operating class is an index into a set of values for radio operation in a regulatory domain. The operating class tables also contain pointers to behaviors and signal detection limits in Annex D where further operational requirements may be found. 目前就美国、日本和欧洲国家有自己的operating class标准,其他国家均使用global operating class
+参考FAQ: FAQ75208
+### 问题: android5.1如何调节通话结束音大小
+解决方案: 调节通话结束音大小,请参照以下方案: packages/services/Telecomm/src/com/android/server/telecom/InCallTonePlayer.java case TONE_CALL_ENDED: toneType = ToneGenerator.TONE_PROP_PROMPT; toneVolume = RELATIVE_VOLUME_HIPRI; toneLengthMillis = 200; break; RELATIVE_VOLUME_HIPRI目前默认80,可以自行调整toneVolume 大小
+参考FAQ: FAQ82141
+### 问题: 展讯7715平台如何固定主卡3G，副卡GSM_Only
+解决方案: 按如下配置Nv即可实现: TD_TIANJI@_NV_TYPE----->NV_PARAM_TYPE_CFG---->wg_cap_swth=0x0;
+参考FAQ: FAQ82026
+### 问题: UICC/SIM/UIM的含义？
+解决方案: UICC:定义了物理特性的智能卡的总称,是一种可移动智能卡,用于存储用户信息、鉴权密钥、电话簿、短消息等信息,包括多种逻辑应用,SIM、USIM、UIM、ISIM等. SIM:是指UICC卡上存储GSM用户签约信息的一个应用,广泛用于GSM系统中.包括IMSI、ISDN、Ki/PLMN. USIM:要使用WCDMA等3G业务时必须使用USIM,主要包括UMTS、IMSI、ISDN、CK、SMS、MMS等.
+参考FAQ: FAQ82027
+### 问题: 查看进程安全上下文selinux权限方法
+解决方案: 手机连接pc,通过adb shell进入命令行,通过如下命令查看进程安全上下文 $ps -Z 查看所有进程安全上下文 $Ps -Z |grep pid 查看对应pid进程的安全上下文 例: $ps -Z |grep zygote //表明zygote进程安全上下文用户是u、角色是r、类型是zygote、安全级别是s0 u:r:zygote:s0 root 164 1 zygote
+参考FAQ: FAQ74179
+### 问题: 查看文件selinux安全上下文权限方法
+解决方案: 手机连接pc,通过adb shell进入命令行,通过如下命令查看文件安全上下文 $ls -Z 查看当前目录下所有文件安全上下文 $ls -Z 文件名 查看对应文件的安全上下文 例: $ls -Z /system/bin/app_ process //表示app_process文件的安全上下文是u:object_r:zygote_exec:s0 app_process -rwxr-xr-x root shell u:object_r:zygote_exec:s0 app_process
+参考FAQ: FAQ74183
+### 问题: 目前蓝牙过BQB测试需要关闭的协议
+解决方案: 目前蓝牙过BQB测试需要关闭的协议有HID/MAP/HDP/PAN.
+参考FAQ: FAQ74243
+### 问题: CTS verifer测试怎么去掉GPS test、Device Only Mode Test、High Accuracy Mode Test测试项
+解决方案: CTS Verifier手动测试项根据手机配置的feature进行加载,去掉GPS相关测试项,只需要到 frameworks\native\data\etc下搜索所有*.xml,将<feature name="android.hardware.location.gps" />注释即可.
+参考FAQ: FAQ74289
+### 问题: CTS Verifier - Car Dock Test is fail
+解决方案: 一般是测试步骤问题,正确步骤: (1)进入Car Dock Test测试,单击Enable Car Mode按钮; (2)选择CTS Verifier,接着选择Always,进入下一个Activity; (3)按Home键之后,该项显示PASS;
+参考FAQ: FAQ74295
+### 问题: 锁屏界面在低电量时会提示用户连接数据线，如何修改该电量值
+解决方案: 将frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardUpdateMonitor.java中的LOW_BATTERY_THRESHOLD修改为自己所需要设定的值即可
+参考FAQ: FAQ74354
+### 问题: 用手机翻合盖(hall器件)来控制亮屏、灭屏
+解决方案: 有些手机会用到翻盖、皮套. 如果想通过翻合盖(或者皮套)来控制亮屏、灭屏. 可以打开如下控制开关. 文件: Config.xml (frameworks\base\core\res\res\values) 开关: <bool name="config_lidControlsSleep">true</bool>
+参考FAQ: FAQ74357
+### 问题: 如何设置第三方短信应用为系统默认的短信应用
+解决方案: import com.android.internal.telephony.SmsApplication; SmsApplication.setDefaultApplication("packagename", mContext); SmsApplication是系统隐藏的类,第三方应用无法直接获取,因此只能在源码中调用该类,或者将out目录下编译出来的SmsApplication.class文件添加到SDK的android.jar中,还可以通过反射的方式调用
+参考FAQ: FAQ74374
+### 问题: 在开发者选项中打开指针位置，跑完monkey后，发现点击屏幕不显示十字划线，滑动操作可以显示
+解决方案: 4.4上请在辅助功能中,将放大手势功能关闭 5.0/5.1上在无障碍中,将放大手势功能关闭
+参考FAQ: FAQ74375
+### 问题: Android5.1高压电池配置方法
+解决方案: Android5.1配置电池参数的位置为 kernel/arch/arm/boot/dts/sprd-battery.dtsi 这里是配置通用电池参数及默认数据的地方,如果需要修改定制参数,如高压电池.需要将配置挪入board的主DTS中配置,这样就会将dtsi文件相对参数覆盖. 高压电池配置: kernel/arch/arm/boot/dts/sprd-xxxxx.dts &sprd_battery { chg-end-vol-h = <4375>; chg-end-vol-pure = <4350>; chg-end-vol-l = <4340>; };
+参考FAQ: FAQ74379
+### 问题: 如何自测Factory Reset Protection (FRP)
+解决方案: FRP自测试步骤. a.连上翻墙网路登入google帐号. b.将锁屏设置成PIN码或密码解锁. c.进入recovery mode, 在recovery mode内执行factory reset. d.factory reset后进入开机向导. e.开机向导在Wifi设定页连上翻墙网路. f.开机向导至输入google帐号密码页面会要求用户输入之前设置过的帐号密码, 否则无法跳离开机向导. 如第六步确定会跳回, 样机只识别之前那组帐号密码, 即样机具有FRP功能.
+参考FAQ: FAQ74415
+### 问题: Audiotester音频通话回声调试主要调节哪些参数？
+解决方案: 遇到通话回声问题可以增大如下参数,它们的常规范围如下: DENS_tail_alpha:20000~29000; DENS_tail_portion:6000~16000; DENS_gamma_e_high:512~1024; DENS_gamma_e_dt:256~768; DENS_gamma_e_low:0~512; DENS_gamma_e_rescue:1024~2048; 在它们正常范围内进行增大.
+参考FAQ: FAQ74427
+### 问题: Audiotester音乐播放相关调试主要调节哪些参数，调试好的参数存储在哪？
+解决方案: 音乐播放的音量可以调试Vdg(dB)和PA_G(dB),这是最大音量的配置,其他音量等级会自动减小; 调试好的参数会自动存储在/data/local/media/audio_Para.可以通过adb拉出来合入版本
+参考FAQ: FAQ74429
+### 问题: RTC时间设置范围
+解决方案: RTC时间最小设置值不能小于系统默认时间; 最大设置值: 根据IET的文档: 2036/02/06: (06:28:16 GMT) 2**32 secs from 1900/01/01 - 00:00:00 GMT. NTP timestamp overflows (2036/02/05 if 1900/02/29 is taken into account). 2037/01/01: Rollover date for NTP systems. 1900/1/1 + 2^32 = 2036/2/6 从2036年2月6日开始就会出现问题. 这个是android原生的问题,建议不要将时间修改超过2036年2月6日.
+参考FAQ: FAQ74447
+### 问题: 带GMS包版本的项目，默认如何设置不提示开机向导
+解决方案: 将项目中GMS.mk 文件的 ro.setupwizard.mode变量进行设置DISABLED 修改前 PRODUCT_PROPERTY_OVERRIDES += \ ro.setupwizard.mode=OPTIONAL \ ro.com.google.gmsversion=4.4_r5 修改后: PRODUCT_PROPERTY_OVERRIDES += \ ro.setupwizard.mode=DISABLED \ ro.com.google.gmsversion=4.4_r5
+参考FAQ: FAQ74472
+### 问题: 展讯平台来电等待设置时为何弹出“通话设置出错”Dialog
+解决方案: 展讯7731、9830平台支持呼叫等待功能,但是在运营商SIM卡未开通此项业务的情况下,通常都会弹出该Dialog
+参考FAQ: FAQ74862
+### 问题: SIMLOCK六位MCCMNC白名单的配置
+解决方案: 如图配置即可:请注意3位MNC的mnc_digit_num必须为3.
+参考FAQ: FAQ74612
+### 问题: AGPS服务器地址和端口如何通过暗码查看？
+解决方案: 1.在拨号盘输入暗码*#*#2266#*#* 2.提示打开GPS,打开位置信息,返回到界面 3.查看SLP Address和SLP Port参数值,即为AGPS服务器地址和端口值
+参考FAQ: FAQ75592,含图片
+### 问题: Audiotester通话音量相关调试主要调节哪些参数？
+解决方案: 下行音量调整dl_PGA0(db)和dl_dgain(db); 上行音量调整ul_PGA0(db)和ul_dgain(db); 每级音量Vol1-Vol9对应的每级增益配置(模拟音量+数字音量).
+参考FAQ: FAQ74529
+### 问题: sim里的opl和pnn介绍
+解决方案: EF_PNN(PLMN Network Name, fid: 6FC5) EF_OPL(Operator PLMN List, fid: 6FC6) EF_OPL中存放的是LAC和EF_PNN中的Record Identifier,也就是索引;simrecords代码在初始化的时候回通过注册的plmn号和lac去找pnn的名称,如果找到,就获取到对应的pnn名称;这个在做协议测试上会用的比较多.
+参考FAQ: FAQ74536
+### 问题: 怎样设VDDEMMCCORE LDO为长开状态?
+解决方案: 在dts中sdhci3部分添加keep-power = <1>; 同时将pm_caps = <0x4>;改为pm_caps = <0x5>;
+参考FAQ: FAQ74571
+### 问题: 2351FM的JNI library名称是什么？
+解决方案: JNI层代码在以下目录:frameworks/base/core/jni/fm/ 生成的lib文件为libandroid_runtime.so, 目录为 out/target/product/sp9830aea_5m_h100(或其他版本)/system/lib/libandroid_runtime.so
+参考FAQ: FAQ74576
+### 问题: 如何将通话界面中的挂断键上移
+解决方案: /packages/apps/InCallUI/res/values/dimens.xml中调整以下的值: <dimen name="floating_action_bar_vertical_offset">-24dp</dimen>
+参考FAQ: FAQ80769
+### 问题: Http返回值有哪些
+解决方案: 常见的HTTP返回状态代码见下表:
+参考FAQ: FAQ74647
+### 问题: CS、PS分别是什么意思？区别在哪?
+解决方案: CS、PS分别是什么意思? CS(Circuit Switch) 电路交换, PS(Packet Switch)分组交换. 区别在哪? 他们不管是在W、TD还是CDMA中,还是在传统的GSM中,都是存在这两个概念的.主要区别: 1、CS业务主要是包括一些语音业务(即打电话),如64K语音等等.但是也包括一些电路型数据业务,最为常见和经典的就是传真. 2、PS业务就是常见的数据业务(即手机上网),也包括流媒体业务、VOIP等等. 一些网络,如WLAN、LTE等都是没有CS业务的,他们的语音业务都只能通过VOIP来实现.
+参考FAQ: FAQ74654
+### 问题: 展讯的蓝牙地址如何在IEEE中查询？
+解决方案: 蓝牙地址由LAP UAP NAP组成,其中官网提供的地址只是UAP NAP部分,LAP由客户自行定义. 查询方法: http://standards.ieee.org/regauth/oui/index.shtml 其中中选择ALL MAC搜索spreadtrum可以查询到展讯的蓝牙地址:为4045DA.
+参考FAQ: FAQ74662

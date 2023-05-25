@@ -1,0 +1,300 @@
+### 问题: SC2342A 支持 GNSS 类型?
+解决方案: SC2342A 支持 GNSS 类型: 支持GPS L1/BDS B1/GLONASS G1/SBAS
+参考FAQ: FAQ76045
+### 问题: SC2342A集成内部的WIFI/BT PA，需要用外部多大的电压和电流供电？
+解决方案: 需要电压3.3V,电流500mA.
+参考FAQ: FAQ76052
+### 问题: WIFI SDIO CLK干扰GPS，怎么处理
+解决方案: WIFI SDIO 默认的clk 是38.4MHz,其41倍频1574.4MHz 刚好干扰到GPS频率,因此建议WIFI SDIO CLK更改到32MHz
+参考FAQ: FAQ76071
+### 问题: 蓝牙设备名称如何修改为客户指定名称？
+解决方案: 修改如下路径下文件中的蓝牙默认名称定义: external\bluetooth\bluedroid\btif\src\Btif_dm.c //修改btif_default_local_name 为指定命名即可. static char btif_default_local_name[DEFAULT_LOCAL_NAME_MAX+1] = {'\0'}; 备注: btif_get_default_local_name() //此接口用于读取蓝牙名称.
+参考FAQ: FAQ76076
+### 问题: 恢复出厂设置后，BT Mac地址是否应该改变？
+解决方案: 在手机恢复出厂设置后,有时Mac地址改变了,有时又没有改变,造成的原因如下: 1.如果手机没有通过写号工具写入 如IMEIWRITER等, 恢复出厂设置时,Mac地址是会随机变化的. 可同时确认下手机里productinfo/目录下是否有btmac.txt 文件,没有写入Mac地址的就没此文件,属于正常情况. 2.当手机经过产线写入指定的Mac地址等号后,恢复出厂设置时,Mac地址是不会发生变化的,如果变化则确实是个问题.
+参考FAQ: FAQ76094
+### 问题: Email修改DeviceID后，登录提示无法连接服务器，如何修改？
+解决方案: [原因分析] device id 修改后,如果ID中含有空格, 空格会附加在URL中,从而导致HTTP请求失败. log中,System.err: java.lang.IllegalArgumentException: Illegal character in query at index 118: https://outlook.office365.com/Microsoft-Server-ActiveSync?Cmd=FolderSync&User=puneet.lahoria%40intex.in&DeviceId=Cloud 4G Smart&DeviceType=Android [解决方法] 将DeviceID中的空格去掉.
+参考FAQ: FAQ76101
+### 问题: 电子邮件内无法查看PPT\doc\pdf \xls\ZIP\RAR等不同格式文件，这是什么原因？
+解决方案: 附件打开需要有可以支持打开该附件的应用,如果无打开此附件的应用则会提示无法打开. 需要安装支持这些格式的第三方应用,才能打开对应格式的文件.
+参考FAQ: FAQ76104
+### 问题: 蓝牙共享网络测试步骤
+解决方案: 在保证测试机正常访问网络的前提下,按照如下步骤进行: 1. 蓝牙设备A为发起端,设备B为接收端; 2. 进入设备 B 的设置界面,点击 更多 -> 网络共享与便携式热点, 点击 蓝牙网络共享 进行打开; 3. 设备A 与设备 B 进行配对,进入 已配对的设备 界面, 点击互联网连接, 查看是否能够勾选成功; 4. 在设备A勾选成功的情况下,查看设备A能否连接网络; 5. 上述连接操作如果失败,需要抓取完整的Slog信息(包括Android log、bt log和Cp2 log); 备注: [log抓取方法:通过暗码 *#*#83781#*#* 进入到Log Settings,进入PC log 开启CP2 log; 再进入到SlogUI勾选Android Log、NWCN Modem Log、Bluetooth Log三项即可]
+参考FAQ: FAQ76111
+### 问题: SC2342A BT UART的作用？
+解决方案: SC2342A的BT UART需要支持硬件流控:下载2342 firmware用,另外还做BT 传输文件和BT播放MP3 时使用.
+参考FAQ: FAQ76081
+### 问题: 如何设置Kernel loglevel的值？
+解决方案: 我们可以通过设置Kernel loglevel的值,达到控制Kernel log信息多少的目标.方法如下: 路径:kernel/arch/arm/boot/dts/Sprd-scx35_XXX.dts 在对应项目的dts中,搜索loglevel,默认是loglevel=1.如果需要增加Kernel log信息,根据实际情况具体设定1~7的数值,建议设为loglevel=3. Thank you.
+参考FAQ: FAQ76121
+### 问题: 如何设置Android loglevel的值？
+解决方案: 通过设置Android loglevel的值,可以达到控制Android log信息多少的目标. 方法如下: 可以修改slogUI中的slogUI setting/Android loglevel.默认是3-Debug.选择2-V,则把V以上的log信息打印,log增多;选择5-E,则把E 以上的log信息打印,log减少.根据实际情况具体设定. Thank you.
+参考FAQ: FAQ76130
+### 问题: 蓝牙共享网络失败原因
+解决方案: 1. 蓝牙MAC地址问题: 1).蓝牙MAC地址的第一个字节最后一位不能为1,如果为1的话对网络来说是不合法的Mac地址,这就导致无法创建网络设备,请参看如下接口判断: static inline int is_valid_ether_addr(const u8 *addr) { /* FF:FF:FF:FF:FF:FF is a multicast address so we don't need to * explicitly check for it here. */ return !is_multicast_ether_addr(addr) && !is_zero_ether_addr(addr); } 2).同时按照蓝牙SIG规定,蓝牙地址第一个字节属于NAP段,这个部分是由蓝牙SIG分配,厂商需要向蓝牙SIG购买的,一般正式出货的蓝牙地址不会有这个问题. 2. 测试步骤有误,具体请参见 FAQ76111.
+参考FAQ: FAQ76129
+### 问题: User版本与UserDebug版本的loglevel是否相同？
+解决方案: 最近会有客户认为User版本与UserDebug版本的loglevel不同,这个想法是错误的.展讯平台默认的设置是Android log 与 Kernel log分别通过各自的loglevel值控制,user版本与userdebug版本的loglevel是一样的. Thank you.
+参考FAQ: FAQ76131
+### 问题: 组合键与长按powerkey进入Sysdump的区别是什么？
+解决方案: 组合键重启手机(vol_up + vol_down + power * 2 即:按住音量上/下键的同时按两次power key):触发方式是panic sysdump,启动模式androidboot.mode=panic . 长按7s power key:触发方式是pmu,启动模式androidboot.mode=unknownreboot .其中,分段地址段存储是为了不同模块方便debug sysdump信息设计的,因为有些模块是不需要全部信息,方便debug. 发生问题时,建议先通过组合键方式进入Sysdump,如果无效,再使用长按powerkey的方式进入Sysdump. Thank you.
+参考FAQ: FAQ76144
+### 问题: Android5.1代码中PhoneId、SlotId的含义是什么
+解决方案: (1)PhoneId:双卡版本,会创建两个RILJ实例,两个GSMPhone实例,维护两个PhoneId,所以双卡情况下PhoneId值为0,1;对于单卡版本,PhoneId的值为0. (2)SlotId: 通过代码可以看到,SlotId与PhoneId的值相同,有0和1两个值.0代表卡槽1,1代表卡槽2.
+参考FAQ: FAQ76160
+### 问题: Android5.0代码中Subid的含义是什么
+解决方案: SubId: 即sim卡数据库telephony.db的siminfo表中的_id字段,是在数据库中所在的条目的唯一标识.有多少条数据,就说明保存了多少个sim卡的信息.
+参考FAQ: FAQ76161
+### 问题: SC2342A芯片封装大小是多少？
+解决方案: size: 7.5*5.3; package:BGA; pitch:0.5mm; ball:65
+参考FAQ: FAQ76212
+### 问题: sc7701 RF的电源由ldo改为dcdc,软件怎么配置VBAT_WPA
+解决方案: VBAT_WPA输出修改: 1.dcdc打开配置 power_cfg.c在ldo_prod_cfg添加如下 {LDO_DCDC_WPA, LDO_VOLT_LEVEL_MAX, SCI_TRUE }, 2.dcdc sleep配置 ldo_cfg.c在slp_ldo_ctl_data修改 {SLP_DCDC_WPA, ANA_LDO_SLP_CTRL1, ANA_FSM_WPA_DCDC_BP_EN, SLP_BIT_CLR, TRUE, NULL},
+参考FAQ: FAQ76270
+### 问题: 如何处理Win7下eclipse快捷键Ctrl+Alt+上键/下键无效
+解决方案: 这是由于Win7下的快捷键与Eclipse下的快捷键冲突导致,禁用Win7下的快捷键即可,如图:
+参考FAQ: FAQ76286
+### 问题: 经典蓝牙与低功耗蓝牙的区别?
+解决方案: 技术规范 : 经典蓝牙( 2.1 &3.0) 低功耗蓝牙( 4.0) 无线电频率 : 2.4GHz 2.4GHz 距离 : 10 米/100 米 30 米 数据速率 : 1-3Mbps 1Mbps 应用吞吐量 : 0.7-2.1Mbps 0.2Mbps 发送数据的总时间: <100ms <6ms 最大操作电流: : <30mA <15mA(最高运行时为 15 mA)
+参考FAQ: FAQ76294
+### 问题: 展讯7731平台是否支持电话会议
+解决方案: 展讯7731平台5.1版本支持电话会议功能,在通话界面——设置——通话账户——运营商名——其他设置菜单里,将"电话会议"选项去除了,但是功能依旧支持.此外,电话会议业务还需要跟当地运营商申请开通.
+参考FAQ: FAQ76313
+### 问题: 蓝牙A2DP要求SRC和SNK支持的语音编码格式？
+解决方案: A2DP要求SRC和SNK至少要支持低于复杂度自带编解码(Low ComplexitySubbandCodec,SBC)标准. MPEG-1 Audio,Mpeg-2Audio,MPEG-2,4高级音频编码(AdvancedAudio Coding,ACC) 和自适应变换音频编码(AdaptiveTransform AcousticCoding,ATRAC)这几种音频编码标准是可选的. 除此之外的其他编码标准称为"非A2DP编码(Non-A2DPCodec)
+参考FAQ: FAQ76338
+### 问题: Manifest文件中的protected-broadcast标记是什么意思
+解决方案: protected-broadcast表明广播类型由系统定义的受限广播,该类广播只允许系统本身及系统规定的几个进程发送,其他进程无权发送该类广播.
+参考FAQ: FAQ76339
+### 问题: 取景模式设为夜间时，在暗处拍照camera会报错卡死
+解决方案: 原因:帧率太慢导致的 解决:将ISP的最低帧率由5帧或者7.5帧修改为10帧或者15帧
+参考FAQ: FAQ76446
+### 问题: 摄像头预览窗口最下面会有一行会显示其他不同的内容，而拍照相片是正常的
+解决方案: 原因:预览的小尺寸照片从sensor里面crop的原始图像存在问题,主要是平台是从sensor那边crop一个预览的图像尺寸的图像,而sensor送出来的时候也是有一个crop的工程,从最基础的大小crop出来一个preview的图像大小,这些尺寸是在sensor的寄存器进行设置的,而当寄存器的基础大小尺寸和需要crop的大小一致的时候,crop的原始点没有跟基础大小的原始点一致的话,会出现有的行没有数据而成为乱码. 解决:将sensor的基础输出大小改大一些.一定要完全涵盖crop的尺寸大小.
+参考FAQ: FAQ76448
+### 问题: 自动对焦频繁
+解决方案: 原因:是判断对焦的awb smart值的最大门限和最小门限相差太大导致,如果太大的话,会出现只要稍微有一些画面的变动就启动自动对焦. 解决:在路径 idh.code\vendor\sprd\open-source\libs\libcamera\isp1.0下的文件isp_ctrl.c下 将: 将 .awb_cal_value_threshold = 50, .awb_cal_num_threshold = 50, .awb_cal_value_stab_threshold = 1024, .awb_cal_num_stab_threshold = 1024, 修改为: .awb_cal_value_threshold = 200, .awb_cal_num_threshold = 200, .awb_cal_value_stab_threshold = 800, .awb_cal_num_stab_threshold = 800,
+参考FAQ: FAQ76451
+### 问题: 如何读取芯片的uid
+解决方案: UID可以通过WRITEIMEI工具读取. 先在设置里使能secure boot,然后再读取.
+参考FAQ: FAQ76538
+### 问题: 注音符号"一"显示为"|"该如何修改
+解决方案: 这个注音符号在简体中文和繁体中文字库中都有,一个竖着写,一个横着写. 如果显示的不对,需确认一下字库配置font_table中简体和繁体字库的顺序, 可将se_initialize()@gui_scripteasy.c中的s_font_table_ptr中简中与繁中字库的顺序调整下, 将繁中字库定义放置于简中字库之前即可解决.
+参考FAQ: FAQ76655
+### 问题: 蓝牙底层目前支持最大链路数，以及classic和le链路的分配
+解决方案: 蓝牙底层目前支持最大链路数为7,分配classic链路为4条,le链路为3条
+参考FAQ: FAQ76658
+### 问题: 蓝牙链路数达到最大值后底层处理策略
+解决方案: 手机当前蓝牙链接数达到最大值后,如果收到链接消息,则底层关闭page scan功能,不允许其他设备链接本设备.如果主动发起链接,则底层回复链接失败,失败原因为HOST resource limited.
+参考FAQ: FAQ76663
+### 问题: SC7701使用RDA芯片该如何实现蓝牙简单配对
+解决方案: 1. 在MMIBT_GetInputPinReq()@mmibt_inquireddevice.c中加入: #ifdef BT_FIXPIN_SUPPORT BT_InputPairPin(&s_pin_request_info.addr,(uint8*)&pwd,4); return ; #endif 2. make file中加入BT_FIXPIN_SUPPORT宏 打开: 点选装置配对时, 不会弹出确认画面可直接连线 关闭: 点选装置配对时, 会谈出确认画面, 按ok后连接其他装置 3. 根据make file设定, 可能需要更新蓝牙库(BT PS需升级到14.19P21或以上)
+参考FAQ: FAQ76657
+### 问题: android5.1 如何打开灭屏动画
+解决方案: android5.1 缺省灭屏动画是关闭的 frameworks/base/services/core/java/com/android/server/display/DisplayPowerController.java private void updatePowerState() { ....... switch (mPowerRequest.policy) { case DisplayPowerRequest.POLICY_OFF: state = Display.STATE_OFF; performScreenOffTransition = false; //改为true 就可以打开灭屏动画 break; ........ }
+参考FAQ: FAQ76859
+### 问题: 为何点击“稍后再提醒”后，无论是否勾选“弹出式通知”，日程提示框都会过一会才消失？
+解决方案: 这是Google的原生设计,点击稍后再提醒时,设置了PRIORITY_HIGH(在AlertServices.java的postNotification方法中),所以即使不勾选弹出式通知(即不设置fullscreenintent),也会显示几秒,原因在于是否显示几秒弹出框,systemui里判断的一个关键条件如下:isFullscreen || (isHighPriority && (isNoisy || hasTicker),即:虽然未设置弹出式通知,isFullscreen为false,但是点击稍后再提醒,isHighPriority条件为true,所以仍然会显示几秒弹出框. Google原生这样设计的原因是:既然用户选择了再次提醒,那么说明这个优先级是比较高的,所以设置这样的提醒为高优先级,故会显示几秒,而第一次是否显示几秒才是根据是否设置"弹出式通知"来确定的.
+参考FAQ: FAQ77296
+### 问题: 通话过程中p-sensor灭屏如何配置可以允许系统进入睡眠
+解决方案: frameworks/base/core/res/res/values/config.xml <bool name="config_suspendWhenScreenOffDueToProximity">true</bool> true: 表示可以入睡 false: 表示不可以入睡,通话功耗会高
+参考FAQ: FAQ76861
+### 问题: SC7731等平台在AndroidL上的Camera设备节点
+解决方案: SPRD的Camera的驱动等主要放在usermod下,与Q平台不同,Q平台Camera驱动主要在kernel下.SPRD的Camera会用到如下几个设备节点:/dev/sprd_sensor, /dev/sprd_image, /dev/sprd_isp, /dev/ion, /dev/sprd_jpeg, /dev/sprd_dma_copy, /dev/sprd_close_afl等,可见这些设备节点不一定是专门给camera模块的.其中/dev/sprd_image是sprd_dcam,也就是我们常说的dcam模块. 还有一点与Q平台差异明显:Q平台前后摄分别有节点对应,SPRD则不分前后摄,dcam统一使用sprd_image节点.
+参考FAQ: FAQ77799
+### 问题: USB中VID/PID格式有要求吗
+解决方案: 展讯软件平台遵循USB标准中对VID/PID格式的要求: Vendor ID(2 bytes,assigned by the USB-IF) Product ID(2 bytes, assigned by the manufacturer)
+参考FAQ: FAQ76936
+### 问题: SIMLOCK如何默认为不锁卡状态
+解决方案: SIM卡锁卡类型若有配置则说明配置了该类型的锁卡状态,若无则说明默认为不锁卡状态. 因此可修改SIM LOCK的锁卡类型为0x00, 其他的SIMLOCK NV配置不变即可. 具体如下: SIM_LOCK_CUSTOMIZE_DATA --> sim_lock_status = 0x00 //0x00即为不锁卡状态. SIM_LOCK_USER_DATA --> sim_lock_status = 0x00 //0x00即为不锁卡状态.
+参考FAQ: FAQ77795
+### 问题: WPA运行机制的四个阶段
+解决方案: WPA(Wi-Fi Protected Access,Wi-Fi 保护访问)是Wi-Fi商业联盟在 IEEE 802.11i草案的基础上制定的一项无线局域网安全技术.可以把WPA看作是IEEE802.11i的一个子集,其核心是IEEE 802.1X和TKIP. WPA的运行机制可简要概括为以下四个阶段: 1、安全能力通告协商阶段 此阶段AP会通过Beacon帧通报给STA其对WPA的支持. 2、安全接入认证阶段 该阶段主要进行用户的身份认证,并产生双方的成对主密钥PMK. 3、会话密钥协商阶段 该阶段主要是进行通信密钥的协商,生成PTK和GTK,分别用来加密单播和组播报文. 4、加密数据传输阶段 数据加密及通信.
+参考FAQ: FAQ77776
+### 问题: 5.1平台如何使得语音信箱设置中的电话本不可点击使用
+解决方案: 可对EditPhoneNumberPreference.java(packages/services/telephony/src/com/android/phone/)的onBindDialogView方法做如下修改 if (mContactPickButton != null) { mContactPickButton.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { if (mParentActivity != null) {//注释掉 mParentActivity.startActivityForResult(mContactListIntent, mPrefId);//注释掉 }//注释掉 } }); }
+参考FAQ: FAQ77064
+### 问题: 如何将T卡detect脚设置为高阻态？
+解决方案: 1、打开/u-boot64/board/spreadtrum/sp7731gea/boot pinmap-sp8830.c 2、将默认的: {REG_PIN_EXTINT0, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(3)|BIT_PIN_WPU|BIT_PIN_SLP_WPU|BIT_PIN_SLP_IE},//SD_DET 改为: {REG_PIN_EXTINT0, BIT_PIN_SLP_AP|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(3)|BIT_PIN_NUL|BIT_PIN_SLP_WPD|BIT_PIN_SLP_Z},//SD_DET
+参考FAQ: FAQ77098
+### 问题: 如何定制WiFi快捷按钮的AP列表的显示行数？
+解决方案: 在下拉状态栏的快捷按钮列表中,点击WiFi快捷按钮图标右下的箭头,会弹出当前扫描到的AP列表. 这个列表中默认显示的AP的行数为7,这个行数可以根据不同项目屏幕的大小自行修改. 定制方法如下: 根据分辨率找到 frameworks/base/packages/SystemUI/res/下, 所使用的分辨率的 values 中的 config.xml 文件 例如: frameworks/base/packages/SystemUI/res/values/config.xml 文件中 <integer name="quick_settings_detail_max_item_count">7</integer> 这里7表示默认显示7行,改为需要定制的值即可
+参考FAQ: FAQ77116
+### 问题: 大面积黑色区域显示异常
+解决方案: 首先需要检查Gamma暗阶区域是否平滑,在Gamma正常的情况下,需要检查一下pref Y模块是否设置太强. 对于Pref Y,在使用用smart_pref_y的时候,我们需要确保max_index的值小于5,对于当我们仅使用一组pref_y 参数时候,要确保y_thr小于5. 下面是问题图片:
+参考FAQ: FAQ77113
+### 问题: 景深（Depth of Field）
+解决方案: 对于人眼或者是CMOS,CCD等感光元件来说,它们的分辨率都是有限的.即使感光元件的分辨率是无限大,但由于人眼的分辨率有限,当一个圆形的光斑足够小时,人眼就可以视它为一个点. 一个对焦距离已定的摄影系统,有且仅有对焦平面上的物体能够清晰成像于感光平面上,其余任何平面上的物体在 CMOS 上得到的都只是一个模糊的像.对焦平面之外的某个平面上有一个几何像点,它在 CMOS 感光平面上所成的像都是一个具有一定直径的圆斑,我们称为弥散圆.所以如果将景深定义为能够严格清晰成像的物方范围,任何摄影系统的景深都应该为零.但是任何影像系统的分辨率都是有限的,如果一个不在对焦平面上的点在感光平面上所成的弥散圆的直径足够小,小到人眼和 CMOS 都误认为它只是一个点,那么就称这个点所在的平面也能够参与清晰成像. 使在感光平面上成的像斑足够小,对焦平面前后延伸出来的,可接受清晰程度的这个范围就是所谓的景深.
+参考FAQ: FAQ77557
+### 问题: Android5.0版本以后的版本中Google去掉了蓝牙可见性开关，这样做的好处是什么？
+解决方案: 蓝牙检测超时选项是Android4.4之前的Google原生功能, 自Android5.0以后的版本,包括目前的Android5.1/6.0,Google原生便不再支持可见性选项功能,但这并不意味着就没有可见性功能了. 目前的做法是:进到蓝牙设置界面可见性自动打开,关闭该界面可见性自动关闭. 可见性功能只是操作蓝牙的一个前提,所以Google针对这个变动就是为了简化用户操作.
+参考FAQ: FAQ77197
+### 问题: 什么状态下蓝牙会进行自动扫描？
+解决方案: 什么状态下蓝牙会进行自动扫描? 1.在开启蓝牙的状态下,进入蓝牙设置界面时,前提是蓝牙设备列表没有已配对的设备. 2.在蓝牙设置界面,开启蓝牙时,前提是蓝牙设备列表没有已配对的设备. 我们在进行自动扫描时,对于Google的原生方案,我们加了一个前提条件(蓝牙设备列表没有已配对的设备), 其用意如下: 1.自动扫描影响功耗 a.搜索操作会增大功耗,导致费电 b.在搜索时,不能sleep,会影响功耗 2.更加符合用户习惯    大部分场景是连接先前已经连接过的设备,不是作扫描设备操作
+参考FAQ: FAQ77203
+### 问题: 为什么预览比实际拍出来的照片的内容要多，即预览与拍照结果不一致？
+解决方案: Sensor的输出分辨率一般是4:3,比如640*480;而LCD屏的分辨率一般是16:9,比如800*480.如果预览窗口的分辨率是640*480,且拍照照片的SIZE也是4:3的话,比如1600*1200,则所见即所拍. 但如果预览时的分辨率不是640*480,比如全屏预览(800*480),这时候就得对sensor输出进行裁切然后放大输出,但是拍的照片还是原来的640*480放大后的结果. 那为什么要进行裁切? 如图1,是4:3的图片,它要变成16:9的显示,由于不能失真,需得先裁掉一部分内容变成图2,再放大变成图3. 图1 图2 图3 也即是说预览时看见的是图3,而拍下来的照片是图1,照片的内容比预览要多.如果要做到预览与拍照结果一致,则要使得预览窗口与照片SIZE的高宽比一样,比如都是4:3.
+参考FAQ: FAQ82177
+### 问题: 为何英文输入字母f、i，手机显示时字符i的点消失与f重合？
+解决方案: 此种显示效果非问题. 这样的显示效果属于印刷体的合字,具体合字概念可从网络中查看.
+参考FAQ: FAQ90858
+### 问题: 是否支持录像时候对视频大小做限制?
+解决方案: 可以修改mmidc_flow.c 中的file_limit_size 去达成客户需求 recorder_start_t.file_limit_size = file_limit_size; // 修改file_limit_size Note: file_limit_size 建议修改范围为最小10K 录相大小且此设定单位为byte Example: 使录相的大小可使用彩信发送 295k recorder_start_t.file_limit_size = 295*1024;
+参考FAQ: FAQ82212
+### 问题: 如何去掉记事本应用？
+解决方案: 修改vendor/sprd/open-source/common_packages.mk文件,去掉 NoteBook \ 之后全部重新编译烧录即可.
+参考FAQ: FAQ82213
+### 问题: 记事本的数据存储在哪里？
+解决方案: 平台记事本并非以文件的方式存储,采取的是数据库的存储方式,存储在/data/data/com.sprd.note/databases/Notes.db 中.
+参考FAQ: FAQ82216
+### 问题: OTA升级如何清除APP data数据
+解决方案: OTA升级不会涉及到data区域,因此需要手动清除data数据或者修改脚本 修改\build\tools\releasetools\ota_from_target_files这个脚本 在 script.DeleteFiles([i[1] for i in to_create]) script.MakeSymlinks(to_create) 之后添加以下命令: script.Mount("/data") script.DeleteFiles(["数据路径1", "数据路径..."]) ps: 路径需要指定到文件
+参考FAQ: FAQ77226
+### 问题: 如何在user版本使能串口输入
+解决方案: 在system/core/rootdir/init.rc中下面console section中删除disabled一行. service console /system/bin/sh class core console disabled user shell ... 这样在启动时就会默认启动控制台并可以使用串口输入了.
+参考FAQ: FAQ77236
+### 问题: 平台默认版本日历为何不能在Google账号下成功新建日程？
+解决方案: 由于Google邮箱不支持EXCHANGE账户,当Calendar模块新建账户时,Google邮件默认被创建为IMAP账户,并且在IMAP账户下没有同步日历的选项,所以不会在日历的数据库中创建日历账户,导致无法新建日程.
+参考FAQ: FAQ77302
+### 问题: android5.0/5.1要在谷歌账号上新建日程有什么解决方案吗？
+解决方案: android5.0/5.1要在谷歌账号新建日程解决方案如下:需要安装5.1 gms包,注意检查里面必须要有Google日历同步的apk才可以新建Google账户:GoogleCalendarSyncAdapter.apk——Google日历同步服务接口;
+参考FAQ: FAQ77303
+### 问题: 日历创建帐户的流程是什么？
+解决方案: 日历创建账户流程如下:在Calendar中点击添加账户,calendar会跳转到Email页面进行邮箱登录设置,登录成功后创建的账号首先存在在Email中,必须要通过日历同步把Email中登录的账号及该账号远程服务器上的数据(比如新建日程的信息)同步到calendar的数据库中. 在点击新建活动时,日程编辑页面会去数据库中查询和加载创建的账号,如果有日历同步没有完成,也就是Calendar的数据库中没有该账号,那么就无法成功新建该账户下的日程.
+参考FAQ: FAQ77305
+### 问题: MAC 单播、组播
+解决方案: 客户手机进行wifi连接测试时,有时wifi一直无法连接上AP.查看打印发现的问题就是DHCP分配超时,通过空口包抓取发现导致 问题的根本原因是STA MAC地址是组播地址导致. 通过上述问题的引导现在就讲解一下怎样通过MAC地址判断其是组播还是单播. 例如:MAC地址 40:45:da:51:df:9b 其第一个字节为:0100 0000 其最低位bit为0,则是单播地址;若为1则为组播地址.
+参考FAQ: FAQ77370
+### 问题: TCP窗口机制
+解决方案: TCP的特点之一是提供体积可变的滑动窗口机制,支持端到端的流量控制.TCP的窗口以字节为单位进行调整,以适应接收方的处理能力.处理过程如下: (1)TCP连接阶段,双方协商窗口尺寸,同时接收方预留数据缓存区; (2)发送方根据协商的结果,发送符合窗口尺寸的数据字节流,并等待对方的确认 (3)发送方根据确认信息,改变窗口的尺寸,增加或者减少发送未得到确认的字节流中的字节数. 调整过程包括:如果出现发送拥塞,发送窗口缩小为原来的一半,同时将超时重传的时间间隔扩大一倍. 　　 TCP的窗口机制和确认保证了数据传输的有序性,可靠性和流量控制. 上面简述了TCP窗口机制处理过程,在客户反映的某些sta下行吞吐量比较低,是与TCP窗口大小设置太小导致的, 现在手机平台默认的都是1M或者512kb.修改窗口大小,会提高相应的吞吐量.
+参考FAQ: FAQ77375
+### 问题: android编译后的image释义
+解决方案: boot.img:包含启动参数、内核等多个元素 ramdisk.img:一个小型的文件系统,是andriod系统启动的关键 system.img:android系统运行的程序包,(framwork就在这里)将被挂载在设备中的/system节点下 userdata.img:各程序的数据存储所在,将被挂载在/data目录下 recovery.img:设备进入"恢复模式"时所需要的映像包 misc.img:杂项设备资源 cache.img:缓冲区,将被挂载到/cache节点中
+参考FAQ: FAQ77381
+### 问题: 如何添加或修改新国家（地区）的号码匹配规则？
+解决方案: android4.0开始号码匹配不再以简单的正则表达来确定.引入了idh.code\external\libphonenumber 号码库. libphonenumber按每个地区对号码匹配规则做了精确的分类.在idh.code\external\libphonenumber\java\src\com\android\i18n\phonenumbers\data存放着各个国家的号码描述文件. 当设备识别当前国家后会加载对应的号码描述文件. 如果发现某个地区的话码规则需要更新,首先尝试更新最新的libphonenumber库, 更新地址在libphonenumber/README.android中 如果更新后不能达到需求,需要自行更改号码描述文件,请按libphonenumber/README.android中的地址下载完整项目源码, 按需求更新PhoneNumberMetadata.xml 重新编译libphonenumber 就会生成新地区号码描述文件.
+参考FAQ: FAQ77531
+### 问题: 在audio 自动化测试中，是否可以侦测有耳机插入及耳机是3pin还是4pin
+解决方案: 可以,方法是通过读取节点sys/class/switch/h2w/state 信息, 能识别耳机类型信息, 0: 没插 ,1: 4pin耳机插入 , 2:3 pin耳机插入
+参考FAQ: FAQ77567
+### 问题: netlink通信模型特点
+解决方案: 分析EUT代码必须要了解netlink相关的知识,在此简介一下netlink通信模型特点. Netlink的通信模型和socket通信非常相似,主要要点如下: · netlink采用自己独立的地址编码,struct sockaddr_nl; · 每个通过netlink发出的消息都必须附带一个netlink自己的消息头,struct nlmsghdr; · 内核态的netlink的操作API和用户态完全不一样(其又被libnl封装了一遍); · 用户态的netlink操作完成采用socket函数,非常方便和简单,有TCP/UDP socket编程基础的非常容易上手.
+参考FAQ: FAQ77598
+### 问题: 进入百度网页提示“该网站的安全证书有问题”，这是什么原因？
+解决方案: 原因分析: 需要检查手机本地时间 如果手机本地时间错误,会与证书有效期冲突. 设置正确的本地时间可以解决问题.
+参考FAQ: FAQ77646
+### 问题: ISP1.0和ISP2.0是否支持镜头几何畸变校正
+解决方案: ISP1.0和ISP2.0不支持镜头几何畸变校正,对广角镜头只能通过软件方法实现.由于该算法一般具有较高的算法复杂度,所以会影响帧率.
+参考FAQ: FAQ77618
+### 问题: 点击email怎样直接进入输入账户界面
+解决方案: 展讯Email账户添加,支持向导界面 如果客户不需要,建议修改 \packages\apps\Email\src\com\android\email\activity\UiUtilities.java 如下 public static final boolean GUIDE_SUPPORT = true; 改为 public static final boolean GUIDE_SUPPORT = false;
+参考FAQ: FAQ77656
+### 问题: WPS机制流程
+解决方案: WPS可以帮助客户端用户自动配置网络名(SSID)及无线加密密钥.对于普通用户来说,无需了解SSID和安全密钥的概念就能实现安全连接;而且用户的安全密钥不可能被外人破解,因为它是随机产生的;最重要的是用户无需记忆冗长的无线加密密码,避免了忘记密码的麻烦.下面是其建链大致流程:
+参考FAQ: FAQ77681
+### 问题: 什么是DTMF
+解决方案: DTMF(Dual Tone Multi Frequency, 双音多频)是由贝尔实验室开发的信令方式,通过承载语音的模拟电话线传送电话拨号信息. 每个数字利用两个不同频率突发模式的正弦波编码,选择双音方式是由于它能够可靠地将拨号信息从语音中区分出来.一般情况下,声音信号很难造成对DTMF接收器的错误触发.
+参考FAQ: FAQ77835
+### 问题: 如何修改使得收到语音留言时，点击后下拉栏notification后状态栏图标自动消失
+解决方案: 请修改packages\services\Telephony\src\com\android\phone\NotificationMgr.java 中的updateMwi方法, 具体如下: if (vibrate) { notification.defaults |= Notification.DEFAULT_VIBRATE; } notification.flags |= Notification.FLAG_NO_CLEAR;//注释掉该句代码 notification.flags |= Notification.FLAG_AUTO_CANCEL;//添加该句代码 configureLedNotification(notification); mNotificationManager.notify(VOICEMAIL_NOTIFICATION, notification); } else
+参考FAQ: FAQ77839
+### 问题: 【印度】请问平台支持以下哪几种语言
+解决方案: 目前功能机针对印度语系 , 支持的语言如下 : Assamese (阿萨姆语) Bengali (孟加拉语) Gujarati (古吉拉特语) Hindi (印地语) Kannada (康纳达语) Malayalam (马拉雅拉姆语) Marathi (马拉提语) Oriya (奥里亚语) Punjabi (旁遮普语) Tamil (坦米尔语) Telugu (泰卢固语) Urdu (乌尔都语) 但只能确定可以显示该语言 , 翻译及输入法不一定完全支持
+参考FAQ: FAQ77866
+### 问题: wcdma 下行速率测试中category和速率怎么对应的 ？
+解决方案: HS-DSCH category 14 ,对应每个TTI可最大传输 42192bits,对应速率 21 M HS-DSCH category 24,对应每个TTI可最大传输 42192bits,支持DC,对应 42 M
+参考FAQ: FAQ113994
+### 问题: 如何查看的VDDSD电压？
+解决方案: 首先需要知道使用的芯片的电源管理芯片型号,如sp7731g使用的是sc2713s电源管理芯片,从芯片spec中可以看出LDO_V_CTRL1的地址为0x40038824 1、连接手机和pc 2、打开cmd,并输入adb root,然后输入adb shell lookat 0x40038824,结果如下图为0x00000305,对应电源管理芯片spec中结果为 01:3.0V 3、另软件上能调整的LDO_SD_V的电压档位有四个,分别为2.8V,3.0V,2.5V,1.8V.
+参考FAQ: FAQ77939
+### 问题: SC7731/SC9830平台的USB各个驱动在苹果Mac系统上是否支持
+解决方案: 展讯的USB驱动安装程序不提供对MAC系统的支持,从实际使用来说,MTP/PTP在MAC上目前是不支持的,UMS/USB-CDROM作为标准设备MAC上是支持的,对于RNDIS MAC上有第三方的驱动可以支持此功能;
+参考FAQ: FAQ77956
+### 问题: CTS Verifier：GPS Test如何测试？
+解决方案: 此项测试GPS搜星定位,需要到室外空旷的地方测试.点击进入GPS Test,手机开始搜星,如下图所示: 等待一会儿,当出现OK! All GPS tests complete 如下界面就表示测试通过,这时pass键亮起,点击完成测试. 如果失败,就要考虑以下情况: (1)当时的GPS信号强度,最好到指定的几个点去测试,成功率比较高; (2)测试手机移动的速度,不要移动太快或者最好不要移动,提高成功概率; (3)是否插入SIM卡,一般插入卡测试比较快一点, (4)周围是否存在遮挡物,地点要选择恰当; (5)对比机情况分析,一般要那两台手机对比测试,排除外部环境原因,有利于定位是否为BUG; (6)GPS 开关重置,有的手机测试不通过之后,重置一下GPS开关就通过了; (7)天气状况的变化; (8)GPS 天线是否损坏,硬件问题,一般不会出现; (9)横竖屏自动切换问题,测试的时候要关闭横竖屏切换,影响效率; (10)屏幕待机时间也最好设置为最长;
+参考FAQ: FAQ78087
+### 问题: CTS Verifier：USB Accessory Test如何测试？
+解决方案: 1、从google官方网站下载CtsVerifier测试包,安装CtsVerifier.apk,同时CtsVerifier目录下有一个cts-usb-accessory测试脚本,用来测试usb accessory功能. 2、拔掉USB连接线 3、PC端:切换到 root,运行./cts-usb-accessory 4、插上USB线,手机端等待状态栏出现usb debugger connected消息,再选择USB Assecery Test测试项,等待PC端的10条消息到来即可PASS 注意: 每次测试都要先拔掉USB线,完全退出CtsVerifier应用.
+参考FAQ: FAQ78088
+### 问题: CTS Verifier：Data Backup Test如何测试？
+解决方案: 这个测试项测试应用数据备份与恢复,数据通过google帐号备份到google云端,需要预置GMS包; 测试前确保连接了wifi(能翻墙),从设置里面登陆了谷歌账户.点击Data Backup Test开始测试. 点击"Generate Test Data"进入测试说明界面: 此时下方有两个按钮OK和Settings,点击Settings将勾选Back up my data和 Automatic restore两项. 点击OK之后preferences列表中将会随机生成一组值,将这些值记录下来: 运行备份命令:adb shell bmgr run //等待1分钟备份到google云端 卸载该APP:adb uninstall com.android.cts.verifier 重新安装CTS Verifier进入Data Backup Test,将之前记录下来的值与当前显示在列表中的值进 行对比,看是否一致.数据一致则该项通过,点击pass完成测试.
+参考FAQ: FAQ78089
+### 问题: kernel编译报错“undefined reference to `__aeabi_ldivmod”
+解决方案: 32位的arm处理器,处理64位除法指令效率较低,为了避免代码中过多地出现64位除法的运算,32位对应的kernel代码不再支持直接的除法运算. solution: 针对不同的32位平台,kernel封装了相应的汇编代码,用来实现64位除法,需要用到64位除法的地方,需要显示地调用宏do_div(a,b). 注意: 该宏的返回值为余数a%b,商a/b保存在a中返回.
+参考FAQ: FAQ78094
+### 问题: 通过Calendar类获取的一周起始日在不同语言下的值如何修改？
+解决方案: 凡是通过Calendar类获取的一周起始日,如 startDay = Calendar.getInstance().getFirstDayOfWeek(); 如果要修改这个值的话,需要修改external\icu\icu4c\source\data\misc\supplementalData.txt 文件,修改方法如下: 1、首先找到对应语言下的intvector值. 比如阿语(国家代码:EG)下原来的值是7(即日历从周六)开始,要修改为从周日开始: EG:intvector{ 7, 修改为 EG:intvector{ 1, 即可 比如西班牙(国家代码:ES)下原来的值是2(即日历从周一)开始,要修改为从周日开始: ES:intvector{ 2, 修改为 ES:intvector{ 1, 即可
+参考FAQ: FAQ78099
+### 问题: [记事本]如何修改记事本编辑界面下光标的显示位置？
+解决方案: 记事本编辑界面光标的显示位置和行间距有关,所以修改方案如下: 修改记事本模块\res\layout下的note_editor.xml文件:android:lineSpacingExtra="20dp" 改成 android:lineSpacingExtra="10dp",可以根据屏幕分辨率的不同修改这个值为合适的值.
+参考FAQ: FAQ78105
+### 问题: [日历]日历为何只支持某些（如Exchange）协议下的邮箱账户同步？
+解决方案: 日历只支持某些(如Exchange)协议下的邮箱账户同步分析说明: 1、日历本身触发创建账户过程使用的是Google原始代码,之后动作交由Email模块和Exchange模块负责.根据账户类型,最终由Exchange模块决定是否在日历模块创建账户进行日历同步. 2、Calendar模块新建账户时,如果被创建为其他(如IMAP)类型账户(Email/Exchange模块处理),并且在IMAP账户下没有同步日历的选项,那么Exchange模块是不会在日历的数据库中创建日历账户的,就会出现不能同步日程的问题. 3、Calendar模块新建账户时,如果被创建为Exchange类型账户,Exchange模块就会在日历的数据库中创建日历账户,就不会存在日程同步问题. 综上,日历创建账户以及账户创建过程本身没有问题,只是某些账户类型不具备日历同步功能,而Exchange类型账户具备日历同步功能,所以日历只支持某些协议下的邮箱账户同步.
+参考FAQ: FAQ78109
+### 问题: 谷歌开机向导会自动打开wifi，能否设置开机向导使其不自动打开wifi?
+解决方案: 谷歌开机向导是谷歌GMS包中提供的,GMS包中的开机向导是谷歌提供的apk,不能使其默认关闭.
+参考FAQ: FAQ78120
+### 问题: 如何去掉拨号界面图标下面的阴影
+解决方案: 将应用设置的button阴影去除即可. ViewUtil.java (\packages\apps\contactscommon\src\com\android\contacts\common\util) public static void setupFloatingActionButton(View view, Resources res) { view.setOutlineProvider(OVAL_OUTLINE_PROVIDER); --view.setTranslationZ( -- res.getDimensionPixelSize(R.dimen.floating_action_button_translation_z)); }
+参考FAQ: FAQ78130
+### 问题: 为什么在连接WIFI后上传下载时，WiFi 图标上没有上下箭头图标显示？
+解决方案: Android原生设计连接WIFI后上传下载时,WiFi 图标上是没有上下箭头图标显示的. SPRD 在 7731 的 sprdroid5.1_tshark_15a 分支上实现了该需求, 该需求,是在 MocorDroid5.1_3.10_Tshark_15a_W15.35.2的版本上实现的. 所以,在这个分支上W15.35.2之前的版本上,连接WIFI后上传下载时,WiFi 图标上是没有上下箭头图标显示的. 所以要解决该问题: 1.可以升级版本到 MocorDroid5.1_3.10_Tshark_15a_W15.35.2 版本或之后版本,即可实现该功能. 2.或者也可以直接提CQ解决(由于改动超过10行不方便贴在FAQ中).
+参考FAQ: FAQ78137
+### 问题: Camera UI界面自动对焦和连续对焦的区别
+解决方案: Camera UI界面菜单中有自动对焦和连续对焦两个选项 自动对焦:场景变换时,不对焦,需要点击屏幕才对焦;按拍照键时,会对焦一次再拍照. 连续对焦:场景变换时,会自动对焦,点击屏幕也可对焦;按拍照键时,不再对焦,直接拍照.
+参考FAQ: FAQ78185
+### 问题: 7731 Android6.0 并行WHTLED方式闪光灯驱动如何实现
+解决方案: 需配置使用如下驱动: obj-$(CONFIG_CAMERA_FLASH_PARALLEL_BG) += flash_parallel_connect_bg.o 该方式通过寄存器WHTLED_CTRL[1-6]来控制电流.4路,每一路供的电流在5ma-45ma之间.WHTLED_CTRL[1-6]决定了每路输出电流的大小.分为64个步长,每个步长为0.625ma.
+参考FAQ: FAQ78195
+### 问题: 如何确认vmlinux与生成sysdump版本是否匹配？
+解决方案: 通过strings命令分别获取vmliux和sysdump文件中的编译时间信息,然后通过比较二者的编译时间信息是否完全一致来判断sysdump和vmlinux是否匹配. 举例: 命令$ strings sysdump |grep "Linux version" 输出结果:Linux version 3.10.65 (chencong@SCL-SH151) (gcc version 4.8 (GCC) ) #1 SMP PREEMPT Sat Jan 2 01:11:05 CST 2016 命令$ strings vmlinux |grep "Linux version" 输出结果:Linux version 3.10.65 (wsys@SCL-7SH155) (gcc version 4.8 (GCC) ) #1 SMP PREEMPT Mon Jan 4 05:20:02 CST 2016 以上信息显示表明该vmlinx和sysdump版本不匹配.
+参考FAQ: FAQ78242
+### 问题: 5.1版本OTA升级recovery log的获取办法汇总
+解决方案: 1 如升级出错,在出错了的界面先按home键或者是power+up键,会出来最终出错的界面,拍照片提供一下可以看出大概出错原因 2 如升级出错,如果1不行,出错后按照1的办法按键出现recovery菜单后,选择重启,然后关机,通过按键进入recovery模式,按home键或者power+up出来菜单,选择"view recovery logs"这个菜单,然后选择cache/recovery/last_log这个,移植拖动到最后看看出错的语句,提供出来能看出出错原因 3 上两个都不好操作则可烧录一个对应user版本的userdebug版本的bootimg,然后在手机重启后执行: adb root adb pull /cache/recovery/last_log D:\log D盘下面log里面的last_log即是刚重启前失败动作的log.
+参考FAQ: FAQ78252
+### 问题: 手机camera厂商常说的OTP“变态模组”模组是什么？
+解决方案: 所谓"变态模组"主要是帮助camera 驱动工程师 double check调用OTP程序是否正确辅助方法之一. 制作方法是,模组厂根据camera烧录规则,故意将能够正确调用的哪一组OTP值写入偏差相对较大的错误值,而将其它组写入正确值,这样OTP 程序如果错误调用和没有调用,在手机上就会发现与实际设计显示图像明显的差异.程序书写是否有问题,就能够一目了然发现.实际确认时,建议最好同步将OTP 相关log 开启,一起确认查看. 此种确认方法一般是在驱动工程师确保otp程序书写正确后,并将手机程序给模组厂,芯片厂double check后,驱动工程师在实际应用中确认.需要特别说明的是,经过此种方法确认后,并不一定能保证后续otp使用不会出任何问题,只是可以减少后续otp 相关问题概率,且确认方式相对比较形象化(通过图像显示确认).
+参考FAQ: FAQ78240
+### 问题: 如何关闭HD VOICE功能
+解决方案: 一,HD voice即AMR-WB:高清语音,自适应多码率宽带 (1) GSM不支持;SC6531平台不持AMR-WB,仅支持AMR-NB即自适应多码率窄带 (2) W可以支持,客户默认不打开该功能. 二,在主mk file中有这样的宏,默认是关闭的,设置为FALSE, VOICE_WB = FALSE; NV中amr_wb_support 值为0x0关闭,值为0x1打开. 将VOICE_WB 设为FALSE ;且NV中amr_wb_support 设为0,即可关闭HD voice
+参考FAQ: FAQ78263
+### 问题: 如何使拍出来的的图片在PC上查看时，属性中显示设备制造商，版权等信息？
+解决方案: 1,打开dc.mk文件中将#MCFLAG_OPT += -D_DC_EXIF__改为MCFLAG_OPT += -D_DC_EXIF,即将dc的exif功能宏打开. 2,在相应工程dc_product_cfg.c文件中,将s_dc_product_cfg_info结构体的第一个变量exif_eb由SCI_FALSE改为SCI_TRUE,使能该参数输出. 3,在相应工程dc_product_cfg.c文件中,根据EXIF_PRI_DESC_T各成员含义,修改s_dc_exif_pri_desc_info结构体中参数为想要的厂商名、版权等. Note:s_dc_exif_pri_desc_info结构体中参数说明,s_dc_exif_pri_desc_info.valid.DateTime等值为开关,其中,1:Enable;0:Disable;s_dc_exif_pri_desc_info.DateTime等表示具体的信息.
+参考FAQ: FAQ78270
+### 问题: 没有听筒时，如何使通话过程中默认用喇叭播放声音
+解决方案: /packages/apps/InCallUI/src/com/android/incallui/CallButtonPresenter.java public void onStateChange(){ ....... updateUi(newState, mCall); + int currentMode; + currentMode= getAudioMode(); //获取当前Audio模式 + Log.d("xxrcurrentMode","currentMode = "+ currentMode); + if(currentMode==AudioState.ROUTE_EARPIECE){ //判断是否是听筒模式 + setAudioMode(AudioState.ROUTE_SPEAKER); //设置为喇叭外放模式 + } }
+参考FAQ: FAQ78259
+### 问题: 在kernel和uboot中操作gpio的方法
+解决方案: 在u-boot阶段读取pin脚状态以识别LCD,在lcd driver里面加入操作GPIO代码,编译时报错: /idh.code/u-boot64/drivers/video/sprdfb/lcd/lcd_ili9806e_mipi_txd.c:276: undefined reference to `gpio_request' /idh.code/u-boot64/drivers/video/sprdfb/lcd/lcd_ili9806e_mipi_txd.c:277: undefined reference to `gpio_direction_input' 在kernel中操作GPIO使用gpio_request、gpio_direction_input等函数接口 在uboot中操作GPIO使用sprd_gpio_request、sprd_gpio_direction_input等函数接口 在uboot和kernel中操作GPIO的方式不同
+参考FAQ: FAQ78294
+### 问题: MTP模式连接到电脑后，设备管理器里面多出了几个未知设备
+解决方案: 虽然选择的是MTP模式,但如果打开了开发者选项中的调试功能,会打开ADB及展讯平台辅助调试的几个接口,这些功能需要安装展讯USB驱动,请向TAM索要USB驱动安装包,安装后可解决该问题.
+参考FAQ: FAQ78481
+### 问题: 如果SC7731G要关掉WCDMA AMR-WB该怎么做
+解决方案: NV中TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_COMMON_CAP\amr_wb_support:item Value设置为1代表开,设置0代表关
+参考FAQ: FAQ78503
+### 问题: 7731工厂模式暗码
+解决方案: *#06# 查询IMEI号 *#*#83781#*#* 进入工程模式 *#*#83789#*#* 进入工厂模式 *#*#4636#*#* 手机测试相关信息 *#*#6699#*#* SLT测试 *#*#8351#*#* Voice Dialer Logging Enabled *#*#8350#*#* Voice Dialer Logging Disabled *#*#2266#*#* SGPS测试信息 *#*#225#*#* 日历信息查询
+参考FAQ: FAQ78539
+### 问题: 如何修改拨号盘按键按下高亮时的图片大小
+解决方案: 修改rippleBackground显示半径大小即可. DialpadView.java(packages/apps/PhoneCommon/src/com/android/phone/common/dialpad/) public class DialpadView extends LinearLayout { (RippleDrawable) getContext().getDrawable(R.drawable.btn_dialpad_key); if (mRippleColor != null) { rippleBackground.setColor(mRippleColor); + rippleBackground.setMaxRadius(60); }
+参考FAQ: FAQ78544
+### 问题: 调试ISP参数时如何选择lnc的grid参数
+解决方案: 为保证最佳效果,调试isp时需要根据sensor尺寸选择适当的lnc的grid参数. 2M及其以下:选择32*32; 5M:可以选择32*32也可选择64*64,32*32为佳; 8M:64*64 13M及以上:选择96*96. 当log中出现lnc参数加载失败的错误时(kernel log 中用关键字搜lnc/ load/ fail/error),或场景变化时出现花屏现象,可重点怀疑lnc的gird参数. grid参数必须做到各场景保持一致,并且preview和snap也应一致为宜.
+参考FAQ: FAQ78563
+### 问题: image sensor概率性identify失败
+解决方案: 由于sensor端寄存器的特性不同,不同sensor原厂的identify函数可作适当调整,如SP5409在压力测试的情况下存在概率性打开失败,此时可以考虑从如下两方面修改: 1、sensor power on函数中加点延时,给sensor端寄存器预留些相应时间 2、在sensor identify函数中,加入3次循环,3次读sensor端寄存器都失败的话,才返回fail 一般情况下,通过以上两种改法都可以解决这种概率性问题.
+参考FAQ: FAQ82161
+### 问题: GCF case 34.3测试注意事项
+解决方案: 34.3 Short message service cell broadcast 请先确认MMI是否开启宏:MMI_SMSCB_SUPPORT 设置完了,检查下菜单.菜单:message-broadcast message 然后在小区广播菜单里面添加channel 0 再开始测试. 否则这条广播消息终端收到以后,也会丢弃. 000026030071 2603-71:SMSCB: msg_id = 0,msg_code = 0,update_num = 1 000026070001 MPH_SMSCB_DATA_IND 000026090001 MSG_ID_AS_L4_GPRS_SMSCB_DATA_IND 000026110001 MSG_ID_L4_AS_GPRS_SMSCB_USELESS_MSG_REQ 000026130001 MPH_SMSCB_USELESS_MSG_REQ
+参考FAQ: FAQ78737
+### 问题: WIFI测试中常见的RF指标有哪些？
+解决方案: –发射指标 •Transmitter Power发送功率 •EVM矢量幅度误差 •Spectral flatness波形平坦度 •Frequency tolerance中心频率误差 •Spectrum Mask频谱模板 •Spurious emission发射杂散 –接收指标 •Sensitivity接收灵敏度 •Max input level最大接收电平 •ACR邻道抑制
+参考FAQ: FAQ78902
+### 问题: 使用WINISO工具，定制光盘镜像时，如何解决内部文件名称都变成大写的问题？
+解决方案: 使用的WINISO版本如下 在使用WINISO工具,定制光盘镜像文件. 发现光盘镜像中的文件都变成了大写,这个问题是由于文件系统属性设置引起的.解决方案是,打开WINISO软件,选择文件系统->文件系统属性,在弹出框内选择使用Joliet扩展.此时镜像内的文件的文件名称就不会自动变成大写状态了.
+参考FAQ: FAQ78936
+### 问题: android智能机，OTG功能外接UVC Camera时，出现显示卡顿，该如何解决？
+解决方案: 有客户需要我们手机支持外接USB Camera的功能,但调试时出现视频卡顿的问题,这种情况多是由于我们手机USB host的速度带宽无法满足视频传输的速度引起的.解决方案是修改视频为MJPEG输出方式,或者降低视频输出格式的分辨率.
+参考FAQ: FAQ78940

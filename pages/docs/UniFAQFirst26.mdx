@@ -1,0 +1,303 @@
+### 问题: 7731指示灯亮度通过文件节点调节亮度不生效
+解决方案: 1.指示灯的实现在如下代码中.\kernel\drivers\leds\leds-sprd-bltc-rgb.c 2.sprd_leds_bltc_rgb_enable函数为打开指示灯 3.在该函数中sci_adi_set(brgb->sprd_bltc_base_addr + BLTC_CTRL, (0x1<<0)|(0x1<<1));又重新设置了一遍,所以去除该code,可以让配置的亮度生效 备注:版本为43.6及更新的版本
+参考FAQ: FAQ52107
+### 问题: 7731后置摄像头是否支2M插值到13M?
+解决方案: 可以支持,同时需相应增大ION大小按照13Mega的摄像头配置.
+参考FAQ: FAQ52113
+### 问题: SC7715 FM的阀值在那里配置?
+解决方案: 1.阀值配置寄存器为FM_REG_MONO_PWR寄存器 2.该寄存器的阀值相关描述如下: bit8～0为threshold1(192),bit24～16为threshold2(19C) 3.threshold值增加为减小阈值(会使搜到的台增多),减小为增加阈值(会使搜到的台减少)
+参考FAQ: FAQ52117
+### 问题: Charge 恒流恒压转换点设置
+解决方案: android启动的时候会启动一个service:batterysrv并创建一个节点 /data/.battery_nv 当USB插入的时候从此节点中读取数据写入: /sys/class/power_supply/battery/hw_switch_point 当USB拔出的时候会将hw_switch_point重新写回到.battery_nv中,以此达到了动态保存转换点的目的.
+参考FAQ: FAQ52123
+### 问题: 为什么设置要设置Charge CCCV点
+解决方案: 电池电心特性及电池自身保护电路决定电池电压应该在4.2V左右,如果高于4.2V就有可能造成li离子电池不可逆的化学变化,损坏电池,于是充电电路就以4.2V为恒流充电结束点,当电池充电到达4.2V的时候理论上应该是电池已经充满,但是实际上电池处于一个伪饱和状态,电池需要进一步充电才可以将"虚"的那部分冲入,于是需要进入一个恒压充电阶段,当进入此阶段后电池电压变化已经很小了. 我们所设置的CCCV点就是控制充电电路的mos管最终在进入恒压阶段充电的电压数值,由于每个项目和电池等外界因素的不同这个点实际上是不准的,需要自动学习,在芯片上默认有64个点,每个点实际上都是希望自己对应的是4.2V以实现自己存在的价值,但是现实是残酷的,64个兄弟只有一个是最接近4.2V的,那么就需要手机在实际充电过程中去判断去使用谁. 芯片中每个转换点间步进为7.5mv也就是可设置的区间是 64*7.5mv=480mv.
+参考FAQ: FAQ52128
+### 问题: SR2351C蓝牙模块设计ID是什么
+解决方案: bt host subsystem: 64721 bt controller subsystem:56164
+参考FAQ: FAQ70827
+### 问题: 蓝牙A2DP协议的限制有哪些
+解决方案: (1)不支持synchronized point-to-multipoint distribution. (2)在Source和Sink端存在延迟. (3)音频数据的速率必须足够小于蓝牙的传输速率. (4)不提供任何数据保护的方法
+参考FAQ: FAQ70829
+### 问题: 7731平台在什么地方设置充电电流的默认值？
+解决方案: 请查看如下代码谢谢! /kernel/arch/arm/boot/dts/sprd-battery.dtsi adp-cdp-cur = <700>; //AC&USB adp-dcp-cur = <700>; //AC adp-sdp-cur = <500>; //usb
+参考FAQ: FAQ52137
+### 问题: 为什么按组合键无法进入工厂测试模式
+解决方案: 如果插上充电器,按组合键是无法进入工厂测试模式的,所以要通过组合键进入工厂测试模式时,一定要拨下充电器.
+参考FAQ: FAQ52140
+### 问题: 如何判断手机是单卡还是多卡
+解决方案: 可通过如下方法实现: private boolean isSingeSim(){ return TelephonyManager.getPhoneCount() == 1 ? true : false; } 注意需要import下面的包: import android.telephony.TelephonyManager;
+参考FAQ: FAQ52170
+### 问题: 获取Android手机内安装的所有桌面
+解决方案: 
+参考FAQ: FAQ52173
+### 问题: 判断Android应用是否在前台
+解决方案: public static boolean isAppOnForeground(Context context) { ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE); String packageName = context.getPackageName(); List<RecentTaskInfo> appTask = activityManager.getRecentTasks(Integer.MAX_VALUE, 1); if (appTask == null) { return false; } if (appTask.get(0).baseIntent.toString().contains(packageName)) { return true; } return false; }
+参考FAQ: FAQ52199
+### 问题: 如何计算某一月份的最大天数？
+解决方案: 可参考如下实现: Calendar cal=Calendar.getInstance(); cal.clear(); cal.set(Calendar.YEAR, year); cal.set(Calendar.MONTH, month - 1); //注意,Calendar对象默认一月为0 int day=cal.getActualMaximum(Calendar.DAY_OF_MONTH); //本月份的天数
+参考FAQ: FAQ52206
+### 问题: 如何将设置→电池中，“电量百分比”开关默认应为勾选状态
+解决方案: 请在\frameworks\base\packages\settingsprovider\src\com\android\providers\settings\DatabaseHelper.java文件中的 loadSystemSettings接口中,添加如下一句就可以了. loadSetting(stmt, "battery_percentage_enabled", 1); 注意,修改后需要恢复出厂设置来验证.
+参考FAQ: FAQ52224
+### 问题: 如何去掉第一次进入辅助功能时，弹出安装talk back的提示框
+解决方案: 修改packages/apps/Settings/src/com/android/settings/accessibility/AccessibilitySettings.java文件, offerInstallAccessibilitySerivceOnce接口中, 注释掉如下这句就可以了. showDialog(DIALOG_ID_NO_ACCESSIBILITY_SERVICES);
+参考FAQ: FAQ52225
+### 问题: 互动屏保何时启动选项，如何默认选择‘Either’
+解决方案: \frameworks\base\core\res\res\values\Config.xml中, 如下两个改为true即可 <bool name="config_dreamsActivatedOnDockByDefault">true</bool> <bool name="config_dreamsActivatedOnSleepByDefault">true</bool>
+参考FAQ: FAQ52226
+### 问题: 如何修改默认屏幕亮度
+解决方案: 默认屏幕亮度可以在\frameworks\base\packages\settingsprovider\res\values\Defaults.xml文件中修改, 修改def_screen_brightness变量的值即可.
+参考FAQ: FAQ52227
+### 问题: 设置里，四个TAB的字符串如果太长，如何滚动显示
+解决方案: 需要修改packages/apps/Settings/res/layout/setting_tab_new_ui.xml 中TextView控件的如下属性, android:ellipsize="end" 修改为 android:ellipsize="marquee" marquee是跑马灯的效果.
+参考FAQ: FAQ52228
+### 问题: 如何去掉设置-移动网络下的UPLMN菜单
+解决方案: 去掉UPLMN的方法如下: packages/services/Telephony/src/com/android/phone/MobileNetworkSettings.java onCreate接口中, mUplmnPref = prefSet.findPreference(BUTTON_UPLMN_KEY); //添加如下一句即可 prefSet.removePreference(mUplmnPref);
+参考FAQ: FAQ52229
+### 问题: 多次点击设置-关于手机中的Android version，如何修改弹出的彩蛋界面里的字母
+解决方案: 修改方法如下: \frameworks\base\core\java\com\android\internal\app\PlatLogoActivity.java中 onCreate接口里面, 如下这句话指定了显示的字母, letter.setText(String.valueOf(Build.ID).substring(0, 1)); 默认是使用版本号Build.ID的头字母. 直接修改为需要显示的字母即可,比如: letter.setText("M");
+参考FAQ: FAQ52230
+### 问题: 如何修改默认时区为lagos
+解决方案: 修改方法如下: 1./build/tools/buildinfo.sh 中检查有没有persist.sys.timezone,如果没有则增加一行时区设置 echo "persist.sys.timezone=Africa/Lagos 2. settings应用里timezones.xml中需要都添加上Africa/Lagos(目前默认是没有这个时区的)
+参考FAQ: FAQ52231
+### 问题: Wifi-direct 如何设置GroupOwner
+解决方案: 两台设备通过wifi-direct建立连接后,会确定group的GroupOwner. 开发者无法决定GroupOwner是哪台设备,但是可以通过WifiP2pConfig.groupOwnerIntent参数进行建议. WifiP2pConfig.groupOwnerIntent的取值范围为0到15,如需要设置某台设备为GroupOwner,可设置该设备的GroupOwner为15.
+参考FAQ: FAQ52238
+### 问题: ffos 7715如何配置firefox账户可用？
+解决方案: 打开gaia/build/config/common-settings.json 将identity.fxaccounts.ui.enabled设置为true即可
+参考FAQ: FAQ52255
+### 问题: ffos 7715如何获取settings中设置多语言时各语言对应的名称？
+解决方案: 打开gaia/locales/languages_all.json文件,其中有firefox 1.4平台支持的各种语言对应的名称.
+参考FAQ: FAQ52256
+### 问题: ffos 如何获取多语言的资源？
+解决方案: 进入如下网址可以下载firefox os的多语言资源: http://hg.mozilla.org/gaia-l10n
+参考FAQ: FAQ52259
+### 问题: ffos 如何查看手机使用向导？
+解决方案: 进入settings->Device information->More Information->Developer 然后点击Launch first time use即可查看手机使用向导
+参考FAQ: FAQ52260
+### 问题: MIPI通道D-PHY组合
+解决方案: MIPI通道的D-PHY的A和B可有如下的组合: #select mipi d-phy mode(none, phya, phyb, phyab) TARGET_BOARD_FRONT_CAMERA_MIPI := phyb TARGET_BOARD_BACK_CAMERA_MIPI := phya 或 TARGET_BOARD_FRONT_CAMERA_MIPI := phya TARGET_BOARD_BACK_CAMERA_MIPI := phyb 或 TARGET_BOARD_FRONT_CAMERA_MIPI := phyab 或 TARGET_BOARD_BACK_CAMERA_MIPI := phyab
+参考FAQ: FAQ52279
+### 问题: SC7731平台，如何打开人脸识别和笑脸拍照功能？
+解决方案: 以工程sp7731gea为例: device/sprd/scx35_sp7731gea/BoardConfig.mk #face detect TARGET_BOARD_CAMERA_FACE_DETECT := false 改成 TARGET_BOARD_CAMERA_FACE_DETECT := true
+参考FAQ: FAQ52280
+### 问题: 打开ZSL功能闪光灯强制不能打开
+解决方案: ZLS功能中,预览和拍照是同一组摄像头设置输出,为避免拍照的闪光影响预览的效果,则做了闪光灯关闭的处理. 客户也可采用一直开启闪光灯的方式.
+参考FAQ: FAQ52281
+### 问题: Android5.0以后蓝牙没有可见性的开关，那可见性开或关在什么时候呢？
+解决方案: 原生android5.1没有可见性的开关. 什么时候可见性为开?:蓝牙设置界面下,并且蓝牙打开时,并且保持屏幕点亮状态,三个条件缺一不可. 什么时候可见性为关?:退出蓝牙设置界面,或者灭屏,或者蓝牙关闭.
+参考FAQ: FAQ68916
+### 问题: 是否需要配置flash参数
+解决方案: 现在不再需要配置flash参数了,只要是通过展讯认证的flash(包括nand和emmc),均不再需要配置参数了,已经实现了自适应配置参数的功能.
+参考FAQ: FAQ52316
+### 问题: 什么原因SC7731手机开机就进入到fastboot模式
+解决方案: 检查KEYIN[1]在手机上电时,是否被拉低,因为在SC7731代码中,该PIN和KEY_HOME键关联.UBOOT启动过程,检测到该PIN为低时,进入到fastboot模式, 如果系统设计中没有用到KEY_HOME键,解决该问题的方法是把这个键的定义去掉. key_map.h中,去掉KEY_HOME键的定义 static unsigned char board_key_map[]={ #if 0 0x27, KEY_HOME, 0x42, KEY_BACK, 0x41, KEY_VOLUMEUP, #else //0x00, KEY_BACK,//DOWN //0x01, KEY_HOME,//CAM //0x10, KEY_MENU,//UP 0x10, KEY_VOLUMEUP,//DOWN //0x01, KEY_HOME,//CAM 0x00, KEY_VOLUMEDOWN,//UP #endif };
+参考FAQ: FAQ52321
+### 问题: 如何修改product.name及其它客制化的参数
+解决方案: 客户希望getprop时,获取的一些参数要按照他们的需求来设置.getprop时,获取的参数来自build.prop,而build.prop是通过build/tools/buildinfo.sh生成的,可能通过修改里面与之相关的宏定义来处理,比如: echo "ro.product.model=HUAWEI Y360-U12" echo "ro.product.brand=HUAWEI" echo "ro.product.name=Y360-U12" echo "ro.product.device=HWY360-U" echo "ro.product.board=Y360-U" echo "ro.product.manufacturer=HUAWEI" 也可以把变量在项目配置文件里面用宏定义,再从这里引用.
+参考FAQ: FAQ52339
+### 问题: Calendar如何转化为Date
+解决方案: Calendar转化为Date: Calendar cal = Calendar.getInstance(); Date date = cal.getTime();
+参考FAQ: FAQ52364
+### 问题: Date如何转为Calendar？
+解决方案: Date如何转为Calendar: Date date = new Date(); Calendar cal = Calendar.getInstance(); cal.setTime(date);
+参考FAQ: FAQ52365
+### 问题: emmc介绍
+解决方案: eMMC 即是Embedded Multi Media Card, 为MMC协会所订立的、主要是针对手机或平板电脑等产品的内嵌式存储器标准规格.eMMC的一个明显优势是在封装中集成了一个控制器,它提供标准接口并管理闪存,使得手机厂商就能专注于产品开发的其它部分,并缩短向市场推出产品的时间. eMMC带有多媒体卡接口、快闪存储器设备及主控制器,都集成在一个小型的BGA 封装,接口速度高达每秒52MBytes.eMMC具有快速、可升级的性能,同时其接口电压可以是1.8v 或者是3.3v.eMMC规格的标准逐渐从eMMC4.3、eMMC4.4、eMMC4.5到eMMC5.0.容量大小有8GB、16GB、32GB、64GB到128GB.
+参考FAQ: FAQ53254
+### 问题: 如何查看当前点击应用的包名和类名
+解决方案: Usb连接手机,在终端中输入命令adb logcat -b events即可实时查看当前点击应用的包名和类名.
+参考FAQ: FAQ52390
+### 问题: 如何禁止播放点击控件的音效
+解决方案: 在布局中添加android:soundEffectsEnabled="false"即可,如下: <ImageView android:id="@+id/btn_video_pause" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="25dp" android:layout_below="@id/btn_video_stop" android:scaleType="centerInside" android:clickable="true" + android:soundEffectsEnabled="false" android:onClick="onPauseClicked" android:src="@drawable/btn_new_video_pause" android:visibility="gone" />
+参考FAQ: FAQ52391
+### 问题: 如何根据包名查看package的详细信息
+解决方案: 用Usb连接手机,在终端用命令adb shell dumpsys package命令来获取当前手机中的包以及注册广播的详细信息.
+参考FAQ: FAQ52413
+### 问题: 如何查看手机当前窗口的详细信息
+解决方案: Usb连接手机,用命令adb shell dumpsys window命令可以把当前堆栈中的窗口的详细信息dump下来,栈顶的窗口信息即为手机当前窗口的详细信息.你也可以加参数policy, displays, animator, windows等,加上参数能得到更多更详细的窗口信息.
+参考FAQ: FAQ52435
+### 问题: SC7701手机连电脑后，电脑上只有手机U盘，无TF卡的盘
+解决方案: 确认项目LCD配置情况,在MAINLCD_SIZE_128X64配置下关闭了TF卡U盘 如需打开修改: 文件:mmi_sd.c 函数:MMIAPISD_Init 在MMIAPISD_Init中去掉 MAINLCD_SIZE_128X64宏控制
+参考FAQ: FAQ52475
+### 问题: SC7715 OTA升级后如何使新的APN生效
+解决方案: 默认情况下更新APN列表OTA升级后需要恢复出厂设置APN更新才有效 需要开机后自动生效修改alps\build\tools\releasetools\ota_from_target_files这个脚本 在 script.DeleteFiles([i[1] for i in to_create]) script.MakeSymlinks(to_create) 之后添加以下命令: script.Mount("/data") script.DeleteFiles(["/data/data/com.android.providers.telephony/databases/telephony.db", "/data/data/com.android.providers.telephony/shared_prefs/preferred-apn.xml"])
+参考FAQ: FAQ52476
+### 问题: SC7715 APN数据存储在哪个区域
+解决方案: 存储在data 区域 相关文件、位置: /data/data/com.android.providers.telephony/databases/telephony.db /data/data/com.android.providers.telephony/shared_prefs/preferred-apn.xml
+参考FAQ: FAQ52479
+### 问题: SC7701的SIM1 PIN是否可以用作普通GPIO需要注意什么
+解决方案: 可以用作普通gpio 主mk修改单卡 :MMI_MULTI_SIM_SYS = SINGLE pinmap正确配置好,另请注意sim1 pin电压域属vsim1,在使用时必须开启vsim1电压
+参考FAQ: FAQ52480
+### 问题: 如何修改日历设置中的默认提醒时间?
+解决方案: 日历中的默认提醒时间是通过android:defaultValue设置的,修改日历general_preferences.xml中的preferences_default_reminder_default参数即可.
+参考FAQ: FAQ52478
+### 问题: 合入gms后关机闹钟无铃声
+解决方案: 经过gms相关排查,与 PRODUCT_PROPERTY_OVERRIDES += \ drm.service.enabled=true 有关 移除drm配置后,铃声正常. DRM 需要过 CTS 认证的 widevine,若没有过CTS 要移除 DRM
+参考FAQ: FAQ52486
+### 问题: LPDDR3 介绍
+解决方案: LPDDR3采用了DDRIII的技术,传输速率分别是LPDDR333/800/1066/1200/1333/1466/1600,容量是4 Gb/8 Gb/16 Gb/32 Gb,这个标准最大支持32Gb,也就是4GB.
+参考FAQ: FAQ52503
+### 问题: 主菜单图标尺寸如何修改
+解决方案: 需要修改以下配置: 1. mmitheme_mainmenu.h文件中 efine MENUICON_WIDTH 48 #define MENUICON_HEIGHT 48 #define MENUICON_FOCUSITEM_W 50 #define MENUICON_FOCUSITEM_H 50 #define MENUTEXT_WIDTH 60 #define MENUTEXT_HEIGHT 14 2. 修改各主菜单图标: 修改成对应尺寸尺寸 3. 主mk文件中: SPECIAL_EFFECT_ICON_SIZE = 48X48 4. 需要注意: 主菜单图标的宽度和高度,与make file中的SPECIAL_EFFECT_ICON_SIZE的配置(48X48、60X60)一定相同, 否则无法做主菜单icon3D特效,如果一定要主菜单尺寸和48X48或60X60不同需要关闭主菜单特效,否则会引起部分特效出现死机情况.
+参考FAQ: FAQ52504
+### 问题: 蓝牙多连接设置
+解决方案: 蓝牙多连接功能的关闭可以通过设置NV实现,具体如下: Nv/productionparam/bt_config/host_reserved/host_reserved[0] 为0x43,表示协议层面是关闭了多连接的
+参考FAQ: FAQ52512
+### 问题: camera mipi时序测试之UI值
+解决方案: camera mipi时序中的UI值是mipi时序测试的基础,可简单的认为是高速模式下data线上的速率.如下如详细说明了UI值的含义: 在mipi时序测试过程中,按照mipi协议的规定,要求此值要小于12.5ns,即mipi data线高速传输时,速率要大于80Mbps.如下测试结果表明mipi data线上的速率大概在500Mbps.
+参考FAQ: FAQ52513
+### 问题: 无GSensor情况下，手机拍摄的照片和录像相对于预览图像转了90度
+解决方案: 无GSensor情况下,手机拍摄的照片和录像相对于预览图像转了90度,无论哪个持机方向均如此.这个是由于在没有GSensor的情况下,手机无法定位持机方位导致的现象. 解决方法:勾选"设置->显示->自动旋转屏幕"后,拍照/录像和预览图像方向便会保持一致.但前摄像头拍照/录像在某个方向还是会出现水平或垂直镜像的情况,这个无法改善.
+参考FAQ: FAQ52524
+### 问题: camera mipi时序测试之HS传输模式
+解决方案: camera mipi数据线上有两种传输模式: LP(Low-Power) 模式:用于传输控制信号,最高速率10MHz, 有LP00、LP01(0)、LP10(1)、LP11 (Dp、Dn)四种状态,工作电压在0 ~ 1.2V HS(High-Speed)模式:用于高速传输数据,速率范围[80Mbps,1Gbps] per Lane,有 HS-0、HS-1两种状态,工作电压在200mv 高速传输模式由于传输速率很高,进入或退出此模式在时序上都有严格要求,如下如所示,进入时序:LP11→LP01→LP00→SoT(0001_1101),退出时序:EoT→LP11,同时各个时间参数之间也要满足一定的要求,在此不详细描述,可查看mipi协议.
+参考FAQ: FAQ52534
+### 问题: 为什么SC7731平台，使用WRITEIMEI工具烧写IMEI号失败？
+解决方案: WRITE IMEI工具,打开设置选项,确认工程栏中的WG是否勾选,对应选择后面下拉栏中的W/G选项.
+参考FAQ: FAQ52575
+### 问题: SC7731参考设计中CAMERA部分的AF_PWDN脚的作用是什么？
+解决方案: AF_PWDN是设计成控制摄像头马达POWERDOWN脚的,有些模组是直接把马达的POWERDOWN上拉到VDD,所以BB端的AF_PWDN脚就用不上.展讯参考软件并没有去操作AF_PWDN,如果确实需要使用这个脚,需要自行编写相关代码.
+参考FAQ: FAQ52574
+### 问题: 请告知ADC校准数据放在nv中的位置
+解决方案: 可以在如下位置找到: GSM_CalibrationParm/calibration_param_t/adc
+参考FAQ: FAQ52598
+### 问题: SC6815平台中阿拉伯文下带“+”号码拨号时的显示问题？
+解决方案: 主要原因为阿拉伯文是右排版格式,这样的号码以名称或标题等形式显示时,把"+"号以字符的形式而不是以数字的形式来排版,所以会出现此现象. 修改方法:可以强制让手机上的这些号码标题格式都从左向右显示,在对应的xml的textview中增加: android:layoutDirection="ltr" 即可.
+参考FAQ: FAQ52540
+### 问题: sc7731如何通过nv开关edge的上下行
+解决方案: 请使用nveditor打开nv item,然后沿如下路径: TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs 其中: support_egprs=0表示关闭上下行; support_egprs=1表示打开上下行; support_egprs=2表示关闭上行但依然有下行.
+参考FAQ: FAQ52565
+### 问题: 7731项目手机蓝牙传输文件中，拍摄视频会出现卡顿严重问题
+解决方案: 该问题是由于客户开启slog, 而同时后台蓝牙又在传输文件,故对IO资源的要求很高. 故对此种测试场景,受限于SD卡的sdio带宽性能, 需客户关闭slog ,并建议使用高速sd卡进行进行测试.
+参考FAQ: FAQ52552
+### 问题: 恢复出厂设置后预装APK还存在 能否去掉？
+解决方案: [RootCause] 内置的apk存放在/system目录下,是不会被删除掉的. [Answer] 可以将apk内置的/data/app目录下. 请参考下面列子修改 将LOCAL_MODULE_PATH := $(TARGET_OUT)/preloadapp 修改为LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/app 用make userdataimage 编译出userdata.img 烧入机器,恢复出厂设置后,/data/app目录下的apk就会被删除掉.
+参考FAQ: FAQ52569
+### 问题: 如何将无notification情况下锁屏界面的时钟向上移动？
+解决方案: 在/idh.code/frameworks/base/packages/SystemUI/res/values-h560dp-xhdpi中有 <fraction name="keyguard_clock_y_fraction_max">32.5%</fraction> 要让无notification情况下锁屏界面的时钟模块向上移动,只需令"keyguard_clock_y_fraction_max"在(0,32.5%)之间取值即可. 该值越小,时钟模块向上移动的幅度越大.
+参考FAQ: FAQ66285
+### 问题: 如何禁用滑动解锁的menu解锁功能？
+解决方案: 滑动解锁menu解锁功能是android的原生设计,平台4.4的版本已使用代码将该功能禁用,目前平台5.0和5.1的版本尚未禁用该功能. 如果您不想使用该功能可以使用如下修改: 修改文件frameworks/base/packages/Keyguard/res/values/config.xml - <bool name="config_disableMenuKeyInLockScreen">false</bool> + <bool name="config_disableMenuKeyInLockScreen">true</bool>
+参考FAQ: FAQ66238
+### 问题: 为什么在选择网络优选模式为“仅GSM”，后再恢复出厂设置，网络优选模式依旧为“仅GSM”？
+解决方案: 优选模式的设计如此. 某张卡的优选网络数据是保存在Modem侧(NV item),恢复出厂设置仅对Android侧的用户数据做清除,所以不会影响到已经选择的优选网络.
+参考FAQ: FAQ52605
+### 问题: event.log中常见activity启动过程log含义
+解决方案: am_create_activity :创建启动activity对应的ActivityRecord am_restart_activity :AMS开始启动activity,对应包括activity的onCreate以及onResume的调度 am_on_resume_called :activity的onResume完成调度 am_pause_activity :AMS开始调度activity的onPause am_on_paused_called : activity的onPause调度完成 am_proc_start : AMS启动activity所在的应用程序进程 am_proc_bound :启动进程与该应用程序完成绑定
+参考FAQ: FAQ52649
+### 问题: service启动的两种方式
+解决方案: service有两种方式 1.startService 2.bindService service启动的两种方式的区别: startService 主要用于启动一个服务执行后台任务,不进行通信,停止服务使用stopService;bindService 该方法启动的服务创建了一个serviceConnection将此service的token对象传递给了caller, 调度bindService方可以通过通过该token获得该service的状态,停止服务使用unbindService
+参考FAQ: FAQ52656
+### 问题: 2351FM设台成功与搜台成功有什么区别？
+解决方案: 设台成功:适用于设台模式下.底层的做法是将上层传入的频率值写入寄存器,若写入后芯片能继续工作便会将中断寄存器FM_REG_INT_STS置位,表示设台成功.但是并关心此台是否有效. 搜台成功:适用于搜台模式下.芯片自动搜索,当搜到有效台时将FM_REG_RSSI_STS寄存器置为0.函数在timeout门限内循环读取此寄存器的值,如果获取到为0,则返回搜台成功.
+参考FAQ: FAQ71286
+### 问题: 为什么在选择网络优选模式为“仅GSM”后，重新注册网络的时间比较长？
+解决方案: 根据已有的测试数据,SC7715在做WCDMA CS attach每次需大约3秒;而GSM CS attach每次需大约10秒. WCDMA和GSM在接入时间上的差异是由于信令不同导致. 因此在设置"仅2G"后,10秒左右的注网时间是正常的,但如果出现30秒或更长的注网时间,则可能出现了某种异常.
+参考FAQ: FAQ52681
+### 问题: 在init.rc中添加shell运行脚本
+解决方案: 在实际开发中,会遇到一些需要在启动过程中执行的操作,但是又不希望使用代码来完成. 比如在某个动作之后之后mount某个设备,创建一些目录,或者更改权限等等,那么,shell是一种比较好的选择. 具体做法,以sc7715为例: 1、在init.rc中添加service service XXX_service /system/xbin/XXX.sh class main disabled oneshot 2、当我们需要这个shell开始做一些事情的时候,就可以进行如下操作: property_set("ctl.start", "XXX_service"); 因为启动的service是oneshot,所以,它在执行完之后就会退出而不会因为占用资源而作为一个程序一直存在
+参考FAQ: FAQ52725
+### 问题: 7731项目如何配置4级温度控制参数?
+解决方案: 客户可以联系展讯硬件FAE 测量手机温升, 获取最优值后. 修改kernel对应客户工程的dts文件 中数据结构: sprd_thermal { compatible = "sprd,sprd-thermal"; id = <0>; interrupts = <0 26 0x0>; reg = <0xf5260000 0x1000>; trip_points_active = <80 88 100>; // 修改温升上升值 trip_points_lowoff = <72 72 81>; //修改温升下限值 trip_points_critical = <110>; trip_num = <4>; };
+参考FAQ: FAQ52735
+### 问题: 如何修改在静音模式下拍照没有拍照音？
+解决方案: 可以通过以下方式,判断当前是否是静音模式: private boolean isSilence() { AudioManager audiomanage = (AudioManager) mActivity.getSystemService(Context.AUDIO_SERVICE); return audiomanage.isSilentMode(); } 然后在调用mCameraDevice.takePicture方法拍照之前,设置一下enableShutterSound即可. if (isSilence()) { mCameraDevice.enableShutterSound(false); } else { mCameraDevice.enableShutterSound(true); }
+参考FAQ: FAQ52746
+### 问题: 7715平台如何使userdata和内置SD卡共享空间
+解决方案: 7715平台的修改路径是:修改device/sprd/scx15/emmc/emmc_device.mk文件,如下: ifndef STORAGE_INTERNAL STORAGE_INTERNAL := emulated endif ifndef STORAGE_PRIMARY STORAGE_PRIMARY := external endif 即可; 注:7715平台只有EMMC的方案支持内置SD卡空间;
+参考FAQ: FAQ52768
+### 问题: 5735平台3G视频通话功能如何打开
+解决方案: 5735平台3G视频通话功能要打开需要做如下修改; 1、设置scx35_sp5735c1eabase(或plus).mk 文件中系统属性值,新增属性项 persist.sys.support.vt=true;而对于scx35_sp5735c1eabase(或plus)_UUI.mk是有persist.sys.support.vt=false,需要修改为true; 2、设置 NV 项,置 td_nv_type.nvm->mt_video_call_support=1;
+参考FAQ: FAQ52769
+### 问题: 在调试中出现类似usb驱动使用过程中出现蓝屏时，log如何抓取？
+解决方案: 系统出现蓝屏后,如果在系统的启动恢复菜单里勾选了保存转储 文件的选项,系统将会保存这个文件,可以将这个文件获取进行分析,如下图log的获取
+参考FAQ: FAQ52773
+### 问题: 5735平台是否支持可以选择哪个SIM卡槽支持3G WCDMA？
+解决方案: 目前5735平台是基于TM_BASE_13B的,目前这个分支是固定的SIM1卡槽支持WCDMA(3G),SIM2卡槽支持GSM(或2G).虽然可以通过修改NV的TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_MN_CFG\sim_slot_cfg,我们可以使卡槽1支持3G、卡槽2支持2G或者卡槽1支持2G、卡槽2支持3G,但是该平台的modem的SIM SLOT 的方案是不完善的,有很多问题,如配置后卡槽和界面显示会不一致等. 另外,万能卡槽的方案,目前只有在 TM_BASE 和 TM_BASE_13C 上才有,并且都在W42版本之后的才支持.
+参考FAQ: FAQ52772
+### 问题: 浏览网页上的GIF动画，如何调整帧率
+解决方案: 浏览器显示GIF动画是chromium通过Skia渲染的,参数的获取是在GIFImageReader.cpp parseData() Case GIFControlExtension:中,修改setDelayTime()的参数.如果要降低播放速率,加大这个值就可以,加大的倍数需要开发人员实际调试.
+参考FAQ: FAQ52779
+### 问题: 俄语下，浏览器输入президент.рф，地址栏会变成一串以xn--开头的英文乱码，这是什么原因？
+解决方案: 网址出现以xn--为开头的不算是乱码,这种编码成为Punnycode, Punycode是一个根据RFC 3492标准而制定的编码系统,主要用于把域名从地方语言所采用的Unicode编码转换成为可用于DNS系统的编码.Punycode可以防止所谓的IDN欺骗. 浏览器会将Unicode编码的url网址通过IDN转换方法转换到ascii或者utf8的Punnycode形式.
+参考FAQ: FAQ52808
+### 问题: 浏览器如何测试记住表单数据
+解决方案: 百度输入栏的候选字清除,需要用清除缓存的方式,不是用表单数据. 表单在网页中主要负责数据采集功能. 测试可以访问新浪微博weibo.cn,在搜索框输入内容,搜索,然后再返回做清除表单数据的测试.
+参考FAQ: FAQ52790
+### 问题: 7731上怎么配置深度休眠状态下可被唤醒的中断
+解决方案: 配置在深度休眠状态下可被唤醒的中断需要注意如下两点: 1.申请中断时请置上IRQF_NO_SUSPEND选项 2.由于休眠状态下,clock时钟一般为32K,所以需要保证中断的保持时间;比如电平中断建议持续时间要超过100ms
+参考FAQ: FAQ52794
+### 问题: 隔行扫描与逐行扫描的区别
+解决方案: 1.隔行扫描(Interlaced):每一帧被分割为两场画面交替显示,即每一帧被分割为两场,每一场包含了一帧中所有的奇数扫描行或者偶数扫描行,由于视觉暂留效应,人眼将会看到平滑的运动而不是闪动的半帧半帧的图像.但是这时会有几乎不会被注意到的闪烁出现,使人眼容易疲劳,当屏幕的内容是横条纹时,这种闪烁特别容易被注意到. 2.逐行扫描(Progressive):逐行扫描方式是将每帧的所有画面同时显示,每次显示整个扫描帧,如果逐行扫描的帧率和隔行扫描的场率相同,人眼将看到比隔行扫描更平滑的图像,相对于隔行扫描来说闪烁较小.
+参考FAQ: FAQ52817
+### 问题: Android上如何实现个暗码，输入暗码直接删除/productinfo/节点下的某个文件。
+解决方案: 比如:/productinfo/engtest.db文件. 实现方法如下: ./packages/apps/Dialer/src/com/android/dialer/SpecialCharSequenceMgr.java文件, 方法static boolean handleSecretCode(Context context, String input)下 加入如下判断:(暗码为:*#3737*#) if (len ==8 && input.equals("*#3737*#")){ File file = new File("productinfo/engtest.db"); if (file.exists()){ boolean b = file.delete(); Log.d(TAG, "delete engtest.db :" +b); } return true; }
+参考FAQ: FAQ53430
+### 问题: 如何满足google的桌面要求，把google的应用放在主页面的文件夹中
+解决方案: 参考Launcher中的default_workspace.xml文件中的<folder>标签,其中launcher:title="@string/default_folder_tools" 可以定义文件夹的名称,launcher:screen="1"定义放在第几页,launcher:x="1" 放在第几列,launcher:y="3" 放在第几行,文件夹中的favorite就是这个文件夹中包含的项.
+参考FAQ: FAQ52873
+### 问题: 7731平台实现紧急电话拨号测试的AT指令流程是怎样的？
+解决方案: AT+SFUN=2:起卡 AT+SFUN=4:起协议栈 ATD112:拨打紧急号码112,返回CONNECT表示连接,ERROR表示连接错误 AT+CPAS:查询DCE状态,返回4表示处于通话状态 AT+CSQ:读取当前服务区的信号强度 ATH:挂电话
+参考FAQ: FAQ52874
+### 问题: 7731平台在关机工程模式下如何获取wifi的MAC地址？
+解决方案: 7731平台在正常开机情况下,默认的wifi MAC地址是保存在/data/misc/wifi/目录下wifimac.txt文件中,但在关机工程模式下wifi模块没有加载,这个文件是不存在的,因此需要手动加载wifi模块,然后获取wifi MAC地址,按照如下指令操作: system("insmod system/lib/modules/bcmdhd.ko"); system("cat /sys/class/net/wlan0/address >> /data/misc/wifi/wifimac.txt"); 读取wifimac.txt文件中的内容,即wifi的MAC地址
+参考FAQ: FAQ52876
+### 问题: 7731平台在关机工程模式下如何获取手机SN号？
+解决方案: 可以通过读取属性ro.serialno来获取手机SN号: property_get("ro.serialno",SN_NO,"");
+参考FAQ: FAQ52877
+### 问题: 7731平台在关机工程模式下如何获取手机IMEI号？
+解决方案: 可以通过发送如下AT指令来获取手机IMEI号: AT+CGSN
+参考FAQ: FAQ52878
+### 问题: SC7715关机充电界面文字字号的大小是否可修改？
+解决方案: 充电界面文字字号是标准字库,无法修改,如果希望显示大字体有两种方案 1、自己重新做一个字库 2、用图片显示
+参考FAQ: FAQ52880
+### 问题: ubi在什么情况下会对头部以外的数据区域进行CRC-32保护？
+解决方案: Ubi会对EC(擦除计数)和VID(卷ID头)进行CRC-32保护,因而可以知道头部是否损坏.而仅当ubi执行原子LEB操作或者当其因负载均衡的缘故移动PEB块的内容时,才会对所存储的数据进行CRC-32保护.
+参考FAQ: FAQ52881
+### 问题: ubi是如何判定VID头部崩溃是由掉电或是非掉电引起的？
+解决方案: 当擦除块的数据区域仅包含0xFFs,没有任何其他数据,那么这个块可以被安全的擦除,这种类型被认为是掉电 当数据区域存在位反转或者数据完整性错误(NAND ECC错误),那么可能的情况是擦除块是在掉电的情况下擦掉的,所以这种情况也判定为掉电.这种情况是不确定的,但仍然判定为掉电. 其他情况都判定为非掉电原因
+参考FAQ: FAQ52883
+### 问题: SC7731使用内置电池，如何支持硬件复位
+解决方案: 7731支持power键7s硬件复位,修改如下:
+u-boot\include\configs\sp7731gea.h    
+-----#define CONFIG_PBINT_7S_RST_HW_SHORT 1 
+//#define CONFIG_PBINT_7S_RST_SW_SHORT 1
+参考FAQ: FAQ52887
+### 问题: 在打开蓝牙时，重启手机后蓝牙的处理流程是怎样的？
+解决方案: 1.系统起来发ACTION_BOOT_COMPLETED广播 2.BluetoothManagerService收到广播,并根据数据库的值来打开蓝牙 3.蓝牙打开成功,SystemUI搜到打开蓝牙成功的广播.进行显示.
+参考FAQ: FAQ52889
+### 问题: 蓝牙中Settings.Global.BLUETOOTH_ON的作用是什么？
+解决方案: 在打开蓝牙时,会将Settings.Global.BLUETOOTH_ON设置成BLUETOOTH_ON_BLUETOOTH(Int值为1),只有再关闭蓝牙,该数据库才会改变.打开蓝牙,重起,这个过程中该数据库一直会是BLUETOOTH_ON_BLUETOOTH. 这个值的唯一作用就是在手机重启的时候,判断是否要自动打开蓝牙.
+参考FAQ: FAQ52891
+### 问题: ACTION_BOOT_COMPLETED广播在蓝牙中有什么作用？
+解决方案: 在打开蓝牙时,重启手机,系统会在ACTION_BOOT_COMPLETED接收后、BlueToothManagerService初始化成功并且数据库读出Bluetooth_On才会执行打开蓝牙操作.SystemServer起来只会初始化BlueToothManagerService,但此时并不会打开蓝牙.Android4.4修改了相应机制,不在SystemServer里面打开蓝牙,为的是不抢占开机资源,减少开机时间.
+参考FAQ: FAQ52892
+### 问题: 如何显示虚拟的MENU/HOME/BACK键？
+解决方案: 在frameworks/base/core/res/res/values/config.xml文件中 <bool name="config_showNavigationBar">true</bool> //将这个属性设置为true即可显示.
+参考FAQ: FAQ52893
+### 问题: FTP Client端和Server端交互流程是怎样的？
+解决方案: 
+参考FAQ: FAQ52895
+### 问题: MAP Client端和Server端交互流程是怎样的？
+解决方案: 
+参考FAQ: FAQ52896
+### 问题: PBAP Client端和Server端交互流程是怎样的？
+解决方案: 
+参考FAQ: FAQ52897
+### 问题: zone.tab中的数据含义分别是什么
+解决方案: frameworks\opt\timezonepicker\assets\zone.tab文件中数据如下: 第一列表示国家码; 第二列coordinates表示的是地区纬度经度信息(其中北纬为正,东经为正,南纬为负,西经为负.); 第三列表示时区名称,如亚洲、欧洲等; 第四列表示时区的说明,包括哪些城市等,可以为空. #ccountry-code coordinates TZ comments AD +4230+00131 Europe/Andorra CN +3114+12128 Asia/Shanghai east China - Beijing, Guangdong, Shanghai, etc.
+参考FAQ: FAQ52903
+### 问题: windows PC侧usb驱动包里包含哪些文件，作用是什么？
+解决方案: 驱动安装包里包含3种主要的文件: .sys 驱动文件可以用来操作硬件. .inf 配置文件 帮助系统找到硬件所要的驱动,包含可以支持的设备的ID 列表,同时可以配置设备在设备管理器上的名字. .cat 可以供数字签名使用的文件.如果有这个文件而且有微软的数字签名,就表明这是系统信任的组件,就不会有警告对话框弹出.Cat 文件是sys 和 inf的校验文件. 驱动包支持32位和64位系统,在X86 目录下是32位的驱动程序,在amd64 下是支持64位的驱动程序.
+参考FAQ: FAQ52923
+### 问题: MOCOR 非APP线程如何向窗口发送消息？
+解决方案: 非APP线程如何向窗口发送消息需使用如下接口: PUBLIC void MMIAPICOM_OtherTaskToMMI( MMI_HANDLE_T handle, MMI_MESSAGE_ID_E msg_id, DPARAM param_ptr, uint32 size_of_param );
+参考FAQ: FAQ52948
+### 问题: 如何解决sc7701平台手机蓝牙概率无法配对？
+解决方案: 该case是sc6531蓝牙与第三方蓝牙配对才会出现的问题,确认问题是page timeout发生,属于蓝牙性能偏弱导致,厂商优化性能提供patch即可.
+参考FAQ: FAQ52863
+### 问题: SC7731平台，LCD选用720P（HD），按照[FAQ45725]修改后，开机花屏，请问还需要修改哪里以解决开机花屏问题
+解决方案: 1. 花屏原因是u-boot中fb 预留内存越界,需要修改u-boot中计算预留内存时的物理内存大小 2. 以board 7731gea为例,请修改如下文件: u-boot/include/configs/sp7731gea.h #define PHYS_SDRAM_1 0x80000000 -- #define PHYS_SDRAM_1_SIZE 0x10000000 ++ #define PHYS_SDRAM_1_SIZE 0x20000000
+参考FAQ: FAQ52973

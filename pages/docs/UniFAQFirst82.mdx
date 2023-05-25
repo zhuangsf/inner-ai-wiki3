@@ -1,0 +1,315 @@
+### 问题: SC2721G的VRTC电压以及32K晶体的输入电压范围
+解决方案: 查询SC2721G的规格书,VRTC电压Typ为3V,实际VRTC的Typ应为1V8. 32K晶体的输入电平应在0.2VRTC~0.8VRTC之间.
+参考FAQ: FAQ202276323,含图片
+### 问题: 时钟抖动的相关介绍和测试
+解决方案: 一、时钟抖动可以分为以下三类: 周期抖动(Period Jitter):测量实时波形中每个时钟周期的宽度与理想波形的偏差 周期间抖动(Cycle to Cycle Jitter):任意2个相邻时钟周期之间偏差 时间间隔误差抖动(Time Interval Error, TIE):测量时钟沿与其理想位置的偏差,需使用参考时钟或时钟恢复提供理想的边沿 二、在用示波器测试Jitter的时候,有以下注意事项: 在近芯片端的TP或电容或电阻上焊接测试线 使用有源探头测试 用示波器的Normal方式触发,等待采样个数达到10K以上时停止采样,可以选择RMS或者Peak to peak 测量环境允许的话用相噪仪测试更加准确 请在晶体校准后测量,PMIC规格书可查看Jitter相关参数,可自行比对.
+参考FAQ: FAQ202276324
+### 问题: TSX+32K-Less如何降低关机漏电流
+解决方案: TSX+32K-less方案关机漏电流在220-280uA左右(AFC校准后),在耗时较长的船运或仓储中,可能会耗尽机器电量. 以下两种方法可以降低关机漏电流: 一、可以使用带有ship mode的充电IC来解决该问题; 细节参考:展锐Ship Mode应用说明书V1.0.pdf https://unisupport.unisoc.com/file/index?fileid=34485 二、可以在关机时关闭RTC模块供电,在船运结束或仓储取出后再回退到之前的版本. 具体操作是在关机状态时关闭VDDDCXO,同时32K来源切换至内部RC震荡,实测可以将关机漏电流控制在60-90uA,可提交软件cq获取sample code, 注意该方法需要重新下载软件.
+参考FAQ: FAQ202276325
+### 问题: SC7701B复位失效
+解决方案: SC7701复位脚EXTRSTN只能实现软复位. EXTRSTN会复位数字部分,但不能使整个系统完全掉电,在某些软件死机(如romcode挂死)的情况下,无法复位. 如需控制全部掉电,需要控制VBAT或者做可拆卸电池. 建议:VBAT上增加MOS开关,MCU下发复位信号控制MOS关断,断开sys供电,实现强制硬件关机.
+参考FAQ: FAQ202276327
+### 问题: SC2721G不接电池的情况下，VBUS接入5V充电，VBAT端输出电压跳变
+解决方案: SC2721G设计了一个研发专用的无电池下载方案,不检测电池在位, 5V VCHG会转换成一个4V/400mA的LDO(输出不可更改), 若系统耗电超过400mA, VBAT会被拉低,触发UVLO, 如此循环将造成VBAT电压跳变. VBAT波形可参考下图:
+参考FAQ: FAQ202276328,含图片
+### 问题: 调整USB驱动能力的方法--修改寄存器
+解决方案: USB20_HS_Host_Mode_Test_SOP_V1.0.0.pdf:https://unisupport.unisoc.com/file/index?fileid=34895 USB20_HS_Device_Mode_Test_SOP_V1.0.pdf:https://unisupport.unisoc.com/file/index?fileid=34889 以上文档详细说明了各平台的眼图测试方法和眼图调整办法,可参考调整USB眼图的上升/下降沿和眼高来调整驱动能力,假如无法查看文档,请提交CQ咨询USB眼图调试方法,如需合入Pac,请提软件CQ.
+参考FAQ: FAQ202276329
+### 问题: 软件代码与单软多硬文档描述的RF Band的ADC电压检测范围不一致
+解决方案: 以Uni-support上参考文档编号25733为例: 如下图,文档中第19页,ACD3是0x06时,需要检查电压的范围是(0.9206,0.9594) 而在代码中:5Gwifi基线sprd_boardid_sp9832e.c中get_adc_value_board函数里面代码写的: if (vol >= 883 && vol <= 997) level = 6; 造成上述差异的原因是什么?需要更正成一致吗? 答:0.9206,0.9594是按47k/1%精度,然后+/-10mV得来的; 883,997是按47k/5%精度,然后+/-10mV得来的; 物料使用1%来保证稳定性,代码用5%精度来加强兼容性,所以两个计算方法实际上是一致的,不需要修改.
+参考FAQ: FAQ202276330,含图片
+### 问题: 怎么打开调试log
+解决方案: 打开 #define OSI_LOCAL_LOG_LEVEL OSI_LOG_LEVEL_DEBUG
+参考FAQ: FAQ202276348
+### 问题: 如何打印一条带字符串的log
+解决方案: 如OSI_PRINTFI("Now %d time callback data=%s", uart_cb_cou, data);
+参考FAQ: FAQ202276350
+### 问题: 如何查看gpu占用率
+解决方案: adb root adb shell cat /sys/class/devfreq/60000000.gpu/available_frequencies //查看gpu支持频率 /vendor/bin/power/gpu/loading/gpu_loading -t 10 //10s内gpu使用率,-t 后的参数可以修改成需要的时间,单位为s cat d/pvr/status //实时查看当前gpu占用
+参考FAQ: FAQ202276352
+### 问题: UIS7862S平台 vddkpled如何保持常开状态
+解决方案: 请在bsp/bootloader/u-boot15/board/spreadtrum/uis7862xxxx/ldo_sleep.c void pmic_lowpower_config(uint32_t ddie_id,uint32_t adie_id) { +ANA_REG_SET(ANA_REG_GLB_KPLED_CTRL1,0x6940); }
+参考FAQ: FAQ202276353
+### 问题: SL8563平台 如何进入低功耗的方法
+解决方案: 可以通过adb手动下发命令; adb shell echo mem > /sys/power/state
+参考FAQ: FAQ202276354
+### 问题: 插卡待机低电流偏大问题，NV部分如何检查
+解决方案: 对于待机低电流偏大问题,可以做一下排除实验. 进行矢网无卡和有卡测试,看待机状态下,低电流是否有区别. 1.有卡测试较无卡测试偏大明显,比如无卡测试待机低电流1mA,有卡测试待机低电流2.2mA,此时可以检测NV部分mipi 器件相关寄存器close 部分是否配置.用到的寄存器最好都置零 还有检查用到的gpio控制的器件,RFCTROL的相关逻辑接口正确置零.比如rfctrol4接口在打开时会拉高,在关闭时不对rfctrol4操作,使得rfctrol4持续拉高,可能会导致漏电. 1.有卡和无卡待机低电流均偏大,,此时与射频前端的开关是否关闭影响不大,可以检测NV初始化部分有无配置sleep模式. 以上两种方式可以通过修改NV解决,特别是某些平台需要手动配置NV的时候,需要留意该部分,若两种方法均无改善,则需要进行电流分解,进一步排除.
+参考FAQ: FAQ202276355,含图片
+### 问题: yocto平台 SL8521E是否支持双卡双待，以及如何切卡
+解决方案: yocto平台 SL8521E smartcoreboard和3in1工程默认推送的版本是双卡双待的,其他SL8521E工程为双卡单待. 双卡双待切数据卡AT指令:AT+SPSWDATA 双卡双待可以使用一个串口给不同卡发at命令,切换的指令是 AT+SPSIMINDEX =0 使用卡1的AT通道 AT+SPSIMINDEX =1 使用卡2的AT通道
+参考FAQ: FAQ202276358
+### 问题: IQ测试WIFI 5G时如何打开信道补偿功能
+解决方案: 如图: 将右下角Channel Estimation选项由LTF改为DATA即可
+参考FAQ: FAQ202276360,含图片
+### 问题: UMT9620 各频段RX Port选择说明
+解决方案: 理论上各频段根据各自的频率和UMT9620 datasheet上面各个port口支持的频率对应即可. 实际使用中,由于各种ENDC和CA组合的支持,需要调整RFIC内部资源配置,为了简便配置以及follow平台验证过的组合能力,建议客户各频段的RX Port 和平台默认保持一致. 目前平台量产频段的RX Port配置如下(软件对应22C分支),其它后续开发的频段请参考平台的baseNV 或者咨询展锐支持团队 注:1. 各band的RX Port只允许在同组内交换,例:H0换到H3,不允许组间交换,例:H口换到M口 2.2G/3G频段的RX Port选择 follow LTE
+参考FAQ: FAQ202276362,含图片
+### 问题: V2平台RX链路靠近Transceiver端匹配物料选择
+解决方案: 不论是低\中\高频率,射频一直要求靠近RFIC端上件或调试时需要串联摆放感性器件. 此位置对射频来说十分重要,除了影响灵敏度外,还有可能会影响RSSI\RSCP等指标. P.S.V3 、V4平台RX 匹配没有额外要求.
+参考FAQ: FAQ202276364
+### 问题: 机器进校准模式（Enter mode）失败或者校准掉口
+解决方案: 排除硬件信号问题的情况下,可尝试调整Uboot阶段的VDDUSB电压:可尝试更改为3V/3V3/2V7. 如需代码修改请提软件cq协助.
+参考FAQ: FAQ202276365
+### 问题: 系统是否支持tts
+解决方案: 1、只有GMS版本才有谷歌tts,并且需要访问外网才能下载相关数据包 2、非gms版本没有tts,需要安装第三方tts,比如科大讯飞tts
+参考FAQ: FAQ202276370
+### 问题: 钰泰ETA6963充电IC使用容易忽略的事项
+解决方案: ETA6963是一颗耐压30V,宽输入3.9-13.5V,3A充电,带路径管理,I2C配置,Buck+OTG一体的充电IC. 但是这个充电IC在关机状态和待机状态会比其他的充电IC大50uA的漏电流,漏电路径通过该IC的 vbat管脚流入到到ETA6963内部. 建议在使用之前与该充电IC厂家提前沟通是否有改善或者替换的物料.
+参考FAQ: FAQ202276374,含图片
+### 问题: 识别不同电池的方法
+解决方案: ADC识别: 将电池ID脚直接连接任意一路空闲的ADC ADC channel 输出20uA,流经电池内部电阻后产生不同电压,可依此区分不同电池,此方法可区分多种电池,但要在软件上将该ADC设置成电流源模式 GPIO识别: 将电池ID脚直接连接到空闲的GPIO, 令电阻在电池内部上拉至VBAT,则电池ID脚可输出高;电阻在电池内部下拉到地,则电池ID脚可输出低; 此方法只能区分两个厂家的电池
+参考FAQ: FAQ202276375
+### 问题: I2C低电平偏高的调整方法
+解决方案: 低电平主要是输出端吸收负载电流(灌电流-被动),灌电流越大,低电平越大; 可从尝试以下几点去改小低电平偏大: SCL是由BB提供的,若低电平幅值偏高可尝试调节驱动强度(电流); SDA是双向的,写信号由BB发,读信号由Device发;若是写方向偏高则调大驱动强度;若是读方向,把上拉改大; 检查SCL/SDA是否有串阻.
+参考FAQ: FAQ202276395,含图片
+### 问题: 在短信中某些unicode字符显示不对
+解决方案: 函数gui_EMS_input_box_insert_character在输入时会使用UI_TEST_UCS2_CHARACTER来判断是否是UCS2字符,0x0060目前被UI_TEST_8895_1_CHAR_IN_GSM_DEF_CHAR设置为GSM字符了,可以通过修改UI_TEST_8895_1_CHAR_IN_GSM_DEF_CHAR(c)来解决
+参考FAQ: FAQ202276399
+### 问题: 无FM功能时，FM的原理图设计
+解决方案: 一、展锐FM常规3个管脚 1.FM_LANT,FM长天线,默认使用的FM射频线路 2.FM_SANT,FM短天线,一般不作为射频线 3.AVSS_FM,FM的GND 二、当不要FM功能,且想在原理图上删除FM电路,原理图设计如下 1.FM_LANT,悬空 2.FM_SANT,悬空 3.AVSS_FM,FM的GND,需要保持接GND,不能悬空,如下图
+参考FAQ: FAQ202276401,含图片
+### 问题: WiFi calling开关名称
+解决方案: 若需要修改设置界面WiFi calling开关显示的名称 请在/packages/apps/Settings/res_unisoc/values-mccXXX-mncXX/strings.xml中(XX为对应运营商的mccmnc) 将wifi_calling_settings_title修改需要的字符串.
+参考FAQ: FAQ202276403
+### 问题: i2c clk占空比
+解决方案: /drivers/i2c/busses/i2c-sprd.c 默认占空比为2:3,修改如下所示: static void sprd_i2c_set_clk(struct sprd_i2c *i2c_dev, u32 freq) { ...... u32 i2c_dvd = APB_clk / (4 * speed) - 1; u32 high = ((i2c_dvd << 1) * 2) / 5; //修改2/5 u32 low = ((i2c_dvd << 1) * 3) / 5; //修改3/5 ...... }
+参考FAQ: FAQ202276404
+### 问题: 语音信箱（voicemail）相关配置
+解决方案: 1.默认语音信箱(voicemail) 号码 voicemial号码先读取SIM卡中是否有预置,而后会读界面以及是否有配置默认号码,默认号码为空. 修改默认号码的方法: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行如下配置: <string name="default_vm_number_string">XXX</string> 2.语音信箱(voicemail) 号码是否可编辑 voicemial号码默认可编辑,通过"KEY_EDITABLE_VOICEMAIL_NUMBER_SETTING_BOOL" 实现运营商定制 修改为不可编辑的方法: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行如下配置: <boolean name="editable_voicemail_number_setting_bool" value="false"/>
+参考FAQ: FAQ202276405
+### 问题: SL8541如何使用EXT_RSTN脚单键复位
+解决方案: 1.u-boot/include/configs/sl8541e_1h10_32b.h(实际使用),改为如下所示
+-----#define CONFIG_7S_RST_MODULE_EN     0   //disable power键的7秒复位功能(可不改)
+-----#define CONFIG_7S_RST_2KEY_MODE	    0   //为单键复位模式
+
+2.u-boot15/board/spreadrum/sl8541e_1h10_32b/sl8541e_1h10_32b.c
+int board_init(void)
+{
+......
+    enable_global_clocks();
+++  enable_ext_reset_mode(); //使能EXT_RSTN脚作为reset功能
+-----#endif
+}
+参考FAQ: FAQ202276406
+### 问题: AndroidR 下发mmicode默认携带的serviceClass配置方法
+解决方案: 通过mmicode下发 设置补充业务时 携带的serviceClass默认为0, 使用"KEY_DEFAULT_MMI_SERVICE_CLASS_INT" 可实现运营商定制. 默认携带serviceClass=1下发指令的方法: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行如下配置: <int name="default_mmi_service_class" value="1"/>
+参考FAQ: FAQ202276407
+### 问题: OTA测试TIS时一些常见错误
+解决方案: １.在测试LTE 分集TIS时,压测多次出现几ｄB以上的波动,(正常TIS数值波动在０.１～０.２以内) 在测试OTA时需要关闭数据流量 VoLTE DNS等,否则开数据流量/VoLTE/DNS,后台会发仪表不期望的数据包,仪表端不响应这些数据包,modem会一直重传这些数据包,重传到最大次数的时候,modem直接报失步,链路就会断开表现为掉线,最终出现问题表现为TIS数据波动. 具体详情可参考如下文档: 33868 《GCF_PTCRB测试指导手册V2.8.pdf》 2.测试2/3G TIIS时,出现主+分的性能反而不如单天线性能 我司平台默认GSM与WCDMA分集是动态开启,主路渐渐低降低到灵敏度极限时,检测到主路信号弱了之后,此时辅路打开,而非立即打开,而在测TIS时,仪表会很快探极限灵敏度,如此反复.这样就导致有时候测试会出问题. OTA测试时需要将分集动态打开修改为强制常开,修改方式请见如下FAQ: [FAQ202173076] GSM WCDMA分集强开方式
+参考FAQ: FAQ202276409
+### 问题: 两位数号码以ATD下发的配置方法
+解决方案: 两位且不以1开头的号码默认会被作为USSD下发,协议规定如此: * According to the 3PGG TS 22.030 specification Figure 3.5.3.2: A 1 or 2 * digit "short code" is treated as USSD if it is entered while on a call or * does not satisfy the condition (exactly 2 digits && starts with '1'), there * are however exceptions to this rule (see below) 若一定要修改为以ATD下发,方法如下: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中, 在mmi_two_digit_number_pattern_string_array下添加对应的号码.
+参考FAQ: FAQ202276410
+### 问题: Google Dialer通话界面显示HD+的配置方法
+解决方案: Google Dialer下通话界面默认不显示HD+图标, 通过"KEY_DISPLAY_HD_PLUS_ICON_BOOL" 实现运营商定制. 修改为显示HD+图标的方法: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行如下配置: <boolean name="display_hd_plus_icon_bool" value="true" />
+参考FAQ: FAQ202276411
+### 问题: 通过Google应用 WfcActivation.apk实现VOWIFI鉴权功能的配置
+解决方案: 若需要打开VOWIFI鉴权功能,请完成如下步骤: 1. 预置 Google应用 WfcActivation.apk 2. 在/packages/apps/CarrierConfig/assets 路径下对应运营商配置文件中,增加 <boolean name="carrier_volte_provisioning_required_bool" value="true" />配置项.
+参考FAQ: FAQ202276412
+### 问题: 使用adb命令获取imei
+解决方案: Android11: adb shell service call iphonesubinfo 1 Android12: (a)userdebug 需要执行adb root adb shell service call iphonesubinfo 4 i32 0 s16 com.android.phone null (b)user版本用shell adb shell service call iphonesubinfo 4 i32 2 s16 shell null Android 13 adb shell service call iphonesubinfo 4 i32 1 s16 shell
+参考FAQ: FAQ202276413
+### 问题: S15727器件使用注意事项
+解决方案: 1.S15727器件是通过引脚 ID0和ID1来判别USID,若这两个引脚出现虚焊,则会出现USID被改写 2.若重新焊接或交叉更换物料,发现问题跟着器件走,且寄存器回读USID是被固定改写成其他值,则可通过以下方式进行修改 ａ.在NV中NR mipi初始化的最前端加入两条指令00-1C_40即使用USID_0对两条mipi线(mipi0和mipi1)上的器件Reset(1C_40),译为0X101700和0X101701 b.Change USID,问题器件的USID都是会被改写成固定值,所以NV中所有涉及到问题器件的地方(mipi初始化&logic),USID都要由原值改成后来的"固定值".
+参考FAQ: FAQ202276414,含图片
+### 问题: 终端一致性射频测试，手机如何设置？有没有参考文档？
+解决方案: 在支持客户过程中,常碰到客户在研发阶段射频指标测试已经OK,而在一致性测试时报一些常规射频指标Fail的CQ.原因为客户一致性测试时不了解展锐平台一致性测试的手机设置要求,从而导致常规射频指标fail,例如关闭数据连接、关闭VoLTE等.具体设置可参考文档:https://unisupport.unisoc.com/file/index?fileid=33868,《GCF_PTCRB测试指导手册V2.8》第五章 测试终端设置.
+参考FAQ: FAQ202276417
+### 问题: UMS9620(UIS7885/UIS7870)平台使用Pandora 读取RFFE寄存器值的方法
+解决方案: 第一步 非信令连接Pandora,选择V4 第二步 进行各制式的非信令TRX操作 例:读取LTE B1 TX时候的PA配置是否生效,选择LTE active TX ON 第三步 保持第二步的操作状态,点击 common页面选择debug
+参考FAQ: FAQ202276419,含图片
+### 问题: A13 美颜与MFNR3.2模块调试注意事项
+解决方案: 答:针对A13,tuning参数的解答: 一:美颜模块 1.先确认下是否添加了美颜模块,若没有添加,需要手动添加上.若发现美颜不生效的情况,先检查下美颜模块是否添加; 二:MFNR3.2 MFNR3.2添加了场景检测模块MFNR_SD,调试时需要同时添加MFNR_SD与MFNR3.2,才能生效,log关键字才能打印出来,若log关键字打印不出来,可检查下这2个模块是否都添加了; 注:A13手动添加完模块后不用编译,push完参数,重启下就会生效;
+参考FAQ: FAQ202276422
+### 问题: GPS TTFF@-130dBm定位时间偏长问题常见原因
+解决方案: GPS TTFF@-130dBm定位时间偏长,测试30次有多次时间达60s以上,从硬件角度来看,主要原因有以下两点: 1.26M时钟信号问题,时钟净空区域没有按照要求设计,走线没有立体包地或与其他基带信号线/电源线平行走线过长,且之间隔离地宽度不足两倍线宽以上,都会干扰26M时钟走线,影响GPS定位时间; 2.GPS RF走线包地不完整也会影响定位时间,需要满足立体包地的要求.
+参考FAQ: FAQ202276436
+### 问题: SC9820E平台，vddkpled如何切换sink模式
+解决方案: 1.u-boot/board/spreadtrum/sp9820xxx/ldo_sleep.c +ANA_REG_SET(ANA_REG_GLB_KPLED_CTRL0,0xf200) 2.修改run_mode kernel/arch/arm/boot/dts/sc2721.dtsi pmic_kpled: kpled@2ac { compatible = "sprd,sc2721-kpled"; brightness_max = <255>; brightness_min = <0>; run_mode = <1>; //1是sink模式,0是ldo模式 reg = <0x2ac>,<0x2b0>; status = "disabled"; };
+参考FAQ: FAQ202276438
+### 问题: B28A ,B28B的切换频率是多少？
+解决方案: 当硬件支持B28A和B28B时候,B28B 5M切换频率点725.6MHz.
+参考FAQ: FAQ202276439
+### 问题: WCDMA FT的 RSCP 是否可以在NV中进行补偿？
+解决方案: WCDMA FT 的 RSCP 是可以在NV中进行补偿,让测试结果更为准确,具体NV为: WCDMA_optimize\wcdma_download_params_optimize\w_rscp_temp_compensation\band[]\freq\comp\comp[].RSCP按温度分段补偿,step为1/8dBm,负数取补码,例如补偿2dB,则comp[]值为16,即0x10; 需设置freq_count=0X1.
+参考FAQ: FAQ202276440,含图片
+### 问题: 手表项目如何实现通过中来电
+解决方案: 307/317手表项目原有设计中,已经有一通电话的情况下,第二通来电会自动拒接. 如果需要开启第二通来电显示,则需要关闭宏WATCH_REJECT_MT_INCALL 开启此宏定义后,可以保证通话时第二通来电提示,后续多通电话界面以及操作可以客制化实现.
+参考FAQ: FAQ202276441
+### 问题: 307/317手表项目如何支持USSD和SS暗码业务
+解决方案: 307/317手表项目为功能机项目,通常来说拨号盘界面主要支持拨打电话 如有需求支持USSD以及SS暗码业务,需要关闭宏定义: MMI_NOT_SUPPORT_USSD_SS_INCC 可在拨号盘界面解析USSD以及SS暗码业务.
+参考FAQ: FAQ202276443
+### 问题: 数字MIC在SC9863A 上的应用
+解决方案: Digital MIC 接口:DMIC_CLKG0(AD28)、DMIC_DATG0(AD29)、DMIC_CLKG1(AE31)、DMIC_DATG1(AF31) 虽然有两组接口,但是G0、G1分别代表Group0和Group1,它们在芯片内部共用一个控制器,只能二选一用于连接数字MIC. 一个Group可以同时支持2个数字MIC,时钟上升沿对一个MIC数据进行采样,时钟下降沿对另一路MIC进行数据采样.
+参考FAQ: FAQ202276444
+### 问题: PMU  ANA_INT作用是什么
+解决方案: ANA_INT 信号,PMIC 侧输出,UMS9230 侧输入,高有效. ANA_INT 信号通知UMS9230,UMS9230 收到通知后再通过ADI 读写相关的中断状态(比如EIC 模块产生的中断、FGU 中断、定时器中断、TYPEC 中断、电池在位等等),同时复位ANA_INT. 原理图设计必须严格按照CS图纸,将UMS9230 与UMP510G 的ANA_INT 信号直连.
+参考FAQ: FAQ202276445
+### 问题: 手机端连续快速讲话，对方手机听不到声音，该如何解决？
+解决方案: 对于本机端快速讲话,对方听不到声音,一般是由于本机端上行噪声抑制过大导致的. 噪声抑制算法将持续的人声判定为噪声了.所以需要降低噪声抑制. 通过降低VAD_SM[0]由0.5降至0.4, 以及加大VAD_SM[1]由0.9到0.999,此快速说话上行无声问题得到解决.
+参考FAQ: FAQ202276447,含图片
+### 问题: 对于UMS512平台，如何打开TDNC开关？
+解决方案: 需要直接在XML里修改,需要在audio_structure.xml里修改 在audio_structure.xml里搜索关键字Clarity_switch NB1模式下 <Clarity_switch offset="0" bits="16" t="u16" id="0x98" visible="true" val="0x00" /> 改为 <Clarity_switch offset="0" bits="16" t="u16" id="0x98" visible="true" val="0x1101" /> 即打开了TDNC开关
+参考FAQ: FAQ202276448
+### 问题: 对于录音麦克无声问题分析，分析思路？
+解决方案: 1)首先抓取录音的DUMP数据,如果DUMP数据也是无声,则问题出在VBC,CODEC以及外部电路区域 2)确认通话场景时麦克是否有声音,如果通话也无声音,则硬件问题造成几率更大. 3)调节录音的模拟增益,看无声是否会恢复为有声音. 4)量一下麦克供电MICBIAS是否有电压值. 5)检查外部电路设计,是否有漏掉器件,麦克通路串联的电容和磁珠等是否有漏贴.
+参考FAQ: FAQ202276450
+### 问题: 免提通话喇叭无声的分析思路？
+解决方案: 1)对于内置功放,可以量取芯片管脚SPK P和SPK N有没有输出,如无输出,需要软件驱动配置通路 2)对于耳机声道推外置功放,量测免提通话音频功放输入是否有信号,如无信号,需要软件驱动配置通路. 如果有信号,再量一下音频功放GPIO口是否使能了.如果GPIO口没使能导致AUDIO PA不工作,则需要修改软件使能GPIO口 3)辅助分析,抓取通话的语音DSP ARM LOG.判断是否是由于参数导致的无声问题 4)辅助分析,抓取通话外放无声时候的tinymix,可以判断免提通话通路是否打开,命令如下: adb shell su tinymix
+参考FAQ: FAQ202276452
+### 问题: FGU电量计软件上获取不到电流,，电量不变化
+解决方案: 电量是根据电流积分变化的,软件上获取到的电流异常小或者没有,电量就不会变化,电量计获取电流,是通过电池负极对地的20毫欧采样电阻进行采样的,只要有电流过采样电阻,电阻两端有压差,电量计sense n/p贴好,软件上就能直接从寄存器获取电流,所以该问题请排查一下电池负极对地的采样电阻是否有贴,sense n/p是否贴好,有没有电流过采样电阻,即可查出原因.
+参考FAQ: FAQ202276457
+### 问题: 短信时间显示
+解决方案: 接收短信时间显示为信息中心时间需要做以下修改: 在函数 MMISMS_HandleSMSMTInd 中将以下代码注释掉 // modify_sms_receive_time_stamp(sig_ptr);
+参考FAQ: FAQ202276460
+### 问题: push message是什么及如何测试?
+解决方案: => push message 是由服务器主动向客户端推送的信息, 可以通过 NowSMS 软件进行测试,需要在网上自行下载安装及测试.
+参考FAQ: FAQ202276463
+### 问题: 2DHSV版本和工具支持信息
+解决方案: 1.新版2dhsv模块介绍: 模块位置:Block -> HSV 模块界面: 2.模块支持信息: (1)平台支持情况:只支持UMS9230, UMS9620, UMS9621,其它平台不支持 (2)基线版本支持情况: A12分支:22b&22b_spa: 只支持UMS9230&UMS9620, 不支持UMS9621 A13分支:支持UMS9230, UMS9620, UMS9621 (3)工具支持情况: ISPTOOL R2.22.4105及更高版本工具均支持; ISPTOOL R2.22.4105相比其它高版本工具界面有显示差异,以R2.22.4105与R2.22.4405为例,对比如下 R2.22.4105工具没有value计算显示 R2.22.4405工具有value计算显示
+参考FAQ: FAQ202276481,含图片
+### 问题: 从参数上快速验证camera各模式的“pm mode”
+解决方案: 除了从log上打印"pm mode",为了核实camera各模式所走通道的准确性,可以从参数NR--CCEUVDIV模块上进行快速验证 方法设置如下: 1、在通道上添加CCEUVDIV模块,并在NR-nr smart界面上设置CCEUVDIV一个挡位 2、参数设置如下: chroma_ratio/Luma_ratio:UV/Y平面中亮降噪强度,越小越强 chroma_max_h/l:高亮度/低亮度色平面的内环半径,小于该值,则会参与滤波,因此设较大 如果效果变灰,则走这个通道;如果效果不变灰,则不是这个通道
+参考FAQ: FAQ202276483,含图片
+### 问题: N6P 5G平台SRS 轮发调用哪里天线mapping
+解决方案: N6P平台SRS轮发在校准和信令下,其天线mapping统一调用RX_cali_ant map 具体如下: 如图1, TX SRS sounding的校准在此平台上不再调用TX_cali_ant map,因而此处无需配置轮发线的映射关系,只需按需配置几T即可.如1T4R,则TX只需要配置一根天线. 图中SRS_supported_type标志位释义如下 0x0,t1r2;0x1, t1r4;0x2 ,t2r4;0x3, t1r4-t2r4;0x4, t1r1;0x5, t2r2;0x6, t4r4;0x7,not support;
+参考FAQ: FAQ202276484,含图片
+### 问题: SIMBA的WIFI频偏标准是怎么定的？
+解决方案: 一、WIFI频偏协议标准 802 11B频偏最大最小值:±25ppm 802.11G/A/N/11AC 频偏最大最小值:±20ppm 二、频偏的换算 SIMBA使用了KHz为单位,需要从ppm换算,11B/11G示例如下 2.4G 11B载波频率为2.412GHz,11B频偏标准为±25ppm 2.412*10^9x25*10^-6=60300Hz=60.3KHz 2.4G 11G载波频率为2.412GHz,11G频偏标准为±20ppm 2.412*10^9x20*10^-6=48240Hz=48.24KHz 三、SIMBA标准示例如下图 1.SIMBA 11B采用±60KHz 2.SIMBA 11G采用±48KHz
+参考FAQ: FAQ202276486,含图片
+### 问题: UMS9230 UART3的作用是什么
+解决方案: UMS9230 UART3 默认是连接WCN芯片UMW2652,实现WCI WIFI/LTE共存功能. 若产品不支持4G LTE,可以删除该接口. BB侧的UART3,必须要选择可映射到WCI控制器的接口.不建议随意更换.
+参考FAQ: FAQ202276492
+### 问题: UMW2652 VDDIO和VDDEFU 走线要求
+解决方案: UMW2652的 VDDIO为数字 IO电路供电, VDDEFU为内部 efuse和 DVDD_CORE LDO控制电路供电,这两路输入需要常供电 1.8V,可由 PMU的1.8V DCDC供给, 总的电流要求为 200mA. UMW2652的 VDDIO/VDDEFU必须 星型 走线 ,不允许就近将 VDDIO和 VDDEFU连接起来.原因是VDDDIO为 SDIO接口电路供电,而 VDDEFU为 DVDD_CORE LDO供电,当SDIO高速工作时会在 VDDDIO上产生 Drop ,PCB设计不当,会影响 DVDD_CORE LDO,导致UMS2652出现异常.
+参考FAQ: FAQ202276493
+### 问题: 正常关机时，VDDDCXO会不会掉电
+解决方案: 如果使用的是 32K less方案,在不掉电关机后VDDDCXO不会掉电,这是因为 VDDDCXO为 26M供电, 26M需要分频出 32K供给系统使用 ;如果使用 32K晶体,则在不掉 电关机后VDDDCXO会下电, 开机时 可看到 VDDDCXO按照上电时序上电.
+参考FAQ: FAQ202276494
+### 问题: HEADMIC_BIAS和MIC_BIAS 供电从哪里来
+解决方案: AVDD_VB 给Codec 的ADC/DAC、bandgap、MICBIAS 提供电压. HEADMIC_BIAS和MIC_BIAS 供电 来自PMU UMP510G AVDD_VB(J1).
+参考FAQ: FAQ202276495
+### 问题: UMP510G VDD28作用是什么
+解决方案: VDD28 Default ON,常供电,为PMIC内部 AUX_ADC模块、耳机检测模块供电. 电压不能调整到3.3V,极限只能设置到 3V. VDD28设置到3V,HP_DET电压也接近3V,需要同步验证HEADMIC_IN_DET检测耳机按键的功能.
+参考FAQ: FAQ202276496
+### 问题: sensor驱动sensor_hw_info配置修改无效
+解决方案: 请检查下sensor_config.h里是否也有对应型号info配置,具体sensor驱动代码里也有相关info配置,sensor_config.h配置用于初始化阶段匹配sensor型号,如匹配成功就会用到sensor_config.h的配置,则匹配不到则使用驱动代码里的info配置,通常不影响编译,详见sensor_init -> sensor_property_parse()
+参考FAQ: FAQ202276497
+### 问题: CMW500的Burst Power和TX Measurement功率值不一样，以哪个为准？
+解决方案: CMW500在Connection Status界面左下角的Burst Power和TX Measurement发功率值不一样,以哪个为准? 1.Connection Status界面左下角的Burst Power是用于信令连接瞬间预估的功率值,仅用于连接时功率预估 2.TX Measurement功率值,是信令连接后,测试信令时的准确功率值 功率测试以TX Measurement的功率值为准
+参考FAQ: FAQ202276499
+### 问题: 展锐方案的WIFI通过调试什么来把参数调试达标
+解决方案: 1.智能机 ①.调试WIFI射频线路的匹配 ②.调试ini文件 2.功能机 ①.调试WIFI射频线路的匹配 ②.调试NV文件里的WIFI部分配置 3.ini或NV调试指导 在Unisupport上搜索对应芯片的指导文档
+参考FAQ: FAQ202276500
+### 问题: 展锐WIFI支持的信道带宽
+解决方案: 1.WIFI 2.4G芯片 只有WIFI 2.4G的芯片,只有20MHz带宽,没有40MHz带宽 WCN SOC:SC2341B/SC2342/SC2332B/SC2331S 内置WIFI的主芯片:SC7731E/SC9820E/SC9832E/SC9863A/UIS8141E/SL8521E/SL8541E/UIS8581 2.WIFI 2.4G/5G 11AC双频芯片 有WIFI 2.4G/5G 11AC双频芯片,带宽支持20/40/80MHz,没有160MHz UWE5621/UWE5623/UWE5622/UMW2652/UMW2651/UWM2631/UWP5661/UWP5662/UWP5663
+参考FAQ: FAQ202276501
+### 问题: 时钟参数Fail，ini文件能调试时钟参数吗
+解决方案: 测试WIFI/GPS的时钟参数Fail,ini文件能调试时钟参数吗? 展锐时钟主要有TSX/TCXO/DCXO方案,时钟的配置都不放在ini文件里 ini文件不能调试时钟参数
+参考FAQ: FAQ202276502
+### 问题: 展锐WIFI的热点（软AP）的射频性能怎么测试？
+解决方案: 展锐WIFI的热点(软AP)的射频性能怎么测试? 展锐WIFI的热点(软AP)模式和手机(Station)模式,两者都使用同样的射频线路和ini,射频性能是一样的 WIFI的热点(软AP)模式时,如果有测不了的射频参数,可以在手机(Station)模式下进行测试,包括传导和OTA
+参考FAQ: FAQ202276503
+### 问题: WIFI的Fail参数项调试PASS，原来PASS的参数项要重新测试吗？
+解决方案: WIFI的Fail参数项调试PASS,原来PASS的参数项要重新测试吗? 射频参数调试后,调试改动可能影响到原来PASS的参数,原来PASS的参数项需要重新测试 这样能确认调试后是否有其他问题,规避调试改动引起其他参数Fail的风险
+参考FAQ: FAQ202276504
+### 问题: 展锐WIFI是否支持2.4G的14信道？
+解决方案: 展锐WIFI是否支持2.4G的14信道? 展锐的WIFI全部支持2.4G的14信道 如果仪器信令测试不到CH14,是因为CH14只有日本有,需要国家码配置为日本,信令才能使用
+参考FAQ: FAQ202276505
+### 问题: 展锐WCN的传导参数调试参考哪些数据？
+解决方案: 展锐WCN的传导参数调试参考哪些数据? 1.参数数据 展锐WCN的传导参数调试,参考Unisupport的WCN测试报告,主要有2个名字 ①.XXX WCN Test Report ②.XXX Connectivity Test Report 2.Test Report要点 ①.Test Report是以天线端的传导测试数据,不是芯片口 ②.WCN的传导参数,参考Test Report的数据进行调试,发射功率一般按不超过报告的数值进行调试
+参考FAQ: FAQ202276507
+### 问题: GNSS可不可以配置为BDS Only使用？
+解决方案: GNSS可不可以配置为BDS Only使用? 1.基本性能 ①.GNSS中GPS追踪灵敏度好,BDS/GLONASS/Galileo稍差一些 ②.实际定位中采用以GPS为主,同时使用BDS/GLONASS/Galileo信号强的卫星仪器组合定位 2.配置方案 ①.GNSS可以配置为BDS Only方案,但不建议使用 ②.不使用BDS Only,GLONASS Only方案 ③.使用GPS Only,或以GPS为主的组合方案:如GPS+BDS、GPS+GLONASS
+参考FAQ: FAQ202276508
+### 问题: WCN如何调试参数一致性
+解决方案: WCN如何调试参数一致性? 1.误差与一致性 ①.由于物料的特性,每个物料都有不同程度的误差,射频线路和各种物料组合在一起调试,也会有误差 ②.在射频调试中,误差也引入了射频参数一致性的问题,即不同板子性能可能有所差异 2.一致性调试 ①.使用多个板子进行调试,避免一直使用1个板子反复多次吹焊,造成板子阻抗特性变化太大 ②.在原来的板子调试好参数后,使用3个以上新板子进行验证一致性,如有差异,继续调试 ③.如果验证新板还有差异,基于最差的板子进行调试,再把差板调试好的配置移植到其他板子上验证,都达到期望值才算调好
+参考FAQ: FAQ202276509
+### 问题: rr88916-21s配置注意事项
+解决方案: 使用2G PA为rr88916-21s时,手动配置GSM处nv 时需注意:Rx_sw_off时reg0不应配置为standby(0x80),应配置为isolation(0x86)或其他端口,否则会出现如下GSM低温低压下PVT概率性在useful段Fail的问题;如用nvaide工具配置,请更新至V3.4.3版本.
+参考FAQ: FAQ202276511,含图片
+### 问题: Andorid 编译过程如何区分user和userdebug版本
+解决方案: Andorid 编译过程如何区分user和userdebug版本 ? 编译过程中区分user、userdebug,
+可以在执行完env_setup.sh 和 lunch 命令之后,
+使用TARGET_BUILD_VARIANT这个环境变量来进行区分.
+
+注意,这个是shell的环境变量,在makefile可以使用、在python中使用需要传入.
+参考FAQ: FAQ202276524
+### 问题: OEM锁无法打开，打开后立即关闭
+解决方案: OEM Lock 功能,涉及到安全领域,使用到了安全存储相关的接口, 而安全存储,是在rpmb区域中实现的存储, 所以,这个功能的使用,需要先进行产线安全部署,写入rpmb key之后,才能正常使用.
+参考FAQ: FAQ202276525
+### 问题: error: BOARD_AVB_BOOT_ROLLBACK_INDEX is not define
+解决方案: error: BOARD_AVB_BOOT_ROLLBACK_INDEX is not defined. 这类编译错误,是因为防回滚的版本号获取错误导致的, 请查看/bsp/tools/secureboot_key/config/version.cfg 这个文件是否存在,不存在请参考IDH编译指南,进行生成. 看是否有 avb_version_xxxxx = 0 这样的一行(如果错误中是 BOOT,那么就是avb_version_boot = 0)
+参考FAQ: FAQ202276526
+### 问题: CVE-2022-XXXXX这类问题，如何获取安全patch？
+解决方案: 首先,登录我们uni-support网站(http://isupport.unisoc.com/isu-patch),找到交付件管理的 patch相关专栏. 使用 "CVE-2022-XXXXX" 这个问题的错误关键字,查找相应的patch 一般来说,会有很多patch,分别对应不同的android 版本,以及平台版本.需要注意区分. 注意patch的适用平台,比如:Android 13 + ums9620. 如果上述没有找到,就需要提交CQ单独申请了.
+参考FAQ: FAQ202276529
+### 问题: UMW2652芯片2.4G WiFi功率产线波动标准设定
+解决方案: UMW2652芯片2.4G WiFi功率在天线口的波动范围,研发实验室环境推荐±2dB的标准,产线上考虑到测试环境差异和仪表校准差异,推荐放宽1dB,设定±2.5dB.
+参考FAQ: FAQ202276532
+### 问题: TSX方案更换为TCXO方案之后，确认各个配置都正确的条件下，GPS CN0仍然偏低导致无法定位
+解决方案: 时钟方案更换后,需要确定软硬件配置正确,如NV/DTS/Board ID/单软多应等配置,如果是TSX方案更换为TCXO方案,则需要格外关注系统遗留的TSX校准参数被调用,导致TCXO时钟信号被影响.遇到此类问题可以通过格式化下载系统PAC包来进行验证,保证校准参数完全被擦除后,再进行GPS 传导测试.
+参考FAQ: FAQ202276533
+### 问题: SL8541E和SC9832E是否支持2.4G WiFi 11N HT40M？
+解决方案: SL8541E和SC9832E支持2.4G WiFi 11b/g/n 20M带宽信号输出,不支持11n HT40M.
+参考FAQ: FAQ202276534
+### 问题: W117（UMS9117-L）平台WCDMA支持DC-HSDPA吗
+解决方案: W117(UMS9117-L)平台,WCDMA支持HSPA和HSPA+, 不支持DC-HSDPA. 支持下行cat 14 throughput up to 21 Mbit/s,上行cat 7 throughput up to 5.76 Mbit/s.
+参考FAQ: FAQ202276546
+### 问题: WCDMA可以校准6个band吗
+解决方案: 目前NV结构只支持校准5个band,多余的band建议做coband处理. 比如band5和band6做coband.band6使用band5的校准参数(需要软件版本支持)立项前需要与CPM确认. 如果平台支持WB1/2/5/6/8/19,WB6使用WB5 coband校准参数,WB19单独校准的,因此校准时勾选WB1/2/5/8/19, B6是不需要勾选.
+参考FAQ: FAQ202276547
+### 问题: Android12 AMS/WMS侧常用Google原生log开关
+解决方案: Android原生自带ProtoLog,在Activity生命周期和config变化时会有相应的log输出,ProtoLog默认时关闭的,可以通过adb指令将其打开,以下述两个ProtoLog为例: ProtoLog.v(WM_DEBUG_CONFIGURATION, "Starting activity when config " + "will change = %b", globalConfigWillChange); ProtoLog.d(WM_DEBUG_STATES, "resumeTopActivityLocked: Resumed %s", next); 则打开log开关的方式为 adb shell wm logging enable-text WM_DEBUG_CONFIGURATION adb shell wm logging enable-text WM_DEBUG_STATES
+参考FAQ: FAQ202276551
+### 问题: UMS9117(-L)平台支持的蓝牙协议版本是多少?
+解决方案: 功能机软件支持BT Classic,v2.1 + EDR.
+参考FAQ: FAQ202276552
+### 问题: 如何透过ADB指令获取当前GSI版本号信息
+解决方案: Google发布GSI镜像包都会带有版本号信息 例如 Build Number: 9429954 Build ID: SGR1.221221.002 那要怎么知道当前样机刷入的GSI版本信息呢? 可以透过adb指令获取对应属性值 1. 查看GSI镜像版本号 2. 查看Build ID与Build Number
+参考FAQ: FAQ202276554,含图片
+### 问题: VDDMEM_FB不接导致sysdump
+解决方案: 有些客户在绘制SCH/PCB时会忘记将VDDMEM_FB接到VDDMEM上,这种设计失误通常会导致sysdump.其原因是,VDDMEM在初始化时不能正常控制输出电压,导致系统memory供电异常. 例如,在某客户的设计中VDDMEM_FB没有接上.VDDMEM在系统上电初始化时出现异常的1.4V,并维持数百毫秒,且修改chipram / uboot / kernel都不能使1.4V消失.
+参考FAQ: FAQ202276557
+### 问题: 十六进制转换成其他类型数据的函数
+解决方案: 十六进制转换成char型接口: hex2char 十六进制转换成int型接口: hex2int ASCII 十六进制字符串转换成二进制数据接口: hexstr2bin
+参考FAQ: FAQ202276558
+### 问题: 关闭蓝牙相关宏，编译报错，如何解决
+解决方案: 关闭蓝牙相关宏后,若出现类似如下错误,该如何修改? [link] Error: L6218E: Undefined symbol BT_SetNonSigRxTestMode (referred from atc_basic_cmd.o). [link] Error: L6218E: Undefined symbol BT_SetNonSigTxTestMode (referred from atc_basic_cmd.o). [link] Error: L6218E: Undefined symbol BT_SetTestMode (referred from atc_basic_cmd.o). 答:请在 \MS_Code\MS_Customize\source\product\driver\bt\bt_prod_dummy.c 中 添加这些link不到的函数(空函数)即可.
+参考FAQ: FAQ202276559
+### 问题: 不支持指纹项目如何保证XTS测试正常通过测试
+解决方案: 修改方法如下: 去掉mk文件中copy android.hardware.fingerprint.xml的文件,可以保证进行XTS测试时不进行指纹相关测试项. 以A13 上9863项目为例: 在device/sprd/mpool/module/vendor/security/mfeature/security/fingerprint.mk - PRODUCT_COPY_FILES += $(ETC_FILE_DIR)/android.hardware.fingerprint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml 将这条语句删除,不去进行指纹的XTS相关测试,保证不支持指纹的项目跑XTS测试时不会报指纹项相关错误.
+参考FAQ: FAQ202276560
+### 问题: Timer线程内调用MmiCreateSignal申请内存死机问题
+解决方案: app申请内存时,首先会去申请"block memory"类型的内存, 如果"block memory"消耗尽了,再去"byte memory"内申请内存 . 但Timer线程内获取内存必须是"block memory",如果"block memory"消耗尽,就会出现err_str = "ASSERT: Error 0x13,Invalid caller of this service,mmi_osbridge.c, line=52, param=0x18" 这样的assert信息 该类assert信息一般是因为存在内存泄漏导致. 可以查看ass文件,搜索 "ENTITY_USER",该搜索结果为死机时已申请但尚未释放的"block memory": ....... ENTITY_USER file_name.c (Line xxx)(addr ...... ) 如果有大量的同一个文件同一行申请了内存但没有释放,说明此处可能存在内存泄漏
+参考FAQ: FAQ202276562
+### 问题: UMP510G平台fgu检测量程和精度是多少？
+解决方案: UMP510G支持5mΩ,10mΩ精密电阻,不支持2mΩ,如下数据以10mΩ为例介绍: UMP510G的fgu为14位ADC,sense_p检测电压量程为±60mV,检测电流量程为:60mV/5mΩ=12A,检测电流分辨率LSB:60mV/2^13/5mΩ=1.464mA,offset:-3~3LSB 电压检测量程为:±6V,分变率为:1.464mV,精度为±20mV
+参考FAQ: FAQ202276563
+### 问题: BC1.2识别错误后，软件的二次检测什么场景有效？
+解决方案: 由于慢插导致的BC1.2识别成Non-DCP后,可以通过软件的二次检测方案纠正,基本原理是:当软件读到BC1.2识别为Non-DCP,delay1s后,软件使能二次检测功能,初始化usb模块后,通过上拉DP至3.1V,检测DM的电平,来模拟BC1.2检测,进行二次识别. 该方案只能争对误识别为Non-dcp的场景有效,争对误识别SDP等其他结果的场景不会发起二次检测.
+参考FAQ: FAQ202276565
+### 问题: RFIC UMT9620端RFCTRL使用规则
+解决方案: UMT9620端有8个RFCTRL (RFIC_CTL_0~RFIC_CTL_7)可用,此8个RFCTRL只能用于对于时序要求较低的场景,如RF Tuner器件, 禁止用于射频前端通路上的开关等器件(此类器件时序要求较高).
+参考FAQ: FAQ202276579
+### 问题: BB UMS9620端RFCTRL使用规则
+解决方案: BB UMS9620端只有RFCTRL0~RFCTRL15 16根RFCTRL可用(如下截图所示),此部分RFCTRL既可以用于射频前端通路上的通用器件可以使用,天线Tuner也可以使用,但是建议天线Tuner优先用RFIC UMT9620端的RFCTL, 因为UMS9620端的RFCTRL用于射频前端通路的通用器件使用本身不太充足,且无法通过其他方法新增可用RFCTRL.
+参考FAQ: FAQ202276580,含图片
+### 问题: SC7731E平台如果需要同时支持WCDMA B1/B2/B4的前端方案选择
+解决方案: SC7731E平台CS图纸设计支持四个WCDMA频段,两个低频频段(B5,B8),两个中频频段(B1,B2),但是有一些项目要求同时支持WB1/2/4三个中频频段,SC7731E只有两组差分中频接收port口,因此如果同时需要支持WB1/2/4需要设计前端方案需要做如下更新: TX PA输出接SP3T开关 分别接WB1/2/4的双工; WB2按照之前的CS图纸设计,WB1和B4使用单端口双工,B1和B4 Rx port通过SP2T开关再接一个单转双巴伦进RFIC SC7731E Rx port
+参考FAQ: FAQ202276581
+### 问题: FGU电量计获取到的充电电压异常
+解决方案: 在电量计驱动sc27xx_fuel_guage.c中的sc27xx_fgu_get_charge_vol()函数获取到的充电电压,如果出现16v左右的值,那么需要检查一下VDD28电源域是否被关闭了,VDD28是常供电不能关闭的,该电源域被关闭会导致软件获取到的充电电压异常过压.
+参考FAQ: FAQ202276583
+### 问题: 6533G添加电话会议失败
+解决方案: void ConferenceCall(void) { if ((GetTotalActiveCallCount() < MAX_HOLD) && (GetTotalHoldCallCount() < MAX_HOLD) && ((GetTotalActiveCallCount() > 0 && GetTotalHoldCallCount() > 0))) OutgoingProcessCMEvent(CM_KB_CONFREQ,(void*)NULL); else ShowCallManagementErrorMessage(NO_ACTIVE_CALL); } 在代码中定义MAX_HOLD为5,因此最多支持5路电话.
+参考FAQ: FAQ202276586
+### 问题: 修改了显示效果参数不生效
+解决方案: 较为常见的一个原因是修改效果参数未同步修改enhance version的值.代码路径下、手机目录vendor/etc/enhance下和手机目录mnt/vendor/enhance下的xml关系为: 手机目录vendor/etc/enhance可以看作一个暂存区,所有从代码路径拷贝过来的xml先放在该路径下,根据适配条件,从vendor/etc/enhance里面寻找符合条件的xml,复制到mnt/vendor/enhance,最后进行解析. 如果手机目录mnt/vendor/enhance下已经有相应的xml,注意修改效果参数时应当使得自己希望生效的xml的enhance version的数值大于mnt/vendor/enhance下对应xml的enhance version的数值,例如可以大1.
+参考FAQ: FAQ202276587
+### 问题: 6533g如何抓取开机log
+解决方案: 针对以前T卡log不能抓取开机部分的问题,新增加这部分功能.可以通过*#3641#进入工程模式,然后将DebugInfo->Fstrace设置为ON即可开启T卡开机log模式.插上T卡重新开机后会自动将trace保存到T卡上,结束后输入*#006#关闭文件.需注意正常情况下需要将将DebugInfo->Fstrace设置为OFF,避免对系统造成影响.
+参考FAQ: FAQ202276589

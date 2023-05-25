@@ -1,0 +1,300 @@
+### 问题: 如何在受限制的情况下读取SIM 卡中的MCC 和MNC？
+解决方案: 通过*#*#83781#*#*进入工程模式,进入Para Set后点击Forbid PLMN选项,进入到新的界面就能够直观查看是否上了FPLMN.
+参考FAQ: FAQ42038
+### 问题: 如何显示当前的选网信息？
+解决方案: 通过*#*#83781#*#*进入工程模式,进入Para Set后点击PLMN Select选项,进入到新的界面就能够看到当前的选网信息.
+参考FAQ: FAQ42039
+### 问题: 如何设置GSM/TD DSP 的最大发射功率？
+解决方案: 通过*#*#83781#*#*进入工程模式,进入Para Set后点击RF Send Power选项,进入到新的界面就根据不同的band,设置GSM/TD DSP 的最大发射功率.
+参考FAQ: FAQ42041
+### 问题: 手机如何查看Nand Flash Block信息？
+解决方案: 进入工程模式中->DEBUG&LOG->SystemInfo->Flash Block Info即可查看. 此项信息是通过读取/proc/mtdbdblk/文件,显示block信息.
+参考FAQ: FAQ42035
+### 问题: 如何设置紧急呼叫不成功后自动重拨？
+解决方案: 通过*#*#83781#*#*进入工程模式,进入App Settings后,将Emergency Call Retry选项的滑块开关打开成功设置紧急呼叫不成功后自动重拨.
+参考FAQ: FAQ42044
+### 问题: 如何设置SIM卡是否接收小区广播？
+解决方案: 通过*#*#83781#*#*进入工程模式,进入App Settings后,再进入Cell Broadcast界面,针对sim0和sim1各有一个开关,打开就是接收小区广播,关闭就是不接收小区广播.
+参考FAQ: FAQ42045
+### 问题: 如何手动设置UA
+解决方案: 通过*#*#83781#*#*进入工程模式,进入App Settings后再进入UA setting,界面上会从Settings中读出 Default UA、Other UA、Custom UA及当前Choice的配置,选中的某个UA配置的时候,显示其具体内容. 点击OK确认修改的时候写回Choice项,按cancel则取消.
+参考FAQ: FAQ42048
+### 问题: FM APP 的 FMplayService.java 中，mute/unmute/ setvolume的区别是什么？
+解决方案: FM APP 的 FMplayService.java 中 有如下函数: public boolean setVolume(int volume) public boolean mute() public boolean unMute() 这些函数的区别是: 对于trout FM 来书 mute/unMute是通过 调用 trout FM 芯片的驱动来实现的, 而 setVolume 则是通过android的系统来实现的,不调用 trout FM 芯片的驱动.
+参考FAQ: FAQ42051
+### 问题: 蓝牙设备改名后发送接收文件对方是否会获取新名字
+解决方案: 1.A和B两个手机设备,并且已配对 2.A设备修改蓝牙设备名称 3.A给B发送文件,此时B设备显示的A设备名称仍是旧的设备名字 4.B给A发送文件,此时B设备显示的A设备名称是修改后新的设备名字 原因是目前bluedroid中建立链接流程中在建立connection过程中,发起链接一方会发送read remote name来获取对方的蓝牙设备名称,而接收方则不会获取对方的蓝牙设备名称.
+参考FAQ: FAQ42040
+### 问题: 动态调整heapsize
+解决方案: 不用编译版本,动态改变heapsize的方法主要是以下两种: 方法1 adb root adb shell setprop dalvik.vm.heapstartsize=16m 创建应用程序的其实堆大小 adb shell setprop dalvik.vm.limit=64m 受控应用的内存限制 adb shell setprop dalvik.vm.heapsize=192m 非受控应用的内存限制 adb shell stop adb shell start adb shell getprop dalvik.vm.heapsize 方法2 也可以adb root 手动修改system/build.prop文件然后重启手机
+参考FAQ: FAQ42071
+### 问题: 源码下的CTS模块如何编译
+解决方案: 代码下载完成后,进入代码根目录,编译整个工程,整个工程编译通过后,执行下面命令 $ make cts //android源码编译好后,在编译cts 编译好cts后生成的文件位置如下 #mydroid/out/host/linux-x86/ 在该目录下包含如下测试文件 Package CTS: out/host/linux-x86/cts/android-cts.zip cts各个用例的apk在路径: out/host/linux-x86/cts/android-cts/repository/testcases
+参考FAQ: FAQ42145
+### 问题: 7715有的的摄像头不支持对焦，支持假对焦
+解决方案: 摄像头假对焦
+参考FAQ: FAQ42147
+### 问题: App Widget支持的布局和控件
+解决方案: App Widget的Layout是基于RemoteViews,而RemoteViews并不是支持所有的Layout(布局)与视图的. Android原生支持的布局和控件有: 1.支持的Layout FrameLayout LinearLayout RelativeLayout GridLayout 2.App Widget支持的控件: AnalogClock Button Chronometer ImageButton ImageView ProgressBar TextView ViewFlipper ListView GridView StackView AdapterViewFlipper 源代码中查看就是类名前面的@RemoteView,如 @RemoteView public class ListView 另外,以上View的子类也是不支持的,如果用了会提示找不到.
+参考FAQ: FAQ42169
+### 问题: SearchView属性之iconified介绍
+解决方案: 1.SearchView.setIconifiedByDefault(false);//点击搜索图片,展开搜索框,搜索图片在搜索框之前,不包含在其内 2.SearchView.setIconifiedByDefault(true);//点击搜索图片,展开搜索框,搜索图片包含在搜索框之内 3.SearchView.setIconified(false);//点击搜索图片之前,搜索框没有展开,但是会弹出输入法 4.SearchView.setIconified(true);//同第二种效果
+参考FAQ: FAQ42167
+### 问题: 如何在C++文件中打印堆栈？
+解决方案: -----#include <utils/CallStack.h> ... CallStack stack; stack.update(); stack.dump(""); // the parameter is prefix of dump 在使用之前需要修改AndroidConfig.h #define HAVE_DLADDR 1 #define HAVE_CXXABI 1 并在文件frameworks/base/libs/utils/Android.mk中大约105行(LOCAL_SHARED_LIBRARIES)后添加 ifeq ($(TARGET_OS),linux) LOCAL_SHARED_LIBRARIES += libdl endif 重新编译,push生成的libutils.so到/system/lib/目录下,重启设备.
+参考FAQ: FAQ42184
+### 问题: 7701平台MNPHONE_GetMeasReportEx获得的输出参数，如何区分GSM和WCDMA的小区信息？
+解决方案: MNPHONE_GetMeasReportEx 该函数是获取 "当前小区的临小区信息", WCDMA 小区的临小区信息包括 GSM 小区 和 WCDMA 小区; 1)如果当前是 WCDMA , 入参数返回的 ncel_meas_ptr->ncell_power[0] ~ ncel_meas_ptr->ncell_power[31] 是当前小区的 wcdma 临小区信息, ncel_meas_ptr->ncell_power[32] ~ ncel_meas_ptr->ncell_power[63] 是当前小区的 gsm 临区信息; 2) 如果当前是 GSM, 则只有 GSM 临区信息, ncel_meas_ptr->ncell_power[0] ~ ncel_meas_ptr->ncell_power[6] 是当前小区的 GSM 小区临区信息
+参考FAQ: FAQ42192
+### 问题: ubuntu下提交代码 git commit -a 将编辑器默认的nano改为vim
+解决方案: Ubuntu下git提交代码时终端默认的编辑器为nano, 可能习惯了VIM的工程师看到一堆的选项使用起来并不是很方便,使用 Vim 来为提交代码 git commit -a 添加comments更好用.设置的方法很简单,只需要修改一个配置我们就可以做到. 操作步骤如下: echo export EDITOR=/usr/bin/vim >> ~/.bashrc 重启终端再提交代码的时候就会默认使用VIM编辑.
+参考FAQ: FAQ42222
+### 问题: 是否可以定制Opera Mini浏览器的默认书签？
+解决方案: Opera Mini的书签是由其服务器配置的,平台不能提供定制.
+参考FAQ: FAQ46213
+### 问题: 非信令测试RX时，概率出现get_user_id 的assert
+解决方案: 原因如下:做npi测试的时候,手机还在做下行收包的动作.而收包和npi rx使用的是同一块buffer,所以在做完npi rx的测试以后buffer上的内容被修改了.等待stop来删除的时候对buffer内容进行检查,发现内容不对,所以就assert了. 修改方案:在rx_start后,destroy一下收包的buffer,这样npi测试就很干净了,所以可以解决这个问题. 遇到此问题请联系CPM 升级CP2
+参考FAQ: FAQ42247
+### 问题: MOCOR 如何生成Release版本？
+解决方案: 在项目的工程主make中将RELEASE_INFO设置为TRUE,编译生成的版本即为Release版本. 注意:生成的release版本无法打印trace信息.
+参考FAQ: FAQ42333
+### 问题: [记事本]新建记事本，不输入任何内容返回或保存没有提示，是问题吗？
+解决方案: 不是问题.这是考虑到用户感受专门做的设计,因为新建时不输入任何内容返回是考虑到用户可能不小心点了新建但是又不想输入任何内容,这时候直接返回或保存是不做提示的;如果是已经有的记事本在删除了所有内容返回或保存的时候就会提示用户,并且不会保存空的记事本,而是原来的内容.这样的设计更多为用户考虑,故不是问题.
+参考FAQ: FAQ42310
+### 问题: user版本如何开启slog
+解决方案: 在user版本下slog服务默认是关闭的,如果想要打开,可以使用如下方法: 修改/tools/slog/slog.conf.user中的如下内容,将disable改为enable,然后编译user版本,这样slog就开启了. #control: enable/disable disable
+参考FAQ: FAQ42301
+### 问题: android4.4上 user版本默认打开usb调试后为什么slog会开启，如何关闭
+解决方案: 在FAQ26567中解释了如何在user版本下开启usb调试的方法,也就是将ro.debuggable属性置为1,但是这个时候会发现slog开始工作了,原因是slog在解析config文件的时候会根据该属性判断是user版本还是userdebug版本,而uerdebug版本默认是开启slog的,这样就会出现前面描述的现象,为解决该问题,提供方案如下: 修改/vendor/sprd/open-source/tools/slog/parse_conf.c中,将ro.debuggable属性的判断改为ro.build.type来区分是user版本还是userdebug版本.
+参考FAQ: FAQ42319
+### 问题: 为什么录制的视频在手机上播放正常，但在电脑上播放时画面旋转了90度
+解决方案: 横屏持机和竖屏持机,Camera成像的角度不同,只存在一个正方位.以展讯参考机为例,横屏持机是正方位成像,竖屏则会转90度,此时Camera给出的源画面已经是旋转了90度的. 虽然通过G-Sensor可以判定持机方向,但平台在录像时并不会实时地去旋转每一帧图像,而是在录像文件中记录一个Rotation属性值,比如90度.录像播放时,播放软件可以解析这个值而做出软件上的旋转处理.手机端默认的播放软件支持解析这个Rotation属性值,其他播放软件如果不支持对该属性值的解析,则播放角度会不同.
+参考FAQ: FAQ42365
+### 问题: ga版本内部存储空间不足，Google play无法安装大的应用在T卡
+解决方案: 插入一张剩余空间足够的T卡后,在Settings 中选择默认安装位置为可移动存储,打开Google Play,下载应用,会提示空间不足,无法下载 通过log文件,发现Google play 下载文件时并没有放在T卡上,而是先下载到了手机的data cache里面,然后安装到T卡上,最后将手机cache里的apk文件删掉.所以内部存储空间比较小的时候,Google play无法安装大的应用在T卡 DownloadProvider在下载的时候,有个值sDownloadDataDirLowSpaceThreshold 大小为:10485760(10M),如果下载cache空间小于这个值的话,就要停止下载.
+参考FAQ: FAQ42372
+### 问题: SC7715充电电源type区别
+解决方案: 在文件 sprd_2713_charge.h #define SPRDBAT_SDP_CUR_LEVEL 500 //usb #define SPRDBAT_DCP_CUR_LEVEL 700 //AC #define SPRDBAT_CDP_CUR_LEVEL 700 //AC&USB 充电器适配器类型 　 低功率SDP (主机或集线器):100mA 　　大功率SDP (主机或集线器):500mA 　　DCP:500mA至1.5A 　　CDP (主机或集线器):高速充电时达到900mA (啁啾期间为580mA);低速和快速为1.5A 可以理解为一种新的充电类型,目前是没有用到.
+参考FAQ: FAQ42392
+### 问题: SC7715充电最大电流修改
+解决方案: 在文件 sprd_2713_charge.h 修改 #define SPRDBAT_DCP_CUR_LEVEL 800 //AC ps,最大电流目标值需要依赖硬件,如充电的PNP管功率等
+参考FAQ: FAQ42395
+### 问题: 下载暂停后，无法继续下载
+解决方案: 下载暂停后,达到下载条件时,下载会发起续传,但是,有时候服务器会回复http code 200,表示不支持续传(正常情况下应该返回206,表示支持续传),客户端发起5次续传,服务器都返回了200,所以下载失败.
+参考FAQ: FAQ42398
+### 问题: 如何禁用锁屏界面中的下拉状态条？
+解决方案: 默认在锁屏界面(如环形解锁、智能解锁、滑动解锁)中可以下拉状态条进行相应操作(如开/关飞行模式等),某些情况下根据项目实际需要要求关闭此功能,即在锁屏界面要禁用下拉状态条,具体修改如下: 将文件:./frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardViewMediator.java中 private static final boolean ENABLE_INSECURE_STATUS_BAR_EXPAND = true; 修改为: private static final boolean ENABLE_INSECURE_STATUS_BAR_EXPAND = false; 即可.
+参考FAQ: FAQ42412
+### 问题: 如何用wpa_cli工具以global方式调试supplicant
+解决方案: 4.4平台上,wpa_supplicant 支持多网卡的调试,采用了一个globla的方式来分组管理个net interface. 从而比之前的方式多了些可控的命令,如INTERFACE_REMOVE. 如何通过命令方式调试呢? 启动wpa_supplicant: wpa_supplicant -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf -dd -g/data/misc/wifi/sockets/global 启动wpa_cli: wpa_cli -iglobal -p/data/misc/wifi/sockets 发命令: IFNAME=wlan0 SCAN //扫描 INTERFACE_REMOVE wlan0 //删除wlan0 网卡
+参考FAQ: FAQ42422
+### 问题: 更换8G Emmc flash可以正常下载使用，但为什么存储显示不正确？
+解决方案: 需要修改BoardConfig.mk文件中BOARD_USERDATAIMAGE_PARTITION_SIZE的大小为实际大小.
+参考FAQ: FAQ42499
+### 问题: FM 常见问题及log分析，如何从log中看出用户按下了HOME键离开FM，而不是按返回键离开FM？
+解决方案: 我们在分析FM问题的时候,有时候我们需确认用户将FM切换到后台的方式, 那么,如何从现有log中看出是按下了HOME键离开FM,而不是按返回键离开FM呢? 我们可以查找以下log FMPlay : mReceiver: action=android.intent.action.CLOSE_SYSTEM_DIALOGS 我们可以通过该log得知FM APP 在前台时收到了用户按下的HOME键 当然我们也可以在 FMPlay.java 的 public void onBackPressed() 函数中加log来确认FM APP 在前台时收到了用户按下的返回键.
+参考FAQ: FAQ42445
+### 问题: 耳机按键检测的电平门限是多少伏
+解决方案: 耳机按键检测的电平门限是可以通过寄存器来配置的,详情可以参考芯片Spec的ANA_CFG20寄存器AUDIO_HEAD_ SBUT字段;对应的软件代码在kernel/drivers/input/misc/headset_sprd.c. static void headset_mic_level(int level) { if (level) headset_reg_set_val(HEADMIC_DETECT_REG(ANA_CFG20), 0x1, AUDIO_HEAD_SBUT_MASK, AUDIO_HEAD_SBUT_SHIFT); else headset_reg_set_val(HEADMIC_DETECT_REG(ANA_CFG20), 0xF, AUDIO_HEAD_SBUT_MASK, AUDIO_HEAD_SBUT_SHIFT); } 上述代码中,电平门限的寄存值设置为0x1,代表0.95V(对应2.8V VDDIO)或者0.76V(对应1.8V VDDIO).
+参考FAQ: FAQ42433
+### 问题: FM 常见问题及log分析，如何从log中看出用户按下了power键关闭了FM？
+解决方案: 有时候我们会遇到FM无声的问题,FM被关闭的问题,在分析这类问题的时候我们首先要排除客户按下FM界面上的power按钮,手工关闭FM的情况. 那么,如何从现有log中看出用户按下了power键关闭了FM? 我们可以查找以下log FMPlay : msg.what: 1 mOver: true,mReady: true 如果log为 FMPlay : onKeyDown keyCode = 85 FMPlay : msg.what: 1 mOver: true,mReady: true 则,是按下了 KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE 关闭的FM 如果log仅为 FMPlay : msg.what: 1 mOver: true,mReady: true 我们可以认定是客户按下了FM 界面上的 power按钮关闭了FM
+参考FAQ: FAQ42446
+### 问题: 为什么user版本工程模式PCLOG中的CP2log打开了又恢复成关闭状态？
+解决方案: 在使用SLOG的方式抓取CP2LOG的时候,需要在PCLOG菜单目录下打开CP2LOG选项,会出现打开后又恢复成关闭状态,是因为user版本本身设计为,默认CP2LOG打开后,只要机器重启过,CP2LOG选项又恢复为关闭状态.
+参考FAQ: FAQ42300
+### 问题: 如何内置第三方的资源到系统中
+解决方案: 1.将第三方APK等文件放在vendor\sprd\partner\prebuilt_apps\下. 2.修改上述目录下的Android.mk,添加相应APK等文件. 3.工程文件中增加需要内置的APK,如:PRODUCT_PACKAGES += ... ES_File_Explorer.apk ....
+参考FAQ: FAQ42460
+### 问题: GPIO电压域是否可以设置为2.8V
+解决方案: 1.不同的GPIO有不同的电压域,相同电压域的GPIO电压只能保持一致. 2.对于内部固定供电源的电压域,只能通过设置电压源的可设置电压来改变电压. 2.对于没有固定供电源的电压域,可以自由选择供电源来选择电压.
+参考FAQ: FAQ42461
+### 问题: 如何去掉GPS功能
+解决方案: 按以下步骤屏蔽GPS的地方: 1:.mk中$(call inherit-product, vendor/sprd/gps/CellGuide_2351/device-sprd-gps.mk) 2:init.board.rc中gps相关设置 3:vendor\sprd\open-source\common_packages.mk中 PRODUCT_PACKAGES += ...SGPS... 4:BoardConfig.mk中BOARD_USE_SPRD_4IN1_GPS := true 5.device/sprd/scx35/device.mk: -frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml 6、去掉上层相关的GPS菜单.
+参考FAQ: FAQ42474
+### 问题: camera 驱动里面的调试信息如何打印
+解决方案: camera sensor驱动已放到hal层,用SENSOR_TRACE打印,用logcat看android log
+参考FAQ: FAQ42484
+### 问题: 如何调整data区和system区的大小
+解决方案: 1.请根据实际system的大小来配置BOARD_SYSTEMIMAGE_PARTITION_SIZE,定义偏大即可,偏小编译会报错. 2.请根据实际nand的大小来配置BOARD_USERDATAIMAGE_PARTITION_SIZE,定义跟实际接近即可,太小会浪费空间,在设置存储中看到的也偏小. 3.在下载工程的xml文件中定义system等分区的实际大小,userdata会自动计算.
+参考FAQ: FAQ42486
+### 问题: PTCRB测试内容包括哪些方面？
+解决方案: PTCRB (PCS Type Certification Review Board) 是指个人通信服务型号认证评估委员会,由北美移动运营商于1997年成立.目前的运营商已经不仅限于北美,而是涵括全球范围内的移动运营商成员.其目的是为包括Cellular GERAN(GSM), UTRAN (UMTS)以及E-UTRAN (LTE)在内的终端产品和模板提供型号认证,其测试内容包括以下四个方面: 1. 射频RF测试 2. 协议PROTOCOL测试 3. SIM/STK测试 4. 音频AUDIO测试
+参考FAQ: FAQ42489
+### 问题: mpdu与msdu区别
+解决方案: MPDU :MAC protocol data unit,是在MAC层之间传递使用的, MSDU: MAC service data unit ,是在MAC层和datalink层之间传递使用. MAC层数据实体在接收到MSDU后,将构造MPDU(MAC层协议数据单元),具体方法是在MSDU前加上帧头MHR,在MSDU后加上帧尾,即MPDU=MHR+MSDU+MFR MSDU是MAC层服务数据单元,表示MAC层载荷;当MAC层协议数据单元(MPDU)被发送到物理层(PHY)时,它便成为了物理层服务数据单元(PSDU). 关系图如下:
+参考FAQ: FAQ42490
+### 问题: 如何在电脑上通过蓝牙听手机的音频文件
+解决方案: 1.打开电脑的蓝牙设备 2.进入控制面板-〉设备和打印机 3.选择添加设备 4.在弹出的搜索设备界面中选择手机,然后进行配对 5.此时会进行驱动安装,安装完毕后再设备和打印机中会显示手机设备 6.右击设备选择控制 7.在弹出的控制界面中 点击连接,则此时电脑右下角会弹出播放器,此时可以在计算机上听手机上的音乐.
+参考FAQ: FAQ42514
+### 问题: 如何简单修改wifi的收包性能
+解决方案: 当手机里AP距离较远时,可能出现连接不上等相关问题.此时可能是终端的收包性能出问题了. 此时可以从两个方面修改: 1)在wifi打开的情况下,adb shell 进去,打开lna设置; iwnpi wlan0 lna_on 2) 设置AP的发射功率,调整至更大值 反之,如果当终端和AP距离特近时,也可能出现连接不上的问题.此时可能是发送功率太强,导致收包过滤导致 反之改过来即可: 1)在wifi打开的情况下,adb shell 进去,关闭lna设置; iwnpi wlan0 lna_off 2) 设置AP的发射功率,调整至较小值
+参考FAQ: FAQ42512
+### 问题: mm编译dialer模块为什么出现错误?
+解决方案: 1.在使用mm,mmm等模块编译命令前要使用make全编译过一次,因为这些命令只会编译当前或指定目录下的模块,不会编译所依赖的模块. 2.模块报错,那是因为里面的test模块报错,模块本身是能编译的,不用理会.
+参考FAQ: FAQ42516
+### 问题: 功能机如何抓取开机时协议栈和SIM卡相关log
+解决方案: 展讯手机界面中,往往都有"飞行模式"的设置菜单(不同项目不太一样,一般是在"设置"->"通话设置"->"其他"里面.不同项目不一样,极个别的项目没有这个菜单).这个菜单中,有一项是"开机选择",选择这一项,然后关机,重新开机.这时会发现开机停在一个界面上,这就是"飞行模式开机选择"的菜单.插好USB log线,确认一下PC上log已经出来了(这里务必请确认下电脑上log已经出来了).选择"关闭"(这个"关闭"是指关闭飞行模式),继续开机流程.这时抓到的log就是SIM和协议栈的开机时log. 另外,如果手机确实没有"飞行模式"这个菜单,也可以通过开启手机开机密码选项方法抓log,因为协议栈开启前,会弹出密码输入窗口,此时连接usb log线,可以抓取开机时的协议log.
+参考FAQ: FAQ42504
+### 问题: 手机给电脑蓝牙发送文件发送失败的可能原因
+解决方案: 由于电脑和手机都支持音频播放和文件发送,即a2dp和obex.所以手机发送文件给电脑时,会先进行连接,此时如果是a2dp先进行连接,则obex连接会失败,导致文件发送失败.将a2dp连接断开再进行发送则可以正常发送.
+参考FAQ: FAQ42524
+### 问题: 蓝牙文件传输服务端创建失败后，会尝试多少次？
+解决方案: 20次,代码位于packages/apps/Bluetooth/src/com/android/bluetooth/opp/BluetoothOppService.java中,在此代码文件中,会进行判断,如果重试次数超过20次,则会走close.
+参考FAQ: FAQ42537
+### 问题: 每次启动BluetoothOppService时，会清理数据库中的哪些数据？
+解决方案: 主要包括三种: 1、失败或成功的、不可见的、发出的文件; 2、失败的、不可见的、接收的文件; 3、排除以上两条的数据后,超过最近的1000条记录的;
+参考FAQ: FAQ42542
+### 问题: 文件传输时，文件数据是怎么从framework到bluedroid的？
+解决方案: 蓝牙在发送文件前,会通过AdapterService.java中的connectSocketNative方法,调用bluedroid层的方法创建socket,生成两个fd,一个fd保留在bluedroid,另一个fd返回给framework,之后,文件的数据会通过socket的方式发送给bluedroid.
+参考FAQ: FAQ42545
+### 问题: 如何调整原生Launcher3主界面的search框的大小？
+解决方案: 在HVGA版本中,有时候需要调整主界面search框的大小. 修改如下: 定位打/packages/apps/Launcher3/res/values/dimens.xml. <dimen name="dynamic_grid_edge_margin">3dp</dimen>//修改这个可以调整search框距离顶部距离. <dimen name="dynamic_grid_search_bar_max_width">500dp</dimen>//search框的宽度,一般不需要调整. <dimen name="dynamic_grid_search_bar_height">48dp</dimen>//search框的高度,不要调整为0,删除按钮需要占用一部分空间.
+参考FAQ: FAQ42559
+### 问题: 如何取消原生Launcher3的壁纸滑动效果？
+解决方案: 修改如下: 定位到/packages/apps/Launcher3/src/com/android/launcher3/WallpaperCropActivity.java 1、private static final float WALLPAPER_SCREENS_SPAN = 2f;//修改为1f,修改壁纸宽度为单倍屏幕宽 2、wallpaperManager.suggestDesiredDimensions(savedWidth, savedHeight); 修改为: wallpaperManager.suggestDesiredDimensions(defaultWallpaperSize.x, defaultWallpaperSize.y);//设置壁纸宽度为单屏宽度.
+参考FAQ: FAQ42564
+### 问题: 蓝牙文件传输时，会接受文件名为空字符串的文件吗？
+解决方案: 当文件名为空字符串时,服务端会返回OBEX_HTTP_BAD_REQUEST,从而拒绝接收.
+参考FAQ: FAQ42610
+### 问题: 如何解决FM在搜台设台过程中可能出现的杂音问题
+解决方案: FM在搜台和设台前需要将FM模块设置为静音,禁止发出音频数据,设台完毕后再使能音频数据输出.
+参考FAQ: FAQ42591
+### 问题: 如何改变保存蓝牙传输文件信息的数据库的名称？
+解决方案: 数据库的名称设置位于packages/apps/Bluetooth/src/com/android/bluetooth/opp/BluetoothOppProvider.java文件中,只要修改成员变量DB_NAME即可.
+参考FAQ: FAQ42594
+### 问题: 对FM无声或所有频道全是杂音问题模块的定位方法
+解决方案: 因为FM音频数据的播放需要audio模块来实现,很多时候出现FM无声或者杂音需要定位是FM输出的音频数据本身就有问题还是在audio播放的时候引入的问题. 这个时候可以开启FM录音功能,FM录音可以获取发送给audio模块前的音频数据,先把数据保存在文件里然后播放一下,就可以定位是那个模块出现的问题,然后再具体进一步分析.
+参考FAQ: FAQ42593
+### 问题: 如何打开蓝牙文件传输时的V log和D log?
+解决方案: V log和D log的开关位于packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java文件中.代码如下,只要设置它们为true即可. public static final boolean DEBUG = true; public static final boolean VERBOSE = true;
+参考FAQ: FAQ42608
+### 问题: 蓝牙sco分组类型
+解决方案: sco分组类型有HV1,HV2,HV3. HV代表高质量的语音分组,1、2、3表示有效载荷所采用的纠错编码方法.1为1/3比例的FEC,设备每隔2个时隙发送1个单时隙分组;2为2/3比例FEC,设备每隔4个时隙发送1个单时隙分组;3为不使用纠错编码,设备每隔6个时隙发送1个单时隙分组.
+参考FAQ: FAQ42596
+### 问题: 蓝牙收发文件保存的数据库的格式是什么样的？
+解决方案: 默认数据库的名称为btopp.db,表的名称为btopp. 主要包括以下字段: BluetoothShare._ID BluetoothShare.FILENAME_HINT BluetoothShare._DATA BluetoothShare.MIMETYPE BluetoothShare.DIRECTION BluetoothShare.DESTINATION BluetoothShare.VISIBILITY BluetoothShare.USER_CONFIRMATION BluetoothShare.STATUS BluetoothShare.TOTAL_BYTES BluetoothShare.CURRENT_BYTES BluetoothShare.TIMESTAMP Constants.MEDIA_SCANNED
+参考FAQ: FAQ42624
+### 问题: 蓝牙搜索时，可用设备列表的进度条是如何刷新的?
+解决方案: 蓝牙开始搜索和搜索结束时,都会触发onScanningStateChanged方法,在此方法中,会调用updateProgressUi方法设置进度条的显示和隐藏.开始搜索,则会显示,搜索结束,则会隐藏.
+参考FAQ: FAQ42627
+### 问题: 如何调试kernel list corruption
+解决方案: 对于list的del操作,kernel会将删除的next和prev置为poison值 #define LIST_POISON1 ((void *) 0x00100100 + POISON_POINTER_DELTA) #define LIST_POISON2 ((void *) 0x00200200 + POISON_POINTER_DELTA) 在正常环境下,这个非空指针将会引起页错误.可被用来验证没有初始化的链表节点. 在打开了CONFIG_DEBUG_LIST后,删除操作的时候会检查List的prev和next, 一旦发现为poison值,或者是被操作的节点的prev->next不等于自己;或者next->prev不为自己,就会报告链表被破坏
+参考FAQ: FAQ42586
+### 问题: 如何使用FONTTOOL工具调整SPML字库中字符的宽度？
+解决方案: 当显示方案为SPML显示时,如果需要调整字库中字符的宽度,可以使用FONTTOOL工具参考如下方法修改: 1、使用FONTTOOL工具加载字库LIB文件. 2、选中需要调整的字符,然后点击Adjust Parameters选项,如下图: 3、在弹出的Adjust Parameters对话框中,调整FBBX的值. 4、重新保存字库LIB文件替换原来的字库.
+参考FAQ: FAQ42647
+### 问题: 如何在模拟器上使用电子书来辅助多语字符串显示问题调试？
+解决方案: 在调试多语显示问题时,为了便于问题分析,可以在模拟器上使用电子书来辅助调试. 比如,如果需要确认孟加拉语字符串显示效果,可以参考如下步骤: 1、将需要确认的孟加拉语字符串拷贝到txt文件中; 2、打开模拟器的Control Panel,在File System中将txt文件加载到Ebook的路径下; 3、进入Ebook应用,打开所添加的txt文件,即可看到所需要分析的孟加拉语字符串. 注: 1、要确保工程已开启Ebook功能; 2、要确保txt文件在PC端显示正常,txt保存时编码格式请选为Unicode.
+参考FAQ: FAQ42685
+### 问题: 如何实现wifi可用但未连接时，不显示wifi信号图标？
+解决方案: 先定位到frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java 再对其中的apply()方法中部分代码修改后为 if (mWifiVisible && mWifiConnected) { mWifiGroup.setVisibility(View.VISIBLE); mWifiSignal.setImageResource(mWifiStrengthId); mWifiActivity.setImageResource(mWifiActivityId); mWifiGroup.setContentDescription(mWifiDescription); } else { mWifiGroup.setVisibility(View.GONE); } 修改后,重新开机后测试是否已经WIFI可用但未连接时,wifi图标不显示.
+参考FAQ: FAQ42684
+### 问题: 如何去掉下载首次开机的桌面向导
+解决方案: launcher.java 把调用showFirstRunCling();的地方注掉
+参考FAQ: FAQ42687
+### 问题: 如何准确快速编辑和查看一个app的manifest.webapp文件？
+解决方案: 每个gaia中的app都包含一个mannifest.webapp文件,用于对此app的应用描述. 主要包括name,description,launch_path,permissions,locales,icons等. 该文件使用JSON格式来描述.如下形式 { "name": "System", "developer": { "name": "The Gaia Team", }, "permissions": { "bluetooth": {} } } 当内容较多或者编写一个新的mannifest.webapp时, 可以使用一个在线工具BeJson(网址:http://www.bejson.com/), 该工具可以快速格式化并且校验内容的合法性.如果内容有错,可以直接显示出错在哪行,及其出错原因. 并且可以已视图的形式将各个属性显示出来,查看属性非常方便.建议在编写时使用该工具.
+参考FAQ: FAQ42700
+### 问题: 为什么在Settings应用中找不到Developer选项?
+解决方案: 如果在Settings应用中找不到Developer选项,是因为被隐藏了.显示方法:进入如下路径: Settings-Device information-More information-Developer Menu 勾选即可.
+参考FAQ: FAQ42702
+### 问题: 使用nightly链接手机时提示remote debugging not enabled on the device？
+解决方案: 如果通过nightly 点击connect 设备的按钮,一直链接不上.如果出现如下log . connecting to localhost:46848 connection error. Possible causes: USB port not connected, port not forwarded (adb forward), wrong host or port, remote debugging not enabled on the device. 说明你的手机没有打开remote debugging 选项,设置路径:Settings-Developer-Remote debugging ,点选ADB and Devtools 即可.
+参考FAQ: FAQ42704
+### 问题: 如何在gdb调试中打印js的stack？
+解决方案: 在gdb调试中可以使用命令 call DumpJSStack() 打印js的调用栈.
+参考FAQ: FAQ42705
+### 问题: 使用ffos中自带的run-gdb.sh调试出现Target disconnected.: Connection reset by peer.如何解决？
+解决方案: 执行./run-gdb.sh 出现如下error: ADB Location: adb Cannot attach to lwp 105: Operation not permitted (1) Exiting Reading symbols from idh.code/objdir-gecko/dist/bin/b2g...done. /tmp/b2g.gdbinit.SPREADTRUM\apadmin.2516:4: Error in sourced command file: Remote communication error. Target disconnected.: Connection reset by peer. 是因为没有root手机造成的.解决方法就是,在使用脚本前需要执行 adb root命令.改设备为root权限.
+参考FAQ: FAQ42706
+### 问题: 关于提供firefox重启问题log时的注意事项！
+解决方案: 如果在使用firefox过程中出现了重启.测试人员往往只提供slog.这还不完全. 因为还有一类关于B2G进程的crash.会在手机的/data/b2g/mozilla/Crash Reports文件夹下 生成trace相关的文件.因此如果出现了重启,需要将该文件夹下的文件pull出来.放在slog中一并提供.
+参考FAQ: FAQ42707
+### 问题: 如何反解ffos crash时的dmp文件？
+解决方案: firefox中如果发生了crash,一般会产生dmp文件,类似于android中的tombstone文件. 可以使用firefox提供的解析工具minidump_stackwalk解析dmp文件: 文件路径:monkey.test/bin下. 使用方法./minidump_stackwalk *.dmp objdir-gecko/dist/crashreporter-symbols/ *.dmp 为出错时的dump文件,crashreporter-symbols 为对应的symbols文件.
+参考FAQ: FAQ42709
+### 问题: objdir-gecko目录下为什么找不到crashreporter-symbols 文件夹？
+解决方案: 正常情况下我们执行的编译命令是不包含symbols文件的.如果要编译出有symbols的文件, 需要在根目录下使用如下命令重新编译: ./monkey.test/build_symb.sh , 这样可以在编译后的/objdir-gecko/dist/下找到crashreporter-symbols文件夹.
+参考FAQ: FAQ42710
+### 问题: DDR扫描是否一定要做高低温扫描？
+解决方案: 是的,DDR扫描一定要做高低温扫描. 因为DDR扫描的机器数量有限,一般只有5～10台左右,相比量产机器的测试抽检率会比较低. DDR扫描的局限性在于扫描时的负载压力较小,无法模拟操作系统跑起来之后的高耗电功能对整个系统的负载. 通过高低温可以增大压力,在一定程度上弥补负载不够的局限,以及扫描机器较少的限制. 所以一定要做高低温DDR扫描.
+参考FAQ: FAQ42714
+### 问题: 如何开启快速睡眠？
+解决方案: 快速睡眠功能:可以设定没有数据传输之后多少毫秒释放数据连接进入省电模式. SC7715默认是不开启快速睡眠的,可以在工程模式下开启这个功能. 操作步骤: *#*#83781#*#* -> TELEPHONY ->Fast Dormancy 点击开关-》输入毫秒数,就可以打开并指定多少毫秒进入快速睡眠.
+参考FAQ: FAQ42725
+### 问题: 4.4平台上wifi 高级设置里IP地址后面显示的数字是什么
+解决方案: 这个属于正常显示,是DHCPV6分配的IPV6 地址. 从android 4.4开始,将dhcpv6分配的ipv6地址在ui上显示出来了. 其实ipv6 在android 4.4之前也都支持,不过ui没有显示.
+参考FAQ: FAQ42736
+### 问题: 如何测试GPRS的Attach/Detach，Activate/Deactive PDP，以及Send Gprs data？
+解决方案: 可以在工程模式中开启这个功能. 操作步骤: *#*#83781#*#* -> TELEPHONY -> GPRS ->插入SIM卡 分别针对不同的SIM 卡,做如下的测试. 1)GPRS附着状态设置,点击进行设置; 2) 激活或去激活指定的PDP上下文; 3) GPRS数据设置与发送 此处有两个输入框.其中,输入框1用于设置发送的GPRS数据的长度-length(1-16000);输入框2用于输入指定的GPRS数据-data
+参考FAQ: FAQ42745
+### 问题: 如何使用设置中的打印功能？
+解决方案: 需要下载并安装google云打印apk.链接:http://www.google.com/cloudprint/learn/index.html. 操作方法: 1.安装云打印apk后,进入 设置-打印-云打印. 2.开启云打印. 3.点击menu键-添加打印机,接着会跳转到google云打印配置页面,根据向导默认设置即可. 注:使用google云打印需要google账户.
+参考FAQ: FAQ42753
+### 问题: 如何修改虚拟键振动默认开关？
+解决方案: packages/apps/AudioProfile/src/com/sprd/audioprofile/AudioProfileProvider.java中createProfileTable()方法下 把 int defHapticFeedback = AudioProfile.IS_HAPTIC_FEEDBACK; 修改为 int defHapticFeedback = AudioProfile.NOT_HAPTIC_FEEDBACK;
+参考FAQ: FAQ42772
+### 问题: 使用NVEditor工具保存工程，为什么工程中数据全部变成了10进制
+解决方案: 如上图所示,只要将"Hex"图标选中,就可以将其保存为16进制了.
+参考FAQ: FAQ42770
+### 问题: 如何修改状态栏中图标，文本框等UI组件的高度？
+解决方案: 先定位到要修改的图标所在的布局文件,在再给UI组件添加或者修改layout_marginBottom属性,该属性的值越大,离其所在UI组件的底越远. 如修改信号栏的高度: 先定位到rameworks/base/packages/SystemUI/res/layout/status_bar.xml 再修改其中的代码为: <include layout="@layout/signal_cluster_view" android:id="@+id/signal_cluster" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="3dip" /> 其中android:layout_marginBottom="3dip"的值越大,离其所在UI组件的底越远.
+参考FAQ: FAQ42751
+### 问题: 使用新版本的NVEditor，保存image时会提示“Clear calibration flag？”是什么意思
+解决方案: 这个功能目的是防止从校准过的手机中读取nv数据(已经设置了校准标志位)后,将校准标志位也保存到nvitem.bin中,从而导致产线漏校准. 请选择是.
+参考FAQ: FAQ42775
+### 问题: "工程模式"下如何设置是否自动应答？
+解决方案: 通过*#*#83781#*#*进入工程模式,"Auto Answer"选项的滑动开关就是控制是否设置自动应答,打开表示自动应答,关闭则不自动应答.
+参考FAQ: FAQ42776
+### 问题: DDR扫描完成之后，是否DDR就没问题了？
+解决方案: 不是,DDR扫描只是辅助检测手段,即使扫描过了,也不能说明DDR就一定没问题. DDR扫描工具的局限性在于没有高负载,无法模拟系统运行MP4时GPU和LCD对系统电源的负载. 所以DDR扫描过了之后,还要开机播MP4高低温来做高低温压力测试一下. DDR扫描工具的优点在于能快速发现问题,如果DDR扫描fail了,可以在项目调试的初期尽早发现DDR的问题.
+参考FAQ: FAQ42761
+### 问题: 手机如何进入安全模式
+解决方案: 长按电源键,在弹出的菜单中长按关机选项3秒,此时就会弹出进入安全模式的提示,选择确定即可进入安全模式
+参考FAQ: FAQ44084
+### 问题: 平台是怎么来控制相机是否有全景功能的
+解决方案: 经常可以看到,有些版本Camera有全景功能,而有些没有. 原因在于,全景相机比较消耗内存,当内存大于256M时,才会开放全景功能,否则会带来不好的体验. 具体的代码控制在ModuleSwitcherView.java中: public static boolean isEnableParomara = MemeoryTotal.isGreateMemory();//是否内存够大 isGreateMemory = iMemorySize > MINX_MEMORY_FOR_PANORAMA;//当MemorySize大于256M时认为内存够大. MINX_MEMORY_FOR_PANORAMA = 256 * 1024 * 1024;
+参考FAQ: FAQ43910
+### 问题: SC7701手机在乌拉圭不支持band2？
+解决方案: 我司SC7701平台手机是支持band2的,只是乌拉圭的运营商是Antel,是850和2100的band,所以在手机NV设置成不支持band2 1900.
+参考FAQ: FAQ42669
+### 问题: SC7701平台Fast Dormancy功能
+解决方案: SC7701平台Rel 是小于或等于(<=)R5,不支持R8级
+参考FAQ: FAQ42866
+### 问题: 网络连接Led显示
+解决方案: 网络连接成功时,即是对应AT命令处理的逻辑处点亮LED即可 ,如下: ps\atc\source\c\Atc.c文件 void ATC_Task_Dispatch(xSignalHeaderRec *sig_ptr) 中 ATC_PPP_SIG_ESTABLISH_CNF (PPP NCP success/failure)
+参考FAQ: FAQ42879
+### 问题: 如何修改双卡设置中点击数据连接设置，短信设置，语音拨号设置弹出框中的字体的颜色？
+解决方案: 修改 packages/apps/Settings/src/com/sprd/settings/sim下的 SimListAdapter.java中的getView方法中的 if (!isPhoneEnabled) { ………………………………………… }else{ holder.name.setTextColor(XXXX); if (holder.viewBtn != null) { holder.viewBtn.setEnabled(true); } } 和DataListAdapter.java中的getView方法中 if (!isPhoneEnabled) { ………………………………………… } else { holder.name.setTextColor(XXXX); if (holder.viewBtn != null) { holder.viewBtn.setEnabled(true); } } 其中,XXXX
+参考FAQ: FAQ42884
+### 问题: ResearchDownload无法识别Com2的下载端口
+解决方案: 可以修改工具目录下的 ResearchDownload.ini中的[PortSetting]下的 EnableFilter置为0,或者设置FilterPort=1
+参考FAQ: FAQ43899
+### 问题: SC7701平台 Simlock 解码锁重复概率
+解决方案: 目前我司SC7701平台 Simlock 功能产生解码锁的算法是SHA256,密码长度8位,计算1KK样本产生重复解码锁的概率是0.3158%,在合理范围内.即使存在极小概率重复的情况,不过不影响解锁功能,生成的密码还是可以正常解锁的.
+参考FAQ: FAQ42882
+### 问题: SC7701平台手机注络时间偏长
+解决方案: 首先确认测试手机的 dcxo 温度曲线,如果dcxo曲线已经OK,就不存在逻辑错误,开机注册网络时间与手机支持的band及地区频点相关,比如手机支持band2与band5,从band2开始搜索直到band5,当测试地点拥有band2的实网频点很多,就会搜索很多信号,会增加注网耗时,如果最后注册的网络是band5的频点,时间就会更长.
+参考FAQ: FAQ42900
+### 问题: SC7701平台手开机注册网络成功前无法hangup
+解决方案: 目前sc7701平台,USIM卡插入后,建立MO Voice call 需要时间比正常开机注册时间长,需要合入对应修改,在base版本FM_BASE_W13.53已经合入.
+参考FAQ: FAQ42907
+### 问题: Skia在Android中的作用?
+解决方案: Skia是Android的2D图形库,用于绘制文字、几何图形、图像等. skia是个2D向量图形处理函数库,包含字型、坐标转换,以及点阵图都有高效能且简洁的表现.不仅用于Google Chrome浏览器,新兴的Android开放手机平台也采用skia作为绘图处理,搭配OpenGL/ES与特定的硬件特征,强化显示的效果.
+参考FAQ: FAQ42945
+### 问题: ffos如何执行monkey test？
+解决方案: Monkey需要使用ubuntu环境进行测试,运行测试后不能拔除USB线,需要连接测试,拷贝monkey.test文件夹下所有文件至ubuntu环境下,将此文件夹所有文件都设置为读写权限(涉及命令:chmod –R 777 文件夹),进入test-config,运行命令./run-对应项目名-monkey.sh,运行测试前,脚本会重启一次手机,然后进行monkey测试,结束后,手机中的设置应用会被删除,当前monkey只能在Userdebug版本进行monkey测试.
+参考FAQ: FAQ42950
+### 问题: FFOS如何执行灭屏唤醒压力测试？
+解决方案: 通过XP电脑环境进行source /data/sleepwake.sh执行, 使用方法:使用adb命令获取手机root权限,将sleepwake.rar文件解压后的sleepwake.sh文件push至手机data分区,修改sleepwake.sh文件权限777,使用adb命令进入对应data目录下,运行source /data/sleepwake.sh,即开启灭屏唤醒测试.
+参考FAQ: FAQ42953
+### 问题: 如何将半角符号转换为全角符号？
+解决方案: 在中文版本下,因为汉字的的标点符号是全角,所以会遇到需要将半角转为全角的情况,这时可以使用接口ConvertToFullSymbol 做转换. 同时也可以对该函数进行扩展以支持更多的符号转换.
+参考FAQ: FAQ42913
+### 问题: MOCOR平台如何配置单卡工程？
+解决方案: 将工程主mk中宏MMI_MULTI_SIM_SYS设置为SINGLE即配置为单卡工程. 注意: 1、MMI_MULTI_SIM_SYS定义必须满足:MMI_MULTI_SIM_SYS <= MULTI_SIM_SYS 2、MULTI_SIM_SYS不允许随意修改,如果需要修改,请务必咨询展讯工程师提供库更新.
+参考FAQ: FAQ42938
+### 问题: 如何增加通讯录中单个联系人存储号码的个数？
+解决方案: 可以通过修改宏MMIPB_MAX_NV_PHONE_NUM(@mmi_custom_define.h)定义实现. 注意: 增大宏MMIPB_MAX_NV_PHONE_NUM定义将会影响NV空间和内存消耗,如果ram/rom小的项目,不要定义过大的值,建议<=2.
+参考FAQ: FAQ42967

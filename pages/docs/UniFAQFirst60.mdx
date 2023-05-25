@@ -1,0 +1,300 @@
+### 问题: SC9820E平台线性充电的NMOS管的参数要求？
+解决方案: 漏源击穿电压Vds要大于20V 漏源导通阻抗Rdx要小于1欧姆(Vgs大于0.9V) 栅源导通电压Vgs门限值要小于1.1V 最大DS电流Id要大于0.3A, 耗散功率Pd要大于0.14W.
+参考FAQ: FAQ110550
+### 问题: SC9820E平台充电的电流检测电阻的参数要求？
+解决方案: 一般要求68mohm,精度要求+/-1%,功率要求大于0.3W(1.4A充电电流时), 对于充电电流精度要求高的需要+/-3%以内的,TR要小于+/-250ppm每摄氏度.
+参考FAQ: FAQ110551
+### 问题: SC9820E平台FUG电阻的参数要求？
+解决方案: 一般要求20mohm,精度要求+/-1%,功率要求大于0.3W. 对于充电电流精度要求高的需要+/-5%以内的,TR要小于+/-250ppm每摄氏度.
+参考FAQ: FAQ110552
+### 问题: SC9820E平台对于TSX和TCXO的频率精度要求？
+解决方案: 对于TSX要求+/-10ppm;对于TCXO要求+/-0.5ppm
+参考FAQ: FAQ110553
+### 问题: 如何修改Google闹钟里面的默认铃声?
+解决方案: Google DeskClock默认闹钟铃声是读取系统默认的RingTone铃声的, 因此修改系统默认RingTone铃声即可达到修改默认闹钟铃声的需求.
+参考FAQ: FAQ110562
+### 问题: simba工具怎样像CFT工具一样设置小黄人扫描校准参数
+解决方案: 1、设置方法:点击simba工具界面右上角倒三角图标:高级设置\常规\重置扫描参数 然后保存 2、测试完成后在工具log文件夹里测试log下有个power文件夹可以看到GSM/WCDMA/LTE的最大最小功率,可以看看板子功率余量是否足够
+参考FAQ: FAQ110564
+### 问题: Mocor 缅甸语言是否支持 Zawgyi 编码
+解决方案: - 缅甸语言可分为 Unicode 編碼以及 Zawgyi 编码 1. Unicode character map 2. Zawgyi character map - 编码使用到的翻译字符串不同,以及字库也不同;在 6531E 平台上默认已经使用 Zawgyi 的翻译字符串做显示,因此僅能使用 Zawgyi 字库
+参考FAQ: FAQ110579
+### 问题: simba 产线测试时怎样设置自动开始
+解决方案: 设置方法:点击工具右上角倒三角图标:高级设置\测试\勾选自动开始,然后保存
+参考FAQ: FAQ110565
+### 问题: SC9863A平台使用哪个串口打印log
+解决方案: 使用串口Uart1打印log
+参考FAQ: FAQ110589
+### 问题: SC9863A平台是否支持听筒和耳机声音双响
+解决方案: 不支持,原因是听筒和耳机的左声道是二选一的,不能同时输出.
+参考FAQ: FAQ110590
+### 问题: SC7731E平台是否支持听筒和耳机声音双响
+解决方案: 不支持,因为听筒和耳机的左声道是二选一的,不能同时输出.
+参考FAQ: FAQ110592
+### 问题: SC7731E平台是否支持SIM card 和T-flash热插拔
+解决方案: 支持
+参考FAQ: FAQ110593
+### 问题: LTE B12和B17 RF校准是否都要进行
+解决方案: Band12和Band17 co-band:RF校准只需要校准Band12即可,Band17不需要校准,会自动调用Band17的校准参数;
+参考FAQ: FAQ114045
+### 问题: SC2721G未使用的LDO怎么处理
+解决方案: 未使用的LDO输出可以悬空, 软件请确保关闭.
+参考FAQ: FAQ110597
+### 问题: 不进行按键操作，手机Flash空片是否支持直接进入下载模式
+解决方案: 支持
+参考FAQ: FAQ110598
+### 问题: 手机进入USB下载模式有几种方式
+解决方案: 三种方式进入USB 下载模式:1.KEYIN0+KEYOUT0;2.KEYIN0+GND;3.U1TXD+GND
+参考FAQ: FAQ110599
+### 问题: SC9832E平台是否支持驻极体MIC和硅MIC
+解决方案: 支持,使用时请注意二者电源接线方式不同.
+参考FAQ: FAQ110600
+### 问题: SC9832E 平台Pin PBINT2的功能
+解决方案: Pin PBINT2 to GND,系统自动进入开机模式.
+参考FAQ: FAQ110601
+### 问题: SC9820E平台无电池和充电功能，BAT_DET\SENSE_P\SENSE_N三个管脚是否可以直接接地
+解决方案: 可以直接接地
+参考FAQ: FAQ110602
+### 问题: SC7731E芯片PinAA2 USB_REXT是否需要端接电阻
+解决方案: 不需要,原因 USB PHY不会用到,SC7731E芯片出厂时会校准,校准值保存在EFUSE中.
+参考FAQ: FAQ110605
+### 问题: SC7731E平台马达电路，普通的转子马达（引线马达）是否需要接续流二极管
+解决方案: 不需要,原因马达工作在LDO mode .
+参考FAQ: FAQ110606
+### 问题: SC2720A VCHG Pin自身耐压有多大
+解决方案: 可以耐28V以下电压,由于VCHG不带OVP功能,EOS浪涌场景下需外加TVS器件.
+参考FAQ: FAQ110622
+### 问题: SC2721G VCHG Pin自身耐压有多大
+解决方案: 可以耐28V以下电压,由于VCHG pin不带OVP功能,EOS浪涌场景下需外加TVS器件.
+参考FAQ: FAQ110623
+### 问题: SC7731E平台的GPIO下拉阻值是多大
+解决方案: 50K
+参考FAQ: FAQ110626
+### 问题: MOCOR 手机蓝牙重新打开后，是否会自动重新连接车载蓝牙装置?
+解决方案: 针对手机项目在重啟或开关蓝牙皆不会主动发起重连的操作, 端看对端装置是否会主动发起断线时重连的动作. 目前不建议修改支持手机端断线重连的操作,因为两边同时发起重连需求也可能造成冲突,反而引入风险.
+参考FAQ: FAQ110631
+### 问题: Simba能否支持多端口同时测试？
+解决方案: 是的,最多可以支持4端口同时测试. 具体设置如下图: 操作方法:
+参考FAQ: FAQ110641
+### 问题: SC2721G VDDWPA电源反馈网络FB_WPA走线宽度为什么需40mil以上
+解决方案: 1. VDDWPA可以工作在bypass 模式(相当于VDDWPA直接接VBAT),此模式下VDDWPA电源由反馈脚(FB_WPA)输出. 2. PA工作时最大电流可达600毫安左右. 3. 驱动默认使能Bypass模式. 当VBAT电压较低时,满足以下条件则驱动控制VDDWPA在DCDC与BYPASS模式之间切换: a. 进入Bypass的条件:VBAT-输出电压(VDDWPA)<200mv b. 退出Bypass的条件:VBAT-输出电压(VDDWPA)>260mv
+参考FAQ: FAQ110642
+### 问题: PMIC(SC270/SC2721/SC2730)硬件最低工作电压检测（UVLO）介绍
+解决方案: 1. PMIC 硬件UVLO(Under Voltage Lock Out)电路作用: 监督系统工作电压Vsys(一般连接VBAT).一旦Vsys低于门限电压UVLT 2ms以上,PMIC就停止工作,关闭电源输出.当Vsys电压恢复,持续大于门限电压UVHT 16ms以上 ,则PMIC恢复工作. Note:UVLO 两个门限电压UVHT/UVLT分别如下 2. UVLO 检测pin: SC2721/2720/2730 UVLO检测pin是VBATA,之前的2723G是VBAT_SENSE pin. 3. 和VBAT_SENSE PIN脚分开后,UVLO和库伦计不再绑定,理论上可分开工作.适用于系统电压正常,但电池异常低压也要开机的项目.此function需要驱动配合,若有需求请提SW CQ详细咨询.
+参考FAQ: FAQ110645,含图片
+### 问题: VBS\VGCS是什么以及展讯平台是否支持?
+解决方案: 1. 什么是VBS\VGCS? VBS全称是Voice Broadcast Service,即语音广播业务; VGCS全称是Voice Group Call Service,它是由多方参加,其中一部分人可以讲话,多方聆听的点对多点的语音通信方式.它突破了点对点通信的局限性,能够快速建立呼叫; VBS\VGCS均应用在GSM-R系统中,即铁路专用通信网. 2. 展讯平台是否支持VBS\VGCS? Reply:目前不支持.
+参考FAQ: FAQ110653
+### 问题: SHARKLE/SHARKL2进入USB Download流程有几种方式？
+解决方案: ROMCODE根据外部相关IO初始情况,有三种方式进入USB Download流程: 1. strap pin模式:当strap pin U1TXD为低时进入USB下载,此方式进入USB Download流程后不会timeout. 2. 按键模式:当KEY[0][0]按下时进入USB 下载,此模式进入后若16秒内没有通信成功则会timeout,退出下载流程,随后尝试从EMMC/NAND启动. Note:按键模式优先级低于strap pin模式. 3. 各种下载模式若没有触发,则ROM code会引导板子从外部flash启动,倘若flash为空,即板子中没有程序,则会自动进入USB download循环模式.
+参考FAQ: FAQ110656
+### 问题: 如何添加thermal白名单
+解决方案: 平台缺省增加了一些thermal白名单,thermal白名单的配置文件路径(如sharkle)在 device/sprd/sharkle/common/scenario.conf. 如需再增加,需要把APP的包名增加到scenario.conf对应项<scenario type="other APP">下面,scenario.conf文件是加密文件,添加APP之前需要使用SPRD-Scenario-Decypt-Tool工具(此工具可向项目CPM获取)来解密,修改完后再加密成scenario.conf ,最后覆盖原来文件device/sprd/sharkle/common/scenario.conf即可.
+参考FAQ: FAQ110665
+### 问题: 2018年手机可用热管最薄尺寸
+解决方案: 0.37mm
+参考FAQ: FAQ110684
+### 问题: 什么是CSFB
+解决方案: CSFB(Circuit Switch Fall Back),LTE只提供数据业务,当发起或者接受语音呼叫时,回落到CS域进行处理.运营商无需部署IMS,只需要升级MSC就可以支持.这是一种快速提供业务的方案,但是缺点就是呼叫接续速度慢.CSFB适合作为IMS部署之前的过渡方案,另外还可以用来解决LTE手机漫游场景的语音呼叫问题,在拜访地网络没有部署IMS,或者IMS漫游协议尚未应用的情况下,CSFB可以为漫游的LTE用户提供语音业务.
+参考FAQ: FAQ111194
+### 问题: 手机网络搜索自动跟手动有什么区别
+解决方案: 手动跟自动的最终目的是没有区别的都是寻找网络,但是如果你的SIM是移动的,自动模式的时候手机就会帮你注册到中国移动你就可以使用电话了,如果是手动,你的手机可以搜索到中国移动的网络,中国联通的网络,然后让你选择的,但是如果你的SIM卡是移动的,即使你在联通注册也是没用的,所以你还是使用自动就行了
+参考FAQ: FAQ115218
+### 问题: 展锐功耗自动化测试的方案介绍
+解决方案: 文中提到的UIA+库仑计,UIA+PowerMonitor,机械手+PowerMonitor这三种方式,展锐内部都有,简单介绍一下: 1.机械手+PowerMonitor,这套系统是东舟研发的功耗自动化测试方案,脚本需要自行编写,机械手采购价约30万RMB,power monitor需单独采购,debug、user版本均可测试; 2.UIA+PowerMonitor,这套系统是展锐自研的功耗自动化测试方案,脚本需要自行编写,需采购power monitor,仅适用于debug版本,目前未对客户开放; 3.UIA+库仑计,这套系统是展锐自研的功耗自动化测试方案,uiautomator脚本需要自行编写,需向展锐购买USB继电器,debug、user版本均可测试,目前有其他客户开始学习. 该文档,列举三种功耗自动化测试方式,目的是从成本、易用性等角度来说明功耗自动化测试的现状.UIA+库仑计的文档可联系对应的CPM获取.
+参考FAQ: FAQ115221
+### 问题: SC9832E平台VDDWPA最大电压输出不足3.5V
+解决方案: 引起该问题的根本原因是软件Efuse模块调用错误导致的,此问题在17B和18A分支上的SVN fix节点分别如下所示: ---Fixed on SVN version 41209(17B branch) and 41213(18A branch) 如果有客户在SC9832E项目RF调试过程中遇到类似问题,请联系贵司的展锐接口TAM/CPM更新SW version到以上SVN节点之后的版本验证即可.
+参考FAQ: FAQ110714
+### 问题: SI/PI仿真需要提供哪些文件？
+解决方案: 仿真文件需求: 1. PCB文件 采用pads工具可以提供.pcb或.asc格式; 采用allegro工具可以提供.brd格式; 其他layout工具可以提供ODB++格式 2. sch原理图文件 3. PCB叠层文件 进入仿真阶段的layout要求: 1. PCB layout不能出现ERC问题; 2. SI 仿真: DDR走线完成,该区域的地过孔添加完成; 3. PI仿真:DCDC区域割地处理(割地要求参照PDN Design guide), VDDARM/VDDCORE/VDDMEM/VBATDRV走线完成,地过孔添加完成 4. 重要信号及小电源仿真:需要仿真的接口(如EMMC,SDIO,MIPI,LVDS)走线完成,周围地孔添加完成;IP电源走线及电容添加完成,周围地孔添加完成.
+参考FAQ: FAQ110723
+### 问题: 在线仿真平台入口
+解决方案: 登录isupport网站(https://isupport.unisoc.com)后,首页会看到 "客户SI/PI仿真" 模块,点击可以进入在线仿真平台. 如果登录之后未看到此模块,请联系对应的TAM(展锐客户接口人)处理.
+参考FAQ: FAQ110727
+### 问题: 在线仿真平台与线下仿真平台的区别
+解决方案: 在线仿真平台流程:客户登录isupoort平台登录后,进入"客户SI/PI仿真" 通过提交文件,即可开始仿真. 如客户提交文件正确,系统会自动开始仿真,节省了中间步骤;仿真结束后,客户可以通过平台下载仿真报告. 线下仿真平台流程: 客户提交的文件需要通过 FAE-> AE 再到仿真组开始仿真.仿真结束后,仿真报告再由 AE->-FAE->客户.
+参考FAQ: FAQ110728
+### 问题: 首次使用在线仿真平台
+解决方案: 如果首次使用,可以采用以下途径: 1. 客户可以联系FAE/AE,安排仿真组开展培训; 2. 登录isupport网站(https://isupport.unisoc.com) "客户SI/PI仿真" 模块,点击进入后,有个"帮助文档" (截图红色圈)下载,可以详细阅读帮助文档,根据文档说明来完成操作;使用过程中出现问题可以发邮件到 ascp.admin@unisoc.com.
+参考FAQ: FAQ110732
+### 问题: 补充业务是否支持SIP方式或UT接口激活？
+解决方案: 展锐终端对于SIP方式和UT接口激活补充业务都支持. SIP方式是指通过SIP信令携带暗码,通过修改号码在网络侧签约的补充业务实现; UT接口是指通过XCAP协议,通过修改号码在网络侧保存的补充业务签约信息的XML文件实现. 目前大部分网络支持UT接口方式,支持SIP方式的网络较少.具体使用哪种方式需要看网络的支持情况.
+参考FAQ: FAQ110752
+### 问题: 如何控制SIP消息使用TCP发送或UDP发送？
+解决方案: 按照协议规定,SIP消息大于1300个字节使用TCP发送,小于等于1300个字节使用UDP发送,在没有特殊要求的情况下,终端默认都是按照协议规定发送的. 如果网络有特殊要求,可以根据通过在工程模式中修改MTU(最大传输单元)限定使用TCP或UDP发送. MTU修改为0可以控制终端固定使用UDP发送SIP消息: MTU修改为1可以控制终端固定使用TCP发送SIP消息: 工程模式中修改MTU的位置: 在拨号界面输入*#*#83781#*#* -> EngineerMode -> TELEPHONY -> VoLTE setting -> regiser setting -> P-CSCF -> MTU length
+参考FAQ: FAQ110754
+### 问题: SC6531E GPRS maximum throughput of DL and UL
+解决方案: SC6531E 的GPRS Class是12, GPRS DL和UL的最大throughput理论值是80kbps.
+参考FAQ: FAQ110785
+### 问题: SIMBA工具如何增加测试项？
+解决方案: 如图所示,选择需要添加测试项的位置,右键单击,选择增加测试项,选择需要添加的测试项,点击保存即可.
+参考FAQ: FAQ110796
+### 问题: SC9832E/SC9820E+S3593A 26M REFOUT开启关闭方法?
+解决方案: 如下图,NV中找到NV中找到Reserved8 定义如下: Bit0 Bit1 Bit2 分别代表refout1/refout2/refou3. 0是打开;1是关闭. 如下是0x6.代表只有refout1 打开.
+参考FAQ: FAQ110801
+### 问题: RF bring up时射频不通检查方向？
+解决方案: 1.NV配置检查,对应频段RF逻辑配置检查,包括天线开关/PA配置/transceiver port配置. 2.Pinmap.c配置检查,对应RFCTL/MIPI配置检查. 3.硬件通路检查,如PA/DPX/SAW/小料等物料焊接问题,封装是否ok?关键物料信号测量(电源/控制信号)等 4.软件版本是否使用正确? 5.如果还有问题,提交问题至展锐寻求进一步分析.
+参考FAQ: FAQ110814
+### 问题: Memory调试常用哪些测试点，必须保留那些测试点？
+解决方案: 针对DDR调试: 1.常用测试点有CLK_P,CLK_N,CKE0,CSN0,CSN1,JTAG测试点等. 2.当项目较成熟,或走线或布局不便时,可删除CLK_P,CLK_N,CKE0,CSN0,CSN1等测试点,但务必保留JTAG测试点. 针对EMMC调试: 务必保留CLK,CMD,DAT0,RST　４个测试点.
+参考FAQ: FAQ110824
+### 问题: SC9832E/SC7731E/SC9850K耳机输出THD+N为-50dB，低于平台水平的-55dB
+解决方案: 因为SC9832E/SC9850K/SC7731E使用的codec耳机输出是Class-AB,需要加一个隔直电容. THD+N偏低的主要原因有两个: 1. 隔直电容的封装:平台参考机的隔直电容使用的是0805封装的22uF,如果使用0603封装的22uF,一般会有5dB左右的差距; 2. 耳机输出的幅值过大:适当的降低模拟增益可以改善THD+N;
+参考FAQ: FAQ110851
+### 问题: 音频客观测试侧音fail如何调试
+解决方案: 在对应的模式(Handset/Headset4P等)下,按照下面的顺序将点击ST,将sidetone选择DSP Digital,点击Vol config,并调试st gain. 备注:该设置只能用于客观测试,不能用于量产,否则会造成客户误以为主观有回声.
+参考FAQ: FAQ110863
+### 问题: LTE 最大期望功率修改
+解决方案: 项目中根据需要可以对LTE最大功率进行微调,LTE的最大功率在NV中修改,修改包括两部分 1.PA 切换点修改 2.APT电压修改 注:1.这两处的修改要保持一致 2.修改的功率必须是整数(如23/22,不能出现22.5等) 由于NV架构不同,将LTE平台分为新平台和老平台. 一.老平台包括 SC9830/SC9832A/SC9820A/SC9820W 修改NV位置如下 1. PA切换点修改 2.APT修改 二.新平台包括 SC9832E/SC9820E/SC9850K/SC9853I/SC9863A 1. PA切换点修改 2.APT修改 新平台APT 改成每个功率对应一个电压(功率以1db步进) ①代表HPM 电压分段个数默认23~11dbm 共13段 对应0xD ②代表一组功率和电压,从大到小依次递减. 当增加或者减小功率时①对应增加或减少,②处的功率从最大依次递减到11dbm
+参考FAQ: FAQ110870
+### 问题: FM耳机天线实测收台效果差
+解决方案: 首先验证FM传导性能是否正常,再检查FM_LNA_EN脚的控制逻辑是否正常,插入耳机FM LNA使能脚会拉低 ,如果为高电平会直接影响FM耳机搜台效果,通知软件修改FM LNA使能脚的控制逻辑即可 FM LNA_EN
+参考FAQ: FAQ110876
+### 问题: NV_type中的IMEI值怎么转化成IMEI号的？
+解决方案: 答:具体如下图转换,IMEI、IMEI2、IMEI3、IMEI4均可按此方式转换;
+参考FAQ: FAQ110891
+### 问题: 耳机座NC脚处理
+解决方案: 耳机座一般有6个脚,比使用到的5个脚多出1个,多出的这个脚一般命名为NC脚,很多客户将其悬空. 耳机座的NC脚,悬空会存在较长金属管脚,天线效应强,容易将板子上的干扰辐射出去. 所以,NC脚正确的处理为:不作悬空,预留1个到地电容的位置,电容不上料. 如果NC脚辐射干扰到旁边的天线,可以使用预留位置进行调试,消除干扰.
+参考FAQ: FAQ110896
+### 问题: SC9820E 使用PBINT2接地方式开机功耗相比按键方式增加多少？
+解决方案: PBINT2内部采用20K上拉电阻,使用PBINT接地开机功耗增加约0.2mA.
+参考FAQ: FAQ110839
+### 问题: 如何检查6531E平台手机升级的软件是否已合入解决天线测试频率误差/相位误差FAIL问题的PATCH
+解决方案: 手机连上MobileTester工具, 1) 检查XO buffer output level是否降低到4, 在Misc Information界面输入at command: AT+RWRFREG=0,69,64,0,看返回值是否为64 2)检查VDDCXO 电压是否修改为 1.95v 在Memory 界面输入, Addr =82001478 , conut=1, 然后点击 read,看返回值是否为4B,Default value是3c,即1.8V,00为1.2V,1个step 是10mv
+参考FAQ: FAQ110855
+### 问题: GCF测试3GPP TS 51.010-1 case 45.2.2-1注意事项
+解决方案: 3GPP TS 51.010-1 case 45.2.2-1:PDP context activation requested by the network, successful and unsuccessful 此case为MT PDP,需要等待UE对于PDP的响应.测试前先发AT+CGAUTO=1自动应答网侧来PDP,再检查仪表PICS "TSPC_AddInfo_N_req_PDP_CA"是否为3,目前展锐平台手机支持响应三个PDP.
+参考FAQ: FAQ110959
+### 问题: 排查DDR频率对GPS性能的影响
+解决方案: userdebug版本软件输入如下指令查看与修改DDR频率,确认DDR频率对GPS性能的影响. adb root adb remount adb shell adb lookat 0X402E0050 // 查看当前DDR频率 adb lookat -s 0X11ec4ec5 0X402E0050 // 设置DDR频率为466MHz adb lookat -s 0Xec4ec4f 0X402E0050 // 设置DDR频率为384MHz adb lookat -s 0X9d89d8a 0X402E0050 // 设置DDR频率为256MHz
+参考FAQ: FAQ110962
+### 问题: WIFI主要RF测试指标
+解决方案: 发射指标 •Transmitter Power 发送功率 •EVM 矢量幅度误差 •Spectral flatness 波形平坦度 •Frequency tolerance 中心频率误差 •Spectrum Mask 频谱模板 •Spurious emission发射杂散 接收指标 •Sensitivity 接收灵敏度 •Max input level最大接收电平 •ACR 邻道抑制
+参考FAQ: FAQ110981
+### 问题: SC2342B的DPD校准方法
+解决方案: 1、将connectivity_calibration.ini文件中的is_calibration改为0; 2、把上述ini文件push到vendor/etc,手机通过同轴线连接到仪器,然后重启手机; 3、开机后,把productinfo/wcn路径下的connectivity_calibration_bak.ini文件pull出来,然后 将该文件中is_calibration改为1; 4、将connectivity_calibration_bak.ini重新命名为connectivity_calibration.ini,然后将其 push到vendor/etc中,最后重启即可.
+参考FAQ: FAQ110986
+### 问题: SC2720/SC2721 VCHG 各种门限电压
+解决方案: VCHG 低压门限: 1.charger插入(CHGR_INT)检测,如下.当插入有效时PMIC power on,或使系统由休眠唤醒. When VCHG<3.1V: VCHG拔出 When VCHG>3.3V: VCHG插入 2. 充电电平Ready( CHGR_ON)判断,如下.当电压ready后打开充电,相反关闭充电. When VCHG<4.1V: "0" When VCHG>4.3V: "1" NOTE: 对于没有电池的模块项目,因不需要充电,VCHG低压只要满足插入检测门限即可. VCHG 高压门限: 1. VCHG OVP电压5.6-9.2V间软件可设,硬件门限 9.2V.当OVP电压达到软件所设或最高硬件门限时就停止充电. 2. VCHG pin直流最高耐压28V.
+参考FAQ: FAQ110869
+### 问题: SC2721 VDDKPLED LDO用作手电筒的电源时，待机后不亮原因？
+解决方案: 现象: 手电筒先打开,待机后需保持常亮,但是待机后不能亮,有时一闪一闪. NOTE:SC2721 VDDKPLED工作在LDO模式,给闪光灯供电,灯负极接地,LDO供上电就会打开灯. 原因: 待机时KPLED_CTRL0寄存器(Offset addr:0x02AC) BIT9(SLP_LDOKPLED_PD_EN)配置错误,导致系统sleep时LDO关闭,正确应该配成0. 一闪一闪是因待机后系统后台有时会唤醒,当唤醒时LDO 打开,往复的间断唤醒使手电筒一闪一闪. NOTE: SLP_LDOKPLED_PD_EN:KPLED LDO sleep power down enable
+参考FAQ: FAQ110997
+### 问题: FCC认证WIFI传导杂散（二次谐波）超标
+解决方案: 标准要求: 传导主频的二次谐波杂散需要在-36dbm以下,预留余量需要保证在-40dbm以下. 频谱仪设置:VBW=300KHz,RBW=100KHz,Max hold. 处理思路: a.WIFI链路上增加滤波器TX SAW. b.调整平台INI文件下调功率. c.若链路上未预留TX SAW位置,需要自行搭建滤波电路,可采用π型电路搭建滤波器(参考滤波电路:1pF/3.9nH/1pF).
+参考FAQ: FAQ110983
+### 问题: PADS中复用功能的几种操作方法（适用SPM导入）
+解决方案: 1.布局复用 (1)reuse 法 1.将A PCB整体2.Filiter里面选择元件,建一个reuse模块 2.在B pcb 里面make like reuse,调入刚才的模块 3.Done 仅适用于pcb decal/part refer 须一致,同样元件数量,要求比较高 (2)EMP/EMN 导入法 1.将A PCB file export emn/emp文件(注意命名不要有中文且不要存放在一个有中文字符的路径上) 2.在B pcb 里面import emn/emp 3.Done 适用于元件位号一致,实际运用简单快捷. 2.布线复用 需要同样的IC的net name命名一致,将A部分IC的出线复用到B部分,步骤: 1.将A /B PCB的原点中心设成IC的中心,Filiter里面选择走线/孔,选择A部分的fan out,点击右键make reuse,输入名称,1,设定原点 2.在B pcb 里面make like reuse,调入1 reu的文件,输入坐标原点
+参考FAQ: FAQ111088
+### 问题: FM室内搜台偏少解决方案
+解决方案: 首先检查FM 传导性能是否正常,然后检查耳机音频通道是否正常,如果发现耳机音频左右声道和耳机检测网络的EMI器件(磁珠)用0ohm电阻代替,请直接将0ohm电阻更换成磁珠(1000ohm@100MHz)即可
+参考FAQ: FAQ111020,含图片
+### 问题: 客户板子哪些信息更改后需要重新仿真？
+解决方案: 出现以下情况之一都会影响仿真结果,需要重新仿真. 对于SI仿真: 1.仿真区域内的PCB走线(包括信号线和地)及地孔的更改 2.PCB叠层厚度信息的改变,包括铜厚及介质厚度 对于PI仿真 1.仿真区域内的PCB走线(包括电源线和地)及地孔的更改 2.PCB叠层厚度信息的改变,包括铜厚及介质厚度 3.仿真区域内电容容值或封装改变,电容个数的增减
+参考FAQ: FAQ111026
+### 问题: 4L 功能机平台走线层规划及几个重要地回流通道提醒
+解决方案: 目前功能机布线都以4L板为主,地的完整性尤其重要 对于4L板的走线规划,建议如下(BB TOP面) L1.元件层,不走线,仅仅在屏蔽罩内走线 L2.走线层(与L3层垂直交叉) L3.走线层与L2层垂直交叉) L4.按键面,主地层 MARK:RF天线周围同层尽可能少走表层线,特别是音频走线/高速信号线/敏感线 几个主要地回流通道的预留 1.BB 内GND 通道(1～4层)(如下图) 2.PA到电池连接器的完整地回流平面 3.BB到耳机座的完整地回流平面
+参考FAQ: FAQ111090
+### 问题: 如何解决CTS中的video测试需要翻墙和占用带宽？
+解决方案: Google反馈他们还不了解这个情况,可能会考虑在中国设置服务器,或者提供相关video资源,让客户自行搭建测试服务器.但目前仍需自行准备翻墙网络,如下为获得翻墙网络的几种方法: 方法一:找三大运营商购买VPN专线,价格比较昂贵,但是网络稳定,高速,而且合法,不会被查封; 方法二:找网上卖的能翻墙的路由器,不够稳定,而且不合法,抓住可能罚款; 方法三:纯软件翻墙,手机里面安装一个app,购买一个账号,登陆后开启app即可完成手机翻墙,连接不稳定,比路由器连接效果差,但是价格便宜,这种vpn也比较容易被查封;
+参考FAQ: FAQ111096
+### 问题: CTS自动化测试如何跳过开机向导及如何打开User版本的USB调试？
+解决方案: 目前该功能暂无法实现自动化,仍需使用手动设置的方式,此外,google MTT也没有解决,主要是google其他部门以安全为由不愿意提供这种手段.
+参考FAQ: FAQ111104
+### 问题: 9832E平台Timing引起的EVM余量不够
+解决方案: 可以通过修改NV中LTE_Downlaod_RF_Common/LTE_PA_config/band_no/PA_config_cc0/mipi_config/PA time通过把PA提前打开来优化.
+参考FAQ: FAQ111110
+### 问题: 不同LPDDR关键电源电压
+解决方案: LPDDR 主要电源有: 1. VDDR1: DDR Core1电源 2. VDDR2:DDR Core2电源及输入only buffer 电源. 3. VDDCA:输入only receiver电源,向CA0-9/CKE/CS_n/CK_t/CK_c 输入buffer供电.有的memory SPEC会将VDDCA pin归到VDDR2中,不单列出来. 4. VDDQ:I/O buffer电源,即data buffer电源. 不同LPDDR电源如下: 　 VDD1 VDD2 VDDCA VDDQ LPDDR2 1.8V 1.2V 1.2V 1.2V LPDDR3 1.8V 1.2V 1.2V 1.2V LPDDR4 1.8V 1.1V 1.1V 1.1V LPDDR4X 1.8V 1.1V 1.1V 0.6V
+参考FAQ: FAQ111117
+### 问题: SC7731E平台支持NAND flash吗？
+解决方案: 仅支持8bit位NAND flash.
+参考FAQ: FAQ111153
+### 问题: Simba writeSN如何设置多个prefix？
+解决方案: 在InputCodes---常用---prefix处设置前缀,以111 、222、333三个前缀为例,设置如下所示格式即可.
+参考FAQ: FAQ111177,含图片
+### 问题: LTE BAND 41不同带宽NV配置
+解决方案: NVaide配置B41时,有全频段和100M带宽两种选择,差异在LTE_DownloadParam\LTE_Download_RF_Common\LTE_Band_Support_info\Band_no6\reserved[0]标志位体现,默认值是0x0,代表全频段. 目前客户多数会和B38做co-band,因此在用NVAIDE配置B41时,可以选择B41(100M)_co-band_B38,然后手动去改标志位,目前标志位只会区分以下三个值: 0x0——全频段/194M(2496~2690MHz) 0x78——120M(2535~2655MHz) 0x64——100M(2555~2655MHz)
+参考FAQ: FAQ111039,含图片
+### 问题: SPI信号对RF ULB RX造成干扰
+解决方案: 目前采取措施是在SPI_CLK管脚增加33pF去耦电容,可有效将desense降低到0.5dB以内. 造成此现象的原因:一方面是由于SPI信号完整性不够,另一方面RF ULB走线过于靠近SPI信号走线; 建议在原理图设计和LAYOUT时尽量将B20/17此类ULB通路远离SPI PORT,另外保留SPI port的去耦电容位置.
+参考FAQ: FAQ111040,含图片
+### 问题: BB SPM 导入的重点及流程
+解决方案: SPM目前提供BB(包含 DDR) /PMU的周围扇出,为防止客户因自行走线造成SI/PI仿真不pass后反复修改, 导入 的重点为SI走线部分及PI部分的电容布局和走线. 因实际结构限制造成的摆件差异及net名器件位号不同造成不能导入的情况,PMU与BB的走线与布局可作为参考. 流程:
+参考FAQ: FAQ111043
+### 问题: CMW500测试GPRS 调制谱问题
+解决方案: 目前客户发南美认证产品2G/3G通常采用CMU200进行脚本测试(少数运营商选择HP8960),4G采用CMW500测试.此项目客户南美运营商要求采用CMW500进行2G/3G认证并提供了脚本. 但是发现CMW500测试GPRS时,调制谱600kHz/800kHz指标比CMU200和HP8960测出来的差8dB,对比测试时的配置项发现客户脚本测试GPRS时TEST MODE使用的是B类,而通常只会选择TEST mode A来测试GPRS,改用TEST MODE A后指标正常. 咨询RS工程师得到答复,TEST mode A/B的区别在于RX,对TX指标没有影响,且他的实验结果并未发现A/B下调制谱有差异. 与RS对比后发现CMW500选件版本不一致,将我司实验室CMW500 GSM选件升级到3.7(原来是version 3.5)后指标正常.
+参考FAQ: FAQ111055
+### 问题: 如何使用AT命令锁WCDMA频点？
+解决方案: W锁频的AT命令: AT+SPACTCARD=card_no //0:卡1,1:卡2;如果插单卡不需要执行这一步 AT+SFUN=5 AT+SPCLEANINFO=4 AT+SPCOMMLOCKFRQ=1,14,1,0,UARFCN AT+SFUN=4 解锁频AT命令: AT+SPACTCARD=card_no //0:卡1,1:卡2;如果插单卡不需要执行这一步 AT+SFUN=5 AT+SPCOMMLOCKFRQ=1,14,0 AT+SFUN=4
+参考FAQ: FAQ111050,含图片
+### 问题: SPM导入需要满足的必要条件和在各PCB软件的适用性
+解决方案: 以导入SI走线举例,在确保DDR类型和制程(例如都是8HDI1)一致的前提下,在PADS中需要满足 1.网络名必须一致 2.元件的相对位置要一致 在其它软件的导入适用性 由于我司提供的是基本PADS版本的PCB文件,但是不影响大部分软件的导入.目前市场主流的allegro和mentor Expendition 均可与PADS完成互转.仅有mentor BS软件不能转换.
+参考FAQ: FAQ111044
+### 问题: 客户评审对提交的PCB文件的入口条件
+解决方案: 布局评审 1.与原理图一致性的PCB 2.布局完成度需要达到90%以上,BB/RF/WCN 器件需要完整放入屏蔽罩内 3.无严重的器件干涉和板外放器件的状态 布线评审 1.与原理图一致性的PCB 2.布线状态95%,重要信号线的包地按照checklist需要完成一次自检, 3 重要滤波电容/屏蔽罩/板边/PA需要完成打地孔的动作,TCXO的挖空处理,RF阻抗线的参考地的处理 布线和布局复审 1.切实按照初审建议修改,提交改动记录
+参考FAQ: FAQ111063
+### 问题: 如何配置volte开关默认关闭，又可以通过AP界面打开
+解决方案: 将如下nv默认配置成为0即可, PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_IMS_FEAT_SETTINGS\ims_voice_available[ ] 后续手机界面打开volte开关,volte业务可以正常使用.
+参考FAQ: FAQ111183
+### 问题: 7715支持AMR-WB，请问是否默认没有打开？
+解决方案: NV工程中看到,NV项"amr_wb_support"是0x0,代表关闭了amr wb,如果需要打开的话,需要使用NVEDITOR工具打开NV prj,将这项修改为0x1
+参考FAQ: FAQ112215
+### 问题: 吞吐量测试需要关闭modem trace，如果实现
+解决方案: 1 AT方式 AT+SPLOGLEVEL=1,0,"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF","FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" //将所有模块的trace等级调到最高,打印最轻量级trace信息 AT+ARMLOG=0 //停止modem log输出 2 nv配置方式 nv中的NV_PARAM_TYPE_SDI_LOG_LEVEL中的severity_level 配置成为0 ,同AT+SPLOGLEVEL设置 nv中的NV_REF_PARAPETER中的enable_arm_log 配置为0,同上AT+ARMLOG设置
+参考FAQ: FAQ111420
+### 问题: FCC认证DT测试不规律
+解决方案: DT测试指的是WIFI在时域下的占空比测试,用于衡量WIFI发射的稳定性. 如下为用频谱仪观测DT不规律的若干例子: 该指标一般很少出问题,若出问题,请注意以下几处地方: 1.采用了损坏的RF射频线/铜管作为传导连接载体. 损坏的RF射频线/铜管会导致功率不稳定或者信号延迟. 2.将测试点焊错. 传导测试的推荐馈点是在天线π型匹配处串联位靠里侧焊盘上,不可焊接在天线馈点处. 原先采用RF射频线(弯曲后功率值变动较大),并焊接在天线馈点,DT测试异常;以及将RF射频线换作铜管(验证OK),并将测试点焊接在传导调试位置上之后正常的例子: 3.频谱仪的sweep points较低. 展讯平台样机的WIFI发包间隔比较大,对仪器的时间分辨率要求较低;而客户样机包与包间的时隙比较小,需要较高的分辨率才可以检测出来. 原先DT不规律,扫描点数为501,改为1001后正常的例子:
+参考FAQ: FAQ111293
+### 问题: SIM卡极性配置方式
+解决方案: sharkl2芯片支持SIM卡检测极性的配置, SharkL2/SharkLJ1/iSharkL2等GPIO中断方式的热插拔是通过配置dts和pinmap来配置极性, SharkLE开始的芯片(包括SharkLE/Pike2/SharkL3)热插拔,需要配置NV和pinmap来配置极性
+参考FAQ: FAQ111408
+### 问题: 如何通过AT命令配置附加业务优先域？
+解决方案: 默认PS domain prefer,通过AT命令可以控制域选择 AT+SPOPRCAP=1,1,0 PS domain prefer AT+SPOPRCAP=1,1,1 PS domain only AT+SPOPRCAP=1,1,2 CS domain only
+参考FAQ: FAQ111409
+### 问题: WiFi 11g 54Mbps的含义
+解决方案: WiFi 11g 54Mbps代表的是11g-OFDM模式下的最高理论速率. 影响速率的计算因子如下: 1. 11g OFDM能够提供52个子载波信道,其中有48个用于数据传输; 2. 64-QAM编码方式能够在每个子载波信道通过一次传输过程携带6bit的数据位; 3. 64-QAM编码每次传输提供3/4的码率,即有效数据容量; 4. 一次传输占用的时间固定为4微秒; 一个OFDM symbol所含bit数为:48×6×3/4=216,传输时间为4微秒,计算得该模式最高理论速率为54Mbps.
+参考FAQ: FAQ111450
+### 问题: GPS传导CNR的影响因素和改善措施
+解决方案: 传导CNR值低会导致解调卫星信号难度大,且定位慢,容易丢失定位. 传导CNR由如下两方面决定: RF trace: RF trace需要做到50Ω的阻抗控制,走线越短越好且要做好严格的包地处理. LNA: LNA有利于优化并降低系统噪声系数NF,需靠近天线处放置.
+参考FAQ: FAQ111449
+### 问题: GPS耦合CNR影响因素
+解决方案: 1.传导CNR 传导CNR低会造成解调卫星信号难度加大,定位慢且容易丢失定位. 传导CNR由主板RF trace和LNA决定. 2.天线效率 天线效率低会造成接收卫星信号强度低,进而造成CNR低. 天线效率由结构和天线形状决定. 3.GPS Desense 干扰源工作时会造成GPS CNR下降. GPS Desense由GPS天线与干扰源间的距离、GPS RF trace与干扰源间的隔离效果决定.
+参考FAQ: FAQ111451
+### 问题: 应用触发文件扫描的几种方式
+解决方案: 一、直接操作MediaStorage数据库,这块不再细说. 二、通过发送广播"android.intent.action.MEDIA_SCANNER_SCAN_FILE" 例如: 三、通过调用MediaScannerConnection 这个类在/frameworks/base/media/java/android/media/MediaScannerConnection.java 所以它是一个开放的API: 看一下这个类的结构:
+参考FAQ: FAQ111455
+### 问题: SharkL2/iSharkL2/SharkLE系列如何设置CAT1 NV？
+解决方案: PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\ueCategory=0x1 PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\ueCategoryDL=0xFF PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\ueCategoryUL=0xFF PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\numofBandCombination=0x0
+参考FAQ: FAQ111479
+### 问题: VBAT_DRV电源应该如何走线？
+解决方案: 1. VBAT电源需要星型走线处理;即VBAT_DRV的电源pin要和其他VBAT电源的管脚分离,PMIC VBAT_DRV 管脚需要经过电容后再到主路径; 2. PMIC端的VSS_DRV 管脚也要和其他GND分割开,单独下主地;
+参考FAQ: FAQ111485
+### 问题: SharkL3 系列如何设置CAT1 NV？
+解决方案: PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategory=0x1 PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategoryDL=0xFF PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategoryUL=0xFF PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\numofBandCombination=0x0
+参考FAQ: FAQ111480
+### 问题: GPS频段分布及其用途
+解决方案: GPS(Global Positioning System)是在美国海军导航卫星系统的基础上发展起来的无线电导航定位系统.频段分布和用途如下: L1: 1575.42MHz,C/A码为(民用)、P(Y)码为精确服务(军用) L2: 1227.60MHz,P(Y)码为精准服务(军用)和新的L2C(民用)IIR-M L3: 1381.05MHz,防御支援系统( Defence Support Programme system ) L4: 1379.913MHz,预留频段 L5: 1176.45MHz,民用安全生命(Safety-of-Life)信号作为GPSIII的一部分
+参考FAQ: FAQ111478
+### 问题: SL8521E平台支持的3G上下行最高Category分别是什么
+解决方案: SL8521E平台支持的3G上下行最高Category和对应速率如下: DL cat 14: 21Mbps UL cat 7: 11.4Mbps ( QPSK+16QAM)
+参考FAQ: FAQ111497
+### 问题: 电源的出pin处的埋孔和小孔个数多少合适
+解决方案: 1. 对于VDDCORE/VDDARM/VDDMEM等电源管脚较多的电源,建议一个电源管脚对应一个小孔,如果空间限制个别情况可以两个电源管脚对应一个小孔; 2. 外一个电源埋孔至少要有两个盲孔与其贴近连接;
+参考FAQ: FAQ111486
+### 问题: 对于PI仿真DCR 结果fail的处理方法
+解决方案: 可以通过以下方式来优化仿真结果: (1)考虑加宽走线; (2)考虑在其他层并联走线; (3)缩短电源走线; (4)增加仿真fail电源走线层铜厚 (一般如果叠层确定,这一条就无法修改了)
+参考FAQ: FAQ111487
+### 问题: SC9820平台是否支持DC功能
+解决方案: 首先,DC是指的WCDMA的dual carrier功能,属于HSPA+的一个 feature; SC9820芯片设计为不支持DC-HSPA feature
+参考FAQ: FAQ111498
+### 问题: SC7701是否支持MOCN功能
+解决方案: SC7701有两个分支,如果是TM_BASE分支,支持MOCN功能;如果是DM_BASE分支,则不支持MOCN功能
+参考FAQ: FAQ111499
+### 问题: 什么是M2M卡？6531E是否支持？
+解决方案: M2M卡是物联网卡的缩写.根据应用场景、技术实现的不同,目前M2M专用卡分为两种形态,包括:MP卡、MS卡. MP卡是M2M Plug-In卡的简称,指采用能够适应特殊环境要求的特殊芯片,以及特殊卡基材料(包括但不限于注塑、陶瓷等),但外观与普通SIM卡相同的卡.MP卡物理性能较高,因此可以满足更长使用寿命和更恶劣环境的要求.MP卡保持与普通SIM卡相同的外观及接口,所以终端无需修改,但无法满足防震动和防氧化的要求. MS卡是M2M SMD卡的简称,是一种专为机器用SIM卡设计的产品平台,它完全具备传统SIM卡的全部功能.同时采用SMD贴片封装工艺使得SIM卡芯片可以直接焊接在M2M模组上或终端内部,以实现紧密牢固的物理连接和可靠的接口通信.SMD封装形式较多,比较常用是QFN封装. 下图是普通电信智能卡与MP、MS卡的物理性能比较. 6531E支持M2M Plug-In卡,但是不支持M2M SMD卡.
+参考FAQ: FAQ111509,含图片
+### 问题: 什么是RX Diversity feature
+解决方案: RX Diversity 功能就是手机支持双天线,有两根天线,在强信号下手机只用一根天线接收信号,在弱信号下手机用两根天线接收信号,这样可以增强有用信号的强度,在弱场下增强手机的性能减少掉话.
+参考FAQ: FAQ111520

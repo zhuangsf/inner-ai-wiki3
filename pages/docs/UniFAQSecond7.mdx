@@ -1,0 +1,325 @@
+### 问题: 搜索结果界面的左上角没有“返回”操作，如何添加
+解决方案: 左上角的"返回"操作其实是ActionBar的向上导航图标,需要显示该图标并监听其按键事件,具体修改如下: diff --git a/src/com/sprd/dialer/calllog/SearchResultActivity.java b/src/com/sprd/dialer/calllog/SearchResultActivity.java --- a/src/com/sprd/dialer/calllog/SearchResultActivity.java +++ b/src/com/sprd/dialer/calllog/SearchResultActivity.java @@ -31,6 +31,8 @@ import android.widget.ImageView; import android.widget.ListView; import android.widge
+完整回答请参考FAQ: FAQ40276
+### 问题: 情景模式中的铃声设置界面如何实现设置项名称的滚动显示？
+解决方案: 铃声设置界面的控件是在EnvSetRingParam中动态创建的.目前的实现方式是每个设置项对应一个Form控件,每个Form控件中包含两个Label子控件,分别对应设置项名称和设置值.由于Form控件的子控件无法同时get active,因此平台设计仅设置值对应的Label控件可以get active,从而支持滚动显示,而设置项名称字串无法滚动. 如修改为设置项名称滚动显示,需要修改以下三处: 1、EnvSetRingParam()中修改控件是否可以get active的属性 if(0 == loop%2) { child_data.is_get_active = FALSE;//改为TRUE ... } if(1 == loop%2) { child_data.is_get_active = TRUE;//改为FALSE ... } 2、HandleRingMainMenuWindow
+完整回答请参考FAQ: FAQ40334
+### 问题: 数据连接模块SystemProperties设置时的命名规则和注意事项
+解决方案: 在系统开发过程中常常会使用SystemProperties来做一些标志位和特殊值设置,方便简单,但是每个模块的SystemProperties是有命名规则和注意事项的,数据连接部分该如何命名和注意事项呢?而数据连接的状态管理类和RIL部分都属于哪个类型? 从下面文件中可以找到: system/core/init/property_service.c /* White list of permissions for setting property services. */ struct { const char *prefix; unsigned int uid; unsigned int gid; } property_perms[] = { { "net.rmnet0.", AID_RADIO, 0 }, { "net.gprs.", AID_RADIO, 0 }, { "net.pp
+完整回答请参考FAQ: FAQ40391
+### 问题: Mocor FeaturePhone Keypad是如何响应并上报按键值的？
+解决方案: Mocor FeaturePhone Keypad按键响应主要流程: 1.HandleKey()-》按键中断回调,按键中断是在KPD_Init中ISR_RegHandler_Ex中注册的. 2.ChangeState()-》GetVirtualKey()-》KPD_GetKeyMap-》底层按键和keymap按键表转换,并以消息方式发送给中断服务程序,其中keymap[]这个表很重要. 3.KPDSVR_Callback()-》按键中断服务处理,按键信息转发给KPDSVR(在keypad.c中init()中注册,这里会同时注册阵列按键和GPIO按键). 4.THREAD_ENTRY(KPDSVR)-》处理按键中断服务程序转发的消息,并转发给APP_RegisterRefService注册的KeypadCallBackFunc回调处理. 5. KeypadCallBackFunc()-》真正
+完整回答请参考FAQ: FAQ40399
+### 问题: 如何实现Launcher2状态栏透明
+解决方案: launcher2想要支持状态栏透明,需要以下修改: 1,需要状态栏支持透明,即打开BarTransitions.java中的开关: private final boolean mSupportsTransitions = true; 2,修改laucnher2\values\styles.xml里的 theme 风格如下:增加一行android:windowTranslucentStatus: <style name="Theme" parent="@android:style/Theme.Holo.Wallpaper.NoTitleBar"> <item name="android:windowTranslucentStatus">true</item> </style> 这样launcher2即可透明. 如果需要主菜单也透明,只需要把主菜单背景设置成透明即可,目前为黑色 1,修改La
+完整回答请参考FAQ: FAQ40589
+### 问题: 在联系人列表中搜索联系人，如何修改为只能从开头匹配
+解决方案: 电话本中存在一条姓名为"wang"的联系人,在联系人列表的搜索框输入"ang"、"ng"、"g"都可以匹配到.如果希望更改为只有输入"wang"才能匹配到,请参考如下修改: packages\providers\ContactsProvider\src\com\android\providers\contacts\DataRowHandlerForStructuredName.java import android.provider.ContactsContract.Data;//增加这一行代码 public void appendSearchableData(IndexBuilder builder) { super.appendSearchableData(builder);//去掉这一行代码 //增加下面4行代码 String value = builder.getString(Da
+完整回答请参考FAQ: FAQ40621
+### 问题: 设置照片为联系人头像时，如何在弹出的联系人选择界面中增加新建联系人的入口
+解决方案: 请参考如下修改: 1 修改AttachPhotoActivity 启动ContactSelectionActivity的intent: packages\apps\Contacts\src\com\android\contacts\activities\AttachPhotoActivity.java @Override public void onCreate(Bundle icicle) { super.onCreate(icicle); if (icicle != null) { ... } else { ... ArrayList<ContentValues> values=new ArrayList<ContentValues>(); ContentValues value=new ContentValues(); value.put(Data.MIMETYPE,Photo.CO
+完整回答请参考FAQ: FAQ40624
+### 问题: 摄像头与模拟电视芯片采用不同PCLK导致无法进模拟电视的一类问题解决方法
+解决方案: 1.典型logel段: CameraHolder( 1311): open camera 2//上层开ATV ... SprdCameraHardware( 102): int android::HAL_camera_device_open(const hw_module_t*, const char*, hw_device_t**): open camera 2//hal层开ATV ... camera_v4l2_handle: Error type 0x10004 1//CCIR并口接受ATV图像数据超时 2.分析 用示波器量测模拟电视CCIR并口的PCLK,VSYNC,HSYNC和DATA均有正常的波形输出,排除ATV无输出所导致的异常; 分析客户的原理图:摄像头采用了PCLK0,而ATV采用了PCLK1,由此解释了模拟电视并口接受ATV图像数据超时的原因; 3.解决 需在ATV厂家
+完整回答请参考FAQ: FAQ40647
+### 问题: 如何简单跨进程通信之Setting
+解决方案: 常用的跨进程通信有:AIDL、ContentPrivider等方式,上述过程都需要实现相应的接口,如何简单实现跨进程,利用系统Setting进行跨进程通信,如 在应用层 Settings.System.putString(this.getContentResolver(), "sos_enable", ""+isEnable); Settings.System.putString(this.getContentResolver(), "sos_number", ""+numberStr); Settings.System.putString(this.getContentResolver(), "sos_content", ""+contentStr); 在framework层或者其它进程取即可 mSosNumber = Settings.System.getString(mContext
+完整回答请参考FAQ: FAQ40655
+### 问题: 在搜索框如何实现点击自动出现下拉提示框
+解决方案: 在展讯平台上实现自动弹出下拉提示框,当输入字符或者移动光标都在后台查询数据库,下拉的数据显示List是通过adaper显示,下面介绍AutoCompleteTextView如何简单实现下拉效果: 在xml文件需要配置 <AutoCompleteTextView android:id="@+id/actv" android:layout_width="fill_parent" android:layout_height="wrap_content" /> 代码中通过findViewById()方法取到actv actv = (AutoCompleteTextView)findViewById(R.id.actv); //new ArrayAdapter对象并将autoStr字符串数组传入actv中 ArrayAdapter<String> adapter = new ArrayAdapter
+完整回答请参考FAQ: FAQ40662
+### 问题: 如何实现分享多个图片、音频、视频、文本等
+解决方案: 在manifest中需要加一下标签 实现单个实现的action为 <action android:name="android.intent.action.SEND" /> 选择多个,然后选择分享,能找到的应用,在manifest中如下,分享的内容类型在mimeType,可以指定具体类型,可以不指定 <intent-filter> <action android:name="android.intent.action.SEND_MULTIPLE" /> <category android:name="android.intent.category.DEFAULT" /> <data android:mimeType="image/*" /> <data android:mimeType="text/x-vcard" /> <data android:mimeType="text/x-vcal
+完整回答请参考FAQ: FAQ40684
+### 问题: 联系人导出至vcf，导出的vcf，联系人号码中间有“-”符号
+解决方案: 这是因为导出的号码经过区域国际化,所以号码中间带了"-"符号,要去掉"-"符号,可以将区域国际化过程去除. 修改VCardBuilder.java (frameworks\opt\vcard\java\com\android\vcard) 的appendPhones()方法, if (TextUtils.equals(numberWithControlSequence, actualPhoneNumber)) { StringBuilder digitsOnlyBuilder = new StringBuilder(); final int length = actualPhoneNumber.length(); for (int i = 0; i < length; i++) { final char ch = actualPhoneNumber.charAt(i); if (Chara
+完整回答请参考FAQ: FAQ40703
+### 问题: 数据搜索时需要对特殊转义字符进行处理
+解决方案: 问题:Bug 278342 - [PSAT][8830][2.3.5_3.10][GA]MMS中,点击搜索,输入%无匹配信息弹出,点击搜索符号才有匹配信息弹出 解决: 在com.android.mms包内suggestionProvider中对查询参数,没有编码,导致在查询输入%时,不能正常解析,在suggestionProvider类中对参数继续编码,在mmsSmsProvider类query中,解析对参数进行解析,能够正常解析参数 还需要对其他转义字符进行处理: * [[span(/   ->    //,style=color:red)]]
+* [[span('   ->    '',style=color:red)]]
+* [[span([   ->    /[,style=color:red)]]
+* [[span(]   ->    /],style=color:red)
+完整回答请参考FAQ: FAQ40704
+### 问题: 模拟电视芯片采用GPIO模拟I2C的解决方法
+解决方案: 1.第三方模拟电视芯片厂家提供了模拟I2C时序的代码,集成即可,详见: kernel/drivers/media/nmi601/nmi_gpio_i2c.c kernel/drivers/media/nmi601/nmi_gpio_i2c.h 2.针对展讯平台,需实现控制GPIO方向和电平的接口函数: --- old/kernel//drivers/media/nmi601/nmi_gpio_i2c.c +++ new/kernel//drivers/media/nmi601/nmi_gpio_i2c.c +/****************************************************************************** +** +** I2c Defines +** +**************************************
+完整回答请参考FAQ: FAQ40705
+### 问题: vcf中联系人号码有“-”符号，将vcf导入联系人，联系人显示号码没有“-”符号
+解决方案: 这是因为导入的号码会经过区域国际化处理,将号码去除了"-"符号,要保留"-"符号,可以修改 VCardEntry.java (\frameworks\opt\vcard\java\com\android\vcard) 的addPhone()方法 for (int i = 0; i < length; i++) { char ch = trimmed.charAt(i); // See RFC 3601 and docs for PhoneNumberUtils for more info. if (ch == 'p' || ch == 'P') { builder.append(PhoneNumberUtils.PAUSE); hasPauseOrWait = true; } else if (ch == 'w' || ch == 'W') { builder.append(PhoneNu
+完整回答请参考FAQ: FAQ40708
+### 问题: 联通Cache功能和Cookie功能中，进入测试网址显示为代码的原因
+解决方案: 操作步骤: 1.被测终端访问测试网址:http://106.37.203.186:8001/operators/cu/index.html;选择WAP测试区 2.点击Cache功能中Cache的容量 3.点击Cookie功能中Cookie协议 测试结果: 1.测试网页显示均为代码 原因分析: 访问的网址是http://106.37.203.186:8001/operators/cu/wap/s15.aspx 抓取cap包分析,服务器返回的HTTP头中,没有说明mime type, 使得浏览器无法识别文件类型,只能作为文本打开. 对比chrome浏览器和其他Android手机也是同样现象. http://106.37.203.186:8001/operators/cu/index.html是联通旧的测试网址,目前用来测试的不是这个网址. 联通通用测试网址是:http://115.28.129
+完整回答请参考FAQ: FAQ40729
+### 问题: 如何修改首次进入倒计时默认起始时间？
+解决方案: 目前首次进入到倒计时,默认起始时间为:00:01:00,如需更改首次进入倒计时默认起始时间,可修改packages\apps\DeskClock\src\com\sprd\timer\TimerFragment.java文件的onResume()方法中红色字体部分: public void onResume() { clearCountTimer(); SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity()); if (mHours != null) { mHours.setValue(prefs.getInt(Utils.HOURS_WHEEL_POSITION, 0)); } if (mMins != null) { mMins.setValue(prefs.getInt
+完整回答请参考FAQ: FAQ40728
+### 问题: SC7731/SC7730 Camera视频录制size配置说明。
+解决方案: 参考路径:device/sprd/scx35_sp7731gea/media_profiles.xml 配置格式如下: <CamcorderProfiles cameraId="0"> //主camera配置 <EncoderProfile quality="low" fileFormat="mp4" duration="60"> //编码属性,最小size <Video codec="h264" //编解码格式 bitRate="256000" //比特率 width="176" //视频宽度 height="144" //视频高度 frameRate="30" /> //录制视频码率 <Audio codec="amrnb" //音频 bitRate="12200" sampleRate="8000" channels="1" /> <EncoderProfile quality="h
+完整回答请参考FAQ: FAQ40773
+### 问题: 为什么给应用程序发送3信号没有生成traces.txt文件
+解决方案: 一、现象 1. 正常情况下ps查看应用程序的进程号,例如: u0_a46 924 119 239712 24760 ffffffff 40026ae8 S com.android.email 2. 发送3信号给它,kill -3 924 3. 发现目录data/anr下没有生成traces.txt文件,提示Unable to open stack trace file '/data/anr/traces.txt': Permission denied没有权限 二、为什么? 由于anr目录权限如下:属于system用户(给system_server发送就可以生成),而其他用户是没有写权限的,因此就不会生成traces.txt drwxrwxr-x system system 2012-01-01 14:23 anr 三、怎么办? 可以先创建traces.txt文件,再执行kill -3 pi
+完整回答请参考FAQ: FAQ40796
+### 问题: Android中如何集成第三方软件包（.jar, .so）
+解决方案: Android中可能会用到第三方的软件包,这包括Java包.jar和Native包.so.jar包既可通过Eclipse开发环境集成,也可通过编译源码集成,看你的工作环境. 假定自己开发的程序为MyMaps,需要用到BaiduMaps的库,包括baidumapapi.jar和libBMapApiEngine_v1_3_1.so. 一、Eclipse中集成第三方jar包及.so动态库 MyMaps工程下创建目录libs以及libs/armeabi,把baidumapapi.jar放在的libs/目录下,把libBMapApiEngine_v1_3_1.so放在libs/armeabi/下. Eclipse中把第三方jar包baidumapapi.jar打包到MyMaps的步骤: 1.右击工程,选择Properties; 2.JavaBuild Path,选择Libraries; 3.Libr
+完整回答请参考FAQ: FAQ40829
+### 问题: init.rc 中service 常见参数含义
+解决方案: disabled 这个服务的级别将不会自动启动,它必须被依照服务名指定启动才可以启动. socket <name> <type> <perm> [ <user> [ <group> ] ] 创建一个名为/dev/socket/<name> 的unix domin socket ,并传送它的fd 到已启动的进程.<type> 必须为"dgram" 或"stream". 用户和组默认为0. user <username> 在执行服务前改变用户名.当前默认为root. 如果你的进程需要linux 能力,你不能使用这个命令.你必须在还是root 时请求能力,并下降到你需要的uid. group <groupname> [ <groupname> ]* 在执行服务前改变组.在第一个组后的组将设为进程附加组( 通过setgroups()). 当前默认为root. oneshot 在服务退出后不重启. 
+完整回答请参考FAQ: FAQ40841
+### 问题: 如何使用DTS配置TP的参数？
+解决方案: 我们平台在7731及后继平台上面强制使用DTS配置TP的参数,配置实例如下: 配置文件: sprdroid4.4_3.10/kernel/arch/arm/boot/dts/sprd-scx35_sp7731gea_fwvga.dts 如TP挂载在I2C4上面,TP的DTS配置patch如下: diff --git a/arch/arm/boot/dts/sprd-scx35_sp7731gea_fwvga.dts b/arch/arm/boot/dts/sprd-scx35_sp7731gea_fwvga.dts index 86d942a..326fcce 100755 --- a/arch/arm/boot/dts/sprd-scx35_sp7731gea_fwvga.dts +++ b/arch/arm/boot/dts/sprd-scx35_sp7731gea_fwvga.dts
+完整回答请参考FAQ: FAQ40856
+### 问题: 如何监听来电通话
+解决方案: 监听来电的方法是创建一个类PhoneState继承PhoneStateListener,实现onCallStateChanged方法,里面的state主要有三种状态 CALL_STATE_RINGING: 来电状态 CALL_STATE_OFFHOOK: 摘机状态,即接听状态 CALL_STATE_IDLE:空闲状态 根据三种状态,分别做对应操作. 然后使用 mPhoneState = new PhoneState(); mTelephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE); mTelephonyManager.listen(mPhoneState, PhoneStateListener.LISTEN_CALL_STATE); 即可使监听生效. 最后还要在AndroidManifest.xml里面
+完整回答请参考FAQ: FAQ40909
+### 问题: 如何通过SQL命令来查看和修改预置的APN参数
+解决方案: APN的预置参数是储存在telephony数据库中,可以从 /data/data/com.android.providers.telephony/databases/telephony.db 目录查看,步骤如下: 1. 首先通过adb shell 进入手机,cd 到/data/data/com.android.providers.telephony/databases/ 2. 使用命令"sqlite3 telephony.db" 打开数据库. 3. 命令"sqlite> .tables" 查看当前数据库里所有表. 4. 命令 "sqlite> .schema" 查看当前数据库所有表每项的数据类型. 5. 命令 "sqlite> select * from carriers0;" 查看运营商预置的所有APN参数. 6. 命令 "select * from carriers0 where nu
+完整回答请参考FAQ: FAQ41053
+### 问题: 如何在应用程序中访问另一个应用程序的资源
+解决方案: 可以通过使用createPackageContext方法来访问 主要作用是:创建其它程序的Context,通过创建的这个Context,就可以访问该软件包的资源,甚至可以执行其它软件包的代码. 使用: try { Context c = createPackageContext("com.dolphin.demo", Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY); } catch (SecurityException e) { e.printStackTrace(); } catch (Exception e) { e.printStackTrace(); } 通常一个软件是不能创建其它程序的Context的,除非它们拥有相同的用户ID与签名.用户ID是一个字符串标识,在程序的 AndroidManifest
+完整回答请参考FAQ: FAQ40938
+### 问题: kernel中常用的关于Audio的配置macro有哪些及其意义是什么？
+解决方案: CONFIG_SND_SOC_SPRD_AUDIO_USE_INTER_HP_PA 意思:使用内部的class g PA,如果使用则需要定义 CONFIG_SND_SOC_SPRD_CODEC_NO_HP_POP 意思:该MACRO同上一个一起使用或者一起不使用,例如不使用class g的情况下,不能定义本macro(这个macro是反义的), CONFIG_SND_SOC_SPRD_VBC_LR_INVERT 意思:左右声道反置,即左声道数据放到右声道,按需配置 CONFIG_HEADSET_STS_POLLING_DISABLED 意思:耳机需要通过不断polling 寄存器来检测耳机拔出,如果左声道 pin和耳机detect pin短接,则需要定义 CONFIG_SND_SOC_SPRD_USE_EAR_JACK_TYPE13 意思:使用class g,并且对class g做初始化处
+完整回答请参考FAQ: FAQ41010
+### 问题: 关机充电动画如何修改？
+解决方案: 1、关机动画界面的更新实现在: vendor\sprd\open-source\apps\charge\Ui.c static void draw_progress_locked(int level) { ......... if (gProgressBarType == PROGRESSBAR_TYPE_NORMAL) { frame = level * (PROGRESSBAR_INDETERMINATE_STATES - 1) / 100; gr_blit(gProgressBarIndeterminate[frame], 0, 0, width, height, dx, dy); } if (gProgressBarType == PROGRESSBAR_TYPE_INDETERMINATE) { gr_blit(gProgressBarIndeterminate[frame], 
+完整回答请参考FAQ: FAQ41102
+### 问题: 7715连接App Manager只能看到部分应用的解决办法
+解决方案: 方法一: 直接修改本地文件即可解决,重新build,down到手机即可 路径:B2G/objdir-gecko/dist/bin/greprefs.js //Block tools from seeing / interacting with certified apps pref("devtools.debugger.forbid-certified-apps", true); 将true修改为false 方法二: 1) 进入手机 adb shell 2) stop b2g 3) cd /data/b2g/mozilla/*.default/ echo 'user_pref("devtools.debugger.forbid-certified-apps", false);' >> prefs.js 4) start b2g 5) exit PS:可参考 https://develope
+完整回答请参考FAQ: FAQ41135
+### 问题: 如何去掉setting-display中的brightness adjust automatically选项？
+解决方案: 可按如下修改: diff --git a/apps/settings/build/build.js b/apps/settings/build/build.js index 8562e30..c3550a8 100644 --- a/apps/settings/build/build.js +++ b/apps/settings/build/build.js @@ -22,7 +22,7 @@ SettingsAppBuilder.prototype.writeSensorsJSON = function(options) { var file = utils.getFile(options.GAIA_DIR, 'apps', 'settings', 'resources', 'sensors.json'); - var defaultContent = { ambientLight: t
+完整回答请参考FAQ: FAQ41142
+### 问题: 关机充电电量的百分比是如何显示的？
+解决方案: 关机充电百分比的显示在:vendor\sprd\open-source\apps\charge\Ui.c static void draw_progress_locked(int level) { ........ // Erase behind the progress bar (in case this was a progress-only update) gr_color(255, 255, 255, 255); gr_fill(0, 0, gr_fb_width(), gr_fb_height()); gr_color(64, 96, 255, 255); if(level > 100) level = 100; else if (level < 0) level = 0; sprintf(bat, "%d%%%c", level, '\0'); draw_text_xy((dy
+完整回答请参考FAQ: FAQ41124
+### 问题: android4.4如何根据log来判定是由于设置了自动关机而导致的手机关机
+解决方案: 1.在system.log中搜索shutdown,如下log信息 09-13 05:10:57.065 564 12198 D AlarmManager: setImplLocked() Action = com.android.settings.timerpower.SHUTDOWN, Component = null, type = 4, when = 1410570000000, absolute triggerTime = 2014-09-13 09:00:00 自动关机窗口弹出 09-13 09:00:00.275 564 791 I ActivityManager: START u0 {act=android.intent.action.ACTION_REQUEST_SHUTDOWN flg=0x10000000 cmp=android/com.android.server.S
+完整回答请参考FAQ: FAQ41164
+### 问题: SC7715如何实现状态栏透明？
+解决方案: android 4.4默认是支持状态栏透明且锁屏界面和launcher已经增加了透明属性.目前看不到透明效果是由于systemui中在透明时会判断系统是否是低内存配置.因为状态栏透明势必会消耗一定的ram,所以对于低内存配置的项目,即使在应用中设置了透明属性.也会被systemui转换为不透模式. 要解决这个现象有以下2个方案: 方案1:请修改ro.config.low_ram这个属性值为false.目前SC7715平台默认为true,所以不透明; 方案2:直接在sytemui中修改判断条件,不再依赖于上面这个属性,具体修改如下: \frameworks\base\packages\SystemUI\src\com\android\systemui\statusbar\phone\BarTransitions.java中修改mSupportsTransitions为true; 修改前: p
+完整回答请参考FAQ: FAQ41279
+### 问题: 7715音乐播放器后台播放时容易因为来电被关闭怎么处理
+解决方案: 1.此种现象是概率性发生,比较容易发生在256MB内存的项目上,主要原因来电后music进入pause状态 2.此时LMK就会因为内存低将后台的music进程kill 3.解决方法一般是提高music在后台的adj值,提高优先级,确保进程不被杀掉 4.修改方法在MediaPlaybackService.java中,将class MediaPlaybackService的stop/pause方法中调整adj值,参考代码如下: public void stop() { try{ ActivityManagerNative.getDefault().setProcessAdj(Process.myPid(),2,true); }catch(Exception e){ e.printStackTrace(); } stop(true); } public void pause() { try{ A
+完整回答请参考FAQ: FAQ41306
+### 问题: FireFoxOS Bluetooth的相关文件都是哪些？
+解决方案: Gaia层: 1.settings蓝牙界面 gaia/apps/settings/elements/bluetooth.html 2. settings逻辑处理 gaia/app/settings/js/bluebooth.js, 3.Profile管理,类似于Android中的LocalBluetoothProfileManager gaia/apps/system/js/bluetooth.js 4.用于opp: gaia/apps/bluetooth/js/transfer.js apps/system/js/bluetooth_transfer.js 5.接口 gecko/dom/webidl/ BluetoothAdapter.webidl BluetoothDeviceEvent.webidl BluetoothDevice.webidl BluetoothDiscoveryS
+完整回答请参考FAQ: FAQ41404
+### 问题: 如何在activity中禁止状态栏下拉？
+解决方案: 禁止下拉栏下拉,可以参考如下方法, 在相关activity的onCreate,onResume,onStop接口中添加相应逻辑即可.具体如下: import android.app.StatusBarManager; import android.content.Context; private StatusBarManager sStatusBar; @Override protected void onCreate(Bundle savedInstanceState) { if (sStatusBar == null) { sStatusBar = (StatusBarManager)getSystemService(Context.STATUS_BAR_SERVICE); } } @Override public void onResume() { super.onResume();
+完整回答请参考FAQ: FAQ43800
+### 问题: FireFoxOS 与Android 关于Bluetooth模块的不同之处有哪些？
+解决方案: Gaia层: Gaia类似于Android中的App,其中bluetooth.js等同于settings/bluetooth.功能和大体框架都类似.在B2G中,界面部分,只有bluetooth.js一个文件,而在Android中,会将其零散的功能拆分出来,相比来说,这更加直观,也更利于维护. 在Android中消息的传递是靠广播,Handle,而B2G中,更常用的是事件的监听,还有dispatchEvent和setTimeout等处理.Android中的广播可以跨进程,那B2G中的跨进程机制是XPCOM. Gecko层: B2G的蓝牙逻辑框架,类似于Android 4.1版本的蓝牙框架.但相比Android的框架结构来说简单明了,而且目录结构相对统一.B2G的大致流程是htmlàjsàwebidlàc++,html是界面,js负责界面逻辑,webidl是上层接口,Gecko中dom/blu
+完整回答请参考FAQ: FAQ41412
+### 问题: FaceLock为什么在某些机器上不能使用
+解决方案: facelock的使用对硬件有要求,例如: RAM consumption: 36MB + whatever the Camera + Camera Preview uses (which depends on hardware treatment of graphical memory) + the MediaServer, roughly 9MBROM consumption: 24MB Processor: ARMv7 or later, 1 GHz; recommend dual core Front-facing camera: camera start-up time: 550ms or less recommended (max for Nexus devices); 1 second or less max for non-Nexus devices. Time is me
+完整回答请参考FAQ: FAQ41469
+### 问题: 7731平台如何在ADB中调试未使用过的GPIO
+解决方案: 以gpio18为例,分三步: 1. 设置su模式,进入GPIO相应目录:sys/class/gpio #su #cd /sys/class/gpio 2. 导入测试gpio18接口 #echo 18 > export 需注意的是可导入的gpio在代码中应该属于未被使用即未被gpio_request过,比如gpio_request(pdata->reset_gpio_number, "ts_rst_pin").也可参考平台运行时的gpio的使用情况: root@xxxx:/ # cat /sys/kernel/debug/gpio cat /sys/kernel/debug/gpio GPIOs 0-255, sprd-d-gpio: gpio-0 (GSENSOR_INT1 ) in lo gpio-1 (GSENSOR_INT2 ) in lo gpio-4 (sysfs ) in lo
+完整回答请参考FAQ: FAQ47694
+### 问题: 插入耳机后，如何修改使拍照声音能通过耳机和外部扬声器均能输出
+解决方案: 修改hardware/libhardware_legacy/audio/AudioPolicyManagerBase.cpp audio_devices_t AudioPolicyManagerBase::getDeviceForStrategy(routing_strategy strategy, bool fromCache) // - in countries where not enforced in which case it follows STRATEGY_MEDIA if ((strategy == STRATEGY_SONIFICATION) || -- (mForceUse[AudioSystem::FOR_SYSTEM] == AudioSystem::FORCE_SYSTEM_ENFORCED)) { ++ !mStreams[AUDIO_STREAM_ENFORC
+完整回答请参考FAQ: FAQ41489
+### 问题: StackOverflowError错误是什么原因，怎么解决
+解决方案: 出现 java.lang.StackOverflowError,SQLiteConnection.java,android.database.sqlite.SQLiteConnection,execute,555,java.lang.StackOverflowError 类似的exception 表示java 应用的堆栈溢出了. 每个java线程启动的时候,会调用函数: allocThread(gDvm.mainThreadStackSize) 分配堆栈.(java 栈和native的栈是分开的) 每调用一层java函数,就会入栈一次.每调用一次jni 层函数,会入两个frame(含break frame). 还有就是局部变量,dalvik使用基于寄存器的方式实现虚拟机,所有的寄存器Vx都是放到栈上的. 栈溢出跟下面几个地方有关系: 1.就是默认栈的大小.gDvm.mainThreadSt
+完整回答请参考FAQ: FAQ41518
+### 问题: 什么是GMS服务包
+解决方案: GMS全称为GoogleMobile Service,即谷歌移动服务.GMS提供有Search、Search by Voice、Gmail、Contact Sync、Calendar Sync、Talk、Maps、Street View、YouTube、Android Market服务.当用户使用谷歌服务的时候,谷歌可以把广告嵌入各种谷歌的服务中,比如:用户在使用谷歌地图的时候,就能发现搜索地名关键字的广告.在使用谷歌移动搜索的时候,不用说,当然也是有广告的.谷歌其实是拿用户的注意力来换取广告主的金钱.而且Android智能手机操作系统其实也就是谷歌把自己的服务主动放到了手机上,进一步巩固自己的市场地位.
+　　依据GMS,谷歌对android手机给予不同程度的授权,把搭载Android系统的手机厂商分为三个级别,
+　　1.免费使用Android操作系统,但不内嵌GMS;
+　　2.内嵌
+完整回答请参考FAQ: FAQ41549
+### 问题: 上网获取的UserAgent的Webkit版本号与实际设置的不符，如何修改
+解决方案: Android4.4原生版本的UA设置是在\frameworks\base\core\res\res\values\strings.xml <string name="web_user_agent" translatable="false">Mozilla/5.0 (Linux; U; <xliff:g id="x">Android %s</xliff:g>) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 <xliff:g id="mobile">%s</xliff:g>Safari/534.30</string> 最新版本也是这样. 浏览器的UA中也是沿用了AppleWebKit/534.30的版本. \packages\apps\Browser\res\values\strings_cmcc.xml <string name="w
+完整回答请参考FAQ: FAQ41550
+### 问题: 从logel定位是否为插值拍照的方法
+解决方案: 解决: 典型logel如下: //启动拍照线程 01-01 02:10:15.250 119 119 D CameraClient: takePicture (pid 4933): 0x342 ... //拍照分辨率为2592*1944,预览分辨率为640*480 01-01 02:10:15.250 119 119 I : L 2329, camera_set_dimensions: picture 2592 1944, display 640 480,rot 0 //开始匹配摄像头预览的分辨率 01-01 02:10:15.250 119 119 I : L 5620, camera_get_sensor_preview_mode: search_height = 480 01-01 02:10:15.250 119 119 I : L 5624, camera_get_sensor_
+完整回答请参考FAQ: FAQ41565
+### 问题: 浏览器界面，如何通过长按键实现连续放大和缩小
+解决方案: webviw.java中有对应的接口 zoomIn()放大, zoomOut()缩小 可以通过监听对应按键的长按事件,调用放大或缩小接口. 示例如下: public boolean dispatchKeyEvent(KeyEvent event) { //Log.d(LOGTAG, "======webview====dispatchKeyEvent======event.getAction()="+event.getAction()+ " , keycode="+event.getKeyCode() +", count="+event.getRepeatCount()); if (event.getAction() == KeyEvent.ACTION_DOWN) { switch (event.getKeyCode()) { case KeyEvent.KEYCODE_TV: //放大
+完整回答请参考FAQ: FAQ90930
+### 问题: 同一个位置，如何定时切换显示不同的字符内容
+解决方案: 例如:原生的Email的widget,在launcher界面的时候, 其界面上的账号显示的位置,会定时切换显示"账号/未读信息个数",这个是如何配置的: 如下是在xml中的配置 <ViewFlipper android:id="@+id/widget_account_unread_flipper" android:layout_width="wrap_content" android:layout_height="wrap_content" android:autoStart="true" //这个是设置自动运行 android:flipInterval="@integer/widget_account_unread_flip_ms">//这是设置定时切换的时间 <TextView android:id="@+id/widget_account" style="@style/WidgetS
+完整回答请参考FAQ: FAQ41588
+### 问题: HCI命令返回错误码
+解决方案: 错误代码 错误含义 0x01 未知的HCI指令 0x02 未知的链接标志 0x03 硬件故障 0x04 寻呼超时 0x05 身份验证失败 0x06 pin或key丢失 0x07 存储器已满 0x08 链接超时 0x09 最大连接数 0x0A 连接到设备A的最大sco连接数 0x0B acl链接已存在 0x0C 指令非法 0x0D 由于资源有限,host被拒绝 0x0E 由于安全原因,host被拒绝 0x0F 由于远端设备地址不可接受,host被拒绝 0x10 最大链接接受超时 0x11 不支持的特性或参数值 0x12 非法的主机控制接口指令参数 0x13 用户中断链接 0x14 由于另一端引起链接中断:资源限制 0x15 由于另一端引起链接中断:关机 0x16 本地主机中断链接 0x17 重复尝试 0x18 不允许匹配 0x19 未知的LMP PDU 0x1A 不支持的远程特性 0x1b 
+完整回答请参考FAQ: FAQ41678
+### 问题: 如何在sprd文件管理器中添加设置铃声的选项
+解决方案: 具体需求描述:进入文件管理器,长按一首音乐,选中"设置为"选项,然后弹出一个选项框,有设置为手机铃声、 设置为通知铃声、设置为闹钟铃声的选项,选中其中某一项,就可以进行相应的设置. 需求实现: 1.在AndroidManifest.xml 文件中添加 <uses-permission android:name="android.permission.WRITE_SETTINGS" />, 目的是允许程序读取或写入系统设置; 2.在OverViewActivity.java和DetailedListFragment.java文件的onCreateContextMenu方法中增加 else if(mFileType == FileType.FILE_TYPE_AUDIO){ menu.add(0, MENU_SET, 0, R.string.set_as).setOnMenuItemClick
+完整回答请参考FAQ: FAQ41695
+### 问题: SSL加密和握手过程
+解决方案: SSL加密核心是client使用server公钥加密信息(公钥加密解密过程时间长,信息只有server可以解密使用),后续交换由client产生的对称密钥.对称密钥会对数据交换进行快速加解密,保证交互数据私密性. SSL 协议既用到了公钥加密技术又用到了对称加密技术,对称加密技术虽然比公钥加密技术的速度快,可是公钥加密技术提供了更好的身份认证技术.SSL 的握手协议非常有效的让客户和服务器之间完成相互之间的身份认证,其主要过程如下: ①客户端的浏览器向服务器传送客户端SSL 协议的版本号,加密算法的种类,产生的随机数,以及其他服务器和客户端之间通讯所需要的各种信息. ②服务器向客户端传送SSL 协议的版本号,加密算法的种类,随机数以及其他相关信息,同时服务器还将向客户端传送自己的证书. ③客户利用服务器传过来的信息验证服务器的合法性,服务器的合法性包括:证书是否过期,发行服务器证书的CA 
+完整回答请参考FAQ: FAQ41745
+### 问题: SC7715项目开机系统很卡，播放开机动画很慢，点击一次触屏，差不多要30秒才有反应的问题定位和解决分析。
+解决方案: 问题定位:通过性能排查apk测的LCD 刷屏fps帧率很低,只有20多帧左右. 解决分析:项目使用的是HX8357D LCD,通过lcd_hx8357d.c,发现屏的spec结构体fps 没有赋值,在以下增加红色体部分. struct panel_spec lcd_hx8357d_mcu_spec = { .width = 320, .height = 480, .fps = 60, .type = LCD_MODE_MCU, .direction = LCD_DIRECT_NORMAL, .info = {.mcu = &lcd_hx8357d_mcu_info}, .ops = &lcd_hx8357d_mcu_operations, }; 注意7715/7730平台定义LCD fps最大和最小值在sprdfb_panel.h /* LCD supported FPS */ #defi
+完整回答请参考FAQ: FAQ41754
+### 问题: 怎样才能在user版本下完整打印FM应用的log?
+解决方案: 由于,user版本只有极少的FM log,只有Debug版本才能输出完整的FM的log才能分析FM的操作,才能分析. 那么,如果有问题不能或者不方便使用debug版本复现,只能使用user版本复现时,有什么方法打印log呢? 由于 FM 应用的log 是通过Debug.isDebug()来控制的: boolean DEBUG = Debug.isDebug(); if (DEBUG) Log.d(LOGTAG,"onCreate"); 所以可以通过修改FM的相关文件来实现FM应用程序的打印,方法是: 1.在FM APP目录 packages/apps/FMPlayer/src/com/thunderst/radio 中搜索 Debug.isDebug 搜索结果举例如下: AlertReceiver.java: private static final boolean DEBUG = Deb
+完整回答请参考FAQ: FAQ41753
+### 问题: 分析FM应用的问题需要那些log？
+解决方案: 1.为了避免FM应用的log大量输出,影响其它模块的分析以及影响系统的性能,user版本只有极少的FM log,只有Debug版本才能输出完整的FM的log才能分析FM的操作. 所以,涉及到FM应用相关的问题需要 Debug版本的log 才能分析. 2.如果有问题不能或者不方便使用debug版本复现,只能使用user版本复现时,可参照已有FAQ:"怎样才能在user版本下完整打印FM应用的log" 修改后打印. 3.如何判断log是否有效 log中至少包含以下log FMPlay : onCreate FMplayService: onCreate fmradio : (setControl)operation=8000004 value=1 result=0 errno=2 4.还需要那些log 根据操作的不同,还需要一些相应的log 如果,在操作过程中涉及到搜台,则还需要 Statio
+完整回答请参考FAQ: FAQ41756
+### 问题: 有外部ATV，SR2351中FM也要可以使用
+解决方案: 将目录vendor\sprd\open-source\libs\audio下的文件audio_hw.c中将 static const dev_names_para_t dev_names_linein[] = { { AUDIO_DEVICE_OUT_SPEAKER | AUDIO_DEVICE_OUT_FM_SPEAKER, "speaker" }, { AUDIO_DEVICE_OUT_WIRED_HEADSET | AUDIO_DEVICE_OUT_WIRED_HEADPHONE |AUDIO_DEVICE_OUT_FM_HEADSET, "headphone" }, { AUDIO_DEVICE_OUT_EARPIECE, "earpiece" }, /* ANLG for voice call via linein*/ { AUDIO_DEVICE_OUT_ANLG_DOCK_H
+完整回答请参考FAQ: FAQ41763
+### 问题: SC7730/SC8830平台IIC介绍和使用说明简介
+解决方案: 见SC7730 Device Specification 文档资料 一般I2C0给TP使用; I2C1:给Camera使用; I2C2给G-Sensor\M-Sensor\L+P-Sensor等使用. 具体需要根据项目硬件设计,软件以上边接法为例配置 文件: Board-sp7730ga.c 1. static struct i2c_board_info i2c2_boardinfo[] = { #if(defined(CONFIG_INPUT_LIS3DH_I2C)||defined(CONFIG_INPUT_LIS3DH_I2C_MODULE)) { I2C_BOARD_INFO(LIS3DH_ACC_I2C_NAME, LIS3DH_ACC_I2C_ADDR), .platform_data = &lis3dh_plat_data, }, #endif ……………………… #if(d
+完整回答请参考FAQ: FAQ41766
+### 问题: SC7731平台Camera模块几个宏开关配置说明
+解决方案: 在文件device/sprd/scx35_sp7731gea/BoardConfig.mk中 (1). #snesor interface TARGET_BOARD_BACK_CAMERA_INTERFACE := mipi TARGET_BOARD_FRONT_CAMERA_INTERFACE := mipi (2). # select camera 2M,3M,5M,8M,最大支持的像素值 CAMERA_SUPPORT_SIZE := 8M FRONT_CAMERA_SUPPORT_SIZE := 3M (3). 是否支持前摄像头 TARGET_BOARD_NO_FRONT_SENSOR (4). 是否支持零延时拍照功能 TARGET_BOARD_CAMERA_CAPTURE_MODE (5). 是否支持开/关Capture Rotation TARGET_BOARD_CAMERA_R
+完整回答请参考FAQ: FAQ41793
+### 问题: 如何快速合入.patch文件中的修改到代码中？
+解决方案: 拿到xxx.patch文件,里面修改了几个文件,文件内容格式如下描述,比如修改包含time.c的修改和time.h,简单的合入代码方法如下: 1、进入到kernel目录,将xxx.patch文件拷贝到kernel目录下(也可以不拷贝到此目录,这里为了方便), 2、然后输入命令 patch -p1 < xxx.patch,执行完后输入git status看下文件是否有修改,再git diff看下差异是否都已合入.如果当前修改的文件已被修改,这个方法不适合,文件行号可能对不上,所以一般用在不怎么修改的文件,如kernel、u-boot中的修改比较方便,省去了手动合代码的烦恼,其中-p1参数含义为去掉a/目录,-px即为去掉前x级目录. diff --git a/kernel/time.c b/kernel/time.c index d3617db..5685082 100644 --- a/k
+完整回答请参考FAQ: FAQ41831
+### 问题: 如何将dialog activity设定成透明
+解决方案: 将activity设定成dialog我们可以通过将activity的theme修改为Theme.Dialog来解决. 但是如果需要设定一个透明的dialog activity,我们需要新定义一个继承Theme.Dialg, 并且将一些显示属性修改为透明,具体修改方法如下: <style name="OutgoingCallBroadcasterTheme" parent="@android:style/Theme.Dialog">         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="andro
+完整回答请参考FAQ: FAQ41839
+### 问题: 蓝牙开启过程中如何配置mac地址？
+解决方案: 蓝牙的mac地址存放在如下路径: /data/misc/bluedroid /btmac.txt 蓝牙打开的过程中会从该文件读取mac地址,发送到controller,代码如下: /vendor/sprd/open-source/libs/libbt/src/ bt_vendor_sprd.c int sprd_config_init(int fd, char *bdaddr, struct termios *ti) { int i,psk_fd,fd_btaddr,ret = 0,r,size=0,read_btmac=0; unsigned char resp[30]; BT_PSKEY_CONFIG_T bt_para_tmp; char bt_mac[30] = {0}; char bt_mac_tmp[20] = {0}; uint8 bt_mac_bin[32] = {0}; 
+完整回答请参考FAQ: FAQ41870
+### 问题: 低内存时kswapd对系统有什么重要影响
+解决方案: 在低内存的时候,通过top命令可以看到系统中kswapd会经常出现,而且占用CPU非常高,从而影响到一系列性能问题. 那么kswapd是个什么样的线程或者进程呢? 首先linux在启动过程中会通过kthread_run启动一个名为kswapd的线程,它用于在内存比较低的时候回收内存. 通常linux下针对不同的CPU分为将内存不同的簇,每一个簇以pgdat_t结构体描述,每一个pgdat_t中又划分了不同的zone,zone主要的目的就是讲内存分为不同的地址段来管理,通常的情况下,分为ZONE_DMA(0~16M),,ZONE_NORMAL(16~896M), ZONE_HIGHMEM(896~),每个zone中有一个关键的数组watermark数组,它包含了watermark_min,watermark_low,watermark_high几部分,当内存高于watermark_high时
+完整回答请参考FAQ: FAQ41874
+### 问题: 如何确认Handler消息处理延时的原因
+解决方案: 主要原因是UI线程的消息队列有事件处理相当耗时,导致上述发送的消息处理被滞后了.我们可以通过在framework中添加 log来确认是那个时间消耗了过多的时间. 文件: frameworks/base/core/java/android/os/Looper.java 代码: ---------------------------------------------------------------- public static void loop() { final Looper me = myLooper(); if (me == null) { throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread."); } final MessageQueue queue = me.
+完整回答请参考FAQ: FAQ41893
+### 问题: adb锁定cpuFreq和cpunum
+解决方案: 1.先plugin所有core(第一步) 2.然后切换governor到userspace 3.手动plug out你不想要的core(本步骤可选) 4.设置频率 //make all core online echo 1 > sys/devices/system/cpu/cpufreq/sprdemand/cpu_hotplug_disable //change the governor to userspace echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor echo userspace > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor echo userspace > /sys/devices/system/cpu/cpu2/cp
+完整回答请参考FAQ: FAQ41902
+### 问题: SC6815平台如何修改或提升ARM电压？
+解决方案: 需要修改两个地方: 1、Chipram中的修改 在Chipram/include/configs/sp6815ea.h #ifndef CONFIG_CLK_PARA #define DDR_CLK 333 #else #define MAGIC_HEADER 0x5555AAAA #define DDR_FREQ 333000000 #define DCDC_ARM 1250 //---------改成想要修改的值,如 #define DCDC_ARM 1300 #define DCDC_CORE 1100 #define CONFIG_VOL_PARA #endif 2、Kernel中的修改 Kernel/arch/arm/mach-sc/cpufreq-scx35.c static struct cpufreq_table_data sc7715_cpufreq_table_data
+完整回答请参考FAQ: FAQ41920
+### 问题: 如何避免开机至锁屏界面时出现的闪烁现象？
+解决方案: 系统正常开机,当开机动画播放完毕后默认会进入锁屏界面(解锁后显示Launcher界面),如果对这个过程进行大规模强度测试就可能发现在这个过程中存在屏幕闪烁的现象,即动画播放完毕即将进入锁屏界面时会先闪烁一下Launcher界面然后快速又显示出锁屏界面,这样给用户的感觉就是出现闪屏现象而影响用户体验,并且这个现象是随机偶现的. 通过分析开机过程中的LOG信息,比较锁屏(KeyguardViewMediator)与Launcher界面创建及显示的时间戳发现Launcher确实比KeyguardViewMediator早出现一些而导致闪烁现象,归根结底之所以出现这个现象还是由于在开机过程中系统处于忙碌状态,系统总体性能决定不同任务调度(在极端情况下)出现先后顺序异常现象,我们可以通过临时调整对应任务的优先级来尽量避免出现此类问题. 针对当前锁屏、Launcher显示先后问题,可以临时提高Keyg
+完整回答请参考FAQ: FAQ42361
+### 问题: 如何理解PLMN与SPN的异同
+解决方案: PLMN: Public Land Mobile Network,即公共陆地移动网络. SPN: Service Provider Name,即服务提供商名. 相同点: PLMN与SPN都可以mcc+mnc (mobile country code + mobile network code) 的形式代表一个运营商. 不同点: PLMN与当前注册的网络有关,表示的是网络所驻留的运营商,是可变的; SPN与当前注册的网络无关,与提供SIM卡服务的运营商有关,写在卡中,是不可变的. 通常当PLMN与SPN不同时,表现为漫游. 平台中何处使用plmn,何处使用spn: 状态栏下拉窗口中显示的运营商名与锁屏界面显示的运营商名,通常是plmn,代码中的逻辑可以是plmn或spn,或两者的组合; 在设置的移动网络列表中显示的SIM卡的名称的组成部分通常采用的是spn. 在哪里修改配置plmn, spn
+完整回答请参考FAQ: FAQ41949
+### 问题: 为什么SC6815平台播放录像视频到最后画面时会出现停一下动一下再停止？
+解决方案: [原因] Android原生问题,音视频同步在最后播放结束时,音频帧时间戳不准导致视频卡顿. [处理规避方法] --- a/media/libstagefright/AudioPlayer.cpp +++ b/media/libstagefright/AudioPlayer.cpp @@ -710,7 +710,7 @@ int64_t AudioPlayer::getRealTimeUsLocked() const { // are less frequent, therefore to get a "smoother" notion of time we // compensate using system time. int64_t diffUs; - if (mPinnedTimeUs >= 0ll) { + if (mPinnedTimeUs >= 0ll && (!mReach
+完整回答请参考FAQ: FAQ41945
+### 问题: RamOptimizer 模块的作用？
+解决方案: 长按home键会进入到Recent界面,该界面的主要作用是一键清理后台进程或服务.而RamOptimizer模块就是展讯针对Recent界面的后台清理功能所做的白名单程序. 添加白名单的位置:packages/apps/RamOptimizer/res/values/arrays.xml <resources> <!-- the name of app that we wan't to kill --> <string-array name="recent_keep_app" translatable="false"> <item>com.sprd.ramoptimizer</item> <item>com.android.settings</item> .... </string-array> <!-- the name of service that we wan't to kill 
+完整回答请参考FAQ: FAQ41978
+### 问题: 如何修改状态栏电池电量的显示级别以及对应的颜色？
+解决方案: frameworks/base/packages/SystemUI/res/values/arrays.xml <!-- BatteryMeterView parameters --> <array name="batterymeter_color_levels"> <item>4</item> <item>15</item> <item>100</item> </array> <array name="batterymeter_color_values"> <item>#FFFF3300</item> <item>#FFFF3300</item> <item>#FFFFFFFF</item> </array> arrays.xml中的batterymeter_color_levels和batterymeter_color_values字段分别对应状态栏电池电量的显示级别以及对应的颜色. 
+完整回答请参考FAQ: FAQ41980
+### 问题: android4.4为何在飞行模式下锁屏界面仍显示运营商信息
+解决方案: 因为问题版本中,在飞行模式下,显示的是spn(SIM卡服务提供商),而非plmn(网络运营商). NetworkController.java中接受到Action为"android.provider.Telephony.SPN_STRINGS_UPDATED"的广播时,会根据广播中传递的showSpn和showPlmn这两个boolean值来决定显示plmn、spn与否. GsmServiceStateTracker.java的updateSpnDisplay方法中根据情况会发送Action为"android.provider.Telephony.SPN_STRINGS_UPDATED"的广播通知NetworkController更新界面,在此之前,showPlmn的初始值为false,该版本在飞行模式下没有重新给该值重新赋值,而由于SIM卡中要求显示spn,且spn的内容非空,故而sho
+完整回答请参考FAQ: FAQ41975
+### 问题: FM hal 层与FM驱动有那些常用接口，功能是什么？
+解决方案: FM hal 层与FM驱动有如下常用接口: FM_IOCTL_ENABLE / FM_IOCTL_SET_TUNE / FM_IOCTL_GET_FREQ / FM_IOCTL_SEARCH / FM_IOCTL_STOP_SEARCH / FM_IOCTL_SET_VOLUME / FM_IOCTL_GET_VOLUME / FM_IOCTL_CONFIG 这些接口的宏定义为: #define FM_IOCTL_ENABLE _IOW(FM_IOCTL_BASE, 0, int) #define FM_IOCTL_SET_TUNE _IOW(FM_IOCTL_BASE, 2, int) #define FM_IOCTL_GET_FREQ _IOW(FM_IOCTL_BASE, 3, int) #define FM_IOCTL_SEARCH _IOW(FM_IOCTL_BASE, 4, i
+完整回答请参考FAQ: FAQ41989
+### 问题: FmManager 与 FM app有那些常用接口，功能是什么？
+解决方案: FmManager 与 FM app 之间的接口分为3类,包括FM 启动停止状态函数,FM音频相关接口函数以及频率相关接口函数 1.FM 启动停止状态: powerUp / powerDown / isFmOn 2.FM音频相关接口: mute / unmute / setVolume / setAudioPath 3.频率相关接口: setFreq / getFreq / searchStation / cancelSearch 这些函数的作用如下: powerUp(); 启动FM powerDown(); 停止FM isFmOn(); 判断FM是否为启动状态 mute(); 静音 unmute(); 恢复音量 setVolume(); 设置音量(trout FM不通过这里控制,参见FAQ:trout FM APP 的音量是如何控制的?) setAudioPath(); 设置FM音频输出
+完整回答请参考FAQ: FAQ41991
+### 问题: 设置里验证应用设置项是否灰化判断的依据是什么？
+解决方案: 验证应用时是否使能验证应用的设置项,其是否有效是由系统中是否安装有程序中能处理Intent.ACTION_PACKAGE_NEEDS_VERIFICATION ("android.intent.action.PACKAGE_NEEDS_VERIFICATION")的广播决定的,如果存在这样的应用就使能,否则灰化不能操作.     private boolean isVerifierInstalled() {
+        final PackageManager pm = getPackageManager();
+        final Intent verification = new Intent(Intent.ACTION_PACKAGE_NEEDS_VERIFICATION);
+        verification.setType(PACKAGE_MIME_TYPE
+完整回答请参考FAQ: FAQ41900
+### 问题: FM 切换音频输出设备调用AudioSystem的那些接口？
+解决方案: FM 最终会在FmService.java的setAudioPath中调用音频接口AudioSystem.setDeviceConnectionState()来设置FM音频输出设备 FM APP定义了三种音频输出设备 喇叭,耳机,无输出. private static final int FM_AUDIO_PATH_SPEAKER = 0; private static final int FM_AUDIO_PATH_HEADSET = 1; private static final int FM_AUDIO_PATH_NONE = 2; FM通过调用AudioSystem.setDeviceConnectionState的接口,设置两种输出设备AudioManager.DEVICE_OUT_FM_SPEAKER和AudioManager.DEVICE_OUT_FM_HEADSET的状态,
+完整回答请参考FAQ: FAQ42052
+### 问题: 开机30s按power键亮屏无反应原因？
+解决方案: 开机以后,PowerManagerService会监听Intent.ACTION_BOOT_COMPLETED,调用startWatchingForBootAnimationFinished去更新mBootCompleted 的标志位. private void startWatchingForBootAnimationFinished() { mHandler.sendEmptyMessage(MSG_CHECK_IF_BOOT_ANIMATION_FINISHED); } private void handleBootCompletedLocked() { final long now = SystemClock.uptimeMillis(); mBootCompleted = true; mDirty |= DIRTY_BOOT_COMPLETED; userActivityNoUp
+完整回答请参考FAQ: FAQ42095
+### 问题: ANR信息中的minor和major什么意思
+解决方案: 一、当ANR产生时,会在system.log中打印相关信息,如下: 26% 606/system_server: 22% user + 3.6% kernel / faults: 11590 minor 57 major 其中包含有信息faults: 11590 minor 57 major,该信息是什么意思? 二、该部分信息表示的是页错误次数,当次数为0时不显示.major是指Major Page Fault(主缺页),内核在读取数据时会先后查找CPU的高速缓存和物理内存,如果找不到会发出一个major信息,请求将数据加载到内存.minor是指Minor Page Fault(次缺页),磁盘数据被加载到内存后,内核再次读取时,会发出一个minor信息.一个文件第一次被读写时会有很多的major,被缓存到内存后再次访问major就会很少,minor反而变多,这是内核为减少效率低下的磁盘I/
+完整回答请参考FAQ: FAQ42050
+### 问题: 怎样配置相机菜单中"存储位置信息"菜单显示或不显示？
+解决方案: 在CameraUtil.java中有这样一个方法: public static final boolean isSupportedGps() { boolean result = true; try { @SuppressWarnings("rawtypes") Class classz = Class.forName("android.os.SystemProperties"); @SuppressWarnings("unchecked") Method method = classz.getMethod("get", new Class[] { String.class, String.class }); Object obj = method.invoke(null, new Object[] { KEY_PROPERTY_SUPPORT_GPS, TRUE} ); result =
+完整回答请参考FAQ: FAQ42138
+### 问题: 怎样通过log判断按键卡住的情况。
+解决方案: 有时,由于设备故障,会连续不断的发送按键事件,可以通过log进行判断: 比如下面的log,一直在打印log: WindowManager: interceptKeyTi keyCode=4 down=true repeatCount=1043317 keyguardOn=false mHomePressed=false canceled=false 其中:keycode一直没有变化,down = true 也没有变化.表示一直是按下的键,正常的是 按下,move ,弹起,这个故障log只有按下. 再看repeatCount 会比较高,这里达到了10w次. 通过这个,我们可以判断,按键的驱动出了问题,需要驱动排查. 对于这种不停发按键事件,手机会有定屏现象.下面是一部分log示范. Line 3: 01-02 06:16:36.044 590 637 D WindowManager: int
+完整回答请参考FAQ: FAQ42151
+### 问题: 如何缩短自动调节亮度的时间？
+解决方案: 手机在光线比较暗的环境测试,由于light sensor采集到光线强度的值较小,frameworks层进行调制的时候会比较长;所以测试的时候应注意下测试环境的选择. 同时,为了避免黑暗和光亮切换时出现闪屏的情况,从Android4.4开始,google做了平滑灭屏、亮屏的设置;对于黑暗和光亮环境的切换,会做相应的延迟后再设置更新的背光值;所以如果想缩短自动调节背光的时间,可以调节如下的参数: frameworks\base\services\java\com\android\server\power\DisplayPowerController.java // Stability requirements in milliseconds for accepting a new brightness // level. This is used for debouncing the ligh
+完整回答请参考FAQ: FAQ42104
+### 问题: 如何去除应用启动过程中的preview window？
+解决方案: 应用在启动过程中为了改善用户体验会先显示一个preview window,该窗口一般只有标题栏和一个带背景色的空白背景. 具体的code实现在: frameworks/base/services/java/com/android/server/wm/windowmanagerserivce.java 文件 的函数 setAppStartingWindow()中实现. 如果客户自己开发应用的theme和preview window 不一致的话,可以在theme、style中,给窗口设置如下属性来取消显示preview window: <item name="android:windowDisablePreview">true</item> 具体code实现在: framworks/base/policy/src/com/android/internal/policy/impl/PhoneWi
+完整回答请参考FAQ: FAQ42186
+### 问题: 如何通过Eventlog快速定位当前页面？
+解决方案: 使用adb logcat -b events抓取events log,Event log中会显示当前界面. 举例: 这段log就说明当前进入的是com.spreadst.lockscreen包下的LockscreenActivity界面 I/am_proc_start( 566): [0,1327,10057,com.spreadst.lockscreen,activity,com.spreadst.lockscreen/.LockscreenActivity] I/am_proc_bound( 566): [0,1327,com.spreadst.lockscreen] I/am_restart_activity( 566): [0,1105014976,3,com.spreadst.lockscreen/.LockscreenActivity] I/am_on_resume_calle
+完整回答请参考FAQ: FAQ42240
+### 问题: 概率性出现产线Autotest WIFI测试失败，出现问题后正常开机也无法打开WIFI
+解决方案: 问题原因: 我们第一次down完版本时,autotest工具是root权限,所以新建的wpa_supplicant.conf 文件为root.root用户,创建完毕时一定概率修改用户组失败,所以导致了后续的supplicant进程没有权限访问这个文件. 修改方案: 在创建wpa_supplicant.conf后,修改用户组时,增加retry机制;另外,在每次打开wifi时,判断wpa_supplicant.conf用户组是否正确,不对则尝试修改为正常. 参考修改: diff --git a/new/hardware/libhardware_legacy/wifi/wifi.c b/old/hardware/libhardware_legacy/wifi/wifi.c index 7e3d43d..69c5857 100644 --- a/new/hardware/libhardware_l
+完整回答请参考FAQ: FAQ42246
+### 问题: 选择多个联系人复制时，如何在复制过程中显示复制的数量
+解决方案: 在package\app\Contacts\src\com\sprd\contacts\BatchOperationService.java BatchImportExportTask类中,下述函数做相应修改即可: public void onProgressUpdate(Integer ... progress) { String title=mResources.getString(R.string.working_batch_import); mNotificationManager.notify(mTag, 0, mBuilder.setAutoCancel(true) .setContentTitle(title) //delete .setContentTitle(title + " " + progress[0] + "/" + mMax) .setTicker(title)
+完整回答请参考FAQ: FAQ42257
+### 问题: android中px dip dp sp有什么区别
+解决方案: dip device independent pixels(设备独立像素). 不同设备不同的显示效果,这个和设备硬件 有关,一般我们为了支持WVGA、HVGA和QVGA 推荐使用这个,不依赖像素. 在android上开发的程序将会在不同分辨率的手机上运行.为了让程序外观不至于相差太大,所以引入了dip的概念.比如定义一个矩形10 x 10dip.在分辨率为160dpi的屏上,正好是10 x 10像素.而在240 dpi的屏,则是15 x 15像素.换算公式为pixs = dips * (density/160). density就是屏的分辨率 这里要特别注意dip与屏幕密度有关,而屏幕密度又与具体的硬件有关,硬件设置不正确,有可能导致dip不能正常显示.在屏幕密度为160的显示屏上,1dip=1px,有时候可能你的屏幕分辨率很大如480*800,但是屏幕密度没有正确设置比如说还是160,那
+完整回答请参考FAQ: FAQ42260
+### 问题: anr时生成trace中的各部分内容都代表哪些信息
+解决方案: 当系统发生anr的时候,会给对应的进程发送3信号,生成trace信息,它记录了当前运行的所有的线程的上下文信息,大体格式如下,其中,第一行和第二行显示的是当前dvm进程的进程id,名字,输出的时间.然后就是所有线程的上下文信息,下面来具体解释下: 1. 第1行是 固定的头, 指明下面的都是 当前运行的 dvm thread :"DALVIK THREADS:" 2. 第2行输出的是该进程里各种线程互斥量的值. 3. 第3行输出分别是线程的名字("main"),线程优先级("prio=5"),线程id("tid=1") 以及线程的类型("NATIVE") 4. 第4行分别是线程所述的线程组 ("main"),线程被正常挂起的次处("sCount=1"),线程因调试而挂起次数("dsCount=0"),当前线程所关联的java线程对象("obj=0x40027190")以及该线程本身的地址("
+完整回答请参考FAQ: FAQ42261
+### 问题: 进入下载内容界面，下载内容字体会先显示为文档再显示为下载内容
+解决方案: 进入下载内容界面,下载内容字体为什么会先显示为文档再显示为下载内容? 这个是Google原生的,Android4.4新添加了一个DocumentsUI.apk,所有的文件显示,都由DocumentsUI来管理,这个和Android4.4 之前的版本不一样,download list同样也由DocumentsUI来管理. 在downloadlist onCreate 方法中,会发送 DocumentsContract.ACTION_MANAGE_ROOT 这个intent给DocumentsUI. 这样DocumentsUI activity 收到这个intent后,就会根据这个intent的实际参数,来显示下载内容. 先显示"文档",是因为documentsUI的manifest文件中定义了application的属性android:label="@string/app_label" ,而
+完整回答请参考FAQ: FAQ42384
+### 问题: 耳机插入检测的电平门限是多少伏？
+解决方案: 耳机插入检测电压是可以通过寄存器配置的,具体可以查看芯片Spec中对寄存器ANA_CFG20的描述;对应的软件代码在kernel/drivers/input/misc/headset_sprd.c,headset_detect_init函数. 例如以下代码表示HP_DET(HEADSET_L_INT)检测门限是2.5V门限(对应2.8V IO电压)或者1.6V(对应1.8V IO电压);而HEADMIC_IN的检测门限是2.1V(对应2.8V IO电压)或者1.4V(对应1.8V IO电压). static void headset_detect_init(void) { ... /* set headset detect voltage */ headset_reg_set_val(HEADMIC_DETECT_REG(ANA_CFG20), AUDIO_HEAD_SDET_2P5_OR
+完整回答请参考FAQ: FAQ42387
+### 问题: 联通入库中DM适配需要的API
+解决方案: 平台提供的源码中已经包含了提供这些系统信息的接口.接口说明如下: 1,软件版本号:通过Build.DISPLAY获取;硬件版本号:通过ro.product.hardware获取. 用法参考:DeviceInfoSettings.java (packages\apps\settings\src\com\android\settings) setStringSummary(KEY_BUILD_NUMBER, Build.DISPLAY); setStringSummary(KEY_HARDWARE_VERSION, SystemProperties.get("ro.product.hardware", "SPREADTRUM")); 2. 其他信息获取接口,在TelephonyManager.java中可以找到.这对不同的卡,初始化不同的TelephonyManager实例.具体API表如下:
+完整回答请参考FAQ: FAQ42431
+### 问题: 现默认版本上WIFI供电VDDWPA没有打开，请问该怎么修改打开此电源
+解决方案: 1.wifi供电在kernel\drivers\misc\sprd_2351\sprd_2351.c 的以下函数中实现,请根据实际供电修改函数实现: void rf2351_gpio_ctrl_power_enable(int flag) int rf2351_vddwpa_ctrl_power_enable(int flag) 2.以7715ga工程为例: 请在u-boot\board\spreadtrum\sp7715ga\ldo_sleep.c文件中作如下修改: void init_ldo_sleep_gr(void) { u32 reg_val; ANA_REG_SET(ANA_REG_GLB_PWR_WR_PROT_VALUE,BITS_PWR_WR_PROT_VALUE(0x6e7f)); + reg_val = ANA_REG_GET(ANA_REG_GLB_LDO_PD_C
+完整回答请参考FAQ: FAQ42493
+### 问题: SC6531过PTCRB测试前软件需做哪些准备工作？
+解决方案: 一. BASE软件准备 1. 目前12C量产分支上,BASE可以用作GCF/PTCRB测试的版本号是BASE_W13.02_P6.12.3.(这个最好和展讯CPM确认下最新版本) 2. 需要手动修改\MS_Code\Base\make\sim\sim.mk删掉SIM_3G_USIM_SUPPORT,否则会有两个SIM case 27.17.1.5.7/8失败.因为这两个case是测试SIM卡的,而默认软件支持USIM卡,所以要关掉. 3. 如果大工程中ATC_SUPPORT不是FULL,则需要在大工程中置ATC_SUPPORT=FULL,不过这样需要更新l4.a库文件(如果该工程中ATC_SUPPORT已经是FULL就不用了). 4. EMR case默认不支持.有的实验室必须测,这个需要更新ps/layer1.a,有的不测.具体和展讯CPM沟通获取版本. 二. 平台软件准备 有很多cas
+完整回答请参考FAQ: FAQ42495
+### 问题: ftrace使能的kernel，如何进行text段比对
+解决方案: kernel 3.10的dump中有ftrace的修改,不能直接比对.text段 1. 首先在linux shell中 $ readelf -S vmlinux Section Headers: [Nr] Name Type Addr Off Size ES Flg Lk Inf Al [ 0] NULL 00000000 000000 000000 00 0 0 0 [ 1] .head.text PROGBITS c0008000 008000 000168 00 AX 0 0 4 [ 2] .text PROGBITS c0009000 009000 635fac 00 AX 0 0 4096 得到.text段的Off和Size 2. 在windows下,使用Winhex Tool分别切割出dump文件和vmlinux的.text段 定义选块->set strat addr(.tex
+完整回答请参考FAQ: FAQ42519
+### 问题: 何为信息发送报告
+解决方案: 以彩信的发送报告为例来说明
+1.发送机Mms设置中开启[发送报告];
+2.发送机编辑彩信发送出去;
+3.接收机收到此条彩信后,通知Mmsc信息收到,Mmsc再通知发送机信息已收到,发送机这边表现为收到wap push(携带发送报告信息) ,数据库中对于的有1条新的记录,其messageId同之前发送的彩信的messageId.
+4.发送机收到接收机传回的已收到刚发送的信息时UI表现为:Toaste提示:xxx已收到信息.(短信同时更新发送报告图标--绿色小勾)
+5.长按刚发送的彩信Item --> 查看报告,即可查看发送报告信息.
+
+说明: 
+[发送报告 按 送达报告 来理解]
+彩信
+1.彩信发送报告需接收机成功下载完彩信,发送机才能收到发送报告(同短信发送报告); 
+2.若接收机为手动下载,点击"下载",下载完成后,发送机才能收到 发送报告.
+
+短信
+短信发送
+完整回答请参考FAQ: FAQ42538
+### 问题: crash中如何查看slab信息
+解决方案: 可以使用kmem -s查看所有slab信息 例如 crash32> kmem -s CACHE NAME OBJSIZE ALLOCATED TOTAL SLABS SSIZE da6a5400 ext4_groupinfo_4k 104 19 29 1 8k da6a4a00 avtab_node 16 1376 1386 66 4k da6a5540 xfrm6_tunnel_spi 48 0 0 0 4k da6a48c0 fib6_nodes 32 1 18 1 4k da6a5680 ip6_dst_cache 256 1 18 1 8k 对于某个slab,可以用kmem -S 查看详细分配情况 例如 crash32> kmem -S fib6_nodes CACHE NAME OBJSIZE ALLOCATED TOTAL SLABS SSIZE da6a48c0 fib6_n
+完整回答请参考FAQ: FAQ42547
+### 问题: U-BOOT要兼容多种LCD是否有代码段大小限制
+解决方案: SPL加载U-BOOT到0x8F800000 RAM起始地址,加载代码段大小在chipram/include/configs/projectname.h中宏定义CONFIG_SYS_NAND_U_BOOT_SIZE为0x8A000,U-BOOT兼容多种LCD驱动后编译出来的u-boot.bin的size不能超过这个宏定义大小. 如果客户有U-BOOT兼容太多LCD驱动需要超过这个size限制的需求,首先需要改大chipram中的这个宏定义,比如改到0x90000,保证SPL能LOAD到所有的代码段,同时u-boot中相同路径文件中的宏定义也需要相应的修改. 原因:u-boot/arch/arm/cpu/armv7/u-boot.lds有定义_bss_start地址: . = CONFIG_SYS_NAND_U_BOOT_SIZE + CONFIG_SYS_TEXT_BASE; . = AL
+完整回答请参考FAQ: FAQ42555
+### 问题: 如何去除原生Launcher3主界面的search框？
+解决方案: 在HVGA版本中,界面空间太小,需要去除search框来节省一些桌面空间. 修改如下: 定位到/packages/apps/Launcher3/src/com/android/launcher3下的Launcher.java文件 1、 public View getQsbBar() { if (mQsbBar == null) { mQsbBar = mInflater.inflate(R.layout.search_bar, mSearchDropTargetBar, false); //mSearchDropTargetBar.addView(mQsbBar);//去除search框 } mQsbBar.setVisibility(View.GONE);//隐藏search框 return mQsbBar; } 2、 //updateGlobalIcons();//搜索此方法调用,全部
+完整回答请参考FAQ: FAQ42558
+### 问题: 为何android 4.4 Launcher在设置一些壁纸后，壁纸显示有点模糊？
+解决方案: android4.4在设置壁纸的时候,默认是采用jpg格式转换的,导致转换后壁纸被压缩了好多,设置壁纸后,某些对比度比较高的壁纸就显示的模糊. 修改如下: 定位到/packages/apps/Launcher3/src/com/android/launcher3/WallpaperCropActivity.java 1、String mOutputFormat = "jpg";//修改为"png" 2、 protected static String getFileExtension(String requestFormat) { String outputFormat = (requestFormat == null) ? "jpg"//修改为"png" : requestFormat; outputFormat = outputFormat.toLowerCase(); return 
+完整回答请参考FAQ: FAQ42568
+### 问题: 编译Android.mk文件出现binary operator expected怎么办？
+解决方案: 当在终端进行编译: xxx@android16:~/sprdroid4.4_14a_7715_w14.19.1_p14.30.2_patch/packages/apps/Mms$ mm ... ============================================ /bin/bash: line 0: [: packages/apps/Mms: binary operator expected make: Entering directory `/home2/xxx/sprdroid4.4_branch_patch' make: *** packages/apps/Mms: Is a directory. Stop. make: Leaving directory `/home2/xxx/sprdroid4.4_branch_patch' 出现binary operato
+完整回答请参考FAQ: FAQ42574
+### 问题: 如何修改android 4.4中Launcher桌面加载新应用图标的位置？
+解决方案: 安装一个新应用,会在桌面添加图标,这个图标默认查找空位是从第二个页面开始找空位,如果没有则查找下一页, 如果没有空位,则新建一个页面. 如果要修改为从最后一页查找空位,修改如下: 定位到/packages/apps/Launcher3/src/com/android/launcher3/LauncheModel.java 1、定位到addAndBindAddedApps方法: int startSearchPageIndex = workspaceScreens.isEmpty() ? 0 : 1; Pair<Long, int[]> coords = LauncherModel.findNextAvailableIconSpace(context, name, launchIntent, startSearchPageIndex, workspaceScreens); 修改为 int s
+完整回答请参考FAQ: FAQ42573
+### 问题: ListView的Item布局不同时，如何复用convertView？
+解决方案: ListView的优化可以采用ViewHolder,其原理就是复用了convertView.但是有时ListView不是每个item的布局都相同,可以通过ViewType实现多个不同View复用. 具体使用方法是先在adapter中实现函数getItemViewType(),根据listiew的实际状态定义不同的viewType.然后在getView中判断ViewType实现不同view复用. 参考code: public View getView(int position, View convertView, ViewGroup parent) {　　　　　　　 if (getItemViewType(position) == VIEW_TYPE_XXX) { if (convertView == null) { convertView = getLayoutInflater(getCo
+完整回答请参考FAQ: FAQ42578
+### 问题: 如何理解内存管理中的三个watermark值
+解决方案: 1. watermark的计算方法 watermark[min] = min_free_kbytes换算为page单位即可 (因为每个zone各有一套watermark参数,实际计算效果是根据各个zone大小所占内存总大小的比例,而算出来的per zone min_free_pages, 其中min_free_kbytes = sqrt(lowmem_kbytes * 16) = 4 * sqrt(lowmem_kbytes)(lowmem_kbytes可认为是系统内存大小)) watermark[low] = watermark[min] * 5 / 4 watermark[high] = watermark[min] * 3 / 2 2. watermark的作用场景 在系统空闲内存低于 watermark[low]时,开始启动内核线程kswapd进行内存回收(每个zone一个),直到
+完整回答请参考FAQ: FAQ42646
+### 问题: Audio Focus机制以及AudioManager的使用
+解决方案: 一、Audio Focus机制 Android是多任务系统,Audio系统是竞争资源.( because there is only one audio output and there may be several media services competing for its use)因为在只有一个音频输出,然而可能有很多的媒体程序去竞争使用它,这样就需要一种机制来管理.Android2.2之前,没有内建的机制来解决多个程序竞争Audio的问题,2.2引入了称作AudioFocus的机制来管理对Audio资源的竞争的管理与协调. 按照AudioFocus的机制,在使用Audio之前,需要申请AudioFocus,在获得AudioFocus之后才可以使用Audio;如果有别的程序竞争你正在使用的Audio,你的程序需要在收到通知之后做停止播放或者降低声音的处理.值得指出的是,这种机制是
+完整回答请参考FAQ: FAQ42774
+### 问题: android init.rc中启动的service 默认是disable的，后续如何启动此服务
+解决方案: init.rc中可以直接启动service 附带的参数决定启动程序的状态,例如数据业务中配置网卡设备的脚本服务 data_on,data_off 在init.rc中启动命令如下,但是默认是disabled状态,即默认此服务是不启动的: #data on service data_on /system/bin/ext_data.sh -u user root disabled oneshot #data off service data_off /system/bin/ext_data.sh -d user root disabled oneshot 后续如何才能启动此服务呢? 我们可以通过 property_set("ctl.start", service_xx); 来启动. 此例子在展讯平台使用如下代码: proprietories-source/phoneserver/ps_servi
+完整回答请参考FAQ: FAQ42768
+### 问题: sc7715,锁屏方式为密码锁屏时，如何设置当唤醒屏幕弹出锁屏界面时自动弹出输入法框
+解决方案: 将文件frameworks/base/packages/Keyguard/res/values/bools.xml中的 <bool name="kg_show_ime_at_screen_on">false</bool>修改为 <bool name="kg_show_ime_at_screen_on">true</bool> 原因: 在文件frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardPasswordView.java中 onResume()函数中的如下代码 if (reason != KeyguardSecurityView.SCREEN_ON || mShowImeAtScreenOn) { mImm.showSoftInput(mPasswordEntry, InputMethodManager.
+完整回答请参考FAQ: FAQ42771

@@ -1,0 +1,313 @@
+### 问题: SC9820 支持哪些视频编码？
+解决方案: 支持YUV422,YUV420,YUV400,RGB888,RGB565,RGB666,RGB555,PACK
+参考FAQ: FAQ95053
+### 问题: SC9820的存储器都有什么配置？
+解决方案: 支持NAND,EMMC,LPDDR2和LPDDR3
+参考FAQ: FAQ95056
+### 问题: SC6533G是否支持USB下载？
+解决方案: SC6533G支持USB下载.
+参考FAQ: FAQ95070
+### 问题: SC9820 KPLED背光电流最大多少？调节步进多少？
+解决方案: KPLED 电流最大80ma,调节步进5ma
+参考FAQ: FAQ95067
+### 问题: SC6533G是否支持USB校准？
+解决方案: SC6533G支持USB校准.
+参考FAQ: FAQ95071
+### 问题: SC6533G是否支持UART串口校准？
+解决方案: SC6533G支持UART串口校准.
+参考FAQ: FAQ95076
+### 问题: SC9820A是否支持TDSCDMA？
+解决方案: SC9820A支持TDSCDMA.
+参考FAQ: FAQ95104
+### 问题: SC6533G是否支持UART串口下载？
+解决方案: SC6533G支持UART串口下载.
+参考FAQ: FAQ95079
+### 问题: SC7731C支持几个I2C接口？
+解决方案: SC7731C支持5个I2C接口.
+参考FAQ: FAQ95088
+### 问题: SC6533G 支持3 SIM卡吗？
+解决方案: 不支持,最多支持2个SIM.
+参考FAQ: FAQ95081
+### 问题: SC9820A是否支持DCXO方案？
+解决方案: 支持.
+参考FAQ: FAQ95111
+### 问题: SC9820A是否支持32Kless方案？
+解决方案: 支持.
+参考FAQ: FAQ95112
+### 问题: SC9820A IIC内部上拉电阻有几种阻值？
+解决方案: 内部上拉电阻有1.8K/4.7K/20K,根据不同Pad类型可选择两种或者三种阻值.
+参考FAQ: FAQ95113
+### 问题: 数据连接设置中的各个选项说明
+解决方案: 主要说明如下 : 需要时连接 - 需要时才连接 gprs 一直连接 - 一直连接gprs 省电模式 - 省电模式是协议栈做了一些优化,比如 Fast Dormancy, 一定时间没有数据时,会自动 Release rrc connection 以节电
+参考FAQ: FAQ95123
+### 问题: SC9820A支持SDIO 3.0吗？
+解决方案: SC9820A Support 3 SDIO 3.0
+参考FAQ: FAQ95238
+### 问题: SC9820A支持几个UART接口？
+解决方案: SC9820A Support 5 UARTs
+参考FAQ: FAQ95239
+### 问题: SC9820A支持几个I2C接口？
+解决方案: SC9820A支持5个I2C接口.
+参考FAQ: FAQ95240
+### 问题: SC9820A支持几个数字 MICs？
+解决方案: SC9820A支持2个数字 MICs.
+参考FAQ: FAQ95242
+### 问题: SC9820A支持串口屏吗？
+解决方案: SC9820A支持SPI 串口 LCM.
+参考FAQ: FAQ95243
+### 问题: SC9820A平台摄像头支持YUV接口和MPI两种接口吗？
+解决方案: YUV接口和MPI两种接口都支持.
+参考FAQ: FAQ95244
+### 问题: SC9820A两个SIM卡能同时都支持2G和4G吗？
+解决方案: SC9820A支持双SIM,但是只有一张SIM同时支持2G和4G.
+参考FAQ: FAQ95245
+### 问题: SC9820A平台耳机支持glass G？
+解决方案: SC9820A平台耳机支持glass G.
+参考FAQ: FAQ95248
+### 问题: SC9820A支持哪些类型的SPI？
+解决方案: support both master and slave, support 3-wire SPI, 4- wire SPI and synchronous SPI
+参考FAQ: FAQ95252
+### 问题: FM 是否支持 RDS 功能
+解决方案: 在6351 以及 7701上 , 平台 FM 目前不支持 RDS 功能. 所谓RDS是英国BBC广播公司开发的一种特殊无线电广播.即"无限数据广播系统"(Radio Data System). 它是在调频广播发射信号中利用副载波把电台名称,节目类型,节目内容及其它信息以数字形式发送出去.通过具有RDS功能的调谐器就可以识别这些数字信号,并做响应处理,RDS广播精髓在于其AF和TA功能,AF既自动频率调整,当信号低于某个水平时,AF功能会自动搜索当前电台的其他发射频率串.
+参考FAQ: FAQ95307
+### 问题: 卡1为主卡，卡2为辅卡，数据连接在卡1，此时卡2有彩信接收，数据连接会自动切换到卡2上
+解决方案: 此为正常现象,因为彩信的优先级高,当卡2有彩信需要下载时,数据连接会自动切换到卡2并下载彩信,待彩信下载完成后又会将数据业务切换回卡1,整个过程都由系统自动切换完成.
+参考FAQ: FAQ95490
+### 问题: android7.0中，系统预置安装某些三方应用无法运行，但是直接adb install后应用可以运行，如何解决？
+解决方案: 查看log后,看到无法运行是由于缺少一些.so导致的,出现此类问题的主要原因为: 在android 7.0上如果将三方应用安装在system目录下,不能够访问系统相关的一些.so文件导致 解决此类问题的方案为: 1.联系应用的开发商,升级应用来适配android 7.0的新特征 2.将三方应用的相关.so 放到相关应用的system目录的文件内的/lib/arm中,应用可以运行.此.so库可以通过将应用adb install 后在 data/app/apk/lib/arm 下找到
+参考FAQ: FAQ95560
+### 问题: SC9820平台有几个PMW信号输出？
+解决方案: SC9820平台有4个PMW信号.
+参考FAQ: FAQ95567
+### 问题: 孟加拉运营商Grameenphone 环境下功耗偏大问题
+解决方案: Android5.1 需要NV需要关闭小区广播CBS(Symphony必测) Android4.4 默认NV已关闭此项,不需要修改. 修改CBS功能NV项 CBS:is_cbmc_enable,Item Value设置为1代表开,设置0代表关 1、 打开NV文件夹下的td_nv_type.nvm,搜索is_cbmc_enable; 2、 使能CBS功能: BEGIN_ITEM ITEM_NAME = is_cbmc_enable td_nv_type.nvm 里 is_cbmc_enable 由 ITEM_CONTENT = 0x1修改为 0x0 3、修改后请重新生成NV
+参考FAQ: FAQ96920
+### 问题: Play Store中个别APP为什么不能下载
+解决方案: Playstore下载应用会先check apps的AndroidManifest.xml中应用需要的features,如果需要的features在硬件上不支持的话,就显示不兼容,无法下载. Zapya, Line Moments, Boomrang这三个应用需要硬件支持autofocus功能: <uses-feature android:name="android.hardware.camera.autofocus"/> 但是通过adb shell pm list features发现出问题的硬件上没有此features,所以不能下载.硬件限制问题,无法修改.
+参考FAQ: FAQ95580
+### 问题: 通过facebook帐号无法直接登录三方应用，如何解决
+解决方案: 登录一些三方应用,如instagram,360camera等应用,使用facebook帐号登录时,需要安装facebook应用后才可以登录.
+参考FAQ: FAQ95581
+### 问题: 如何实现在Settings预览各类型的铃声时使声音从蓝牙耳机中传出
+解决方案: 可以在PlayFixdRing@mmiset_ring.c中设置route为MMISRVAUD_ROUTE_BLUETOOTH, 另外需注意要在MMIBT_OpenHeadsetConfirmIND@mmibt_headset.c加入目前预览铃声时, 不弹出a2dp提示判断. Sample code
+参考FAQ: FAQ95592
+### 问题: 手机如何默认开启FAST Dormancy功能
+解决方案: 使手机默认支持FD的方法是,修改NV中的"PDCP_NODATA_TIMER"的时长来开启该功能,同时设置NODATA后多久发起SCRI消息.从LOG中可查看ARM LOG中TRACE: PDCP_RAB_RELEASE_TIMER_VALUE来确认修改的值是否是NV客户自行配置的值.
+参考FAQ: FAQ95615
+### 问题: 如何从LOG中确认当前的2G服务小区是否支持拨打紧急电话112，119等
+解决方案: 这属于引起客户无法拨打紧急电话的一种原因.通常在2G下,手机收到的系统消息1中会上报是否可以拨打紧急电话,如下,截图,从LOG右侧确认系统消息1,将空口消息SIB1解析出来的内容中可以看到EMERGENCY_CALL_ALLOW=0,通常0代表该2G小区支持紧急呼叫.1代表不支持.
+参考FAQ: FAQ95616
+### 问题: 为什么用一些三方音乐播放器播放音乐时，再从平台的music播放器或者视频播放器播放音乐或视频，两种声音会共存？
+解决方案: 这种情况是由于三方音乐播放器在失去AudioFocus焦点时,没有对播放状态做处理,导致音乐会继续播放,从而使两种声音共存.此类问题只能通过联系三方应用开发者来修改.
+参考FAQ: FAQ95620
+### 问题: 有哪些常见的scheme?
+解决方案: 一般在代码中得到scheme是通过Uri.getScheme(),然后根据不同的scheme有可能做不同的处理; 常见的scheme有:file、content、http、https、rtsp
+参考FAQ: FAQ95649
+### 问题: 存储卡是否可以抓取audio mem log？
+解决方案: 存储卡可以抓取audio mem log 如果手机版本使用非logmananger,需要打开IQ模式,如果使用logmanager工具,需要选择语音业务模式 使用T卡抓取audio mem log,使用log4android2PC工具导出5mode_modem log,如下图: 打开armlog、dsplog、channelserver工具,进行回放 5mode_modem log,生成tg .mem文件,如下: 该MEM文件即为audio mem log
+参考FAQ: FAQ95652
+### 问题: 如何默认开启HSUPA
+解决方案: E_DCH_Supported=1 代表support UPA
+参考FAQ: FAQ95685
+### 问题: 如何关闭VT CALL
+解决方案: 可通过修改如下NV: nv_type.nvm->mt_video_call_support=0
+参考FAQ: FAQ95699
+### 问题: FAST DOMANCY( T323 is off  DUT don't send scri.)
+解决方案: 如客户需求T323 OFF的时候不需要发SCRI,那么需要打开如下NV开关.将如下VALUE=1因为我们的软件版本默认是当T323 IS OFF时发送不带CAUSE的SCRI. FD关闭 TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\device_type=0 FD打开 TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\device_type=1
+参考FAQ: FAQ95700
+### 问题: 在展讯平台的联系人支持SDN吗？
+解决方案: 展讯平台的联系人支持SDN, SDN (系统拨叫号码)网络服务拨号. SDN联系人说明: 1. 开机读取sim卡过程中,将sdn号码读取到联系人数据库;
+ 2. 联系人列表"所有联系人"界面,显示sdn联系人,以SIM卡图标作为标识; 
+ 3. sdn联系人不能被编辑,点击联系人详情界面,只能share,不能删除、编辑、复制,且不支持将SDN联系人保存到sim卡群组中.
+参考FAQ: FAQ95749
+### 问题: 怎么卸载Google Play Sevice的更新
+解决方案: 进入 系统设置-->安全--> 设备管理器,将Android设备管理器 取消"激活"状态.然后就可以卸载掉Google Play Service更新了.
+参考FAQ: FAQ95732
+### 问题: MOCOR 双卡时不能设置 数据连接设置
+解决方案: Q: 为何插入一張SIM卡,可以进入数据连接设置,插两张SIM卡,数据连接设置灰显? A: 设计如此,单卡的时候,数据连接设置的内容是可以选择"始终开启"以及"需要時開啟".但是双卡时,不可能都是"始终开启",所以双卡的时候没有设置的必要,因此灰显. Q: 为何双卡不可能设置"始終开启"? A: 设置"始終开启"的意思是,不管上网或是不管是否使用GPRS,PDP都是激活的状态,但我们不能同时有两个PDP都激活,所以不能两个GPRS都是始终开启.
+参考FAQ: FAQ95829
+### 问题: 如何关闭wcdma prefer功能
+解决方案: 解决办法: 从LOG中搜索如下 7060:12553-167: Time:118054: Time: 118054 WRCC: GetWCDMA Prefer=1发现3GPREFER功能打开.该功能是我司根据客户需求做的特性功能,在可以保证通话前提下,重选判决算法上有改动.尽可能的让手机驻留在3G下.可通过修改NV关闭该功能FEATURES_SWITCH=0.如需要该功能可这是VALUE=1
+参考FAQ: FAQ95911
+### 问题: SC9820平台支持NAND MCP吗？
+解决方案: 可支持4Gb+2Gb NAND MCP.
+参考FAQ: FAQ95915
+### 问题: 谷歌下载的Facebook，没有Live功能，同样的Facebook版本5.1上是有的
+解决方案: 在平台项目和客户项目中均能复现问题,原因是项目中model name值与实际不符导致,facebook apk会检查设备信息是否属实,硬件参数是否支持,然后才显示Live按钮: 出问题的7731gea上ro.product.model是7731A,将其改为7731G后问题修复. \system\build.prop ro.product.model=SP7731A
+参考FAQ: FAQ95931
+### 问题: 7701平台手机如何设置APN
+解决方案: APN设置需要沟通运营商,可通过以下两种方式设置手机APN. 1. NV中配置APN: PS_NV_PARAMS\NV_PARAM_TYPE_APN1 2. 设置APN的at命令为: AT+CGDCONT AT+CGDCONT=1,"IP","cmnet" 如MMI需要做用户设置界面,此命令调用的接口为: MNGPRS_SetPdpContextEx 或者使用MNGPRS_SetPdpContextAPNWithCidEx 也可以设置APN
+参考FAQ: FAQ95923
+### 问题: SC9820 片内sram是多大？
+解决方案: 64KB
+参考FAQ: FAQ95982
+### 问题: SC9820 有多少PWM out？
+解决方案: SC9820 支持4路PWM out
+参考FAQ: FAQ95983
+### 问题: SC9820 image sensor支持RAW_RGB吗？
+解决方案: 支持RAW_RGB,13M pixels
+参考FAQ: FAQ95984
+### 问题: SC9820 image sensor支持哪几类接口？
+解决方案: SC9820 image sensor 接口支持8M pixel Jpeg,3M Pixel YUV,13M Pixel RAW_RGB,mipi CSI,YcbYcr,CCIR656和CCIR601
+参考FAQ: FAQ95985
+### 问题: SC9820 pin 间距是多少？
+解决方案: 0.4mm
+参考FAQ: FAQ95986
+### 问题: 为什么蓝牙自拍杆，无法连拍
+解决方案: 蓝牙自拍杆的点击操作的命令下发是Down事件和UP事件,当Down事件执行后无论长按蓝牙自拍杆的拍照键与否,都会执行UP事件,Down/UP事件是前后执行的.而手机屏幕的点击事件是分为Down 事件,Move 事件和,Up事件等,每一个操作都是单独的操作.相机连拍的原理就是当检测到Down事件之后两秒没有进行其他事件事件操作的时候就会开始连拍操作,因此长按相机蓝牙自拍杆的时候不会进行相机的连拍操作.
+参考FAQ: FAQ96040
+### 问题: SC9820A是否支持GPIO扩展按键？
+解决方案: SC9820A是否支持GPIO扩展按键? 支持
+参考FAQ: FAQ96007
+### 问题: SC9820A支持的LCD数据格式有哪些？
+解决方案: SC9820A支持的LCD数据格式有哪些? YUV422/YUV420/YUV400/RGB888/RGB565/RGB666/RGB555/PACK data format
+参考FAQ: FAQ96009
+### 问题: SC9820A支持的SPI LCD最大读写速率是多少
+解决方案: SC9820A支持的SPI LCD最大读写速率是多少 Max SPI speed (write direction, 48Mbps, read direction 24Mbps, for 320X240 resolution, the max frame rate is 26fp/s for now)
+参考FAQ: FAQ96011
+### 问题: 双击电源键打开相机会白屏
+解决方案: 双击电源键打开相机是Google7.0原生功能,再打开相机之前设备会进行解锁操作,白屏时设备解锁动画,此现象可以通过单次点击电源键进行解锁,等手机屏幕亮了之后按住屏幕右下角的相机图标在手机屏幕上进行滑动,即可看到白屏效果. 只是双击电源键打开相机的时候动画已经开始执行.
+参考FAQ: FAQ96049
+### 问题: 为什么用电脑端观看手机录像视频画面横向显示
+解决方案: 手机录制的视频方向和您手持手机方向有关,这个方向信息会写在手机录制的视频信息里,视频信息里面有一个exif参数信息用来记录视频录制的方向,手机播放画面的时候是会进行exif的读取的,但是在电脑客户端进行播放的时候,电脑端不会进行手机端exif信息的读取,会导致有些视频会被横向播放.
+参考FAQ: FAQ96056
+### 问题: camera Al detect 还原默认无效
+解决方案: 产生原因:当还原默认设置的时候没有将人脸识别的框进行还原设置 修改方案: packages/apps/Camera2/src/com/android/camera/PhotoModule.java 将PhotoModule的onSettingChanged方法,添加如下这句话; 　mUI.intializeAIDetection(settingsManager); public void onSettingChanged(SettingsManager settingsManager, String key) { if (mActivity.getCameraAppUI().getSettingsMenuView().isReseting()) { mUI.intializeAIDetection(settingsManager); return; } }
+参考FAQ: FAQ96057
+### 问题: 相机无任何照片时，进入相机拍一张照片或录像后，选择删除该图片，无“已删除”或“撤消”选项
+解决方案: 当前现象为Google原生设计,若修改为单张照片或者视频可进行删除撤销的话,存在如下风险:当还剩一张的时候您强制弹出已删除或者撤销按钮的时候会出现缩略图小图标变成黑色图片的现象 若要修改,可通过以下方式: src/com/android/camera/CameraActivity.java类中 将方法private void removeItemAt(int index)中的 if (mDataAdapter.getTotalNumber() >= 1) { showUndoDeletionBar(); } 替换成 if (mDataAdapter.getTotalNumber() >= 0) { if (index == -1){ return; } showUndoDeletionBar(); }
+参考FAQ: FAQ96062
+### 问题: 应用安装在内部存储和外部存储时，分别安装在哪个目录下？
+解决方案: 1.应用安装在内部存储时,可以通过命令adb install -r ***.apk ,安装后,应用在目录data/app下 2.应用安装在外部存储时,可以通过命令adb install -s ***.apk,安装后,应用在目录mnt/asec下
+参考FAQ: FAQ96090
+### 问题: 手机内部存储和外部SD卡内文件名字的限制
+解决方案: 手机内部存储和外部SD的文件名长度,不管是从PC(win、linux系统)向手机内部存储或者外部SD卡存储,创建或者拷贝文件,都要受到手机的linux文件系统的限制.而linux对文件名的长度限制为255字符,可输入的最长文件名长度也是255个字符. 定义如下: kernel/include/uapi/linux/limits.h中 #define MAX_INPUT 255 #define MAX_NAME 255 需要注意的是: 当我们向手机内存或者外部SD卡存储拷贝文件的时候,或者在手机内存或者外置SD卡中创建文件的时候.对于linux VFS来说: 文件 = 文件名+路径 所以根据路径的不同,文件名的长度限制会在0-255个字符之间变化,是正常的现象.
+参考FAQ: FAQ96118
+### 问题: 仪器cmu200，GPRS 注册失败
+解决方案: 解答:需要如附件关闭数据业务
+参考FAQ: FAQ96138
+### 问题: SC9820支持SPI接口LCM吗？
+解决方案: 支持.
+参考FAQ: FAQ96151
+### 问题: SC9820平台camera接口类型？
+解决方案: 可支持mipi接口,也支持CCIR接口. 有2种实现方式: 1.前摄用CCIR接口,则后摄需用MIPI接口,且最多支持3 data-lane; 2.前后摄都用MIPI接口,后摄支持4 data-lane,前摄支持2 data-lane.
+参考FAQ: FAQ96152
+### 问题: Network provider定位精度问题
+解决方案: 现象:无硬件GPS只有网络定位的情况下,导航偏移严重. 示例:SPCSS00337877 原因:定位使用的是GMS提供的Network定位,发生google地图定位不准.如下是google定位说明: Google 地图通过以下信息来源估计您的位置: GPS:这一方式使用卫星信号确定您的位置,其误差只有几米. Wi-Fi:这一方式根据您附近的 Wi-Fi 网络来确定您的位置. 基站:这一方式根据您与移动网络的连接来确定您的位置,其误差最高可达几千米. https://support.google.com/maps/answer/2839911?co=GENIE.Platform%3DAndroid&hl=zh-Hans 没有硬件GPS的设备,在使用Network定位出现偏差也属于正常的情况. 解决方案:无
+参考FAQ: FAQ96191
+### 问题: 打开V手势后前置镜像功能无用
+解决方案: V手势和镜像功能不能同时开启 ,当您打开V手势的时候进入设置界面的时候可以打开镜像功能,但是当您再重新返回Camera相机界面的时候,如果V手势是打开的话,相机会关闭镜像功能.
+参考FAQ: FAQ96268
+### 问题: 长时间录像，手机会在34:08分时停止录像然后出现相机无反应
+解决方案: 外置存储的文件系统是fat32格式,单个文件最大限制在4G,长时间录像导致单个文件大小超过限制,底层无法继续写入而停止了录像 .
+参考FAQ: FAQ96269
+### 问题: 拍照后进入编辑，"Texture"中的效果均无作用
+解决方案: Ø 产生原因 获取资源的图片内存存储的位置不对 Ø 修改方案 在Camera2/src_ucam/UPhoto/src/com/ucamera/ucam/compatible/params/StorageDirectory.java中将 getResourceStorageDir()方法中的 return Environment.getExternalStorageDirectory().toString() + "/DCIM/" + ".UCam"; 改为 return Environment.getInternalStoragePath().toString() + "/DCIM/" + ".UCam";
+参考FAQ: FAQ96273
+### 问题: SC9820A平台产线生产是否需要进行ADC校准？
+解决方案: 不需要ADC校准.
+参考FAQ: FAQ96355
+### 问题: 关于Android Cursor判空问题
+解决方案: 在执行SQLite query的时候,一般我们会将查询的记录放入到cursor中,如面代码所示:
+Cursor cursor = null;
+cursor = db.rawQuery(SELECT, null, null);
+但是,很多同事误认为,如果查询的结果为空,cursor仍然为null,然后就会通过使用if(cursor==null)去判断有没有查询到内容,
+这样的判空方式是不正确的,原因是:cursor中默认存在下标-1表示空数据.
+
+正确的判空方式如下:
+if(cursor.getCount == 0) {
+为空
+}else {
+非空
+}
+参考FAQ: FAQ96321
+### 问题: SC9863A平台搭配SC2703L芯片能支持9V3A充电吗？
+解决方案: 搭配SC2703L芯片不能支持9V3A充电. 若要支持9V3A充电,需要使用SC2703P芯片,且CHG_VCRNT、Flash_IN电路上的C6112/C6119/C6101电容需更换为16V或25V耐压等级.
+参考FAQ: FAQ106511
+### 问题: SC9820E/SC9832E SIM 检测脚是否可以使用普通GPIO？
+解决方案: 普通GPIO口没有到SIM controller sim detect的通路,所以不可以使用普通GPIO口,需要使用专用检测脚:BUA_SIM_DET
+参考FAQ: FAQ106423
+### 问题: SC9820E/SC9832E U2TXD/U2RXD测试点是否可以删掉
+解决方案: U2TXD/U2RXD如果外设没有用到的话,测试点可以删掉.
+参考FAQ: FAQ106424
+### 问题: 如何通过adb shell命令关机、重启、进入recovery、进入fastboot模式
+解决方案: 通过adb shell setprop sys.powerctl "命令",可以进入不同模式,如重启、关机、recovery等. 命令如下 adb shell setprop sys.powerctl reboot 手机直接会重启 adb shell setprop sys.powerctl shutdown 手机执行关机 adb shell setprop sys.powerctl reboot,bootloader 手机执行重启进入fastboot模式 adb shell setprop sys.powerctl reboot,recovery 手机执行重启进入recovery模式
+参考FAQ: FAQ106430
+### 问题: 如何配置从开机到进入系统之后 背光的默认亮度
+解决方案: uboot修改: u-boot15/include/boot_mode.h #define BACKLIGHT_ON 25 值的范围为0~255. 改为和kernel一致. kernel: kernel/arch/arm/boot/dts/sp9832e-common.dtsi default-brightness-level = <25>; 值的范围为0~255. 改为和uboot一致. android: 在frameworks/base/packages/SettingsProvider/res/values/defaults.xml文件,如下定义: <integer name="def_screen_brightness">22</integer> 修改该值便可以改变默认的背光亮度,范围是0-255.
+参考FAQ: FAQ116852
+### 问题: 工模測試時，如何关闭sleep mode
+解决方案: 工模测试BT、FM等测项时,可能因為進入sleep mode导致连线或是测试失败 可以進入 #*8378#1# -> Para set -> Sleep Mode -> Close ,將 sleep mode 关闭 关闭后可以解决因为进入 sleep mode 导致的连线或是测试失败等问题
+参考FAQ: FAQ96556
+### 问题: gts4.1R1版本上测试GTS在多台机器分布式测试形成一份报告
+解决方案: 步骤: 1. 保证手机的软件版本等完全一致, 完成GTS测试的相关设置. 2 .使用run gts --shards shards_number 命令来进行测试 例如:设置好3台手机后,执行命令为run gts --shards 3 3. 测试完成后,会有fail项,跑fail项的常规执行命令为: run gts --retry session_id 其中session_id查看方法: 输入'"l r" 最左边一列为session_id, 根据设备号和时间可以找到所跑的那一个 4. 如跑fail项要继续分布式测试, 可以在下面加上--shards run gts --retry session_ID --shards 数量
+参考FAQ: FAQ97037
+### 问题: SC6531E平台搭配8位并口屏和SPI摄像头怎么接？
+解决方案: SC6531E并口屏接法为: VLCAM电压域的C4脚～D3脚为LCM_D1~D7,LCM_D0脚接B10脚,RD接C3脚,WR接B11脚,RS或CD接C10脚,RSTN接D8脚,CS接C9脚,FMARK接C8脚,特别注意POWER页的供电:并口屏的F3脚和D9脚都是接VDD2V8; 串口摄像头接法为: MCLK接A7脚,I2C接B8/C7脚,POWER DOWN接A6脚,D1接B7脚,D0接C6脚,PCLK接D6脚,RST接B6脚,如果双摄像头,另一个PWD接GPIO0
+参考FAQ: FAQ97054
+### 问题: SC7701平台是否支持SD卡热插拔？
+解决方案: 不支持
+参考FAQ: FAQ97061
+### 问题: SC7701平台是否支持SIM卡热插拔？
+解决方案: 不支持
+参考FAQ: FAQ97063
+### 问题: 6531E是否可以同时使用parallel LCM和parallel 摄像头
+解决方案: 不支持此方案
+参考FAQ: FAQ97064
+### 问题: SC6533G如何支持3SIM卡功能？
+解决方案: SC6533G只支持2个SIM卡(SIM0/SIM1),暂不支持3卡或4卡
+参考FAQ: FAQ97065
+### 问题: CheckX工具上是否集成了恢复出厂设置选项？
+解决方案: 工具设置界面上勾选"Factory Reset"即可
+参考FAQ: FAQ97069
+### 问题: SC6533G是否支持ATV方案？
+解决方案: 支持.
+参考FAQ: FAQ97075
+### 问题: SC6533否支持双屏翻盖手机设计?
+解决方案: 不支持.
+参考FAQ: FAQ97076
+### 问题: SC9820平台TDD LTE B40的TX/RX的是否可以使用一个双端的滤波器？
+解决方案: 只做B40,是可以的. 参考设计用的是LPF+Balun,主要是考虑TDD LTE做多个频段如B38/39/40/41.
+参考FAQ: FAQ97079
+### 问题: 请问过音频的HAC 认证，音频上需要怎么处理？
+解决方案: HAC是Hearing Aid Compatibility的英文缩写.手机发送的无线电波会在天线周围形成电磁场,这会使配戴助听器的人们听到刺耳的嗡嗡声.HAC认证是手机与助听器的电磁兼容性测试,手机端只要保证音量大小满足客户要求即可,主要还是看助听器的选型是否满足认证测试需求.
+参考FAQ: FAQ97066
+### 问题: SC7701平台支持WCDMA BAND4，需不需要另外打补丁？
+解决方案: SC7701 MP DM_WBASE_13B_MP_W16.26.4及之后的版本已合入band 4代码,(建议直接升级到W16.32.1或之后的版本). 需要注意的是:band4未进行过实际调试,请先升级调试,如果有问题再提过来我们解决.
+参考FAQ: FAQ97097
+### 问题: SC9820 平台满足CAT4通信时DDR2频率不能低于466MHz吗？
+解决方案: 是的,SC9820 平台满足CAT4通信时DDR2频率最低不能低于466MHz
+参考FAQ: FAQ97116
+### 问题: SC9820 TSX方案能和SC9832 TSX共用TSX晶体吗？
+解决方案: 可以
+参考FAQ: FAQ97117
+### 问题: SC9820 sim0和sim1都支持4G吗？
+解决方案: SC9820 sim0和sim1都支持4G,但是不能同时支持4G,比如sim0支持2G/4G,sim1则只支持2G.反之亦然.
+参考FAQ: FAQ97118
+### 问题: SC9820 前摄像头采用ccir接口时，后摄像头mipi接口支持几路lan？
+解决方案: 支持3路
+参考FAQ: FAQ97119
+### 问题: SC9820 camera mipi接口lan速率？
+解决方案: 最大1Gbps
+参考FAQ: FAQ97120
+### 问题: SC9820 camera 双mipi接口时两块模组lane数怎么配置？
+解决方案: 可以配置为4lane+2lane
+参考FAQ: FAQ97121
+### 问题: SC9820_A_CS_A_V0.1.1_SC2723G2_SR3592_SC2393_RDA5876_CMCC_3M7B 参考设计的PA的功率检测不需要吗？
+解决方案: 不需要,该参考设计目前支持的模式是FDD,TDD,TD和GSM,现在不支持Wcdma,所以不需要功率检测,请按照参考设计来画原理图即可
+参考FAQ: FAQ97123
+### 问题: 6531E平台摄像头串口(SPI)连接方式，CAM_VS连接到CPU哪个接口
+解决方案: 6531E平台摄像头SPI口,没有专门的VS脚,CAM_D1口(摄像头的SPI DATA1)接到CCIRVS/SSN/SDI1_1(芯片的B7脚)
+参考FAQ: FAQ97130
+### 问题: SC9820A平台对电池的过流保护电流要求是什么？
+解决方案: 电池的过流保护电流建议4A; 电池保护IC过流保护触发时间建议10mS
+参考FAQ: FAQ97134
+### 问题: SC9820A支持SPI接口camera吗？
+解决方案: 不支持.
+参考FAQ: FAQ97135
+### 问题: SC9820平台的SD卡是否可以支持到128G？
+解决方案: SC9820平台支持128GB SD卡.
+参考FAQ: FAQ97139
+### 问题: 选用headmic为detect，只支持4pole的欧标耳机的风险和原理图修改
+解决方案: 首先这种耳机座不是我们推荐使用的,如果一定要用,在不需要支持3 port耳机的情况下,基本功能可以实现,不过会存在POP noise的风险,耳机插拔的pop音变大,同时无法支持某些自拍杆和车载音响设备. 原理图参考
+参考FAQ: FAQ97146

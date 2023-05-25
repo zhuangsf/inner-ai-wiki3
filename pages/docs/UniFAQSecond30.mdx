@@ -1,0 +1,383 @@
+### 问题: Router Solicitation&Router Advertisement工作机制及实例分析
+解决方案: Router Solicitation(RS)&Router Advertisement(RA)工作机制及实例分析 一,基本概念 目前在我们手机做数据业务或VoLTE通话中,都会用到IPv6.为了实现手机端地址的无状态地址自由配置,一个基本前提是路由发现和前缀获得.为了这,我们会用到邻居发现协议NDP(Neighbor Discovery Protocol),它是IPv6协议体系中一个重要的基础协议,由RFC2461定义. 为了定位邻居路由器,生成default router列表,并获取与地址自动配置有关的前缀和配置参数,目前采用RS/RA机制实现.如下图 RS:路由器请求.由主机发送Router Solicitation报文给路由器. RA:路由器公告.路由器回应Router Advertisement报文 主机从RA报文获得前缀及其它参数 二,Wireshark抓包实例分解分析 (1)
+完整回答请参考FAQ: FAQ109574
+### 问题: 如何调整预览图片时手指放大的倍数？
+解决方案: 图片手指拖动缩放的最大值是SCALE_LIMIT*SCALE_MAX_EXTRA,由这两个值相乘确定,可根据需要自行调整; 例如,如果需要把图片预览时手指放大最大到2倍,请参考如下修改即可. 修改文件路径: vendor/sprd/platform/packages/apps/NewGallery2 --- a/src/com/android/gallery3d/ui/PositionController.java +++ b/src/com/android/gallery3d/ui/PositionController.java @@ -77,12 +77,12 @@ class PositionController { // We try to scale up the image to fill the screen. But in order not to // scale too
+完整回答请参考FAQ: FAQ109730
+### 问题: 功耗测试有哪些注意事项
+解决方案: 1.正式功耗认证测试时请使用user版本,平时测试有需使用userdebug版本(user版本无法获取light sleep值) 2.第一次开机启动的过程中Google&location的两个勾去掉,选择 English 之后Location对话框要选 disagree. 3.进行功耗测试之前,首先要测试并记录deep sleep、light sleep、lcd on的功耗. 4.功耗测试时必需关掉内置GMS应用,如果含GMS应用的测试需要在翻墙WIFI下进行 5.做待机测试前,会先将测试机恢复出厂设置进行测试,且待机测试会分为数据连接打开,和数据连接关闭,两种场景下分别进行测试. 6.通话测试和wifi网络下文件下载、待机,本地播放音频,3G播放音频测试都为暗屏下测试记录数据,其中通话测试需等电流稳定后开始计时. 7.本地播放视频,默认为播放1080P的视频文件,3G播放视频:http:
+完整回答请参考FAQ: FAQ109771
+### 问题: 为什么VCHG带OVP保护的机子,个别项目有出现打ESD时充电器拔除现象?
+解决方案: 触发了OVP过压保护,关断VCHG导致.可以通过修改软件,延长VCHG掉电判断时间. 比较粗暴的方法如下: void vchg_deb_change(void)
+{
+        char *gpio_addr_v;
+        gpio_addr_v = ioremap(0x403c82c0, 0x1);
+        writel_relaxed(0x41f4, gpio_addr_v);
+           //0x1f4是500ms,默认是50ms,可以自己调整
+}
+
+然后找一个初始化的地方调用一下
+
+正规做法可以通过如下调用实现
+ kernel/drivers/usb/musb/musb_sprd.c
+static int musb_sprd_config_vbus_int(struct sprd_glue *glue)
+{
+....
++ 
+完整回答请参考FAQ: FAQ109784
+### 问题: GSM待机电流图30S周期行为是什么
+解决方案: 协议45008规定: The MS shall attempt to decode the full BCCH data of the serving cell at least every 30 seconds or at least as often as possible in the case that system information scheduling period exceeds 30 seconds. As an exception, after the first attempt at cell selection, SI15, if used, shall be decoded at least once every 30 minutes. If SI13 is broadcast, the MS supporting change mark in SI13 (S
+完整回答请参考FAQ: FAQ110161
+### 问题: 测试GMS版本的手机通信功耗的注意事项
+解决方案: 1. GMS,Google Mobile Services,即谷歌移动服务,是Google开发并推动Android的动力,是Android系统的灵魂.GMS目前提供有Search、Search by Voice、Gmail、Contact Sync、Calendar Sync、Talk、Maps、Street View、YouTube、Play store等应用服务. 2. 测试GMS版本的功耗需要注意: 1)GMS版本有后台bt/wifi scan,需要先通过如下操作关闭: 设置--谷歌--位置信息--扫描--WLAN扫描和蓝牙扫描--关闭 2)建议在可稳定连结google服务器的环境下进行测试, 避免后台gms服务不断尝试连结Google 服务器导致睡不下去的情形.即需要使用翻墙软件支持. 3)开机后过一段时间例如30分钟后再开始测试.这是因为首次连网, play store 会触发后
+完整回答请参考FAQ: FAQ109839
+### 问题: AndroidP的GMS版本无法关闭流量下载提醒
+解决方案: 这个问题仅限于AndroidP.AndroidP的GMS版本无法关闭流量下载提醒. 问题原因是,如果是GMS版本,就会自动关闭流量提醒 ,但是对GMS版本是通过对GMS的版本号定义来判定的.因为androidP版本没有检测到GMS版本号,所以就当作native版本默认开启流量提醒. 之所以没有检测到GMS版本号,是因为在8.1及之前的版本,GMS版本号是通过PRODUCT_PROPERTY_OVERRIDES来定义的,但是在androidP中,PRODUCT_PROPERTY_OVERRIDES已经被PRODUCT_SYSTEM_DEFAULT_PROPERTIES所取代,所以版本号的定义没有生效. 解决方案,用PRODUCT_SYSTEM_DEFAULT_PROPERTIES定义版本号. gms.mk -PRODUCT_PROPERTY_OVERRIDES += \ +PRODUCT_S
+完整回答请参考FAQ: FAQ109875
+### 问题: 第一次开机在开机向导界面提示"Disabled or missing Download Manager;unable to download voice pack"
+解决方案: 首次开机,会进入direct boot模式,在此模式下,downloadmanager还没有启动,所以google的开机向导会报错.
+因为这个问题只发生在个别地区,只有开机时检测到需要下载所需的语言包时才会发生,所以目前没有合入版本,单独提供补丁.
+ 
+ packages/providers/DownloadProvider/AndroidManifest.xml
+
+    <application android:process="android.process.media"
+                 android:label="@string/app_label"
+                 android:icon="@mipmap/ic_launcher"
+                 android:allowBackup="false"
+ 
+完整回答请参考FAQ: FAQ109877
+### 问题: 适配文件在移动外场自动化测试中的作用
+解决方案: 中移外场测试采用APK自动运行测试用例.自动化测试之前要保证将测试Modem对应的sprdMsgId.txt适配文件放置到APK的安装目录下,该适配文件可以在展讯发布的Modem包中获取,存放在工具路径\Logel_for_TD\Bin\Parser下. sprdMsgId适配文件由两部分组成: 第一部分包含适配文件第一行数据,其作用是指示APK解析消息码流时采用的数据结构类型.#PLATFORM=SC983X#表示指示APK解析码流时采用983x类型的数据结构,#PLATFORM=SC986X#则表示指示APK解析码流时采用SC986X类型的数据结构; 第二部分从适配文件第二行开始到文件结尾,其作用是描述消息ID和消息的对应关系.由于Modem版本的升级,消息ID可能会发生变更,该信息用以告知APK具体消息在消息码流中对应的ID号,以便APK能够正确进行消息解析. 在自动化测试过程中出现
+完整回答请参考FAQ: FAQ110001
+### 问题: 如何解决开机弹出"您的设备内部出现了问题。请联系您的设备制造商了解详情。"报错？
+解决方案: 1.首先该报错弹框是在ActivityManagerService.java 通过发送SHOW_FINGERPRINT_ERROR_UI_MSG handle 消息弹出的. 发送该消息的判断条件是Build.isBuildConsistent(),只有该逻辑判断为false,则就会发送报错弹窗消息. 相关代码: /frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java if (!Build.isBuildConsistent()) { Slog.e(TAG, "Build fingerprint is not consistent, warning user"); mUiHandler.obtainMessage(SHOW_FINGERPRINT_ERROR_UI_MSG).s
+完整回答请参考FAQ: FAQ109923
+### 问题: 中国移动外场自动化测试Log提供要求
+解决方案: 移动外场自动化测试由APK自动执行测试任务,其中Log包括四部分:APK执行Log、自动化工具保存的平台Modem Log、移动服务器端Log和平台Andriod Log.针对不同的失败场景提供不同的Log,可以提高问题分析和沟通效率. 其中测试中遇到的问题场景分为以下三类: 1:APK执行问题(APK闪退、自动化测试黑屏等):需要提供APK执行Log和Andriod Log.其中APK执行Log需要拷贝APK安装目录下的所有Log,即手机内部存储/CDS/目录下的所有文件;Andriod Log需要区分是否有SD卡,如果测试是在插有SD卡的情况下进行的,则Andriod log存放在/external_storage/ylog,否则在/internal_storage/ylog. 2:执行Case问题(Case无法点亮、Case点击后没有起测等):需要提供Modem Log.该Modem
+完整回答请参考FAQ: FAQ109922
+### 问题: DeadObjectException crash
+解决方案: DeadObjectException 的问题的原因,通常是因为访问了被杀进程的资源.如果内存优化不能够解决或改善,可以考虑对异常进行捕获处理.但具体问题要具体分析,异常捕获后接下来如何进行后续流程是比较关键的. 例如在DocumentsUi中发生的这个DeadObjectException,是一个子线程对directory进行load数据,子线程load完成将数据向主线程更新,因为主线程因为低内存被杀,所以导致发生exception.但是针对这个case,子线程的工作已经完成,而且主线程被杀也不再需要子线程再提供数据,所以直接将异常捕获然后退出,对于monkey不会产生额外影响. 08-15 23:25:41.649 11079 11079 E AndroidRuntime: FATAL EXCEPTION: main 08-15 23:25:41.649 11079 11079 E A
+完整回答请参考FAQ: FAQ110120
+### 问题: targetSdkVersion的设置
+解决方案: targetSdkVersion的设置在AndroidManifest.xml中 <uses-sdk android:targetSdkVersion="23" /> targetSdkVersion的设置需要谨慎,尽可能使用平台默认,不要特别设置. 如果遇到因为sdkversion的版本不对程序中报错,有可能是程序中的方法使用的不对导致,尽量纠正程序设计,而不是修改targetSdkVersion. 例如,download遇到的这个问题: 开机后,背景播放音乐,设置-显示中首次调节显示大小,音乐自动退出,调节字体大小或切换语言没有此问题,重启后能重复复现. 这个问题就是因为,设置显示大小时,AMS触发kill all background except.只有在改变显示大小时触发,目的是防止App在切换显示大小后发生显示不兼容的情况.DownloadProvider的targetSdkVe
+完整回答请参考FAQ: FAQ110123
+### 问题: TI充电IC BQ24157在VBAT异常低压时不充电问题
+解决方案: 发生场景: a. 电池异常过放至低压.原因多样,最常见如:下载时download工具中未勾选"reboot"或"关闭"选项,则下载完后系统仍有100ma左右耗电,致VBAT持续下降,当降到PMIC UVLO电压(PMIC最低工作电压)时,PMIC关闭,此时耗电减小到ua级,最终电池电压稳定在2.6V-2.9V间. b. 开机后插拔过充电器且关机时没有插充电器或下载时工具关闭了充电(没有勾选keep charge). c. 未插拔过电池,内置电池项目更易碰到. 原因: 1. 在上述场景b情况下,默认驱动会通过IIC配置BQ24157寄存器REG01 bit2 /CE =1 ,即disable 充电. 2. BQ24157 特性:电池不插拔或电池电压不低于其复位电压2.4V时,插入VCHG不能复位充电使能寄存器REG01 bit2 /CE,会一直保持最后一次(关机时)的软件设置状态,本案即di
+完整回答请参考FAQ: FAQ110121
+### 问题: 怎么解决SC9832E平台3G或4G RAM项目打开圆角功能后上下边带出现花屏？
+解决方案: 圆角功能参考FAQ113121打开后,1G或2G内存的项目没有问题,但3G或4G内存的上下边带显示会花掉,主要因为内存不一样导致的地址分配存在异常.需要按照以下三步骤修改(以arm64为例): 1、 arch\arm64\configs\sprd_sharkle_defconfig - # CONFIG_DISP_LITE_R2P0 is not set + CONFIG_DISP_LITE_R2P0=y 解决3G或4G内存项目开机进入kernel后logo花屏的问题 2、 diff --git a/arch/arm64/boot/dts/sprd/sharkle.dtsi b/arch/arm64/boot/dts/sprd/sharkle.dtsi index d2b0307..63842fb 100644 --- a/arch/arm64/boot/dts/sprd/sharkle.
+完整回答请参考FAQ: FAQ113443
+### 问题: 特定网络环境下，网络主动下发PS detach的指令，并且cause为re-attach not required,这种场景下手机是否主动去attach PS？
+解决方案: 如果网络下发了re-attach not required 类型的detach,在非特定的cause值,nas会将detach的类型转化为re-attach required,尝试进行reattach.转化的条件具体细节如下:
+1.网络下发的detach类型为re-attach not required
+2.网络下发的detach request中没有携带emm cause值
+或者携带了emm cause值,但除去以下值:2(imsi unknown in hss),3(illegal ue),6( illegal me) 7(eps not allowed),8(eps and no-eps not allowed), 11(plmn not allowed),12(ta not allowed),13(roam not allowed in this ta), 14(eps no
+完整回答请参考FAQ: FAQ110233
+### 问题: 如何提高某个进程优先级，避免被LMK 杀死？
+解决方案: 场景:在某些低内存设备,非常容易出现部分重要gms应用或者影响正常系统使用的非原生应用出现被LMK杀死回收的问题.因此为了验证或解决某些问题,我们可能需要将这些应用优先级提高以避免被LMK杀死回收. 风险:参考下面的修改,这样将导致此进程常驻内存,虽然避免被lmk杀死,但是会一直占用一定的内存空间,所以必须全面评估内存情况后才能进行这样的调整. 这里以 com.google.android.music 为例子 vendor/sprd/platform/frameworks/base/services/core/java/com/android/server/am/ActivityManagerServiceEx.java diff --git a/services/core/java/com/android/server/am/ActivityManagerServiceEx.java b
+完整回答请参考FAQ: FAQ110266
+### 问题: 目前展锐平台所有模式支持的BAND及频率情况
+解决方案: RAT Band Uplink - Mobile To Base (MHz) Downlink - Base To Mobile (MHz) GSM 850 824.2 849.2 869.2 893.8 900 880 915 925 960 1800 1710.2 1784.8 1805.2 1879.8 1900 1850.2 1909.8 1930.2 1989.8 Tds F 1880 1920 1880 1920 A 2010 2025 2010 2025 WCDMA 1 1922.4 1977.6 2112.4 2167.6 2 1852.4 1907.6 1932.4 1987.6 4 1712.4 1752.6 2112.4 2152.6 5 826.4 846.6 871.4 891.6 8 882.4 912.6 927.4 957.6 LTE 1 1920 1980
+完整回答请参考FAQ: FAQ110268
+### 问题: vdex文件中header都记录了哪些信息
+解决方案: Header 的大小是24个字节,查看Header 相关的数据: ********************************************************* addr 0 1 2 3 4 5 6 7 8 9 a b c d e f 00000000 76 64 65 78 30 31 30 00 01 00 00 00 44 e0 01 00 |vdex010.....D...| 00000010 50 09 00 00 64 1c 00 00 8c 39 81 ea 64 65 78 0a |P...d....9..dex.| ********************************************************* 通过上面的数据,结合如下表格来了解header每部分的含义: 地址 字节数 描述 备注 示例含义 0x00 4 Magic 
+完整回答请参考FAQ: FAQ110320
+### 问题: 下载应用默认打开手机内部存储
+解决方案: 1.修改缺省进入的root配置
+packages/apps/DocumentsUI/res/values/config.xml
+
+-   <string name="default_root_uri" translatable="false">content://com.android.providers.downloads.documents/root/downloads</string>
++   <string name="default_root_uri" translatable="false">content://com.android.externalstorage.documents/root/primary</string>
+
+
+2.禁止显示菜单,如果默认进入的界面不是手机内部存储时,无需修改下面的内容
+packages/apps/DocumentsUI/s
+完整回答请参考FAQ: FAQ110375
+### 问题: 如何在出现Long monitor 信息时打印出对应竞争线程的java堆栈信息
+解决方案: 在monitor.cc中stack_dump_lock_profiling_threshold_变量为打印持锁时trace信息的阀值,默认为0.如果要打印持锁发生竞争时的trace信息,需要将该变量设置为非0值.单位ms. 例如如果要打印持锁时间超过500ms时的java栈信息.修改进入如下修改: --- a/runtime/monitor.cc +++ b/runtime/monitor.cc @@ -85,6 +85,9 @@ // line driven arguments, but it's easier to adjust here than in the build. lock_profiling_threshold_ = lock_profiling_threshold * kDebugThresholdFudgeFactor; + if(stack_dump_lock_pr
+完整回答请参考FAQ: FAQ110387
+### 问题: 手机与基站通信13
+解决方案: 前面章节已经介绍了如何同步小区,同步小区过程中解析到了小区ID等内容,但是小区的最终选择,一个重要的考量指标就是其信号强度和质量,RSRP与RSRQ.这两个值的获得来源于小区参考信号. 小区参考信号,对小区内所有UE都有效,它在每个下行子帧和整个下行带宽的每个RB上都会发送,换句话说,就是时域上,每个子帧(每ms)都有参考信号,频域上每个RB都有,RB的概念在之前讲述结构体章节已有描述这里不赘述,鉴于一个RB宽度等于12个子载波,12个子载波中必然有一个. RSRP(Reference Signal ReceivedPower参考信号接收功率):小区下行公共导频在测量带宽内功率的线性值(每个RE上的功率),当存在多根接收天线时,需要对多根天线上的测量结果进行比较,上报值不低于任何一个分支对应的RSRP值,max(RSRP00,RSRP01).即为信号功率S.反映当前信道的路径损耗强度,用于
+完整回答请参考FAQ: FAQ110493
+### 问题: 手机与基站通信14
+解决方案: 前面章节讲了小区参考信号大概的时频域位置,温故一下,时域每个子帧都会有参考信号,频域每个RB都有.每个参考信号最小承载单位还是RE. 很多参考资料给出了相位星座图,一般这个用于理解相位互不干扰,可时分或频分,这个贴出来会很迷惑,有一个很简单的公式图解如下: 时域L,与天线端口相关,最简单的假设我们现在是单天线端口,这个信息在解析MIB的时候就知道了.小区ID是0xf7.L=0, 子帧0～9的第一个symbol上. 频域k, 先计算M,m就是RB的索引,取值范围是0~110, 这个110值得商榷,目前最大20M带宽RB数为100,范围大也没毛病.真实情况是根据带宽来的,比如1.4M带宽6个RB.假设现在是1.4M带宽,有6RB. V在天线0的基础上,只会取0这个值; Vshift取值为0xf7mod6=247mod6=1 (0+1) mod 6 = 1 K=6*m +1 k的取值有1,7,1
+完整回答请参考FAQ: FAQ110501
+### 问题: CTS CtsMediaTestCases android.media.cts.CamcorderProfileTest#testGetWithId
+解决方案: 这项报错通常与摄项头最大支持的录像分辨率相关,少数案例还可能需要调整摄像头驱动, 但不在此文做探讨. 大部分的案例先透过cts报错讯息与检视media_profiles.xml文件配置的录像分辨率(EncoderProfile quality) 是否符合摄像头可支持的最大分辨率来做调试. 而EncoderProfile quality在google原生定义的代码可参照如下路径的代码: a. Android 8.1版本 - frameworks/base/media/java/android/media/CamcorderProfile.java - frameworks/av/media/libmedia/include/media/MediaProfiles.h b. Android 6.0/7.0版本 - frameworks/base/media/java/android/media
+完整回答请参考FAQ: FAQ110532
+### 问题: LCD MIPI线对GPS 的干扰分析
+解决方案: GPS的载波频率为1.57542GHz,如果某些CLK的高次谐波或者CLK的谐波的边带落在这个范围之内,就会导致GPS的灵敏度受到干扰,C/N0变差,影响定位速度.GPS的相关RF测试是在LCD ON的前提下进行,主要的干扰源有如下两个方面: (1),LCD ON的时候,DSI CLK的高次谐波的干扰.DSI CLK目前默认使用展频方案,展频宽度为代码中定义的频率进行 30000ppm下展频.举例说明:代码中定义的数据速率为520Mbps,则CLK的频率为265MHz,则展频宽度为 265*0.03=7.95MHz,DSI CLK的工作范围为257.05～265MHz,而1575.42/6=262.57MHz,DSI CLK虽然开启了展频, 但是高次谐波依然落在了GPS的接收频率范围之内,所以在LCD ON的时候会造成干扰. 这时可以通过调整默认频率或 关闭展频的方法进行,使得CLK的谐波
+完整回答请参考FAQ: FAQ111304
+### 问题: GTS-6.0_r1 GtsMemoryHostTestCases - com.google.android.memory.gts.MemoryHostTest#testSystemMemoryAvailabilityPostBoot fail
+解决方案: java.lang.AssertionError: Failed to successfully run device tests for com.google.android.memory.gts: Instrumentation run failed due to 'Process crashed.' at com.android.tradefed.testtype.junit4.BaseHostJUnit4Test.runDeviceTests(BaseHostJUnit4Test.java:511) at com.android.tradefed.testtype.junit4.BaseHostJUnit4Test.runDeviceTests(BaseHostJUnit4Test.java:323) at com.android.tradefed.testtype.junit4.
+完整回答请参考FAQ: FAQ110555
+### 问题: GTS-6.0_r1 GtsPlacementTestCases - com.google.android.placement.gts.DefaultIntentTest#testDefaultIntentHandlers 等六项 fail
+解决方案: fail 现象分两种 1. java.lang.AssertionError: Unable to execute because authorization failed, please ensure the service account key is properly installed.. at org.junit.Assert.fail(Assert.java:88) at com.android.compatibility.common.util.BusinessLogicTestCase.failTest(BusinessLogicTestCase.java:95) at com.android.compatibility.common.util.BusinessLogicConditionalTestCase.ensureAuthenticated(BusinessLogi
+完整回答请参考FAQ: FAQ110556
+### 问题: GTS-6.0_r1 GtsBackupHostTestCases - com.google.android.gts.backup.SettingsProviderBackupHostTest#testSoftApE2EBR fail
+解决方案: java.lang.AssertionError: on-device tests failed: com.google.android.gts.backup.testscontainerapp.SettingsProviderBackupTest#testSoftApE2EBR: java.lang.AssertionError: Backup was unsuccessful, error code: -2001 at org.junit.Assert.fail(Assert.java:88) at com.google.android.gts.backup.testscontainerapp.AbstractBackupRestoreE2ETest.requestBackup(AbstractBackupRestoreE2ETest.java:125) 根据gts user guid
+完整回答请参考FAQ: FAQ110557
+### 问题: GTS-6.0_r1 GtsPermissionTestCases - com.google.android.permission.gts.DefaultPermissionGrantPolicyTest#testDefaultGrantsWithRemoteExceptions fail
+解决方案: java.lang.AssertionError: Permission:android.permission.WRITE_EXTERNAL_STORAGE cannot be granted by default to package:com.aaa.bbb Permission:android.permission.READ_CONTACTS cannot be granted by default to package:com.aaa.bbb 此测项主要是检查应用默认取得的权限是否符合gts 规范. 测项会先至google 服务器取得哪些app 可以默认取得哪些权限的白名单, 再开始进行测试. 以上面 fail log 为例, 测项打印 com.aaa.bbb 不应默认取得 storage 与 contacts 权限. 会有此现象有几种可能. 1. 测试前手动开启过 com.aaa.
+完整回答请参考FAQ: FAQ110558
+### 问题: GTS-6.0_r1 GtsGmscoreHostTestCases - com.google.android.gts.devicepolicy.managedprovisioning.DeviceOwnerProvisioningHostsideTest#testRequiredAppsInManagedDevice fail
+解决方案: 此项fail 通常与provision 后缺少某些app 相关, 可以先查看host_log 寻找 W/XtsHostTestBase 片段, 最常见为以下三种fail. 1. W/XtsHostTestBase: java.lang.AssertionError: Should have at least one packages to handle Intent { act=android.intent.action.INSERT typ=vnd.android.cursor.dir/raw_contact }, found [] Expected: a value greater than <0> but: <0> was equal to <0> provision 后缺少 Contacts app. 此种情形需确认项目预置的 Contacts app 包名是否有在 gms 包内以
+完整回答请参考FAQ: FAQ110559
+### 问题: 桌面预置时钟Widget小部件，开机后一直显示正在加载, 概率加载不出来, 不会显示正常Widget图示
+解决方案: 该问题与开机后系统繁忙以及Widget的广播发送接收快慢有关, 如发生此现像合入以下代码可以优化Widget加载速度和避免因low memory而被kill掉导致一直加载不出来: 1. Intent添加FLAG_RECEIVER_FOREGROUND将广播提升为前台广播 frameworks\base\services\appwidget\java\com\android\server\appwidget\AppWidgetServiceImpl.java private void sendEnableIntentLocked(Provider p) { Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_ENABLED); + intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUN
+完整回答请参考FAQ: FAQ110604
+### 问题: 部份语言, 例如西班牙语，在编辑短信时，输入字符直到计数器显示出来后，再输一个西班牙语字符，计数器显示异常.
+解决方案: 分析为该现像是受到Message应用内的Use simple characters这个参数默认值影响, 会让西班牙字母所占的位元不同, 如需改变此行为将该值默认从Disable改为Enable并做以下确认即可. 1. 需修改在vendor\sprd\platform\packages\apps\CarrierConfig\assets\carrier_config_xxxxxxx.xml, xxxxxxx为mccmnc, 看需要在哪些电信商也就是插入哪些SIM卡时有该功能, 就修改相对应的carrier_config_xxxxxxx.xml文件, 在文件内添加以下代码: <carrier_config> <boolean name="smsUsesSimpleCharactersOnly" value="true" /> </carrier_config> 2. 确认有预置CarrierS
+完整回答请参考FAQ: FAQ110609
+### 问题: 将语言切换成泰文后不能用Google assistant 会提示切换语言
+解决方案: 这边分析只有在Android Go项目上的Google Assistant应用才会有此问题, 因Google在Go项目上将Assistant功能独立出来, 独立出Assistant Go这个应用, 而跟据Google官方所述, 目前该应用仅支持部份国家语言, 官方原文如下, 而泰文并不在支持的范围, 因此在将系统切换成泰文的情况下无法使用Google Assistant功能, 需按照提示将切换可使用的语言. Use Google Assistant for Android (Go edition) You can find answers and get tasks done with Google Assistant Go. Google Assistant Go works with entry-level devices and a variety of Internet speed
+完整回答请参考FAQ: FAQ110628
+### 问题: 如何查看手机支持的bands和如何设置手机可抓取cap包
+解决方案: [客户问题]: (一), 如何查看手机支持的band (二), 如何设置手机抓cap包 [问题1] SC98XX平台如何查看手机所支持的band? 方法一: 第1步:从手机拨号盘界面输入*#*#83781#*#*,进入工程模式 第2步:从TELEPHONY选择"bandSelect" 第3步: 再选择"bandSelect", 第4步: 你会看到卡槽1中的卡,可支持的band信息: 方法二: 从空口消息UECAPABILITYINFORMATION 中去看: 25982:42 867217-1 14:11:58.397 SIM1 LTE -> UECAPABILITYINFORMATION 》》》》 rf-Parameters supportedBandListEUTRA: 9 items Item 0 SupportedBandEUTRA bandEUTRA: 38 .... ..0. 
+完整回答请参考FAQ: FAQ110630
+### 问题: DTM是什么以及展讯平台是否支持?
+解决方案: 1. 什么是DTM? Reply:DTM全称是Dual transfer mode,即GSM CS业务和GPRS\EGPRS\EGPRS2可以并发,在protocol TS 44018中是这样描述的: 3.1.2.7 Dual transfer mode (DTM) In dual transfer mode, the mobile station is simultaneously in dedicated mode and in packet transfer mode.This feature is optional for the mobile station and the network. It is only applicable for a mobile station supporting GPRS, EGPRS or EGPRS2. Dual transfer mode
+完整回答请参考FAQ: FAQ110652
+### 问题: 如何使能Charge ntc sensor和 PA  ntc sensor
+解决方案: 为了更全面的了解手机的温度, 平台会建议客户在片外通过ADC通道外接一些热敏电阻来检测温度,比如Board ntc sensor 用于监测Board 的温度, Charge ntc sensor 用于监测Charge 芯片的温度, PA ntc sensor 用于监测PA的温度. 根据 要求所有客户Board ntc sensor 是硬件必须支持的, 因此平台软件默认会支持 Board ntc sensor 温度的读取 , 但是对于Charge ntc sensor 和 PA ntc sensor 有些客户可能不支持, 因此平台软件默认是disable 该sensor 的,如果客户需要使用Charge sensor 和 Pa sensor 可以通过修改dts方式打开(前提平台软件已经有该ntc sensor 节点), 例如Charge sensor . 打开Charge sensor th
+完整回答请参考FAQ: FAQ110663
+### 问题: 功率电感如何选型？
+解决方案: 功率电感有很多参数,比如: Nominal Inductance-uH(名义电感值),感值选多大,根据开关频率来决定; Inductance tolerance-%(感值允许误差); DC Resistance-ohm(直流阻抗),DCR越小,发热越小; Rated Current: Isat -mA(额定Saturation current直流饱和电流),感值下降10%～30%时的饱和电流; Rated Current: Irms-mA(额定Temperature rise current直流温升电流),电感本体温升不超过40度时的电流; Self-resonant freq-MHz(自谐振频率),感值越大,越容易自谐振,工作频率不能超过SRF. 实际举例: 参考设计中VDDCORE/VDDARM使用的电感为:IND POWER;0.33uH;+/-20%;2520;5.3A;4.05A
+完整回答请参考FAQ: FAQ110864
+### 问题: 如何优化首次开机时，先显示壁纸，后显示开机设置向导？
+解决方案: 出现壁纸的原因是: 主题设置为showwallpaper为true,在启动流程中,开机动画结束后显示的是FallbackHome界面,该界面销毁后立即启动开机向导.FallbackHome通常没有背景,所以在FallbackHome显示一直到开机向导启动之前的小段时间内,会显示壁纸. 针对这种情况,可以做一个优化处理,即给FallbackHome的背景设置为开机动画的最后一帧的图片,这样在将FallbackHome显示的这段时间就不会显示壁纸.而启动开机向导界面是一个瞬间的过程,这样就可以优化显示效果,基本上看不到壁纸的显示. 具体修改方案如下: packages/apps/Settings/src/com/android/settings/FallbackHome.java文件的onCreate方法: if (Settings.Global.getInt(getContentResolv
+完整回答请参考FAQ: FAQ110903
+### 问题: 自定义壁纸后，再设置默认壁纸为主屏幕壁纸，锁屏壁纸随之变化
+解决方案: 一、问题分析: 1、设置主屏幕壁纸后,调用WallpaperManager的setStream接口 public int setStream(InputStream bitmapData, Rect visibleCropHint, boolean allowBackup)             throws IOException {
+        return setStream(bitmapData, visibleCropHint, allowBackup, FLAG_SYSTEM | FLAG_LOCK);
+    } 2、最终调用WallpaperManagerService的setWallpaper方法,由于参数为FLAG_SYSTEM | FLAG_LOCK,导致migrateSystemToLockWallpaperLocked(userId)不被调用,故主屏幕壁
+完整回答请参考FAQ: FAQ110928
+### 问题: ini的WIFI功率调试方法
+解决方案: 1.connectivity_calibration.ini为WIFI参数配置文件 2.WIFI TX参数在[SETCTION 6] 其中: ①txpower_freq_delta_gainindex = -2, -1, 1, 2, 2, 2, 1, 0, -1, -2, -1, -2, -2, 0 WIFI_2.4G的14个信道功率配置,14个数值分别对应1~14信道的功率配置值 ②txpower_psat_11b_backoff = -3 WIFI_2.4G_11B所有信道的功率配置 ③txpower_psat_11g_backoff = -3 WIFI_2.4G_11G所有信道的功率配置 ④txpower_psat_11n_backoff = -2 WIFI_2.4G_11N所有信道的功率配置 3.WIFI TX Power的ini调试方法 ①每1个单位理论上对应0.5dB ②把值调
+完整回答请参考FAQ: FAQ110923
+### 问题: 如何开启关闭A51/A52/A53 cipher algorithm ?
+解决方案: A51/A52/A53 cipher algorithm 分别有对应的NV项控制,如下: PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\a5_1=0x1 PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\a5_2=0x1 PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\a5_3=0x1 其中1表示支持,0表示不支持; 若需要支持A51/A52/A53,则修改如下: PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\a5_1=0x1 PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\a5_2=0x1 PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMT
+完整回答请参考FAQ: FAQ110935
+### 问题: 8.1的指纹移植到9.0不能用（仅针对于使能vndk导致）
+解决方案: 原因主要是"android9.0上vndk的启用" 详细原因如下: 在android9.0上会将vndk启用,该功能启用后,vendor模块与系统模块会区隔,一些非vendor_available的系统库不允许vendor模块使用,需要vendor做一些适配. 如下是常见的错误信息,供参考(log关键信息 " ... failed: library "xxx.so" not found"): ---------------------------------------------------------------------------------------- 例1: 06-11 04:49:10.939 3287 3287 E vndksupport: Could not load /vendor/lib64/hw/fingerprint.default.so from defau
+完整回答请参考FAQ: FAQ111168
+### 问题: 工程模式的WIFI非信令功率发射设置
+解决方案: 在CE/FCC认证中,WIFI的发射功率是必测项目 WIFI认证一般都使用展锐系统自带的工程模式,进行非信令发射信号,再测试信号参数是否达到认证标准 测试过程中,客户经常遇到的WIFI无功率,或WIFI功率超标的问题 那么,工程模式需要怎么设置才能通过测试,以下就对WIFI工程模式各项设置进行说明 一.软件版本要求 送测的软件版本需为Debug版本,这样能确保开放WIFI控制权限,工程模式能对WIFI非信令进行控制 二.工程模式WIFI TX设置 特别注意注释部分的设置,如果错误,可能没有功率输出 Pkt length:600 //WIFI_11B最大值为1024,认证测试主要测WIFI_11B,如果设置大于1024,设置错误,输出功率可能不受控制 Pkt cnt:0 //0为一直发包,如果设置具体数据如1000,那么只发1000个包就不发了,后面没有数据输出,所以设置为0 Power l
+完整回答请参考FAQ: FAQ111242
+### 问题: 蓝牙BQB测试的 EUT开启方法
+解决方案: 客户进行BQB RF的classic测试时,需要开启EUT模式才能进行,具体操作过程如下: 1、*#*#83781#*#*进入工程模式 (根据测试机实际进工模命令操作) 2、开启Modem To PC 或 WCN To PC,其中不同版本打开Modem To PC\WCN To PC的方法如下: Android 8.0及以上 : 工程模式--Debug&Log—Ylog--Settings->Debug Setting & Tools->开启 Wcn To PC Android 6.0、7.0 : 工程模式--Debug&Log--LogManager—Tools--打开Modem To PC Android 5.1: 工程模式--Debug&Log--Slog--SlogSettings--Modem Log Settings--Log输出方式设置--PC抓取 Android 4.4: 
+完整回答请参考FAQ: FAQ112296
+### 问题: SC9832E平台如何在校准模式下使能display显示并且在睡眠时对其下电保证display的功耗正常？
+解决方案: pandora和simba工具测试均是进入校准模式,通常这种模式下最后要测试深睡后的底电流,此问题只针对display功耗测试. 一般出现校准模式深睡后lcd导致的功耗问题分为以下两种情况: 1、 客户为了方便观察手机显示把校准模式下的display enable了,即 russell.zhao@shand09:~/sprdroid8.1_trunk_18a_rls2/u-boot15$ git diff . diff --git a/common/loader/boot_mode.c b/common/loader/boot_mode.c index 62d6c00..a062b87 100644 --- a/common/loader/boot_mode.c +++ b/common/loader/boot_mode.c @@ -87,7 +87,7 @@ void calibrati
+完整回答请参考FAQ: FAQ114233
+### 问题: 运营商网络VOLTE电话不建专有承载导致volte call失败，如何继续VOLTE CALL
+解决方案: 我们正常的一个VOLTE CALL(MT)的流程如下: /////////// 343398-1 09:42:58.962 SIM1 IMS <- [0]INVITE 0:02:38.931 343409-1 09:42:58.967 SIM1 IMS -> [0]100 0:02:38.936 343477-1 09:42:58.971 SIM1 IMS -> [0]183 0:02:38.940 344813-1 09:42:59.066 SIM1 <- ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_REQUEST 0:02:39.035 344844-1 09:42:59.066 SIM1 -> ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT 0:02:39.035 345653-1 09:42:59.144 S
+完整回答请参考FAQ: FAQ111416
+### 问题: BT认证准备及工程模式设置
+解决方案: 在CE/FCC认证中,BT的发射功率是必测项目 测试过程中,客户经常遇到的ＢＴ无功率,或ＢＴ功率超标的问题 以下将ＢＴ认证需要准备的信息,及ＢＴ工程模式设置逐一说明 一、认证准备 1.Debug版本软件,确保开放BT控制权限 2.先关闭WIFI/BT 3.在WIFI关闭情况下,点击WIFI界面下的绿色字体"扫描设置",进去后关闭WIFI扫描、蓝牙扫描,这样可以防止认证过程中其他后台程序调用WIFI/BT信号 二、BT工程模式设置 在NO SIGNALLING TX界面 TX Pattern:PRBS9 //编码:PRBS9是伪随机码 TX Channel:0 //信道设置:0/39/78为低中高信道;255为随机信道即0~78一直随机切换 TX Pac Type:DH1 //信号类型 TX PAC Len:27 //帧长度:填写的值不能超过提示的MaxLen值 TX Power Type:
+完整回答请参考FAQ: FAQ111396
+### 问题: GPS RF 测量指标
+解决方案: 方案一:SR2351C/SC2341 TCXO Idle mode 1,C/N0 (-130dBm) 要求:•C/N0 @-130dBm为大于39dB*Hz 2,静态冷启动 -130dbm TTFF/定位精度 要求:定位时时小于等于35s,精度小于等于7m 3,静态冷启动 -140dbm TTFF/定位精度 要求:定位时时小于等于45s,精度小于等于15m 4,静态冷启动捕获灵敏度 要求:不低于-144dBm 5,静态跟踪灵敏度 要求:不低于-158dBm 方案二: SC2393/SC2342A/SC2342B/SC9832E /SC9820E/SC7731E/SC2355A:TCXO Idle mode/TSX Flight mode 1,C/N0 (-130dBm) 要求:•C/N0 @-130dBm为大于39dB*Hz 2,静态冷启动 -130dbm TTFF/定位精度 要求:定位时
+完整回答请参考FAQ: FAQ111447
+### 问题: MediaStorage中记录多媒体文件信息的“Composer”字段是何含义？
+解决方案: 背景: SoundRecord使用"Composer"字段来标识音频文件的来源,在生成录音文件时,在MediaStorage数据库中添加此字段内容;后续显示录音列表时也会通过此字段过滤音频文件. 字段含义: 以MP3文件为例: MP3 文件大体分为三部分:TAG_V2(ID3V2),Frame, TAG_V1(ID3V1) ID3V2 包含了作者,作曲,专辑等信息,长度不固定,扩展了ID3V1的信息量 Frame　　 一系列的帧,个数有文件大小和帧长决定 每个FRAM的长度可能不固定,也可能固定,由位率bitrate决定 每个FRAME由分为帧头和数据实体两部分 帧头记录了mp3的位率,采样率,版本等信息,每个帧之间相互独立 ID3V1　　　 包含了作者,作曲,专辑等信息,长度为128byte ID3V1标签内容固定为128byte,但里面不包含"composer"字段; 而ID3V2标签
+完整回答请参考FAQ: FAQ111456
+### 问题: Android8.1 在指定的信道上创建wifi P2P group
+解决方案: frameworks/base/wifi/java/android/net/wifi/p2p/WifiP2pManager.java public void p2pFindByFreq(int timeout, int freq) { try { mService.p2pFindByFreq(timeout,freq); } catch (RemoteException e) { // ignore } } /frameworks/base/wifi/java/android/net/wifi/p2p/IWifiP2pManager.aidl void p2pFindByFreq(int timeout, int freq); /frameworks/opt/net/wifi/service/java/com/android/server/wifi/p2p/WifiP2pServiceIm
+完整回答请参考FAQ: FAQ111527
+### 问题: WIFI的信号指示实测：4格：>-55,3格：-56~-65，2格：-66~-77,1格：-78~-88,0格：<-89;不符要求，详细划分需按照C
+解决方案: diff --git a/wifi/java/android/net/wifi/WifiManager.java b/wifi/java/android/net/wifi/WifiManager.java index dbfabcf..c510c01 100644 --- a/wifi/java/android/net/wifi/WifiManager.java +++ b/wifi/java/android/net/wifi/WifiManager.java @@ -42,6 +42,7 @@ import android.os.Message;  import android.os.Messenger;  import android.os.RemoteException;  import android.os.WorkSource; +import android.os.System
+完整回答请参考FAQ: FAQ111530
+### 问题: wifi的安全加密方式更改
+解决方案: diff --git a/src/com/android/settings/wifi/WifiApDialog.java b/src/com/android/settings/wifi/WifiApDialog.java index 5e84209..3c82f84 100644 --- a/src/com/android/settings/wifi/WifiApDialog.java +++ b/src/com/android/settings/wifi/WifiApDialog.java @@ -58,6 +58,7 @@ public class WifiApDialog extends AlertDialog implements View.OnClickListener, public static final int OPEN_INDEX = 0; //NOTE: Add se
+完整回答请参考FAQ: FAQ111532
+### 问题: 售后问题，客户退机WIFI打不开
+解决方案: diff --git a/old/hardware/libhardware_legacy/wifi/wifi.c b/new/hardware/libhardware_legacy/wifi/wifi.c index 77e44e6..08353af 100644 --- a/old/hardware/libhardware_legacy/wifi/wifi.c +++ b/new/hardware/libhardware_legacy/wifi/wifi.c @@ -405,13 +405,26 @@ int ensure_entropy_file_exists() int ret; int destfd; + struct stat s_buf; + int res = stat(SUPP_ENTROPY_FILE, &s_buf); + ALOGD("%s stat : uid=%d
+完整回答请参考FAQ: FAQ111544
+### 问题: 手机与小米盒子高概率出现连接失败
+解决方案: frameworks/base/services/core/java/com/android/server/display/WifiDisplayController.java diff信息: --- a/services/core/java/com/android/server/display/WifiDisplayController.java +++ b/services/core/java/com/android/server/display/WifiDisplayController.java @@ -686,7 +686,7 @@ final class WifiDisplayController implements DumpUtils.Dump { config.wps = wps; config.deviceAddress = mConnectingDevice.devi
+完整回答请参考FAQ: FAQ111545
+### 问题: 来电时将静音、会议模式下播放的收音机暂停以提醒用户有来电
+解决方案: diff --git a/AndroidManifest.xml b/AndroidManifest.xml index 317dab6..a90ff22 100644 --- a/AndroidManifest.xml +++ b/AndroidManifest.xml @@ -40,6 +40,7 @@ <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <uses-permission android:name="android.permission.SET_MEDIA_KEY_LISTENER"/> + <uses-permissi
+完整回答请参考FAQ: FAQ111546
+### 问题: Settings打开WiFi 按钮, 偶现WiFi无法打开
+解决方案: BluetoothEnabler.diff 47c47 < public final class BluetoothEnabler implements Preference.OnPreferenceClickListener { --- > public final class BluetoothEnabler implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener { 125c125,126 < mSwitchPreference.setOnPreferenceClickListener(this); --- > //mSwitchPreference.setOnPreferenceClickListener(this); > mSwitchPreference.set
+完整回答请参考FAQ: FAQ111547
+### 问题: 紧急救援短信功能，灭屏情况下发送失败问题的解决方案
+解决方案: 修改的文件路径: frameworks/base/services/core/java/com/android/server/policy/PhoneWindowManager.java                  } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {                     if (down) {                         if (!mA11yShortcutChordVolumeUpKeyTriggered                                 && (event.getFlags() & KeyEvent.FLAG_FALLBACK) == 0) {                           +  mA11yShortcutChordVol
+完整回答请参考FAQ: FAQ111555
+### 问题: 双卡版本中拨打紧急通话也弹出选择SIM卡弹框
+解决方案: diff --git a/src/com/android/server/telecom/CallsManager.java b/src/com/android/server/telecom/CallsManager.java index 4dba884..2c39611 100644 --- a/src/com/android/server/telecom/CallsManager.java +++ b/src/com/android/server/telecom/CallsManager.java @@ -1300,7 +1300,7 @@ public class CallsManager extends Call.ListenerBase int activeSubscriptionInfoCount = SubscriptionManager.from( mContext).get
+完整回答请参考FAQ: FAQ111563
+### 问题: 对号码拦截后仍能呼进
+解决方案: 改的文件路径: packages/providers/BlockedNumberProvider/src/com/android/providers/blockednumber/BlockedNumberProvider.java 修改的代码逻辑: diff --git a/src/com/android/providers/blockednumber/BlockedNumberProvider.java b/src/com/android/providers/blockednumber/BlockedNumberProvider.java index ed6768d..fb546e7 100755 --- a/src/com/android/providers/blockednumber/BlockedNumberProvider.java +++ b/src/com/android/p
+完整回答请参考FAQ: FAQ111564
+### 问题: 录像时来电没有铃声
+解决方案: 相机 app 录像时,会设置静音模式,等录像结束,再恢复回来,google 原生 camera 也是这个行为.   去掉静音模式,虽然可以保证来电时有铃音,但是同时,录像也会把来电铃音给录进视频里,此时如果用户接听来电,录像随即终止,挂断电话后,回过头来查看该录像时,会发现视频带有来电铃声结尾,影响用户体验.考虑到用户可能拒接电话,继续录像,那么就是录制视频的中间段有来电铃声,也很影响用户体验.请了解.   不仅是来电铃声,比如闹钟、提示音、短信等等都有此问题,不建议修改.   如果坚持要修改,可以使用如下方案: diff --git a/src/com/android/camera/VideoModule.java b/src/com/android/camera/VideoModule.java index 89be497..de366b2 100644 --- a/src/com/a
+完整回答请参考FAQ: FAQ111566
+### 问题: 如何在上层屏蔽4G功能及其设置，保留3G/2G
+解决方案: 修改方案如下: diff --git a/src/com/android/phone/ExtendedNetworkSettingsImpl.java b/src/com/android/phone/ExtendedNetworkSettingsImpl.java index bed36c2..c65db98 100644 --- a/src/com/android/phone/ExtendedNetworkSettingsImpl.java +++ b/src/com/android/phone/ExtendedNetworkSettingsImpl.java @@ -234,16 +234,22 @@ public class ExtendedNetworkSettingsImpl extends ExtendedNetworkSettings } } - if (isDeviceSu
+完整回答请参考FAQ: FAQ111583
+### 问题: 今日头条界面锁屏后待机，过会图案解锁，图案绘制完成后2s左右才完成解锁
+解决方案: 解锁的log如下 221050 M2B71F4 09-08 11:38:54.163 4503 4503 D PanelView: onTouchEvent:ACTION_UP 221425 M2B736A 09-08 11:38:55.458 4503 4503 D KeyguardSecurityView: showNextSecurityScreenOrFinish(true) 2B7449 09-08 11:38:55.727 4231 9791 I am_set_resumed_activity: [0,com.ss.android.article.news/.activity.MainActivity,resumeTopActivityInnerLocked] 2B745D 09-08 11:38:55.737 4231 9791 I am_resume_activity: [
+完整回答请参考FAQ: FAQ111586
+### 问题: Ensure to remove the any search results with “Wi-Fi calling”
+解决方案: diff --git a/src/com/android/settings/wifi/ConfigureWifiSettings.java b/src/com/android/settings/wifi/ConfigureWifiSettings.java index 422e2e3..75af823 100644 --- a/src/com/android/settings/wifi/ConfigureWifiSettings.java +++ b/src/com/android/settings/wifi/ConfigureWifiSettings.java @@ -45,6 +45,7 @@ public class ConfigureWifiSettings extends DashboardFragment {      private static final String T
+完整回答请参考FAQ: FAQ111588
+### 问题: 连上时状态栏wifi图标右下角出现x数秒后x消失是否正常？
+解决方案: 1. 在Wifi网络连接后,会进行网络检测. 2. 在网络检测完成之前网络状态为invalided状态,右下角显示x,网络检测完成且状态为pass后x消失. 3. 如果贵司确定要修改为没有x的逻辑,麻烦按照如下查分代码进行修改: --- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/WifiSignalController.java +++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/WifiSignalController.java @@ -34,6 +34,7 @@ import com.android.systemui.statusbar.policy.NetworkController.IconState; import co
+完整回答请参考FAQ: FAQ111589
+### 问题: 客户要求连接USB默认选项为MTP模式
+解决方案: diff--------------------------------------git a/services/usb/java/com/android/server/usb/UsbDeviceManager.java b/services/usb/java/com/android/server/usb/UsbDeviceManager.java index a0d3e2a..3c35af3 100644 --- a/services/usb/java/com/android/server/usb/UsbDeviceManager.java +++ b/services/usb/java/com/android/server/usb/UsbDeviceManager.java @@ -458,7 +458,7 @@ public class UsbDeviceManager { priv
+完整回答请参考FAQ: FAQ111590
+### 问题: 通话过程中, 短按时hold，长按时挂断
+解决方案: 该问题为客户需求, 目前我们平台行为如下: 来电响铃状态:短按耳机键接听, 长按耳机键拒接 通话中:短按耳机键挂断, 长按耳机键静音 快速点击耳机键两次(500毫秒内两次keyup,则认为是double press), 则呼叫保持 客户需求如下: 客户现在要求改为短按时hold,长按时挂断 solution: 修改平台设计 packages/services/Telecomm/src/com/android/server/telecom/CallsManager.java#onMediaButton() diff --git a/src/com/android/server/telecom/CallsManager.java b/src/com/android/server/telecom/CallsManager.java index 4dba884..765d991 100644 --
+完整回答请参考FAQ: FAQ111592
+### 问题: Android8.1 系统时间界面，调节年份时不能上下滑动切换年份的解决方案
+解决方案: 请参考如下修改方案: diff --git a/core/java/android/widget/DatePickerCalendarDelegate.java b/core/java/android/widget/DatePickerCalendarDelegate.java index e40023d..8cfec73 100755 --- a/core/java/android/widget/DatePickerCalendarDelegate.java +++ b/core/java/android/widget/DatePickerCalendarDelegate.java @@ -30,9 +30,11 @@  import android.util.StateSet;  import android.view.HapticFeedbackConstants;  import 
+完整回答请参考FAQ: FAQ111594
+### 问题: 状态栏去掉android版本图标
+解决方案: diff --git a/services/java/com/android/server/usb/UsbDeviceManager.java b/services/java/com/android/server/usb/UsbDeviceManager.java index 8c88d83..a9e4f08 100644 --- a/services/java/com/android/server/usb/UsbDeviceManager.java +++ b/services/java/com/android/server/usb/UsbDeviceManager.java @@ -145,6 +145,8 @@ public class UsbDeviceManager { private int usbConnectedCount = 0; private boolean mIni
+完整回答请参考FAQ: FAQ111602
+### 问题: DUT fails to access call forwarding settings in Airplane Mode
+解决方案: 解决方案:在GsmUmtsAllCallForwardOptions.java中添加如下代码 if (mSubscriptionInfoHelper.getPhone() != null && mSubscriptionInfoHelper.getPhone().getPhoneType() == PhoneConstants.PHONE_TYPE_GSM) { - if (hasService()) { + if (hasService() || mSubscriptionInfoHelper.getPhone().isWifiCallingEnabled()) { mCallForwardingPref.setEnabled(true); if (!getLteCapability(mSubscriptionInfoHelper.getPhone())) { log("Phone wi
+完整回答请参考FAQ: FAQ111609
+### 问题: 如何查看LTE模式下UE支持的安全能力
+解决方案: LTE的安全能力通过arm logel工具查看方法如下:
+
+在log中找到attach request/tau request消息,找到其中的ue_nw_cap结构
+
+ue_nw_cap
+  [0] = 0xf0
+  [1] = 0xf0
+  [2] = 0xe0
+  [3] = 0xe0
+  [4] = 0x1d
+
+前两个字节标识LTE的安全能力,第一个字节是指支持的加密算法,第二个字节是支持的完整性保护算法,每个比特含义如下
+
+EEA0  128-EEA1  128-EEA2  128-EEA3  EEA4  EEA5  EEA6  EEA7
+EIA0  128-EIA1  128-EIA2  128-EIA3  EIA4  EIA5  EIA6  EIA7
+
+上面的例子,表示UE支持EEA0  128-EEA1  128-EEA2  128-EEA3这
+完整回答请参考FAQ: FAQ111683
+### 问题: 是否support “Combined Attach”并提供LOG
+解决方案: 从log中看,attach的类型可按如下的信令查看,谢谢.
+
+29652-1	15:37:52.095 	--	      	-> ATTACH_REQUEST                            	                                             	0:03:41.973  	
+29652-1    	15:37:52.095 	0x2537	MSG_ID_EMM_ATTACH_REQUEST                           	MOD_EMM_1->MOD_RRC_1                         	0:03:41.973  	
+	EPS_AttachType = ATTACH_TYPE_COMBINED_ATTACH   
+	  
+ 
+
+ 
+	当前的attach的类型有:
+完整回答请参考FAQ: FAQ111688
+### 问题: [SC9820E] 配置为32K+TCXO，软件上如何配置?
+解决方案: 9820E平台默认是TSX+32K Less模式,如果需要配置为32K+TCXO后,软件需要修改LDODCXO的配置为power down模式,具体代码修改如下: u-boot15/board/spreadtrum/sp9820e_XXX/ldo_sleep.c ANA_REG_SET(ANA_REG_GLB_SLP_LDO_PD_CTRL0, BIT_SLP_LDORF15_PD_EN | BIT_SLP_LDORF18_PD_EN | //BIT_SLP_LDOEMMCCORE_PD_EN | BIT_SLP_LDODCXO_PD_EN | ... ); ANA_REG_SET(ANA_REG_GLB_SLP_LDO_LP_CTRL0, //BIT_SLP_LDORF15_LP_EN | //BIT_SLP_LDORF18_LP_EN | //BIT_SLP_LDOEMMCCORE_L
+完整回答请参考FAQ: FAQ111700
+### 问题: Direct Boot功能介绍和使用场景
+解决方案: 功能介绍: Android N设备在开机第一次解锁前处于Direct Boot模式,用户解锁后便退出该模式,直至设备重启.为支持此模式,系统为数据提供两个存储区域: l 凭据加密存储(CE) :这是默认存储区域,仅在用户解锁设备后可用. l 设备加密存储(DE):这是新的存储区域,当设备启动后,可以在任何时刻访问这个储存区域,包括在Direct Boot模式中. 当手机被设置成了Encrypted phone,并且添加了锁屏方式(除了None以外任意一种) 手机,重启后,如未能解锁,应用默认的数据存储路径是加密过的,当然也是没法去访问的,如下图,/data/data分区下的目录已经是非明文的了: 使用场景: 那么解锁之前应用需要使用的数据该怎么处理呢? 应用必须先向系统注册其组件,然后才能在Direct Boot模式下运行或访问设备加密存储. 应用通过将组件标记为"加密感知"来注册系统. 
+完整回答请参考FAQ: FAQ111711
+### 问题: TSX晶体的温漂和频漂测试
+解决方案: 操作步骤如下: 1.等待测机器开机,进入WIFI/BT的工程模式(默认指令为*#*#83781#*#*),然后在EngineerMode-DEBUG&LOG-YLOG-Settings-Debug Setting & Tools中,将Modem To PC和Wcn To PC开关均打开.同时,关闭手机SGPS和其他占用定位的后台应用,并关闭GPS定位信息. 2.电脑开机,GPS信号发生器(例:GS6700)也上电启动;待仪表启动完毕,打开并运行GPS信号发生器的控制程序:Positioning Application,加载ALL_default.scn的replay文件,将仪表信号强度设置为-130dBm. 3.将待测机器通过USB连接线连接至电脑,待驱动加载完毕(若端口为感叹号,需先安装最新的SPRD驱动). 4.电脑端打开并运行GNSS Tool程序,将Connect Settings
+完整回答请参考FAQ: FAQ111790
+### 问题: 为什么有些手机会有两个IMEI号以及如何查看IMEI号？
+解决方案: (一)双IMEI的原因 移动、联通和电信手机,IMEI的情况: 对于单卡手机来说,肯定只有一个IMEI号.双卡双待手机也不一定是双IMEI号. (1),移动和联通的双卡双待手机有两个IMEI号,是因为它们的两个卡槽除了有一个可以装4G卡外,还可以装3G/GSM卡, (2),而电信版的双卡双模双待手机只有一个IMEI 号,因为它的两个卡槽中,有一个只能装一张GSM卡,另一个卡槽只能装3G卡. 原因是: 因为3G和GSM制式不同,它们处在两个不同的平台,可以区分,所以电信版的只有一个IMEI号.而联通和移动的手机有可能用的是同一家运营商的两张GSM 卡,处在同一个平台,两个手机号的通讯信息可能存在干扰,因此同一家运营商要区分两个卡,所以手机设置了两个IMEI号. 总之,一个手机有两IMEI,主要目的是避免两个卡槽可能会出现同一运营商的同一制式从而带来干扰. (二)如何查IMEI呢? 从手机拨号
+完整回答请参考FAQ: FAQ111771
+### 问题: 紧急呼叫结束后，紧急注册超时之前没有发起紧急重注册？
+解决方案: 一个紧急呼叫流程中,先进行emergency registration,然后建立emergency session进行通话.emergency registration 超时之前不一定要执行emergency reregistration. 执行emergency reregistration需要满足以下3个条件之一: (1)有正在进行中的emergency dialog (2)存在独立事件standalone transaction(SMS,OPTION) (3)用户发起一个新的紧急呼叫 所以,紧急呼叫结束后,即使emergency registration超时也不会发起emergency reregistration.当user再次发起紧急呼叫时,若此时emergency registration 已经超时,首先进行emergency reregistration,否则直接进行紧急呼叫
+完整回答请参考FAQ: FAQ111794
+### 问题: 客户更新NV后不能注册VOLTE自查方法？
+解决方案: NV与版本不匹配的特征:CP Log中终端发给网络的IMS注册消息REGISTER的Security-Client头域的端口port-c和port-s都是0,如下所示: [IMS]:msg -> REGISTER [IMS]:Security-Client: ipsec-3gpp;alg=hmac-md5-96;ealg=null;spi-c=0;spi-s=0;port-c=0;port-s=0,ipsec-3gpp;alg=hmac-md5-96;ealg=des-ede3 [IMS]:-cbc;spi-c=0;spi-s=0;port-c=0;port-s=0,ipsec-3gpp;alg=hmac-md5-96;ealg=aes-cbc;spi-c=0;spi-s=0;port-c=0;port-s=0,ipsec-3gpp;alg= [IMS]:hmac-sha-1-96;eal
+完整回答请参考FAQ: FAQ111795
+### 问题: [thermal] 如何通过prop关闭thermal Action
+解决方案: 将如下变量设置为0即可 [persist.sys.thermal.goven]: [0] //关闭thermal机制 [persist.sys.thermal.chggoven]: [0] //关闭充电电流的控制 [persist.sys.thermal.pagoven]: [0] //关闭thermal PA的控制 具体修改如下 方案一:找到对应工程,在device/sprd/<xxx>/system.prop文件中添加如下变量 persist.sys.thermal.goven=0 persist.sys.thermal.chggoven=0 persist.sys.thermal.pagoven=0 方案二:通过shell临时修改 setprop persist.sys.thermal.goven 0 setprop persist.sys.thermal.chggoven 0 se
+完整回答请参考FAQ: FAQ111822
+### 问题: 如何提供精准有效的离线log
+解决方案: 平时对终端进行测试特别是外场测试时,往往要长时间抓取离线log,这样,一次测试就会产生大量的离线Log(其中绝大多数是CP侧Log,即通信处理器log).当发生故障时,如果简单地将所抓取的大量离线log连同问题单一并提交,那么,这样不但要花费大量的时间来传递log,而且研发人员还要花费大量时间去回放log,从而严重影响问题单的处理效率. 以下介绍的方法可在大多数场合保证所提供的log精准有效,从而减少log传输时间和研发人员回放log的工作,进而提高问题单的处理效率. 步骤一、测试前完成以下准备工作: 1. 设置工程菜单选项.在工程菜单中根据需要抓取的内容设置正确的选项,详细操作请参考工程菜单使用说明或联系客户接口人咨询; 2. 同步时间.将被测终端和相关设备(如参考终端、对比终端、计时设备等)的时间都尽量精确地同步起来,例如,当终端正常驻留到网络时,可在终端设置菜单中选择"使用网络提供的
+完整回答请参考FAQ: FAQ111908
+### 问题: 如何修改musb控制器usb传输速率为full speed模式
+解决方案: 针对musb 这个UDC,可以在初始化的时候,将USB的传输速率,修改为Full speed模式. 修改方式如下: diff --git a/drivers/usb/musb/musb_sprd.c b/drivers/usb/musb/musb_sprd.c index 89a8843..1aebf7b 100644 --- a/drivers/usb/musb/musb_sprd.c +++ b/drivers/usb/musb/musb_sprd.c @@ -1120,7 +1120,7 @@ static int musb_sprd_probe(struct platform_device *pdev) musb = platform_get_drvdata(glue->musb); musb->g.charger->get_charger_type = sprdchg_charg
+完整回答请参考FAQ: FAQ111923
+### 问题: adb 测试BT4.0操作说明
+解决方案: 1.首先需要修改两个bin档的权限system/bin/bdtdev/ttyS0把权限修改为777 即可 adb root adb remount adb shell chmod 777 /system/bin/bdt chmod 777 dev/ttyS0 2.然后用adb 命令打开蓝牙 bdt enable 3.LE 发包& 收包的adb 命令如下: TX: le_test_mode 2 0 37 0 (TX,channel,包长,pattern type) Notice:设置CBT 上EUT signal /Tx Channel与命令所发Channel相同 notice:TX测试完成后,先disable,再enable RX : 1.le_test_mode 1 0 (RX,channel) 2. CBT上选择RQ Gen.RF:设置Tx Channel与命令所发Channel相同 
+完整回答请参考FAQ: FAQ111970
+### 问题: re-INVITE中的URI地址为什么与初始INVITE中的URI地址不一样？
+解决方案: 根据RFC3261的规定,UA会在初始INVITE响应消息的Contact头域中携带远端地址,UA再次发送消息时使用Contact头域中的远端地址作为Request-URI. 1. UA set remote target to the Contact header field of the response to INVITE. 2. UA use remote target to build Request-URI. 例如: 响应消息183的Contact头域中携带了远端地址,当发送re-INVITE时就会使用Contact头域中的远端地址作为Request-URI. msg <- 183 m:<sip:418347c2-c68e-406e-aeb4-4aa8300822da@10.55.2.233:5070;transport=TCP;yop=00.00.8A9E1773.0000.
+完整回答请参考FAQ: FAQ111979
+### 问题: 拨打VOLTE紧急电话时看到终端发了一个REGISTER消息是正常的吗？
+解决方案: 因为拨打的是紧急电话112,根据协议和规范,拨打紧急电话需要进行IMS紧急注册,所以在拨打电话后会看到一个IMS紧急注册流程,这是正常的. ATD112 IMS -> REGISTER 0:01:28.705 ---- 开始紧急注册 IMS <- 401 0:01:28.876 IMS -> REGISTER 0:01:28.984 IMS <- 200 0:01:29.236 IMS -> INVITE 0:01:29.254 ---- 开始拨打紧急电话112 IMS <- 100 0:01:29.437 SIM1 <- ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_REQUEST 0:01:30.523 ---- 开始建立语音专有承载 SIM1 -> ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT 0:01:30.
+完整回答请参考FAQ: FAQ111981
+### 问题: 蓝牙通话有杂音的排查方法
+解决方案: 蓝牙通话有杂音,可以从以下4点来进行排查问题 一.耳机听到有杂音 此时,手机蓝牙处于发射,耳机蓝牙处于接收 即手机蓝牙发射有问题,或耳机蓝牙接收有问题. 1.手机蓝牙功率_TX Power有问题 一般DH5在天线口大于4dBm 如果功率小于4dBm,那么可以调试匹配电路和功率等级进行提升 2.手机蓝牙EVM有问题 EVM要求小于10%,如果大于10%需要调试优化 3.耳机蓝牙接收有问题 替换其他OK的耳机进行对比验证 二.手机听到有杂音 此时,手机蓝牙处于接收,耳机蓝牙处于发射 即手机蓝牙接收有问题,或耳机蓝牙发射有问题. 1.手机的蓝牙灵敏度有问题 DH5/2DH5在天线口传导为-90dBm左右,如果DH5/2DH5大于-85dBm,需要调试优化 2.耳机蓝牙发射有问题 替换其他OK的耳机进行对比验证 三、天线问题 1.使用3CM的金属线做天线,验证是否正常 2.如果有WIFI功能,看W
+完整回答请参考FAQ: FAQ112003
+### 问题: Gmail如何添加163等其它三方邮箱选项并设置对应的签名?
+解决方案: 需先登入Google授权帐号后进入Google Help网站下载PartnerGmailProvider代码包, 或向我司提CQ索取, 拿到PartnerGmailProvider代码包后将PartnerGmailProvider内置为system app, 并修改代码包下/res/values/strings.xml, /res/xml/account_setup_entry.xml和/res/xml/providers.xml文件, 分别修改如下: 1. /res/values/providers.xml添加以下代码 <providers> <provider id="sample2" label="@string/sample2_label" domain="domain2.*" signature="@string/sample2_signature"> <incoming uri
+完整回答请参考FAQ: FAQ112256
+### 问题: GSM 读取BCCH系统消息时的TC_MASK说明
+解决方案: BSIC同步成功之后,GRRA发送RRA_MPH_BCCH_LIST_DECODE_REQ消息给GLAYER1,携带了需要解哪些系统消息的TC_MASK 1个TC周期为8个51复帧,BCCH信道分2种,分别为NORMAL和EXT 每个51复帧占1个BIT,NORMAL有8个BIT,EXT有8个BIT,共16个BIT,bit0~bit7 NORMAL , bit8~bit15 EXT 不同的系统消息占用不同的BIT位 system information TC 位置 1 0 BCCH NORM 2 1 BCCH NORM 2bis 5 BCCH NORM 2ter 5or4 BCCH NORM 2quater 5or4or5 BCCH NORM/BCCH EXT 3 2and6 BCCH NORM 4 3and7 BCCH NORM 7 7 BCCH EXT 8 3 BCCH EXT 13 
+完整回答请参考FAQ: FAQ112261
+### 问题: GPRS加密算法设置
+解决方案: 1.我司芯片支持的GPRS算法有四种:1.不加密 2.GEA1 3.GEA2 4. GEA3 2.加密算法支持:在NV中可以设置支持哪些算法.在NV editor打开NV工程,在NVitem->PS_NV_PARAMS->NV_PARAM_TYPE_PREV_UMTS_MS_NW_CAP目录下,gea_encryption_algo1字段表示是否支持GEA1加密算法,支持设置为1,不支持设置为0.ext_gea_val目录下有gea_algo2至gea_algo7字段,表示对GEA2到GEA7算法的设置,设置为1,表示支持,设置为0,表示不支持.展讯芯片只能设置GEA1到GEA3,不支持加密全部设置为0. 3.如果UE支持加密,而且网络需要加密,会在鉴权加密过程中通知UE加密,以及算法类型.UE的NAS收到网络的加密要求后,会把加密类型和加密参数发给AS进行加密.在log中找到GMM_LL
+完整回答请参考FAQ: FAQ112479
+### 问题: AT+CESQ的返回值如何换算成dbm
+解决方案: 2G下面是rxlev,3G下面是rscp,4G下面是rsrp TS27007 8.69 Extended signal quality +CESQ +CESQ: <rxlev>,<ber>,<rscp>,<ecno>,<rsrq>,<rsrp> Description Execution command returns received signal quality parameters. If the current serving cell is not a GERAN cell, <rxlev> and <ber> are set to value 99. If the current serving cell is not a UTRA FDD or UTRA TDD cell, <rscp> is set to 255. If the current serving cell i
+完整回答请参考FAQ: FAQ112398
+### 问题: SC6531E怎样用宏控制BASE\atc\feature_phone\tools\template\atc.atd文件?
+解决方案: atc.atd文件中是不能直接添加宏开关控制的. atc.atd文件用于添加新的AT命令,如果需要对新的AT命令控制有如下两种方法: 方法一: 1. 添加at命令 2. 在处理函数中添加宏开关控制 AT_CMD_FUNC( ATC_ProcesstTEST) { #ifdef _XXXX_ ...... #endif } 方法二: 1. 新建atc_xxx.atd,此.atd中添加了at命令格式定义 2. feature_phone\tools\中新建atc_xxx_gen.bat(可以直接copy atc_gen.bat), 然后修改此文件中的atc_atd为atc_xxx.atd 3. 然后在BASE\make\atc.mk 中最后添加宏开关控制运行atc_xxx_gen.bat 例如atc.mk中的: ifeq ($(strip $(GPRS_SUPPORT)), TRUE) cmd
+完整回答请参考FAQ: FAQ114899
+### 问题: lcd端把DSI_DP0和DSI_DN0接反了，那么软件上如何配置互换过来正负相位？
+解决方案: 1、 PHY的0x4d寄存器的bit[7]控制 DSI_DP0和DSI_DN0相位,默认是0,如要互换需置1. dphy寄存器的配置查看可以连上adb操作: sp9832e_1h10_go:/sys/class/display/dphy0 # echo 0x4d 1 > reg_read sp9832e_1h10_go:/sys/class/display/dphy0 # cat reg_read ADDR | VALUE ------+------ 0x4d | 0x00 默认情况下0x4d的值为0. 2、 uboot目录下: diff --git a/drivers/video/sprdfb/dsi_1_21a/mipi_dsih_dphy_megacores_whale.c b/drivers/video/sprdfb/dsi_1_21a/mipi_dsih_dphy_megacor
+完整回答请参考FAQ: FAQ112420
+### 问题: 在GSM下，如何查看自己当前使用的TMSI或者IMSI？在哪个消息里面存在？
+解决方案: 在modem log中的internal message中搜索MM_RR_MM_INFO_REQ消息,能看到当前使用的imsi和tmsi,示例如下:
+
+MM_RR_MM_INFO_REQ	MOD_NAS_SWTH_1->MOD_GRR_1
+
+[LOCAL] MM_RR_MM_INFO_REQ_MSG
+	ref_count = 0x1
+	tmsi
+		valid_flag = 0x1
+		tmsi_value
+			[0] = 0x11
+			[1] = 0x12
+			[2] = 0x13
+			[3] = 0x14
+	imsi
+		valid_flag = 0x1
+		length = 0x8
+		imsi_value
+			[0] = 0x9
+			[1] = 0x10
+			[2] = 0x10
+			[3] = 0x10
+			[4] = 
+完整回答请参考FAQ: FAQ112474
+### 问题: 查询GSM TA,发射功率power的函数和参数说明
+解决方案: 提供可供调用的接口: BOOLEAN L1API_GetTaPwr(uint8* ta,uint8* pwr) 说明:此函数只可在gsm 通话过程中调用,待机状态和GPRS状态调用无效. 接口说明: TA:Timing advance of GSM(时间提前量) TA的取值范围是0-63,代表的时间范围是0-233us,相当于0-70公里;TA每增加1,代表手机离开基站的距离增加约550米. pwr:当前业务信道发射的功率Power control level值: 以下是对应pwr level和功率的关系 GSM 400 and GSM 900 and GSM 850 Power control level Nominal Output power (dBm) 0 2 39 3 37 4 35 5 33 6 31 7 29 8 27 9 25 10 23 11 21 12 19 13 17
+完整回答请参考FAQ: FAQ112525
+### 问题: 射频走线案例简析
+解决方案: 在手机产品中,PCB尺寸小,射频走线的空间也被压缩的很小,细节处理到位,插损才会减少. 这里挑选5个常见的问题,做简单的说明,共享给大家 1.直线与直角 在空间狭小的情况,射频线基本都走直线或直角,少有弧线或45°角. 所以,这里只讨论走直角和直角,简单的区分2者: 直线:插损小,好 直角:插损大,差 2.串联与并联物料 以单路射频线(无巴伦)为例,线上有串联和并联的物料,用于根据PCB实际情况进行修改调试. 串联:必上料的元件 并联:到地的元件,可能上料,也可能不上 如果空间不够,一定要直角,那么,串联元件走直角是偏好的选择 并联元件走直角则偏差,因为并联物料可能不上,走线为纯直角,插损大于串联 3.T字走线 经常看到客户项目有T字走线,这里拿来举例说明 并联元件布线时,1脚需搭在射频线上 如果走T字线,拉一段线走出了,会形成1个分支,损耗射频功率 如图: 4.射频孔 射频线有可能要换层
+完整回答请参考FAQ: FAQ112555
+### 问题: 如何在支持sensorhub的平台添加新的acc  sensor或plsensor?
+解决方案: 在支持sensorhub的平台,android8.1及9.0的版本添加acc sensor或plsensor的方法如下: device/sprd/sharkl3/s9863a3h10/BoardConfig.mk 对于支持的sensor,填写对应的型号(如mcxxx),该名称与opcode中的名称(如: accelerometer_mcxxx.cpp)需要保持一致;硬件不支持的sensor填写null # Config Sensor driver SENSOR_HUB_ACCELEROMETER := mcxxx //添加acc sensor的名称 SENSOR_HUB_GYROSCOPE := null SENSOR_HUB_LIGHT := ltrxxxals //添加light sensor的名称 SENSOR_HUB_MAGNETIC := null SENSOR_HUB_PROX
+完整回答请参考FAQ: FAQ113517
+### 问题: 在支持sensorhub的平台上软件如何配置以支持sensor兼容？
+解决方案: 在sensorhub的平台上软件是可以支持sensor的兼容的,如plsensor ltrxxxals 和 ltryyyals兼容,修改如下: 1,device/sprd/sharkl3/s9863a3h10/BoardConfig.mk SENSOR_HUB_LIGHT := ltrxxxals ltryyyals //添加light sensor的名称 SENSOR_HUB_PROXIMITY := ltrxxxals ltryyyals //添加proximity sensor的名称 2,添加opcode到对应的目录: vendor/sprd/modules/sensors/libsensorhub/ConfigSensor/proximity/proximity_ltrxxxals.cpp vendor/sprd/modules/sensors/libsensorhub/Confi
+完整回答请参考FAQ: FAQ113509
+### 问题: SC7731E SIM热插拔功能如何配置pinmap
+解决方案: SC7731E modem版本以FM_BASE_17C_W18.41.3版本号为分界点,W18.41.3之前的版本为旧版热插拔方案,W18.41.3及以后的版本为新版热插拔方案. 旧热插拔方案使用注意事项: 1.pinmap配置(旧方案只支持低有效) a.开启热插拔配置如下: {REG_PIN_MTCK_ARM, BITS_PIN_AF(2)|BIT_PIN_SLP_PUBCP|BIT_PIN_SLP_IE}, {REG_MISC_PIN_MTCK_ARM, BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_WPU|BIT_PIN_SLP_WPU},//SIM1_DET {REG_PIN_MTMS_ARM, BITS_PIN_AF(2)|BIT_PIN_SLP_PUBCP|BIT_PIN_SLP_IE}, {REG_MISC_PIN_MTMS_ARM, BITS_PI
+完整回答请参考FAQ: FAQ112561
+### 问题: 网络分析仪二端口校准
+解决方案: 1:点返回键进入E5071C 主菜单,如仪器不在默认状态,可以点击preset进行仪器复位. 2: 设置调试频段,直接采用按钮输入方式,见按钮STIMULUS.点击triger按钮确认Triger source是否为internal. 3:在display按钮下,设置num of trace为3,然后点击Meas设置每个trace的测试参数,当然每个参数的显示类型可以通过点击format 进入显示格式选择. 4:进入后有多种阻抗显示格式,如回损log mag, smith 圆图,驻波图SWR,可根据测试需求选择. 5:使用电子校准件进行二端口校准:连接好电子校准件,点击Ecal选择2-port, 进入后再选择所要使用的对应端口号点击校准即可. 6:延长cable线: 由于校准完后还需加长cable线,所以需做延长处理.点port extensions,设置Port extensions 为
+完整回答请参考FAQ: FAQ112584
+### 问题: 【BBAT】SC6531X平台项目测试完BBAT后再开机概率无向导界面
+解决方案: SC6531X平台BBAT测试使用的cali post 模式,手机显示画面与正常开机相似,由于BBAT模式下按键测试除了power键外,其他按键都是通过GPIO方式来测试,但没有屏蔽其按键响应,按键响应会导致向导界面消失 solution: BBAT测试屏蔽除了power key以外的其他按键响应 通用patch:PATCH00532905 具体代码修改: Index: MS_Code/MS_Ref/source/base/src/keypad.c =================================================================== --- MS_Code/MS_Ref/source/base/src/keypad.c +++ MS_Code/MS_Ref/source/base/src/keypad.c @@ -363,7 +363,10
+完整回答请参考FAQ: FAQ112604
+### 问题: 如何查看UE上报的FGI信息
+解决方案: FGI: FeatureGroupIndicators,使用bit位的方式来表征对特定的功能是否支持,其各个bit的具体含义参考3GPP TS 36.331 "B.1 Feature group indicators", 包含在UE EUTRA能力(UE-EUTRA-Capability)消息中上报给网络. 由于UE能力消息中,各个制式的能力信息都是以码流的形式上报的,如下图所示,EUTRA的能力码流为: C5BA0404001060E4C244F8BFC4F8BFC4F8BFC4F8BFC4F8BFFFC7FF5D4404070CA74AB23BF06980800000C0A008B00400 可以使用第三方的解码工具获得其FGI的值,如下图,解码得到该UE上报的FGI为1111 1111100011111111111010111010 实际上,在中的trace信息中也可以查到对应的FG
+完整回答请参考FAQ: FAQ112660
+### 问题: 什么叫TTI Bundling以及原理和应用场合？
+解决方案: 在与仪器联调中,尤其调试VoLTE业务时,我们会经常碰到TTI Bundling这一概念.下面对这概念做一介绍. 1,什么叫TTI以及TTI Bundling? TTI:Transmission Time Interval,传输时间间隔.TTI 是指在无线链路中的一个独立解码传输的长度. 在3GPP LTE与LTE-A的标准中,一般认为 1 TTI = 1ms .即一个Subframe(子帧=2slot)的大小,它是无线资源管理所管辖时间的基本单位. TTI Bundling(时隙绑定):是将一个数据包在连续多个TTI资源上重复进行传输,接收端将多个TTI资源上的数据合并达到提高传输质量的目的. 2,主要原理及应用场合? 原理:LTE中物理层调度的基本单位是1ms ,这样小的时间间隔可以使得LTE中应用的时间延迟较小.然而在某些小区边缘,覆盖受限的情况下,UE由于受到其本身发射功率的限制,
+完整回答请参考FAQ: FAQ112664

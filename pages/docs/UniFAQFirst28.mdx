@@ -1,0 +1,300 @@
+### 问题: wifi firmware目录下的fw_bcmdhd4343s_mfg.***.bin是用于信令还是非信令测试？
+解决方案: 在HAL层wifi firmware目录下,带有mfg后续的fw是用于WIFI射频测试,而且只能用于非信令测试,选用测试方式时切勿加载错firmware
+参考FAQ: FAQ53652
+### 问题: 孟加拉语字符Unicode区间段说明
+解决方案: 孟加拉语字符Unicode区间段为0x0980~0x09FF.
+参考FAQ: FAQ53689
+### 问题: 7731平台 怎么修改来电界面的字体大小
+解决方案: 1. 找到相应工程下packages/apps/InCallUI/res/layout/call_card_sprd.xml 2. 文件中的android:textSize即为字体大小,调整相关参数即可.
+参考FAQ: FAQ53685
+### 问题: GTS测试中testPlayStore测试项为什么会失败？
+解决方案: 失败原因是没有将Google Play放到开机第一页.
+参考FAQ: FAQ53708
+### 问题: GTS测试中com.google.android.xts.search.hotword.HotwordTest的几个测试项为什么会失败？
+解决方案: 失败原因是没有将GSM预制完整,请将com.google.android.googlequicksearchbox包预制到手机中.
+参考FAQ: FAQ53713
+### 问题: FM客户化定制:如何改变FM应用的主界面图标？
+解决方案: 两种方法: 1.直接替换同名资源文件 用新的图片资源替换 packages/apps/FMPlayer/res/drawable/notification_fm.png 2.增加新资源文件,并修改代码中资源名称. 以新图标资源名称为new.png举例 将新图标资源new.png放入packages/apps/FMPlayer/res/drawable/ 修改packages/apps/FMPlayer/AndroidManifest.xml文件 修改此行<application android:icon="@drawable/notification_fm" android:label="@string/app_name"> 修改为 <application android:icon="@drawable/new" android:label="@string/app_name"> 即可
+参考FAQ: FAQ53714
+### 问题: 修改了nv参数为什么编译生成的不同
+解决方案: 有些nv项用的是MS_Code\make\nv_parameter\config_info.nv,需修改这个文件
+参考FAQ: FAQ53718
+### 问题: FM客户化定制:如何实现在频道列表中点击搜台按钮时不询问客户是否搜台直接搜台？
+解决方案: SPRD参考设计为: 在频道列表中点击搜台按钮时,不是直接搜台而是,询问客户是否进行搜台. 那么如何去掉这个提示,在频道列表中点击搜台按钮时不询问客户是否搜台直接搜台呢? 修改packages/apps/FMPlayer/src/com/thunderst/radio/FMPlayList.java文件 FMPlayList类 setActionListeners() 函数 在 mSearch.setOnClickListener(new View.OnClickListener() { 中 将 showDialog(SEARCH_DIALOG); 改为 Intent intent = new Intent(getBaseContext(), StationSearch.class); startActivity(intent);
+参考FAQ: FAQ53720
+### 问题: user版本不能自动化测试
+解决方案: 如果userdebug版本正常,user版本不行;需合入 PATCH00120339
+参考FAQ: FAQ53722
+### 问题: FM客户化定制:如何使频道列表中当前频道频道颜色与其他频道不同？
+解决方案: 修改packages/apps/FMPlayer/src/com/thunderst/radio/HighlightSelectedAdapter.java文件 HighlightSelectedAdapter类的getView()函数 增加 TextView freq = (TextView) row.findViewById(R.id.freq); 得到 freq if (position == mSelectedListItem) { //这个判断表示绘制频道为当前播放频道 使用 freq .setTextColor(); 命令可以设置不同的颜色. 例如 if (position == mSelectedListItem) { freq .setTextColor(Color.red) }else{ freq .setTextColor(Color.BLACK) }
+参考FAQ: FAQ53727
+### 问题: FM客户化定制:如何使频道编辑列表中当前频道频道颜色与其他频道不同？
+解决方案: 修改频道编辑列表的颜色与修改频道列表的颜色的方法相同,修改的文件不同 修改的文件为: 修改packages/apps/FMPlayer/src/com/thunderst/radio/TextButtonAdapter.java文件 TextButtonAdapter类的getView()函数 修改的方法可参照FAQ:FM客户化定制:如何使频道列表中当前频道频道颜色与其他频道不同?
+参考FAQ: FAQ53730
+### 问题: lmp链路控制管理之建立连接
+解决方案: 1.寻呼设备若要建立链路管理器上层的连接,就向远端设备发送LMP_Host_Connection_Req PDU. 2.远端设备收到该请求以后,就通知其主机.远端设备可以接受或拒绝建立连接的请求. 若从设备需要进行主从转换,在收到LMP_Host_Connection_Req PDU后,向主设备发送LMP_Slot_Offset PDU和LMP_Switch_Req PDU. 主从转换成功完成后,原先的从设备在用LMP_Accepted PDU或LMP_Not_Accepted PDU来相应LMP_Host_Connection_Req PDU. 3.如果从设备接受LMP_Host_Connection_Req PDU,就可以与主设备协商LMP安全过程(匹配、鉴权和加密).如果一个设备不想在建立连接期间发起更多的安全过程,它将发送LMP_Setup_Complete PDU. 4.主从设备都发送LMP_Setup_Complete PDU后,就可以进行数据通信了.
+参考FAQ: FAQ53709
+### 问题: lmp链路控制管理之链路释放
+解决方案: 1.释放链路发起方的链路管理器首先结束带有L2CAP信息的前ACL分组传送并终止L2CAP传输,然后发送LMP_Detach PDU,启动6Tpoll时隙的定时器. 2.如果发起方链路管理器在定时器截止前收到基带层的确认,它将启动3Tpoll时隙的定时器. 当该定时器截止时(发起方链路管理器是主设备),就可以重新使用AM_ADDR. 如果最初的定时器截止,发起方链路管理器将结束连接,并启动T(link supervision Timeout)定时器,随后AM_ADDR也可以重新使用(如果发起方是主设备). 3.接收方链路管理器收到LMP_Detach PDU后,若它是从(从)设备,将启动6Tpoll(3Tpoll)时隙的定时器,定时器截止时,链路断开. 若接收方设备是主设备,AM_ADDR可以重新使用.若没有接收到LMP_Detach PDU,链路监控将会超时,链路也会断开.
+参考FAQ: FAQ53758
+### 问题: lmp数据分组管理之多时隙分组控制
+解决方案: 一个设备发送含有最大时隙数目的LMP_Max_Slot PDU,可以限制接收设备使用的最大时隙数目.每个设备都可以通过发送LMP_Max_Slot_Req PDU,请求能够使用的最大时隙数目. 建立新连接后,由于寻呼、寻呼扫描、主从切换或解除休眠等操作,最大时隙数目的默认值为1.LMP_Max_Slot、LMP_Max_Slot_Req这两个PDU用于多时隙分组的控制,在连接建立后的任何时刻都可以发送这两个PDU.
+参考FAQ: FAQ53766
+### 问题: make:commands commence before first target
+解决方案: makefile时常遇到这样的问题,汇总网上的原因如下: 1. 上一行换行符号 \ 后面有空格 2. 本行前面的空白有非法字符 1)Makefile可能是以命令行开始:以[Tab]字符开始,但不是一个合法的命令行(例如,一个变量的赋值).命令行必须和规则一一对应. 2)第二种原因可能是一行的第一个非空字符为分号,make会认为此处遗漏了规则的"target: prerequisite"部分.
+参考FAQ: FAQ53770
+### 问题: 蓝牙打开后，是如何通知界面上各个控件的？
+解决方案: 首先,在手机中,从四个地方可以看出蓝牙是否打开,他们分别是: 1)桌面上的widget开关 2)statusbar的图标; 3)quicksetting界面; 4)Setting.apk中的蓝牙开关; 蓝牙打开后,会使用两种方式中的一种通知它们,分别是发送广播和采用回调函数,上面的1、2、4都是采用广播来通知,而3是采用回调的方式通知;所以一般3显示较快.
+参考FAQ: FAQ53829
+### 问题: 7731 如何控制MIPI动态变频的开关
+解决方案: 配置MIPI动态变频,采取以下做法: 用NVEDITOR工具打开7731 nv的 .prg工程,修改NV中ProductionParam中lcd_fre_config一项. 其中, type =0 表示该动态变频功能关闭; type=1表示开启MIPI动态变频; type=2表示开启RGB动态变频. type之后的各项是默认的屏幕时钟的频率和要跳变的频率,具体修改的值需要根据测试结果来计算出来.不同的屏幕,配置的也都不一样.
+参考FAQ: FAQ53784
+### 问题: 如何把一个模块加入到BootClass里？
+解决方案: 要新加入模块到BootClass,只要加入PRODUCT_BOOT_JARS就可以在BOOTCLASSPATH和odex dependency中都有体现,并且要保证生成的jar文件在/system/framework下. PRODUCT_BOOT_JARS在build/target/product/core_base.mk中写定的,类似: PRODUCT_BOOT_JARS := core:conscrypt:okhttp:core-junit:bouncycastle:ext:framework:framework2:telephony-common:voip-common:mms-common:android.policy:services:apache-xml:webviewchromium 注意是以":"分割的,要加入一个新的,加上:<new_module>即可.
+参考FAQ: FAQ53790
+### 问题: 如何打开Native层的ALOGV
+解决方案: 要打开ALOGV,只需要在你的cpp代码前加上:#define LOG_NDEBUG 0 可以阅读源码,目录/system/core/include/log/log.h,其中有描述: /* * Normally we strip ALOGV (VERBOSE messages) from release builds. * You can modify this (for example with "#define LOG_NDEBUG 0" * at the top of your source file) to change that behavior. */ #ifndef LOG_NDEBUG #ifdef NDEBUG #define LOG_NDEBUG 1 #else #define LOG_NDEBUG 0 #endif #endif
+参考FAQ: FAQ56712
+### 问题: 自旋锁
+解决方案: 1. 自旋锁与互斥锁有点类似,都是为了访问临界区时起到排斥其它线程的作用.但自旋锁不会引起调用者睡眠,自旋锁已经被别的线程保持而没有释放,调用者就一直循环在那里等待,也称为忙等待.因此,自旋锁适合在不容许睡眠的环境中执行,例如中断处理函数.
+参考FAQ: FAQ53805
+### 问题: 如何选择与AP对应的CP2固件？
+解决方案: Zero Copy版本CP2适用于MocorDroid4.4_3.10_14A_W14.19.1_P14.30.2及后续更新版本合入; No zero copy版本patch适用于MocorDroid4.4_3.10_14A_W14.19.1_P14.30.2之前的版本合入. 在实际项目中使用不同整体版本,在做升级时需要区分CP2的以上两种版本.
+参考FAQ: FAQ53818
+### 问题: 什么是快速拨号？如何预制快速拨号？
+解决方案: 快速拨号(Fast Dial Number)是在拨号盘中长按某键拨打某个号码的功能,Android平台一般都支持此功能. 用户可在拨号盘界面,选择"快速拨号设置",将某按键设定为指定号码,但按键"1"一般留作语音信箱的号码. 由于快速拨号的信息来自Shared Preferences(fast_dial_numbers.xml),在定制方面,参考如下方式: 1. 在系统中预制配置文件,其中定义了快速拨号,例如:<按键2,号码2>,<按键3,号码3>,...... 2. 在Android启动时,判断是否需要导入上述配置,如果需要则写入Shared Preferences.
+参考FAQ: FAQ53819
+### 问题: 手机开启蓝牙共享网络后，程序中到底执行了什么操作？
+解决方案: 此过程将packages/apps/Bluetooth/src/com/android/bluetooth/pan/PanService.java文件中的mTetherOn设置为true,之后,就可以接收其他PAN设备的连接了.
+参考FAQ: FAQ53835
+### 问题: hid是什么协议？
+解决方案: hid为Human Interface Device (HID)定义了蓝牙在人机接口设备中的协议、特征和使用规程.典型的应用包括蓝牙鼠标、蓝牙键盘、蓝牙游戏手柄等.
+参考FAQ: FAQ53837
+### 问题: hid设备中，鼠标和键盘的配对过程有什么不同？
+解决方案: 在android4.4代码中,手机与蓝牙鼠标配对时,先连接Hid协议,再配对;而键盘是先配对,再建立Hid连接; 具体代码请看external/bluetooth/bluedroid/btif/src/btif_dm.c文件中的btif_dm_cb_create_bond函数.
+参考FAQ: FAQ53838
+### 问题: 蓝牙共享网络时，使用的tap是什么？
+解决方案: TAP虚拟网络设备为用户空间程序提供了网络数据包的发送和接收能力,可以当做以太网设备,实现了虚拟网卡的功能.
+参考FAQ: FAQ53840
+### 问题: 【BBAT】自动化测试中makecall测试流程是怎样的？
+解决方案: 自动化测试中的makecall是由PC端工具通过diag命令直接与modem交互完成的, 通过AT指令来拨打指定号码并获取相应的信息来判断是否PASS. 其具体流程如下: 1."AT+SFUN=2" 2."AT+SFUN=4" 重新注册网络 3."ATD112" 拨打指定电话 4."AT+CPAS" 查询DCE的状态,返回4,则说明在通话状态中 5."AT+CSQ" 用来读取当前服务小区的信号强度 6."ATH" 挂断电话 以上指令除返回OK外,通话状态和信号强度正常则说明makecall测试PASS.
+参考FAQ: FAQ53854
+### 问题: 【BBAT】自动化测试如何写站位标记，并如何查询？
+解决方案: 在产线上,若需要在MMI Test中检查板子BBAT是否PASS,则要在BBAT中设置标志位,可使用NV中BIT27来存储该标记位. 同时,PC端的BBAT工具需要进行配置: 在BBAT-Tool-Release-FV7/BBATProject/Sample/ProjectInnerSetting/Total_Config.ini文件中,将参数WriteMultiFlag置为1. 如此,BBAT测试PASS,BIT27则为1,FIAL则为0.
+参考FAQ: FAQ53857
+### 问题: 修改Kernel代码后编译并下载bootimage，为何在Native MMI Test模式下不起作用？
+解决方案: Native MMI Test是进recovery模式,修改kernel代码后需要编译并下载recoveryimage才有效.
+参考FAQ: FAQ53860
+### 问题: 海外项目根据当地sim自动切换语言
+解决方案: 解决方式: 修改文件:MccTable.java (frameworks\opt\telephony\src\java\com\android\internal\telephony) 找到sTable中对应的配置信息: 写成如下形式sTable.add(new MccEntry(460,"cn",2,"zh")); locale.region为cn ,locale.language为zh表示所在地在中国,自动识别为中文
+参考FAQ: FAQ53850
+### 问题: SC7731平台上，为何同时按音量下键和power键有时不能进recovery模式？
+解决方案: 目前SC7731下载模式的组合键是音量下键+power键,若按下的音量下键在power键之前,则直接进入下载模式. 若需要进recovery模式,则需要先按power键,再立即按音量下键,直至开机即可.
+参考FAQ: FAQ53861
+### 问题: 为什么蓝牙FTP协议实现时，不需要在bluedroid中写向sdp数据库中添加ftp service record的代码?
+解决方案: 当启动FTP时,在bluedroid的btif_core.c文件中会调用add_rfc_sdp_by_uuid函数,该函数会根据接收到的uuid,走不同的添加service的方法,这些case中没有FTP,所以最终会执行默认的添加过程,调用add_sdp_by_uuid函数,所以不写添加Ftp serivce recorde也可已.
+参考FAQ: FAQ53915
+### 问题: 开启零延时功能/ZSL加快连拍速度
+解决方案: 解决方法:开启ZSL功能. 以工程sp7731gea为例, device/sprd/scx35_sp7731gea/BoardConfig.mk #select camera zsl cap mode TARGET_BOARD_CAMERA_CAPTURE_MODE := false 改成 TARGET_BOARD_CAMERA_CAPTURE_MODE := true
+参考FAQ: FAQ53865
+### 问题: 如何解决刚开机几分钟耳机按键无响应的问题？
+解决方案: 刚开机,系统需要处理大量的广播. 耳机按键是通过广播发送出去的,如果系统较繁忙的话可能会造成应用收到广播有一定延后. 需要提高耳机按键广播优先级.
+参考FAQ: FAQ53864
+### 问题: 如何理解lcd 中的density？
+解决方案: Lcd Density 根据像素分辨率,在屏幕指定物理宽高范围内能显示的像素数量. 在同样的宽高区域,低密度的显示屏能显示的像素较少,而高密度的显示屏则能显示更多的像素. 屏幕密度非常重要,因为其它条件不变的情况下,一共宽高固定的UI组件(比如一个按钮)在在低密度的显示屏上显得很大, 而在高密度显示屏上看起来就很小. 为简单起见,Android把所有的屏幕分辨率也分为四种尺寸:小,普通,大,超大(分别对应:small, normal, large, and extra large). 应用程序可以为这四种尺寸分别提供不同的资源-平台将透明的对资源进行缩放以适配指定的屏幕分辨率. Android主要有以下几种屏: QVGA和WQVGA屏density=120; HVGA屏density=160; WVGA屏density=240.
+参考FAQ: FAQ53873
+### 问题: 联系人列表项在listView中的位置对应关系
+解决方案: 一般情况下listview某项的点击事件(item click),传入的position值是该项在listview的位置-1(下标从0开始).但是联系人列表有时并不是这样,因为在联系人列表中除了联系人项,还有字母表头项.如果需要获取正确的position值,需要减去该联系人项以前字母项的项数,也就是做如下转换: int adjPosition = position - mListView.getHeaderViewsCount(); 这样才能获取到正确位置的联系人项.
+参考FAQ: FAQ53872
+### 问题: 录像时，如何了解视频编码的耗时等信息?
+解决方案: 视频编码使用的库是libomx_avcenc_hw_sprd.so,对应的接口处理代码SPRDAVCEncoder.cpp,在vendor目录下. 编码调用的函数int ret = (*mH264EncStrmEncode)(mHandle, &vid_in, &vid_out);后面会跟着编码后的log信息,使用userdebug版本抓log即可了解到:视频数据输入的帧数,耗时,输入输出视频宽高等信息.
+参考FAQ: FAQ53874
+### 问题: Native MMI测试中TP开路、短路测试原理？
+解决方案: TP一般会存在故障情况如下表格所示: 若TP是良品,得到的这几项数据会在一个固定的阈值之内,假如得到的数据超出了每一项检测阈值,则该项是Fail的,就可以认为该触摸屏是不良品. 不同类别的TP的阈值范围需要在软件中进行相应不同的设置和调整. 目前TP原厂会一般都会在驱动中提供该项测试的接口,上层通过文件节点形式调用即可. NO. 故障描述 1 接收电极断开 2 发送电极断开 3 发送电极与地短路 4 发送电极之间短路 5 发送电极与电源短路 6 接收电极之间短路 7 接收电极与发送电极之间短路
+参考FAQ: FAQ53887
+### 问题: SC7715能否区分非标准充电器充电和连接电脑充电？
+解决方案: 7715spec 标注支持三种充电器,但目前芯片只开放支持标准和非标准充电器,并未开放支持非标准充电器充电和连接电脑充电的区别判断. 目前硬件只识别标准和非标准两种充电器.
+参考FAQ: FAQ53886
+### 问题: windows下新建的ANSI编码格式中文文档，放到手机里面，不能正常显示。
+解决方案: 显示乱码是因为中文文档是ANSI编码的文本,ANSI编码的文本开头没有像UTF-8、Unicode等格式的文本一样开头包含标识本文不所使用的charset,当ANSI编码的文本里面包含中文时,不能很好的解析.google原生HTMLViewer就不支持打开中文的txt,可选用WPS打开含中文的文本文件,HTMLViewer本身并不是专门用来查看txt文件的,设计它的初衷是打开html文件,在处理txt这种没有指定文本编码方式的情况时,常会出现文字编码不匹配导致的乱码.
+参考FAQ: FAQ53604
+### 问题: 7715编译下载idh包后，开机出现“开机出现com.android.system.ui停止运行“错误提示信息，如何解决？
+解决方案: 7715编译工程需要选择带uui的工程. 7715非uui版本已经不维护,编译下载后会出现异常.
+参考FAQ: FAQ53902
+### 问题: 如何从log判断手机是低电量自动关机
+解决方案: 搜索kernel.log 关键字vbat_ocv 如果log里面显示vbat_ocv数字一直降低到3000以下.就表示掉电关机了.vbat_ocv落到3.4对应电量是5%,就该弹出提示关机框了.
+参考FAQ: FAQ53904
+### 问题: repo - contains uncommitted changes
+解决方案: 在使用repo sync同步代码时候出现 error: .repo/manifests/: contains uncommitted changes 出现这个问题的原因是本地代码发生变化,但未commit 试着通过 git reset --hard来恢复所有变化的文件之后,依然存在上述问题, 最后通过cd .repo/manifests 切换到 .repo/manifests目录下执行git stash命令,并 通过git clean -f -d命令删除变化记录目录,然后使用repo sync就可以通过了.
+参考FAQ: FAQ53938
+### 问题: connectivity_configure.ini 等文件使用规则
+解决方案: 代码设计是根据板子类型(读取adc值来确定RF配置),所以要看具体的硬件设计才能确定,但目前这部分自适应代码没考虑到具体硬件设计和平台设计不同,如ADC悬空,客户板子ADC不准,导致拷贝生效的配置文件有误. 所以比较保险的办法是,把connectivity_configure_hw100.ini,connectivity_configure_hw102.ini,connectivity_configure_hw104.ini三个文件的内容都替换成展讯发的那个文件里边的内容即可,同时把version+1.
+参考FAQ: FAQ53945
+### 问题: 图库中每删除一个相册就提示‘无可用图片或视频’,提示是否正常？
+解决方案: 进入图库,在相册列表删除某个相册,不会有提示:无可用图片或视频. 点击进入某一个文件夹,全选图片,进行删除,图片删除之后,该文件夹中已经没有图片,此时给出提示"无可用图片或视频",并退出图片列表,回到相册列表,这是正常现象.
+参考FAQ: FAQ53947
+### 问题: 关闭UI_MULTILAYER_SUPPORT编译不过
+解决方案: 有几个控件(ctrlscroll、ctrlprogressbar、ctrllist_item等)是基于UI_MULTILAYER_SUPPORT开发的. 关闭后编译不过,不建议关闭.
+参考FAQ: FAQ53946
+### 问题: 为什么UBI卷不存在坏块？
+解决方案: UBI卷初始化的一个重要的工作就是进行peb(物理擦除块)和leb(逻辑擦除块)的映射,建立映射表.Ubi层的leb块的映射过程会判断当前要被映射的peb是否是坏块,如果是坏块,就查找下一个peb进行映射,因此,ubi卷的读写的块不存在坏块.
+参考FAQ: FAQ53951
+### 问题: 无PSensor的项目在通话界面如何模拟通话时灭屏功能？
+解决方案: 出于成本考虑,客户有些项目会省掉PSensor器件,这样通话过程中通过距离传感进行响应的自动灭屏功能(如贴近耳朵通话)就会失效,为尽量模拟实现相应功能,可以通过如下功能扩展来代替: 1.进入通话后5S(或10S)自动灭屏 2.通过响应TP操作来灭屏(当贴近耳朵时触发TP事件来关闭屏幕) 由于实际上没有PSensor,屏灭以后在通话过程中是不会再自动亮屏(需要按Power键点亮屏幕)的,为尽量方便操作,可以打开音量键点亮屏幕的功能. 如有相应需求,可以申请相应功能包来实现.
+参考FAQ: FAQ53969
+### 问题: 平台相机功能是否支持画中画功能
+解决方案: 需要使用摄像头厂家特殊的摄像头模组, 画中画数据由模组直接传出
+参考FAQ: FAQ53983
+### 问题: SC7715如何解决T卡插入不识别的问题？
+解决方案: 先确认硬件是否配置t卡的detect脚,如果未配置detect脚,需要修改如下代码: static struct sprd_sdhci_host_platdata sprd_sdio0_pdata = { .caps = MMC_CAP_HW_RESET | MMC_CAP_4_BIT_DATA, .caps2 = MMC_CAP2_HC_ERASE_SZ | MMC_CAP2_CACHE_CTRL, .vdd_extmmc = "vddsd", #ifdef CONFIG_ARCH_SCX15 -- .detect_gpio = 193, ++ detect_gpio = NULL, #else .detect_gpio = 0,//71, #endif
+参考FAQ: FAQ53984
+### 问题: user 版本中如何让预制应用不做odex处理？
+解决方案: user版本默认会对系统和预制应用做odex处理,而某些第三方应用在odex处理后会出现无法启动、登陆的问题.此时可以修改这些应用的make文件加上LOCAL_DISABLE_DEX_PREOPT := true. ex: include $(CLEAR_VARS) LOCAL_MODULE_TAGS := optional LOCAL_MODULE := xxx.apk LOCAL_MODULE_CLASS := APPS LOCAL_CERTIFICATE := PRESIGNED LOCAL_MODULE_PATH := $(TARGET_OUT)/preloadapp LOCAL_SRC_FILES := xxx.apk + LOCAL_DISABLE_DEX_PREOPT := true include $(BUILD_PREBUILT)
+参考FAQ: FAQ54004
+### 问题: MOCOR WIN7 64位机器RVDS编译配置注意事项说明
+解决方案: MOCOR WIN7 64位机器RVDS默认安装路径为:C:\Program Files (x86)\ARM\RVCT 为保证能正常编译需要修改makefile.rules(@\MS_CODE)文件如下: 1、 FULL_PATH_NAME =Program Files 修改为 FULL_PATH_NAME =Program Files (x86) 2、 SIMPLE_PATH_NAME=Progra~1 修改为 SIMPLE_PATH_NAME=Progra~2
+参考FAQ: FAQ54050
+### 问题: 通过git维护项目idh代码包的注意事项？
+解决方案: 通过git版本库来维护idh开发环境代码时,有时会遇到从git服务器clone下来的代码会出现编译不过的情况,遇到这种问题可以将导出的代码与原始发布的idh包内容进行比较,一般情况下为新导出的代码缺少文件导致,如确定为文件不全所导致的编译不过问题,则应该是在将原始idh包代码导入至git版本库时由于.gitignore的存在导致一些文件未正常加入至代码库中,进而导致再clone出版本内容时导致文件缺失而产生编译错误,为保证在初始导入时代码完整,可以在add文件内容至版本库时增加'-f'选项,如下: $ cd idh.code $ git init . $ git add -f . #通过'-f'选项保证符合.gitignore过滤条件的文件也被加入至版本库中 引入.gitignore忽略内容配置文件,主要是过滤掉对无需版本维护或固定不会更新的文件的操作以加快git操作效率,但是在使用.gitignore机制时也要注意文件导出的完整性.
+参考FAQ: FAQ54062
+### 问题: 如何直接停止class为main的所有service
+解决方案: 我们可以用以下方法停止所有class main service. property_set("vold.decrypt", "trigger_reset_main") 这个方法是将trigger_reset_main 命令加入执行队列,不能立马执行. 有的时候需要立即响应,可以按照下面方法直接执行. 在system/core/init/init.c中找到合适的地方调用下面的方法直接stop,不用排队. service_for_each_class("main",service_reset);
+参考FAQ: FAQ54075
+### 问题: adb shell 中如何关闭selinux
+解决方案: 首先解释下什么是selinux. selinux是用来对Linux进行安全加固的,有了它,用户和管理员们就可以对访问控制进行更多控制.selinux为访问控制添加了更细的颗粒度控制.与仅可以指定谁可以读、写或执行一个文件的权限不同的是,selinux可以让你指定谁可以删除链接、只能追加、移动一个文件之类的更多控制. 有的时候我们遇到问题怀疑是不是selinux引起的,这个时候就需要关闭selinux. 可以直接在adb shell 中执行命令 setenforce 0 此命令会立即生效,重启依然有效. 如果要恢复selinux,执行命令setenforce 1 注意需要root权限.
+参考FAQ: FAQ54081
+### 问题: 采用2341A连接芯片，wifi射频测试中如何获取当前所支持的信道？
+解决方案: 在adb shell中进行如下操作: adb root adb shell wl channels 显示的数字串即为当前2341A支持的信道编号
+参考FAQ: FAQ54085
+### 问题: 如何用vdc命令挂载sdcard
+解决方案: vold模块有一个很好用的程序就是vdc命令,可以用来在命令行执行外设操作.比如最简单的: vdc volume list 可以列举出当前外设,及其挂载情况. 如果想要mount/umount sdcard 可以使用下面命令: vdc volume mount sdcard vdc volume umount sdcard
+参考FAQ: FAQ54091
+### 问题: 修改某语言环境下默认日期的格式
+解决方案: 修改对应语言下的Donottranslate-cldr.xml文件中的numeric_date_template. 如将中文环境下的日期格式修改为"yyyy年 MM月 dd日" 打开文件Donottranslate-cldr.xml (frameworks\base\core\res\res\values-zh-rCN) 找到numeric_date_template这项,修改成下面这样: <string name="numeric_date_template">yyyy年 MM月 dd日</string> 这样默认日期格式就变成"yyyy年 MM月 dd日"了.
+参考FAQ: FAQ54086
+### 问题: SC7701平台如何锁定插入的第一张SIM卡
+解决方案: simlock锁定插入的第一张sim卡,再插入其它卡都不可以用,需要如下配置: 1. 首先配置选择开启哪张卡TD_TIANJI2_NV_TYPE --> NV_PARAM_TYPE_SIM_CFG1 --> is_support_gsm_only 2. 其次配置BaseParam->SIM_LOCK_CUSTOMIZE_DATA --> sim_lock_status和BaseParam->SIM_LOCK_CUSTOMIZE_DATA->sim_lock_status,目前最多支持两张卡对该功能的配置: 该域的最高位(低7位)对应卡1对该功能的配置; 低6位对应卡2对该功能的配置. 低5位空着各位域值的意义:0:关闭功能;1:开启功能 卡1 imsi 1 0 0 10000(开启锁卡)= 90(转换成十六进制) 卡2 imsi 0 1 0 10000 = 50 双卡都开启 1 1 0 10000 = D0
+参考FAQ: FAQ54093
+### 问题: 联系人快速查找所允许输入的最大字符数是多少？
+解决方案: 进行联系人快速查找所允许输入的默认最大字符数为11,其值由宏MMIPB_MUL_SEARCH_MAX_CHAR控制.
+参考FAQ: FAQ54129
+### 问题: Linux内核学习之poll和select的区别
+解决方案: 使用非阻塞I/O的应用程序也经常使用poll、select和epoll系统调用.poll、select和epoll的功能本质上是一样的:都允许进程决定是否可以对一个或多个打开的文件做非阻塞的读取或写入.这些调用也会阻塞进程,直到给定的文件描述符集合中的任何一个可读取或写入.因此,它们常常用于那些使用多个输入或输出流而又不会阻塞于其中任何一个流的应用程序中.同一功能之所以要由多个独立的函数提供,是因为其中两个几乎是同时由两个不同的Unix团体分别实现的:select在BSD Unix中引入,而poll由System V引入.epoll系统调用在2.5.25中引入,它用于将poll函数扩展到能能够处理千个文件描述符.
+参考FAQ: FAQ54144
+### 问题: 消费类产品陀螺仪厂商
+解决方案: 对于消费类手机,平板,智能手环,光学防抖的陀螺仪IC提供商主要有的应美胜(Invensense),意法半导体(ST),博世(Bosch),Konix,日本春田(主要在光学防抖方面).
+参考FAQ: FAQ54143
+### 问题: 如何实现不插T卡也能预览拍照
+解决方案: 手机只需做以下设置即可 settings->Media storage ->Default media location 将将这个选项设为 Interal,就能在不插T卡时打开拍照,照片就会保存到内置存储卡中.
+参考FAQ: FAQ54160
+### 问题: 怎样预置wifi ssid
+解决方案: idh.code\external\wpa_supplicant_8\wpa_supplicant_8_lib\wpa_supplicant.conf 添加以下代码,重新编译后即可. network={ ssid="XXX WIFI" key_mgmt=NONE priority=1 }
+参考FAQ: FAQ54161
+### 问题: 什么叫僵死进程
+解决方案: 僵死进程指的是一个进程已经退出,它的内存和相关资源已经被内核释放,但是为了使系统在它退出后能获得它的退出状态等信息,它的进程描述符仍然被保留. 一个僵死进程是非常特殊的一种进程,它没有任何可执行代码,也不能被调度,仅仅保留自己的描述符,记载该进程的退出状态等信息供其他进程收集,除此之外,僵死进程不再占有任何内存空间.
+参考FAQ: FAQ54179
+### 问题: 什么叫孤儿进程
+解决方案: 如果父进程在子进程之前退出,则子进程成为孤儿进程.如果不为孤儿进程寻找新的父进程,在它们退出之后,将会永远处于僵死状态. exit_notify()会调forget_original_parent()完成这个寻父过程.forget_original_parent()定义在kernel/exit.c文件,主要完成两个工作. (1)寻找合适的父进程.首先在当前线程组内为孤儿进程寻找父进程,如果没有,则指定init进程为新的父进程. (2)将寻找到的新的父进程指定给所有的兄弟孤儿进程.
+参考FAQ: FAQ54180
+### 问题: 什么叫后台进程
+解决方案: 后台进程(Daemon)是运行在后台的一种特殊进程.它独立于控制终端并且周期性的执行某种任务或等待处理某些发生的事情. 后台进程必须与其运行前的环境隔离开来.这些环境包括包括未关闭的文件描述符,控制终端,会话和进程组,工作目录以及文件创建掩码等.这些环境通常是后台进程从执行它的父进程(特别是shell)中继承下来的.
+参考FAQ: FAQ54182
+### 问题: 拨号盘按键搜索，为何只显示部分匹配联系人？
+解决方案: 在packages\apps\Dialer\src\com\android\dialer\database\DialerDatabaseHelper.java的getLooseMatches()方法中,通过MAX_ENTRIES变量对搜索结果进行了限制.只会显示搜索结果中前20(MAX_ENTRIES的值为20)条非重复联系人信息.所以当匹配的联系人数量多于MAX_ENTRIES设置值时,将不会显示.
+参考FAQ: FAQ56461
+### 问题: 为何彩信幻灯片播放时音视频文件时不显示时长？
+解决方案: 为何彩信幻灯片播放时音频文件时不显示时长? 由于彩信幻灯片播放时播放控制条默认是隐藏的,点击幻灯片中的媒体如音频/视频,播放控制条即显现.
+参考FAQ: FAQ54210
+### 问题: SC7731 Mali400频率是多少？
+解决方案: Mali400最高频率为460.8MHz,可通过软件选择更低频率.
+参考FAQ: FAQ54212
+### 问题: 信息小部件图标无法缩放？
+解决方案: 信息widget本身是最大size,且最小size也是大的,所以无法缩放,是正常现象.
+参考FAQ: FAQ54220
+### 问题: SC7715平台如何实现拍照静音
+解决方案: 拍照声音是通过调研cameraservice 的playsound来播放声音的,可以再上层设置拍照 静音菜单开关,当点击时将属性persist.sys.camera.sound设为0,cameraservice发现 persist.sys.camera.sound属性为0,就不播放声音,为1才播放声音. void CameraService::playSound(sound_kind kind) { char sound_flag[PROPERTY_VALUE_MAX]; property_get("persist.sys.camera.sound",sound_flag,0); LOG1("persist.sys.camera.sound(%d)", sound_flag[0]); if(!strncmp(sound_flag,"1",1)){ //prop is 1 , play sound LOG1("playSound(%d)", kind); ...... } } }
+参考FAQ: FAQ54270
+### 问题: 7715HDR拍照的三张图片怎么保存
+解决方案: 保存3张图片为/data/1.raw, 2.raw, 3.raw, 合成图片保存为/data/4.raw .可在windows用yuv查看工具查看. 在vendor/sprd/open-source/lib/libcamera/sc8830/src/cmr_arith.c中arithmetic_hdr() 打开save_hdrdata(dst_addr,width,height)即可
+参考FAQ: FAQ54271
+### 问题: 7731 7s硬件长复位和硬件短复位的区别
+解决方案: 7s硬件复位,硬件都会断电.硬件长复位和硬件短复位对应的宏为:CONFIG_PBINT_7S_RST_HW_SHORT(硬件短复位) , CONFIG_PBINT_7S_RST_HW_LONG(硬件长复位) , 硬件长复位:按住power键7s后开始断电,松开power键后开始重启.7s->松开power键的过程,一直处于掉电状态. 硬件短复位:按住power键7s后开始断电,断电几十毫秒后重启
+参考FAQ: FAQ54272
+### 问题: OV8865 mipi raw摄像头点不亮
+解决方案: OV8865有两个I2C地址,0x20,0x21和0x6c 0x6d需要注意模组厂用的是哪个
+参考FAQ: FAQ54273
+### 问题: 7731 WCDMA Band 无法校准
+解决方案: 7731与SR3131的控制都是通过CP0, 因此所有控制射频的脚位都必须为CP0控制. 如脚位为CP1_RFCTL0的脚,必须改由Cp0控制.修改如下,因为很多人以为0就是CP0,而引起射频不通. {REG_PIN_CP1_RFCTL10, BIT_PIN_SLP_CP0|BIT_PIN_NULL|BITS_PIN_DS(1)|BITS_PIN_AF(1)|BIT_PIN_NUL|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE}
+参考FAQ: FAQ54277
+### 问题: git 如何 取消 已经git push到服务器的若干文件
+解决方案: 解决步骤如下:(执行命令) 1,进入模块,同步模块最新代码; 2,git fetch ... ... ;(把已加提交的代码拉下) 3,git reset HEAD^1 <file>;(把不想提交文件的路径放入<file>位置) 4,git checkout <file> ;(把不想提交文件的路径放入<file>位置) 5,git commit --amend; 6,git push ... ...; 按此步骤即可把已经git push 到服务器的若干个文件取消.
+参考FAQ: FAQ55146
+### 问题: 什么是TS流？TS流是什么一种格式？
+解决方案: 传送流(Transport Stream)简称TS流,它是根据ITU-T Rec.H.222.0|ISO/IEC 13818-2 和ISO/IEC 13818-3协议而定义的一种数据流, 其目的是为了在有可能发生严重错误的情况下进行一道或多道程序编码数据的传送和存储.这种错误表现为比特值错误或分组丢失. 传送流由一道或多道节目组成,每道节目由一个或多个原始流和一些其他流复合在一起,包括视频流、音频流、节目特殊信息流(PSI) 和其他数据包.其中PSI表有4种类型:节目关联表(PAT)、节目映射表(PMT)、网络信息表和条件访问表.
+参考FAQ: FAQ54305
+### 问题: 什么是DVB？
+解决方案: DVB, 数字视频广播Digital Video Broadcasting的缩写, 是由DVB项目维护的一系列国际承认的数字电视公开标准.DVB项目是一个 由300多个成员组成的工业组织,它是由欧洲电信标准化组织European Telecommunications Standards Institute (ETSI), 欧洲电 子标准化组织European Committee for Electrotechnical Standardization (CENELEC) 和欧洲广播联盟European Broadcasting Union (EBU)联合组成的联合专家组Joint Technical Committee (JTC)发起的.DVB数字广播传输系统利用了包括卫星、有线、地面、 SMATV、MNDSD在内的所有通用电视广播传输媒体.它们分别对应的DVB标准:DVB-S、DVB-C、DVB-T、DVB-SMATV、DVB-MS和DVB-MC.
+参考FAQ: FAQ54306
+### 问题: 什么是DVB-T?
+解决方案: DVB-T是数字地面广播系统标准:此系统的标准是1998年通过的,这是最复杂的DVB传输系统.不用编码正交频分复用(COFDM)调制方式, 8MHz带宽内能传送4套电视节目,而且传输质量高.采用MPEG-2数字视频、音频压缩编码技术.地面数字发发射的传输容量,在理论上 大至与有线电视系统相当,本地区覆盖好.此系统有利于数字与模拟电视共存,在与现行模拟电视混合传输方面显示出优势.DVB-T标 准中主要规范的是发送端的系统结构和信号处理方式,对接收端则是开放的,各厂商可以开发各自的DVB-T接收设备,只要该设备能够 正确接收和处理发射信号,并满足DVB-T中所规定的性能指标.
+参考FAQ: FAQ54307
+### 问题: 如何禁止插入耳机是状态栏不显示耳机图标？
+解决方案: 如果需要禁止插入耳机时状态栏显示耳机图标,可按照下面方式修改: 定位到\frameworks\base\packages\SystemUI\src\com\android\systemui\statusbar\phone\PhoneStatusBarPolicy.java的updateHeadSet方法中, 修改前: mService.setIconVisibility("headset", visiable); 修改后: mService.setIconVisibility("headset", false);
+参考FAQ: FAQ54311
+### 问题: 如何禁止蓝牙打开时状态栏显示蓝牙图标？
+解决方案: 如果需要禁止蓝牙打开时显示蓝牙图标,可按照下面方式修改: 定位到\frameworks\base\packages\SystemUI\src\com\android\systemui\statusbar\phone\PhoneStatusBarPolicy.java的PhoneStatusBarPolicy方法中, 修改前: mService.setIconVisibility("bluetooth", mBluetoothEnabled); 修改后: mService.setIconVisibility("bluetooth", false);
+参考FAQ: FAQ54315
+### 问题: Mocor  音频输出设备优先级说明
+解决方案: 音频应用在创建或者播放时,如果没有设置默认输出设备或者强制设置输出设备,音频输出会根据允许输出设备和设备标志位进行循环判断,其中蓝牙耳机(MMISRVAUD_ROUTE_BLUETOOTH)设备优先级高于耳机,耳机(MMISRVAUD_ROUTE_EARPHONE)的优先级高于扬声器(MMISRVAUD_ROUTE_SPEAKER).
+参考FAQ: FAQ56266
+### 问题: SC7731平台前摄像头使用30W像素，仅使用一组mipi data线可以吗？
+解决方案: 可以,使用 MCSIB_DATA0即可
+参考FAQ: FAQ54332
+### 问题: SC7701平台可以支持SPI串口的摄像头吗？
+解决方案: 可以支持,软件需要加patch
+参考FAQ: FAQ54333
+### 问题: SC7715平台支持Hd voice吗？
+解决方案: 可以支持,需要使用双MIC
+参考FAQ: FAQ54334
+### 问题: SC7731平台支持HD voice吗？
+解决方案: 可以支持,需要使用双MIC
+参考FAQ: FAQ54335
+### 问题: 闹钟设置开启振动，灭屏后不再振动只剩下闹铃
+解决方案: google原生设计如此,灭屏后关闭震动,可参考代码 VibratorService.java中的: BroadcastReceiver mIntentReceiver = new BroadcastReceiver() { public void onReceive(Context context, Intent intent) { if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) { synchronized (mVibrations) { doCancelVibrateLocked(); int size = mVibrations.size(); for(int i = 0; i < size; i++) { unlinkVibration(mVibrations.get(i)); } mVibrations.clear(); } } } };
+参考FAQ: FAQ54337
+### 问题: Google voice后台搜索时，无法启动其他录音软件
+解决方案: Google语音搜索在后台时AudioManager.isAudioRecording一直返回true,而录音/录像会根据此接口返回值决定是否可以录音,从而会导致不能录音/录像 在AudioManager.isAudioRecording方法中添加判断条件,如果后台Google语音搜索,此方法返回false,允许其他应用去录音;且Google语音搜索最新版本已将input source类型改为AUDIO_SOURCE_HOTWORD(1999),即允许其他高优先级的录音应用去抢占input资源;修改方案如下: frameworks/base/media/java/android/media/AudioManager.java public boolean isAudioRecording() { return !AudioSystem.isSourceActive(1999) && AudioSystem.isAudioRecording(); }
+参考FAQ: FAQ98444
+### 问题: 修改开/关机铃声播放文件及音量
+解决方案: 开/关机铃声是在BootAnimation::soundplay中调用MediaPlayer播放的,可以根据需要设置播放的文件以及StreamType类型. 如果StreamType类型设置成了STREAM_SYSTEM,那么关机铃声会随着系统铃声音量调小而变小;而开机铃声没变化是因为刚开机,Android上层还没初始化结束,那么播放使用的是系统默认的音量. 如果需要调节开关机的音量,那么可以在播放时,通过调用MediaPlayer. setVolume(1.0,1.0)来设置,其中1.0为保持音频的原始音量,参数范围为0.0~1.0;小数点,如参数0.5就是静原始音量衰减一半后去播放.
+参考FAQ: FAQ98445
+### 问题: 为何大图片无法显示？
+解决方案: 由于机器性能问题,在对大图片进行解码时,容易出现oom.因此,在底层加了判断,如果图片的大于4096*4096,则不对图片进行解码,并return false. 上层,图库中获取缩略图失败之后,使用默认缩略图代替显示.
+参考FAQ: FAQ54535
+### 问题: PPP LCP介绍
+解决方案: 链路控制协议(LCP) LCP 建立点对点链路,是 PPP 中实际工作的部分.LCP 位于物理层的上方,负责建立、配置和测试数据链路连接.LCP 还负责协商和设置 WAN 数据链路上的控制选项,这些选项由 NCP 处理. 状态机如下: 验证有2种类型:一种是PAP,一种是CHAP.相对来说PAP的认证方式安全性没有CHAP高.PAP在传输password是明文的,而CHAP在传输过程中不传输密码,取代密码的是hash(哈希值).PAP认证是通过两次握手实现的,而CHAP则是通过3次握手实现的.PAP认证是被叫提出连接请求,主叫响应.而CHAP则是主叫发出请求,被叫回复一个数据包,这个包里面有主叫发送的随机的哈希值,主叫在数据库中确认无误后发送一个连接成功的数据包连接.
+参考FAQ: FAQ54534
+### 问题: PPP NCP协议简要流程
+解决方案: LCP完成后,PPP通过网络控制协议 (NCP) 负责连接PPP(第二层)和网络协议 (第三层).对于所使用的每个网络层协议,PPP 都分别使用独立的 NCP来连接.以IP为例,建立IPCP的网控协议. 动态地址协商过程示意图:
+参考FAQ: FAQ54539
+### 问题: 为了防止黑客破解SIM Lock，是否需要锁住ADB端口？
+解决方案: 答:没有必要;因为SPRD sim lock的保密信息,包括是否开启SIM Lock的开关,sim lock 白名单,解锁数据等,是由Modem来实现的,相关数据均保存在Modem的NV中,ADB不能读取到Modem NV的数据,因此不需要对ADB进行保护;
+参考FAQ: FAQ54541
+### 问题: 7715中，黑客可能破解SIM Lock的途径有哪些？如何防止？
+解决方案: 答:三种可能破解途径: a) 通过下载端口破解 i. 获取Modem bin 和NV ii. 破解NV中保存的状态 iii. 根据NV中的字段进行修改,然后重新下载NV 对策: SIM Lock相关保密数据均存放在Modem NV中,每一个手机项目都有自己的NV,不同的NV是不能混用的,只要客户 NV的版本保护好不被泄露出去,黑客是无法了解客户 NV如何保护SIM Lock数据的;而且Modem NV是SPRD的私有协议,并不开放,一般的黑客无法了解NV的协议和内容,也无法读取NV或者下载NV; b) 暴力破解 i. 采用穷举法 对策: 手机SIM LOCK在输入密码十次以上,手机将会永久被锁,所以穷举法不可能破解 c) 刷机 i. 采用下载新版本的方式破解锁卡 对策: 此方法需要有手机的正确版本,一般第三方刷机是无法刷modem 和NV 的,只要客户 保护好自己的版本不泄漏,此方法也不可行;
+参考FAQ: FAQ54549
+### 问题: SC7715 TP的VDD接VDDSIM2出现使用失效
+解决方案: 依次做如下确认: 1.TP失效的时候测量VDDSIM2电压已被关闭 2.检查AP侧软件没有异常控制VDDSIM2的代码 若情况如以上描述,基本可以确认是由于NV中RF band有关配置有误,请根据实际硬件情况配置即可.
+参考FAQ: FAQ54606
+### 问题: NVEDITOR Wirte dsp是做什么用的
+解决方案: write dsp 是供展讯内部研发有时需要改写dsp代码用的.只在平台研发阶段有用.量产是不需要的,会写到代码里.
+参考FAQ: FAQ54662
+### 问题: 平台支持最大的图片分辨率是多少
+解决方案: [Answer] 在gallerycommon/src/com/android/gallery3d/common/Utils.java文件中有定义的 public static final long MaxSize = 4096*4096; 不能超过这个值.
+参考FAQ: FAQ54667
+### 问题: [android4.4]\packages\apps\VideoEditor应用是否可以正常使用？
+解决方案: \packages\apps\VideoEditor应用目前不可以正常使用,请不要导入量产版本.
+参考FAQ: FAQ54745
+### 问题: ffos 7715 如何配置7715ea单卡版本的HVGA工程？
+解决方案: 1、 u-boot/include/configs/sp7715ea.h 中 打开CONFIG_LCD_HVGA,关闭原来的LCD配置 2、 device/sprd/ scx15_sp7715ea/ scx15_sp7715eabase.mk中增加PRODUCT_LCD_TYPE := hvga 3、 scx15_sp7715eabase.mk中修改PRODUCT_AAPT_CONFIG := mdpi 4、 system.prop中修改 ro.sf.lcd_density=160 5、 kernel/arch/arm/configs/sp7715ea-native-defconfig中打开CONFIG_FB_LOW_RES_SIMU配置
+参考FAQ: FAQ54703

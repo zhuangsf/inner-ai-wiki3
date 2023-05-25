@@ -1,0 +1,300 @@
+### 问题: WiFi Display的RTP数据传输端口号如何获取？
+解决方案: 传输音视频数据是通过RTP协议发送给sink客户端的,对于RTP端口号的获取可参见RTPSender.cpp文件中PickRandomRTPPort函数,端口号取值是个随机值,取值范围在1024到65534之间即[1024, 65534).
+参考FAQ: FAQ45034
+### 问题: WiFi Display相关的关键术语解释
+解决方案: Source:作为音视频数据发送方,传输多媒体内容的设备 Sink:作为音视频数据接收方,能够接收并渲染多媒体内容的设备 Primary Sink:可以用来播放视频画面,或同时播放视频画面和音频 Secondary Sink:用来渲染播放音频 WFD:WiFi Display Miracast:是Wi-Fi联盟(Wi-Fi Alliance)对支持Wi-Fi Display功能的设备的认证名称,通过Miracast认证的设备将在最大程度内保持对Wi-Fi Display功能的支持和兼容.
+参考FAQ: FAQ45035
+### 问题: 7715上能否模拟海外运营商信息以验证运营商名称等信息?
+解决方案: 可以,通过综测仪向插入测试白卡的手机发送对应运营商的MCC和MNC号即可.
+参考FAQ: FAQ45074
+### 问题: SC7731支持哪几类Flash？怎样配置？
+解决方案: SC7731平台支持EMMC Flash和Nand Flash,A5 Pin悬空时为eMMC,10K电阻下拉到地时为Nand Flash.
+参考FAQ: FAQ45136
+### 问题: SC7731 mipidsi接口中Mdsi_RSET下拉电阻阻值多少？精度多少？
+解决方案: 4.02K,1%
+参考FAQ: FAQ45137
+### 问题: SC7731 电池电压小于1.1V时充电电流是多少？
+解决方案: 5ma
+参考FAQ: FAQ45138
+### 问题: 如何正确测试流媒体case2.7
+解决方案: 测试流媒体case2.7时,请参见如下步骤: 1、流媒体播放器自动启动并开始播放; 2、在改变带宽的时候,若当前速率不能满足流媒体播放,终端必须自动暂停播放并对媒体内容进行缓存,在收到 足够信息后继续播放; 该测试case在现网中需要使用数据连接进行测试,而不是使用wifi进行测试,在步骤2中,请注意,改变带宽使得当前速率不能满足流媒体播放要求时,并非数据连接完全断开,而是要保证数据连接正常的情况下,从网络信号弱的地方切换到网络信号强的地方进行测试,例如,先在网络信号较强的地方播放流媒体而且流媒体播放很流畅,然后转到网络信号减弱的地方,流媒体暂停约2s左右,立即回到信号较好的位置,如果流媒体能够正常继续播放,则符合流媒体case2.7的要求.
+参考FAQ: FAQ54953
+### 问题: TCPIP的net_id、nsapi怎么使用？
+解决方案: net_id是网络接口标识,承载层在和TCPIP交互数据前,先要调用TCPIP_RetNetInterface来注册网络接口,注册成功后承载层得到TCPIP网络接口标识(net_id),之后数据收发和流控设置等操作,都需要承载层在调用接口中提供给参数. TCPIP提供了一个数组,最多可以记录5个网络信息,net_id就是其中的组数元素的指针. 同时,net_id记录在另外一个数组s_netif_matrix多维数组中,net_id在数组中的index就对应了nsapi,关系为index=nsapi-5,nsapi的范围为5～15. nsapi由承载层维护.对于gprs来说,nsapi在pdp激活后获得,并且通过APP_MN_ACTIVE_PDP_CONTEXT_CNF传递给应用层.net_id仅用于TCPIP层,当应用层需要用到网络接口时,可以直接使用nsapi,nsapi在TCPIP层会被转换为net_id来使用.
+参考FAQ: FAQ45232
+### 问题: Email附件下载（上传）时大小的限制
+解决方案: 在没有WIFI的情况下,附件的下载和上传都是限制为5M,但是在有WIFI的情况下,附件的下载大小是不受限制的.
+参考FAQ: FAQ54961
+### 问题: 如何进行USSD功能测试？
+解决方案: USSD是一种新型基于GSM网络的交互式数据业务. 当我们使用手机键盘输入一些网络已预先制定的数字或者符号比如*#等,再按send也就是拨号键就可以向网络发送一条指令,服务网络根据你的指令,反馈给终端一个菜单,对该菜单进行操作. 举例: 设置无条件转移 **21*电话号码# 取消##21# 设置遇忙转移 **62*电话号码# 取消##62# 设置无人接听时转移 **61*电话号码*10*响铃时间# 取消##61# 设置无网络时转移 **67*电话号码# 取消##67# 响铃时间的设定分别为5,10,15,20,25,30秒
+参考FAQ: FAQ45256
+### 问题: 如何判断手机处于锁屏状态
+解决方案: 可参考如下函数: public static boolean getKeyGuardStatus(Context context){ KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE); if(keyguardManager !=null && keyguardManager.inKeyguardRestrictedInputMode()){ return true; }else{ return false; } } 返回true则代表处于锁屏状态,否则返回false
+参考FAQ: FAQ45326
+### 问题: 修改packages\apps\InCallUI下的代码，应编译哪个模块并放入手机验证
+解决方案: 修改packages\apps\InCallUI后,需要重新编译Dialer应用.编译完成后将编译目录下system/priv-app/Dialer.apk push到手机中system/priv-app目录即可.
+参考FAQ: FAQ45335
+### 问题: SC7715平台如何通过Research download工具对Mem、ARM和Core电压等进行升降？
+解决方案: 1.使用ResearchDownload工具(最新版本)加载Pac包 2.点击Setting按钮,弹出Download settings界面 3.选择Vol-Freq Tunning页 4.此时可以修改DCDC MEM(开机电压)、DCDC CORE(芯片电压)、DCDC ARM(芯片电压)等信息; 修改完成点击OK后下载pac就会完成升降电压的操作
+参考FAQ: FAQ45352
+### 问题: SC7715闪光灯电流能做到多少，可以调节吗？
+解决方案: :SC7715闪光灯电流:最多输出470mA,可调,30mA一级
+参考FAQ: FAQ45376
+### 问题: 什么是Android Graphics Hardware Acceleration
+解决方案: Android Graphics Hardware Acceleration:图形硬件加速,从Android 4.0开始加入了硬件加速功能,即使用GPU进行绘图,旨在得到更加平滑的动画更加平滑的滚动,和更好的总体性能和响应用户的交互.GPU是专门优化图形绘制的硬件单元,很多GPU都支持OpenGL,一种开放的跨平台的3D绘图API.Android3.0以前,几乎所有的图形绘制都是有Skia完成.Skia是一个向量绘图库,使用CPU来进行运算,所以它的performance是一个问题,所以从Android3.0开始,Google用hwui取代了Skia,准确说是推荐取代,因为OpenGL的支持不完全,有少量的图形api仍由Skia完成,另外还需要考虑到兼容性,硬件加速的功能并不是默认打开,需要程序在AndroidManifests.xml或代码里控制开关.最终由hwui调用到OpenGL,再到GPU.
+参考FAQ: FAQ45384
+### 问题: 文件传输的btopp数据库中，USER_CONFIRMATION字段取值有哪些情况？含义是什么？
+解决方案: 该字段用来保存用户确认的状态 取值有如下几种情况: USER_CONFIRMATION_PENDING=0:等待用户确认 USER_CONFIRMATION_CONFIRMED=1:确认接受 USER_CONFIRMATION_AUTO_CONFIRMED=2:自动确认,用于批量传输时,除了第一个是1,其他都是2 USER_CONFIRMATION_DENIED=3 //拒绝 USER_CONFIRMATION_TIMEOUT=4 //确认超时 USER_CONFIRMATION_HANDOVER_CONFIRMED=5 //无需确认,自动接收,针对:NFC等
+参考FAQ: FAQ45390
+### 问题: 文件传输的btopp数据库中，MEDIA_SCANNED字段取值有哪些情况？含义是什么？
+解决方案: 该字段用来保存文件是否扫描的状态; 所有接受的media都会进行扫描操作,然后会将uri保存到MediaProvider,这样,别的媒体相关的应用才会感知到. 取值: MEDIA_SCANNED=2 //已扫描 MEDIA_SCANNED_FAILED=3 //扫描失败 MEDIA_SCANNED_NOT_SCANNED=0 //未扫描
+参考FAQ: FAQ45392
+### 问题: 蓝牙文件传输时，文件接收提示框是如果弹出来的？
+解决方案: 当服务端和客户端建立好OBEX连接后,服务端收到客户端发送的第一个PUT命令,如果这个文件需要用户的确认,就会弹出文件接收提示框,提示用户接收或者取消.
+参考FAQ: FAQ45396
+### 问题: SC7715平台使用SR2351A与SR2351C所配的BT/WIFI开关有哪种型号器件？
+解决方案: 可以配置RTC6627E和SR2319.
+参考FAQ: FAQ45399
+### 问题: SC7731是否支持RGB接口的LCD？
+解决方案: SC7731只支持MIPI的LCD,RGB接口的不支持.
+参考FAQ: FAQ45400
+### 问题: SC7715 VDDMEM支持的电压范围？
+解决方案: SC7715 VDDMEM支持的电压范围与所用的MEMORY有关,不同的MEMORY可能要求不同的电压.电压可调范围为1.1/1.2/1.3/1.4/ 1.7/1.8/1.9/2.0 V.
+参考FAQ: FAQ45401
+### 问题: SC7715平台支持HSIC接口吗？
+解决方案: 不支持
+参考FAQ: FAQ45429
+### 问题: SC7715平台默认只有SIM0支持WCDMA+GSM，SIM1只支持GSM，能否让SIM1支持WCDMA+GSM,SIM0支持GSM？
+解决方案: 可以,但需要修改相应的NV参数.
+参考FAQ: FAQ45430
+### 问题: 支持USB2.0的平台，USB的DP DM的ESD器件有什么要求？
+解决方案: 要求ESD器件的结电容小于2pF.
+参考FAQ: FAQ45431
+### 问题: SC7702平台支持9pF 或者12.5pF的32K晶体吗？
+解决方案: 支持.
+参考FAQ: FAQ45432
+### 问题: SC7702平台ADC的量程范围是多少？
+解决方案: 小量程支持0～1.2v;大量程支持0～3.0V.
+参考FAQ: FAQ45433
+### 问题: SC7731 mipicsi接口中Mcsi_RSET下拉电阻阻值多少？精度多少？
+解决方案: 4.02K,1%
+参考FAQ: FAQ45454
+### 问题: SC7715、SC5735平台使用内置Audio PA免提通话speaker底噪声很大该如何处理？
+解决方案: 1、降低模拟增益、增大DL Clarity 中dl ns limit 1000=10dB 1200=12dB(对底噪衰减12dB) 2、使用AudioTester工具修改Inner PA的配置为class D+SW mode 3、检查音频走线有没受到干扰
+参考FAQ: FAQ45476
+### 问题: 蓝牙mac地址相关的测试case？
+解决方案: 1. 随机生成测试: adb root adb remount adb shell rm /productinfo/wifimac.txt adb shell rm /data/misc/wifi/wifimac.txt adb reboot adb root adb remount adb shell cat /data/misc/wifi/wifimac.txt 预期会随即生成一个mac地址. 2. 指定mac地址测试: adb root adb remount adb shell echo 00:11:22:33:44:55 > /productinfo/wifimac.txt adb shell rm /data/misc/wifi/wifimac.txt adb reboot adb root adb remount adb shell cat /data/misc/wifi/wifimac.txt mac地址会被指定为00:11:22:33:44:55
+参考FAQ: FAQ46561
+### 问题: 如何检查字符串表中的字符串是否进行了资源编译？
+解决方案: 资源中的字符串表中的字符串数目较多,如果需要检查某个字符串是否进行了资源编译,可以打开编译目录\build\***_builddir\tmp中的文件mmi_res_***_text.txt,查看其中是否存在对应的字符串ID.
+参考FAQ: FAQ45737
+### 问题: 某apn的Authority Type指定为PAP该如何配置
+解决方案: vendor/sprd/open-source/res/apn/apns-conf.xml vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 在以上两个文件中按照mnc, mcc搜索到相关的apn配置,修改或添加以下项: authtype="1"
+参考FAQ: FAQ45787
+### 问题: 某apn的Authority Type指定为PAP or CHAP该如何配置
+解决方案: vendor/sprd/open-source/res/apn/apns-conf.xml vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 在以上两个文件中按照mnc, mcc搜索到相关的apn配置,修改或添加以下项: authtype="3"
+参考FAQ: FAQ45790
+### 问题: 某apn的Authority Type指定为CHAP该如何配置
+解决方案: vendor/sprd/open-source/res/apn/apns-conf.xml vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 在以上两个文件中按照mnc, mcc搜索到相关的apn配置,修改或添加以下项: authtype="2"
+参考FAQ: FAQ45788
+### 问题: 应用程序出现java.lang.OutOfMemoryError 异常怎么办？
+解决方案: 1. 当程序由于发生了java.lang.OutOfMemoryError 异常而停止,在debug版本或者monkey测试时会在data/misc/hprofs/目录下生成hprof文件,代码实现(frameworks\base\core\java\com\android\internal\os\RuntimeInit.java)dumpHProfile方法中.用log导出工具导出的slog中的hprofs目录中会有该文件,如下: com.android.phone_945_2014_11_28_05_14_25.hprof,文件名由进程名称、进程号和生成时间组成. 2. 当发生上述异常后通常是由于内存泄漏导致,用MAT工具分析生成hprof文件可以找到发生内存泄漏的怀疑点,然后查看对应的代码逻辑,找出问题点.
+参考FAQ: FAQ55774
+### 问题: 手机竖屏录像，录制的视频在电脑上播放，旋转了90度
+解决方案: 因为录制视频时,默认为横屏录像是0度录像,竖屏录像时,录制的视频角度就是rotation 90度的.竖屏录像后在PC上查看mediainfo 的视频信息就是旋转了90度,所以在PC上播放也是旋转90度的.而竖屏录像后在手机上播放时,用户看起来并没有旋转90度,那是因为我们视频播放器中针对视频角度旋转在显示时做了对应的处理,使得用户查看录像时会达到所看即所得的效果.所以手机竖屏录像,录制的视频在电脑上播放,旋转了90度属于正常现象.
+参考FAQ: FAQ45829
+### 问题: SC7715上音量键+Power键进入工厂测试模式屏幕这一段时间显示为黑色，如何修改？
+解决方案: 请在代码路径:u-boot/property/engtest_mode.c文件中修改: void engtest_mode(void) { printf("%s\n", __func__); #if BOOT_NATIVE_LINUX vlx_nand_boot(BOOT_PART, CONFIG_BOOTARGS " androidboot.mode=engtest", BACKLIGHT_ON);//此处OFF改为ON #else vlx_nand_boot(BOOT_PART, "androidboot.mode=engtest", BACKLIGHT_OFF); #endif
+参考FAQ: FAQ45850
+### 问题: 5735平台是否支持wifi direct功能？
+解决方案: 5735平台的V1版本一直不支持Wifi direct,但在V2版本(从Mocordroid4.4.3.10_pad_V2_W14.26.1以后的版本)是支持的. 注释: Wifi direct: Wi-Fi Direct标准是指允许无线网络中的设备无需通过无线路由器即可相互连接.与蓝牙技术类似,这种标准允许无线设备以点对点形式互连,而且在传输速度与传输距离方面则比蓝牙有大幅提升.
+参考FAQ: FAQ45847
+### 问题: 如何由radio log判定掉卡
+解决方案: 搜索radio log,如果出现+ECIND: 3,1,2的主动上报,则可判断为掉卡,需要modem进一步分析. log举例: 10-09 11:47:35.965 602 635 D use-Rlog/RLOG-AT: [t] Unsol: AT< +ECIND: 3,1,2
+参考FAQ: FAQ45852
+### 问题: 如何在FM APP的Recorder.java 中获得当前播放的频道？
+解决方案: FM APP 中当在 FMPlaySharedPreferences 中保存有前播放的频道, 在Recorder.java 中可以直接调用 FMPlaySharedPreferences.getTunedFreq() 来获得当前播放的频道. 举例: float freq = FMPlaySharedPreferences.getTunedFreq();
+参考FAQ: FAQ45894
+### 问题: 怎么在7731上检测提示灯硬件能否正常工作
+解决方案: 1.通过adb直接查看指示灯的设备节点是否存在 /sys/devices/f53f8000.adi_bus/f53f83c0.leds_sprd_bltc_rgb/leds/ 2.通过echo写入0,1检测能否正常点亮与关闭 echo 1 > ./sys/devices/f53f8000.adi_bus/f53f83c0.leds_sprd_bltc_rgb/leds/red/on_off 备注:指示灯功能在sprdroid4.4_tshark_41.6_mp(含41.6)之后的版本才支持
+参考FAQ: FAQ45895
+### 问题: SC7701平台如何让modem不对mmi传下来的紧急号码做检查
+解决方案: modem不对MMI 所指定的紧急号码进行检查,需要将MMI 将接口MNCALL_StartCallEx()替换成调用MNCALL_StartCallWithEscvEx() MNCALL_StartCallWithEscvEx()这个接口的前5个参数同MNCALL_StartCallEx()的参数. 参数6 is_escv_present: 如果emergency call,这个值为TRUE;如果是normal call,这个值为FALSE 参数7 emgcy_ctgry_value: 这个是emergency category value,如果有的话可以让客户传下来.如果没有这个值,写成0就可以了.
+参考FAQ: FAQ45943
+### 问题: 关于音乐播放器和第三方播放器一起播放的情况
+解决方案: 平台音乐播放器与其他应用交互是通过AudioFocus管理,有些第三方播放器如天天动听、百度音乐或没有使用AudioFocus或AudioFocus使用不当,就会出现平台音乐和第三方音乐可以同时播放的情景.这是第三方应用的原因,在对比机上也都存在此现象.平台不做修改.
+参考FAQ: FAQ46838
+### 问题: ImageView在设置setVisibility属性不起作用
+解决方案: 一般情况下,是ImageView在执行动画,这时通过setVisibility设置imageView的可见性是不起作用定的.解决办法一般是去掉动画效果,或者调用ImageView.clearAnimation().
+参考FAQ: FAQ45981
+### 问题: Ipsec与IKE的关系
+解决方案: 1.IKE是UDP之上的一个应用层协议,是IPsec的信令协议; 2.IKE为IPsec协商建立SA,并把建立的参数及生成的密钥交给IPsec; 3.IPsec使用IKE建立的SA对IP报文加密或认证处理.
+参考FAQ: FAQ49027
+### 问题: SC7701平台3G下，上下行速率是多少
+解决方案: SC7701平台支持HSDPA,不支持HSUPA, 下行最高7.2Mbps, 上行最高384Kbps
+参考FAQ: FAQ46060
+### 问题: 如何关闭SIM卡电源
+解决方案: 通常在客户的实际项目中,对于特定的产品形态中可能会有需要对SIM卡单独要求切断电源的需求,这个可以通过AT+SFUN=3来执行关闭SIM的动作,底层sim driver会在执行完sim卡关闭流程之后对SIM卡下电. 因此,如果需要关闭SIM卡电源,可以下发AT+SFUN=3来实现!
+参考FAQ: FAQ46076
+### 问题: 如何查看FM 的 oom adj值？
+解决方案: 有些情况下我们需要知道FM的优先级,可以通过adb连接手机查看FM 的 oom adj的值, 方法是: adb shell ps (查到FM对应的进程号 ) cat proc/XXXX/oom_adj (其中XXXX为PS查找到的进程pid) cat出来的oom_adj的值就是FM的优先级 举例: adb shell $ ps ... u0_a48 3241 155 349600 25128 ffffffff 4004e784 S com.thunderst.radio ... ps 命令查到 com.thunderst.radio 对应的进程号 3241 然后查看 3241 对应的优先级: $ cat proc/3241/oom_adj 1 3241对应的优先级为1
+参考FAQ: FAQ46079
+### 问题: 2351芯片对应手机是否支持相互搜索
+解决方案: 2351芯片对应手机不支持相互同时搜索功能.原因是蓝牙进行设备搜索时,会将自己设置为不可见状态,使得对方无法搜索到自己.
+参考FAQ: FAQ46092
+### 问题: 如何在Actionbar添加自定义View?
+解决方案: 在action bar中添加自定义的View,如button或edittext等,需要使用ActionView的setCustomView,然后使用setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)来Enable自定义View. 例子如下: ActionBar actionBar = getActionBar(); actionBar.setCustomView(R.layout.actionbar_view); actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+参考FAQ: FAQ46095
+### 问题: 如何获取守护进程的运行状态
+解决方案: init进程在启动/停止/重启某个守护进程的时候,会设置对应的属性值. 如尝试停止一个叫a的守护进程的时候,会设置 init.svc.a 为 stopping 如果已经kill掉他,那么就会设置init.svc.a 为stopped. 如果该进程不是disabled,那么就会被加到restart队列中,同时,init.svc.a被标记为restarting 而如果该进程正在运行,那么init.svc.a就等于running. 因此,如果想获得守护进程a的状态,只需要: property_get("init.svc.a",buf,"unkown"); 再判断buf的值为哪个即可.
+参考FAQ: FAQ46518
+### 问题: 什么是ntp和rtp时间
+解决方案: ntp和rtp时间: rtp时间是视频数据打包成rtp包时第一帧的时间. ntp时间表示在发送时间戳为该rtp时间的rtp包时的系统绝对时间,就是在发送这个rtp包时的系统时间,所以这两个时间值有对应关系,由于对于一个同步源,时间戳单位是固定的,所以可以由后续的某个数据包的rtp时间戳timestamp1计算出这个数据包所对应的绝对时间,这个绝对时间就是在发送这个数据包时,发送端的系统时间.
+参考FAQ: FAQ46114
+### 问题: ADC通道大小量程使用问题
+解决方案: 温度检测通过ADC 通道0-4中一个选取,这四个通道有大小量程区分 大量程3V,小量程1.8V,12位的ADC:小量程有更高精度 ADC读值的时候通过参数scale来区分使用的量程,需要注意将ADC转化成电压值的时候一定需要使用对应量程的分压比,如果使用错误会掉值ADC读值与实际值不符. static inline void sci_adc_get_vol_ratio(unsigned int channel_id, int scale, unsigned int* div_numerators, unsigned int* div_denominators ) //获取分压比 //scale是大小量程,1是小量程,0是大量程 int sci_adc_get_values(struct adc_sample_data *adc) //获取adc值 // adc_sample_data结构传参的时候需要把scale根据量程传递进来
+参考FAQ: FAQ46112
+### 问题: SC7731平台RMVB，WMA，KMVB，WMV这四个格式的视频无法播放的原因说明
+解决方案: RMVB(real), WMA/WMV(MS), KMVB这几种格式都是有版权的,android原生不支持,我们平台没有版权;所以7731也不支持.具体支持的视频格式见SC7731 Tshark featurelist V1.0.7 文件中描述.
+参考FAQ: FAQ46131
+### 问题: 我司蓝牙芯片SC2341B(MARLIN) 支持的Message Access Profile  协议版本
+解决方案: MAP1.0
+参考FAQ: FAQ73141
+### 问题: 如何控制拨号盘号码输入框中的光标显示或者隐藏
+解决方案: 在拨号盘中如何控制号码输入框中的光标显示或隐藏,可参照packages\apps\Dialer\src\com\android\dialer\dialpad\DialpadFragment.java文件. 显示光标: mDigits.setCursorVisible(true); 隐藏光标: mDigits.setCursorVisible(false);
+参考FAQ: FAQ46098
+### 问题: 如何通过代码确定当前支持的HFP协议版本
+解决方案: 在external/bluetooth/bluedroid/bta/ag/bta_ag_sdp.c中 进入bta_ag_add_record函数 里面有 if (service_uuid == UUID_SERVCLASS_AG_HANDSFREE) { profile_uuid = UUID_SERVCLASS_HF_HANDSFREE; version = HFP_VERSION_1_6; } else { profile_uuid = UUID_SERVCLASS_HEADSET; version = HSP_VERSION_1_2; } 这里的version表明当前的版本,如上代码表示HFP的版本为1.6,HSP的版本为1.2
+参考FAQ: FAQ73125
+### 问题: 我司蓝牙芯片SC2341B(MARLIN) 支持的 Audio/Video Control Transport Protocol (AVCTP) 协议版本
+解决方案: AVCTP 1.2
+参考FAQ: FAQ73138
+### 问题: 我司蓝牙芯片SC2341B(MARLIN) 支持的A/V Remote Control Profile 协议版本？
+解决方案: AVRCP1.3
+参考FAQ: FAQ73139
+### 问题: 我司蓝牙芯片SC2341B(MARLIN) 支持的Advanced Audio Distribution Profile 协议版本
+解决方案: A2DP 1.2
+参考FAQ: FAQ73140
+### 问题: 从文件管理器选择的多媒体文件，如何获取其真实存储路径
+解决方案: 1)从文件管理器选择的多媒体文件,uri类似: file:///storage/sdcard0/1.mp3 2)要获取该多媒体的真实路径: /storage/sdcard0/1.mp3,只需使用: uri.getPath()即可
+参考FAQ: FAQ46179
+### 问题: [日历]日历月视图界面，长按一个日期，新建活动界面中事件主题的控件大小如何调整？
+解决方案: 修改packages\apps\Calendar\res\layout\create_event_dialog.xml 文件中的 event_title 控件的高度和宽度即可.
+参考FAQ: FAQ46195
+### 问题: 7731如何关闭14信道
+解决方案: 目前7731最新版本上,wifi 14信道能够根据国家码自适应. 需要打开 CONFIG_CFG80211_INTERNAL_REGDB
+参考FAQ: FAQ46196
+### 问题: 为什么在TCP协议里，建立连接是三次握手，而关闭连接却是四次握手呢?
+解决方案: 因为当处于LISTEN 状态的服务器端SOCKET当收到SYN报文(客户端希望新建一个TCP连接)后,它可以把ACK(应答作用)和SYN(同步作用)放在同一个报文里来发送给客户端.但在关闭TCP连接时,当收到对方的FIN报文时,对方仅仅表示对方没有数据发送给你了,但未必你的所有数据都已经全部发送给了对方,所以你大可不必马上关闭SOCKET(发送一个FIN报文),等你发送完剩余的数据给对方之后,再发送FIN报文给对方来表示你同意现在关闭连接了,所以通常情况下,这里的ACK报文和FIN报文都是分开发送的.
+参考FAQ: FAQ46201
+### 问题: 关闭TCP连接一定需要4次挥手吗?
+解决方案: 不一定,4次挥手关闭TCP连接是最安全的做法.但在有些时候,TIME_WAIT 状态(如当MSL(max segment lifetime))数值设置过大导致服务器端有太多TIME_WAIT状态的TCP连接,减少这些条目数可以更快地关闭连接,为新连接释放更多资源),这时我们可以通过设置SOCKET变量的SO_LINGER标志来避免SOCKET在close()之后进入TIME_WAIT状态,这时将通过发送RST强制终止TCP连接(取代正常的TCP四次握手的终止方式).但这并不是一个很好的主意,TIME_WAIT 对于我们来说往往是有利的.
+参考FAQ: FAQ46206
+### 问题: 如何针对特殊运营商SIM卡配置不同的UA？
+解决方案: 浏览器使用的UA是通过MMIBROWSER_GetDefaultUserAgent函数获取的,该函数先根据插入SIM卡的MCC、MNC信息,从s_mcc_mnc_ua_tabel中匹配,匹配不到再使用平台默认UA.因此将该卡的MCC、MNC以及的UA信息添加到s_mcc_mnc_ua_tabel中即可实现对特殊SIM卡的UA定制.
+参考FAQ: FAQ46214
+### 问题: [android 4.4]播放视频时，顶部下滑会出现状态栏，是否异常？
+解决方案: 在自带的视频播放器中播放视频时,状态栏本来就隐藏了,但是为了用户查看信息的需要,只有当用户下滑顶部时,状态栏才会显示出来,而且过一会儿会自动隐藏起来,根本不影响用户看视频,用户下滑显示状态栏的目的是,用户可以查看当前的时间及手机电量等重要信息,所以顶部下滑出现状态栏属于正常现象.
+参考FAQ: FAQ46215
+### 问题: 为什么TIME_WAIT 状态还需要等2*MSL秒之后才能返回到CLOSED 状态呢?
+解决方案: 因为虽然双方都同意关闭连接了,而且握手的4个报文也都发送完毕,按理可以直接回到CLOSED 状态(就好比从SYN_SENT 状态到ESTABLISH 状态那样),但是我们必须假想网络是不可靠的,你无法保证你(客户端)最后发送的ACK报文一定会被对方收到,就是说对方处于LAST_ACK 状态下的SOCKET可能会因为超时未收到ACK报文,而重发FIN报文,所以这个TIME_WAIT 状态的作用就是用来重发可能丢失的ACK报文.
+参考FAQ: FAQ46220
+### 问题: nv上如何配置对SIM卡交换方法
+解决方案: TD_TIANJI2_NV_TYPE/NV_PARAM_TYPE_MN_CFG/sim_slot_cfg=0x1000203 from 0x00010203
+参考FAQ: FAQ46236
+### 问题: 手动搜索可用网络时为何提示请关闭数据连接
+解决方案: 因为modem不支持在开启网络连接的情况下手动搜网,所以AP在检测到数据连接开启的情况下用户试图手动搜网时,会先提示"数据连接已开启,请关闭数据连接".
+参考FAQ: FAQ46275
+### 问题: android4.4蓝牙名称允许的最大长度值
+解决方案: android4.4蓝牙名称允许的最大长度值为247
+参考FAQ: FAQ46314
+### 问题: 在monkey测试时为何出现system log为空，或者main log里只有log级别为F的log的情况
+解决方案: 因为目前的monkey测试脚本在测试时会push 脚本/tools/目录下的slog.conf 到/data/local/tmp/slog/目录下, 如果slog.conf文件中将stream log里的event/system/main log 类型的level值配置成了7以上就会出现问题描述的现象.
+参考FAQ: FAQ46312
+### 问题: 为什么有的时候misc目录下面没有没有traces.log/last_kmsg.log/cmdline.log等文件
+解决方案: 因为目前slog的机制是:当检测到有发生重启,会在当前目录的misc下面生成traces.log/last_kmsg.log/cmdline.log等文件,以记录重启前的一些信息.
+参考FAQ: FAQ46323
+### 问题: android4.4如何修改蓝牙最大名称长度
+解决方案: 在packages\apps\settings\src\com\android\settings\bluetooth\BluetoothNameDialogFragment以及 packages\apps\settings\src\com\android\settings\bluetooth\DeviceProfilesSettings.java中有 private static final int BLUETOOTH_NAME_MAX_LENGTH_BYTES = 247 这需要修改BLUETOOTH_NAME_MAX_LENGTH_BYTES的值即可修改输入蓝牙名称允许的最大长度
+参考FAQ: FAQ46322
+### 问题: 匹配通话记录时，如何构造SQL语句，使首位匹配的号码排在前面
+解决方案: 举例如下: 通话记录表calls中存在几条通话记录,部分字段如下: 记录A: _id number type name date 1 10086 2 A 1414049055635 记录B: _id number type name date 2 31260000 2 A 1414049055636 记录C: _id number type name date 3 10010 2 A 1414049055637 如以"1" 匹配number 希望 记录C和A排在B之前. 可按如下方式构造SQL语句: select _id,number,type from calls where number LIKE "%1%" order by LIKE('1%',number) desc 其中LIKE表达式,表示number 是否符合'1%'这种模式,对于上面的例子 记录A 和C符合所以 LIKE('1%',number) 为1,记录B不符合所以为0
+参考FAQ: FAQ46345
+### 问题: 7715 FFos如何解决ccache错误.
+解决方案: 客户编译7715 firefox版本,编译出现error: configure: error: ccache not found 该原因,是客户没有配置ccache编译环境导致. 如客户不想安装ccache环境. 可以修改: 在gonk-misc/default-gecko-config里面把ac_add_options --with-ccache 去掉即可解决该问题i.
+参考FAQ: FAQ46389
+### 问题: 7715 ffos 不识别T卡问题
+解决方案: 客户问题:插sd卡开机后,在设置里面的Media storage中查看不能识别到T卡. 客户可以先: adb手机后mount命令,察看没有显示sdcard盘符,如没有. 可check 是否detec_gpio 被打开. 在kernel/arch/arm/mach-sc/devices-sc8830.c文件 在sprd_sdio0_pdata结构体中: 将detect_gpio值改为-1 即可.
+参考FAQ: FAQ46390
+### 问题: 如何解决关机充电概率性出现唤醒慢的问题
+解决方案: 原因: 在关机充电时,手机灭屏后点击power键唤醒,如果按键的时机在charge进程被冻结之后,会出现相应的power没有响应,从而导致屏幕不能唤醒或唤醒慢 解决方案: 为尽量避免这种情况发生,需要在power键的中断处理函数里面上一把超时的唤醒锁,超时的时间建议2s左右
+参考FAQ: FAQ48552
+### 问题: 7731项目OTA升级时备份哪些nv项？
+解决方案: 客户可以check文件: bootable/recovery/nvmerge/nvmerge.c中对应nv id,即为需要备份的nv项.
+参考FAQ: FAQ46391
+### 问题: 基于展讯样机适配WVGA的TP问题
+解决方案: 展讯样机是QHD(540*960)的屏,TP的区域是720*1280,所以适配WVGA(480*800)时,TP的区域需要改成640*1067,具体的算法是:x = 720*480/540,y = 1280*800/960,就是把之前的720*1280 按照LCD的分辨率变化比例等比例缩放.
+参考FAQ: FAQ46407
+### 问题: init.rc中的class
+解决方案: class 可以声明一个类别的服务,方便管理,现在在init中常用的有main core charger等. 使用class_start main 就可以启动所有声明为class main的服务. 使用class_stop main 就可以停止所有声明为class main的服务. 如在boot的最后,就会使用 class_start core class_start main 来启动main和core组的所有进程.
+参考FAQ: FAQ46463
+### 问题: SC6815/SC7715平台怎样修改默认主题？
+解决方案: 在对应的项目mk文件(如scx15_sp6815eaplus_UUI.mk)中增加一行: PRODUCT_DEFAULT_THEME := xxxxx xxxx为对应的主题名称,如HelloColor ,注意该主题名称一定是包括在PRODUCT_THEME_PACKAGES 中的. 通常情况默认的主题在idh.code\vendor\sprd\UniverseUI\ThemeRes\universeui.mk 中定义的,如下: # Common control, which theme you want to set to default one. ifeq ($(strip $(PRODUCT_DEFAULT_THEME)),) PRODUCT_DEFAULT_THEME := SimpleStyle endif
+参考FAQ: FAQ46478
+### 问题: SC7731是否支持前2M+后8M的camera？
+解决方案: 可以支持,前后Camera都是双data lane的MIPI接口,8M preview时帧率会降低.
+参考FAQ: FAQ46492
+### 问题: 在录像的同时支持拍照
+解决方案: 启用零延时(ZSL)拍照功能即可 以工程sp7715ea为例, device/sprd/scx15_sp7715ea/BoardConfig.mk #select camera zsl cap mode TARGET_BOARD_CAMERA_CAPTURE_MODE := false 改成 TARGET_BOARD_CAMERA_CAPTURE_MODE := true
+参考FAQ: FAQ46498
+### 问题: 快速调试摄像头驱动和HAL层代码的技巧
+解决方案: 1.单独编译camera.xxx.so模块,命令如下: mmm vendor/sprd/open-source/libs/libcamera/ adb push camera.xxx.so /system/lib/hw/ 2.根据需要,去除应用记录的信息 设置->应用->相机->清除数据 3.重启手机
+参考FAQ: FAQ46499
+### 问题: 前后摄像头有相同的I2C地址，导致识别异常的不同厂家摄像头组合
+解决方案: 前后摄像头有相同的I2C地址,导致识别异常的摄像头组合主要集中于同一厂家的组合, 在FAQ33229已有详尽的列举 不同厂家摄像头组合导致识别异常比较少见,目前发现的有: SP2529/HI708---I2C地址:0x30 解决方式可参考FAQ30200实现 FAQ30200 GC0309/GC0328分别用作前后摄像头,出现识别异常的原因分析和解决方法
+参考FAQ: FAQ46505
+### 问题: 如何实现字体加粗显示？
+解决方案: 平台显示文字对应的接口为GUISTR_DrawTextToLCDByOffset,该接口最后一个参数state对应文字显示状态,加粗显示需要给state增加一个GUISTR_STATE_BOLD属性.
+参考FAQ: FAQ47854
+### 问题: 蓝牙mac地址的生成过程
+解决方案: 在wcnd守护进程中会对mac地址的创建做相应的判断,下图是mac地址的生成 流程
+参考FAQ: FAQ46555
+### 问题: user版如何判断手机出现modem assert
+解决方案: user版本中当出现手机掉网或掉卡(即信号栏出现x)的情况考虑可能是出现了modem assert. 此时如果有条件抓log,可从android的main log中搜索assert关键字,会发现类似信息说明出先assert的地方 10-17 16:23:55.540 128 149 D MODEMD : buf=W Modem Assert in file layer1_main.c at line 6724 exp=(SCI_SUCCESS == state) info=[L1:event fail Act] 10-17 16:23:55.540 128 149 D MODEMD : modem assert happen 如此时操作人员无条件或者不会抓log,可以在拨号盘输入*#*#83781#*#*进入工程菜单,关闭或者去掉勾选App Settings->modem reset.这样再次出现问题时手机状态栏会出现骷髅头图标,并在通知栏显示assert信息.
+参考FAQ: FAQ47351
+### 问题: 蓝牙通话无声如何处理？
+解决方案: 1. 首先检查蓝牙的IIS配制是否正确,IIS的配制参看IIS通道如何配置. 2. 然后检查蓝牙耳机的电话音频通道是否已成功连接,如果没有,则必然无声音,需要重新连接蓝牙耳机.如果成功连接, 则搜索main.log,查找是否有AT+SSAM=5(音频通道切换到bluetooth),或AT+SSAM=6(音频通道切换到带噪声抑制、 回声消除的bluetooth),如果有,则需要提供DSP LOG给DSP同事分析.
+参考FAQ: FAQ46567
+### 问题: 蓝牙听音乐卡顿问题如何处理
+解决方案: 因slog特别是bt log在听音乐的时候,写SD卡很频繁,而SDIO性能问题可能导至音乐卡顿,因此可以关闭SLOG,包括bt log,对比测试是否卡顿.如果关闭log,问题不能重现,则是SD卡读写性能问题,非BT问题.
+参考FAQ: FAQ46569
+### 问题: 关于ioctl和unlocked_ioctl的差别及其执行的顺序
+解决方案: 1、两者的差别: ioctl的格式是: long ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg); unlocked_ioctl的格式是: long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long); 两者间的差别在于形参的个数.千万不能搞错,如果两者搞混了,不会出现编译失败,但在执行命令的时候会出现意想不到的问题. 2、两都的执行顺序: 对于ioctl操作,优先执行f_op->unlocked_ioctl,如果没有unlocked_ioctl,那么执行f_op->ioctl.
+参考FAQ: FAQ46581
+### 问题: [7715]kernel中EMMC兼容列表在哪里？
+解决方案: 在kernel中的路径:\drivers\mtd\nand\sprd_nand_param.h 该文件列出了如下厂商的nand/EMMC struct sprd_nand_maker maker_table[] = { {0x2C, "Micron", micron_device_table}, {0x98, "Toshiba", toshiba_device_table}, {0xAD, "Hynix", hynix_device_table}, {0xC8, "Adata", adata_device_table}, {0xEC, "Samsung", samsung_device_table}, {0xFF, "kingstone", kingstone_device_table}, {0x00, NULL, NULL} }; 其中具体厂商的要看相应的device table;
+参考FAQ: FAQ46591
+### 问题: ResearchDownload、FactoryDownload和UpgradeDownload工具的区别
+解决方案: 目前提供的下载工具一共有三个,分别为ResearchDownload工具、FactoryDownload和UpgradeDownload工具. 其中ResearchDownload工具给客户研发人员使用,功能最全,可以选择是否要备份校准参数,另外可以用来生成PAC包. FactoryDownload和UpgradeDownload工具给生产线使用.FactoryDownload工具没有备份校准参数功能, 多用于PCBA生产阶段,SMT贴片完成第一次下载必须要用FactoryDownload工具.UpgradeDownload工具有强制备份校准参数功能,用于整机组装产线和售后升级,做软件升级必须要用UpgradeDownload工具,防止校准参数被擦除.
+参考FAQ: FAQ46636
+### 问题: SC7715平台EMMC版本如何修改为HVGA分辨率
+解决方案: 请对照NAND的HVGA版本的配置,在mk里添加: PRODUCT_LCD_TYPE := hvga PRODUCT_AAPT_CONFIG := mdpi 此外以下配置还需要修改,展讯默认hvga配置如下: ro.sf.lcd_density=160 lmk.autocalc=false ro.sf.lcd_width=36 ro.sf.lcd_height=54 其中ro.sf.lcd_height和ro.sf.lcd_width是测量出来的,是物理的宽度和高度. ro.sf.lcd_density的计算公式如下: density = (横向像素2 +纵向像素2 )1/2 /屏幕尺寸(inch) ,其中屏幕尺寸为屏幕对角线的长度.
+参考FAQ: FAQ46633
+### 问题: 通过终端修改loglevel的等级
+解决方案: 一般情况下,都是通过修改代码,然后再编译版本下载到手机,让loglevel的等级生效,现在有个更加便捷的方式(注:不适合需要打印开机过程的串口log): 连接手机,打开adb,通过以下adb命令修改即可生效: echo X > /proc/sys/kernel/printk X代表loglevel的等级
+参考FAQ: FAQ46645
+### 问题: 如何复制一个Bitmap?
+解决方案: Android平台Bitmap类中提供了这样方法,可以得到一个Bitmap的备份 Bitmap android.graphics.Bitmap.copy(Config config, boolean isMutable) 使用方法如下: Bitmap dstBitmap = srcBitmap.copy(srcBitmap.getConfig, true); srcBitmap.recycle(); //注意必要时recycle,回收内存
+参考FAQ: FAQ46651
+### 问题: 6531 7701 在国内怎么支持AGPS
+解决方案: AGPS是应用在GPS上的加快定位功能.手机利用网络上下传即时星图,直接输入到GPS芯片中.GPS芯片找星的速度就提高很快. 6531、7701是不支持AGPS的.但可以利用固定的坐标来实现AGPS功能.由于武汉是处于中国地理上的中心点.可以利用 武汉的位置从服务器中取得星图数据,传给GPS来实现AGPS功能.
+参考FAQ: FAQ46676
+### 问题: 7715 3G自适应
+解决方案: 支持,目前7175最新版本已支持,3g不再只局限于卡1. 单张3G卡,取决于所插卡槽. 两张3g卡,默认卡槽1/3g,可以通过设置更换.
+参考FAQ: FAQ46729
+### 问题: 什么是hprof文件
+解决方案: hprof文件是当java层的进程发生out of memory的时候,会将其heap等内容进行dump而生成的,以.hprof结尾的文件,主要用来进行辅助内存泄漏的分析,我们可以是用MAT工具对其进行分析.
+参考FAQ: FAQ49332
+### 问题: shark FM收听模式的设置方法
+解决方案: 当打开 FM 的时候, 驱动程序会完成一系列设置,以保证 FM 处于工作状态,具体设置如下: 1, 使能 MSPI 总线,该总线用于和 SR2351 通讯. 2, 配 置 时 钟 源 , 其 中 要 注 意 的 是 要 把 主 晶 震 配 置 成 在 deep sleep 模 式 下 依 然 工 作(0x402b00c4 的 bit8 为 1),目的是在 deep sleep 模式下 FM 依然可以工作. 3,配置相关 IO,比如 I/O 通路等. 4,初始化 SR2351,打开 SR2351 的 FM 功能. 5,初始化 MODEM. 经过如上的配置后,FM 就可以处于收听模式.
+参考FAQ: FAQ47923

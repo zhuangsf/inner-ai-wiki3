@@ -1,0 +1,300 @@
+### 问题: android中，如何将图片转换成黑白图片？
+解决方案: 先调用android的系统工具,获取图片生成bitmap文件,再使用android中的二值化技术,将图片转化成黑白图片. 将彩色图转换为纯黑白二色代码: /** * 将彩色图转换为纯黑白二色 * * @param 位图 * @return 返回转换好的位图 */ public static Bitmap convertToBlackWhite(Bitmap bmp) { int width = bmp.getWidth(); // 获取位图的宽 int height = bmp.getHeight(); // 获取位图的高 int[] pixels = new int[width * height]; // 通过位图的大小创建像素点数组 bmp.getPixels(pixels, 0, width, 0, 0, width, height); int alpha = 0xFF << 24;
+完整回答请参考FAQ: FAQ54468
+### 问题: 为了防止黑客破解SIM Lock，是否需要锁住下载端口？
+解决方案: 答:对于下载端口的忧虑,主要是担心黑客通过修改数据或者破解的方式来破坏sim lock的相关功能,但是对于download端口是不建议锁住的,原因如下: 1 SIM Lock相关保密数据均存放在Modem NV中,每一个手机项目都有自己的NV,不同的NV是不能混用的,只要客户项目NV的版本保护好不被泄露出去,黑客是无法了解客户的项目中 NV如何保护SIM Lock数据的; 2 Modem NV是SPRD的私有协议,并不开放,一般的黑客无法了解NV的协议和内容;也无法读取NV或者下载NV; 3 下载端口是由芯片的Rom Code来实现的,不能修改;如果要禁止下载端口,只有硬件上去掉启动下载端口的按键(Power+音量键);然而下载端口做为最后维修升级的手段,一旦禁止,将会给后续的升级带来很多麻烦; 4 理论上来说,最安全并且绝对能够防止黑客破解的方案只有Secure Boot,然而这种方案对
+完整回答请参考FAQ: FAQ54543
+### 问题: ffos 7715如何修改软硬件版本？
+解决方案: 1,硬件版本: Device information->Model与Device information->More Information->Hardware revision显示的是一个东西,都是指芯片类型,并非产品名称.建议这个可不修改. 若仍需要修改请可按如下方式修改: 1)、device/sprd/scx15_sp7715ga/scx15_sp7715gaplus.mk中的PRODUCT_MODEL的值改为F15. 2)、修改Device information->Model的显示,找到gaia/apps/settings/elements/about.html文件中的deviceinfo.hardware,将其替换为deviceinfo_product_model. 3)、修改Device information->More Information->Hardware revi
+完整回答请参考FAQ: FAQ54700
+### 问题: ffos 7715 如何内置闹钟铃声和设置默认闹钟铃声？
+解决方案: 假设此处要内置的闹钟铃声文件的信息如下: 文件名: ac_for_test.opus html中对应id: ac_for_test_opus 选项设置中显示名称: Test alarm ringtone 内置步骤如下 1. 将声音文件 ac_for_test.opus放置在文件夹 gaia/shared/resources/media/alarms/ 路径下 2. 在 gaia/apps/clock/js/panels/alarm_edit/panel.html 中添加代码 <select id="sound-select"> <option value="0" data-l10n-id="noSound">No Sound</option> <option value="ac_for_test.opus" data-l10n-id="ac_for_test_opus "></option
+完整回答请参考FAQ: FAQ54713
+### 问题: android4.4编译环境是否支持支持ubuntu 14.04
+解决方案: 我们android4.4的编译脚本都是基于ubuntu12.04上做的,在14.04编译则会出现以下错误: Traceback (most recent call last): File "scripts/make_css_value_keywords.py", line 177, in <module> in_generator.Maker(CSSValueKeywordsWriter).main(sys.argv) File "/home/jinwh/project/7731/external/chromium_org/third_party/WebKit/Source/core/scripts/in_generator.py", line 119, in main writer.write_files(options.output_dir) File "/home/jinwh/pro
+完整回答请参考FAQ: FAQ54768
+### 问题: 如何配置SIM LOCK，只支持移动联通卡
+解决方案: 1. TD_TIANJI2_NV_TYPE --> NV_PARAM_TYPE_SIM_CFG1 --> is_support_gsm_only 配置成1 2. BaseParam->SIM_LOCK_CUSTOMIZE_DATA --> sim_lock_status 配置成1 SIM_LOCK_USER_DATA --> sim_lock_status 配置成1 3. BaseParam->SIM_LOCK_CUSTOMIZE_DATA -->max_num_trials 这个设置的大点,最大可输入次数,设置个比如说10000之类的 4、BaseParam->SIM_LOCK_CUSTOMIZE_DATA -->time_interval 设置成1,设置时间间隔 BaseParam->SIM_LOCK_CUSTOMIZE_DATA -->time_multiplier 设置成1,出错后
+完整回答请参考FAQ: FAQ54770
+### 问题: 如何解决在可视电话回落界面有另一来电状态栏有两个来电图标的问题
+解决方案: [产生原因] 语音来电会更新通知栏图标. [解决方案] Fall back状态来语音电话后视频通话界面会被finish,此时取消关于视频通话的通知.具体的修改如下: ./packages/services/Telephony/src/com/sprd/phone/videophone/InVideoCallScreen.java // onPause is guaranteed to be called when the InCallScreen goes // in the background. @Override protected void onPause() { ...... + if(InCallScreenMode.FALL_BACK != mInCallScreenMode){ //这里增加判断 mVideoPhoneGlobals.getNotificationMgr()
+完整回答请参考FAQ: FAQ54774
+### 问题: SC7731如何通过uart抓取armlog？
+解决方案: 在sc7731工程中添加了专门的diag命令来切换usb log还是uart log. 1. 版本烧写完成后默认是USB Log 2. 打开armlogel->Send diag command窗口 3. USB Log切换到UART Log:接机身的USB口,正常输出Trace.在diag command窗口发送命令type=5 sub_type=5 buffer=007A12000003 (前八位007A1200是波特率8M的16进制表示,可选8M,3250000,460800,115200.均使用8位16进制表示,后四位00表示使用cp的哪个uart,03表示BB上使用的uart口). 4. 将USB线连接debug板(上小板)上的USB口,channelserver中设置8000000,选择手机枚举出的串口(串口号最大的那个),连接arm log和dsp log就可以输出UART 
+完整回答请参考FAQ: FAQ54811
+### 问题: android中，bitmap与base64字符串之间如何转换？
+解决方案: /** * bitmap转为base64 * @param bitmap * @return */ public static String bitmapToBase64(Bitmap bitmap) { String result = null; ByteArrayOutputStream baos = null; try { if (bitmap != null) { baos = new ByteArrayOutputStream(); bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos); baos.flush(); baos.close(); byte[] bitmapBytes = baos.toByteArray(); result = Base64.encodeToString(bitmapBytes, Base64.
+完整回答请参考FAQ: FAQ54877,含图片
+### 问题: 如何打开DT(Device Tree)项目中的电池温度检测功能
+解决方案: 如果项目需要电池温度检测的功能,可以按照下面的步骤操作: (1)打开温度检测功能 电池温度检测相关配置 temp-support = <0>; // 是否开启温度检测 temp-adc-ch = <3>; // adc 通道 temp-adc-scale = <1>; temp-adc-sample-cnt = <15>; temp-table-mode = <1>; temp-tab-size = <19>; temp-tab-val = <1084 1072 1055 1033 1008 977 938 897 850 798 742 686 628 571 513 459 410 362 318>; // adc值 temp-tab-temp = <750 800 850 900 950 1000 1050 1100 1150 1200 1250 1300 1350 1400 145
+完整回答请参考FAQ: FAQ61458
+### 问题: 国际移动用户识别码 IMSI简介
+解决方案: 国际移动用户识别码(IMSI) international mobile subscriber identity 国际上为唯一识别一个移动用户所分配的号码.　 IMSI共有15位,其结构如下:MCC+MNC+MSIN ,(MNC+MSIN=NMSI) MCC:Mobile Country Code,移动国家码,MCC的资源由国际电联(ITU)统一分配和管理,唯一识别移动用户所属的国家,共3位,中国为460;　　 MNC:Mobile Network Code,移动网络码,共2位,中国移动TD系统使用00,中国联通GSM系统使用01,中国移动GSM系统使用02,中国电信CDMA系统使用03,一个典型的IMSI号码为460030912121001 MSIN:Mobile Subscriber Identification Number共有10位,其结构如下:09+M0M1M2M3+ABCD　其
+完整回答请参考FAQ: FAQ55036
+### 问题: 设置Activity的无标题栏,为什么要在Activity调用setContentView(int resId)之前调用requestWindowFeature(...)
+解决方案: 如果不是在Activity第一次调用setContentView之前调用requestWindowFeature(Window.FEATURE_NO_TITLE)就会抛出下面异常信息.(这里提到的第一次调用一般都指放在Activity的onCreate(...)方法中调用,当然不放在onCreate(...)中也可以) AndroidRuntimeException: requestFeature() must be called before adding content 这个异常来自framework/base/policy/src/com/android/internal/policy/impl/PhoneWindow.java中的 public boolean requestFeature(int featureId) { if (mContentParent != null) {
+完整回答请参考FAQ: FAQ55100
+### 问题: 如何添加铃声资源配置到闹钟铃声,并设置为默认铃声?
+解决方案: 修改方案: (1).将要新增的XXX.ogg文件,放到frameworks\base\data\sounds\alarms\ogg目录下; (2).修改frameworks\base\data\sounds\AllAudio.mk 与 frameworks\base\data\sounds\AudioPackage_sprd_56.mk,将新增文件加入到铃声列表; AllAudio.mk : PRODUCT_COPY_FILES += \ $(LOCAL_PATH)/Alarm_Beep_01.ogg:system/media/audio/alarms/Alarm_Beep_01.ogg \ $(LOCAL_PATH)/Alarm_Beep_02.ogg:system/media/audio/alarms/Alarm_Beep_02.ogg \ $(LOCAL_PATH)/Alarm_Be
+完整回答请参考FAQ: FAQ58176
+### 问题: 添加解锁到浏览器去浏览一个网页，但是无法打开浏览器，请问如何解决？
+解决方案: 浏览器为了降低功耗,和安全方面的考虑在灭屏及锁屏的情况下不会去新打开url. 具体逻辑是在BrowserActivity.java public void onCreate(Bundle icicle)中,调用shouldIgnoreIntents()方法做判断, 如果修改shouldIgnoreIntents() 去掉ignore |= mKeyguardManager.inKeyguardRestrictedInputMode(); 应该就可以打开浏览器,但我们不建议这么做. 修改建议是发送intent时约定一个字段,如果intent是从KeyGuard发来的,那么就流程就执行下去, 参考代码如下: Intent callIntent = new Intent(); callIntent.setAction(Intent.ACTION_VIEW); Uri uri = Uri.pars
+完整回答请参考FAQ: FAQ58029
+### 问题: 如何在SprdLauncher1的Menu弹出界面中增加设置入口？
+解决方案: 1、修改布局文件--新增SettingsView: vendor/sprd/UniverseUI/SprdLauncher1/res/layout/uui_overview_panel.xml 在此文件中增加一个View: <TextView android:id="@+id/settings_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:drawablePadding="4dp" android:drawableTop="@drawable/setting_button" android:fontFamily="sans-serif-condensed" android:gravity="center_horizontal" android:text="@s
+完整回答请参考FAQ: FAQ55229
+### 问题: 如何配置ffos中预装哪些app？
+解决方案: 1、FFOS中预装app是通过makefile中的GAIA_APPDIRS与GAIA_APP_CONFIG来配置的,且GAIA_APPDIRS的优先级更高; 2、在gaia目录下的Makefile中有一套GAIA_APPDIRS与GAIA_APP_CONFIG的默认配置,但是在device/sprd/中的各个board目录下也有一套配置,且board目录下的优先级将高于gaia目录下的配置; 3、board目录下的配置在$(BOARDDIR)/device.mk或者$(PLATDIR)/device.mk中定义. 以ffos1.4 scx15_sp7715ga为例: 在device\sprd\scx15_sp7715ga下没有device.mk,但device\sprd\scx15\device.mk存在,且其中有如下配置: export GAIA_APP_SRCDIRS=apps ext
+完整回答请参考FAQ: FAQ55277
+### 问题: 如何在拨号盘(UUI版本)的联系人中添加搜索功能？
+解决方案: 修改文件:packages\apps\Dialer\res\layout/show_all_contacts_fragment.xml 修改内容: <!-- Shown only when an Account filter is set. - paddingTop should be here to show "shade" effect correctly. --> + <RelativeLayout + android:id="@+id/search_view_container" + android:layout_width="match_parent" + android:layout_height="wrap_content" + android:layout_marginBottom="-1px" + android:background="@drawable/search_
+完整回答请参考FAQ: FAQ55387
+### 问题: getWidth和getMeasuredWidth在何时可以得到正确数值?
+解决方案: getMeasuredWidth在源码中的解释如下: /** * Like {@link #getMeasuredWidthAndState()}, but only returns the * raw width component (that is the result is masked by * {@link #MEASURED_SIZE_MASK}). * * @return The raw measured width of this view. */ public final int getMeasuredWidth() { return mMeasuredWidth & MEASURED_SIZE_MASK; } /** * Return the full width measurement information for this view as computed * b
+完整回答请参考FAQ: FAQ55424
+### 问题: nativeUI版本信息编辑界面如何标识信息来源？
+解决方案: nativeUI设计如此,信息编辑界面,往来信息不显示"发送自","接收自"字样, 若要修改,可进行如下修改,仅供参考: packages\apps\Mms\src\com\android\mms\ui\MessageListItem.java private void bindCommonMessage(final boolean sameItem) { ...... /* SPRD: Add for multi-sim module. @{ */ if (MessageUtils.isMSMS && !mToSimMessage) { mPhoneidIndicator.setVisibility(View.VISIBLE); -- if (!MessageUtils.UNIVERSEUI_SUPPORT) { ++ /*if (!MessageUtils.UNIVERSEUI_SUP
+完整回答请参考FAQ: FAQ55430
+### 问题: 如何让呼吸灯在充电时亮起
+解决方案: Android原生在BatteryService中已经写好了在充电时调用指示灯的代码,使用的灯效是ID为LIGHT_ID_BATTERY的指示灯.但是很多手机上硬件上只有一个指示灯,而且我们灯效的HAL层没有对ID为LIGHT_ID_BATTERY的灯做处理,只对LIGHT_ID_NOTIFICATIONS的灯效做了处理.比较简单的办法就是在HAL层中做处理,复用指示灯. 在vendor/sprd/open-source/libs/liblights/lights.c文件的open_lights函数中增加对LIGHT_ID_BATTERY的支持 static int open_lights(const struct hw_module_t *module, char const *name, struct hw_device_t **device) { //................
+完整回答请参考FAQ: FAQ55460
+### 问题: 宽长高短的屏如何解决开机动画显示异常的问题
+解决方案: 在平台中开机动画应用在创建Surface对象的时候,其大小默认是宽(width)小于高(height).如果屏物理宽度本身就大于高度,此时由于Surface大小和屏大小不匹配,则开机动画显示异常. 此时需要修改BootAnimation.cpp文件: status_t BootAnimation::readyToRun() { ... if (dinfo.w > dinfo.h) { control = session()->createSurface( String8("BootAnimation"), dinfo.h, dinfo.w, PIXEL_FORMAT_RGB_565, ISurfaceComposerClient::eFXSurfaceNoDisp); } else { control = session()->createSurface( String8("BootAni
+完整回答请参考FAQ: FAQ55473
+### 问题: WIFI 802.11D 每个国家对应的国家码是什么，信道顺序是多少
+解决方案: 国家 国家码 2.4GHz 信道 室内AP 阿根廷 AR 1-13 √ 亚美尼亚 AM 1-13 √ 澳大利亚 AU 1-13 √ 奥地利 AT 1-13 √ 阿塞拜疆 AZ 1-13 √ 巴林群岛 BH 1-13 √ 白俄罗斯 BY 1-13 √ 比利时 BE 1-13 √ 伯利兹 BZ 1-13 √ 玻利维亚 BO 1-13 √ 巴西 BR 1-13 √ 保加利亚 BG 1-13 √ 文莱 BN 1-13 √ 加拿大 CA 1-11 √ 智利 CL 1-13 √ 中华人民共和国 CN 1-13 √ 哥伦比亚 CO 1-11 √ 哥斯达黎加 CR 1-13 √ 克罗地亚 HR 1-13 √ 塞浦路斯 CY 1-13 √ 捷克 CZ 1-13 √ 丹麦 DK 1-13 √ 多米尼加共和国 DO 1-11 √ 厄瓜多尔 EC 1-13 √ 埃及 EG 1-13 √ 萨尔瓦多 SV 1-13 
+完整回答请参考FAQ: FAQ55518
+### 问题: 如何判断触摸过程中有多少个手指在屏幕上
+解决方案: 可以根据event.getAction() & MotionEvent.ACTION_MASK的结果来判断是何种事件, 是ACTION_DOWN、ACTION_UP还是ACTION_MOVE. MotionEvent.ACTION_DOWN:在第一个点被按下时触发 MotionEvent.ACTION_UP:当屏幕上唯一的点被放开时触发 MotionEvent.ACTION_POINTER_DOWN:当屏幕上已经有一个点被按住,此时再按下其他点时触发. MotionEvent.ACTION_POINTER_UP:当屏幕上有多个点被按住,松开其中一个点时触发(即非最后一个点被放开时). MotionEvent.ACTION_MOVE:当有点在屏幕上移动时触发. 根据上面这些原理,就可以判断在触摸过程中有多少个手指在屏幕上: switch (event.getAction() & Motion
+完整回答请参考FAQ: FAQ55555
+### 问题: 如何预置有源码APK使得用户可以卸载
+解决方案: 1.在 packages/apps 下面以需要预置的 APK 名字创建文件夹,以 预制一个名为Test的APK为例 2.将 Test.apk 放到 packages/apps/Test 下面; 3.在 packages/apps/Test 下面创建文件 Android.mk,文件内容如下: LOCAL_PATH := $(call my-dir) include $(CLEAR_VARS) LOCAL_MODULE := Test LOCAL_MODULE_TAGS := optional LOCAL_SRC_FILES := $(call all-java-files-under, src) LOCAL_MODULE_PATH := $(TARGET_OUT_DATA_APPS) include $(BUILD_PACKAGE) include $(call all-makefiles-
+完整回答请参考FAQ: FAQ55585
+### 问题: 如何解决编译差分包出现的ValueError: can't find recovery API version in input target-files
+解决方案: 做差分包的时候.把ota_new.zip update.zip 这两文件放在代码的根目录下,也就是和build文件同目录, 输入 ./build/tools/releasetools/ota_from_target_files -i ota_old.zip ota_new.zip update.zip 最后报ValueError: can't find recovery API version in input target-files 原因是在执行上面的脚本时如果使用选项i则会调用WriteIncrementalOTAPackage会从ota_new包和update包中的META目录下搜索 misc_info.txt 来读取recovery_api_version的值.但是在执行make otapackage命令时生成的update.zip包中没有这个目录更没有这个文档. 此时就需要使用
+完整回答请参考FAQ: FAQ55588
+### 问题: 如何在工程测试模式的psensor测试项中，增加显示出贴脸的距离
+解决方案: 以al3006_pls传感器为例说明: 驱动修改 al3006_pls.c int pls_distance; static DEVICE_ATTR(distance, S_IRUGO | S_IWUSR, al3006_pls_show_distance, NULL); static ssize_t al3006_pls_show_distance(struct device* cd, struct device_attribute *attr, char* buf) { ssize_t ret = 0; sprintf(buf, "%d\n",pls_distance); ret = strlen(buf) + 1; return ret; } static int al3006_pls_create_sysfs(struct i2c_client *client) { err = d
+完整回答请参考FAQ: FAQ55606
+### 问题: [日历]日历设置中如何修改家里时区中国家的英文显示名称？
+解决方案: 由于日历使用的时区库是封装的,只有从上层修改,修改方法如下: 1、在frameworks\opt\timezonepicker\assets\zone.tab中找到要修改的国家对应的country_code(如CI、TN). 2、修改frameworks/opt/timezonepicker/src/com/android/timezonepicker/TimeZoneData.java文件中如下代码处(如 科特迪瓦 英文显示修改为:The Republic of Cote d'ivoire ; 突尼斯 英文显示修改为Tunis ;). public class TimeZoneData { if (PALESTINE_COUNTRY_CODE.equalsIgnoreCase(countryCode)) { countryDisplayName = mPalestineDisplayNa
+完整回答请参考FAQ: FAQ55688
+### 问题: 什么是IMSI,MCC,MNC，MSIN以及它们之间的结构关系?
+解决方案: IMSI: International Mobile Subscriber Identity (string without double quotes)国际移动用户识别码 MCC:Mobile country code:移动用户所属国家代号 MSIN:Mobile Subscriber Identification Number 是移动用户识别码 IMSI,它是在公众陆地移动电话网(PLMN)中用于唯一识别移动用户的一个号码其中MCC是移动用户所属国家代号,占3位数字,中国的MCC规定为460;MNC是移动网号码,最多由两位数字组成,用于识别移动用户所归属的移动通信网,MNC号不同运营商,可以能有多个号码,例如:中国移动使用00和02,中国联通使用01,中国电信CDMA系统使用03,在实际过程中,可能有增加;MSIN是移动用户识别码,用以识别某一移动通信网中的移动用户 IMSI共有15位
+完整回答请参考FAQ: FAQ56031
+### 问题: event log中dvm_lock_sample相关log什么意思？
+解决方案: 1. 在event log中经常会看到和关键字"dvm_lock_sample"相关的log,如: 12-06 21:22:09.375 636 651 I dvm_lock_sample: [system_server,1,WindowManager,81,WindowAnimator.java,96,WindowManagerService.java,2780,16] 2. 其tag定义在system/core/logcat/event.logtags中, # Dalvik VM 20003 dvm_lock_sample (process|3),(main|1|5),(thread|3),(time|1|3),(file|3),(line|1|5),(ownerfile|3),(ownerline|1|5),(sample_percent|1|6) 其log信息写入是在logCont
+完整回答请参考FAQ: FAQ55677
+### 问题: 如何将 FM 加入一键清理的白名单，在一键清理时FM不会退出？
+解决方案: 将FM加入一键清理的白名单,需要修改packages/apps/RamOptimizer模块如下代码: 1、--- a/res/values/arrays.xml +++ b/res/values/arrays.xml <item>com.sprd.audioprofile</item> <item>com.android.bluetooth</item> <item>com.android.music</item> + <item>com.thunderst.radio</item> </string-array> <!-- the name of service that we wan't to kill --> <string-array name="recent_keep_service" translatable="false"> <item>com.sprd.ramoptimi
+完整回答请参考FAQ: FAQ55704
+### 问题: ViewStub的特点和限制
+解决方案: 一、特点: 1. ViewStub只能Inflate一次,之后ViewStub对象会被置为空.某个被ViewStub指定的布局被Inflate后,就不会够再通过ViewStub来控制它了. 2. ViewStub只能用来Inflate一个布局文件,而不是某个具体的View. 基于以上的特点,使用ViewStub的场景有: 1. 在程序的运行期间,某个布局在Inflate后,就不会有变化,除非重新启动. 因为ViewStub只能Inflate一次,之后会被置空,所以无法指望后面接着使用ViewStub来控制布局.所以当需要在运行时不止一次的显示和 隐藏某个布局,那么ViewStub是做不到的.这时就只能使用View的可见性来控制了. 2. 想要控制显示与隐藏的是一个布局文件,而非某个View. 因为设置给ViewStub的只能是某个布局文件的Id,所以无法让它来控制某个View. 所以,如果
+完整回答请参考FAQ: FAQ55804
+### 问题: 如何在拨号盘(Native UI)的联系人中添加搜索功能？
+解决方案: 步骤一,在layout中添加搜索输入框; 修改文件:packages\apps\Dialer\res\layout\show_all_contacts_fragment.xml 修改内容: <!-- Shown only when an Account filter is set. - paddingTop should be here to show "shade" effect correctly. --> + <RelativeLayout + android:id="@+id/search_view_container" + android:layout_width="match_parent" + android:layout_height="wrap_content" + android:layout_marginBottom="-1px" + android:backgrou
+完整回答请参考FAQ: FAQ55832
+### 问题: FFOS如何去除camera应用前置摄像头状态下的切换闪光灯的图标
+解决方案: 由于处于前置摄像头状态,不需要闪光灯,所以进入camera界面上方的开关闪光灯的图标没有什么意义,所以可以通过如下方法去除掉该图标: 在gaia/apps/camera/js/controllers/hud.js下有个updateFlash()函数,当切换前/后置摄像头时会被调用,在此函数中判断当前的摄像头是否是前置,如果是则加个标识,并将此标识通过参数传给gaia/apps/camera/js/views/hud.js中的setFlashMode()HudController.prototype.updateFlash = function() { var selected = this.settings.flashModes.selected(); if (this.settings.cameras.selected('key') === 'front') { supported = 
+完整回答请参考FAQ: FAQ55862
+### 问题: FM常见问题：为什么：后台播放FM时，使用 Dopool Player手机电视播放器观看手机电视后，FM不恢复播放？
+解决方案: 根据AudioFocus机制, 应用程序申请 AudioFocus ,可以有长久占用AudioFocus(AUDIOFOCUS_GAIN) 和临时占用AudioFocus(AUDIOFOCUS_GAIN_TRANSIENT) 等几种类型 当应用程序申请 AudioFocus 类型为 临时占用AudioFocus的应用(AUDIOFOCUS_GAIN_TRANSIENT)的时候, FM会收到来自于AudioFocus的,AUDIOFOCUS_LOSS_TRANSIENT 消息,此时FM停止播放,处于后台, 该应用结束后,FM会收到来自于AudioFocus的恢复播放 消息,此时FM继续播放. 当应用程序申请 AudioFocus 类型为 长久占用AudioFocus的应用(AUDIOFOCUS_GAIN)的时候, FM会收到来自于AudioFocus的,AUDIOFOCUS_LOSS 消息,
+完整回答请参考FAQ: FAQ55960
+### 问题: 如何使用Viewstub
+解决方案: ViewStub是一个轻量级的的view,它没有尺寸,也不会绘制以及以某种形式参与到布局中来. 这意味着ViewStub去inflate以及保留在View层次中的代价是很廉价的,ViewStub中引用的布局只在你想添加到UI上时才会显示,以VT拨号键为例: 当系统支持VT时才需要显示VT拨号键,因此在dialpad的视图结构中定义view_stub如下: <ViewStub android:id="@+id/video_dial_button_stub" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginLeft="3dp" android:layout_marginRight="3dp" android:layout_weight="2" android:layout=
+完整回答请参考FAQ: FAQ55978
+### 问题: ffos如何单独编译保留的android模块？
+解决方案: ffos中保留的android模块仍然可以用android原生的编译方法,不过先要查看下当前project的配置,下面以ffos 6821为例: 1、查看根目录下的.config文件,查找LUNCH字段的值 如cat .config MAKE_FLAGS=-j26 GECKO_OBJDIR=objdir-gecko DEVICE_NAME=sp6821a_gonk4.0 DEVICE=sp6821a_gonk LUNCH=sp6821a_gonk-userdebug 2、source build/envsetup.sh 3、lunch $(LUNCH) $(LUNCH)即上面查找出来的值,对于ffos 6821来说,就是lunch sp6821a_gonk-userdebug 4、make需要编译的android模块,比如单独编译device/sprd/common/apps/engine
+完整回答请参考FAQ: FAQ56057
+### 问题: SC7731平台如何开启支持ble（bluetooth low energy）特性？
+解决方案: 修改方法如下: (1). \device\sprd\scx35\device.mk中增加如下一行 # general configs PRODUCT_COPY_FILES += \ ...... frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \ (2). \frameworks\native\data\etc\handheld_core_hardware.xml中增加一行 <feature name="android.hardware.bluetooth_le" /> (3). \frameworks\native\data\etc\tablet_core_hardware.xml中增加一行 <feat
+完整回答请参考FAQ: FAQ56062
+### 问题: 插入充电器，充电level已经是100的情况下，状态还是charging，导致状态栏图标一直为显示充电状态的原因分析和解决方法。
+解决方案: 原因分析: 插入usb显示充电为android原生设计的,平台电量显示100%不一定表示真正充满,有可能是电量的虚饱和,所以当电量显示100%时还会显示在充电状态. 解决方法: 如果现在要求不管在状态是否为charging,只要level 等于 100 就要显示充满的图标.修改如下: 在frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/BatteryController.java中onReceive函数中在BatteryManager.BATTERY_STATUS_CHARGING 中添加 level < 100 的约束,如下: public void onReceive(Context context, Intent intent) { …….. if (level < 100 && s
+完整回答请参考FAQ: FAQ56058
+### 问题: SC7731平台上相机拍照的相片如何修改详细信息中的制造商(maker)和模型(model)的信息？
+解决方案: 照片信息中的maker和model,代码中是在vendor/sprd/open-source/libs/libcamera/sc8830/src/cmr_oem.c中添加的.可以查看以下信息: #define EXIF_DEF_MAKER "Spreadtrum" #define EXIF_DEF_MODEL "spxxxx" 然后在用到时,通过以下方式获取: property_get("ro.product.manufacturer", property, EXIF_DEF_MAKER); property_get("ro.product.model", property, EXIF_DEF_MODEL); 也就是说,如果没有配置ro.product.manufacturer和ro.product.model,则会用默认定义的EXIF_DEF_MAKER和EXIF_DEF_MODEL. 
+完整回答请参考FAQ: FAQ56064
+### 问题: SC7715/SC7731 wifi需要根据国家码进行屏蔽掉相应的频段，请问平台版本是否支持？并且如何验证？
+解决方案: SC7715 MocorDroid4.4_3.10_14A_W14.19.1_P30.2_P7及以后版本支持该功能; SC7731 MocorDroid4.4_TShark28_MP_W14.47.2及以后版本支持该功能. 测试验证方法如下: Case1:验证country CN(设置中国国家码,验证是否支持channel 13) 预置条件:1.AP设置为channel 13,安全模式设置为open,2.手机不插SIM卡 测试步骤:开启Wi-Fi,在shell下执行下述命令: adb root adb remount adb shell wpa_cli -iwlan0 -pwpa_wlan0 IFNAME=wlan0 SET country CN adb shell wpa_cli -iwlan0 -pwpa_wlan0 IFNAME=wlan0 save_config adb reboo
+完整回答请参考FAQ: FAQ56068
+### 问题: 展讯Slog如何抓取
+解决方案: Preparation for User release (Skip this is for Userdebug version) 1． Click on "Build Number" 3~4 times. 2． Click on "Developer options". If you don't see "Developer options", go back previous step and try again. 3． Enable debugging Slog 1． Insert a SD card to the phone. 2． Dial *#*#83781#*#* to enter engineering mode, and then swipe to DEBUG&LOG page 3． Click on Log settings, then PC log. Turn ARM
+完整回答请参考FAQ: FAQ56098
+### 问题: 如何增加前摄像头0.3MP插值到1.3MP的功能？
+解决方案: 解决: 1.device/sprd/xxx/BoardConfig.mk # select camera 2M,3M,5M,8M FRONT_CAMERA_SUPPORT_SIZE := 1P3M 2.vendor/sprd/open-source/libs/libcamera/Camera.mk ifeq ($(strip $(CAMERA_SUPPORT_SIZE)),2M) LOCAL_CFLAGS += -DCONFIG_CAMERA_SUPPORT_2M endif ++ifeq ($(strip $(FRONT_CAMERA_SUPPORT_SIZE)),1P3M) ++LOCAL_CFLAGS += -DCONFIG_FRONT_CAMERA_SUPPORT_1P3M ++endif 3.vendor/sprd/open-source/libs/libcamera/sc883
+完整回答请参考FAQ: FAQ56176
+### 问题: 配置前摄支持1080P录像的方法
+解决方案: 解决: 1.HAL层增加对1080P的支持 vendor/sprd/open-source/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h struct config_element sprd_front_camera_hardware_config[] = { ... {"preview-size-values", "960x540,720x540,720x480,640x480,352x288,320x240,176x144"}, 改成 {"preview-size-values", "1920x1088,1280x960,1280x720,960x540,720x540,720x480,640x480,352x288,320x240,176x144"}, ... } 2.配置media_profiles.xml文件,使上层UI
+完整回答请参考FAQ: FAQ56181
+### 问题: 去除后摄，只使用前摄作为单摄像头
+解决方案: 解决: 前后摄像头从驱动的角度看,只有PowerDown脚和MIPI接口配置的差异, 完全可以理解为:单摄像头时,唯一的摄像头就是后摄像头,按上述思路配置如下: 1.device/sprd/xxx/BoardConfig.mk TARGET_BOARD_NO_FRONT_SENSOR := false 改成 TARGET_BOARD_NO_FRONT_SENSOR := true # select camera 2M,3M,5M,8M CAMERA_SUPPORT_SIZE := 8M//根据实际摄像头分辨率修改,如2M 2.device/sprd/xxx/BoardConfig.mk 修改摄像头对应的MIPI接口 #select mipi d-phy mode(none, phya, phyb, phyab) TARGET_BOARD_FRONT_CAMERA_MIPI := phyb 
+完整回答请参考FAQ: FAQ56182
+### 问题: 拨号盘输入一个数字键，点击添加到联系人，为何不显示输入号码？
+解决方案: 在拨号盘上仅输入一个数字键,按搜索结果下方的添加到联系人.会触发\packages\apps\Dialer\src\com\android\dialer\list\SearchFragment.java的onItemClick()方法.在此方法中会执行DialerPhoneNumberListAdapter.SHORTCUT_ADD_NUMBER_TO_CONTACTS的分支.这里会通过adapter.getFormattedQueryString()获取号码,并将此号码作为intent参数,最终传到联系人编辑界面.而获取的号码在packages\apps\Dialer\src\com\android\dialer\list\DialerPhoneNumberListAdapter.java的setQueryString()方法中通过调用PhoneNumberUtils.formatNum
+完整回答请参考FAQ: FAQ56186
+### 问题: OV5645与GC2145前后摄像头组合互相干扰
+解决方案: 1.典型logel分析: //开始打开后摄像头 12-10 20:51:00.130 2704 2704 D CameraHolder: open camera 0 ... //升级版本后第一次进摄像头,前后摄像头均未识别过,故idex值均为0xFF(255) 12-10 20:51:00.220 175 2733 I sensor_drv_u: L 3170, Sensor_SetMark: Sensor_SetSensorParam:sensor_identified=0,idex is 255,255. ... //识别后摄像头OV5645失败 12-10 20:51:00.280 175 2733 I : L 1390, _ov5645_Identify: fail,pid_value=0 ... //开始识别前摄像头 12-10 20:51:00.410 175 2733 I s
+完整回答请参考FAQ: FAQ56187
+### 问题: 去掉相机设置中“测光”功能项的方法
+解决方案: 在BoardConfig.mk中增加去掉"测光"功能的配置: device/sprd/xxx/BoardConfig.mk TARGET_BOARD_CAMERA_NO_EXPOSURE_METERING := true 具体作用项如下: 1.vendor/sprd/open-source/libs/libcamera/Camera.mk ifeq ($(strip $(TARGET_BOARD_CAMERA_NO_EXPOSURE_METERING)),true) LOCAL_CFLAGS += -DCONFIG_EXPOSURE_METERING_NOT_SUPPORT endif 2.vendor/sprd/open-source/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h struct config_element sp
+完整回答请参考FAQ: FAQ56188
+### 问题: GSM 频段配置方法？
+解决方案: 1) 1.nv_type->NV_BAND_SELECT:请结合手机能力填写,取值含义如下: EGSM900: 0 DCS1800:1 EGSM_DCS_DUALBAND:2 PCS1900:3 GSM850:4 EGSM_PCS_DUALBAND:5 GSM850_DCS_DUALBAND:6 GSM850_PCS_DUALBAND:7 GSM850_EGSM_DUALBAND:8 GSM850_EGSM_PCS_TRIBAND:9 GSM850_EGSM_DCS_TRIBAND:10 EGSM_DCS_PCS_TRIBAND:11 GSM850_EGSM_DCS_PCS_QUALBAND:12 DCS_PCS_DUALBAND:13 GSM850_DCS_PCS_TRIBAND:14 2.td_ptianji2_nv_type->nv_param_type_prev_ms_class_
+完整回答请参考FAQ: FAQ56205
+### 问题: WCDMA支持频段配置？
+解决方案: NV中设置: TD_TIANJI2_NV_TYPE ----NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY ----rf_cap NumBand ----BandInfo ----BandInfo[0][0] ----BandInfo[0][1] NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY定义了信令下支持的频段信息,一定要和你实际支持的频段信息一致,否则会导致切换频段异常,其中: NumBand:定义了signalling band数; BandInfo[0][0]:定义了signalling band; BandInfo[0][0]:定义了signalling band的功率等级,默认为class3; 如果上图中的NV中显示的是灰色的,可以在NV工程文件夹中找到td_nv_type.nvm文件,打开,并用查找功能
+完整回答请参考FAQ: FAQ56207
+### 问题: 拨号盘输入一长串号码，点击添加到联系人，为何却未显示输入的号码？
+解决方案: 在拨号盘上输入号码,按搜索结果下方的添加到联系人.会触发\packages\apps\Dialer\src\com\android\dialer\list\SearchFragment.java的onItemClick()方法.在此方法中会执行DialerPhoneNumberListAdapter.SHORTCUT_ADD_NUMBER_TO_CONTACTS的分支.这里会通过adapter.getFormattedQueryString()获取号码,并将此号码作为intent参数,最终传到联系人编辑界面.而获取的号码在packages\apps\Dialer\src\com\android\dialer\list\DialerPhoneNumberListAdapter.java的setQueryString()方法中通过调用PhoneNumberUtils.formatNumber(
+完整回答请参考FAQ: FAQ56221
+### 问题: 如何修改wifi直连默认名称
+解决方案: ./base/wifi/java/android/net/wifi/p2p/WifiP2pService.java private String getPersistedDeviceName() { String deviceName = Settings.Global.getString(mContext.getContentResolver(), Settings.Global.WIFI_P2P_DEVICE_NAME); if (deviceName == null) { /* We use the 4 digits of the ANDROID_ID to have a friendly * default that has low likelihood of collision with a peer */ String id = Settings.Secure.getStrin
+完整回答请参考FAQ: FAQ56260
+### 问题: SC7715平台电话的接通或挂断状态怎样判断？
+解决方案: 电话的接通和挂断涉及到很多状态,底层可以通过AT命令在ril层来处理,对应的状态都是natvie层传上来的. 上层要判断电话是否接通或挂断,可以在 \packages\services\Telephony\src\com\android\phone\CallNotifier.java 中的 onPhoneStateChanged()来判断处理, 如 if ((fgState == Call.State.ACTIVE) 表示电话已经接通等等.fgState 有多种状态, public static final int INVALID = 0; public static final int IDLE = 1; /* The call is idle. Nothing active */ public static final int ACTIVE = 2; /* There is an ac
+完整回答请参考FAQ: FAQ56382
+### 问题: 手机电池一体化的项目中如何实现某些情况下也能看到开机logo及动画
+解决方案: 需要修改两部分(如果涉及其它异常开机模式,也需要做相应的修改): 一是u-boot部分: diff --git u-boot/property/normal_mode.c b/property/normal_mode.c index 8f2f839..d1f43ce 100755 --- u-boot/property/normal_mode.c +++ u-boot/property/normal_mode.c @@ -568,10 +568,16 @@ void unknow_reboot_mode(void) void panic_reboot_mode(void) { debugf("%s\n", __func__); +#if defined (CONFIG_SC8810) || defined (CONFIG_SC8825) || defined (CONFIG_SC8830)
+完整回答请参考FAQ: FAQ56418
+### 问题: 7715,怎样去掉第一次打电话，进入通话界面时，出现的黑屏背景？
+解决方案: 请修改packages/apps/InCallUI/src/com/android/incallui/InCallPresenter.java文件的setUp()方法,在其结尾处添加如下代码: public void setUp(Context context, CallList callList, AudioModeProvider audioModeProvider) { if (mServiceConnected) { ... .... // The final thing we do in this set up is add ourselves as a listener to CallList. This // will kick off an update and the whole process can start. mCallList.addListener(this)
+完整回答请参考FAQ: FAQ56702
+### 问题: 如何在拨号盘匹配到的列表中，增加发送短信的shortcut
+解决方案: 可参考下面的修改方法: DialerPhoneNumberListAdapter.java // 增加发送短信的shortcut类型: public final static int SHORTCUT_ADD_SNEND_SMS = 2; //将支持的SHORTCUT 总数改为3 public final static int SHORTCUT_COUNT = 3; private void assignShortcutToView(ContactListItemView v, int shortcutType) { ... switch (shortcutType) { case SHORTCUT_ADD_NUMBER_TO_CONTACTS: text = resources.getString(R.string.search_shortcut_add_to_contacts); dr
+完整回答请参考FAQ: FAQ57934
+### 问题: FM 模块中打开50K搜台的支持时,如何验证成功打开50K搜台的支持开关？
+解决方案: 之前有FAQ24588 描述在FM 模块中,如何打开50K搜台的支持,实际工作中发现有时设置错误导致打开失败,但不知道如何验证. 本文讲述如何验证确认成功打开50K搜台的支持. 1.首先,需要使用Debug版本抓一个FM搜台的Slog 2.main log中会有 12-18 16:08:19.616 2640 2640 D FMPlay : FMUtil surpport50k=true 12-18 16:08:19.626 2640 2640 D FMPlay : FMUtil surpport50k format 这表明在device/sprd/xxx/xxx.mk 修改为 persist.surpport.50ksearch=1 这个修改已经成功. 3.继续分析log,确认 kernel 中 CONFIG_FM_SEEK_STEP_50KHZ=y 是否成功. 下面举例说明: 如果ke
+完整回答请参考FAQ: FAQ56778
+### 问题: 7731如何配置成单颗后摄像头
+解决方案: 配置成单颗后摄像头的方法和步骤: 1.device/sprd/xxx/BoardConfig.mk TARGET_BOARD_NO_FRONT_SENSOR := false 改成 TARGET_BOARD_NO_FRONT_SENSOR := true # select camera 2M,3M,5M,8M CAMERA_SUPPORT_SIZE := 8M//根据实际摄像头分辨率修改,如2M 2.device/sprd/xxx/BoardConfig.mk 修改摄像头对应的MIPI接口 #select mipi d-phy mode(none, phya, phyb, phyab) TARGET_BOARD_FRONT_CAMERA_MIPI := phyb TARGET_BOARD_BACK_CAMERA_MIPI := phya // 根据实际摄像头硬件对应的MIPI接口修改,如改
+完整回答请参考FAQ: FAQ56744
+### 问题: 如何在备份应用中通过空间换时间来优化备份大的应用时耗费时间？
+解决方案: 备份应用包含备份应用程序和程序数据,程序中的一些数据可以通过buffer来优化时间,可以进行如下修改, diff --git a/src/com/sprd/appbackup/utils/FileUtils.java b/src/com/sprd/appbackup/utils/FileUtils.java @@ -99,10 +99,14 @@ public class FileUtils { } zipOut.putNextEntry(new ZipEntry(f.getPath().substring(index))); in = new FileInputStream(f); + byte[] content = new byte[1024]; int len; - while ((len = in.read()) != -1) { - zipOut.write(len); + w
+完整回答请参考FAQ: FAQ56752
+### 问题: FM 客户化定制：如何实现在收音机界面点击收音机开关按钮，直接退出收音机应用？
+解决方案: SPRD FM 参考设计为,收音机主页面,点击收音机开关icon之后,收音机停止播放,不退出. 此时用户可再次点击该收音机开关icon,来打开收音机,继续播放. 很多收音机应用都这样设计,包括SPRD, 但是有些时候会有需求:要实现在收音机界面点击收音机开关按钮之后可以直接退出收音机应用, 可以按照如下方法实现. 修改/packages/apps/FMPlayer/src/com/thunderst/radio/FMPlay.java 文件的 onCheckedChanged() 函数. 在power_toggle 的处理之后新增3行: case R.id.power_toggle: Intent intent = new Intent(FMplayService.ACTION_SHUTDOWN); //新增此行 sendBroadcast(intent); //新增此行 finish()
+完整回答请参考FAQ: FAQ56765
+### 问题: FM 客户化定制：如何调整2341A芯片 FM的搜台门限阈值？
+解决方案: 2341A芯片 FM 搜台时设置 MIN_SIGNAL_STRENGTH_DEFAULT 为搜台阈值, 用这个MIN_SIGNAL_STRENGTH_DEFAULT信号强度来控制搜台的数量,如果将该参数减少可使搜台数量减少. 可以根据实际情况调这个值整减少假台等情况的发生. 1.这个参数在 MIN_SIGNAL_STRENGTH_DEFAULT 在FmProxy 中有定义 partner/brcm/FmRadio/jar/src/com/broadcom/fm/fmreceiver/FmProxy.java public static final int MIN_SIGNAL_STRENGTH_DEFAULT = 105; 2.这个参数在在FmManager.java的searchStation中使用FmProxy.MIN_SIGNAL_STRENGTH_DEFAULT /packages
+完整回答请参考FAQ: FAQ56784
+### 问题: FM 客户化定制：如何定制FM APP的名称？
+解决方案: 有些产品需要定制FM APP 应用的名称. 有两种方法可以实现: 1. 直接修改字符串 根据语言的不同在 res/values ***/strings.xml 中搜索 app_name 将对应的名称修改. 举例:如修改中文下的APP名称,则修改 res/values-zh-rCN/strings.xml文件 将 <string name="app_name">收音机</string> 中 "收音机" 改为新的名称 2.增加新资源文件,并修改代码中资源名称. 根据语言的不同在 res/values ***/strings.xml 中增加新的字符串 如 new_app_name. 举例:如修改中文下的APP名称,需在res/values-zh-rCN/strings.xml文件中增加 如 <string name="new_app_name">新名称</string> 需要在所有,需要支持的语
+完整回答请参考FAQ: FAQ56768
+### 问题: 小区广播内置信道（开机默认有信道）
+解决方案: 在创建小区广播db时就创建信道,开机默认就存在预置信道 在频道表CHANNEL_TABLE_NAME中插入50,60频道即可,实现samplecode如下: --- old/packages/apps/CellBroadcastReceiver/src/com/android/cellbroadcastreceiver/CellBroadcastDatabaseHelper.java 2014-10-16 15:15:08.698033100 +0800 +++ new/packages/apps/CellBroadcastReceiver/src/com/android/cellbroadcastreceiver/CellBroadcastDatabaseHelper.java 2014-10-16 15:14:15.038769100 +0800 @@ -107,8 +107,8 @@
+完整回答请参考FAQ: FAQ56828
+### 问题: 信息编辑界面，输入法的prev无作用？
+解决方案: 原因为信息编辑界面未处理prev事件 需要在ComposeMessageActivity的onEditorAction()中增加对ACTION_PREVIOUS事件的处理,获取光标,如下为samplecode: --- old/packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java 2014-10-30 17:07:06.637775200 +0800 +++ new/packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java 2014-10-30 17:10:46.764642400 +0800 // SPRD:Add this for Recipients Editor Function. mRecipientsPicker.s
+完整回答请参考FAQ: FAQ56832
+### 问题: Android系统中，不通过GPS，有什么办法得知当前位置的信息？
+解决方案: 手机定位一般可以使用两种途径: 1. GPS:依赖手机内置的GPS chip 运算获取位置.定位精度高,速度略慢,耗电大. 2. network:使用手机周围WIFI AP or cell 信息 通过网络服务器查询大概位置.依赖网络连接和服务器.精度低,速度快. a) 对于AOSP 来说,Google不提供network 定位.需要GMS支持,且需要连接google. b) SPRD 目前没有服务器用来提供WIFI/cell 与位置的mapping 信息. c) 大陆有baidu 腾讯等公司提供network 定位服务能力,一般由厂家负责洽谈. 对于Android来说,可以通过GMS包来获取定位信息,通过统一的接口,其它APK也能获得这个位置.但是谷歌网络定位服务需要能够连接上google,中国大陆可能需要一定的技术手段; · Android 4.4 只要引用 \google\framew
+完整回答请参考FAQ: FAQ56838
+### 问题: 选中的SIM卡信息，横屏后无法删除？
+解决方案: 选中的SIM卡信息cursor被关闭,导致横屏后无法删除. 解决方案:获取某条sim卡信息的cursor后,立即从cursor中获取该条信息的index,后续即使cusor被关闭,该条SIM卡信息仍然能被删除. --- a/src/com/android/mms/ui/ManageSimMessages.java +++ b/src/com/android/mms/ui/ManageSimMessages.java @@ -446,7 +446,6 @@ public class ManageSimMessages extends Activity public void run() { mContentResolver.unregisterContentObserver(simChangeObserver); Cursor cursor = (Cursor) mListAdapter.g
+完整回答请参考FAQ: FAQ56836
+### 问题: 进入email应用出现程序停止现象的IndexOutOfBoundsException分析
+解决方案: 进入email,输入账户和密码登录后, 选择exchange,进入后server输入为outlook.office365.com 一直按next程序停止, 通过这个现象,可以查看log,如果发现有如下类似的log信息输出, 12-02 21:33:56.920 16819 16819 W System.err: java.lang.IndexOutOfBoundsException: setSpan (34 ... 34) ends beyond length 32 12-02 21:33:56.920 16819 16819 W System.err: at android.text.SpannableStringBuilder.checkRange(SpannableStringBuilder.java:1016) 12-02 21:33:56.920 16819 16819 W Sy
+完整回答请参考FAQ: FAQ57023
+### 问题: 如何修改FORM控件列表选中项背景（即高亮条）？
+解决方案: FORM控件列表的选中项,其背景有两种显示方式:图片与颜色. 见:MMITheme_GetFormTheme @ mmitheme_form.c (1)平台中默认使用"颜色"的方式,要修改成其它颜色: theme_pr->form_active_child.bg.color = MMITHEME_GetCurThemeFontColor(MMI_THEME_FORM_BG); 更改这个值,如: theme_pr->form_active_child.bg.color = 0x07E0;//则高亮条显示成值为0x07E0的颜色(即绿色) (2)如果要改成"图片",需修改如下: theme_ptr->form_active_child.bg.bg_type = GUI_BG_IMG;//这里原来是:GUI_BG_COLOR;改成:GUI_BG_IMG 再增加一句: theme_ptr->for
+完整回答请参考FAQ: FAQ56894
+### 问题: Android平台上怎样使用复数字符串？
+解决方案: 在某些语言环境中不同的数字在使用方法上会有所不同.例如,在英文中如果一本书会说one book,如果两本书,会说two books.当数量大于1时,会在名词后面加s或变成其他的复数形式,在这种情况下就要考虑不同数字的字符串资源. 在Android平台上提供了这样的复数字符串资源的解决方案.需要用<plurals>标签定义复数字符串,并使用<item>标签指定具体处理哪一类数字的复数字符串. 如在7715平台上的\idh.code\packages\apps\Music\res\values\strings.xml 中的 <!-- Toasts after adding song(s) to playlists --> <plurals name="NNNtrackstoplaylist"> <!-- message shown when one song was added --> <it
+完整回答请参考FAQ: FAQ56928
+### 问题: 国内一些用户对于email中电话号码不显示高亮的问题
+解决方案: 目前碰到国内客户要求邮箱中的特别号码点击可以进行拨号,例如+111111.email中用webview来呈现邮件的内容,Android的自带了对webview中的电话号码和网络链接的检查,在号码正常的情况下基本够用,但是还不能满足某些特殊客户的需要. 目前我们可以做的有两点: 1.对底层代码修改让webview支持对特别号码的支持,这部分代码4.4之前主要在webkit中,4.4google用chromium取代了webkit所以可以针对不同的版本进行修改. 2.可以在Email程序中对邮件的内容进行读取,再解析匹配我们需要的号码然后加上链接.下面是一个email内容解析匹配电话号码的代码片段. String textTmp = sb.toString(); if (textTmp != null){ sb = new StringBuffer(""); Matcher phoneMatc
+完整回答请参考FAQ: FAQ57154
+### 问题: FFOS 7715 如何修改打印机显示的设备名称?
+解决方案: 1, 在B2G/device/sprd/scx15 /init.scx15.usb.rc中 将write /sys/class/android_usb/android0/iProduct Spreadtrum Phone 修改成 write /sys/class/android_usb/android0/iProduct HEXING_PHONE 注意:如果HEXING PHONE中间用空格隔开,只能显示空格前面的内容,所以使用HEXING_PHONE(此处为示例,客户按照具体情况修改) 2, 在B2G/kernel/drivers/usb/gadget/f_mass_storage.c中 搜索%-8s%-16s%04x,然后将其附近的代码做如下修改: snprintf(common->inquiry_string, sizeof common->inquiry_string, - "%-
+完整回答请参考FAQ: FAQ57605
+### 问题: SC7731平台,如何修改代码，延时处理耳机插入动作？
+解决方案: SC7731平台,延时处理耳机插入动作,可以在一定程度上改善因耳机接入时,产生的pop音. 插入动作延时不宜过长,1s以内,否则影响体验. Headset_sprd.c文件 原文件 static irqreturn_t headset_detect_irq_handler(int irq, void *dev) { struct sprd_headset *ht = dev; headset_irq_button_enable(0, ht->irq_button); headset_irq_detect_enable(0, ht->irq_detect); wake_lock_timeout(&headset_detect_wakelock, msecs_to_jiffies(2000)); gpio_detect_value_last = gpio_get_value(ht->platf
+完整回答请参考FAQ: FAQ57186
+### 问题: SC6815/SC7715/SC7731平台怎样配置某营运商的SIM卡进入另外营运商网络中也显示非漫游？
+解决方案: 在idh.code\frameworks\base\core\res\res 中配置,该目录下有很多类似如"values-mcc214-mnc04" 这样加有mcc\mnc标识的文件夹,在该文件夹中的config.xml 配置即可. 具体如下: <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"> <!-- Don't use roaming icon for considered operators --> <string-array translatable="false" name="config_operatorConsideredNonRoaming"> <item>21407</item> </string-array> </resources> config_operatorConsideredNonR
+完整回答请参考FAQ: FAQ57246
+### 问题: SC7715如何使用指令进行格式化SD卡？
+解决方案: 1、 #adb shell #cat /proc/mounts 显示如下信息,找到/mnt/media_rw/sdcard0对应的值,如下图为179:129,即为SD卡对应的块设备; 2、输入格式化命令 newfs_msdos -F 16 -c 64 /dev/block/vold/179:129(其中179:129为T卡对应的块设备) 3、格式化实现的部分在system/vold/Fat.cpp中, 对应的函数为addArgs,这里会区分-c后面的参数 如下: if(blk_dev_size <= CARD_SIZE) { args[argc++] = "16"; args[argc++] = "-c"; args[argc++] = "64"; }else { args[argc++] = "32"; } 可以通过system.log来确认当前格式化是哪个分区,部分打印如下所示: 01
+完整回答请参考FAQ: FAQ57337
+### 问题: 如何得到USB连接状态？
+解决方案: 要得到USB的连接状态,在3.1以前的版本中,有一个ACTION_UMS_CONNECTED广播,表示手机已进入大容量模式,但是没有消息说USB有没有连上.3.1以上的版本包含了一个android.hardware.usb ,也没有相应的API.其实我们可以从batterymanager入手: IntentFilter mIntentFilter = new IntentFilter(); mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED); registerReceiver(BtStatusReceiver, mIntentFilter); public BroadcastReceiver BtStatusReceiver = new BroadcastReceiver() // receive broadcast that BT
+完整回答请参考FAQ: FAQ57363
+### 问题: 字符串中子串的查找(indexof())有哪几种方法？
+解决方案: Java中字符串中子串的查找共有四种方法,如下: 1、int indexOf(String str) :返回第一次出现的指定子字符串在此字符串中的索引. 2、int indexOf(String str, int startIndex):从指定的索引处开始,返回第一次出现的指定子字符串在此字符串中的索引. 3、int lastIndexOf(String str) :返回在此字符串中最右边出现的指定子字符串的索引. 4、int lastIndexOf(String str, int startIndex) :从指定的索引处开始向后搜索,返回在此字符串中最后一次出现的指定子字符串的索引. indexof()用法说明 indexof() 返回 String 对象内第一次出现子字符串的字符位置. string.indexOf(subString[, startIndex]) 参数 string 
+完整回答请参考FAQ: FAQ57382
+### 问题: 如何查看aux adc和fgu的校准信息？
+解决方案: 在进行CFT校准的时候,与充电相关的校准信息有两个:一个是普通的ADC通道(aux adc)的校准信息;另一个是FGU(库仑计)内部的ADC的校准信息.这两个校准的信息在进行CFT校准重新开机后会保存在手机里的下面目录: productinfo/adc.bin 代码在uboot的阶段会去读取这个bin文件,从中获取到aux adc的信息和fgu的校准信息,具体代码的位置: Normal_mode.c (u-boot\property) cmdline_fixup_adc_data函数 bin文件的数据内容的定义如下: adc_data[2],adc_data[3] : aux adc的校准信息 adc_data[4],adc_data[5],adc_data[6] :fgu的校准信息 adc_Data[11] : BIT1 :是否支持FGU BIT0:没有用 adc_data[10] : 
+完整回答请参考FAQ: FAQ57369
+### 问题: 联通入库对联通网络下的APN列表有什么要求？
+解决方案: 联通入库要求,在联通网络时,UI APN设置至少要有3组APN选项. 对于联通某一PLMN,例如46001,可参考如下apns-conf.xml配置: <apn carrier="沃3G彩信" mcc="460" mnc="01" apn="3gwap" mmsproxy="10.0.0.172" mmsport="80" mmsc="http://mmsc.myuni.com.cn" type="default,mms" preload="1" /> <apn carrier="沃3G连接互联网" mcc="460" mnc="01" apn="3gnet" type="default,supl" preload="1" /> <apn carrier="沃3G手机上网" mcc="460" mnc="01" apn="3gwap" proxy="10.0.0.172" port="80
+完整回答请参考FAQ: FAQ57532
+### 问题: 在彩信中录制一段视频，为什么视频的大小只有250KB，能否增加视频的大小？
+解决方案: 从Mms应用进入录像视频大小只能接近,但无法达到300K.这是因为一条彩信最大为300K,其中包括幻灯片、pdu头部等预留空间. 视频的大小会根据录制时传入的参数有关.例如,为了增加视频在彩信中所占比例,可在启动录像时只传入大小限制,而不传入时长限制.请参考如下sample code: src/com/android/mms/ui/MessageUtils.java public class MessageUtils extends SprdMessageUtils{ public static void recordVideo(Activity activity, int requestCode, long sizeLimit) { sizeLimit *= .95F; //拍摄的视频大小占彩信剩余大小的95%,可根据需要修改此比例,但是不建议修改 ... Intent intent =
+完整回答请参考FAQ: FAQ57544
+### 问题: 如何实现充电过程中提前显示充满
+解决方案: 在充电过程最后的恒压阶段,当电压达到截止电压时,电量百分比会停留在99%,只有当充电电流下降到截止电流时,才会显示100%,这在体验上可能会觉得99%到100%的时间相当较长,这里提供一种改善的方法. 当电压达到截止电压,充电电流适当下降(未达到截止电流)时,这时候让电量显示100%,但是实际上还是在充电,直到达到截止电流为止,具体的修改如下: Sprd_2713_power.c (kernel\drivers\power) static void sprdbat_charge_works(struct work_struct *work) 增加下面代码: if(sprdbat_data->bat_info.module_state != POWER_SUPPLY_STATUS_FULL){ if ((sprdbat_data->bat_info.vbat_vol >sprdbat_dat
+完整回答请参考FAQ: FAQ57554
+### 问题: FFOS 源码中的铃声文件编译后在out目录中生成的目标文件是哪个？
+解决方案: firefox 系统铃声文件在编译之前统一放置在gaia/shared/resources/media目录之下. 编译完成后没有像android一样在out目录中生成目标文件. 而是每个使用铃声的应用会在编译时将其需要的铃声文件打包的自己的应用中. 例如: 1,settings应用会使用到通知铃声和来电铃声,其编译完成后生成的应用包为 gaia/profile/webapps/settings.gaiamobile.org/application.zip 将该zip包解压缩就可以发现,解压缩后有一个shared/resources/media目录,gaia/shared/resources/media目录下通知铃声和来电铃声对应的两个目录notifications和ringtones包括其中的铃声文件都被拷贝到此目录中. 2,clock应用会使用闹钟铃声,其编译完成后生成的应用包为 gai
+完整回答请参考FAQ: FAQ57673
+### 问题: FFOS 7715 如何修改USB线连接手机和PC时PC右下角弹出的硬件提示名?
+解决方案: 1, 在B2G/device/sprd/scx15 /init.scx15.usb.rc中 将write /sys/class/android_usb/android0/iProduct Spreadtrum Phone 修改成 write /sys/class/android_usb/android0/iProduct HEXING_PHONE 注意:如果HEXING PHONE中间用空格隔开,只能显示空格前面的内容,所以使用HEXING_PHONE(此处为示例,客户按照具体情况修改) 2, 在B2G/kernel/drivers/usb/gadget/f_mass_storage.c中 搜索%-8s%-16s%04x,然后将其附近的代码做如下修改: snprintf(common->inquiry_string, sizeof common->inquiry_string, - "%-
+完整回答请参考FAQ: FAQ57607
+### 问题: FFOS 7715 如何修改磁盘驱动器显示名称？
+解决方案: 1, 在B2G/device/sprd/scx15 /init.scx15.usb.rc中 将write /sys/class/android_usb/android0/iProduct Spreadtrum Phone 修改成 write /sys/class/android_usb/android0/iProduct HEXING_PHONE 注意:如果HEXING PHONE中间用空格隔开,只能显示空格前面的内容,所以使用HEXING_PHONE(此处为示例,客户按照具体情况修改) 2, 在B2G/kernel/drivers/usb/gadget/f_mass_storage.c中 搜索%-8s%-16s%04x,然后将其附近的代码做如下修改: snprintf(common->inquiry_string, sizeof common->inquiry_string, - "%-
+完整回答请参考FAQ: FAQ57615
+### 问题: SC7715 framework层如何读取TP虚拟按键节点文件？
+解决方案: TP虚拟按键节点文件读取函数是在frameworks\base\services\input\EventHub.cpp文件中,通过以下代码进行读取的: status_t EventHub::loadVirtualKeyMapLocked(Device* device) { // The virtual key map is supplied by the kernel as a system board property file. String8 path; path.append("/sys/board_properties/virtualkeys."); path.append(device->identifier.name); if (access(path.string(), R_OK)) { return NAME_NOT_FOUND; } return VirtualKeyM
+完整回答请参考FAQ: FAQ57639
+### 问题: 如何在factorytest中自定义测试项目？
+解决方案: 可以通过修改如下代码的enum结构中的成员来增加或者删除某项测试,例如想去掉gps测试,则删除MENUTITLE(TEST_GPS, test_gps_start)一行即可. vendor/sprd/open-source/apps/factorytest/res/menu_phone_test.h, enum { MENUTITLE(TEST_LCD, test_lcd_start) MENUTITLE(TEST_TP, test_tp_start) MENUTITLE(TEST_VB_BL, test_vb_bl_start) // vibrator and backlight MENUTITLE(TEST_KEY, test_key_start) MENUTITLE(TEST_FCAMERA, test_fcamera_start) MENUTITLE(TEST_BCAMERA, t
+完整回答请参考FAQ: FAQ57712
+### 问题: 手机硬件没有某个按键，如何在factorytest中去掉该按键的测试？
+解决方案: 可以通过修改如下代码的test_key_info[]数组成员来删除某个按键的测试,例如手机没有camera拍照键,则可以把{KEY_CAMERA, 0, TEXT_KEY_CAMERA}, 一行删除掉即可. vendor/sprd/open-source/apps/factorytest/testitem/key.c, struct test_key test_key_info[] = { {KEY_VOLUMEDOWN, 0, TEXT_KEY_VOLUMEDOWN}, //114 {KEY_VOLUMEUP, 0, TEXT_KEY_VOLUMEUP}, //115 {KEY_POWER, 0, TEXT_KEY_POWER}, //116 {KEY_MENU, 0, TEXT_KEY_MENU}, //139 {KEY_BACK, 0, TEXT_KEY_BACK}, //158 {
+完整回答请参考FAQ: FAQ57716
+### 问题: 如何修改自动更新时间的备用服务器？
+解决方案: SNTP方式自动更新时间是通过连接某个服务器取得的,在不同地区某些服务器可能会无法连接,此时会自动连接备用服务器取得对应时间.如备用服务器地址需要修改,可在frameworks\base\core\res\res\values\config.xml文件中修改如下数组: <string-array translatable="false" name="config_ntpBackupServerList"> <item>asia.pool.ntp.org</item> <item>cn.pool.ntp.org</item> <item>132.163.4.101</item> <item>132.163.4.102</item> <item>132.163.4.103</item> <item>210.72.145.8</item> <item>192.43.244.18</item> <
+完整回答请参考FAQ: FAQ57733
+### 问题: SC7701项目过CTA相关宏控制是怎样的？
+解决方案: 可根据各自过CTA情况,控制相关的CTA宏定义 1. 双卡单待宏定义:MULTI_SIM_GSM_CTA_SUPPORT = TRUE 2. 关闭GPRS宏定义: MMS_SUPPORT = NONE; BROWSER_SUPPORT = FALSE; BROWSER_SUPPORT_DORADO = FALSE; UPDATE_TIME_SUPPORT = FALSE MMS_SMS_IN_1_SUPPORT = FALSE; OPERA_MINI_SUPPORT = NONE; CHATMODE_ONLY_SUPPORT = FALSE; SMS_CHAT_SUPPORT = FALSE WRE_SUPPORT = FALSE; WRE_WREKERNEL_NORFLASH = FALSE; WRE_WRESTORE_PRELOAD = FALSE; WRE_VIRTUALDISK_S
+完整回答请参考FAQ: FAQ57737
+### 问题: 如何解决平板下载完软件，首次开机没有开机动画的问题
+解决方案: 平板都是机器和电池一体的,无法拆卸,所以无法直接掉电后再开机,下载版本后第一次开机是通过长按POWER键实现的(相当于长按7S重启),走的开机流程和正常开机流程是不一样的.异常开机的流程是 "androidboot.mode=unknowreboot"或者其它非常规流程.这可以从frameworks\native\services \surfaceflinger\SurfaceFlinger.cpp: 函数SurfaceFlinger::SurfaceFlinger()里面: property_get("ro.bootmode", value, "mode"); if (!(strcmp(value, "engtest") && strcmp(value, "special") && strcmp(value, "wdgreboot") && strcmp(value, "unknowre
+完整回答请参考FAQ: FAQ57789
+### 问题: 要fm 支持搜台需要支持小数点后两位
+解决方案: 1:在需要的工程配置文件中设置 persist.surpport.50ksearch的属性值为1,例如下面这个工程 device/sprd/scx15_sp7715ea/scx15_sp7715eacuccspecAbase_UUI.mk: -persist.surpport.50ksearch=0 +persist.surpport.50ksearch=1 2:在kernel 中相应的工程配置文件中打开CONFIG_FM_SEEK_STEP_50KHZ属性并设置为y,例如还是以上面这个工程为例 kernel/arch/arm/configs/sp7715ga-native_defconfig: -# CONFIG_FM_SEEK_STEP_50KHZ is not set +CONFIG_FM_SEEK_STEP_50KHZ=y 全编代码即可. 3. boolean surpport50
+完整回答请参考FAQ: FAQ57791
+### 问题: 为什么进入到engmode只有标题而没有菜单列表？
+解决方案: engmode中的菜单列表是通过json文件来构建的,在index.js中可以找到如下定义: var fileTable = { '1.3.0.0-prerelease': 'menu_tarako.json', '1.4.0.0-prerelease': 'menu_dolphin.json', '2.0.0.0-prerelease': 'menu_dolphin_v2.0.json', '2.1.0.0-prerelease': 'menu_dolphin_v2.1.json' }; 即根据当前ffos系统的os版本号来选择对应的菜单json文件,os版本号取自于setting项'deviceinfo.os',具体获取方法如下:navigator.mozSettings.createLock().get('deviceinfo.os') ffos的版本默认如上列表显示,如果客户将之修
+完整回答请参考FAQ: FAQ57812
+### 问题: SR2351使用VDDWPA供电，在u-boot中直接写寄存器打开VDDWPA会有一些隐患，需要在2351打开和关闭时对上电部分作统一管理
+解决方案: SR2351使用VDDWPA供电,2351打开和关闭时对上电部分作统一管理,参考修改如下: 1. 统一管理的思路 1)SR2351 POWERON时BIT_DCDC_WPA_PD、BIT_SLP_DCDCWPA_PD_EN写0; 2)SR2351 POWEROFF时BIT_DCDC_WPA_PD、BIT_SLP_DCDCWPA_PD_EN写1; 2. 代码修改 1)平台默认的2351的供电管理的函数在kernel/drivers/misc/sprd_2351/sprd_2351.c void rf2351_gpio_ctrl_power_enable(int flag) 2. 我们另外写两个函数,分别是POWERON和POWEROFF时的控制,再把这两个函数替换掉rf2351_gpio_ctrl_power_enable中gpio控制的部分,这两个函数实例如下: static void r
+完整回答请参考FAQ: FAQ57983
+### 问题: 如何解决SC7731全擦下载，写完IMEI号后无法启动的问题
+解决方案: [问题的原因]: 主要的原因是充电代码获取校准参数的时候没有对参数进行非法的判断 [解决方法]: 增加参数非法的判断 Kernel\drivers\power\sprd_2713_fgu.c static int __init fgu_cal_start(char *str) { unsigned int fgu_data[3] = { 0 }; char *cali_data = &str[1]; if (str) { printk("sprdfgu fgu_cal%s!\n", str); sscanf(cali_data, "%d,%d,%d", &fgu_data[0], &fgu_data[1], &fgu_data[2]); printk("sprdfgu fgu_data: 0x%x 0x%x,0x%x!\n", fgu_data[0], fgu_data[1], fgu_d
+完整回答请参考FAQ: FAQ57992
+### 问题: 使用微信6.0版本拍摄小视频,拍摄完成后，预览视频的界面花屏,请问如何修改
+解决方案: 1. 问题原因: 目前不支持preview size和录像size不同,有应用设置预览size和录制size不同就会出现花屏 2. 修改方案 文件SprdCameraHardwareConfig.h,sprd_back_camera_hardware_config[]中 -- {"preview-size-values", "1280x960,1280x720,720x480,352x288,176x144"}, ++ {"preview-size-values", "1280x960,1280x720,720x480,640x480,352x288,176x144"}, #elif defined(CONFIG_CAMERA_VIDEO_SIZE_SUPPORT_720P) -- {"video-size-values", "1280x720,720x480,352x288,176x14
+完整回答请参考FAQ: FAQ57993
+### 问题: 如何设置第三方浏览器为默认浏览器？
+解决方案: 如果手机本身安装了多个浏览器而又没有设置默认浏览器的话,系统将让用户选择使用哪个浏览器来打开连接. 设置默认程序要使用packageManager.addPreferredActivity() , 需要在PackageManagerService.java中的systemReady函数的最后中增加以下代码. 比如添加Opera Mini作为默认的浏览器: if (isFirstBoot()) { String str1 = "android.intent.category.DEFAULT"; String str2 = "android.intent.category.BROWSABLE"; String str3 = "android.intent.action.VIEW"; // 设置默认项的必须参数之一,用户的操作符合该过滤器时,默认设置起效 IntentFilter filter 
+完整回答请参考FAQ: FAQ58014
+### 问题: 7731 睡眠后屏会固定频率的亮屏
+解决方案: 这个问题的主要原因是:硬件上只有三个按键,而power键不算keypad,而事实上在系统中定义的时候也定义了三个按键(上下音量键和一个home键,但硬件上没有home键),主要是要把home键的定义都去掉. 修改办法是:在dts里面将 keypad@f5208000{ compatible = "sprd,sci-keypad"; reg = <0Xf5208000 0x1000>; gpios = <&a_eic_gpio 2 0>; interrupts = <0 36 0x0>; sprd,keypad-num-rows = <2>; sprd,keypad-num-columns = <2>; sprd,keypad-rows-choose-hw = <0x30000>; sprd,keypad-cols-choose-hw = <0x300>; sprd,debounce_tim
+完整回答请参考FAQ: FAQ58729
+### 问题: 通过蓝牙接收一个*.FLV格式的视频后，蓝牙接收的文件中选择该视频无法播放的分析和解决方法
+解决方案: 分析原因: *.FLV格式的视频类型没有加入支持列表中 解决方法: 对应目录 : packages\apps\Gallery2\AndroidManifest.xml <intent-filter> <action android:name="android.intent.action.VIEW" /> <category android:name="android.intent.category.DEFAULT" /> <category android:name="android.intent.category.BROWSABLE" /> <data android:scheme="http" /> <data android:scheme="https" /> <data android:scheme="content" /> <data android:scheme="file" 
+完整回答请参考FAQ: FAQ58179
+### 问题: 进入GPS搜索后TP不能使用
+解决方案: 此问题主要是软件上VISIM2电压域与VDDSIM2 LDO之间是存在关联,具体修改如下 1.非dts版本: kernel/arch/arm/mach-sc/devices-sc8830.c中修改 static struct sprd_pin_switch_platform_data sprd_pin_switch_data[PD_CNT] = { {"vdd28", 0x10, 0, 1}, {"vdd28", 0x10, 1, 1}, {"vddsim0", 0x10, 2, 1}, {"vddsim1", 0x10, 3, 1}, /*{"vddsim2", 0x10, 4, 1},*/ 此处注注释掉去掉pinswitch 功能 {"vddsd", 0x10, 5, 1}, {"vdd18", 0x10, 6, 1}, } 2.dts版本: kernel/arch/arm/boot/
+完整回答请参考FAQ: FAQ58470
+### 问题: 由权限导致的wifi cp2 reset 失败问题
+解决方案: 查看打印有如下信息: 12-23 18:08:13.770 160 234 E WCND : open /dev/cpwcn failed, error: Permission denied 修改方法: device/sprd/scx35/init.sc8830.rc中添加如下二行: chmod 660 /proc/cpwcn/wdtirq chmod 660 /proc/cpwcn/stop chmod 660 /proc/cpwcn/start chmod 660 /proc/cpwcn/modem chmod 660 /proc/cpwcn/dsp ++chmod 660 /dev/cpwcn chown system root /proc/cpwcn/wdtirq chown system root /proc/cpwcn/stop chown system root /proc/
+完整回答请参考FAQ: FAQ58471
+### 问题: 第一次adc未校准导致下次进入死机问题
+解决方案: 主要是由于第一次adc 未校准,但是adc文件却生成了,且默认电压值都为0xffffffff,这样在第二次进入时会使用该值,该默认值造成了此问题的发生,具体可以按如下修改: Kernel\drivers\power\sprd_2713_fgu.c中增加如下二行: static int __init fgu_cal_start(char *str) { unsigned int fgu_data[3] = { 0 }; char *cali_data = &str[1]; if (str) { printk("sprdfgu fgu_cal%s!\n", str); sscanf(cali_data, "%d,%d,%d", &fgu_data[0], &fgu_data[1], &fgu_data[2]); printk("sprdfgu fgu_data: 0x%x 0x%x,0x%x!
+完整回答请参考FAQ: FAQ58475
+### 问题: JNI ERROR--Accessed stale globle/local reference是什么异常
+解决方案: 由native调用java对象的方法时,会使用的CallMethod*方法,在该方法中会对native对象的引用进行检察,使用的是dvmDecodeIndirectRef函数,那么在该函数中会分别调用各引用表的get方法来获取对象的引用,在get方法中会做几个检察:首先对引用的有效性做检查,通过和kIndirectKindInvalid来进行比较;其次就是判断index值,主要是和topindex值比较,前文中解释过topIndex-1才是最上面的有效存储的index,如果超过这个值,便认为这个引用不是一个有效的值(这里有效性指没有一个对象和其对应,在表中不存在).即如果大于等于topIndex,我们则认为这个引用已经stale(陈旧)了.就会出现accessed stale reference的错误.这种情况一般是在 DeleteXxxRef(jobject) 或 PopLocalFra
+完整回答请参考FAQ: FAQ58568

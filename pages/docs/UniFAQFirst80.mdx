@@ -1,0 +1,336 @@
+### 问题: 默认允许安装第三方未知应用
+解决方案: 修改frameworks/base/core/java/android/app/AppOpsManager.java中 private static int[] sOpDefaultMode 中对应OP_REQUEST_INSTALL_PACKAGES一项将default属性由MODE_DEFAULT改为MODE_ALLOWED -AppOpsManager.MODE_DEFAULT, // OP_REQUEST_INSTALL_PACKAGES +AppOpsManager.MODE_ALLOWED, // OP_REQUEST_INSTALL_PACKAGES
+参考FAQ: FAQ202275521
+### 问题: 9863A的录音功耗与NR算法有关系吗？
+解决方案: 9863A的录音功耗与NR算法有关系吗? 9863平台的录音消噪NR算法是运行在AP端的,如果要打开NR消噪,则AP会一直处在工作状态,此时录音功耗增大是正常的. 可参考我们9863A参考样机的数据,录制AAC格式的录音功耗: 打开NR 录音功耗:89.85mA 关闭NR 录音功耗:46.77mA
+参考FAQ: FAQ202275523
+### 问题: usb虚拟串口配置波特率
+解决方案: usb虚拟串口没有波特率这个概念,波特率是物理串口硬件协议层面的概念,波特率匹配,两端才能正常通信.
+参考FAQ: FAQ202275525
+### 问题: 带外置LNA的NV工程选择
+解决方案: 目前我司针对UMS312,UMS512,UMS512T及UMS9230这些平台单独建立了带外置LNA的NV工程,如果项目中任意一个Band有外置LNA的情况,就选择后缀带eLNA 的NV工程,该NV工程针对有外置LNA的情况做了对应的补充,如果选择不带eLNA 后缀的NV工程会有一些校准性能等问题. 带外置LNA的主板一定要选择后缀带elna customer字样的base NV;不带外置LNA的主板一般选择不带elna的customer base NV,也可以选择带elna字样的customer base NV. 以下modem版本之后都包含了ELNA的版本:4G_MODEM_21A_W22.39.4, 4G_MODEM_22A_W22.38.3, 4G_MODEM_21A_W22.35.2 ,FM_BASE_TRUNK_V2_W22.35.1, 4G_MODEM_22A_W22.34.4,21A/22A/TRUNK V2
+参考FAQ: FAQ202275527
+### 问题: AWB->Cal_OTP中random和golden值使用关系是什么？
+解决方案: 1.awb3.2版本: random有值用的是random random没有值,用的是golden值 如果random和golden都没有,就不做 2.awb4.0版本: 只使用random值进行计算,golden值已不再使用
+参考FAQ: FAQ202275533
+### 问题: UMP9620  ship mode设计说明
+解决方案: UMS9620X平台 ship mode设计示意图如下: 要点说明: 1、charger IC需要具备ship mode功能; 2、R4默认空贴,其作用是防止一些charger IC的 QON脚内部无上拉影响按键功能 3、两二级管的作用是防止QON内部上拉电源电压与PBINT内部上拉电源电压不一致时产生漏电,选用小功率二级管即可,漏电足够小时也可用电阻代替二极管 4、UMP9620的VBAT_SENSE在ship mode下仍然有电,但其漏电足够小,不需要额外加PMOS管电路进行切断 5、进入ship mode时 AP通过I2C配置charge IC的相关寄存器使能ship mode 功能即可(详见charge IC规格书相关介绍),也可提软件CQ获取支持.
+参考FAQ: FAQ202275534,含图片
+### 问题: 什么是ship mode , 使用场景是什么？
+解决方案: 什么是ship mode: ship mode也就运输模式,是针对不可拆卸电池的便携设备设计的一种降低关机漏电流的功能; 使用场景:一般是成品机器包装时使用,包装前设置机器进入ship mode模式,以避免长时间的航运和存储后,机器的关机漏电流慢慢耗尽电池电量,导致用户拿到新拆封的机器后需要充电一段实际才能开机. 注:展锐平台实现ship mode需要结合带ship mode功能的第三方charger IC, 具体设计说明参考相关文档和FAQ,如: 展锐Ship Mode应用说明书V1.0.pdf https://unisupport.unisoc.com/file/index?fileid=34485 FAQ202275534 UMP9620 ship mode设计说明
+参考FAQ: FAQ202275535
+### 问题: ALSC排查问题，使用命令固定table表，如何确认命令下发成功？
+解决方案: 固定lsc table表命令: adb shell setprop debug.isp.alsc.table.index X 固定index,X为标定时对应index 命令确认关键子: eng_alsc_table_index 示例: Line 64201: M01F4AF 07-07 09:48:16.303 551 8166 D android.hardware.camera.provider@2.4-service: [ALSC]: L 172, alsc_get_eng_cmd: eng_alsc_bypass_otp=1, eng_alsc_bypass=0, eng_alsc_table_index=1 说明:eng_alsc_table_index = 1 -> 表示固定table表为index 1
+参考FAQ: FAQ202275547
+### 问题: ALSC2.1版本录像模式有shading，参数中video下应该如何配置模块进行优化？
+解决方案: 问题背景: ALSC算法版本是2.1,参数中各mode下添加BLC和LNC,重新标定LNC模块后,录像shading现象无改善; 问题原因: 针对ALSC2.1版本,其它mode下添加BLC和LNC模块时,应同步添加BIN模块; BIN模块应用介绍及参数配置: 1.ALSC2.1版本,参数中当前mode的size和common不同时,该mode下需要添加BLC, LNC, BIN模块 2.BIN下参数为hx和vx, 其中32<=width/2/2hx<=128, 32<=width/2/2vx<=128 --> width/2/2hx & width/2/2vx尽量接近128 推荐值:hx = (int)(log(w/2/128)/log(2)) + 1、vx = (int)(log(h/2/128)/log(2)) + 1
+参考FAQ: FAQ202275550
+### 问题: simba工具校准进模式时间设置
+解决方案: 解决方法:simba工具 Entermode >常用>option>timeout 默认30000值改大(90000)
+参考FAQ: FAQ202275553,含图片
+### 问题: 平台能支持的GPRS/EDGE的DL与UL的最大速率是多少?
+解决方案: GPRS上下行速率 85.4Kbps;EDGE上下行速率236.8kbps GPRS每时隙最大速率为21.4Kbps, 4*21.4=85.4kbps; EDGE每时隙最大速率为59.2Kbps,4*59.2=236.8kbps
+参考FAQ: FAQ202275559
+### 问题: 如何查询3A&ALSC&ATM4Gamma&HDR的算法库版本
+解决方案: 答: 各模块算法库版本查询的关键字与示例列于以下表格:
+参考FAQ: FAQ202275566,含图片
+### 问题: 慢录，延时摄影模式下，录像播放没有声音
+解决方案: 慢录模式功能原理:慢录模式需要sensor支持高帧率120fps,media recorder将抓取的视频帧做编码处理,encode rate为30fps,也就是说,慢录模式下,录制1s,实际生成的视频有4s.此模式应用场景为抓拍一些转瞬即逝的画面,例如透支棒球,物体坠落等. 延时摄影模式功能原理:延时摄影是将录像编码帧做跳帧处理,sensor正常出帧是30fps,media recorder将根据设置的的阈值做跳帧处理,例如每隔1s编码一帧数据,也就是说,录制1min,实际编码了60帧数据,根据视频帧率30fps,则实际生成的视频只有2s.此模式应用场景为抓拍一些缓慢变化的画面,例如花开花落,云卷云舒等. 总结:根据慢录和延时摄影的功能原理,最终呈现的视频是对相机的帧数据做了"拉伸"和"压缩"处理,而音频数据是没办法做对应的匹配处理的,故在这两种模式下是没有配置音频流的,谢谢.
+参考FAQ: FAQ202275569
+### 问题: LTE带内连续CA信道中心频率间隔
+解决方案: 带内连续CA中心频率间隔计算公式如下: BWChannel(1) 跟 BWChannel(2)分别代表PCC跟SCC的带宽, 从公式可以得出: 20M+20M的中心频率间隔为19.8M,即[(20+20)-0.1X|20-20|]/0.6=66.66666=66(取整数);66 X 0.3=19.8 10M+10M的中心频率间隔为9.9M, 即[(10+10)-0.1X|10-10|]/0.6=33.33333=33(取整数);33 X 0.3=9.9 10M+5M的中心频率间隔为7.2M, 即[(10+5)-0.1X|10-5|]/0.6=24.16666=24(取整数);24 X 0.3=7.2
+参考FAQ: FAQ202275571,含图片
+### 问题: 8910是否支持 WebRTC协议？
+解决方案: WebRTC 是 Web Real-Time Communication 的缩写,可以让浏览器上不同的使用者在不需要安装浏览器 plugin 的前提下进行点对点 (peer-to-peer) 的语音, 视讯通话以及资料传输.截至目前为止,已经有越来越多的浏览器纷纷都加入支援 WebRTC 的行列,包含苹果的 Safari 以及微软的 Edge , 目前 8910 平台并不支持 WebRTC
+参考FAQ: FAQ202275583
+### 问题: Mocor 平台有没有接口，去判断这个sim有没有激活 ？
+解决方案: 插入 SIM 卡状态下, 调用接口 MMIAPIPDP_GetLinkState 获取指定应用激活的PDP链路的状态, 如为 MMIPDP_LINK_STATE_ACTIVED 则表明当前链路处于已激活的状态,可以使用.
+参考FAQ: FAQ202275584
+### 问题: 针对设备收不到OMACP消息的情况下如何进行排查
+解决方案: 对于OMACP消息,设备收不到的情况有如下可能: 1.设备无有效IMEI号(暗码×#06#有显示不能说明是有效,它统一由认证部门分配),以往类似问题的原因多集中于此类. 2.运营商没有推送OMA push给终端设备. 3.运营商推送了,但设备因故障没有收到和提醒用户. 以上原因排除和确认的方式如下: 1.给测试机写入对比机(正常收到的设备)的IMEI号,使用同一张SIM卡,并请保证对比机为关机状态,之后测试. 2.modem侧没有收到OMA push消息,UNISOC modem log分析 3.modem侧收到OMA push消息,ap侧未处理,UNISOC AP log分析
+参考FAQ: FAQ202275585
+### 问题: Mocor 平台字体能否用多种字体， 比如我使用汉语，同时导入几种字库，在软件同时使用不同字体
+解决方案: 目前不支持直接内置一种语言对应不同几个字库, 在某窗口,不同位置使用不同字体显示
+参考FAQ: FAQ202275586
+### 问题: 8910 平台如何获取WIFI SSID 名字
+解决方案: 在 Idle 界面输入 #*8378#0# 进入工程模式 -> Item Test -> WIFI Test -> WLAN On 可以搜索到WIFI ,但是因为硬件不支持 SSID, 故无法显示 AP 热点名称, 目前支持有 MAC 地址和信号强度 ,
+参考FAQ: FAQ202275587
+### 问题: Android10是否支持BIP（Bearer Independent Protocol）？
+解决方案: BIP(Bearer Independent Protocol)独立传输协议,与新一代STK---USAT关系密切,是直接通过USAT中的增值应用下载用户所需的东西时,所采用的数据传输协议.通过BIP协议结合USAT应用,手机终端允许USIM卡和远程服务器之间进行透明的数据传输.BIP协议更有利于实现高速移动数据业务的传输,使得各种业务数据下载变得更加容易、快捷. Android10支持BIP协议. 技术标准主要参考3GPP TS 31.111,测试标准ETSI TS 131.124.
+参考FAQ: FAQ202275589
+### 问题: Android10中各制式信号阈值是？
+解决方案: 1.首先,不同制式都有一个默认阈值数组: frameworks/base/telephony/java/android/telephony/CarrierConfigManager.java LTE:KEY_LTE_RSRP_THRESHOLDS_INT_ARRAY(lte_rsrp_thresholds_int_array) WCDMA:KEY_WCDMA_RSCP_THRESHOLDS_INT_ARRAY(wcdma_rscp_thresholds_int_array) GSM:KEY_GSM_RSSI_THRESHOLDS_INT_ARRAY(gsm_rssi_thresholds_int_array) 2.packages/apps/CarrierConfig/assets下也可能存在对应的配置,这里的配置是随卡mccmnc生效的.
+参考FAQ: FAQ202275590
+### 问题: 如何通过ping指令测试网络(Android)？
+解决方案: ping测试IPv4: (1)ifconfig确认是否有IPV4的地址, (2)然后 ping www.qq.com 或 ping www.baidu.com ping6测试IPv6: (1)ifconfig确认是否有IPV6的地址, (2)然后 ping6 www.qq.com (注意:fe80开头的是内网IPV6地址,内网IPV6是无法访问外网的.)
+参考FAQ: FAQ202275591
+### 问题: Android4.4/Mocor5如何确认是否支持volte？
+解决方案: Android4.4开启volte需要(以mccmnc=45010为例): (1)属性:persist.sys.volte.enable=true (2)白名单:volte-conf.xml中配置<allowPlmn numeric="45010" enable="true"/>
+参考FAQ: FAQ202275592
+### 问题: UMS9620 SDIO1使用
+解决方案: 
+参考FAQ: FAQ202275596
+### 问题: APN不可编辑相关问题
+解决方案: 1.是否支持APN不可编辑? 支持. 2.如何设置APN不可编辑? APN字段的定义在Telephony.java中的静态内部类Carriers中,其中USER_EDITABLE字段表示是否可编辑.一般情况下,APN默认都是可编辑的. 如果需要设置某一APN不可编辑,可在APN配置文件中,找到该APN,在该APN中添加如下配置即可: user_editable="0"
+APN配置文件路径为:/vendor/sprd/telephony-res/apn/apns-conf_8_v2.xml
+参考FAQ: FAQ202275597
+### 问题: 为何dun类型APN不可编辑?
+解决方案: Q:为何dun类型APN不可编辑? A:相关代码如下所示: /frameworks/base/telephony/java/android/telephony/CarrierConfigManager.java     /**
+     * APN types that user is not allowed to modify.
+     */
+    public static final String KEY_READ_ONLY_APN_TYPES_STRING_ARRAY =
+            "read_only_apn_types_string_array";
+ sDefaults.putStringArray(KEY_READ_ONLY_APN_TYPES_STRING_ARRAY, new String[] {"dun"}); 从上述代码可知,针对所有运营商,dun类型APN都是默认只读的,也即不可编辑.
+参考FAQ: FAQ202275598
+### 问题: LVGL 相关资源有哪些？
+解决方案: LVGL 是个开源图形库,可以根据需要在网上搜索到所需的资源包含demo. lvgl官网:https://lvgl.io lvgl官方文档:https://docs.lvgl.io 百问网lvgl中文文档:http://lvgl.100ask.net github lvgl资源站:https://github.com/lvgl/lvgl
+参考FAQ: FAQ202275599
+### 问题: UFS,EMMC 电源兼容设计
+解决方案: 请参考下图及真值表设计
+参考FAQ: FAQ202275600,含图片
+### 问题: Android 12 pull /data/system/下的文件是乱码
+解决方案: Android12的/data/system/XXXX.xml被默认设置二进制xml格式,直接打开是乱码. 可以通过修改配置将其改为普通的xml格式 adb shell setprop persist.sys.binary_xml false 重启手机,再获取XXXX.xml,就是普通xml格式了.
+参考FAQ: FAQ202275601
+### 问题: SR3595D的温湿敏等级是多少？
+解决方案: 湿度敏感性等级:MSL,Moisture sensitivity level SR3595D MSL等级为MSL3
+参考FAQ: FAQ202275603
+### 问题: UIS8850 关于IMEI号最后第15位数据的说明
+解决方案: UIS8850 关于IMEI号最后第15位数据的说明 1,第15位输入数据要求:在AT+EGMR命令设置IMEI时,如果传入参数是15位,会对输入的数进行"模10"合法校验,通过才允许写入;如果传入14位那就先计算前面14位的校验和作为第15位; 2,第15位数据写入:最终写入时第15位数是将前面14位数求和取模后计算出来的数据,并非命令中传入的数据; 3,第15位数据读取:读出前14位,第15位数据为写入时同样方法计算后填入的数据;
+参考FAQ: FAQ202275608
+### 问题: 耳机crosstalk的软件优化方法（适用与安卓12以后的版本）
+解决方案: 本优化方案只适用于安卓12以后的软件版本. 1.先执行下面的adb命令读一下tinymix的状态 adb root adb remount adb shell tinymix tinymix读出来的一堆配置中,可以找到149和150项,如下图 2.一般这个功能默认是打开的on状态,然后一边测试crosstalk指标,一边调试这个HP_CROSSTALK_GAIN的值,用下面这个命令 tinymix 150 xxx值 举例如下图 这个值的范围是0~6553600,调试时一开始可以加多一点,5000为一个步进的加,指导指标开始有变化了以后再细调,1000为一个步进的调.直到设到一个值,crosstalk指标达到用户要求. 一般来说这个指标调到-60dB左右就够了.记录下现在设的值. 3.把这个值写入软件中:如下图,修改vendor/etc/下audio_route.xml文件中4个场景里on参数下的HP_CROSSTALK_GAIN的val
+参考FAQ: FAQ202275611,含图片
+### 问题: I2C常见异常波形
+解决方案: 如下图: I2C的SDA线上出现半高电平(蓝色框):该问题不会对通讯产生影响, 毛刺发生时,并不是 SDA 线采样的时刻. I2C的SDA线上出现毛刺(红色框):此毛刺的电平范围符合I2C协议规定,不会造成电平误判,不影响功能.使用接地环测量或者串联小于100ohm电阻或可改善.
+参考FAQ: FAQ202275613,含图片
+### 问题: I2C的SCL被拉低
+解决方案: 一、Slave 执行时钟延长从而拉低 SCL 如下图,SCL 被拉低之前未收到停止信号,说明通讯仍在继续,SCL短暂被拉低是正常现象. 当 Slave 需要更多时间来管理数据时,Slave 可能会执行时钟延长(CLK stretching). 时钟延长允许 I2C 外设强制 Master 进入等待状态,即拉低 SCL. 二、Master 拉低 SCL 的情况: 当 Master 需要持续占用总线和某个 Slave 通讯时,或者 Master 忙碌需要当前 Slave 等待时,会拉低 SCL 总线让当前 Slave 处于等待状态,且其他外设无法使用该总线.该现象是正常现象.
+参考FAQ: FAQ202275614,含图片
+### 问题: UMPS9621 输入电压连接方式
+解决方案: UMPS9621 的VBAT/VBATDRV/BOOST输入连接到VBAT, 如下图
+参考FAQ: FAQ202275615,含图片
+### 问题: UMS9230平台的安卓13（A13）版本，音频参数路径在哪里？
+解决方案: 安卓13的音频参数默认路径是: /odm/etc/audio_params/ ; 音频工具调试之后的临时音频参数路径不变: /data/vendor/local/media/audio_params ; 并且临时音频参数路径下的音频参数的优先级高于 /odm/etc/audio_params/ 下的音频参数.
+参考FAQ: FAQ202275619
+### 问题: CtsNetTestCases-android.net.cts.DnsResolverTest#te
+解决方案: 该类型问题经常性出现如下fail 提示 java.lang.AssertionError: RawQuery test1-nx.metric.gstatic.com with private DNS wait private DNS setting timeout 代表著国内运营商的网络不支持dns.google.com 的private 的dns 查询. 是国内测试才有的特定问题 可以建议客户以下几个方式 1. 关闭移动数据网络复测 2. 在只有wifi的网络环境下复测. 3. 插入一个香港漫游卡或者使用国外的测试环境进行复测.
+参考FAQ: FAQ202275621
+### 问题: 参数重构后，other文件夹内各个bin文件的修改途径及其作用
+解决方案: 1.captureinfo.bin:在加载参数时,该文件会被加载使用.该bin文件作用是记录lmage Size, 在工具栏"Modity Image Size"打开并修改size后,captureinfo.bin会更改. 2.libuse info.bin:在加载参数时,该文件会被加载使用.该bin文件作用是记录3ALIB CONFIG界面数据,修改3ALIB CONFIG界面并保存,libuse info.bin会更改. 3.raw ioctrl.bin:在加载参数时,该文件不会被加载使用.该bin文件工具中没有修改的途径. 4.resolution info.bin:在加载参数时,该文件会被加载使用.该bin文件工具中没有修改的途径. 5.version info.bin:在加载参数时,该文件不会被加载使用.该bin文件作用是记录sensor name,使用过程中仅load到工具内存中, 工具中没有修改的途径.
+参考FAQ: FAQ202275623
+### 问题: 在设置中显示：视频分辨率选择
+解决方案: 设置视频电话分辨率功能是展锐做的一个feature,在如下路径设置: 设置 -> 网络和互联网 ->移动网络 -> [选择对应卡的移动网络] -> 高级 -> 视频分辨率选择 ,设置视频分辨率 是否在设置显示视频分辨率,可以通过下列配置项设置,默认是false的,即显示视频分辨率,如果不想显示的话,则在对应运营商配置如下为true: <boolean name="hide_vt_resolution_bool" value="true"/>
+参考FAQ: FAQ202275625
+### 问题: 配置指定电话号码不显示在dialer通话记录
+解决方案: 需要在对应运营商设置下列 CarrierConfig 配置,num 表示有多少个号码,item 表示设置指定的号码 // 如下,指定 016、011 两个号码不显示在通话记录中
+
+  <string-array name="unloggable_numbers_string_array" num="2">
+    <item value="016"/>
+    <item value="011"/>
+  </string-array>
+参考FAQ: FAQ202275626
+### 问题: 导出联系人、通话记录数据库
+解决方案: 导出联系人数据库: adb root
+adb pull /data/data/com.android.providers.contacts/databases/contacts2.db D:\yourpath
+ 导出通话记录数据库: adb root
+adb pull /data/data/com.android.providers.contacts/databases/calllog.db D:\yourpath
+ 其中 D:\yourpath 为指定的输出数据库的路径
+参考FAQ: FAQ202275627
+### 问题: power键灭屏后，电话断开后自动亮屏
+解决方案: 电话断开后自动亮屏是平台的一个feature,如果不想要此feature,可以在下列路径中设置为false /packages/services/Telecomm/res/values/carrier_configs.xml
+
+<bool name="config_is_support_wakeup_screen">true</bool>
+ 需要注意的是: 如果是google dialer 接通电话遮住光感灭屏,挂断电话时手不放开仍遮住光感,手机不亮屏, 这是google dialer问题,dialer层没有释放接近传感器唤醒锁
+参考FAQ: FAQ202275628
+### 问题: UIS8850 bscore功能重启后ram中数据丢失
+解决方案: UIS8850 bscore功能重启后ram中数据丢失 Psram重启时会掉电,目前暂不支持重启后保存bscore buf数据
+参考FAQ: FAQ202275635
+### 问题: HDR天空分层现象分析思路
+解决方案: 对于HDR天空分层现象,分析思路如下: 一、raw图的精度是否足够平滑,需要检查非HDR图片,部分过曝的地方会不会有蓝-青-白渐变的现象; 二、sensor每个通道动态范围特性是否是线性的; 三、如果排除硬件问题,查看一下gamma在高亮处是否平滑; 四、如果排除gamma问题,可以通过dump yuv图,查看一下输入和输出yuv的情况.
+参考FAQ: FAQ202275638
+### 问题: 偏色问题分析思路
+解决方案: 偏色问题分析思路: 一、分析该偏色问题是不是awb问题:局部偏色,或者说某种颜色异常,不属于awb问题,属于cmc矫正不准确.因为awb偏色是整体的,可以在图片中找白点,或拍摄中带张色卡,查看中性色块的awb是否准确. 二、如果确定是awb偏色问题,通过debug tool分析色温色调是否正常,确定调试方向之后,再进行色彩偏移调整,首先查看 boundary设置是否合理,再考虑通过gray/color method参数做调整. 三、遇到色彩问题,优先使用awb/cmc进行优化.
+参考FAQ: FAQ202275639
+### 问题: AUXADC校准哪些电压点？
+解决方案: SC2730的AUXADC支持 1/1 (1.2V) ,1.92/1 (2.4V),2.56/1(3V) , 4/1(5V)量程,小量程校准0.1V和1V点,5v量程校准3.6V和4.2V点 SC2721的AUXADC支持1/1(1.2V) ,10.25/4 (3V),只校准0.1V和1v点
+参考FAQ: FAQ202275641
+### 问题: 客观调试中△E测试不过的调试思路
+解决方案: ΔE(色差)计算公式为: L(亮度)轴表示黑白,0为黑,100为白 a(红绿)轴正值为红,负值为绿,0为中性色 b(黄蓝)轴正值为黄,负值为蓝,0为中性色 ΔE数值越大,说明色差越大 调试思路: 一、需要检查该环境的awb有没有做准,查看awb 有没有可调的空间; 二、awb做准的情况下,再查看cmc有没有做准:查看24色卡的24色块跟标准色块的偏差值,针对某个偏差较大的色块单独做调整.在满足亮度和饱和度客观标准的情况下 ,查看cmc是否有可调空间.
+参考FAQ: FAQ202275642,含图片
+### 问题: TYPE-C接口的设备做host识别device插入的门限是多少？
+解决方案: 展锐平台CC默认的驱动电流为80uA,以80uA为例介绍device插拔判别门限: 手机做host时CC识别device拔出门限为:默认1.6V (1.55-1.7V可配) 手机做host时CC识别device插入门限为:默认0.2V(0.15-0.3V可配) 备注:当一个type-c的device设备连接手机时,CC检测到电平在0.2v-1.6v认为有device插入,大于1.6v认为没有device拔出
+参考FAQ: FAQ202275644
+### 问题: N6P平台 GSM Ramp曲线具体优化方式
+解决方案: [FAQ202274951] 非信令调试PVT使用Agilent8960测试时,出现Sync not found如何处理?
+参考FAQ: FAQ202275647
+### 问题: UIS8910 死机后无法导出蓝屏dump情况下怎么处理
+解决方案: UIS8910 死机后无法导出蓝屏dump情况下怎么处理 1,保存好异常前的AP/CP log做进一步分析; 2,测试时使用稳压电源,看下出现异常时电流多少,是否处于低功耗状态导致不能dump,如果是低功耗场景出现的,可以关闭休眠再确认下; 3,测试时使用uart 2 (debug host)口来抓ap log,出现异常后先在coolwatcher工具的命令行输入r 0命令,看看串口连接是否还是通的,如果是通的理论上是可以抓蓝屏dump的; 4,如果前面方法都没办法定位问题,请把板子jtag口飞出来,说明下稳定复现的路径,把机器寄给我们测试;
+参考FAQ: FAQ202275648
+### 问题: 闪光灯拍照出现偏色帧解决办法
+解决方案: 当遇到闪光灯拍照出现偏色帧时,可通过修改ISP_AE_flash_control_param 中的参数pre_skip_num(预闪时预览跳帧)、main_skip_num(主闪时预览跳帧)解决.这两个参数建议设置从5到1,在能解决问题的前提下,值越小越好. 如下图:
+参考FAQ: FAQ202275649,含图片
+### 问题: WIFI Only AFC校准
+解决方案: 1.TSX挂在电源芯片,同时有UMW2651/UMW2652/UWE5623等WIFI 5G功能的WCN 芯片,在WIFI Only方案时,可以选择WIFI Only AFC校准 2.在SIMBA的WCN文件夹下,选择脚本:[WIFI_AFC]WCN_UMW265x_Phone.seq 3.WIFI用射频线接仪器,运行脚本即可完成WIFI Only的AFC校准
+参考FAQ: FAQ202275652
+### 问题: 如何确定是否有EIS功能
+解决方案: 具体步骤如下: 第一、查看相机录像模式下是否有视频防抖开关,如果没有,则无EIS功能; 第二、如果有视频防抖开关,则打开视频防抖开关,抓取对应的log,在log中搜索关键字 CAM_ALGO_CV_EIS_LIBVER, 如果有该关键字,则说明EIS功能已导通,具体如下图:
+参考FAQ: FAQ202275653,含图片
+### 问题: usb_sw的作用和门限值？
+解决方案: usb_sw是用于识别支持usb3.0的type-c接口的正反插的, USB_SW 的电源域是vbat,高电平为70%*Vbat,低电平为30%*Vbat. 当usb_sw为1时走USB_RXP1通路,usb_sw为0时走USB_RXP2通路
+参考FAQ: FAQ202275657
+### 问题: ADC产线还需要校准么，校准哪几个点？
+解决方案: 现在芯片出厂前就会校准,校准值存入efuse中,产线整机无需再校准. 校准点为小量程校准0.1V,1V,大量程校准3.6V,4.2V.
+参考FAQ: FAQ202275659
+### 问题: UMS9117平台TYPE-C数字耳机和模拟耳机是否都支持
+解决方案: 模拟TYPPEC耳机是支持的,但需要加一个切换开关,负责切换USB和音频的开关 数字TYPEC耳机,不支持通话,因为USB不能挂在VBC上. 录音可以使用数字TYPEC耳机,但录音的VBC里面的LCF,EQ,ALC等功能是BY PASS的不能使用.可以使用AP里的NR录音消噪算法. 音乐播放部分可以使用数字TYPEC耳机,由于不经过VBC,里面的算法都是BYPASS的,所以音乐播放无法调试参数.
+参考FAQ: FAQ202275661
+### 问题: TypeC接口兼容模拟耳机方案设计，不建议加FM功能，这个建议是什么原因？
+解决方案: TypeC接口使用耳机线作为FM天线时,因为FM需要一个对地磁珠,另外TYPEC有模拟开关,耳机座地脚到板子地之间会存在等效阻抗.这样会让CROSSTALK更差. 但是如果对CROSSTALK变差不介意,我觉得是可以用FM的. TYPEC 耳机接口,手机用耳机线作为FM天线,由于TYPEC需要加切换开关,会让FM信号端对地之间形成一段阻抗.这样其实FM性能本身也会受到一些影响. 如果用外置天线作为FM天线,这种设计对于FM性能提升有帮助,同时也不影响耳机CROSSTALK.
+参考FAQ: FAQ202275662
+### 问题: Micro B接口和Type-C接口的设备识别OTG的区别？
+解决方案: Micro B接口的手机识别OTG设备是通过识别USB_ID脚电平实现的,Micro B接口的OTG线是直接接地的,手机USB_ID识别到0电平,认为OTG连接 Type-C接口的手机识别OTG设备是通过识别CC脚电平实现的,Type-C接口的OTG线是5.1K下拉接地的,手机CC识别到 I*5.1K 的电平认为OTG连接
+参考FAQ: FAQ202275664
+### 问题: 数字MIC如何供电
+解决方案: BB芯片数字MIC管脚的电源域为VIO1V8,建议数字MIC用VDD1V85网络供电,以保证电平匹配.
+参考FAQ: FAQ202275666
+### 问题: UIS8910 导出dump目录中ap.cmm出现Register.Set r0 Data.Long
+解决方案: UIS8910 导出dump目录中ap.cmm出现Register.Set r0 Data.Long(D:0x14)原因 出现这种情况主要是因为程序还在运行,没有死机,系统运行时读不了arm寄存器的值,所以会dump出来的ap.cmm中出现Register.Set r0 Data.Long(D:0x14)地址,SP指针为0xEEEEEEEE,没法查看当前任务栈信息.在没有死机的情况下可以通过coolwatcher和dtools工具来抓dump数据,但要注意关闭log接收以及其它工具占用debug端口的情况.
+参考FAQ: FAQ202275668
+### 问题: UIS8850 armlogel工具抓取的ap log中ip报文长度只能显示1K长度字符
+解决方案: UIS8850 armlogel工具抓取的ap log中ip报文长度只能显示1K长度字符 目前Arm logel工具限制,R9.22.3505之后的版本才支持,当前有samplecode,具体请咨询FAE.
+参考FAQ: FAQ202275672
+### 问题: 关于PMIC SC2721G TSX MODE Enable 的说明
+解决方案: 关于PMIC SC2721G TSX MODE Enable 客户经常有以下疑问: 在原理图上,PMIC TSX MODE Enable 标注,HIGH 为 Enable,LOW 为Disable.但是原理图上,M3管脚(TSX_MODE)却接地,这是否存在矛盾? 答案是:不矛盾. 原因解释:SC2721G 的M3 管脚,决定SC2721G 的26M 时钟源,目前UWS6130E\UWS6131E平台SC2721G 均采用外部 26M 输入方式,所以TSX_MODE 直接拉地即可.
+参考FAQ: FAQ202275674,含图片
+### 问题: UMS9230/UMS9230T DCDCGPU上电时序注意事项
+解决方案: 对于UMS9230/UMS9230H平台:PMU的DCDCGPU是给BB的大核供电,DCDCGPU 由BB 的DCDCARM1_EN 控制开启,而大核供电是在系统运行到kernel 后开启的,上电时序测量时会测试到DCDCGPU 很靠后打开就是这个原因.可以理解为,此种方案下,硬件上电时序中对DCDC_GPU没有要求,硬件上电过程中不需要考虑DCDCGPU的上电时序,DCDCGPU是由硬件上电完成后,软件进行控制的. 对于UMS9230T平台:PMU的DCDCGPU是给BB的VDDMM供电,这个上电过程是由硬件控制的,要遵循PMU的硬件上电时序要求.具体请参考PMU的规格书关于上电时序的要求.
+参考FAQ: FAQ202275676
+### 问题: Pandora工具测试BT跳频设置
+解决方案: 使用Pandora工具测试BT跳频需要将ChannelID设置为255,即可进行测试,设置见下图,需要注意旧版本的Pandora无法设置ChannelID为255,故不支持该项测试,请使用Pandora_R22.21.4301及以后版本进行测试.
+参考FAQ: FAQ202275677,含图片
+### 问题: 调整特定供sensor的加载顺序
+解决方案: A13 sensor驱动初始化接口被调用顺序跟驱动编译顺序有关.以ACC为例,如想调整ACC中各供的加载顺序 请查看bsp/sensorhub/public/sensor_hub_sprd/public/system/sensor_driver/acc_drivers/acc_drivers.cmake,并在多供的 list(APPEND_SRCS XXX) 中将指定供的 list(APPEND_SRCS XXX) 排到第一位 以及在bsp/sensorhub/public/sensor_hub_sprd/public/system/sensor_driver/acc_drivers/Kconfig将指定供的功能宏也放在第一位
+参考FAQ: FAQ202275678
+### 问题: 针对无拨号键、无“设置”的安卓系统，进入工程模式、GNSS传导测试模式、打开设置等的ADB指令
+解决方案: 1、进*#*#2266#*#*的ADB:adb shell am start com.spreadtrum.sgps/.SgpsActivity 2、进*#*#83789#*#*的ADB:adb shell am start com.sprd.validationtools/.ValidationToolsMainActivity 3、进*#*#83781#*#*的ADB:adb shell am start com.sprd.engineermode/.EngineerModeActivity 4、进入设置:adb shell am start -n com.android.settings/.Settings
+参考FAQ: FAQ202275679
+### 问题: userdebug版本关闭tcpdump.log
+解决方案: 1.在APLogControl.java文件中将enableCapLog置为false; 2.在ylog.conf.debug文件中将tcpdump置为0 具体文件路径: vendor/sprd/platform/packages/apps/LogManager/src/com/sprd/logmanager/logcontrol/APLogControl.java vendor/sprd/tools/ylog/ylog_common/conf/ylog.conf.debug
+参考FAQ: FAQ202275688
+### 问题: 关于参数重构后uiinput bin文件的说明
+解决方案: 由于要兼容c格式参数,且部分模块的参数在c文件分属于不同的结构体,因此在参数重构后,这些模块的参数仍由两个bin文件组成.这些block具体如下: ①AE block的曝光表、AE table等存放在AE_16433_uiinput.bin; ②LSC block的light、Grid、Lpf等存放在LSC_2D_16394_uiinput.bin; ③Bayer NR block的NR标定参数、Alpha、Sigma等存放在BAYER_NR_20591_uiinput.bin; ④Dual_flash的标定bin文件、UI中的电流参数等存放在DFLASH_16438_uiinput.bin. 注意事项: 用AE举例,当不确定你所修改AE block参数里是否包含了uiinput参数,建议把AE_16433.bin和AE_16433_uiinput.bin一并push.
+参考FAQ: FAQ202275691
+### 问题: AGC SPEC
+解决方案: AGC SPEC
+参考FAQ: FAQ202275694
+### 问题: 9863A平台 mic的偏置电压除了使用micbias做外置偏压外，可以在芯片内部设置内置偏压吗？
+解决方案: "芯片内部设置内置偏压"是指像高通那样在芯片内部直接给MICBIAS这一路供电,省掉芯片外部的MICBIAS的连线. 对于9863A平台不支持这种芯片内部给MICBIAS供电的方式.因此外部MICBIAS的连线是需要的,不可以省略.具体设计如下图:
+参考FAQ: FAQ202275719,含图片
+### 问题: 如何关闭DDR size限制
+解决方案: 将对应board的defconfig文件(如该路径 /arch/arm/configs/sprd_sharkl3_defconfig)中的三个宏使能 CONFIG_HIGHMEM=y CONFIG_HIGHPTE=y CONFIG_BOUNCE=y
+参考FAQ: FAQ202275720
+### 问题: Android音视频支持的格式
+解决方案: 音频封装格式: mp3、ogg、amr、3gp、aac、flac、wav、gsm、midi、mp4、m4a、xmf、mxmf、rtttl、rtx、ota、imy、mkv 音频编码: mp3、aac、amr-nb、amr-wb、flac 音频解码: mp3、aac、amr-nb、amr-wb、flac、opus、vorbis、gsm、midi 视频封装格式: mp4、3gp、avi、flv、f4v、mka、mkv、webm、3gpp、mov、qt、mpeg2ts 视频编码: H.264、H.265 视频解码: H.263、H.264、H.265、MPEG-4、VP8、VP9、AV1 图片格式: BMP、GIF、JPEG、PNG、WebP、HEIF
+参考FAQ: FAQ202275732
+### 问题: AndroidS如何关闭系统主题颜色会根据设置壁纸的颜色而变功能?
+解决方案: +++ b/packages/SystemUI/res/values/flags.xml @@ -22,7 +22,7 @@ <bool name="flag_notification_pipeline2_rendering">false</bool> <bool name="flag_notif_updates">true</bool> - <bool name="flag_monet">true</bool> + <bool name="flag_monet">false</bool> 系统主题颜色会根据设置壁纸的颜色而变化,把flag_monet 置为false 即可屏蔽该功能, 该功能屏蔽后会导致[MADA][M54]Dynamic color tonal palettes检查项不符合要求,不符合原因为彩蛋背景不会根据壁纸颜色改变而改变,请客户根据项目情况自行评估是否需要MADA测试,如不需要可将该flag 置为false ,屏蔽该功能!
+参考FAQ: FAQ202275738
+### 问题: 中国广电APN参数配置
+解决方案: <apn carrier="CBNET"
+        mcc="460"
+        mnc="15"
+        apn="cbnet"
+        protocol="IPV4V6"
+        roaming_protocol="IPV4V6"
+        type="default,supl"
+    />
+    <apn carrier="ims"
+        mcc="460"
+        mnc="15"
+        apn="ims"
+        protocol="IPV4V6"
+        roaming_protocol="IPV4V6"
+        type="ims"
+    />
+参考FAQ: FAQ202275740
+### 问题: VDDWPA滤波电容容值要求
+解决方案: 关于MMPA的VDDWPA供电上面要求有4.7uF以上电容,主要为了保证VDDWPA工作稳定性,纹波不能超过+/-4%.
+参考FAQ: FAQ202275744
+### 问题: UMS9620平台GSM PVT定时误差调试位置
+解决方案: gsm_research\system_param_dsp_use_remaining\dfe_para_struct\tx_delay_adjust_GMSK=0X6E 如下图: 注意:以4为步进左右调整验证.
+参考FAQ: FAQ202275745,含图片
+### 问题: 如何抓取部署simlock和imei时的armlog
+解决方案: 抓armlog的电脑要先安装我司logel工具,步骤如下: 1.打开simba工具按ctrl+F2进入高级设置 2.勾选dut1并将logel工具路径设置为您电脑上logel工具路径,路径名称包含logel.exe,举例:E:\tool\Logel\Bin\Logel.exe 3.完成设置后部署simlock 4.部署完成后打开simba工具左下角文件夹图标,文件夹中有Arm.Logel这个文件,提供该文件夹中所有文件即可.
+参考FAQ: FAQ202275749
+### 问题: PMIC的几路DCDC输出，如VDDCPU、VDDGPU等的电压为什么会跳动，有小台阶(DVFS)?
+解决方案: VDDCPU、VDDGPU等的电压会跳动,有小台阶,是因为对应电源开启了DVFS功能. 什么是DVFS,其目的是什么: DVFS是dynamic voltage and frequency scaling的缩写,即动态电压频率调整,此功能的目的是根据对应电源的用户(如CPU、GPU)的繁忙程度(或负载大小)去动态调整工作电压和工作频率以达到功耗和性能的一个平衡,在保证性能的同时尽可能减少功耗. PMIC哪几路电源支持DVFS: 具体哪几路电源支持DVFS可在对应PMIC规格书中搜索"DVFS"关键字,对应电源有相关控制寄存器说明其支持DVFS 更多DVFS说明及相关调试手段,可参考下面两篇文档: 27679 AP侧功耗调试指导手册V1.7.pdf 101922 展锐硬件调试指导手册 - 电源篇V1.0.pdf
+参考FAQ: FAQ202275751
+### 问题: UIS8910 osiThreadSetFPUEnabled()的作用
+解决方案: 对于没有FPU的平台,使用osiThreadSetFPUEnabled接口开启软件浮点运算.当前8910平台有FPU硬件处理,osiThreadSetFPUEnabled()函数为空,为了兼容还是保留了这个接口.当前平台浮点数运算可以使用在任何地方,包括线程和中断里面.
+参考FAQ: FAQ202275760
+### 问题: 校准fail报超时、timeout且每次fail的地方不确定，产线校准fail概率高
+解决方案: 产线校准时报各种超时,比如Receive response timeOut、ReadEdge测试超时,大概率是USB的数据传输有问题,需要测试USB的信号质量,然后给软件同事分析给方案
+参考FAQ: FAQ202275776
+### 问题: UIS8910FF校准出现LTE AGC Min GAIN fail如何解决？
+解决方案: Simba LTE AGC Min GAIN fail报错如下图: 工具门限值为-40 到-5,若校准结果很临界上限值,可以在灵敏度正常的前提下修改上限-5到0,修改方式如下图所示,修改门限值不会影响BER和RSSI,但需实测下FAIL板子的灵敏度有无异常
+参考FAQ: FAQ202275779,含图片
+### 问题: Unisupport QVL里WCN芯片的晶体
+解决方案: 展锐常规方案里,WCN晶体一般有2种 1.WCN共用TSX方案 WCN芯片与PMIC、Transceiver共用一个TSX晶体,TSX晶体需要校准,把校准后的时钟信号提供给WCN芯片使用 2.WCN单独TCXO晶体 WCN单独使用一颗TCXO晶体 3.晶体的方案 展锐参考原理图有晶体方案的具体搭配表,可以直接看到具体电路设计的差异 4.Unisupport QVL的晶体 基于上述信息,QVL里搜索到的晶体 ①.主芯片的TSX,是满足主芯片整体方案的晶体 ②.WCN芯片的TCXO,是单独使用并能满足WCN要求的晶体
+参考FAQ: FAQ202275780
+### 问题: UMS9230项目LTE TX功率回读功能集成到工程模式中
+解决方案: UMS9230项目LTE TX功率回读功能集成到工程模式中 需求背景: 此功能目的是对客诉信号不好的样机,通过发送AT命令,在工程模式中回读功率,用于判断硬件通路是否正常. 实现方案: 将LTE TX功率回读功能集成到工程模式中,选择对应LTE band后,点击开始,即可自动下发AT指令; 进行各个band的TX功率回读,并将下发和回读的功率显示,并在结果栏显示两者的对比结果(参考下面举例图片); 如果差异很大,显示fail(可判断硬件通路有问题);差异很小,显示pass,可判断为硬件通路正常. 如下modem版本已合入功率回读功能: 4g_modem_22a_w22.34.3(含此版本或之后版本)
+参考FAQ: FAQ202275781,含图片
+### 问题: 支持WCDMA Band19的CP版本（modem版本）？
+解决方案: 支持WCDMA Band19 (B19)的CP版本: FM_BASE_TRUNK_V2_W21.25.1 4G_MODEM_20A_W21.22.4 4G_MODEM_21A_W21.52.5 FM_BASE_18A_W21.51.3 FM_BASE_18B_W22.01.6
+参考FAQ: FAQ202275783
+### 问题: V2平台CA支持能力
+解决方案: V2平台仅支持2CC CA,不支持多于2CC的CA组合. 具体支持能力: 1. DL 2CC(带内连续,带内不连续,带间L+M,M+H,L+H,带间M+M: 1A+3A, 2A+4A) 2. UL 2CC (带内连续) 3. DL 2*2 MIMO 这里: L=Low band 699~960MHz M=Mid band 1805~2200MHz H=High band 2300~2700MHz
+参考FAQ: FAQ202275790
+### 问题: Simba工具测试WiFi 2x2 MIMO方法
+解决方案: Simba工具进行WiFi 2x2 MIMO综测方法如下: 1.选择测试序列----Simba工具解压压缩包后直接双击下方Simba图标启动软件,打开Bin\Project\WCN\WCN_UMW265x.seq,导入工具内置序列. 2.设置天线----测试WIFI PRI/WIFI AUX PRI选择Ant1st,测试WIFI DIV/WIFI AUX DIV选择Ant2nd,根据不同测试设置端口. 3.设置仪表测试Port----点击设置菜单进入工具仪表配置界面,界面可设置端口以及Loss和仪表RF口,注意根据实际情况设置. 上述步骤完成后即可进行WiFi 2x2 MIMO综测.
+参考FAQ: FAQ202275793,含图片
+### 问题: 开机PDN自动激活AT命令
+解决方案: 开机PDN自动激活AT命令 AT+VERCTRL=0,1 //设置后重启,开机会自动激活 AT+VERCTRL=0,0 //平台默认设置,开机后关闭自动激活 注意:插白卡在仪表上测试时,自动开启自动激活模式,不受AT+VERCTRL命令控制.
+参考FAQ: FAQ202275795
+### 问题: AndroidR/S设置-隐私中如何自行配置Microphone access麦克风访问权限选项？
+解决方案: Settings/src/com/android/settings/privacy/MicToggleController.java 可以参考直接返回AVAILABLE,即可正常显示 @Override 40 public int getAvailabilityStatus() { 41 return mSensorPrivacyManagerHelper.supportsSensorToggle(getSensor()) 42 && DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY, "mic_toggle_enabled", 43 true) ? AVAILABLE : UNSUPPORTED_ON_DEVICE; 44 }
+参考FAQ: FAQ202275802
+### 问题: 8850 PM1支持的唤醒源有哪些？
+解决方案: hal_chip_8850.h中有唤醒源,uart唤醒源只有uart1-3:
+HAL_RESUME_SRC_UART1
+HAL_RESUME_SRC_UART2
+HAL_RESUME_SRC_UART3
+参考FAQ: FAQ202275803
+### 问题: Go项目使用userdebug版本测试GTS部分测项会fail
+解决方案: 部分GTS测试项, 例如testEEAv2Compliance, testDefaultIntentHandlers...等, 使用userdebug软件进行测项测试会失败是因为Google GTS的设计, Google再GTS的设计内将Go Device的判断逻辑添加了PLAY_STORE_USERDEBUG_CERT这个逻辑, 用于检查是否预置正确的Play Store版本, 但Google再该逻辑的判断又添加了是否user版本软件, 如果不是的话都会导到检测为非Go的项目, 进而引起测项本来该检测Go版本的判断流程变为非Go版本的判断流程, 最终fail. 因此建议测试GTS时都使用user版本做测试.
+参考FAQ: FAQ202275807
+### 问题: 平板项目Google Dialer拨号盘显示缩小
+解决方案: 根据分析Google再88.1.474643964左右的Google Dialer版本做了拨号盘显示的UI更新导致此现象, 经相关测试发现是Google Dialer拨号盘的设计没有随著wm size变化跟著一起变化引起, 因可以透过将Pixel原生机的window size修改到趋近平板的比例就可以复现问题. 测试修改window size的方法可以透过adb指令, 相关方法如下: 1. 先输入adb shell wm size取得原始尺寸, 再透过adb shell wm size设定想要的尺寸 以Pixel 4a为例: 输入: adb shell wm size 输出: Physical size: 1080x2340 . . 然后设定趋近平板的size 2000x2340 输入: adb shell wm size 2000x2340 输入后手机画面会变为该size, 设回方法一样透过指令, 或是恢复原厂设定.
+参考FAQ: FAQ202275808
+### 问题: 预置客户应用导致testMbaPrivilegedPermission fail
+解决方案: 这部份属于Google对预置应用的检查, 并不建议规避方式避免被检测出预置的应用有非Google允许的应用, 需透过向Google提豁免解决.
+参考FAQ: FAQ202275809
+### 问题: HTTPS是否支持双向校验证书？
+解决方案: HTTPS是否支持双向校验证书? 平台提供的HTTPS不支持双向验证,TLS握手后设备证书被服务器认证通过后即可进行数据传输,设备不认证服务器的证书. mbedtls支持双向验证功能,如需要支持双向验证功能,可以基于 mbedtls 进行开发. 附HTTP相关文档链接如下: HTTP接口设计说明书V1.0.pdf https://unisupport.unisoc.com/file/index?fileid=33437
+参考FAQ: FAQ202275810
+### 问题: GTS 10_r1 新增测试项 testFeatureAiai fail
+解决方案: fail log出现以下提示: Devices must not declare 'com.google.android.feature.ASI' if ASI is not installed 需先确认项目RAM是否大于4G, 因该功能按照Google的要求是需要在4G以上的硬件才支持的, 如果确认没有4G则直接到vendor/partner_gms/etc/sysconfig/google.xml中把<feature name="com.google.android.feature.ASI" />给屏蔽掉. 符合Google的要求, 则按照提示预置ASI应用.
+参考FAQ: FAQ202275813
+### 问题: 进入相机,开启位置显示,录制视频,进入Google Photos应用查看视频详情里面没有出现位置信息
+解决方案: 这边发现某些Google Mainline版本会引起此现象, 需先排查是否Google Mainline引起, 确认Mainline引起后将Mainline版本更新到最新版本解决. 确认是否Google Mainline引起的步骤如下: 先使用没有集成Google Mainline的软件版本确认是否进入Google Photos应用查看包含位置信息视频的详情里面会出现位置信息 确认没有集成Google Mainline的软件版本正常 将Google Mainline更新到最新版本 如更新Google Mainline后仍有问题, 再提CQ单进一步调查
+参考FAQ: FAQ202275814
+### 问题: Google Play Movies & TV 应用自动消失, 变为 Google TV.
+解决方案: 根据 Google 官方说明 Google TV 会全面取代 Google Play Movies & TV 此现象为过渡期的 Google 原生行为, 正常现象. 使用 Google 原生机测试,连网后点击 Google Play Movies & TV 会要求登入账号, 线上自动更新完 Google Play Movies & TV 后即转换为 Google TV. 官方论坛连结: https://support.google.com/googleplay/thread/156571755/play-movies-tv-is-moving-to-google-tv?hl=en
+参考FAQ: FAQ202275815
+### 问题: 通话录音后找不到对应文件
+解决方案: google dialer 通话录音会保留在 /data/data/com.google.android.dialer/files/callrecordingprompt/ 内. 属于文件管理器无法存取的位置, 此为 google dialer 原生设计. 如要验证如何存取通话录音, 可参考以下 google 官方连结 Find a recorded call 章节. https://support.google.com/phoneapp/answer/9803950
+参考FAQ: FAQ202275819
+### 问题: Go项目锁屏界面下无法透过从底部角落上滑方式调起语音助手
+解决方案: 根据对比测试了平台Android 12 Go版本平台样机也是一样行为, 非Go版本则可以在不用解锁情况下进入语音助理界面, 进一步调查应用反编看到是因为Google在非Go版本助理应用内有调用activity.setShowWhenLocked(true);, 使其可以在不用解锁显示页面, 但是Go版本助理无此调用, 所以需要解锁才行. 因此该行为是Google在Go版本的Assistant设计行为.
+参考FAQ: FAQ202275821
+### 问题: Simba工具校准完之后如何写入IMEI/SN号
+解决方案: 问题描述:Simba工具校准完之后如何写入IMEI/SN号? 问题解答:1、在Simba工具中,在power off前面添加测试项,选择provision.dll-->inputCode-->WriteX-->确认,具体如下图所示: 2、新增inputCode测试项之后,常用里面自动含有SN号和IMEI号,可自行选择写入SN/IMEI号,如下图所示:
+参考FAQ: FAQ202275831,含图片
+### 问题: 工厂区SN读写接口函数
+解决方案: 工厂区SN读写接口函数 BOOLEAN update_nv_SN(uint8 *data, uint32 length) //写 Uint32 read_nv_SN(uint8 *data, uint32 max_data_len) //读
+参考FAQ: FAQ202275839

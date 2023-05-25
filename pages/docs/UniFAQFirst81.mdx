@@ -1,0 +1,346 @@
+### 问题: A12上9832E平台如何打开TOS log
+解决方案: 1.device/sprd/mpool/module/bsp/mfeature/kernel/kernel5.4/msoc/sharkle/ko/km.mk 在BOARD_VENDOR_KERNEL_MODULES 下面添加上 $(BSP_KERNEL_MODULES_OUT)/trusty-log.ko 2. device/sprd/mpool/module/bsp/mfeature/kernel/kernel5.4/msoc/sharkle/ko/modules.load 在列表相应位置加上 trusty-log.ko 重新编译pac文件烧录再抓取Ylog查看.
+参考FAQ: FAQ202275840
+### 问题: 工厂站位检查的相关接口和设置
+解决方案: 1. 在手机上查看站位信息
+在6533G手机终端上,输入暗码 *#87# 可以进入auto test界面,选择Test Info,然后选择Phase Check
+会显示站位检查信息,其中ANNTest 就是OTA的站位信息.
+
+2.代码实现
+相关的代码在FM_GetPhaseCheckInfos ,可以参考这个函数中的相关实现.
+
+3. 工具配置
+在产线工具中,默认已经勾选站位信息.
+比如在耦合测试产线工具中,有一个setting.ini文件,其中
+CheckANNTESTPreStation=1
+SetANNTESTStation=1
+已经默认支持站位信息的检查和写站位.
+参考FAQ: FAQ202275846
+### 问题: WCDMA校准时提示出现RSSI超上下限时怎么处理？
+解决方案: 若WCDMA某band实测灵敏度均正常,但校准时RSSI提示会超范围[-20,0],此时可以适当放宽校准上下限. 修改NV路径如下:WCDMA_optimize\WCDMA_download_params_optimize\w_band_cali_setting\w_cali_band\band[x] 上下限计算公式如下: 代入便可得到[-20,0]的校准范围,如下图 以上图为例,可看到W band4 PRI的rssi值临近下限,但实测灵敏度均正常,此时便可放宽下限,将对应band的PRI处原值ref_rssi_down:900向下调整至450,此时校准限制便由[-20,0]调整至[-23,0]
+参考FAQ: FAQ202275847,含图片
+### 问题: WCDMA APC校准数据解读
+解决方案: WCDMA APC 校准数据,对于不同平台,NV位置和名称可能不同,但是对数据的解读是一致的. 以V2平台W APC校准数据为例,从control_word[0]开始记录,word[0]对应23dBm,word[1]对应22dBm,依次类推按1dB步进降序排列. 每个control_word[X] 记录的校准数据,包含两部分信息:APT index(高8bit)和GAIN index(低8bit) 以control_word[5]=0x5C52举例: 高8bit:0x5C00=101110000000000 右移10位 10111=23 => 得到APT index=23 低8bit:0x52 => 得到GAIN index=82 APT index的软件代码:
+参考FAQ: FAQ202275849,含图片
+### 问题: WCDMA校准报APC NV Delta问题
+解决方案: 发射功率由控制字(control word)决定,功率的control word步进8bit为1dB,容限为+-1dB,故门限为[0~16],发射功率1dB步进递增,如果前后两个功率的control word相差超过16,则校准会报APC NV Delta的错误 如果报错APC NV Delta则表示某段功率线性度不达标. 除了常规的优化匹配之外,还可通过调整DCDC电压. control word由dcdc index和gain index构成 举例: 由校准log可以看到前后两个控制字相差0x983C(38972)-0x982B(38955)=17 超过16 将control word拆解可以解析得到对应的问题dcdc index值为0X26 可以对对应的dcdc index进行优化,修改方式及位置请查阅对应的NV指导文档 注:修改完dcdc index值后需同步check ILPC
+参考FAQ: FAQ202275850,含图片
+### 问题: UIS8850 是否支持电信自注册
+解决方案: UIS8850 是否支持电信自注册 当前电信送测版本为W22.31.5,不支持CTWING和电信自注册.
+参考FAQ: FAQ202275854
+### 问题: CMW500 测试 WCDMA RSCP指标，RSCP和cell power之间有约3dB的差异
+解决方案: CMW500测得的RSCP为CPICH RSCP,该CPICH RSCP和cell power之间的关系为:CPICH RSCP=cell power+PCPICH. PCPICH为CMW500上的一个可设置参数,只有当PCPICH设置为0时,CPICH RSCP才等于cell power. 因此,CPICH RSCP的目标值应该是CPICH RSCP=cell power+PCPICH. 在此基础上再考虑3GPP规定的余量要求.无条件地认为CPICH RSCP的目标值等于cell power值是错误的.
+参考FAQ: FAQ202275856
+### 问题: Simba工具中lte的cellpower说明
+解决方案: Simba上LTE的cellpower实际上是RS_EPRE,实际信号强度需经过公式 P=RS_EPRE+10*LOG(N_RE),N_RE=12*RB数量, 10M带宽是50RB;如simba工具上设cellpower=-57,则P=-57+10*LOG(12*50)=-29.2dbm.
+参考FAQ: FAQ202275861
+### 问题: 修改dts中的loglevel值为何不生效？
+解决方案: 问:修改dts中的loglevel值为何不生效? 答:dts中设置的loglevel是默认值,在开机启动过程中,这个值还会由u-boot通过读取下载工具中设的值来更新(下载工具ResearchDownload.ini中Data=enable:level=x,x值不等于0).因此,下载工具中设的值会覆盖dts的值,也是最终loglevel的值.最终loglevel的值可以通过cat /proc/cmdline来确认.
+参考FAQ: FAQ202275865
+### 问题: WCDMA  互调特性测试 case6.7 参数说明
+解决方案: 1、WCDMA 6.7 Intermodulation Characteristics是指接收互调响应抑制,测试在存在干扰信号的情况下,接收机在其指定信道频率上接收所需信号的能力. 2、不同于其他band, band1测试要求是普通条件,指标要求低一些. 3、B1使用普通测试条件如table6.7.3,误码率不超过0.1%. 4、Band II, Band III, Band IV, Band V, Band VIII, Band X, Band XII, Band XIII or Band XIV需要遵照tables 6.7.4 要求.
+参考FAQ: FAQ202275879,含图片
+### 问题: 如何移除自研CallFireWall应用
+解决方案: 针对A11及之后的版本,去除展锐自研CallFireWall的方案如下:
+
+需要在以下代码处去掉CallFireWall,使之不进行编译即可
+
+device/sprd/mpool/module/telephony/mtype/native/native.mk
+- # SPRD: FEATURE_VOLTE_CALLFORWARD_OPTIONS
+- PRODUCT_PACKAGES += \
+-    CallFireWall
+参考FAQ: FAQ202275880
+### 问题: 8850 audio播放接口对于错误音频数据的处理办法
+解决方案: 1、播放接口会给出返回值(true); 2、上报 AUPLAYER_EVENT_PLAY_ERR事件 该事件需要使用auPlayerSetEventCallback接口来设置上报的回调函数.使用方法参考AT+CAUDPLAY:
+参考FAQ: FAQ202275882,含图片
+### 问题: 接收新短信手表无铃声且震动不停
+解决方案: 接收新短信手表无铃声且震动不停是因为铃声解码失败,所以铃声播放失败, 而振动不停,因为当前铃声模式是ring and vibrate, 振动是在铃声播放结束时才会停止. 需检查当前铃声的格式,若是midi格式,由于目前307手表平台上不支持midi格式, 需更换为其它格式铃声,如mp3,wav 格式铃声.
+参考FAQ: FAQ202275883
+### 问题: 打不开vcard文件
+解决方案: 电话本导出联系人是vcrad文件,vcf格式的 ,要打开vcard文件需要支持Ebook功能, 若是Ebook功能关闭,则不能打开vcard文件.
+参考FAQ: FAQ202275885
+### 问题: 如何添加图片至模拟器的SD卡中？
+解决方案: 将图片放至soft/application/CoolSimulator/bin/Win32FS/DRIVE_E/Photos 文件夹下. 同样,音频文件可放至Win32FS/DRIVE_E/My Music 文件夹下; 视频文件放至Win32FS/DRIVE_E/Videos 文件夹下.
+参考FAQ: FAQ202275886
+### 问题: MOCOR平台信号不同网络制式下强度转换（asu与dbm）
+解决方案: MOCOR平台信号不同网络制式下强度转换(asu与dbm) 在4G网络下:asu = 140dbm + rsrp (4G的信号强度即为rsrp,单位dbm) 在3G网络下:asu = 116dbm + rscp(3G的信号强度即为rscp,单位dbm) 在2G网络下:asu = (lev + 113dbm) * 0.5 (2G下的信号强度暂记lev,单位dbm)
+参考FAQ: FAQ202275895
+### 问题: 8910 外置PA通路设置方法
+解决方案: 通过audio_calib_VQE.nvm中的audio_calib_param\CALIB_AUD_ALG\VoiceCallNb[0]\reserved的值来控制
+reserved为0表示使用内部PA或外部PA接在SPK或RCV上,没有听筒喇叭二合一或三合一
+reserved为1表示使用外部PA,外部PA接在HP_R上,没有听筒喇叭二合一或三合一
+reserved为2表示使用内部PA或外部PA接在SPK或RCV上,有听筒喇叭二合一或三合一
+reserved为3表示使用外部PA,外部PA接在HP_R上,有听筒喇叭二合一或三合一
+使用方法:
+请用工具NVEditor.exe(如没有该工具请找我司接口人提供)打开prebuilts\modem\8910\贵司使用的工程\nvitem中的audio_calib_VQE.nvm
+参考FAQ: FAQ202275910
+### 问题: 通用SPI接口外挂flash是否可以通过烧录工具
+解决方案: 不可以,下载阶段代码中只有专用flash接口下载的代码,如需通用SPI接口flash内容的烧录需要修改代码.
+参考FAQ: FAQ202275911
+### 问题: SC7701是否支持双卡双待
+解决方案: 支持 双卡双待
+参考FAQ: FAQ202275918
+### 问题: UMS9620x系列，UIS7885，UIS7870是否支持UFS3.1
+解决方案: 上诉平台支持UFS3.1. UMS9620, UMS9620T,UMS9620S,UMS9620W,UIS7885,UIS7870规格书中只有关于UFS3.0的描述,但UFS3.0和UFS3.1在SOC端硬件是兼容的,只需调整软件既能支持UFS3.1,目前上诉平台已调试验证完UFS3.1,并认证测试了一些UFS3.1的物料. 相关基线软件是否需要升级才能支持UFS3.1可提软件CQ确认; 各平台认证过的UFS3.1的物料可以在Uni-support的QVL上查询. 另注意UFS2.x和UFS3.x供电设计在上诉平台上有差异,具体可以参考如下FAQ [FAQ202275933] UMS9620系列平台UFS2.x与UFS3.x供电区别
+参考FAQ: FAQ202275945
+### 问题: 如何在user版本下显示recovery菜单
+解决方案: user版本下recovery显示"no command"为正常现象. 通过长按"power + 音量上" 键可显示recovery菜单列表
+参考FAQ: FAQ202275949
+### 问题: A12 关闭特定应用的StartingWindow窗口
+解决方案: sprdroid12_trunk_22a/vendor/sprd/platform/frameworks/base/services/core/java/com/android/server/wm/UnisocWMSLog.java // snapshot类型,一般热启动时的StartingWindow类型,将应用包名添加到NOT_SAVE_SNAPSHOT_APPS数组中 private static final String[] NOT_SAVE_SNAPSHOT_APPS = { ... } //splashscreen类型,一般冷启动时StartingWindow类型,将应用包名添加到NOT_SAVE_SPLASHSCREEN_APPS 数组中 private static final String[] NOT_SAVE_SPLASHSCREEN_APPS = { ... }
+参考FAQ: FAQ202275950
+### 问题: A11 关闭特定应用的StartingWindow窗口
+解决方案: sprdroid12_trunk_22a/frameworks/base/services/core/java/com/android/server/wm/WMSLog.java // snapshot类型,一般热启动时的StartingWindow类型,将应用包名添加到NOT_SAVE_SNAPSHOT_APPS数组中 private static final String[] NOT_SAVE_SNAPSHOT_APPS = { ... } //splashscreen类型,一般冷启动时StartingWindow类型,将应用包名添加到NOT_SAVE_SPLASHSCREEN_APPS 数组中 private static final String[] NOT_SAVE_SPLASHSCREEN_APPS = { ... }
+参考FAQ: FAQ202275951
+### 问题: UMS312平台使用TSX+32K Less 的方案关机漏电流偏大的说明
+解决方案: 对于UMS312平台,当使用TSX+32K Less方案时, 初始上电后的漏电流为0.1mA,正常关机后的漏电流为0.2mA, 正常关机后的漏电流会比初始上电后的漏电流大100uA. 这是因为: 32Kless 方案没有32K 晶体,32K 时钟来源是26M 晶体分频.系统正常关机之后VDDDCXO将一直为时钟震荡电路提供电源,这将导致关机漏电流增大.(在初始上电后(未开机之前)VDDDCXO此时未上电,开机之后后续将一直保持上电.) 注意事项:必须经过射频AFC 校准后,再测量关机后漏电流.因为AFC 校准会调整低功耗TSX(或DCXO)振荡幅度,一般AFC 校准之后关机电流(开机再关机)会减小.
+参考FAQ: FAQ202275953
+### 问题: CMW500 测试GSM时在multi evaluation处跳闪input underdriven
+解决方案: 1、CMW500默认的PS service是BLER,需要改为Test Mode A. 2、用CMW500测试GSM时,不要勾选measure control里的measure on exception,否则,就会在multi evaluation处跳闪input underdriven
+参考FAQ: FAQ202275970
+### 问题: 3595D射频部分的NTC有什么用处？
+解决方案: 在参考设计中,RF_ADC_TEMP连接ADCI2,用于对RF PA的发射功率进行温度补偿,RF Transceiver 3595D中集成了温度Sensor,这一路外部NTC sensor只是预留,目前不做使用.
+参考FAQ: FAQ202275971,含图片
+### 问题: 用CMW500测试GSM edge时，burst type在8PSK和GMSK之间跳变
+解决方案: 用CMW500测试GSM edge时,burst type在8PSK和GMSK之间跳变 解决方法:仪器设置问题,在measurement control / modulation view下面,将测试Slot对应的ANY改成8PSK(如果测的时MCS5~8)或GMSK(如果测的时MCS1~4)
+参考FAQ: FAQ202275972
+### 问题: NFC芯片外部中断接口有哪些要求？
+解决方案: 优先连接具备EXINT功能的管脚;其次为任意一个普通GPIO.
+参考FAQ: FAQ202275973
+### 问题: UMP9620/UMP9621之间系统控制信号说明
+解决方案: UMP9620和UMP9621这两个PMIC之间一共有4个系统信号,分别是PWR_ON,PWR_N,PWR_OPT/PWR_RST.这四个信号分别用来控制芯片的开机,reset,关机和过温保护,具体功能如下表所示: 其中,O表示 output,I表示input,图示的红色箭头表示控制的方向. 上述表格中没有描述 UMP9622的复位控制,这是因为UMP9622没有独立的reset电路,UMP9622是通过电源(VDDRTC,DCDCGEN0,VDDDCXO)上电时序来复位,也就是power ON reset. 所以当系统进行软复位时候,VDDRTC,DCDCGEN0,VDDDCXO三路电源不掉电,UMP9622不会进行复位.
+参考FAQ: FAQ202275974,含图片
+### 问题: UMS9230平台是否支持TTY功能？
+解决方案: UMS9230平台目前支持RTT功能,不支持TTY. 目前的趋势是RTT已经替代TTY,服务于失聪用户或听力障碍用户. RTT是VoLTE下的功能,直接集成在手机的应用里,而TTY是2/3G下的功能,需要额外接一个外接设备,通过设备实现实时文本的收发. 另外FCC从2019年底开始,要求RTT替代TTY.
+参考FAQ: FAQ202275977
+### 问题: 通话回铃声卡顿,断续问题调试方法
+解决方案: 通话回铃声出现卡顿或断续问题常见的原因及调试方式有以下几种: 1>>CVS下行NS参数消噪太强,导致卡顿或断续: 调试方法: 适当加大第二行SM_S[1],SM_N[1]和VAD_SM[1]的值,确保SM_S[1]和SM_N[1]不小于0.97,VAD_SM[1]不小于0.90 2>>CVS下行Speech Protect或Tone没有打开: 调试方法: 在Tone功能框中,按照如下频点和带宽设置: Speech Protect选择All On: 3>>CVS下行Tone中Purity Threshold设置过大: 调试方法: 将Purity Threshold值适当改小,建议值:0.5
+参考FAQ: FAQ202275978,含图片
+### 问题: SC9863A、UMS512、UMS512T平台，若硬件通路使用了EXLNA，如何选取NV工程？
+解决方案: 如果SC9863A、UMS512、UMS512T平台硬件方案使用了EXLNA ,需要选用带exLNA的NV project 即可; 例如: SC9863A选择带exLNA的NV工程:sharkl3_pubcp_exLNA_customer_builddir; UMS512T选择带exLNA的NV工程:sharkl5pro_pubcp_exLNA_customer_builddir. SC9863A、UMS512、UMS512T平台支持EXLNA的modem分支(含此版本或之后版本)如下: 4G_MODEM_21A_W22.35.2, 4G_MODEM_21A_W22.39.4, 4G_MODEM_22A_W22.34.4, 4G_MODEM_22A_W22.38.3, FM_BASE_TRUNK_V2_W22.35.1
+参考FAQ: FAQ202275988
+### 问题: 链路有没有激活
+解决方案: 插入 SIM 卡状态下, 调用接口 MMIAPIPDP_GetLinkState 获取指定应用激活的PDP链路的状态, 如为 MMIPDP_LINK_STATE_ACTIVED 则表明当前链路处于已激活的状态,可以使用.
+参考FAQ: FAQ202275995
+### 问题: 判断这个sim有没有激活
+解决方案: Mocor 针对SIM卡的接口是 MMIAPIPDP_PsIsActivedPdpLinkExistEx 表明当前 sim 有没有激活
+参考FAQ: FAQ202275996
+### 问题: 修改手机U盘为中文名称
+解决方案: 可以修改 MMIAPIFMM_SetDeviceLabel(MMIAPIFMM_GetDevicePath(MMI_DEVICE_UDISK), "sprd" 实现U盘为中文名称
+参考FAQ: FAQ202275998
+### 问题: 基于UMP510G的平台 USB模块使用开关转换芯片的注意事项
+解决方案: 在某些场景下,例如平板需要支持键盘,这个时候就需要考虑在USB上加开关转换芯片. 如果加开关芯片,此时要注意:开关芯片的电源(VCC)要使用VBAT,而不能是PMU的电源.如果使用PMU的电源,例如VDD2V8,将会导致关机状态下无法识别DCP设备(识别DCP为SDP). 具体原因如下: 当选用VDD2V8做为开关转换芯片的电源时,在关机状态下插入充电器,此时VCHG会触发BC1.2检测,同时也会触发PMU上电,但是BC1.2的检测在VDD2V8上电之前. 这意味着BC1.2检测的时候,开关芯片未工作,自然无法把充电头的硬件状态传递过来,便会导致把DCP设备误识别为SDP设备. 把DCP设备识别为SDP设备是因为:开关转换芯片在未工作的状态下,会把DP、DM拉低.这种状态下进行BC1.2检测,便会识别为SDP设备.
+参考FAQ: FAQ202276002
+### 问题: 基于UMP510G的平台是否可通过PD协议提升对外输出的功率
+解决方案: 一些客户有类似于以下的需求: 把手机当作source为外部设备供电,但是受限于TYPE C接口自有协议最大支持3A的电流,希望利用PD协议+TYPE C接口实现更大的输出电流. 对于UMP510G平台集成了PD协议通讯模块,但是我司平台并不具备利用PD协议提高输出电流的功能. 我司平台做为source时,输出电流的能力取决于外部充电芯片. 综上:基于UMP510G的平台无法通过PD协议提升对外输出的功率
+参考FAQ: FAQ202276003
+### 问题: EDGE开关谱 CMW500测试Fail 解决思路
+解决方案: 测试EDGE过程中,即使上行调试方式修改为8PSK(MCS5-MCS9), 手机依然会通过GMSK向仪器传输一些信令信息. 当手机存在GMSK信号传输时,即2up burst之间GMSK与8PSK之间的切换时,仪器可能识别到GMSK信号,从而影响8PSK开关谱性能. 此问题,在8960上无法复现,只有使用CMW500时候才会出现.调整Slot调制方式方式ANY->8PSK,可以解决. 但是,如果客户使用CMWrun运行脚本中,Slot默认为ANY,则必须通过修改NV解决. 修改点: 1. EDGE PA BIAS优化(找PA厂家要推荐值) 2. EDGE Delta和Duration调整 3. gmsk to 8psk, 加入PA off操作 4. gmsk to 8psk pa on/off timing调整
+参考FAQ: FAQ202276031,含图片
+### 问题: 从log中如何查看手动awb的信息？
+解决方案: 如下截图log: 关键词"set_wbmode",0对应专业模式WB下的auto awb,1对应专业模式WB下的晴天,2对应专业模式WB下的阴天,3对应专业模式WB下的日光灯,4对应专业模式WB下的白炽光, 关键词"_set_awb_gain_manualwb_v3"打印当前手动awb的r,g,b gain,以及ct.(如下截图log,为awb 3.0打印的log) 上述log对应tuning参数AWB模块下的Setting_MWB,log中打印的"set_wbmode"与参数中ID对应:
+参考FAQ: FAQ202276037,含图片
+### 问题: 软件支持哪些FOTA
+解决方案: 展锐从android9开始就没有FOTA合作厂商,接口都是google那套通用的. 由客户自行找FOTA厂商.
+参考FAQ: FAQ202276043
+### 问题: SC7701B UART驱动接口在哪个文件
+解决方案: 参考chip_drv/chip_module/uart/uart_hal.c
+参考FAQ: FAQ202276046
+### 问题: 如何关闭wcn log唤醒
+解决方案: 如下有两条log打印,说明是wcn log唤醒系统; sprd-powerdebug power-debug: #--Wake up by 69(INT_APCPU_MBOX_TAR_AP)! irq read smsg: dst=3, channel=5 可以通过发送命令echo -e "at+armlog=0\r" > /proc/mdbg/at_cmd进行关闭 或者进ylog->setting->Custom scene ->关闭WIFI/BT Log 和GNSS Log
+参考FAQ: FAQ202276058
+### 问题: 如何关闭modem log唤醒
+解决方案: 如果有如下两条log打印,说明是modem log唤醒系统 sprd-powerdebug power-debug: #--Wake up by 69(INT_APCPU_MBOX_TAR_AP)! irq read smsg: dst=5, channel=5 可以通过发送命令echo -e "at+armlog=0\r" > /dev/stty_lte30进行关闭modem log(注:机器重启后无效)
+参考FAQ: FAQ202276060
+### 问题: 是否可以用PMU上的RGB LED灯接口做闪光灯
+解决方案: 答:是可以支持的. 1.对应可以使用路径bsp/kernel/kernel4.14/drivers/leds/leds-sc27xx-bltc.c里的sc27xx_led_set()函数去控制闪光灯. 2.对应可以通过节点控制 sys/class/leds/ 例如:echo 255 > sys/class/leds/sc27xx\:green/brightness (最大亮度) echo 0 > sys/class/leds/sc27xx\:green/brightness (最小亮度)
+参考FAQ: FAQ202276061
+### 问题: RD NV B66 tx timing delay NV配置
+解决方案: 请联系展锐射频工程师配置,具体NV如下图:
+参考FAQ: FAQ202276075,含图片
+### 问题: simlock5.2方案生成DB密钥文件的方法和步骤
+解决方案: 在调试simlock5.2功能时使用工具 RSAKeyGen生成DB密钥文件. RSAKeyGen工具在工具CSSimlock_AssitTools_version\RSAKeyGen目录下 详细步骤如下: 1.输入工程名称 注意:该名称可以自由命名,当simba等其他工具使用RSAKeyGen产生的DB密钥文件时, 该Product Name需要和simba等其他工具中Product Name保持一致. 2.密码:首次输入时,直接输入 8位密码即可 3.选择存储 DB密钥的路径并命名DB密钥名称 4.key的类型选择 RSA2048 注意:simlock5.2的方案要求使用的 key的类型为 RSA2048 5.点击 Generate,在选定的路径下生成DB密钥文件
+参考FAQ: FAQ202276076,含图片
+### 问题: simlock5.2方案生成pem格式公钥的方法
+解决方案: 在simlock5.2方案中需要将pem格式的公钥,在签名过程中存放到modem bin文件中. 平台生成pem格式的公钥,使用的工具是 SimLockDataGen集成 RSAPublicKey临时版本 详细步骤如下: 1.选 RSA key Gen这个页面 2.填 Productn Name 注意:该Productn Name与使用RSAKeyGen工具中使用的Productn Name是一致的. 3. RSA DB:点击右侧省略号选择DB密钥文件的路径. 注意:该DB密钥文件是使用RSAKeyGen工具生成的 4.RSA PUBLICK KEY:点击右侧省略号选择pem公钥存放的路径. 5.不要勾选 softdog 6 点击确定,在步骤4选择的路径下生成pem公钥.
+参考FAQ: FAQ202276077,含图片
+### 问题: simlock5.2方案pem公钥预置的位置以及签名脚本的位置
+解决方案: simlock5.2方案中需要将pem公钥预置到特定目录下,在签名或编写大版本时,Insertkey.py脚本将pem公钥插入到modem bin文件中. 1.Insertkey.py脚本路径:vendor\sprd\proprietories-source\packimage_scripts 2.pem公钥预置的路径与Insertkey.py脚本中pem公钥存放的路径保持一致 3.默认将pem公钥存放到config中 SimlocKeys目录下authstartkey等 5个目录中.如果路径中没有authstartkey等 5个文件夹,自行创建即可. 目录结构如下:
+参考FAQ: FAQ202276079,含图片
+### 问题: 如何实现插USB上电自动开机
+解决方案: 在u-boot15\common\cmd_cboot.c boot_mode_enum_type get_mode_from_charger(void中 if (charger_connected()) { debugf("get mode from charger\n"); return CMD_CHARGE_MODE; //改为return CMD_NORMAL_MODE; } else { return CMD_UNDEFINED_MODE; } ps:如果发现没有关机充电模式,也可以看看此处是否做了该修改
+参考FAQ: FAQ202276084
+### 问题: SC2721G平台Type-C CC Logic接口反向充电支持规格说明
+解决方案: 当SC2721G平台做为Source,需对外供电时,通过该平台集成的Type-C CC logic可以确认反向充电支持规格. 对于该平台仅支持通过配置CC脚为80uA电流源上拉的方式,也即是支持输出电流为500mA.系统默认也是此方式. 不支持配置CC脚为180uA、330uA电流源上拉的方式,也即是不支持1.5A、3A的大电流输出. 备注:以上说明对于所有搭配SC2721G(PMU)的平台均适用.
+参考FAQ: FAQ202276087
+### 问题: 3G下通话界面显示HD图标
+解决方案: 3G下拨打电话,若底层上报hdStatus为1,上层支持在收到上报后,在通话界面显示HD图标 如需显示HD图标,需要在package/apps/CarrierConfig/assets下的对应运营商文档中配置如下      <boolean name="display_hd_audio_property_bool" value="true"/>
+     <boolean name="gsm_cdma_calls_can_be_hd_audio" value="true"/>
+参考FAQ: FAQ202276088
+### 问题: simlock5.2方案将XML配置文件转换成bin文件的方法
+解决方案: 使用工具 simlockdatagen,工具在CSSimlock_AssitTools_R6.21.3501\SimLockDataGen路径下 转换bin文件预置条件: 1.准备锁卡数据XML文件 2.获取simlockdatagen工具 3.修改工具的配置文件 simlockdatagen.ini,将RSA_KeyDB修改为存放密钥的路径,注意路径要包含文件名称,详情见下图 达到预置条件后详细转换步骤如下: 1.输入Product Name(注意:该Productn Name与使用RSAKeyGen工具中使用的Productn Name是一致的) 2.点击省略号选择已存在的xml文件 3.不勾选SoftDog 4.点击省略号选择转换生成的bin文件的存放路径 5.点击Generate生成bin文件
+参考FAQ: FAQ202276089,含图片
+### 问题: 如何实现手动搜网结果合并？
+解决方案: 如果需要实现手动搜网合并逻辑,也即将RAT(2G、3G、4G和5G)不同的相同运营商名称进行合并显示.可将如下配置中的false改为true即可.
+/packages/apps/Settings/res_unisoc/values/config_feature_unisoc.xml
+    <!-- Whether to Merge operators with the same PLMN -->
+    <bool name="network_scan_custom_display_results">false</bool>
+参考FAQ: FAQ202276091
+### 问题: UIS7885支持频选调度功能吗？
+解决方案: 5G频选调度指的是子带CQI上报,CQI上报分宽带和子带上报,子带上报就是把宽带分成多个子带,每个子带上上报CQI,这个功能N6Pro芯片对应的UIS7870、UIS7885支持该功能.
+参考FAQ: FAQ202276100
+### 问题: 如何修改uboot的size大小?
+解决方案: 1 修改chipram仓库下对应<board>.h(如bsp/bootloader/chipram/include/configs/<board>.h)文件中的CONFIG_UBOOT_MAX_SIZE值; 2 修改device/sprd/<soc>/<board>/<board>.xml中的分区size大小(MB). 注: 1和2的size大小需要一致.
+参考FAQ: FAQ202276101
+### 问题: 6533G提示框声音播放问题
+解决方案: 1 函数DisplayPopup的最后一个参数就是需要播放的声音,该函数会继续调用playRequestedTone进行声音的播放,但因为其内: case SUCCESS_TONE: break; case SAVE_TONE: //CSD Brian added for disable save tone */ //AudioPlayReq( TONE_GENERAL_BEEP,DEVICE_AUDIO_PLAY_ONCE); break; 这两个声音的播放是空的,所以播放该类tone是没有效果的. 2 有的tone也会因为情景模式设置的不同而导致有的可以播放声音,有的不能播放声音,例如: case GENERAL_TONE: if(gcurrentprofile.extraTone.warningTone == 1) AudioPlayReq(TONE_GENERAL_BEEP,DEVICE_AUDIO_PLAY_ONCE); break;
+参考FAQ: FAQ202276116
+### 问题: wifi信号强度显示问题
+解决方案: 可以通过修改MMIWIFI_RSSI_20,MMIWIFI_RSSI_40,MMIWIFI_RSSI_60,MMIWIFI_RSSI_80的值实现. 平台目前有5个信号强度档位,函数WifiGetConnectedRssiImage判断rssi的值的范围从而显示不同的信号强度图片,
+参考FAQ: FAQ202276117
+### 问题: 无线网络自动断开问题
+解决方案: wifi在系统进入deepsleep后,会调用WifiStartCalcWakeupPacket函数检测底层网络数据包,wifi底层在监测到数据包后会间歇性发送消息SRV_WIFI_SIG_CALC_IND到app,app会检查当前使用wifi的应用程序列表,如果没有任何应用程序使用wifi,则认为是网络攻击,因此会断开wifi. 修改方案为在灭屏时,需要调用MMIAPIWIFI_AddDeepSleepWifiUser把该应用加入到wifi使用者链表中.
+参考FAQ: FAQ202276118
+### 问题: 在6533g平台中，运营商名称显示问题
+解决方案: 在国外场测时碰到airtel运营商(mcc/mnc 63002)名称显示为"Airtel CD",参考机显示为"Airtel",经查,这个问题是由于sim卡上存在spn name"Airtel CD",原先的6533g会同时将operator name 和spn name都显示出来,目前由于将函数ServiceIndicationStringDisplay内部注释掉了,所以只会显示spn name.
+参考FAQ: FAQ202276120
+### 问题: SC9863A/A1 SD卡上电初始化过程中CMD、DATA出现半高电平问题的说明
+解决方案: 在SD卡上电初始化的过程中,CMD、DATA会出现半高电平问题. 产生原因:在初始化过程中,如果VDDSDIO的上电时序早于VDDSDCORE,则CMD、DATA会出现半高电平问题(VDDSDIO上拉IO口,SD卡下拉IO口,产生半高电平). 该现象属于正常现象. 原因: (1)根据SD卡协议要求,只需要CLK信号晚于VDDSD(VDDSDCORE、VDDSDIO),并没有对VDDSDCORE和VDDSDIO的上电时序做要求,因此在SD卡上电初始化的过程中可能存在VDDSDIO上电早于VDDSDCORE的情况; (2)根据SD卡协议要求,只要半高电平的幅值不超过2.7V,则不会对协议产生影响,该平台CMD、DATA半高电平为1V,因此不会对SD卡初始化过程产生影响; 综上该现象认为是正常现象.
+参考FAQ: FAQ202276121
+### 问题: 6533g平台漫游标志显示
+解决方案: 6533g平台漫游图标显示依赖于函数mmi_bootup_is_roaming,在这个函数中会综合各种条件来判断是否显示漫游标志.
+参考FAQ: FAQ202276127
+### 问题: 硬件SIM卡热插拔
+解决方案: 硬件SIM卡热插拔的前提下,如何配置? 请检查下 sim_hot_plug_cfg 的NV配置是多少: sim_hot_plug_cfg = 0x0 表示不支持热拔插, sim_hot_plug_cfg = 0x3 表示支持热拔插,卡槽DET引脚低电平有效, sim_hot_plug_cfg = 0x303 表示支持热拔插,卡槽DET引脚高电平有效. 请分别使用0x3、0x303试一下,看是否可以识别,同时检查下pinmap配置是否正确,如有问题,麻烦提供下完整的开机modem log提CQ处理. 附相关文档链接如下: UMS9117客制化NV配置指南V1.0.pdf https://unisupport.unisoc.com/file/index?fileid=28541
+参考FAQ: FAQ202276129
+### 问题: UMS9117平台软件是否支持单双卡兼容？
+解决方案: UMS9117平台不支持单双卡单软多硬,平台当前可以修改宏MMI_MULTI_SIM_SYS=SINGLE/DUAL来配置单/双卡.
+参考FAQ: FAQ202276132
+### 问题: 8910系列芯片是否支持GSM RX口用于LTE band RX？
+解决方案: 不支持. 仅支持LTE的产品想要利用GSM RXP设计LTE BAND接收,只能用开关扩展LTE RX port,不能使用GSM port设计LTE band 接收.
+参考FAQ: FAQ202276135,含图片
+### 问题: N6P平台NR TX功率温度补偿 (非CA)调试指导
+解决方案: 调试位置为:NR_download_rf_perf_opt\NR_rf_perf_opt_tx_ant0_ch0\NR_Tx_temp_comp\band\band[1]\comp_channel\comp_channel[0]\comp_value\ 具体见下图,对应具体温度如右图所示: 请注意: A:温度补偿不分频点,一个band用一段温补; B:非CA场景下的温度补偿皆放于channel[0]中,channel[1]暂未启用,位置预留; C:温补步进:1/8 db; D:负数用补码表示;
+参考FAQ: FAQ202276139,含图片
+### 问题: 获取时区信息
+解决方案: T117获取时区的方式有两种,这取决于时间更新的方式,更新时间有两种方式,分别是NITZ和SNTP,NITZ的优先级高于SNTP. 若运营商支持NITZ,NITZ更新时间时运营商会上报时区信息,请参考接口ParseSysTimeFromNetworkInfo对于时区信息的处理; SNTP更新时间时,通过MCC查表获取时区,接口为MMIAUT_GetMccAndTimezone.
+参考FAQ: FAQ202276143
+### 问题: GSM RX Level 补偿方案
+解决方案: 认证或测试时,当GSM RX Level超标,可以采用温度补偿方案,可以参考[FAQ202274200] GSM的RX level温度补偿负数表达方式 这种补偿方法,不区分信道,是整个Band统一补偿.适用于整个Band整体偏上限或者偏下限的情况. 当传导测试正常,辐射耦合测试时,因为整机带天线测试,有可能因为天线性能不良,整个带内增益不平坦,出现RX Level 有些信道偏上限, 有些信道偏下限的情况.此时采用统一补偿的方案,不能满足要求.方法有2个: (1)在屏蔽箱内,找到合适位置,满足所有信道的指标要求. (2)手动在NV中修改校准增益补偿参数(此方法仅用于过认证,不能使用于量产中)
+参考FAQ: FAQ202276148,含图片
+### 问题: SC2721G、UMP510G平台 VCHG起始充电电压是多少，可否调整？
+解决方案: SC2721G和UMP510G平台在VCHG起始充电电压的设置上是一致的. 对于SC2721G平台的VCHG引脚(N14),UMP510G平台的VCHG引脚(K11),它们的插入检测门限均为3.3V.也即是当VCHG检测到插入电压至少为3.3V时,才会开启充电. 且没有寄存器可以更改该电压值,也即是该3.3V的设定值不可调整. 对于插入电压的检测为电平检测,详细情况可以参考对应PMU平台规格书. 备注: 以上说明对于所有基于SC2721G或UMP510G平台的设计均适用.
+参考FAQ: FAQ202276151
+### 问题: 工程模式RF CALI test中不显示LTE Band 38校准频段
+解决方案: 工程测试模式(*#*#83789#*#*)中 RF CALI test,不显示Band 38校准信息,Band 41显示正常. 因Band 38是Band 41的子频段,只要Band41校准并正常显示后,则说明Band 38也是校准过并且是支持的. 因此工模中Band 38校准信息不显示不算问题,只是工模界面会有点歧义而已.
+参考FAQ: FAQ202276152
+### 问题: W307/W317有无RPC接口确认
+解决方案: 请在文件MS_Code/MSL/rpc/ap/src/mn_rpc_a2c_ap.c中搜索RPC接口,而不是在文件MS_Code/MN_Rpc/source/mnapi/mn_rpc_a2c_ap.c中搜RPC接口. 另外,在遇到CQ问题时,需要提供rpc代码用于分析的时候也请提供MSL目录下的,而不是MN_Rpc目录下的.
+参考FAQ: FAQ202276160
+### 问题: LTE TX ON/OFF时 eLNA的控制状态
+解决方案: 对于FDD LTE:TX ON和TX OFF,配置GPIO控制eLNA处于打开状态. 对于TDD LTE:TX ON和TX OFF,配置GPIO控制eLNA处于关闭状态.
+参考FAQ: FAQ202276161
+### 问题: CA组28A-66A 组合中，上行信道的3次谐波落在Mid band 下行信道频率带宽的灵敏度标准?
+解决方案: 类似28A-66A LOW band 与Midband的CA组合,会有Low band B28上行信道的3次谐波落在Mid band B66下行信道频率带宽范围内.此类组合灵敏度按照3GPP 相对与单PCC的灵敏度可以进行回退,请参考章节7.3A Reference sensitivity level for CA,Table 7.3A.0-0a: Reference sensitivity for carrier aggregation QPSK PREFSENS, CA (exceptions due to harmonic issue)
+参考FAQ: FAQ202276177,含图片
+### 问题: CMW500如何测试Pri+DIV 灵敏度？
+解决方案: 
+参考FAQ: FAQ202276178
+### 问题: 美颜1.0如何修改美颜效果
+解决方案: 美颜1.0美颜效果参数在适配层修改 如修改美白效果在 sprd_facebeauty_adapter.cpp 文件 construct_fb_level函数中      - unsigned char map_skinBrightLevel[NUM_LEVELS]={0,2,4,6,6,8,8,10,10,12,12};
+     + unsigned char map_skinBrightLevel[NUM_LEVELS]={0,4,8,12,12,16,16,18,18,20,20};
+ app中的0到5档效果分别*2对应数组中的index
+参考FAQ: FAQ202276182
+### 问题: NV部分频段缺少agc spec
+解决方案: 使用Simba中可以写入agc spec,但写入选项默认是未勾选的. 由于seq是只读文件,要使用记事本打开seq文件,找到ReadNvSpec和WriteNvSpec两行,1代表勾选,0代表未勾选.将ReadNvSpec后面的值改为0, WriteNvSpec的值改为1,保存后再使用simba校准,就能写入需要的频段的agc spec.写入agc spec后要将ReadNvSpec和WriteNvSpec改回1和0,再进行正常校准即可.
+参考FAQ: FAQ202276183,含图片
+### 问题: 注释掉了sys wdt的喂狗操作，发现一直不死机
+解决方案: 系统不工作的时候自动进入到idle态了,进idle关狗,出idle会开狗,把osiChipLightSleep里的关狗和开狗操作注释了就会卡死了: halSysWdtStop(); halSysWdtStart();
+参考FAQ: FAQ202276212
+### 问题: 32位系统使用的ddr限制为2GB
+解决方案: 如果系统是32位的,那么寻址范围就是0~2^32,也就是0~FFFFFFFF. 而展锐平台的ddr起始地址是0x80000000,所以对于system能使用的内存就只有7FFFFFFF,也就是2G. 地址空间规划时有一部分会被寄存器总线映射占用掉 剩下的部分才是system用的.可以cat /proc/iomem,可以通过这个命令看一下预留给IO的都是干什么用的分别在哪个区间.
+参考FAQ: FAQ202276215
+### 问题: UMS9230样机，AudioTool 工具能连上手机，但读不到手机里面的参数？
+解决方案: UMS9230样机,AudioTool 工具能连上手机,但读不到手机里面的参数,工具版本 AudioTool_R3.21.3401 对于此问题,由于 AudioTool_R3 版本与UMS9230不适配,需要用 AudioTool_R4以上的版本即可
+参考FAQ: FAQ202276222
+### 问题: UMS9117平台双喇叭硬件方案支持1个三合一喇叭+1个普通喇叭吗？
+解决方案: UMS9117平台双喇叭硬件方案支持1个三合一喇叭+1个普通喇叭吗? 目前来看是可以实现的,需要走rat开发 建议用左右声道各推一路外置功放. 外置功放的输入的高通滤波RC需要注意截止频率不要把马达的频率滤掉了. 请问三合一喇叭听筒模式下WB RFR 可以过3GPP框线吗? 由于滤除振感,建议对200Hz以下滤除,WB RFR 低频200Hz有下限要求.如果对WB RFR 低频200Hz有下限要求.建议不要做三合一,因为这两个是矛盾的.根据以往客户做三合一的经验,低频200HZ都是要被滤除的.
+参考FAQ: FAQ202276224
+### 问题: UMS512参考设计上MICP/N通路上串接的是1uf电容，目前电容接的是100nf，是否有影响？
+解决方案: UMS512参考设计上MICP/N通路上串接的是1uf电容,目前电容接的是100nf,是否有影响? 电容越小,低频截至频率会越大,低频会截的更多一点. 我们参考设计以前也是100nF, 后面发现用1UF也是OK的,并且低频截止更低一些. 这两个设计都是可以的,二选一都可以
+参考FAQ: FAQ202276225
+### 问题: 9863a平台加入第三方音效，播放音乐破音，调整增益无效，是什么原因？
+解决方案: 9863a平台加入第三方音效,播放音乐破音,调整增益无效,是什么原因? 由于音效算法和我们的ALC,EQ,LCF等冲突,建议使用音效时关掉ALC,EQ,LCF、 通过调低平台数字增益改善平台端电信号杂音,通过音效适当加大响度.
+参考FAQ: FAQ202276226
+### 问题: UMS512在ylog关闭（主要是AG-DSP log关闭）的情况下，拨打112免提模式声音断续？
+解决方案: UMS512在ylog关闭(主要是AG-DSP log关闭)的情况下,拨打112免提模式声音断续? 该问题在基线4G_MODEM_22A_W22.43.4_sharkl5_c2k.rar或后面的基线已经release 可通过替换*_AGCP_DSP.bin来解决该问题 (相关修改的bin需要提交CQ申请) 版本里 DSP_LTE_AG 需要自己签名
+参考FAQ: FAQ202276228
+### 问题: UMP510G的Smar PA功能是否一定要使用，ISEN_P、ISEN_N和VSEN悬空是否有风险
+解决方案: UMP510G的Smar PA功能是否一定要使用,ISEN_P、ISEN_N和VSEN悬空是否有风险? UMP510G的Smar PA功能根据你们需求选择可用可不用.不使用 UMP510G的Smar PA功能的话,ISEN_P、ISEN_N和VSEN_P,这三个管脚悬空即可. 参考设计上SPK输出端P和N分别串接了2个0Ω电阻,是什么作用?是否一定要接? 这两个串联的0欧是可选贴磁珠的预留位置.如果最终的板子没有射频干扰等问题,这里可以直接短接即可.
+参考FAQ: FAQ202276231
+### 问题: BT和WIFI的调制方式是什么？
+解决方案: A. BT的调制方式如下:
+
+1、BR调制方式: GFSK(DH1&DH3&DH5)
+
+2、EDR调制方式:π/4 DQPSK (2DH1&2DH3&2DH5)
+
+         8DPSK(3DH1&3DH3&3DH5)
+ B. WIFI调制方式如下:
+参考FAQ: FAQ202276235,含图片
+### 问题: USB-互联网PC是什么功能？如何使用？
+解决方案: [功能说明] USB-互联网PC:其功能是手机侧(device端)使用PC(host端)分享的网络资源,实现在手机侧上网的功能 [操作步骤] 在手机端选择"USB-互联网PC功能"后,必须要在PC端做一系列设置后,才可以实现上网,PC侧的操作步骤是: 1. 进入网络共享中心 2. 选择本地连接(指未连UE时,使PC能上网的连接) 3. 点击属性 -> 共享 4. 勾选 -> 运行其他网路用户通过此计算机的Internet连接-> 确定.如果已经勾选过,取消->确定,再进入属性->共享->勾选->确定 注意: 1.如果发现"运行其他网路用户通过此计算机的Internet连接"已经勾选过,要取消掉,确定后再重新勾选(详见步骤4) 2. PC方面:不要使用公司网络,如果连wifi需要公共开放wifi.
+参考FAQ: FAQ202276239
+### 问题: T117拍照不回显结果画面
+解决方案: 若不需要回显画面,需要将拍照过程中的回显函数屏蔽掉, 可做下面修改: dacmera_app.c _DCAMERA_DoSnapshot ++ #if 0 if (_DCAMERA_DoSnapShotReview (param_ptr, &lcd_info, select_personal)) { DC_RET_ERR (DCAMERA_OP_REVIEW_ERR) } ++ #endif if (_DCAMERA_DoSnapShotRotation (param_ptr, image_size, select_personal)) { DC_RET_ERR (DCAMERA_OP_ROTATION_ERR) }
+参考FAQ: FAQ202276240
+### 问题: 6533g平台合并电话会议时为何会提示“invalid command”
+解决方案: 在代码中会判断当前激活和hold的电话数量,如果小于5路才会合并,也就是说电话会议最多支持5路电话. void ConferenceCall(void)
+{
+	if ((GetTotalActiveCallCount() < MAX_HOLD) &&
+		(GetTotalHoldCallCount() < MAX_HOLD) &&
+		((GetTotalActiveCallCount() > 0 && GetTotalHoldCallCount() > 0)))
+	OutgoingProcessCMEvent(CM_KB_CONFREQ,(void*)NULL);
+	else
+		ShowCallManagementErrorMessage(NO_ACTIVE_CALL);
+}
+参考FAQ: FAQ202276251
+### 问题: GSM EDGE无法连接仪器，但能驻网
+解决方案: GSM EDGE校准综测pass,可以驻网,但无法connect仪器,问题的原因可能是:32K晶体工作异常,频偏过大,尽量采用我司QVL里的器件.
+参考FAQ: FAQ202276260
+### 问题: 安卓12如何快捷替换新的CP2的版本
+解决方案: 安卓12替换CP2 bin步骤如下: 1)手机开机,unlock解锁(A12 可使用当前的A11解锁工具解锁); 2)解锁成功后重新开机,逐条命令执行: adb root; adb shell disable-verity; adb reboot 3)开机后执行 adb root; adb remount 4)将CP2 bin重命名为wcnmodem.bin, 逐条命令执行: adb push wcnmodem.bin /vendor/firmware; adb reboot
+参考FAQ: FAQ202276269
+### 问题: 如何查看UA（user-agent）？
+解决方案: 提供配置方法如下: (1)使用NV工具NVEditor或NVTool打开NV工程nvitem.prj, 找到"sip_uaName". (2)User-Agent携带的内容是ASCII码,这里举例说明一下,如果期望IMS消息携带"User-Agent: VOLTE",则需要将"VOLTE"的ASCII码配置在sip_uaName[0] - sip_uaName[4]的数组中,如下: sip_uaName[0] ---- 0x56 ---- 'V' sip_uaName[1] ---- 0x4F ---- 'O' sip_uaName[2] ---- 0x4C ---- 'L' sip_uaName[3] ---- 0x54 ---- 'T' sip_uaName[4] ---- 0x45 ---- 'E' (3)保存NV并重新烧写NV,重新开机查看任一条IMS消息是否携带"User-Agent: VOLTE".
+参考FAQ: FAQ202276274
+### 问题: 项目无听筒配置
+解决方案: 项目无听筒,需要将device_for_product_strategy_phone.pfw中所有earpiece = 1的配置项把它改成earpiece = 0,同时这个修改项同级的speaker = 1, 如9230芯片项目,代码位置在:device/sprd/mpool/module/audio/msoc/qogirl6/system/etc/parameter-framework/Settings/device_for_product_strategy_phone.pfw 手机上也可以验证修改是否生效,可以pull以下文件,查找对应的项: adb pull vendor/etc/parameter-framework/Settings/Policy/PolicyConfigurableDomains.xml
+参考FAQ: FAQ202276295
+### 问题: UMS9230平台AUX_CLK的用法
+解决方案: 通常来说,baseband芯片的AUX_CLK能输出1.8V数字方波,频率通常有26MHz,24MHz,32KHz等,具体值请参考规格书.AUX_CLK通常用来输出32K给我司套片中的WCN芯片,也可以输出26MHz这种给外部的音频CODEC芯片使用.但由于输出的时钟相位误差较大,不建议给NFC器件使用. 本规则同样适用于UMS512和UMS9620平台.
+参考FAQ: FAQ202276304
+### 问题: UMS9230平台NFC器件应该如何选择时钟
+解决方案: NFC芯片需要通过无线信号与外部的设备进行通信,对信号相位噪声要求比较高,因此对时钟源的相位噪声要求也比较高.推荐客户优先使用外置晶体,次选PMIC的REFOUT,尽量不要用baseband芯片的AUX_CLK. REFOUT输出时钟相位精度较高但不同REFOUT间容易生成串扰,VDDDCXO走线和REFOUT走线都要特别关注. baseband芯片的AUX_CLK相位噪声很大,通常不满足NFC芯片的要求. 上述规则对使用UMP510G的平台和UMP9622的平台均适用.
+参考FAQ: FAQ202276305
+### 问题: UIS7863 内部PA配置问题咨询
+解决方案: 问:UIS7863平台当我们需要使用内部PA时(普通PA或者升压PA),配置如附件截图框选的区域所示,此时R0211是NF的,即切断了AVDDVB到内部PA的供电,那么此时AVDDVB是怎样的连接方式?悬空吗? 确认下AVDDVB是否就如下2种连接方式?1、不使用外部模拟PA时,AVDDVB保持悬空;2、使用外部模拟PA时,将AVDDVB连接到内部PA电源上. 答:1、使用内置PA时,R0211不接,AVDDVB也不是悬空,需要有C0213电容下地,AVDDVB还为听筒麦克等供电,因此不可以悬空哦. 2、使用外部模拟PA时(截图第三种模式,此种模式是用内置功放输出来驱动外置功放),将AVDDVB连接到内部PA电源上. 3、另外一种使用耳机右声道推外置功放可以用截图第四种方式(不用内置PA).按照截图第四种配置即可
+参考FAQ: FAQ202276308,含图片
+### 问题: UMT9620 RFIC的GPIO控制脚使用说明
+解决方案: 在搭配RFIC UMT9620的平台上,除了常规的RFCTL0~15之外,RFIC还自带8个GPIO口(RFIC_CTL0~7)可以控制射频器件.下面对RFIC上面的8个GPIO使用规则进行说明. 1.用途 RFIC上面的8个GPIO由于响应时间无法满足TRX时序要求,所以不能用于常规的RF开关控制,只能用于天线tuner控制. 2.配置方式 RFIC的8个GPIO和常规的16个RFCTL,bit对应关系如下 例:如果需要RFIC_CTL1输出高电平,则将对应的bit17置1,配置为0x20000 由于RFIC的GPIO只能给tuner用,所以配置位置固定,除以下位置,其它地方不要配置RFIC的GPIO
+参考FAQ: FAQ202276310,含图片
+### 问题: UIS8910的SPILCD只能接LCD吗？
+解决方案: 是的,只能接LCD不能接其他SPI外设.SPILCD这个SPI口是内嵌在显示模块上的,直接受控于显示模块,不能像普通SPI接口那样被CPU调用. 平台还有两个普通的SPI可以使用,那种可以接一般SPI外设. 本规则同时适用于UIS8910DM/UIS8910FF/UIS8910FF-S/UIS8910FV.
+参考FAQ: FAQ202276312
+### 问题: UIS8910的CLK26M_AUX1能给音频codec做时钟源吗？
+解决方案: 不能.8910的CLK26M_AUX1输出是26MHz的正弦波,幅度只有0.5~0.8V左右,而大部分CODEC是1.8V电压逻辑,要求1.8V的时钟信号输入. 可以使用CAM_REFCLK给音频CODEC做时钟输入用.
+参考FAQ: FAQ202276314
+### 问题: SC9863/8581A/8581E在选用LPDDR3/4/4X时原理图的供电设计注意事项
+解决方案: 一、LPDDR3设计框图参考: BB侧VDDMEM/VDDMEMQ供电均来自SC2721的LDO----VDDMEM(1.1V); Memory侧的VDDQ/VDD2供电来自VDDMEM(1.1V). 二、LPDDR4供电框图参考: BB侧VDDMEM供电均来自SC2721的LDO----VDDMEM(1.1V); BB侧的VDDMEMQ供电来自外部LDO/DCDC----VDDQ(0.9V); Memory侧的VDDQ/VDD2供电来自VDDMEM(1.1V). 三、LPDDR4X供电框图参考: BB侧VDDMEM供电均来自SC2721的LDO----VDDMEM(1.1V); BB侧的VDDMEMQ和Memory侧的VDDQ供电来自外部LDO/DCDC----VDDQ(0.6V); VDD2供电来自VDDMEM(1.1V).
+参考FAQ: FAQ202276320,含图片
+### 问题: 各平台UART的使用参考
+解决方案: 在各芯片规格书中搜索uart_matrix_mtx_cfg可查看各芯片的所有UART接口、各UART接口相关配置信息. 例如:在UMS512平台:有7个UART接口,下图以UART6为例,可被AP控制的有3个即可接三个外设. 各平台一般会在Hardware Design Guide中给出默认配置的UART参考,请优先按照默认配置.
+参考FAQ: FAQ202276321,含图片
+### 问题: I2C的电源域以及电平转换
+解决方案: 我司I2C的电源域默认为1V8. 若外设为3V3则需增加电平转换电路,可参考如下:
+参考FAQ: FAQ202276322,含图片

@@ -1,0 +1,375 @@
+### 问题: SC7731,建立视频通话，当两个手机都暂停视频选项时,视频选项消失,如何解决？
+解决方案: 建立视频通话,当两个手机都暂停视频选项时,视频选项消失,请参照以下方案: packages\apps\InCallUI\src\com\android\incallui\CallCardFragment.java ... ... return true; } }); ++ observer.dispatchOnPreDraw(); } /** * Determines the amount of space below the call card for portrait layouts), or beside the * call card for landscape layouts. * * @return The amount of space below or beside the call card. */ public float getSpaceBesideCallCard(
+完整回答请参考FAQ: FAQ73726
+### 问题: GTS测试Fail：com.google.android.xts.persistentdata.PersistentDataHostTest, com.google.android.xts.devicepolicy.DeviceOwnerTest -- testFactoryResetProtection
+解决方案: 此类测项为FRP相关测项, FRP功能正常自测步骤通过, 此测项应该可pass, 测项主要是对persist此独立分区做存取的动作. 测项失败有可能是以下原因, 请逐一检查. 1. frp patch代码合入不全 请先检查样机内此路径/dev/block/platform/sdio_emmc/by-name/ 下是否包含 persist, 如果没有代表此项目未合入FRP patch或FRP patch合入不全. 2. 无persist分区 请先检查下载的pac内是否有包含persist.img. 3. 登入Google帐号的情形下跑GTS. 有登入Google帐号的情形下此测项必FAIL, Google文档有说明跑GTS不需登入Google帐号. 4. 其他原因 a. 某些原因Google play service有问题导致PersistentDataBlockService异常而内部报错
+完整回答请参考FAQ: FAQ79912
+### 问题: 低内存项目安装路径为T卡机身内存剩余40M，Play Store下载35M大小的APP, 遭到拒绝提示空间不足.
+解决方案: 虽然安装设为T卡, 但play store运作的机制会先将apk下载暂存至内存, 下载完成后将暂存apk复制至T卡安装, 再将内存暂存的apk删除, 所以play store内部在下载前会先经过以下判断. Data分区可使用空间扣掉要下载的apk大小必须大于data分区10%, 也就是说将apk放置data分区内, data分区小于10%则无法下载, 此为下载前play store原生检查. 无法修改. 可输入adb shell df 观察分区使用状态. ============ df 15-11-02 12:22:28 ============== Filesystem Size Used Free Blksize /dev 108.6M 164.0K 108.4M 4096 /sys/fs/cgroup 108.6M 12.0K 108.6M 4096 /mnt/asec 108.6M
+完整回答请参考FAQ: FAQ73746
+### 问题: ro.sf.lcd_density 值的设置
+解决方案: 在使用cpu-z软件进屏幕的参数进行测量的时候,往往牵涉到LCD的几个参数. ro.sf.lcd_height 实际测量的屏幕长,单位为mm ro.sf.lcd_width 实际测量的屏幕宽,单位为mm ro.sf.lcd_density 计算公式 density = (横向像素(2)+纵向像素(2) )(1/2) /屏幕尺寸(inch) 但是不同的屏幕计算的值不一定是120 160 240 320 480这些值,如何填写呢? 是填写实际值还是填写相近值. 下面是google开发人员的回复 This is indeed the value you should be changing for your device. However, this does not describe the actual density in dpis of your display, but a "virt
+完整回答请参考FAQ: FAQ73749
+### 问题: 如何配置多国语言plmn运营商名称显示？
+解决方案: 答: 以孟加拉语为例配置; MCCMNC=334020, 运营商名称: Grameen Phone,翻译后项:" 翻译后的孟加拉语". 分两步进行: 1. 1. 首先,要确定您要翻译的运营商名称Grameen Phone是否包含在贵司Numeric_operator.xml配置文件的两个数组 numeric_to_operator和operator_need_update中, 如:Grameen Phone不存在,则需要在两个数组添加键值对: 形式如:<item>"MCCtMNC"=Grameen Phone</item> 注意:MCCtMNC为新构建的关于MCCMNC的字符串,即前面的MCC照抄,后面的MNC作取整数处理,假如MNC=020, 则:tMNC=20.所以,MCCtMNC=33420,要添加的item项为: <item>33420=Grameen Phone</item> 2
+完整回答请参考FAQ: FAQ73760
+### 问题: 如何消除plmn和spn网络名称显示时携带的”2 G”或”3 G”信息
+解决方案: 答:frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmServiceStateTracker.java private String showVRTechStr() { if (mSS.getRilVoiceRadioTechnology() == ServiceState.RIL_RADIO_TECHNOLOGY_HSDPA || mSS.getRilVoiceRadioTechnology() == ServiceState.RIL_RADIO_TECHNOLOGY_HSPA || mSS.getRilVoiceRadioTechnology() == ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP || mSS.getRilVoiceRadioTechnolo
+完整回答请参考FAQ: FAQ73773
+### 问题: google play store 不能下载应用，提示“your decice isn't compatible with this version”
+解决方案: 由于google play store在下载App之前, 会先检查硬件和软件是否符合App需求, 如不符合需求则下载页会提示 "your decice isn't compatible with this version". 举例来说某App部分功能需要GPS, 如果在不带GPS的项目上透过Play Store下载该APP, 则有可能无法下载. 不同的Android版本以及支援的分辨率都可能影响此状况. 如遇此情况可先在正常的项目与不正常的项目输入adb shell pm list features > features.txt, 两项目需同Android版本, 然后比对两项目的features.txt, 即可得知缺少哪一种硬件或软件需求. 如缺少的需求是硬件有支持但features.txt内缺少, 则将此feature加回来即可, 如本身硬件就不支持, 则无法修改. 举例来说某项目缺少f
+完整回答请参考FAQ: FAQ73785
+### 问题: SIMLOCKKEYGEN工具如何使用
+解决方案: 1.首先是获取SIMLOCKKEYGEN工具,这个工具位于IDH包Modem压缩包的DebugTools里面. 2. 通过工具运算出解锁密码 BaseParam---->SIM_LOCK_CONTROL_KEY ------> control_key_type = 0x02 解压工具SimLockKeyGen, 执行cmd,cd到解压后生成的文件夹下的目录,输入如下命令行: SimLockKeyGen IMEI_Start IMEI_End dummy1 dummy2 dummy3 outputFileName IMEI_Start,IMEI_End分别是两个IMEI值,只需保证你上一步获得的IMEI值在这两个值之间,结果会生成一个列表,这两个IMEI值之间的所有IMEI都生成一个对应的解锁密码. 这里也可以将IMEI_Start,IMEI_End都设置为上一步获得的IMEI值,也就是只需
+完整回答请参考FAQ: FAQ80741
+### 问题: 如何解决GMS包SMS选项不勾选导致发短信异常的问题
+解决方案: diff --git a/src/com/sprd/phone/OtherGlobals.java b/src/com/sprd/phone/OtherGlobals.java index 75ef71a..1534933 100644 --- a/src/com/sprd/phone/OtherGlobals.java +++ b/src/com/sprd/phone/OtherGlobals.java @@ -19,6 +19,7 @@ import android.content.Intent; import android.content.IntentFilter; import android.content.SharedPreferences; import android.content.pm.ResolveInfo; +import android.database.Con
+完整回答请参考FAQ: FAQ73934
+### 问题: 5.1版本下surfaceflinger dump显示数据
+解决方案: 1 surfaceflinger 原理 surfaceflinger负责图层的叠加,在各个图层叠加数据完成后,通过fb_post将显示数据刷新到framebuffer中去. layer1--------| surfaceflinger [layer(1+2+...+n)] --->fb_post ------>framebuffer--->LCD显示 layer 2-------| ... ------------| layer-n ----- | 2 4.4之前dump 图层方法 在4.4之前的版本中,集成有dump_bmp.cpp文件,可以通过设置对应配置来dump 每个layer.具体的方法参照 https://isupport.spreadtrum.com/iSupport/apply/faq_list?faq_id=792 3 5.0 之后surfaceflinger dump 
+完整回答请参考FAQ: FAQ73936
+### 问题: [SC7731][pad]android5.1pad,如何在紧急拨号界面（由锁屏界面进入）禁止弹出第三方输入法的键盘？
+解决方案: android5.1pad,在紧急拨号界面(由锁屏界面进入)禁止弹出第三方输入法的键盘,请参照以下方案: packages\services\Telephony\AndroidManifest.xml <!-- Dialer UI that only allows emergency calls --> <activity android:name="EmergencyDialer" android:label="@string/emergencyDialerIconLabel" android:theme="@style/EmergencyDialerTheme" ++ android:windowSoftInputMode="stateAlwaysHidden|adjustNothing" android:screenOrientation="portrait"> <intent-fi
+完整回答请参考FAQ: FAQ73960
+### 问题: 如何提高service的优先级？
+解决方案: 如果service在执行比较重要的任务,需要不被lowmemorykill杀死,此时可以考虑提高service的优先级 提高优先级的方法如下: 在service执行重要任务前使用startForeground(int id, Notification notification)方法,提高优先级,当任务完成后,使用stopForeground(boolean removeNotification) ,取消优先级的提高 例如: 提高优先级: Notification status = new Notification(); status.contentView = mStatusBarViews; status.flags |= Notification.FLAG_ONGOING_EVENT; status.icon = R.drawable.stat_notify_musicplayer; 
+完整回答请参考FAQ: FAQ74034
+### 问题: 如何禁止非必要进程的启动？
+解决方案: 禁止非重要应用进程的启动 此处需修改 frameworks\base\services\core\java\com\android\server\am\ActivityManagerService.java文件 具体实现如下: private final void startProcessLocked(ProcessRecord app, String hostingType, String hostingNameStr, String abiOverride, String entryPoint, String[] entryPointArgs) { long startTime = SystemClock.elapsedRealtime(); if(不在白名单中){ Slog.i(TAG,"start a unneed process"+app.processName+" ,ignor
+完整回答请参考FAQ: FAQ74037
+### 问题: 如何提高应用进程的优先级
+解决方案: 1)在应用中使用 ActivityManagerNative.getDefault().setProcessProtectStatus(Process.myPid(), status);方法调整 其中status有以下几种: a. ActivityManager.PROCESS_STATUS_RUNNING:运行状态,设置其adj为0 b. ActivityManager.PROCESS_STATUS_MAINTAIN:保护状态,设置adj为2 c. ActivityManager.PROCESS_STATUS_PERSISTENT:常驻状态,设置adj为 - 12 2)在应用中使用 ActivityManagerNative.getDefault().setProcessProtectArea(String appName, int minAdj, int maxAdj, int pro
+完整回答请参考FAQ: FAQ74040
+### 问题: 一个FileInputStream同时设置两种墙纸(wallpaper），有一个可能无效
+解决方案: 有时候,锁屏墙纸、主菜单墙纸需要分开设置,或者设置成一样. 如果同一个文件(FileInputStream),连续调用WallpaperManager.setStream()给两种不同的墙纸类型设置同一个墙纸. 例如如下代码,可能后面设置的那个不成功. 因为WallpaperManager把一个FileInputStream设置为墙纸的时候,文件会从当前位置(文件第一次打开是在文件头部)读到文件尾. 设置完成后,文件指向文件结尾了. 第二次调用的时候,文件还是从当前位置(文件尾)开始读,读不到数据,所以设置失败. FileInputStream fileInputStream = new FileInputStream(wallpaperFile); wallpaperManager.setStream(fileInputStream); // first wallpaper type w
+完整回答请参考FAQ: FAQ74039
+### 问题: android4.4版本中加入古吉拉特语、旁遮普语显示空白？
+解决方案: 显示空白为缺少字库原因.早期版本中字库此两种语言字库存在版权问题所以已从4.4发布的版本中删除. 目前android5.1 原声已支持此两种语言的字库,所以显示需要移植5.1的字库到4.4版本中. 1.获取5.1旁遮普语、古吉拉特语字库copy到4.4代码的frameworks/base/data/fonts/下 5.1字库名称及位置 external/noto-fonts/NotoSansGujarati-Regular.ttf ; external/noto-fonts/NotoSansGurmukhi-Regular.ttf ; 2.修改frameworks/base/data/fonts/Android.mk ifeq ($(MULTILANGUAGE_SUPPORT),true) font_src_files := \ ...... + NotoSansGurmukhi-Regu
+完整回答请参考FAQ: FAQ74276
+### 问题: dispatchKeyEvent和onKeyDown使用说明
+解决方案: dispatchKeyEvent 和onKeyDown这两个继承方法,既可以在activity中,也在View中继承. 应用开发如下想通过这两个方法来截断对应的按键事件的话,可以重写Activity中的,也可以重写View中的方法,但View如果没有获得焦点,那就不能监控/拦截返回键、菜单键和Home键,所有还是重写Activity的onKeyDown方法比较好. dispatchKeyEvent和OnkeyDown使用方法都是一样的: 当我们重写了dispatchKeyEvent或onKeyDown方法后,如果return false,则会继续调用系统的 dispatchKeyEvent或onKeyDown方法. 如果只想让程序调用自己写的dispatchKeyEvent或onKeyDown,则需要return true. 说明: dispatchKeyEvent 和onKeyDown的
+完整回答请参考FAQ: FAQ88962
+### 问题: android5.1已经存在两通通话，如何添加不能再添加通话的提示信息
+解决方案: 已经存在两通通话,添加不能再添加通话的提示信息,请参照以下方案: packages/services/Telecomm/src/com/android/server/telecom/CallsManager.java Call startOutgoingCall(Uri handle, PhoneAccountHandle phoneAccountHandle, Bundle extras, boolean isVideocall) { ... ... // Do not support any more live calls. Our options are to move a call to hold, disconnect // a call, or cancel this call altogether. if (!isPotentialInCallMMICode && !make
+完整回答请参考FAQ: FAQ82608
+### 问题: 打开screen pinning功能后，如何修改可以听到通知铃声？
+解决方案: google原生在设置了screen pinning功能后禁止播放通知铃声,按如下修改可在开启screen pinning功能后不禁止播放通知铃声: /idh.code/frameworks/base/services/core/java/com/android/server/am/ActivityStackSupervisor.java      public void handleMessage(Message msg) {
+            .....
+            case LOCK_TASK_START_MSG: {
+                    // When lock task starts, we disable the status bars.
+                    ......
+                   
+完整回答请参考FAQ: FAQ74614
+### 问题: batterysrv操作/productinfo/.save_capacity节点失败？
+解决方案: 复现步骤: 使用download工具升级,备份prodnv分区中的数据,升级前后版本中batterysrv属于不同的用户、组. 原因: /productinfo/.save_capacity是通过batterysrv创建出来的,/productinfo/.save_capacity用户、组同上一版本中的batterysrv对应的用户、组.更新版本中的batterysrv与之前的batterysrv属于不同的用户、组,就导致了没有权限操作文件节点/productinfo/.save_capacity. 解决方法: 修改/device/sprd/{board}/init.{hardware}.rc,在on init对应的section中添加如下语句 on init mkdir /productinfo 0771 system system #chown之前必须先挂在上分区prodnv moun
+完整回答请参考FAQ: FAQ74193
+### 问题: CTS Verifier - Bluetooth Test - BLE Server Test，弹出停止运行
+解决方案: [操作步骤] 1、安装CtsVerifier.apk 2、点击主菜单-CTS Verifier - Bluetooth Test - BLE Server Test [实际结果] 弹出"Unfortunately,CTS Verifier has stopped"的提示 备注: CtsVerifier.apk版本号4.4_r4 [原因分析] log报空指针: 10-04 10:23:41.293 612 933 I am_crash: [1952,0,com.android.cts.verifier,10075718,java.lang.NullPointerException,Unable to create service com.android.cts.verifier.bluetooth.BleServerService: java.lang.NullPointerExceptio
+完整回答请参考FAQ: FAQ74284
+### 问题: android.admin.cts.DeviceAdminActivationTest#testActivateGoodReceiverDisplaysActivationUi测试FAIL
+解决方案: 错误堆栈: 09-28 14:34:49 I/09997282762695: android.admin.cts.DeviceAdminActivationTest#testActivateGoodReceiverDisplaysActivationUi FAIL junit.framework.AssertionFailedError at junit.framework.Assert.fail(Assert.java:48) at junit.framework.Assert.assertTrue(Assert.java:20) at junit.framework.Assert.assertFalse(Assert.java:34) at junit.framework.Assert.assertFalse(Assert.java:41) at android.admin.cts.D
+完整回答请参考FAQ: FAQ74285
+### 问题: android.admin.cts.DevicePolicyManagerTest下六个FAIL
+解决方案: 出现这个问题对应的错误堆栈: 09-28 14:34:57 I/09997282762695: android.admin.cts.DevicePolicyManagerTest#testPasswordQuality_complexLetters FAIL junit.framework.AssertionFailedError: Password '1234' failed on minimum Letters=0 at junit.framework.Assert.fail(Assert.java:50) at junit.framework.Assert.assertTrue(Assert.java:20) at android.admin.cts.DevicePolicyManagerTest.assertPasswordSucceeds(DevicePolicyManagerT
+完整回答请参考FAQ: FAQ74286
+### 问题: android.security.cts.SELinuxDomainTest#testInitDomain 测试FAIL
+解决方案: 错误堆栈: 10-09 11:50:47 I/09997282762695: android.security.cts.SELinuxDomainTest#testInitDomain FAIL junit.framework.AssertionFailedError: Expected 1 process in SELinux domain "u:r:init:s0" Found "[ pid: "1" proctitle: "/init" label: "u:r:init:s0" vsize: 765952, pid: "190" proctitle: "/system/bin/sprd_res_monitor" label: "u:r:init:s0" vsize: 3133440, pid: "1658" proctitle: "/system/bin/slog" label: "
+完整回答请参考FAQ: FAQ74287
+### 问题: android.mediastress.cts.HEVCR1080pAacLongPlayerTest#testPlay00 测试失败
+解决方案: 错误堆栈: 10-09 16:50:47 I/0123456789ABCDEF: android.mediastress.cts.HEVCR1080pAacLongPlayerTest#testPlay00 FAIL junit.framework.AssertionFailedError: playback /storage/sdcard0/test/bbb_full/1920x1080/mp4_libx265_libfaac/bbb_full.ffmpeg.1920x1080.mp4.libx265_6500kbps_30fps.libfaac_stereo_128kbps_48000Hz.mp4 at junit.framework.Assert.fail(Assert.java:50) at junit.framework.Assert.assertTrue(Assert.java
+完整回答请参考FAQ: FAQ74290
+### 问题: android.app.cts.ActivityManagerTest#testGetRunningAppProcesses 测试FAIL
+解决方案: 这个问题要合一个漏洞补丁CVE-2015-3833(ANDROID-20034603): /ishare/uploadeditor/file/20151112/20151112193508_129.zip 以解决getRunningAppProcesses的安全漏洞: From 13fb04a30ddafbbd0374a52e81ccd6fc6a856c3c Mon Sep 17 00:00:00 2001 From: Wale Ogunwale <ogunwale@google.com> Date: Mon, 6 Apr 2015 16:08:52 -0700 Subject: [PATCH] Lockdown AM.getRunningAppProcesses API with permission.REAL_GET_TASKS * Applications must now have
+完整回答请参考FAQ: FAQ74299
+### 问题: FM RDS功能详解
+解决方案: 我们听的收音,有主要的两种发射方式,分别是俗称的FM和AM,其中又以FM的音质为好,并且是立体声,但它却有一个致命的弱点,就是传输的距离太短,而这偏是AM的强项.当然,我们平时固定在某地时,不是什么大问题,可是我们要去另外一个地方的时候,比如从广州去到深圳,珠江经济台就不一定能收得到了,或者发射频率已经变了. 怎么办呢?有什么方法可以把FM和AM的优点结合在一起呢?聪明的欧洲人于是就研发了RDS收音系统.至于网上的解释,只是涉及了RDS的皮毛而已,换句话说,可以显示电台名称、节目类型、节目内容及其它信息,只发挥了RDS的10%左右的功能! RDS广播的精髓在于,它的AF和TA功能!通常一个广播电台想扩大它的覆盖率,肯定会进行多个频率点的发射,比如某个电台就是107.5和100.8MHZ两个频点,当你开着车听着100.8,去到某个地方的,信号忽然变差了,你有两个选择:一是将就着听,差点没关系
+完整回答请参考FAQ: FAQ74313
+### 问题: FM驱动AP侧判断假台的方式
+解决方案: 2341A:RSSI. 在FmManager类中,私有成员SPRD_SNR_THRESHOLD控制SNR阈值,最终通过btif_fm_set_search_criteria函数调用其库函数BTA_FmSetSchCriteria将其设置到CP侧.在searchStation方法中调用seekStationCombo时其第三个参数便是RSSI的最小值,最终传递至btif_fm_combo_search通过库函数BTA_FmComboSearch将其发送至CP侧. 2341B:RSSI. 2341B的上层处理与2341A完全相同,只是底层操作CP侧时存在差异.从其底层处理文件的btif_fm_set_search_criteria函数可以看出其只是给结构体赋值,并没有调用其他函数,而btif_fm_combo_search函数可以看出,调用了BTM_VendorSpecificCommand函
+完整回答请参考FAQ: FAQ74317
+### 问题: monkey测试过程中，为何低电量不会自动关机
+解决方案: BatteryService在systemReady后会检查当前电池的状态,当电池没电或电池温度过高(shutdownIfNoPowerLocked、shutdownIfOverTempLocked)会start action为ACTION_REQUEST_SHUTDOWN的Activity 查看frameworks/base/core/res/AndroidManifest.xml中对ACTION_REQUEST_SHUTDOWN的声明,此action是属于ShutdownFullscreenActivity的 <activity android:name="com.android.server.ShutdownFullscreenActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:c
+完整回答请参考FAQ: FAQ74355
+### 问题: GPS-打开settings-location开关默认模式的设置
+解决方案: 1 修改代码位置: \packages\apps\Settings\src\com\android\settings\location\LocationSettings.java public void onSwitchChanged(Switch switchView, boolean isChecked) { if (isChecked) { if (WCN_DISABLED) { setLocationMode(Settings.Secure.LOCATION_MODE_BATTERY_SAVING); } else { //展讯平台默认设置为高精度,修改为仅限设备或者低耗电需要在这行代码进行修改即可 setLocationMode(android.provider.Settings.Secure.LOCATION_MODE_HIGH_ACCURACY); } } else { se
+完整回答请参考FAQ: FAQ74384
+### 问题: 如何定制AlertDialog的布局
+解决方案: 很多情况,在显示一个AlertDialog时,需要添加自己的元素,例如EditText、CheckBox等. 这时候需要定制AlertDialog的布局. 可以参考如下代码. 文件: LabeledEditorView.java (packages\apps\contacts\src\com\android\contacts\editor) 参考代码: final AlertDialog.Builder builder = new AlertDialog.Builder(mContext); final View view = layoutInflater.inflate(R.layout.contact_editor_label_name_dialog, null); builder.setView(view); 主要是要自定义一个布局,例如contact_editor_label_na
+完整回答请参考FAQ: FAQ74407
+### 问题: 如何定制Toast的布局
+解决方案: Toast使用时,为了应用界面风格统一,或者需要添加自己的元素,例如EditText、CheckBox等,在显示一个Toast时,就需要自定义layout. 可以参考android的如下源代码. 文件: StkAppService.java (packages\apps\stk\src\com\android\stk) 参考代码: Toast toast = new Toast(mContext.getApplicationContext()); View v = inflate.inflate(R.layout.stk_event_msg, null); toast.setView(v); toast.setGravity(Gravity.BOTTOM, 0, 0); toast.show(); 主要是要自定义一个布局,例如stk_event_msg. 加载布局文件后,调用Toast.s
+完整回答请参考FAQ: FAQ74437
+### 问题: 以fan5405为例,代码中该如何配置外部IC功能？
+解决方案: 下面的修改以外部充电IC,FAN5405为例进行的修改 1.修改deconfig文件,文件所在目录/kernel/arch/arm/configs/: # CONFIG_SPRD_2713_POWER is not set CONFIG_SPRD_EXT_IC_POWER=y #以5405为例,如果使用了其他型号的IC可以参照5405进行修改 CONFIG_SPRD_CHARGER_FAN5405=y 2.修改dts文件,文件所在目录/kernel/arch/arm/boot/dts/: i2c3: i2c@f5372000{ compatible = "sprd,i2c"; interrupts = <0 14 0x0>; reg = <0xf5372000 0x1000>; #address-cells = <1>; #size-cells = <0>; /*change added 
+完整回答请参考FAQ: FAQ74451
+### 问题: 如何在应用层操作gpio
+解决方案: 在应用层操作GPIO,可以使用sysfs方式; 首先在底层创建文件节点, 然后在上层操作节点. 例如:拉高gpio39 在deconfig中打开CONFIG_DEVRES, CONFIG_GPIOLIB, CONFIG_OF_GPIO,CONFIG_GPIO_SYSFS, 若开机adb shell 进入系统后,如下操作是有效的: root@# echo 39 >/sys/class/gpio/export root@# echo out > /sys/class/gpio/gpio39/direction root@# echo 1 >/sys/class/gpio/gpio39/value 则可在代码中直接进行如下操作: system("echo 39 >/sys/class/gpio/export") system("echo out >/sys/class/gpio/gpio39/d
+完整回答请参考FAQ: FAQ74471
+### 问题: 怎么看log去分析iso更新时区的信息
+解决方案: 在通过iso更新时区里,回获取到iso,然后去更新,这里就能看到和分析数据的获取情况;log里是no nitz but one TZ for iso-cc=cn with zone.getID=Asia/Shanghai testOneUniqueOffsetPath=false ,然后setAndBroadcastNetworkSetTimeZone.这个逻辑5.1在GsmServiceStateTrackerSprd.java 如: 01-01 08:07:53.901 1580 1580 D TelephonyManager: setTelephonyProperty: success phoneId=0 property=gsm.operator.iso-country value: cn propVal=cn 01-01 08:07:53.931 1580 1580 D GsmS
+完整回答请参考FAQ: FAQ74540
+### 问题: Android 触摸屏（TP）角度设置
+解决方案: 如果想设置触摸屏的角度,需要修改inputflinger,对应的修改如下(如下的修改是设置TP同屏幕旋转角度进行一致): --- a/services/inputflinger/InputReader.cpp +++ b/services/inputflinger/InputReader.cpp @@ -3000,7 +3000,28 @@ void TouchInputMapper::configureSurface(nsecs_t when, bool* outResetNeeded) { } bool viewportChanged = mViewport != newViewport; if (viewportChanged) { - mViewport = newViewport; + mViewport = newViewport; + + int displayOrienta
+完整回答请参考FAQ: FAQ74547
+### 问题: 2351FM立体声分离度差的解决办法
+解决方案: 通过修改FM寄存器FM_REG_FM_CTRL[18]:STER_SWAP和FM_REG_UPD_CTRL[24:25]:STDIF_DLY解决,具体修改如下: diff --git a/drivers/misc/fm_2351/sr2351_fm_rf.c b/drivers/misc/fm_2351/sr2351_fm_rf.c --- a/drivers/misc/fm_2351/sr2351_fm_rf.c +++ b/drivers/misc/fm_2351/sr2351_fm_rf.c @@ -72,7 +72,7 @@ static unsigned int write_fm_reg(u32 reg_addr, u32 val) static void fm_register_set(void) { - write_fm_reg(FM_REG_FM_CTRL , 0x0000
+完整回答请参考FAQ: FAQ74572
+### 问题: 在振动模式下，来电时如何让后台音乐不停止
+解决方案: /packages/services/Telecomm/src/com/android/server/telecom/CallAudioManager.java文件中做如下修改: private void updateAudioStreamAndMode() { Log.i(this, "updateAudioStreamAndMode, mIsRinging: %b, mIsTonePlaying: %b", mIsRinging, mIsTonePlaying); + boolean mIsVibrate; + int RingerMode = mAudioManager.getRingerMode(); //获取当前的情景模式 + if (RingerMode == mAudioManager.RINGER_MODE_VIBRATE){ //判断当前的情景模式是否是振动 + mIsV
+完整回答请参考FAQ: FAQ80773
+### 问题: 5.1平台如何去掉USSD交互界面显示信息中的空行
+解决方案: 请在修改PhoneUtils.java文件(path: packages/services/telephony/src/com/android/phone/) // build the dialog String ussdText=text.toString();//将techarsubsquences类型的text转化为string类型 ussdText=ussdText.replaceAll("(?m)^[ \t]*\r?\n", "");//运用正则表达式将空行删除 final AlertDialog newDialog = new AlertDialog.Builder(contextThemeWrapper) .setMessage(text)//删除该行 .setMessage(ussdText)//填充dialog的message .setView(dialogView) .
+完整回答请参考FAQ: FAQ74627
+### 问题: 7715平台如何去掉CALL_BARRED的dialog提示框
+解决方案: \packages\apps\InCallUI\src\com\android\incallui\InCallActivity.java中作如下修改 private int getResIdForDisconnectCause(Call.DisconnectCause cause) { int resId = INVALID_RES_ID; if (cause == Call.DisconnectCause.CALL_BARRED) { resId = R.string.callFailed_cb_enabled;/注释掉该行 resId = INVALID_RES_ID;//添加该行,返回该值,dialog将不会show } else if (cause == Call.DisconnectCause.FDN_BLOCKED) { resId = R.string.callFailed_
+完整回答请参考FAQ: FAQ74631
+### 问题: 当首选网络类型设置2G Only, 恢复出厂设置后，仍然为2G Only, 怎样默认为Auto自动
+解决方案: 因为恢复出厂设置只是擦除data分区,但首选网络模式的实际配置在modem NV中会保留,AP侧通过AT+SYSCONFIG来配置. --- a/src/com/android/settings/MasterClearConfirm.java +++ b/src/com/android/settings/MasterClearConfirm.java @@ -18,6 +18,9 @@ package com.android.settings; import com.android.internal.widget.LockPatternUtils; // 导入如下所需包文件 +import android.telephony.TelephonyManager; +import com.android.internal.telephony.RILConstants; +import andr
+完整回答请参考FAQ: FAQ74643
+### 问题: 如何修改系统安装app的安装位置策略
+解决方案: 系统安装app的位置策略主要定义在文件/frameworks/base/core/java/com/android/internal/content/PackageHelper.java文件中的public static int resolveInstallLocation()方法中,如果需要修改尽量在这个方法中修改. 代码: public static int resolveInstallLocation(Context context, String packageName, int installLocation, long sizeBytes, int installFlags) { int prefer; //期望的安装位置 boolean checkBoth; //如果期望的安装位置无法满足,是安装失败还是尝试其他位置继续安装 …… int installPreference 
+完整回答请参考FAQ: FAQ75362
+### 问题: 网络模式选择，只有3G,2G没有Auto，怎样添加
+解决方案: 原设计3G代表 3G/2G auto,2G 代表2G only; 思路:修改3G为Auto,添加3 G项 packages/services/Telephony/src/com/android/phone/MobileNetworkSettings.java packages/services/Telephony/res/values/strings.xml --- a/res/values/strings.xml +++ b/res/values/strings.xml @@ -588,8 +588,9 @@ <string name="network_lte">LTE (recommended)</string> <string name="network_4G">4G (recommended)</string> <string name="network_3G" translata
+完整回答请参考FAQ: FAQ74657
+### 问题: 如何在有墙纸小部件按钮界面添加设置按钮？
+解决方案: Launcher.java
+    protected boolean hasSettings() {
+        if (mLauncherCallbacks != null) {
+            return mLauncherCallbacks.hasSettings();
+        }
+-        return false;
++        return true;
+    }
+
+    protected void onClickSettingsButton(View v) {
+        if (LOGD) Log.d(TAG, "onClickSettingsButton");
+        if (mLauncherCallbacks != null) {
+            mLauncherCallbacks.
+完整回答请参考FAQ: FAQ79206
+### 问题: 如何修改应用名称？
+解决方案: 举例说明:Launcher3 应用 将Launcher3 修改为 Standard Home screen. AndroidManifest.xml <application android:name="com.android.launcher3.LauncherApplication" android:allowBackup="@bool/enable_backup" android:backupAgent="com.android.launcher3.LauncherBackupAgentHelper" android:hardwareAccelerated="true" android:icon="@mipmap/ic_launcher_home" android:label="@string/application_name" android:largeHeap="@bool/co
+完整回答请参考FAQ: FAQ74796
+### 问题: 如何让新添加到桌面的widget名称随着语言的切换而改变？
+解决方案: packages/apps/Launcher3/src/com/android/launcher3/LauncherModel.java
+
+        private boolean loadWorkspace() {
+           ......
+                    while (!mStopped && c.moveToNext()) {
+                        try {
+                            int itemType = c.getInt(itemTypeIndex);
+                            boolean restored = 0 != c.getInt(restoredIndex);
+                            b
+完整回答请参考FAQ: FAQ79209
+### 问题: 如何调整RGB指示灯亮度
+解决方案: 调整RGB指示灯亮度的三种方法: 1. kernel/drivers/leds/leds-sprd-bltc-rgb.c static void sprd_bltc_rgb_init(struct sprd_leds_bltc_rgb *brgb) { …… sci_adi_set(brgb->sprd_arm_module_en_addr + 0xa0, (0x00<<8)); …… } 其中0x00表示亮度,范围0x00—0x1f. 2. kernel/drivers/leds/leds-sprd-bltc-rgb.c static void sprd_leds_bltc_rgb_set_brightness(struct sprd_leds_bltc_rgb *brgb) { …… if(pwm_duty > 255) pwm_duty = 255; ….. } 其中255表示亮度,
+完整回答请参考FAQ: FAQ75956
+### 问题: cts测试 libcore.java.net.OldSocketTest#test_ConstructorLjava_lang_StringI FAIL
+解决方案: 网络的原因,大多数情况下不需要解决,换个网络测试就ok了.如果客户更换网络后多次测试始终无法通过,则可以通过如下修改规避: 在libcore/luni/src/main/java/java/net/Socket.java 作如下修改: private void tryAllAddresses(String dstName, int dstPort, InetAddress localAddress, int localPort, boolean streaming) throws IOException { + if (dstName.equals("unknown.host.google.com")){ + throw new UnknownHostException("UnknowHostException for "+dstName); + } 注意,5.1中有的是unknown.h
+完整回答请参考FAQ: FAQ81169
+### 问题: wifi中wpa_supplicant 的 eloop 循环处理那些类型的事件？
+解决方案: 在wifi的wpa_supplicant 中 external\wpa_supplicant_8\src\utils\Eloop.c 的 eloop_run 函数中的 while循环处理三种类型的事件: Socket事件,Timeout事件,Signal事件. 其中 socket事件还分为三个类型: eloop_event_type - eloop socket event type for eloop_register_sock() @EVENT_TYPE_READ: Socket has data available for reading @EVENT_TYPE_WRITE: Socket has room for new data to be written @EVENT_TYPE_EXCEPTION: An exception has been reported 在eloop_r
+完整回答请参考FAQ: FAQ75001
+### 问题: linux下修改文件访问权限
+解决方案: linux下修改访问权限,大家基本都知道用chmod指令.在这里我只是把这个命令的使用详细的总结一下,使用户遇到此类问题的时候可以更熟练的使用该命令. 查看权限 Linux文件访问权限分为可读,可写和可执行三种. 可用ls -l 命令查看,例: ls -l 显示 -rwxr-xr-x 1 root root 6444 09-22 15:33 shmwrite -rw-r--r-- 1 root root 1443 09-22 15:33 shmwrite.c drwxr-xr-x 2 root root 4096 09-22 17:19 test 第一个字符代表文件类型.d代表目录,-代表非目录. 接下来每三个字符为一组权限,分为三组,依次代表所有者权限,同组用户权限,其它用户权限 每组权限的三个字符依次代表是否可读,是否可写,是否可执行 r 表示拥有读的权限 w 表示拥有写的权限 x 表
+完整回答请参考FAQ: FAQ75398
+### 问题: 如何耗尽手机内存来模拟测试低内存状态下的测试情况。
+解决方案: 在Android 5.1上, 平台增加了costmem的工具, 来填充手机内存, 工具编译后会打包到system/bin下面, 产生一个costmem的可执行文件, 需要时, 可以通过adb来运行: shell@scx35_sp7731gea_hdr:/ # costmem costmem Usage: costmem [-ccost_size(KB) -bblock_size(KB) -oOom_adj(-16 to 15)] such as: costmem -c2048 -b128 -o15 234|shell@scx35_sp7731gea_hdr:/ #costmem -c2000 -b2048 -o-16 costmem -c2000 -b2048 -o-16 Cost mem 2000 KB, 2048 KB per Block, oom_adj -16 Have mallo
+完整回答请参考FAQ: FAQ75037
+### 问题: 如何将Launcher3主菜单背景修改成透明色，小部件保持原来的灰色背景？
+解决方案: 方案一:设置主菜单背景的不可见.
+src/com/android/launcher3/Launcher.java
+showAppsCustomizeHelper方法:
+  // Hide the real page background, and swap in the fake one
+            content.setPageBackgroundsVisible(false);
++	    if (isWidgetTray) {
+                revealView.setVisibility(View.VISIBLE);
++	  }else{
++		revealView.setVisibility(View.INVISIBLE);
++	   }
+            // We need to hide this view as th
+完整回答请参考FAQ: FAQ75042
+### 问题: 双卡情况如何默认主卡为卡1
+解决方案: 在packages/apps/Settings/src/com/android/settings/simSimDialogActivity.java文件中按照类似如下逻辑修改即可. case DATA_PICK: case CALLS_PICK: case SMS_PICK: - /* SPRD: add option for selecting primary card @{ */ - case PRIMARY_PICK: /* SPRD: modify for fix bug 437828 @{ */ mSimChooseDialog = createDialog(this, dialogType); mSimChooseDialog.show(); + break; /* @} */ + /* SPRD: add option for selecting primary card @
+完整回答请参考FAQ: FAQ75053
+### 问题: STK是一个什么功能
+解决方案: STK(SIM TOOL KIT),简称"用户识别应用发展工具",可以理解为一组开发增值业务的命令,一种小型编程语言,它允许基于智能卡的用户身份识别模块SIM运行自己的应用软件. STK卡不是一般的通常使用的SIM卡,而是基于Java语言平台的Simera32K卡片.STK是一种小型编程语言的软件,可以固化在SIM卡中.它能够接收和发送GSM的短消息数据,起到SIM卡与短消息之间的接口的作用,同时它还允许SIM卡运行自己的应用软件.这些功能经常被用于在可通过软件激活的电话显示屏上,用友好的文本菜单代替机械的"拨号-收听-应答"方式,从而允许用户通过按键轻松进行复杂的信息检索操作或交易.SIM卡技术,"空中下载"业务,实现基于SIM卡的服务业务,例如移动的"移动梦网"SIM卡,"动感地带"等都是基于STK技术的SIM卡,该技术可以使SIM卡拥有大的存储容量和内置运营商提供的各项服务. STK
+完整回答请参考FAQ: FAQ75087
+### 问题: 如何用命令打开Log.isLoggable里面的log
+解决方案: adb root adb remount adb shell setprop log.tag.<tag> <level> 在代码中可以看到: public static final String TRANSACTION = "Mms:transaction";
+
+if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+
+    Log.v(TAG, "Creating TransactionService");
+
+}
+ 上述代码里的Mms:transaction就是上面的<tag>, VERBOSE就是<level>. 因此开启Mms:transaction的log命令就是: adb shell setprop log.tag.Mms:transaction VERBOSE 然后再查看log就会发现"Creating Tr
+完整回答请参考FAQ: FAQ75089
+### 问题: m3u8流媒体定义及测试方法介绍
+解决方案: M3U8文件概念: M3U8文件是指UTF-8编码格式的M3U文件.M3U文件是记录了一个索引纯文本文件,打开它时播放软件并不是播放它,而是根据它的索引找到对应的音视频文件的网络地址进行在线播放,M3U8是苹果专用的视频格式. M3U8测试方法: 可以在任意在线视频播放网站,如pptv网站(http://www.pptv.com/)上播放视频,同时抓取slog,在slog的main.log中搜索setDataSource会有类似如下打印: "MediaPlayerService:setDataSource(http://14.22.0.16/%B5%F3%C2%F9%B9%AB%D6%F7%E5%D0%D2%A3%CD%F5%28%B5%DA01%BC%AF%29.m3u8?type=mpptv&k=21cdd7985183366ca4726ebab51444db-a197-1439212
+完整回答请参考FAQ: FAQ75308
+### 问题: 如何控制TextView控件的字体大小
+解决方案: 对于能够显示文字的控件(如TextView EditText RadioButton Button CheckBox Chronometer等),有时需要控制字体的大小.Android平台定义了三种字体大小: "?android:attr/textAppearanceLarge" "?android:attr/textAppearanceMedium" "?android:attr/textAppearanceSmall" 在xml文件中,使用方法如下: java代码: android:textAppearance="?android:attr/textAppearanceLarge" android:textAppearance="?android:attr/textAppearanceMedium" android:textAppearance="?android:attr/textA
+完整回答请参考FAQ: FAQ75112
+### 问题: 如何解决Android 4.4 CTS FAIL --- android.security.cts.ListeningPortsTest.testNoListeningLoopbackTcp6Ports
+解决方案: 测试FAIL log: 03-12 11:20:23.290 4825 4838 I TestRunner: started: testNoListeningLoopbackTcp6Ports(android.security.cts.ListeningPortsTest) 03-12 11:20:23.340 4825 4838 I TestRunner: failed: testNoListeningLoopbackTcp6Ports(android.security.cts.ListeningPortsTest) 03-12 11:20:23.340 4825 4838 I TestRunner: ----- begin exception ----- 03-12 11:20:23.350 4825 4838 I TestRunner: 03-12 11:20:23.350 4825
+完整回答请参考FAQ: FAQ75124
+### 问题: 如何解决Android 5.0 CTS FAIL --- android.security.cts.ListeningPortsTest.testNoListeningLoopbackTcp6Ports
+解决方案: Android5.0 解决方法 77315.0/frameworks/base$ git diff diff --git a/services/core/java/com/android/server/am/ActivityManagerService.java b/services/core/java/com/android/server/am/ActivityManagerService.java index 5f7781d..815a139 100755 --- a/services/core/java/com/android/server/am/ActivityManagerService.java +++ b/services/core/java/com/android/server/am/ActivityManagerService.java @@ -10075,6 +1007
+完整回答请参考FAQ: FAQ75127
+### 问题: 如何解决Android 5.1 CTS FAIL --- android.security.cts.ListeningPortsTest.testNoListeningLoopbackTcp6Ports
+解决方案: Android5.1 解决方法. diff --git a/services/core/java/com/android/server/am/ActivityManagerService.java b/services/core/java/com/android/server/am/ActivityManagerSer index a4b7bea..c44f18f 100755 --- a/services/core/java/com/android/server/am/ActivityManagerService.java +++ b/services/core/java/com/android/server/am/ActivityManagerService.java @@ -10025,6 +10025,12 @@ public class ActivityManagerServic
+完整回答请参考FAQ: FAQ75129
+### 问题: Mocrdroid4.4 CTS FAIL ----  libcore.javax.net.ssl.DistinguishedNameParserTest
+解决方案: FAIL LOG: -- testGetCns fail java.lang.NoSuchMethodError: javax.net.ssl.DistinguishedNameParser.getAllMostSpecificFirst at libcore.javax.net.ssl.DistinguishedNameParserTest.assertCns(DistinguishedNameParserTest.java:59) -- testGetCnsWithOid fail java.lang.NoSuchMethodError: javax.net.ssl.DistinguishedNameParser.getAllMostSpecificFirst at libcore.javax.net.ssl.DistinguishedNameParserTest.assertCns(
+完整回答请参考FAQ: FAQ75130
+### 问题: 蓝牙分组类型
+解决方案: 分组类型如下: 分组类别 Type(b3b2b1b0) 时隙 SCO ACL 链路控制分组 0000 1 NULL NULL 0001 POLL POLL 0010 FHS FHS 0011 DM1 DM1 单时隙分组 0100 1 未定义 NULL 0101 HV1 0110 HV2 0111 HV3 1000 DV 1001 NULL AUX1 3时隙分组 1010 3 未定义 DM3 1011 DH3 1100 未定义 1101 5时隙分组 1110 5 未定义 DM5 1111 ACL分组形式为:D(M|H)(1|3|5),D代表数据分组,M代表用2/3比例的FEC的中等速率分组;H代表不使用纠错码的高速率分组;1、3、5分别代表分组所占用的时隙数目; DM1、DM3、DM5、DH1、DH3、DH5 SCO分组形式为:HV(1|2|3).HV代表高质量语言分组,1、2、3有效载荷所
+完整回答请参考FAQ: FAQ75824
+### 问题: MocroDroid5.1 CTS FAIL ----  android.security.cts.SELinuxDomainTest -- testInitDomain
+解决方案: 版本号: MocorDroid5.1_3.10_Tshark_15a_W15.32.3 FAIL LOG: junit.framework.AssertionFailedError: Expected 1 process in SELinux domain "u:r:init:s0" Found "[ 解决方案: Android的SELinux 安全策略,需要添加dhcp相关配置. /device/sprd/scx35/git diff diff --git a/scx35/BoardConfigCommon.mk b/scx35/BoardConfigCommon.mk index 1a35c52..2434904 100644 --- a/scx35/BoardConfigCommon.mk +++ b/scx35/BoardConfigCommon.mk @@ -47,6 +47,7
+完整回答请参考FAQ: FAQ75135
+### 问题: 如何去掉Launcher3主界面上面状态栏和下面hotseat 背景阴影部分？
+解决方案: 修改res/layout-land/launcher.xml 、res/layout-port/launcher.xml 和 res/layout-sw720dp/launcher.xml 这三个文件
+
+修改如下:
+
+ <com.android.launcher3.LauncherRootView
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:launcher="http://schemas.android.com/apk/res-auto"
+
+     android:id="@+id/launcher"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent
+完整回答请参考FAQ: FAQ80928
+### 问题: 如何将下拉快捷面板中的亮度调节Slider调整到所有快捷图标的下面？
+解决方案: 请按照如下修改: 1. frameworks/base/packages/SystemUI/src/com/android/systemui/qs/QSPanel.java + private static final boolean mBrightnessBelowQuickIcons = SystemProperties.getBoolean("statusbar.
+        bar_below_icons", true);
+
+ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final int width = MeasureSpec.getSize(widthMeasureSpec);
+        mBrightnessView.measure(exac
+完整回答请参考FAQ: FAQ75992
+### 问题: 如何将锁屏界面的时钟固定在屏幕左上角，状态栏下面的位置？
+解决方案: 请按照如下修改: 1. frameworks/base/packages/Keyguard/res/layout/keyguard_status_view.xml     <LinearLayout
+        android:layout_marginTop = "20dp"
+        android:id="@+id/keyguard_clock_container"
+-         android:layout_width="match_parent"
++        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+-         android:layout_gravity="center_horizontal|top"
++      
+完整回答请参考FAQ: FAQ75288
+### 问题: 如何解决电池温度读取偏差大的问题
+解决方案: 1)温度读取偏差大可由以下因素产生,客户在解决问题过程中可逐项进行排查: 因素 产生的影响 读取电池温度的功能没有使能,读取电池温度功能需要硬件上支持并在软件中将功能代码打开 读取的温度一直为20度,不会变化 ADC没有校准,如果ADC没有校准会导致读取的电压与实际偏差较大 温度读取偏差大 ADC使用不当,从项目实际来看,在使用ADC读取电压时要使用小量程(最大1.2V)并采用恒压模式,大量程及恒流模式下,ADC偏差会稍大 温度读取偏差大 在计算温度时没有考虑到对地电阻的影响,平台为了能够读到到系统的电流在地与电池负极端连接一个20mohm的电阻,它会对实际的ADC读值产生一定的影响,当系统电流较大,NTC温度较高时,在ADC到温度的转化过程中,这个影响是不可以简单忽略的 温度读取存在较大的偏差 SC7715平台软件BUG,目前发现7715平台温度检测功能软件上存在BUG: a)在sprd
+完整回答请参考FAQ: FAQ75743
+### 问题: wifi 直连里operating channel和listen channel是如何生成的？
+解决方案: operating channel是打开wifi初始化时随机生成的;与此同时listen channel也随即生成,目前随即规则只取值1、6、11. int wpas_p2p_init(struct wpa_global *global, struct wpa_supplicant *wpa_s) { ..... if (wpa_s->conf->p2p_listen_reg_class &&wpa_s->conf->p2p_listen_channel) { p2p.reg_class = wpa_s->conf->p2p_listen_reg_class; p2p.channel = wpa_s->conf->p2p_listen_channel; wpa_printf(MSG_DEBUG, "P2P: Configured p2p.reg_class=%d p2p.channel=%
+完整回答请参考FAQ: FAQ75206
+### 问题: wep wpa wpa2简介
+解决方案: WEP 有线等效加密(Wired Equivalent Privacy),又称无线加密协议(Wireless Encryption Protocol),简称WEP,是个保护无线网络(Wi-Fi)信息安全的体制.因为无线网络是用无线电把讯息传播出去,它特别容易被窃听.WEP 的设计是要提供和传统有线的局域网路相当的机密性,而依此命名的.不过密码分析学家已经找出 WEP 好几个弱点,因此在2003年被 Wi-Fi Protected Access (WPA) 淘汰,又在2004年由完整的 IEEE 802.11i 标准(又称为 WPA2)所取代. WPA 和 WPA2 WPA 全名为 Wi-Fi Protected Access,有WPA 和 WPA2两个标准,是一种保护无线电脑网路(Wi-Fi)安全的系统,它是应研究者在前一代的系统有线等效加密(WEP)中找到的几个严重的弱点而产生的.WPA
+完整回答请参考FAQ: FAQ77440
+### 问题: 如何编译framworks/opt/chips/下和RecipientEditTextView相关的修改
+解决方案: 问题: RecipientEditTextView是定义在framework/opt控件,目前系统只有Email,Mms,Calendar等系统级应用使用.没有开放给第三方应用,该控件主要的功能是为应用提供联系人搜索建议.如果要修改Email中关于RecipientEditTextView的相关显示,该如何编译 解决方案:(以Email为例) 1:如果修改的文件在framworks/opt/chips/res/下,如调整布局等,可在修改之后,直接退回Email模块,单独编译Email模块就可以了,因为在编译Email模块的时候,会直接去检索相关布局的修改加入编译.然后push Email.apk到对应的目录即可调试 2:如果修改的文件在framworks/opt/chips/src下,可在此目录下编译,之后退回到Email模块,再编译Email,然后push Email.apk到对应的目录
+完整回答请参考FAQ: FAQ75224
+### 问题: 如何修改android长按 Textview或 Editext 弹出的原生游标
+解决方案: Textview或 Editext的长按其实是一样的.长按会进入selection mode,具体的实现逻辑在framework/base/core/java/android/widget/Editor.java 长按之后弹出可滑动的左右游标的具体代码实现在 private void initDrawables() { if (mSelectHandleLeft == null) { mSelectHandleLeft = mTextView.getContext().getDrawable( mTextView.mTextSelectHandleLeftRes); } if (mSelectHandleRight == null) { mSelectHandleRight = mTextView.getContext().getDrawable( mTextView.mTextSelec
+完整回答请参考FAQ: FAQ75230
+### 问题: RecipientEditTextView相关属性使用说明
+解决方案: 常用属性如下: android:completionHint、setCompletionHint(CharSequence):设置下拉菜单中的提示标题 android:completionHintView:设置下拉菜单中提示标题的视图 android:completionThreshold、setThreshold(int):设置用户至少输入几个字符才会显示提示 android:dropDownAnchor、setDropDownAnchor(int):设置下拉菜单的定位"锚点"组件,如果没有指定该属性,将使用该TextView本身作为定位"锚点"组件,默认是和EditText对齐的,如Email就是铺满父控件. android:dropDownHeight、setDropDownHeight(int):设置下拉菜单的高度 android:dropDownHorizontalOffest 
+完整回答请参考FAQ: FAQ75233
+### 问题: 5.1重启后如何清除最近任务
+解决方案: 5.0之后系统会将最近任务数据存储到持久存储中,这样手机重启后打开最近任务界面,之前的任务还是会显示出来 但这只是一个入口方便用户再次打开之前的应用,AMS并没有启动这些应用,所以作为一个新特性,不建议修改 修改方案: 手机使用过程中系统将最近任务数据存储到/data/system/recent_images和/data/system/recent_tasks这两个目录 重启时,系统会到持久存储中去读取这两个数据,所以在这个之前将数据删除即可 可以参考如下修改: diff --git a/services/core/java/com/android/server/am/ActivityManagerService.java b/services/core/java/com/android/server/am/Activity index a1501af..ce51e76 100755 --
+完整回答请参考FAQ: FAQ75255
+### 问题: wep share方式会有几次auth，具体含义是什么
+解决方案: wep share方式会有四次auth,空口包如下: 各步骤及具体含义如下: 1.Shared Key authentication (first frame) Upon receipt of a Shared Key MLME-AUTHENTICATE.request primitive, the requester shall perform the following procedure: a) If one or more request parameters are invalid, issue an MLME-AUTHENTICATE.confirm primitive with ResultCode set to INVALID_PARAMETERS; else b) Construct a Shared Key authentication request frame an
+完整回答请参考FAQ: FAQ75295
+### 问题: 从Settings中选择默认Launcher后按返回键回到桌面没有起效
+解决方案: 这个是android原生设计,从Settings中选择默认Launcher后仅仅只是将默认Home Activity保存到默认程序xml文件中,由于ActivityStack中已经保存有原Home Activity,按返回键回到home的过程中并不会重新resolve home activity,而是直接显示之前已经存在的home activity,导致设置没有生效. 此时有两种解决办法: 1,修改选择默认home后的行为,选中时马上跳转到所选home界面(建议采用这种改法) --- a/src/com/android/settings/HomeSettings.java +++ b/src/com/android/settings/HomeSettings.java @@ -101,6 +101,11 @@ public class HomeSettings extends Settin
+完整回答请参考FAQ: FAQ75354
+### 问题: 如何使用adb shell设置某个gpio口输出的高低电平
+解决方案: 1. 先要获取对应芯片平台的spec, 得到GPIO的Base Addr Range,这个一般在spec中GPIO章节的开始部分,如sc7731的spec中对应有gpio0-gpio255,对应如下: GPIO0 ~ GPIO15 0x4028_0000 GPIO16 ~ GPIO31 0x4028_0080 GPIO32 ~ GPIO47 0x4028_0100 GPIO48 ~ GPIO63 0x4028_0180 GPIO64 ~ GPIO79 0x4028_0200 GPIO80 ~ GPIO95 0x4028_0280 GPIO96 ~ GPIO111 0x4028_0300 GPIO112 ~ GPIO127 0x4028_0380 GPIO128 ~ GPIO143 0x4028_0400 GPIO144 ~ GPIO159 0x4028_0480 GPIO160 ~ GPI
+完整回答请参考FAQ: FAQ75199
+### 问题: wep open认证方式连接时有几次auth，分别是什么意思？
+解决方案: wep open认证方式连接时有两次auth,手机发一个auth,AP回复一个auth. 具体含义如下: Open System authentication (first frame) Upon receipt of an Open System MLME-AUTHENTICATE.request primitive, the requester shall perform the following procedure a) If one or more request parameters are invalid, issue an MLME-AUTHENTICATE.confirm primitive with ResultCode set to INVALID_PARAMETERS; else b) Construct an Open System authentication 
+完整回答请参考FAQ: FAQ75356
+### 问题: 默认安装位置设置为T卡后，更新系统app时安装失败
+解决方案: 这个是android系统的原生设计,由于有些系统应用是系统不可或缺的一部分,缺少了会导致系统不问题,所以系统限制将系统应用安装到可卸载的SD卡上,一旦SD卡被卸载系统可能不稳定. 相关代码: public class PackageManagerService extends IPackageManager.Stub { ...... // Check for updated system application. if ((pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) { if (onSd) { Slog.w(TAG, "Cannot install update to system app on sdcard"); return PackageHelper.RECOMMEND_FAILED_INVALID_
+完整回答请参考FAQ: FAQ75355
+### 问题: 修改wifi射频参数后，代码里如何确定修改哪个ini文件才生效？
+解决方案: 要让我们修改的ini文件,编译生成之后是有效的.就需要确定编译时使用的是哪个ini文件; 1.首先,我们ini文件全部在如下目录: /vendor/sprd/open-source/res/productinfo/ 2.这个目录有各个工程的makefile文件,从这些makefile文件里可以得知使用了哪个ini文件 LOCAL_PATH:= vendor/sprd/open-source/res/productinfo PRODUCT_COPY_FILES += \ $(LOCAL_PATH)/scx35l_sp9820a_connectivity_configure.ini:system/etc/connectivity_configure.ini \ $(LOCAL_PATH)/scx35l_sp9820a_connectivity_calibration.ini:system/et
+完整回答请参考FAQ: FAQ75357
+### 问题: simlock 关于BaseParam-->SIM_LOCK_CUSTOMIZE_DATA-->dummy2配置的含义说明
+解决方案: 在NV中配置simlock时,通常如果是双卡项目,并且有依赖关系需要配置BaseParam-->SIM_LOCK_CUSTOMIZE_DATA-->dummy2为某一个具体的值.这个值标识了simlock的双卡之间的依赖关系. 1.单卡项目 单卡项目无需配置此项,如果配置会出现异常,比如sim上报状态的异常等,导致AP侧SIM相关模块出现异常. 2.双卡项目 dummy2: 1 ONE_SIMLOCK功能:SS需求,只要任意一张卡符合锁配置的网络锁百名单,两张卡都可以用. 2 卡槽1插入白名单的情况,卡槽2任意卡可用.卡槽1不插卡或插入黑名单卡,卡槽2任何卡不能用 3 卡槽1插入白名单的情况,卡槽2任意卡可用.卡槽1不插卡或插入黑名单卡,卡槽2白名单卡可用,黑名单卡不可用 4 anysimlock, SS有提过该需求,任意卡位黑名单卡,两张卡都不可用 5 越南veltel运营商需求,白名单
+完整回答请参考FAQ: FAQ75410
+### 问题: android5.1如何修改通话界面button选中时的背景颜色
+解决方案: android5.1修改通话界面button选中时的背景颜色,请参照以下方案: \InCallUI\src\com\android\incallui\CallButtonFragment.java ...... // state_selected private void addSelected(Resources res, StateListDrawable drawable, MaterialPalette palette) { int[] selected = {android.R.attr.state_selected}; LayerDrawable selectedDrawable = (LayerDrawable) res.getDrawable(R.drawable.btn_selected); ((GradientDrawable) selectedDrawable.get
+完整回答请参考FAQ: FAQ75411
+### 问题: ramdisk.img解压\压缩方法
+解决方案: 解压ramdisk.img方法 $file ramdisk.img 01.ramdisk.img: gzip compressed data, from Unix 02.看出为gzip压缩过的文件,将ramdisk.img重命名为ramdisk.img.gz $mv ramdisk.img ramdisk.img.gz 更改名称 $gzip -d ramdisk.img.gz 进行解压 01.再用file来看一下ramdisk.img,此时为 02.ramdisk.img: ASCII cpio archive (SVR4 with no CRC) 03.这时候使用cpio来提取ramdisk.img中的内容 $cpio -i -F ramdisk.img 便解压得到了ramdisk.img内的内容 打包ramdisk.img 假设上面解压的ramdisk.img存储在目录/me/temp
+完整回答请参考FAQ: FAQ75484
+### 问题: 客户机器不配马达，移除震动功能
+解决方案: 请修改kernel下面的文件,移除掉vibrator功能 [说明]在编译vibrator模块的前提下,不对vibrator文件操作做处理,就可以移除掉vibrator功能能 android4.4: --- a/arch/arm/mach-sc/vibrator.c +++ b/arch/arm/mach-sc/vibrator.c android5.0 5.1: --- a/drivers/platform/sprd/vibrator.c +++ b/drivers/platform/sprd/vibrator.c @@ -168,7 +168,7 @@ static void update_vibrator(struct work_struct *work) static void vibrator_enable(struct timed_output_dev *dev, int val
+完整回答请参考FAQ: FAQ75537
+### 问题: 为什么camera app里面闪光灯不亮？
+解决方案: step1: 首先按照FAQ70573的方法调整闪光灯驱动的写法,然后验证闪光灯是否能通过以下方法点亮: 请先adb shell到手机里 再执行以下命令看看有没有效果: 得到当前闪光灯状态: cat /sys/class/flash_test/flash_test/flash_value 打开闪光灯: echo 1 > /sys/class/flash_test/flash_test/flash_value 关闭闪光灯: echo 0 > /sys/class/flash_test/flash_test/flash_value step2: 如果 经过step1,还是不能点亮闪光灯,说明闪光灯驱动的写法有问题,需要进一步修改闪光灯驱动写法. 如果 经过step1,能点亮闪光灯,说明闪光灯驱动的写法没有问题.接下来要调整Camera里面的闪光灯驱动. camera闪光灯驱动在kernel/d
+完整回答请参考FAQ: FAQ75545
+### 问题: 不带GPS硬件的设备，在google play store中无法下载带定位功能的软件
+解决方案: 在 项目中frameworks\native\data\etc目录的android.hardware.location.gps.xml/handheld_core_hardware.xml 这两个文件中添加<feature name="android.hardware.location.gps" />到featrue list 中. 可以用下面的方法临时测试下: Adb root Adb remount Adb pull system/etc/permissions/android.hardware.location.gps.xml d:/ Then ,add feature "<feature name="android.hardware.location.gps" /> " in this xml file . Adb shell chmod -R 777 system/etc/per
+完整回答请参考FAQ: FAQ75552
+### 问题: Wifi EUT命令调用流程
+解决方案: 进入83781后,开启wifi EUT模式测试,在UI手动输入参数,调用iwnpi命令, iwnpi再通过NPI接口/netlink将命令传至内核,最终送给CP2. 涉及模块: App层:packages\apps\EngineerMode\src\com\sprd\engineermode\connectivity\wifi Wcnd:vendor\sprd\wcn\platform\wcnd iwnpi:vendor\sprd\open-source\apps\engmode\iwnpi npi:kernel\drivers\net\wireless\sprdwl netlink:kernel\net\netlink 具体流程: - UI界面输入参数,start/stop - WifiEutHelper.java向wcnd进程发送命令 - sendCmd() - Wcnd进程工程模式接
+完整回答请参考FAQ: FAQ75568
+### 问题: 如何解决解锁密码界面按组合键截屏，跳出了输入解锁密码界面
+解决方案: 原因分析: 解锁界面power键处理导致的异常. 解决方案: 取消解锁界面power键处理. 修改packages\services\Telephony\src\com\android\phone\IccNetworkDepersonalizationPanel.java diff --git a/src/com/android/phone/IccNetworkDepersonalizationPanel.java b/src/com/android/phone/IccNetworkDepersonalizationPanel.java index efdfab5..2601611 100644 --- a/src/com/android/phone/IccNetworkDepersonalizationPanel.java +++ b/src/com/android/phone/IccN
+完整回答请参考FAQ: FAQ75575
+### 问题: android :configChanges属性详解
+解决方案: 在Activity中添加了 android:configChanges属性,目的是当所指定属性(Configuration Changes)发生改变时,通知程序调用 onConfigurationChanged()函数,而不是重新oncreate的过程 configChanges包括以下几种: mcc:手机用户所属的国家码 mnc:手机用户的服务商(插入SIM卡后会发生变化) locale:手机用户所在的地区(切换语言会发生变化) touchscreen:触摸屏模式发生变化(一般不会变化) keyboard:键盘模式发生变化(插入外接键盘等会发生变化) keyboardHidden:键盘隐藏 navigation:导航栏模式 orientation:手机横竖屏模式 screenLayout:布局方向 uiMode:ui显示模式(desk/car/television/appliance/w
+完整回答请参考FAQ: FAQ75514
+### 问题: wifi中wpa_supplicant 的 eloop 循环中select等待时间是多少？
+解决方案: 在wifi的wpa_supplicant 中 external\wpa_supplicant_8\src\utils\Eloop.c 的 eloop_run 函数中的 select: res = select(eloop.max_sock + 1, rfds, wfds, efds,timeout ? &_tv : NULL); 超时时间是通过 timeout ? &_tv : NULL 得出的 1. 其中 timeout 指向等待超时事件的链表 其结构体如下: struct eloop_timeout { struct dl_list list; struct os_time time; void *eloop_data; void *user_data; eloop_timeout_handler handler; ... }; 2. 其中_tv 是等待时间,其结构体如下 struct
+完整回答请参考FAQ: FAQ75590
+### 问题: wifi P2P 应用中 DIALOG_DISCONNECT 窗口 与 DIALOG_CANCEL_CONNECT 窗口有什么区别？
+解决方案: 在 WifiP2pSettings.java (所在路径:packages\apps\settings\src\com\android\settings\wifi\p2p) 中: 有窗口: private static final int DIALOG_DISCONNECT = 1; private static final int DIALOG_CANCEL_CONNECT = 2; 这两个定义一个是断开连接,一个是取消连接,那从功能看这连个窗口各自是做什么的,有什么区别呢? 其中 断开连接,DIALOG_DISCONNECT,用于链接成功之后,需要将连接断开时. 它调用的是WifiP2pManager 的 removeGroup 函数. mWifiP2pManager.removeGroup 举例: A B 已建立链接, 此时A又不想连接B了,则A在界面上选择断开对B的连接. 而DIA
+完整回答请参考FAQ: FAQ75602
+### 问题: 为什么Android里TextView的省略号有时显示两个点，有时显示三个点？
+解决方案: 当TextView的省略属性设为android:ellipsize="end",省略号会显示为3个点 当TextView的省略属性设为android:ellipsize="marquee",获得焦点会有跑马灯效果,省略号会显示为2个点 比较常见是在设置应用中,在TextView都过长的情况下: Title是android:ellipsize="end",所以显示3个点 列表用的是PreferenceFragment,其中的TextView是android:ellipsize="marquee",所以显示为2个点 此为Android原生设计,不建议修改,一定要改的话,请参考以下修改方案: diff --git a/core/java/android/text/TextUtils.java b/core/java/android/text/TextUtils.java old mode 100
+完整回答请参考FAQ: FAQ75606
+### 问题: 如何修改Android原生输入法键盘上的数字
+解决方案: 对于一些小语种的键盘,由于此语种下的数字可能并不一定以 我们常用的阿拉伯数字(1,2,3)来表示,因而当按键盘 左下方的数字切换键时,切换出的数字符号键盘上的数字可能是 用该语言来表示的. 这种情况下,代码中该语言也必然会定制自己的按键,我们可以 通过修改如下文件来实现修改键盘,以印地语举例 /packages/inputmethods/LatinIME/tools/make-keyboard-text/res/values-hi/donottranslate-more-keys.xml <!-- U+0967: "१" DEVANAGARI DIGIT ONE -->  <string name="keyspec_symbols_1">&#x0967;</string>  <!-- U+0968: "२" DEVANAGARI DIGIT TWO --> <string name="ke
+完整回答请参考FAQ: FAQ75617
+### 问题: 如何关闭默认开启的Google voice type
+解决方案: 前言: 在使用GMS包的客户版本中,将自带Google voice type的功能, 即使在代码中enabled inputmethods列表中取出该键盘,但切换 语言后仍会自动打开,使用下面的修改可以实现关闭. 方法: 1.修改输入法默认状态 frameworks/base/packages/SettingsProvider/res/values/defaults.xml 从config_enabled_input_method字段中去除com.google.android.googlequicksearchbox/com.google.android.voicesearch.ime.VoiceInputMethodService 同时在frameworks/base/packages/SettingsProvider/src/com/android/providers/settings
+完整回答请参考FAQ: FAQ75626
+### 问题: 在设置-设置sim卡颜色，如何在联系人应用中获取此颜色值？
+解决方案: 插入双卡的用户,显示不同的颜色能让用户直观的区分sim1 和sim2,那么如何获取在'设置'中所设的值? 直接调用下面代码的 querySimColor()方法即可将最新的颜色值读取到static Map变量storageObject <account-name, color>中.使用时直接从此变量中获取值即可.重新设置后,需要调用querySimColor()及时刷新最新值. public final String ACCOUNT_SIM = "sprd.com.android.account.sim"; public final String ACCOUNT_USIM = "sprd.com.android.account.usim"; public final String NAME_SIM = "SIM"; public String ACTION_SIM_COLOR_CHANGE
+完整回答请参考FAQ: FAQ75610
+### 问题: 如何给无色图片上色，例如通话记录中已接、未接的箭头图标使用的是同一个图片资源，只是颜色不同
+解决方案: 通过Drawable.setColorFilter(int color, PorterDuff.Mode.MULTIPLY)可以实现颜色filter效果,例如: Java - Dialer/src/com/android/dialer/calllog/CallTypeIconsView.java - Eclipse // 修改通话记录中的呼入呼出箭头标志的颜色: public Resources(Context context) { final android.content.res.Resources r = context.getResources(); incoming = r.getDrawable(R.drawable.ic_call_arrow); incoming.setColorFilter(r.getColor(R.color.dialer_blue_highlight_
+完整回答请参考FAQ: FAQ75639
+### 问题: User版本如何导出联系人数据库？
+解决方案: User版本如何导出联系人数据库? 1. Android在4.1后的版本加入了可以导出联系人数据的隐藏功能,实现代码: packages\providers\ContactsProvider\src\com\android\providers\contacts\debug\ContactsDumpActivity.java 2. 使用方法 第一种方法:运行adb命令 "adb shell am start -a com.android.providers.contacts.DUMP_DATABASE", 不需root.运行后出现下图: 按'开始'后,等待后台复制联系人数据.然后出现发送选项如下图,选择一个发送方式即可. 上面方法需要手机连接电脑,电脑上安装好usb驱动和adb tool.这些条件无法满足的话请看如下更方便的导出方法. 第二种方法:从联系人主界面调用此功能,在搜索框输入deb
+完整回答请参考FAQ: FAQ75676
+### 问题: 如何修改Launcher3小部件界面背景色？
+解决方案: 例如将小部件背景修改成透明色.
+方案一:设置背景的不可见.
+src/com/android/launcher3/Launcher.java
+showAppsCustomizeHelper方法:
+  // Hide the real page background, and swap in the fake one
+            content.setPageBackgroundsVisible(false);
++	  if (isWidgetTray) {
++                revealView.setVisibility(View.INVISIBLE);
++	  }else{
+		 revealView.setVisibility(View.VISIBLE);
++	   }
+            // We need to hide th
+完整回答请参考FAQ: FAQ75747
+### 问题: autotest测试中TP的INT和RST pin对应的GPIO测试fail该如何处理？
+解决方案: 在7731G的平台参考样机上,TP的INT 和 RST pin分别对应的GPIO是gpio82和gpio81. 但如果客户的TP的INT 和 RST pin用的不是默认的配置,如果客户用的是gpio68 和 gpio83,则需要添加进去再进行测试. 因为gpio测试的数组里面没有这两个gpio,测试会fail.添加新的gpio的方法如下: 在kernel/drivers/autotst/pinmap_gpio.h(如果对应的软件版本没有该文件则需要先合入一个针对G2信号盒子的gpio的patch,可以找tam要)中添加 1, 添加:#define gpio68 REG_PIN_SPI0_DO #define gpio83 REG_PIN_SIMRST2 2, pinmap_gpio_t pinmap_gpio[] = { .......... //CTP {73, gpio73,}, {7
+完整回答请参考FAQ: FAQ75852
+### 问题: 如何实现autotest的前摄闪光灯测试
+解决方案: 目前产线工具BBAT及小工具autotest都已经支持前摄闪光灯的测试,AP侧code尚未支持,因此只需修改AP侧code即可. 首先AP侧与autotest工具端协商的diag命令如下: 前摄闪光灯亮:0x7e 0x4 0x0 0x0 0x0 0xa 0x0 0x38 0xc 0x8 0x1 0x7e 前摄闪光灯灭:0x7e 0x4 0x0 0x0 0x0 0xa 0x0 0x38 0xc 0x8 0x0 0x7e 然后修改AP侧code如下: 1,vendor/sprd/open-source/apps/autotest/camera.cpp 添加如下code: int frontflashlightSetValue(int value) { int ret = 0; FUN_ENTER; if(1 == value) ret = system("echo 0x10011 > /sys
+完整回答请参考FAQ: FAQ94382
+### 问题: 为什么插着充电器电量显示为0%而不关机？
+解决方案: 插着充电器电量显示为0%后,不是马上关机,当关机后量电池电压已经过放,这是由于在framework层进行了判断:如果正在充电,即使电量为0,也不会走关机流程; 如果想要去掉这个功能,可以做如下的修改: --- a/services/core/java/com/android/server/BatteryService.java +++ b/services/core/java/com/android/server/BatteryService.java @@ -244,7 +244,7 @@ public final class BatteryService extends Binder { private void shutdownIfNoPowerLocked() { // shut down gracefully if our battery is critically low an
+完整回答请参考FAQ: FAQ75884

@@ -1,0 +1,333 @@
+### 问题: Simba综测后，使用CMW500测试功率、灵敏度异常问题
+解决方案: Simba搭配CMW500综测后,CMW500会保持综测脚本的仪表设置,因此,此时仪表的线损已经设置为simba综测脚本的线损值(2.4G WiFi 1.2dB / 5G WiFi 1.6dB),若工程师在此基础上再设置线损(一般为1dB),则两个线损值会叠加,造成TX 功率和灵敏度异常.因此,simba综测后需要将仪表设置还原,才能保证测试结果准确. 如图所示,可在configuration界面检查线损是否有误,如有错误,图中所示位置会报错:
+参考FAQ: FAQ202275106,含图片
+### 问题: 如何查看设备支持的文件系统及打开的kernel config？
+解决方案: 查看设备支持的文件系统 1)adb shell cat proc/filesystems 注意:列出的为支持的文件系统,但如果实际能使用,有些还需要配套的工具和so库编译在系统里,比如exfat需要mount.exfat,mkfs.exfat等. 2)adb shell mount 通过开机后的mount信息,可以看到目前实际挂载使用的文件系统有哪些 查看设备打开的kernel config adb pull /proc/config.gz 解压该gz文件后,可查看当前kernel的config配置.
+参考FAQ: FAQ202275108
+### 问题: App创建线程时栈空间分配
+解决方案: SCI_CreateAppThread创建线程时,其栈空间是从Dynamic App Heap中申请的. 一般设置为几K到十几K都可以. Dynamic App Heap大小取决于项目配置,其大小可以参考文件 MS_Customize\source\product\config\ums9117_barphone\mem_cfg.c内的函数MemUsage_init.
+参考FAQ: FAQ202275109
+### 问题: UIS8910FF平台配置Tunner注意事项
+解决方案: 此平台支持Tunner的MIPI和GPIO两种控制方式,配置时需区分制式/频段,同时注意需保证在RX ON/TX ON/RX OFF/TX OFF时Tunner配置为相同状态. 具体配置规则请参考UIS8910FF RF NV配置指南 具体配置位置如下图:
+参考FAQ: FAQ202275110,含图片
+### 问题: Mocor窗口消息处理流程
+解决方案: Mocor平台窗口处理流程 如下: 1 如果当前窗口在创建时设置了钩子函数,那么首先该窗口的钩子函数会处理窗口消息;如果处理结果返回TRUE,那么不在进行下面的处理;返回FALSE进行以下处理 钩子函数通过以下接口设置: MMK_SetWinHookFunc(win_id, hook_func) 2 窗口内的子控件处理该消息,如果窗口内子空间处理消息后返回TRUE,那么不再进行下面的处理;返回FALSE,则继续以下处理 3 窗口的处理函数,窗口的处理函数是在定义窗口时指定的 例如HandleVPwinmsg即为窗口处理函数: WINDOW_TABLE(MMIVP_MAIN_PLAY_WIN_TAB) = { WIN_FUNC((uint32)HandleVPwinmsg), WIN_ID(MMIVP_MAIN_PLAY_ID), ..... }
+参考FAQ: FAQ202275111
+### 问题: 如何获取wifi信号强度
+解决方案: 打开wlan应用后,wlan会起一个timer定期扫描周边的热点,wifi底层在获取到热点后会通过消息WIFISUPP_SIG_SCAN_IND消息上报,在该消息内包含了热点的ssid,bssid,signal_qua等值,signal_qua就是wifi信号强度
+参考FAQ: FAQ202275112
+### 问题: 如何调试GSM的TX noise in RX band指标
+解决方案: 首先确认tx noise指标fail的现象,是噪底偏高还是杂散个数超标 1、如果是噪底偏高,一般调试2G PA的输入匹配,有时甚至需要串电阻. 2、如果是杂散个数超标,需要看杂散是从transceiver引入还是从PA引入, (1)如果是从transceiver引入,那么多数是因为RF电源被干扰所致 (2)如果是从PA引入,那么考虑PA电源和PA控制线是否被干扰 3、如果杂散个数超标且杂散间隔呈现一定规律,比如固定间隔出现一个spur,如果是2M左右的spur,那么干扰源很可能是DCDC,如果间隔是26M或者13M,那么干扰源很可能是时钟,需要检查射频电源是否和这些干扰源有保持足够的隔离.在不改版的前提下通常是在射频电源或控制线上加电容进行滤波处理. 4、通常情况下,GSM LB容易fail,HB不容易fail,如果都fail了,那么调好LB后HB可能也就ok了.
+参考FAQ: FAQ202275113
+### 问题: simba工具默认的SEQ文件相关改动说明
+解决方案: 为了加快产线校准速度,GSM引入的快速校准,即FDT: Fast Device Tune.这种方法充分利用GSM多时隙(1 Frame = 8 Slots)的机制,将上行(TX)和下行(RX)的多频点、多功率点校准尽可能在一次测量(我们称为一个sequence)中完成,大大减少测量迭代循环次数,提高校准速度. Simba工具设立的校准机制如果第一次FDT校准Fail的时,会用common 方式retry一次. Simba_R8.21.2801 之前版本默认加载的SEQ勾选Recailbration,之后需要手动进行勾选.
+参考FAQ: FAQ202275119,含图片
+### 问题: FM可否进行OTA测试？
+解决方案: FM调频 频率范围在88M-108MHz 频率较低,天线在45cm-64cm 天线长度四分之一波长.由于物理关系天线做在耳机上面应用的比较广泛. 对暗室的要求: 需采用到的半波暗室 频率范围可以扩展到30MHz-8G,上限至40G (暗室接收天线需覆盖到FM频段) 半波暗室尺寸要求: EUT最大尺寸<1.2米 收发距离L为3m 理想暗室净空尺寸,若收发距离为L则暗室的净空间长度为2L,宽度为L,高度为1-4米,对于3m法的半电波暗室净空尺寸应为6 5 4.6, 考虑天线架设,人员活动,标准尺寸应达到9 6 6. 暗室静区要求: 静区是以转台旋转台旋转轴为轴线,一定直经的圆柱体,静区是指射频吸波室内收反射干扰最弱的 区域,3m法测试距离的静区是一个2m直径的圆柱体. 近场通常认为是天线到1个波长的距离,那么FM的波长2.77m.所以需要测试的话最少得在一个10m法的暗室里面测试.
+参考FAQ: FAQ202275120
+### 问题: CMWrun脚本序列添加衰减方法
+解决方案: 1、打开需要添加的测试序列点击工具项Edit 2、在添加项中把"AttenuationTables添加至测试序列中点击OK保存 3、编辑好的系列双击"AttenuationTables"选择设置常量,端口衰减值保存,测试中会直接调用衰减配置.
+参考FAQ: FAQ202275122,含图片
+### 问题: 如何关闭相机多摄模式
+解决方案: adb root adb remount adb shell setprop persist.vendor.cam.multi.camera.enable 0 相关逻辑在 vendor/sprd/modules/libcamera/hal3_2v6/SprdCamera3Setting.cpp initCameraIpFeature 第13项
+参考FAQ: FAQ202275123
+### 问题: 如何识别通话电话号码的国家码或区号
+解决方案: 1. 国家码 国家码由MMI识别. 主要由数据类型中的号码类型识别,如果MMI发的号码类型(type of number)是国际号码即拨打时带有"+",MODEM在电话号码前加上0x91发送网络;反过来如果收到的号码是0x91,会告诉MMI号码类型是international来电. 再由数组s_countryarea_code_table识别当前号码的国家码,此数组可扩充,用于客制化需求,比如通话界面显示地区. 2. 区号 不支持.
+参考FAQ: FAQ202275125
+### 问题: 应用设置录像音频声道数为双声道，录出来音频仍为单声道
+解决方案: 通过MediaRecorder接口录制音频,会走多媒体框架,框架中会对设置的音频声道数进行判断,若大于配置的最大声道数,就会设置为支持的最大声道数. 配置最大的声道数是在media_profiles.xml文件中,位置在: device/sprd/mpool/module/media/codec/msoc/xxx/media_profiles.xml <AudioEncoderCap name="aac" enabled="true" minBitRate="8000" maxBitRate="96000" minSampleRate="8000" maxSampleRate="48000" minChannels="1" maxChannels="1" /> 修改对应的编码器的maxChannels即可
+参考FAQ: FAQ202275126
+### 问题: 通话挂断后，第一次点击拨号键没有声音
+解决方案: 当挂断电话后再播放声音时,会有一个将外设切到喇叭的过程,但是本身声音播的比较短,在还没切到喇叭时,声音就已经停止播放了,所以会听不到声音. 这个是正常的现象,若长按拨号音,后面会听到声音.
+参考FAQ: FAQ202275127
+### 问题: Android R SPA分支如何打开高亮模式
+解决方案: SPA分支,高亮模式是默认打开得,进行以下配置即可: 对应工程目录下配置: #Display 12bit backlight PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.bl.max=4095 #BrightnessBooster PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.bl.boost=true 需要注意得是,展锐22周以后得版本才会默认打开.
+参考FAQ: FAQ202275138
+### 问题: 如何查看当前cpu频率
+解决方案: 查看当前小核频率: adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 查看当前大核频率: adb shell cat /sys/devices/system/cpu/cpu4/cpufreq/scaling_cur_freq
+参考FAQ: FAQ202275139
+### 问题: Settings中如何打开阳光保护功能
+解决方案: SunLightProtector对应了展锐自研feature,阳光保护和cabc等功能,在设置菜单中阳光保护功能的开关主要是在设置界面中打开智能环境适应或护眼模式,此时上层模块会根据场景去设置底层的模式,从而实现阳光保护功能.
+参考FAQ: FAQ202275141
+### 问题: APP如何进行开机预编译
+解决方案: 可在apk对应的mk文件中,针对LOCAL_DEX_PREOPT作如下修改,例如: /system_ext/priv-app/Srmi/Srmi.apk vendor/sprd/proprietories-source/srmi/Android.mk 15 LOCAL_DEX_PREOPT := false -> 改为true或删除
+参考FAQ: FAQ202275142
+### 问题: Android 12 如何恢复原生省电模式？
+解决方案: 恢复Android原生省电功能: debug版本调试时,可以通过adb直接设置下列属性为0恢复Android原生省电功能: adb shell setprop persist.sys.pwctl.enable 0 修改配置文件恢复Android原生省电功能: 在device/sprd/mpool/module/power/main.mk 中将TARGET_PWCTL_ULTRASAVING设置为false,属性persist.sys.pwctl.enable 设置为0
+参考FAQ: FAQ202275143
+### 问题: 为什么在开机过程中背光会明显变化？
+解决方案: 正常现象,表现为开机过程中动画屏幕会暗一下. 原因是Uboot, Kernel, 和 Android Framework 设置的默认背光值不一致导致.
+参考FAQ: FAQ202275144
+### 问题: 如何修改超时灭屏时变为Dim的时长？
+解决方案: 超时灭屏分为两个阶段, 第一阶段从亮屏到暗屏(Dim), 第二个阶段从暗屏到灭屏, 这两个阶段之和就是所有的超时灭屏的时间 , 第二个时间默认为总时间的1/5, 但是默认不会超过7s. 面的值是设置暗屏时间占整个时间的比例,以及最大的dim时间, 请根据需要修改该值. frameworks/base/core/res/res/values/config.xml <fraction name="config_maximumScreenDimRatio">20%</fraction> <integer name="config_maximumScreenDimDuration">7000</integer>
+参考FAQ: FAQ202275145
+### 问题: 为何开启自动调节亮度后，再去手动调节亮度条，自动亮度失效？
+解决方案: 手动调整亮度条的效果如下:如果手动调亮,得到的新的映射表相当于把初始映射表统一向亮的方向移动,所以整体的亮度都会变大;而手动调暗,相当于把调整之前的映射表统一向暗的方向移动,所以整体亮度都会变小.即环境光与背光的映射不是一成不变的,而是根据手动调节整体变化的. 所以手动往100%亮度方向调整,插入用户数据,整体映射表也往亮的方向移动,当同样的暗环境,自然背光也会往亮的方向去调整,不会是0. 这是google的原生特性,并非bug,目的是自动调节背光亮度基础上记录用户的习惯,强化了自动调节的功能,使手动调节亮度进度条的频率降低.
+参考FAQ: FAQ202275146
+### 问题: 为什么拔掉电池后吗，插上电池时间显示错误？
+解决方案: 对于拔电池这种异常掉电,重新开机后底层时间会被重置.除非重新开机后,上层重新传给底层一个正确的时间值,否则底层时间为默认的重置时间值(通常为版本编译时间),为正常现象.
+参考FAQ: FAQ202275147
+### 问题: 如何调整背光自动变化速率？
+解决方案: 上层这边,有属性控制每秒变化多少个亮度单位: frameworks/base/core/res/res/values/config.xml 523 <!-- Fast brightness animation ramp rate in brightness units per second--> 524 <integer translatable="false" name="config_brightness_ramp_rate_fast">180</integer> 525 526 <!-- Slow brightness animation ramp rate in brightness units per second--> 527 <integer translatable="false" name="config_brightness_ramp_rate_slow">60</integer> 上述有两个属性可以控制,分别是快速率和慢速率配置.
+参考FAQ: FAQ202275148
+### 问题: 如何配置高温关机默认值？
+解决方案: 平台上层有高温关机,没有低温关机,在下面配置,默认68度关机 /frameworks/base/core/res/res/values/config.xml <!-- Shutdown if the battery temperature exceeds (this value * 0.1) Celsius. --> <integer name="config_shutdownBatteryTemperature">680</integer>
+参考FAQ: FAQ202275149
+### 问题: 为何手机平放桌面，屏朝下过几秒中会出现亮度慢慢变低，然后自动息屏？
+解决方案: A12新增的功能: FaceDownDetector,用于处理手机屏幕朝下的一些处理.主要通过FaceDownDetector类进行处理,包括sensor的检讨,用户活动等方法. 当检测到facedown,会重设灭屏时间为-1,也就出现了自动息屏的问题.
+参考FAQ: FAQ202275150
+### 问题: 如何打开doze功能？
+解决方案: doze功能是否开启可通过adb命令查看: adb shell dumpsys deviceidle eanbled 如果返回false,请配置config.xml中配置true即可 <bool name="config_enableAutoPowerModes">true</bool>
+参考FAQ: FAQ202275151
+### 问题: 第三方apk如何默认开启自启动？
+解决方案: vendor/sprd/modules/power/fw-power-config/appPowerSaveConfig.xml下配置类似: <package name="com.booslink.Wihome_videoplayer3" optimize="1" alarm="0" wakelock="0" network="0" autolaunch="1" secondarylaunch="2" lockscreencleanup="2" consumertype="0" exemptsource="0" /> autolaunch="1"是禁止开机自启动 如果默认不配置的话,本身默认的就是开机自启动.
+参考FAQ: FAQ202275152
+### 问题: 为何安兔兔、Devcheck、Device info hw、AIDA64等软件电池容量显示不正确？
+解决方案: 可查看下power_profile.xml里面配置的battery.capacity的值是多少,大概率是此值导致安兔兔等app获取到的电池电量. 因为android原生接口里并没有获取电池容量的对外接口. 安兔兔获取电池容量是直接通过反射的方式使用PowerProfile的方法来获取. 可以修改battery.capacity该值,便于第三方应用读取.
+参考FAQ: FAQ202275155
+### 问题: SL8541E平台 如何关闭时钟的单软多硬功能
+解决方案: 在路径bsp/bootloader/u-boot15/scripts/Makefile.autoconf AUTO_ADAPTIVE_BOARD_LIST中的对应Board名去掉.去掉之后默认为32k_less.如果宏定义CONFIG_32K_TYPE,该为32k.(宏定义CONFIG_32K_TYPE在bsp/bootloader/u-boot15/drivers/misc/sprd_boardid_sl8541e.c)
+参考FAQ: FAQ202275160
+### 问题: SL8541E 关机后VDDDCXO漏电流大
+解决方案: 1.通过cat /proc/cmdline查看下32k.less的值,32k.less=1 即32k_less晶体方案, 32k.less=0 即32k方案 2.如果通过步骤1确认32k.less的值和实际板子晶体方案不匹配,如下有两个解决方法; 1)硬件上board_id0(gpio86)贴好上拉或者下拉电阻 2)软件上把sprd_get_32k()里内容全部注释,添加return 1; 路径在bsp/bootloader/u-boot15/drivers/misc/sprd_boardid_sl8541e.c
+参考FAQ: FAQ202275161
+### 问题: UIS8581A 如何通过节点查看ddr cpu频率
+解决方案: 方法如下: adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq (cpu0的频率) cat /sys/class/devfreq/scene-frequency/sprd_governor/ddrinfo_cur_freq (DDR的频率)
+参考FAQ: FAQ202275168
+### 问题: WCDMA IRR校准fail如何调试
+解决方案: 1、如果WCDMA IRR校准fail,首先确认simba版本是不是2022.07.05之前发布的版本,因为老的版本有bug.如果是老版本就取用最新的版本. 2、展锐平台WCDMA IRR校准默认只校准high band,low band 不校准IRR. 3、WCDMA IRR校准fail多为低概率,比如100片板子里有2片fail. 4、正常情况下,除了simba版本原因,WCDMA IRR校准都不应该出现fail,一般也没有什么参数可以去调试,只能确认校准环境是否正常. 5、如果simba版本是最新的,校准环境也没有问题,IRR校准还是fail,那么只能提CQ给展锐分析.
+参考FAQ: FAQ202275170
+### 问题: SCI_GetTickCount()的限制
+解决方案: SCI_GetTickCount()是根据PMIC UIP8910的32K Timer所换算而来
+
+32K register 是0xFFFFFFFF
+
+4294967295 / 32.768 = 131071999.9694824ms = 131071 sec
+
+131071 sec / (24h*60min*60sec) = 1.517025462962963days
+
+所以大约1.5天会重新计数
+参考FAQ: FAQ202275176
+### 问题: 自动背光下亮度调节不平滑
+解决方案: 背光调节不平滑问题 config_brightness_ramp_rate_fast 和 config_brightness_ramp_rate_slow用于控制设置背光时的速率.即在设置背光时并不会一步到位设置到目标直,而是根据一定的速率进行渐进设置,这样才不会导致背光变化突兀.其中config_brightness_ramp_rate_slow主要用于自动背光设置时的渐进速率.而config_brightness_ramp_rate_fast在亮屏设置背光和手动调整背光时使用.
+参考FAQ: FAQ202275178
+### 问题: 如何打开高亮模式
+解决方案: 平台A12已支持高亮模式,该功能默认关闭,打开需要执行如下操作: 配置属性 persist.sys.bl.boost 为1
+参考FAQ: FAQ202275180
+### 问题: 8910FF/8910FF-S 如何新增假紧急号码 SETTINGS_NV_DEFAULT_FAKE
+解决方案: SETTINGS_NV_DEFAULT_FAKE_ECC 是一组假紧急号码,如果用户拨打了这组号码,那么介面上会是紧急拨号的介面,但实际上仍是以普通电话的方式呼出 如果需要新增,请尝试在文檔 \MS_Code\make\nv_parameter\nv_parameter_variant\config_info.nv 中,在 NV_VARIANT_CONFIG_SETTINGS\DEFAULT_FAKE_ECC\DEFAULT_FAKE_ECC[0]\DEFAULT_FAKE_ECC[0][0]=0x31 这组数组新增配置 或是直接在代码函数 MMIAPICC_IsFakeEmergencyNumByNdt @ mmicc_app.c中,针对入参 uint8 *tele_num,uint8 tele_len作字符串匹配,与贵司想要新增的紧急号码匹配
+参考FAQ: FAQ202275181
+### 问题: 为什么播放Camera录像的时候开始有1S无声
+解决方案: 平台针对拍照将录音音效录进去的问题做了数据前半部分的mute处理,才会1S无声 可以修改以下audio_hw.c/Threads.cpp中的内容800ms 无声修改为100ms vendor/sprd/modules/audio/vendor/whale/audio_hw.c: --#define RECORD_POP_MIN_TIME_CAM 800 //ms ++#define RECORD_POP_MIN_TIME_CAM 100 //ms frameworks/av/services/audioflinger/Threads.cpp: --#define RECORD_MUTE_MIN_TIME_CAM 800 //ms ++#define RECORD_MUTE_MIN_TIME_CAM 100 //ms
+参考FAQ: FAQ202275183
+### 问题: 使用Band2双工器兼容PCS1900 RX通路，删除多余匹配物料的注意事项
+解决方案: 出现仅需支持PCS1900,可不支持WCDMA/LTE B2,又没有做SAW兼容PCS1900 RX通路,为了降低bom物料总数,可能会考虑删除PA TX→B2 duplexer的匹配物料.正确做法是不删除. 双工器(包括LB/HB双工器/合路器),其设计和性能指标均是基于"阻抗匹配+50欧姆负载"为前提条件进行的; 同样,由于端口匹配/负载不一样,性能就会有所变化,RF工程师会为增加TX二次谐波抑制对下图TX位置的匹配进行调整,以强化双工器+匹配组合对TX谐波的抑制; 也是因此,如L2被删除,而使TX端负载为开路,ANT→RX端的带内平坦度将会受到影响,IL恶化最大有1.5dB,对PCS1900接收性能的恶化比较明显. 其他GSM频段也一样,仅使用双工器RX通路时双工器TX匹配也是不能删除的.
+参考FAQ: FAQ202275198,含图片
+### 问题: 安卓user版本如何开启和关闭ylog
+解决方案: ylog包含ap log和cp log,开启方式如下: 1.ap log adb shell ylogctl enable //开启 adb shell ylogctl disable //关闭 2.cp log cp log包含modem log和gnss,wcn等log 2.1 modem log开启方式包含上层和底层开关: 上层开关:cplogctl enable 5mode 底层开关:at+armlog=1 2.2 gnss或wcn log开启和关闭方式 打开gnss log: cplogctl enable gnss 关闭gnss log cplogctl disable gnss 查询gnss log cplogctl state gnss 对于wcn,audio等log以此类推替换即可实现开启和关闭.
+参考FAQ: FAQ202275201
+### 问题: SC6533G平台+RTM7292 GSM HB 开关谱FAIL问题调试
+解决方案: 关于此问题的分析处理流程如下: 1.检查一下PA的VRAMP线路上的滤波网络是否正确?应该是串联10Kohm和并联100PF电容. 2.PA的RFCTL走线上(TXEN,CTRL0,CTRL1)的并联电容是否有贴22PF?如果没有贴,请贴上再检查GSM HB开关谱是否还FAIL? 经过调试经验,此电容会影响到GSM HB的开关谱性能. 3.如果步骤1没法完全PASS,那就只有调试GSM HB PCL0的RAMP值,用专用的DEBUG软件版本,通过CURVER NUMBER 2和3的RAMP值(分别对应GSM HB的RAMP UP和RAMP DOWN的值)来改善PVT和开关谱. 4.如果调试RAMP参数对开关谱改善不大的话,也可以考虑微调VRAMP上的滤波网络,优化调试并联电容.
+参考FAQ: FAQ202275202
+### 问题: SC6533G+RTM7292 DCS CALL不上仪器
+解决方案: SC6533G+RTM7292项目经常性出现DCS CALL不上仪器或DCS连上仪器之后无故掉线,其它频段都是OK的.且DCS频段校准PASS. 解决方案:在RTM7292的RFCTL走线上(TXEN,CTRL0,CTRL1)的并联22PF电容.
+参考FAQ: FAQ202275203
+### 问题: CTSV NOTIFICATIONS模块 - Condition Provider test
+解决方案: 根据ctsv 预置条件, 官网地址如下 https://source.android.com/compatibility/cts/verifier 1. 恢复出厂并设置 2. adb shell settings put global hidden_api_policy 1 Condition Provider test这一项应可以正常测试至PASS
+参考FAQ: FAQ202275208
+### 问题: [平版] google 助手拨电话显示 Sorry, I can't make calls yet.
+解决方案: Android 12 平版项目使用 google 助手拨电话显示 Sorry, I can't make calls yet. 发送短信也有类似现象. 此问题只发生在平版项目上, 一般电话项目无问题. 直接透过 Phone app 可正常拨电话, 但无法透过 google 助手拨电话. 根据 google 官方反馈, 目前平版不支持使用 google 助手拨电话或发短信. [Android 12][Tablet][Google assistant] Can't make a call via google assistant https://partnerissuetracker.corp.google.com/u/1/issues/237639281
+参考FAQ: FAQ202275211
+### 问题: UIS8910DM 下载时NV备份出错怎么解决
+解决方案: UIS8910DM 下载时NV备份出错怎么解决 1,选择下载pac包,在main page页面,不勾选NV和Phasecheck,其它全部勾选,下载软件; 2,选择下载pac包,默认勾选,正常下载;
+参考FAQ: FAQ202275212
+### 问题: 在通话期间使用移动数据
+解决方案: 
+参考FAQ: FAQ202275222
+### 问题: 越南语言显示方框问题
+解决方案: 越南语言显示方框问题,主要是因为spml针对Latin有个转换table LatinCharacterComposeTbl[],某些组合(比如M+0x0300) M 组合字会转换成0xF850, ·而当前平台字库未定义这个unicode导致方框.0xF850是private use area, 为了解决越南语显示问题而做的,ttf需要搭配定义0xF850才能正常显示. ·目前的做法是这些组合不去转换,按原生ttf逻辑显示,验证显示正常,请更新 spml_main.a 库, 及 LANG_FONT_LATIN_xxx.lib 库
+参考FAQ: FAQ202275241
+### 问题: FGU能测量最大电流是多少
+解决方案: 电流检测量程为60mv,根据电池负极对地采样电阻阻值,60mv/采样电阻阻值,可以得到所能测量的最大电流,一般电阻贴的是20mohm的话,所能测量的最大电流就是3A.
+参考FAQ: FAQ202275245
+### 问题: 8910 CPU主频的速度如何控制
+解决方案: 在需要调整cpu主频速率的应用场景中,可以调用代码接口 osiMutexLock osiRequesetSysClkActive osireleaseClk osiMutexUnlock [注意]配对使用,申请的主频速率,用完后需要对应的释放掉.
+参考FAQ: FAQ202275249
+### 问题: UIS8310 锁band命令说明
+解决方案: UIS8310 锁band命令说明 AT+SPLBAND=mode,P1,P2,P3,P4,P5 mode: 1:锁LTE(fdd/tdd) banad (参数p1,p2,p3,p4,p5) 6,锁wcdma band (参数p2) 0或5:读LTE支持的(锁住的)band 7或8:读wcdma支持的(锁住的)band 9:锁的GSM band (参数p2) 10:读GSM支持的band p1: band49 - band64 p2: band33 - band48 //假设值为480 = 111100000 支持band38,39,40,41 p3: band17 - band32 p4: band1 - band16 //假设值为213 = 11010101 支持band1,3,5,7,8 p5: band65 - band80
+参考FAQ: FAQ202275252
+### 问题: SR3595D是否支持B29、B30
+解决方案: 目前平台暂时未做相关的开发,暂不支持B29/B30这两个频段.
+参考FAQ: FAQ202275257
+### 问题: yocto平台读取CP2版本
+解决方案: cd /sys/devices/virtual/misc/wcn/devices
+cat sw_ver
+这里是cp2版本
+ 具体代码在sysfs.c.
+参考FAQ: FAQ202275262
+### 问题: 蓝牙DeviceClass显示图标配置方式
+解决方案: 配置显示图标需要修改COD class of device定义方式: {service_class,major_class,minor_class}
+ 查询具体的代码可以参考 BluetoothClass.java中Major定义 不同方案的修改地方有差异 system/bt/include/bt_target.h
+system/bt/vnd_unisoc/include/btdevice_target.h
+
+ 修改的是BTA_DM_COD #ifndef BTA_DM_COD
+-----#define BTA_DM_COD \
+ { 0x5A, 0x04, 0x08 }
+-----#endif
+==>手机图标
+
+{ 0x5A, 0x02, 0x0c } 
+==》耳机图标
+参考FAQ: FAQ202275265
+### 问题: SC6533G平台饱和功率
+解决方案: 问题回答:可通过SPRDPTCH校准工具获取6533G对应频段的饱和功率,具体操作如下: 1、连接好校准用的仪器(通常agilent8960或者RS CMW500等等),点击calibSetting,选择Calib Debug; 2、进入Calib Debug界面之后,将DAC值设置成1023之后点击TX send可以非信令发射饱和功率(dac值是直接控制ramp电压给出一个合适的值).具体界面如下图所示:
+参考FAQ: FAQ202275266,含图片
+### 问题: SC6533G用CMW500校准综测报错#11
+解决方案: 问题描述:客户利用CMW500综测报错#11,但是其板子在8960上校准综测正常. 问题分析:1、从RDA校准工具使用指南文档中校准错误编号可以了解到#11报错表示的是 不能建立呼叫 2、先利用CMW500进行校准,可以校准pass,排除了硬件链路问题以及校准综测环境搭建问题 3、由于综测是非信令连接,需要仪表具有相应的波形文件才能正常与板子建立连接,通过加入GSM相应的波形文件到CMW500 waveform文件夹中,具体路径如下: DATA(D):\Rohde_Schwaz:\CMW:\Data:\waveform 问题解决,添加GSM波形文件进CMW500的Waveform文件夹中,使仪表与板子能够正常建立连接.
+参考FAQ: FAQ202275269
+### 问题: SR3595D CA支持情况注意事项
+解决方案: 1、对于FDD+TDD CA,平台只支持FDD做PCC; 2、对于UL 2CA,平台只支持带内连续UL CA
+参考FAQ: FAQ202275274
+### 问题: 为什么 android12 /sys/kernel/debug 目录下面是空的？
+解决方案: 因为 android12 (kernel5.4)版本没有自动挂载debugfs,可以通过 mount -t debugfs none /sys/kernel/debug/ 挂载.
+参考FAQ: FAQ202275280
+### 问题: LTE小带宽DL Throughput测试时仪表配置注意事项
+解决方案: 在测试吞吐速率时,除了常规设置之外, 需要额外关注的是子帧配置.尤其是小带宽测试, 需注意特殊子帧,如子帧0会有PSS/SSS/MIB/Sib1这些固定占用的资源, 所以不能够将配置打满(原则上要求子帧的码率(CodeRate)不超过0.93). CMW500的TTI配置 DL FRB 64QAM CMW500仪表的TTI设置界面: 安立MT8821C的子帧MCS配置: 安立MT8821C的仪表设置界面: PS:MCS和TBS的对应关系如下表所示,数据来源3GPP.36213第7章
+参考FAQ: FAQ202275281,含图片
+### 问题: sim卡(带卡)正常的上下电时序是怎么样的？
+解决方案: SIM卡上电: 1.VCC先上电; 2.从Ta时刻起,CPU施加CLK给SIM卡; 3.在Ta到I/O拉高的时间为ta值,CPU的I/O驱动器要置为接收模式 (部分项目I/O和VCC同时拉高,没有ta); 4.从Ta到RST拉高的时间为tb值 5.从Tb到SIM卡开始回复ATR的时间为tc值. 6.如果SIM卡在RST被拉高后的40000个时钟周期内无应答,则SIM卡下电. SIM卡下电: 基于SIM_CLK的状态,SIM卡接口有下面两种方式下电:　 a.如果SIM_CLK正在运行则按照如下顺序下电: １.SIM_RST低电平 ２.SIM_CLK低电平 ３.SIM_IO 低电平 ４.VCC低电平 b.如果SIM_CLK已经处于停止状态且没有被重新启动: 只要保证SIM_VCC拉低前其他所有信号都已经达到低电平,SIM接口可以以任何顺序下电.
+参考FAQ: FAQ202275282,含图片
+### 问题: UIS8910FF 不支持 webkit 功能
+解决方案: 8910 平台目前不支持 webkit 功能. BROWSER_SUPPORT_WEBKIT宏没法支持 Webkit 仅是平台调研阶段时曾经简单整合过 , 完全不能使用 , 请客户不要开启这个宏
+参考FAQ: FAQ202275284
+### 问题: 工厂模式里面 TOUCHPANEL_TYPE_MULTITP怎么测试
+解决方案: 目前只有下面代码 , 其他的工模测试不支持 , 因为 TP 功能跟触屏厂商有关 ,测试的内容 都与客制化有关, 这类需求请客户自行开发 PUBLIC void MMIENGAPI_StartChipTest(void) { #if defined TOUCH_PANEL_SUPPORT && !defined TOUCHPANEL_TYPE_MULTITP MMK_CreateWin((uint32*)MMIENG_CHIPTEST_TP_WIN_TAB, PNULL); #else MMK_CreateWin((uint32*)MMIENG_CHIP_TEST_PLAYMP3MP4_WIN_TAB, PNULL); #endif return ; }
+参考FAQ: FAQ202275285
+### 问题: 显示异常：显示有色块
+解决方案: 首先可以排查是不是pq功能引起的,执行下面的命令: adb shell setprop persist.vendor.pq.disable 0xff adb reboot //重启后可以查看色温功能是否正常,如色温功能不能正常使用,通常可以认为pq功能被关闭. 如关闭pq功能后色块消失,可以参考下面的修改关闭pq的ltm. bsp/kernel/kernel4.14/drivers/gpu/drm/sprd/dpu/dpu_lite_r2p0.c dpu_enhance_set()函数中作如下修改: case ENHANCE_CFG_ID_LTM: - enhance_en |= BIT(6); + //enhance_en |= BIT(6); - pr_info("enhance ltm set\n"); + pr_info("enhance ltm not set\n"); ltm为局部色调映射算法模块,如对显示效果无特殊要求,可以关闭ltm.
+参考FAQ: FAQ202275287
+### 问题: SC6533G dump通话语音数据
+解决方案: 前置准备:手机插入T卡 操作步骤: 1.使用AudioCalibrator连接设备 点击setting->选择serial port(有两个端口,选择SPRD DIAG那个端口)-> OK 2.开启通话dump 点击dump data to TFlash项下面的dump按钮 3.开始通话 手机拨号开始通话,复现问题 4.上传PCM 复现问题后通话结束,上传T卡中的micData.pcm,spkData.pcm和resData.pcm 5.关闭通话dump 点击dump data to TFlash项下面的stop按钮
+参考FAQ: FAQ202275288
+### 问题: 休眠时TCXO时钟供电一直都在，如何关闭？
+解决方案: 对于WCN时钟源为TCXO的方案,出于功耗优化,TCXO需要在休眠时关闭,唤醒时开启.完成该功能需要结合实际电路修改ldo_sleep.c文件. 例如: WCN UWE5623的WB_CLK_REQ连到了PMIC SC2721G的EXT_XTL_EN3,并且TCXO的供电为VDDKPLED. 需要把ldo_sleep.c中的 //BIT_LDO_KPLED_EXT_XTL3_EN
+修改为
+BIT_LDO_KPLED_EXT_XTL3_EN
+ 如果为TCXO供电的是PMIC的其他LDO,则绑定该LDO与EXT_XTL_EN3即可.
+参考FAQ: FAQ202275292
+### 问题: mocor平台是否支持截屏功能
+解决方案: 7701平台上支持过截屏功能,UMS9117平台保留了这部分代码,但默认是不打开这个功能. 打开方法,在make/app_main/low_memory_none.mk 中打开宏定义 MCFLAG_OPT += -DPRINTSCREEN_SUPPORT 即可, 代码中搜索PRINTSCREEN_SUPPORT 这个宏,可以找到相关的函数和接口. 编译好PAC文件,下载到手机中之后的操作方法: 截屏功能目前入口是在工程模式中, 通过#*8378#1#进入工程模式 -> app set ->Print screen 注:目前截屏文件存储在SD卡上,所以必须插入SD卡才可以开启. 目前默认设置的是长按Green键(Call键)进行截屏,截屏结果保存在SD卡 screenshots中.
+参考FAQ: FAQ202072218
+### 问题: CtsSecurityTestCases android.security.cts.PackageSignatureTest#testPackageSignatures fail
+解决方案: 若是报错如下: junit.framework.AssertionFailedError: These packages should not be signed with a well known key: [android.cts.backup.includeexcludeapp, android.cts.backup.fullbackupapp] 在应用名字若有"cts"字眼,即是测试过程中安装的cts app, 可能因为前面测试项目fail 没有正确卸载,导致这个测试项目检测到异常没有签名的app 此时只要恢复原厂设置,并且测试此测项即可通过, 为环境影响的缘故
+参考FAQ: FAQ202072222
+### 问题: 类比时钟显示秒分针异常
+解决方案: 目前Platform的演算法在做背景图与前景图合并时,
+
+会先已背景为主,
+
+所以当背景图是透明的,
+
+时秒针图会显现不出来,
+
+请修改背景图的透明度.
+参考FAQ: FAQ202072223
+### 问题: 替换字库.lib之后开机发生死机(spml_otf_gdef.c)的原因和解决方法
+解决方案: 大部分新的字库TTF档需要GDEF1.2的支持,而较老的SPML库只支持GDEF1.0,如果用GDEF1.2系统会强制assert. 只要更新SPML库就能解决此问题(较新的平台版本已包含).
+参考FAQ: FAQ202072225
+### 问题: LTE only等无TXM设计时的外部coupler设计注意事项？
+解决方案: LTE only等无TXM设计方案,由于无TXM,RF前端会使用TX Switch,一般TX Switch内部无RF coupler,故设计时需要在TX Switch到RF 测试座之间加上外部Coupler,以保证功率检测功能. 具体外部Coupler SCH设计如下: 推荐的器件如下: Manufacturer mpn MURATA LDJ18829M24AC002 Walsin RFCPL1608070PS0T62 ACX CP160825Q0822T/LF
+参考FAQ: FAQ202072226,含图片
+### 问题: RF NTC温度检测及NV配置方法？
+解决方案: 参考设计SCH默认有预留RF NTC温度检测电路: RF NTC温度检测可使用外部NTC电路,还是transceiver内部.平台默认使用transceiver内部电路. 这部分可以在NV中配置,默认配置0X2即温度检测从transceiver内部读取. temp_comp_status:the flag bit for APC temperature compensation state; 0x0=no temperature compensation; 0x1=enable the temperature compensation, and read the temperature index value from external; 0x2=enable the temperature compensation, read the temperature index value from the internal register of transceiver;
+参考FAQ: FAQ202072229,含图片
+### 问题: UMS9117(-L/N)芯片BT RF部分的BT_TRX_P/N能否从差分走线更改成单端走线方式？
+解决方案: UMS9117(-L/N)平台默认使用的是差分走线,兼容了单端走线设计.平台有验证过使用单端走线方式,BT的TX性能较差分方式持平,但RX会出现0.5~1.5dB的gap.更改成单端的话会节省物料但影响性能,需要综合评估,如果改成单端的话,电路上BT_TRX_N端接0.5pf到GND.
+参考FAQ: FAQ202072230
+### 问题: UMS512平台IIS是否支持主从模式？一组IIS是否可以外接两个设备，IISBCK与IISLRCLK是否可以共用？
+解决方案: UMS512(T)及UIS7862平台共有四组IIS,都支持主从模式,IIS做主时每组IIS接口都可以外接两个IIS接口的设备,DI和DO各外接一个,然后由主平台提供BCLK和LRCLK.但是主平台内部只有一个master控制器,所以四组IIS接口不能同时做主去提供所需要的时钟,只允许有一组.原理图接线框图如下所示:
+参考FAQ: FAQ202072231,含图片
+### 问题: Android R 上，目前音频参数保存在手机的/data/vendor/local/media/路径下，有10个文件，如何把他们转化为一个nv文件，可以方便的用调试工具进行离线调试
+解决方案: 9863A上目前没有工具直接将XML转换为NV 有如下两种方案实现导出NV 方案1)让软件合入这些文件出一个软件版本,然后用AUDIO TESTER工具导出NV参数即可 方案2)将XML文件PUSH到对应的路径后重启,再用AUDIO TESTER读取NV
+参考FAQ: FAQ202072233
+### 问题: 如何修改在下载工具界面显示的PAC包名称？
+解决方案: 在打包的脚本:flash.cfg中修改ProductVer值即可. 举例说明: 需显示为"SC9863A_A_B_1102" ProductVer=SC9863A_A_B_1102 即可.
+参考FAQ: FAQ202072235
+### 问题: 护眼模式下如何调节屏幕色温？
+解决方案: 客户可以自行调试xml文件来实现调试护眼模式下色温的需求. 首先执行以下指令,把需要调试的xml文件pull出来: adb root adb remount adb pull vendor/etc/enhance 目标文件夹 找到bld.xml,调试以下参数中的:Rmin/Rmax,Bmin/Bmax和Gmin/max; <range> <param rmin="0"/> <param rmax="0"/> <param gmin="18"/> <param gmax="72"/> <param bmin="72"/> <param bmax="288"/> </range> </reg_table> </cm_config> </root> Rmin/Rmax,Bmin/Bmax和Gmin/max的意义,是要和上面的1024做差值,得出的结果就是最终的效果对应的R,G,B值. 修改以上的数值,可以达到在护眼模式下的色温范围的调整.
+参考FAQ: FAQ202072238
+### 问题: 在Audio tool工具中，侧音是如何调试的？
+解决方案: Audio tool工具里调试侧音在VBC_ST里, 打开模块可以看到有三个使能开关:ST DP En,ST En和ST HPF En, ST DP En可以理解为总开关(通路开关); ST En:控制HPF和ST Volume的开关; ST HPF En:控制HPF的开关,HPF为高通滤波器; ST HPF Set(Hz):设置滤波器的低频截止频率. 所以调试侧音时,需要打开ST DP En,ST En和ST HPF En,然后调试HPF和各音量等级的Volume.如果需要关闭侧音,可以单独直接关闭"ST DP En",而无需考虑另外两个开关是否关闭.
+参考FAQ: FAQ202072239,含图片
+### 问题: 插入耳机，耳机不工作时，MIC_BIAS是锯齿波，设计就是这样吗？
+解决方案: 对于使用Audio Codec为UMP510G的平台,耳机插入后一段时间休眠,软件做了节约功耗处理,在休眠时Head Micbias会关断20ms左右再打开.所以电压波形呈现锯齿波,这是正常的.
+参考FAQ: FAQ202072240
+### 问题: SC7731E平台内置的音频PA输出时，需要多大耐压的TVS管？
+解决方案: SC7731E平台适配的是SC2720A,SC2720A的 Audio PA采用Vbat供电,内置PA输出喇叭通路电压即Vbat电压,考虑到电压有过冲,建议选用耐压值4.5V(实际工作电压5.5V左右)或以上即可.
+参考FAQ: FAQ202072242
+### 问题: 8910FF平台都支持哪些语音编解码
+解决方案: UIS8910FF手机平台当前支持的语音编解码有amr、 wb-amr、efr、fr、hr.
+参考FAQ: FAQ202072243
+### 问题: 8910FF手机平台音乐模式都支持哪些编解码
+解决方案: 8910FF手机平台当前音乐编码支持AAC-LC、amr、wav ,音乐解码支持AAC-LC、mp3、wav、wma.
+参考FAQ: FAQ202072244
+### 问题: adc 采样频率
+解决方案: 样时钟可以配置到6.5M,每bit采样需要5个clock,12bit时需要60个clock周期才能获取一个完整的ADC数据; 采样的最低频率为70 + 60 cycles,且clk_adc为6.5MHz 一次完整的采样时间为:Time = (60 +70 )*(1 / 6.5MHz) 采样周期为Freq = 1/Time = 50KHz 10bit时至少需要50个clock周期才能获取一个完整的ADC数据,所以最快采样率在130KHz
+参考FAQ: FAQ202072246
+### 问题: 展锐基带芯片的IBIS模型如何获取？
+解决方案: 通常IBIS模型伴随平台硬件基本资料通过Uni-Support中的DCC系统发布.客户端可自行下载取用,检索IBIS即可. IBIS模型具备仿真计算量较小的优势,适用于高速信号的时域仿真.
+参考FAQ: FAQ202072249,含图片
+### 问题: 如何支持特殊运营商要求不同MCC/MNC的情况内漫游不显示漫游图标？
+解决方案: T117平台支持某些特殊的情况下卡的mcc与mnc 和当前网络的 mcc及mnc 不相同的情况下,不显示漫游图标, 在接口CheckIsRealRoaming中,会判断SIM卡的卡的mcc与mnc 和当前网络的 mcc及mnc 是否在列表mvno_list.h中命中,如果命中,则不显示漫游. mvno_list.h中数据描述如下: typedef struct { uint16 mvno_mcc; // 对应SIM卡的MCC uint16 mvno_mnc; // 对应SIM卡的MNC uint16 host_mcc; // 对应当前所驻网络的MCC uint16 host_mnc; // 对应当前锁住网络的MNC }MMI_MVNO_ROAMING_T; 举例如下: SIM卡MCC/MNC为232/12,当前驻网的MCC/MNC为232/01,该种情况下不显示漫游图标,则在mvno_list.h中添加如下信息: 232, 12, 232, 1,
+参考FAQ: FAQ202072250
+### 问题: 展锐的仿真标准为什么过于严苛？
+解决方案: 部分BB平台理论上是不支持单面摆件case的,标准是在双面摆件的基础上制定,在此基础上有的客户想做纯单面摆件的设计,或者为了成本考虑缩减层数, ,导致设计空间和条件被压缩降低,难免会出现仿真fail的情况.对于单面摆件的case可以考虑标准放宽20%,牺牲一些性能上的Margin,前提条件是客户接受放宽标准带来的性能水平的相应降低.
+参考FAQ: FAQ202072253
+### 问题: 小屏工程提示框字符串显示不完整处理方法
+解决方案: 两个界面都是用到了公共的提示框, 修改时间的提示框是调用的 MMIPUB_OpenAlertWinByTextId, 电量低提示框是调用的MMIPUB_OpenQueryWinByTextIdEx, 最终都会调用到 DisplayPubWinTeDisplayPubWinText 进行字符串显示, 提示框字符串最大显示行数为MMIPUB_MULTILINE_MAX,现在定义是4 , 在字符串显示函数 DisplayPubWinText处理中, 当需要显示的字符串大于MMIPUB_MULTILINE_MAX 时, 会先将字体设置为 normal font,再进行绘制. 但是在小屏界面中,字体设置为normal font 后还是会显示不完整, 因此需要再使用以下方式进行修改: 在提示框中会显示图标,在调用提示框接口时,将image id设置为PNULL, 这样就不会显示图标,而字符串显示的区域增大了,则可以完整显示字符串.
+参考FAQ: FAQ202072254
+### 问题: 4G平台国内频段有哪些？
+解决方案: 4G国内频段: TDD LTE:B34/B38/B39/B40/B41 FDD LTE:B1/B3/B5/B8 TD-SCDMA:B34/B39 WCDMA:B1/B5(漫游)/B8 GSM:B2(漫游)/B3/B5(漫游)/B8 ps:运营商电信有B5的要求,移动有B8的要求.
+参考FAQ: FAQ202072256
+### 问题: 关于早期结论：RTM7916的TRX12/13/14接法问题？
+解决方案: 关于早期结论:RTM7916的TRX12/13/14插损较大导致不能接B7/B38/B41/B40等高频频段; 目前发货PA均是phase2.5,即RTM7916-51,此TXM已经优化了此问题,TRX12/13/14也可接高频.
+参考FAQ: FAQ202072257
+### 问题: T117平台主叫号码隐藏功能功能是否与网络交互？
+解决方案: T117平台主叫号码隐藏功能功能是否与网络交互? T117平台在设置主叫号码隐藏(CLIR)功能时是不会与网络发生交互的,因为现有大部分运营商是不支持更改网络上的主叫号码隐藏功能的,只有在查询CLIR功能时才会与网络进行交互. 为何智能机设置主叫号码隐藏功能会有数据图标显示? 智能机平台因为菜单逻辑与功能机平台不同,在设置前会先进行一次查询,因查询clir与网络交互,给人以设置clir功能会跟网络交互的错觉. 如何验证智能机设置主叫号码隐藏功能与网络交互的真实情况? 验证此点可请测试人员找一台Android设备通过暗码进行设置/取消(*31#/#31#)并查看是否与网络交互.
+参考FAQ: FAQ202072258
+### 问题: 手机开机语言显示
+解决方案: 当手机语言菜单设置为自动,在开机时收到SIM 卡PWER ON消息(APP_MN_SIM_POWER_ON_CNF)后,在处理该消息的函数(HandlePowerOnSimCnf)里,会通过调用 MMIAPISET_GetPreferLanguageTypeFromSim 去读取存储在该SIM卡中的优先语言,若获取到SIM卡中的优先语言,就将该语言设置为显示语言,若未获取到,则默认为英语. 开机时优先语言只设置一次,若已配置一张卡的优先语言,则第二张卡不会再进行配置.
+参考FAQ: FAQ202072259
+### 问题: 每周的起始日设置
+解决方案: 如何修改每周的起始日: 默认每周的起始日为周日开始,如果客户想要修改默认值,可以修改函数MMIAPISET_GetFirstDayOfWeek.例如:如果想把周一作为每周的开始日,则可以让函数返回1. 返回值说明:0:周日 1:周一 2:周二 ... 6:周六
+参考FAQ: FAQ202072261
+### 问题: 电话记录最大条数
+解决方案: 电话记录最大为什么只有10条? 受限于存储空间,目前相同号码的电话记录最多只能保存10条,如果超过,最早的记录将被最新的覆盖掉. 最大值使用宏MMICL_MAX_CALL_TIMERS定义,如果想增加记录可以修改此值.
+参考FAQ: FAQ202072262
+### 问题: 联系人保存在SIM中姓名输入字符长度问题
+解决方案: SIM卡联系人是存储在SIM卡文件EFADN , SIM 卡联系人名字字符长度是由SIM卡自身决定的,协议理论最大长度为 241,但是不可以修改,可查看协议3GPP31102SIM卡联系人名字长度在代码中是通过MMIPB_GetContactMaxAlphaLen 获取 的, 在该函数中会调用PHONEBOOK_GetFileInfoEx 得到名字长度.
+参考FAQ: FAQ202072263
+### 问题: 切换语言后窗口title或者list选项的字符串不显示
+解决方案: 问题分析: 出现这种显示问题与字符串的翻译有关.分为以下情况: 1.字符串在该语种下未做翻译,切换语言后原来有字符串显示的位置出现空或者显示为"..." 2.选中选项后,字符滑动显示,未选中时显示为空.该字符串前有空格造成的. 修改方法: 1.增加该语种下的字符串 2.删除该语种对应的字符串前的空格
+参考FAQ: FAQ202072265
+### 问题: Mocor平台App几个常用的API调用接口
+解决方案: 1. 打电话API MMIAPICC_MakeCall 2. 发短信API MMIAPISMS_SendSmsForOther 3. 屏幕亮度API MMIAPISET_UpdateLCDContrast 4. 通话相关声音设置API MMIAPISET_SetCallVolume MMIAPISET_SetCallRingVolume
+参考FAQ: FAQ202072267
+### 问题: 展锐UMS9117 平台移动入库自注册功能支持的状况
+解决方案: 首先,中国移动(CMCC)DM自注册的功能,分很多形态,比如: -- 手机形态,使用的是基于https的网络上报,比如智能手机、功能手机 -- 终端形态,使用的是udp协议封装的coap协议上报,比如儿童手表等等 具体某个产品,以哪种形态上报,需要到移动公司申请的时候,才确定. 我们UMS9117平台,开发过程是定义的功能手机形态,目前是: 支持手机形态的自注册(https) 不支持终端形态的自注册(coap) 鉴于目前有很多客户用这个芯片平台做一些手表或者其他项目,我们也在开发支持终端形态的上报(coap), 预计会在2020年12月开发完成发布.
+参考FAQ: FAQ202072269
+### 问题: 在哪里设置MMI NV默认值？
+解决方案: MMI NV的值是在第一次开机读取其值失败时设置的,例如: MMINV_READ(item,&data,return_value); if(return_value != MN_RETURN_SUCCESS ) //在第一次开机时会读取nv失败,从而进入if语句 { data = init_value; //在此处设置NV的初始值 MMINV_WRITE(item,data) }
+参考FAQ: FAQ202072270
+### 问题: 开关机动画时间在哪里控制？
+解决方案: 在开关机处理函数HandleNormalStartupWindow中,会创建一个timer来控制开关机动画的时间,其定义为宏: #define PHONE_STARTUP_DURING_TIME 6000 //默认为6秒 通过修改该宏可以控制开关机动画播放时长
+参考FAQ: FAQ202072271
+### 问题: 如何查看已经支持哪些国家地区的CMAS紧急广播？
+解决方案: 在文件mmismscb_control.c中,有一个内置的数组: CMAS_CONTROL_LIST_T s_cmas_spec_list[] = { {999,s_cmas_defualt_channel_info}, {730,s_cmas_chile_channel_info}, {424,s_cmas_uae_channel_info}, {430,s_cmas_uae_channel_info}, } 数组的每个一项都是由{mcc, channel_info}组成: mcc 对应国家或者地区的 mcc号码 channel_info是一个描述具体行为的配置结构体,例如频道号,频道的titile等 要查看是否支持一个国家CMAS,只需要查看其mcc是否已经在s_cmas_spec_list列表中即可
+参考FAQ: FAQ202072272
+### 问题: 为什么有时在图库中浏览图片切换时会有一个带叉的图片闪过？
+解决方案: 图库显示图片需要先解码图片,之后才会显示,而有的图片解码需要的时间会长一些,因此在没有解码完成或者解码有错误时会显示一个带叉的默认图片.其控制代码在文件ctrlanim_display.c中: Public Boolean GUIANIM_Display(BOOLEAN is_full_paint,BOOLEAN is_only_update,CTRLANIM_OBJ_T *anim_ctrl_ptr) { .... if( anim_ctrl_ptr->is_decoded ) { //已经解码完成 } else { if(anim_ctrl_ptr->is_wallpaper_ctrl) { }else { DisplayDefaultPicIcon(anim_ctrl_ptr); ////此处即为显示默认带叉的图片 } } }
+参考FAQ: FAQ202072273
+### 问题: SC2721G VBATDRV 和VBATA/VBATB 走线注意事项
+解决方案: SC2721G 的DCDC的输入VBATDRV要与VBATA和VBATB隔离开,星型走线,否则DCDC的噪声进入VBATA可能导致系统UVLO或者OVLO.尤其注意SC2721G的G11管脚,由于ballmap原因容易与VBATA走线接到一起,造成无法开机或异常关机.
+参考FAQ: FAQ202072277

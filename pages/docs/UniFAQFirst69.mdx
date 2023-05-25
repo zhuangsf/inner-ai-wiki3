@@ -1,0 +1,332 @@
+### 问题: 6531E+RTm7276 平台 PvT问题
+解决方案: 有一部分的PvT 是由于没用假电而造成 PvT useful部分fail. 用了真电池和带电容的假点后,PvT 没有问题. 如果用的电源是安捷伦66319,则电源设置成HLocal模式,这种模式下,即使不用假电,Pvt也没有问题.
+参考FAQ: FAQ123806
+### 问题: UMS312平台CAMERA的mipi的布线长度需要注意哪些？
+解决方案: UMS312共有3组CSI PHY供给camera使用,最高支持1.5Gbps.每组差分线内部P和N等长控制在<1.25mm,但是建议控制在0.5mm内.差分对组间和CLK控制在2.5mm以内.UMS312要求mipi阻抗尽量控制在90ohm±9ohm,PCB上MIPI走线长度不要超过120mm.
+参考FAQ: FAQ122223
+### 问题: UWE5621在做SDIO原理图设计时需要注意什么？
+解决方案: UWE5621可以支持SDIO3.0,最高支持200MHz,通常在做OTT产品时用来和host传输wif数据使用.此时strapping pin应设置成:111.UWE5621的SDIO电源域为VDDIO,VDDIO的电源范围为-0.3V~2.5V,所以OTT产品上VDDIO pin常接1.8V. 当上位机的SDIO电平值也为1.8V时,并且上位机也支持SDIO3.0协议时,该OTT产品的SD_CLK可以设置到200MHz. 当上位机上SDIO电平值为3.3V与UWE5621的电平值不相匹配时,需要在中间增加电平转换芯片.但是各类电平转换芯片有其最大限度的data rate,而且会影响到CLK的上升沿、下降沿时间以及负载电容.所以增加电平转换芯片会限制住SD_CLK的速率.目前市场上的电平转换芯片只能支持到SD_CLK=50MHz.
+参考FAQ: FAQ122225
+### 问题: 9820E平台 LCM背光电流
+解决方案: 9820E平台参考设计中,背光是并联设计.背光LED正极接VBAT,负极并联接PMIC 2721的RGB_IB[0:2]管脚上. RGB_IB[0:2],每一路电流最大能输出27.7mA,并联在一起使用时,最大电流为83.1mA. 具体电流配置,可参考RGB_CTRL寄存器. 参考文档: 1.《SC9820E Hardware Design Guide V1.2》 P47; 2.《SC2721G Device Specification_V0.3》 5.8 RGB LED Driver & 7.19.1.169 RGB_CTRL
+参考FAQ: FAQ122279
+### 问题: linux内核如何打开c文件中的pr_debug调试信息
+解决方案: 比如,kernel\drivers\staging\sprd\modem\sipc\sbuf.c默认是没有打开调试信息,现提供以下两种办法打开: 1.利用节点,动态打开pr_debug调试信息: adb root adb shell echo "file sbuf.c +p" > /d/dynamic_debug/control 2.打开宏DEBUG,重新编译kernel: (1)找到sbuf.c对应makefile文件,添加DDEBUG标记,打开宏DEBUG,CONFIG_SPRD_SIPC_DEBUG为SIPC模块定义的宏名,其它模块需要根据自己的实际情况定义适当的宏名: ccflags-$(CONFIG_SPRD_SIPC_DEBUG) := -DDEBUG (2)在对应工程defconfig文件中,声明并打开CONFIG_SPRD_SIPC_DEBUG: CONFIG_SPRD_SIPC_DEBUG=y (3)重新编译kernel.
+参考FAQ: FAQ122385
+### 问题: FM_BASE_19A分支（NV2.0结构）使用NVAide V3.3.0 版本注意事项
+解决方案: SC9820E, SC9832E, SL8521E, SL8541E系列平台使用FM_BASE_19A的分支,即使用NV2.0架构的NV工程,需注意以下几点 1. 必须使用NVAide V3.3.0版本 2. SC9820E选取SR3593A_SC9820E_NV2_0, SC9832E选取SR3593A_SC9832E_NV2_0, SL8521E, SL8541E系列平台选取SR3593A_SC9820E_NV2_0 3. 如果升级是从FM_BASE_17B/FM_BASE_18A升级到FM_BASE_19A分支,因为是NV1.0结构和NV2.0结构差异太大,没法差分升级,只能当成一次新的Bring Up,并用NVAide选取××××××_NV2_0的平台重新配置
+参考FAQ: FAQ122293
+### 问题: FDN开启后，SMS不在列表中怎么能让发送出去
+解决方案: 1. 可以添加目标号码到FDN列表,但是添加后还是短信无法发送 如果发短信时需要检查目标号码是否在FDN列表里面,而短信中心不需要检查,那修改NV项 feature_switch_2,将bit1(从bit0开始)设置为0,其它位不变. 这样,目标号码在FDN列表里面时,短信能发送出去,目标号码不在FDN列表里面短信发送不出去. 2. 不添加FDN列表,也需要将短信发送出去 如果发短信时不需要检查FDN列表,那修改NV项 feature_switch_2,将bit1和bit2(从bit0开始)设置为0,其它位不变. 这样,无论目标号码还是短信中心在不在FDN列表中,短信都能发送出去. 3. feature_switch_2 这个NV默认是将bit1和bit2(从bit0开始)设置为1,短信中心号码和目标号码都是需要检查FDN列表,这个是协议规定的,所以在一般情况下不要随意 修改NV配置,除非有特殊运营商或是客户要求才进行修改,并且不是一个一般要求.
+参考FAQ: FAQ122306
+### 问题: SC6531E中PDP QOS参数Maximum SDU size相关问题
+解决方案: Maximum SDU size是属于R99的QOS参数.MMI设置QOS时,如果设置的是R97的参数,无Maximum SDU size参数设置.底层发送给网络时会根据R97的参数设置,转换为R99的参数. 根据协议规定,缺省的Maximum SDU size转换为R99后的值为SDU Size parameter = 150 (1500 octets).
+参考FAQ: FAQ122368
+### 问题: SC6531E中过期卡导致注册网络失败的判断方法
+解决方案: SC6531E中过期卡导致注册网络失败的判断方法 如果需要判断是过期卡导致注册网络失败,可用如下方法判断: APP_MN_SIM_NOT_READY_IND中的reason=0x14,且消息 APP_MN_NETWORK_STATUS_IND中plmn_status=0x4, mn_mm_cause=0x2(IMSI unknown in HLR).
+参考FAQ: FAQ122369
+### 问题: 客户如何修改终端EVS默认开启情况？
+解决方案: 9832E对应的modem平台上有两项开关去控制EVS功能: 1.终端EVS能力开关,可由客户根据项目要求自行在NV文件中配置打开或者关闭; 2.网络EVS能力开关,由展锐根据对应运营商网络配置文件,在运营商NV中进行配置,客户不需要修改. 只有当终端及网络都支持EVS时,终端拨打VoLTE电话时才会启用EVS.  如客户需修改项目EVS默认开启情况,只需修改如下NV配置: td_nv_type.nvm\PS_NV_PARAMS\NV_PARAM_TYPE_IMS_CSM_SETTINGS\audio_codec_type audio_codec_type=0x6:关闭EVS; audio_codec_type=0x7:打开EVS;
+参考FAQ: FAQ122464
+### 问题: SC2721G的Flash_IB恒流状态下能达多大电流？
+解决方案: 9820E平台搭载的PMIC是2721G. 我们可以从如下方式中,获取该信息. 1.CS图纸 我司发布的CS图纸中,在PMIC后标注的有该管脚电流最大最小值的信息. 2.《SC9820E Hardware Design Guide》 3.《2721G Devices Specification》 文档中有详细配置说明.
+参考FAQ: FAQ122479
+### 问题: SC6531E  KPLED_OUT 是否可调，如果可调电流范围?
+解决方案: SC6531E平台,KPLED_OUT为电流源模式.电流范围见下表. 截取自《SC6531 Device Specification-V1.9》
+参考FAQ: FAQ122488
+### 问题: 提供完成锁频测试的AT命令
+解决方案: WCDMA锁频AT命令:
+AT+SPACTCARD=card_no 
+AT+SFUN=5
+AT+SPCLEANINFO=4
+AT+SPCOMMLOCKFRQ=1,14,1,0,UARFCN
+AT+SFUN=4
+
+解锁频AT命令:
+AT+SPACTCARD=card_no 
+AT+SFUN=5
+AT+SPCOMMLOCKFRQ=1,14,0
+AT+SFUN=4
+参考FAQ: FAQ122491
+### 问题: 为什么UE开启CBS接收时WCDMA待机功耗会明显增大？
+解决方案: 开启CBS接收时UE需要周期性的接收数据,会导致功耗增加; 另外,CBS接收分为level1和level2两个阶段,level1阶段接收调度信息,level2阶段按照level1阶段接收到的调度消息的调度信息进行CBS接收; 如果网络侧配置的的CTCH接收周期较小,那么UE需要较频繁的唤醒接收数据,则可能会引起功耗增大,另外在信号较弱的地方如果LEVEL1阶段的调度信息解不对,则UE会一直停在LEVEL1去接收调度信息,而网侧配置的level1阶段的接收周期一般较小,也会导致功耗的显著增加;
+参考FAQ: FAQ122514
+### 问题: 如果不需要支持type-C，SC2721G相关引脚是否需要接GND？
+解决方案: 如果不使用TYPE-C,SC2721G的SW(L12),CC1(L10)和CC2(M11)引脚悬空即可,无需接地.
+参考FAQ: FAQ122535
+### 问题: 为什么展锐释放的deltanv.bin和使用同一版本 OperatorNV\Operator_Cfg 目录下的 *.NV 生成的delta_nv.bin 有很大的差异？
+解决方案: 运营商delta NV(Operator NV)是一部分对应于运营商网络特性的NV Item.UE运行时,Operator NV的值随着SIM卡和驻留网络的不同会被重新加载为相应运营商的配置. 
+ 展锐发布的版本中,将这部分delta nv保存在了modem.bin中,deltanv.bin不包含运营商配置信息.而客户自己通过"OperatorNV\Operator_Cfg "目录生成的delta nv bin则包含这些运营商配置信息,所以客户生成的delta nv bin会大于展锐发布的版本. 
+ 客户新生成的delta nv bin替换原始版本deltanv.bin后,UE运行时加载的是客户修改后的运营商配置信息,也可正常使用.
+参考FAQ: FAQ122540
+### 问题: SE_GPIO 和普通GPIO有何差异？
+解决方案: SE_GPIO,理解为"secure GPIO",这种GPIO在Secure OS boot的时候会被引导配置,作为安全模式启动的GPIO,受SLV固件控制. 应用中sec gpio时用在安全世界(trusty zone),不用于普通场景. 系统在某些场景下,会需要短暂地切换到安全世界执行一些安全操作,动作结束后再切换会普通模式.比如支付宝付款等.
+参考FAQ: FAQ124374
+### 问题: 当使用TCXO时SR3593A和TCXO间的1000PF隔直电容是否可以换成0R？
+解决方案: TCXO与transceiver间1000pF隔直电容不建议删除. 删除的主要风险点是: 当前transceiver内部无隔直电容,拿掉外部隔直电容后,transceiver与TCXO的直流偏置可能存在细微不同,可能会导致transceiver获取的时钟参数劣化,比如占空比劣化等;另外TCXO可能由于此原因不起振,引起稳定性问题.
+参考FAQ: FAQ122578
+### 问题: LTE搜网类问题FAQ
+解决方案: 1. 网络信号太弱 有些地下室/车库/电梯没有4G热点覆盖的地方,会存在4G信号弱的情况,建议拿对比机或者展讯平台机相同环境下进行对比观察测试. 2. 该终端不支持该网络Band 一般终端支持的BAND数目有限,可能不支持当前网络BAND,建议通过手机工程模式查看BAND支持情况. 3. 终端校准问题 终端升级版本过程中没有备份NV参数,导致NV中校准参数不正确,可能会引起搜不到网,或者搜到网网络信号rsrp(代表信号强度)值异常,比如异常偏高,达到-50dbm以上,一般需要重新校准.或者是升级版本后,新老版本号差距较大,NV结构有变动导致NV校准参数不准确,一般也需要重新校准, 也可以联系CPM获取支持. 4. 终端OTA性能问题 建议用对比机进行对比测试,同时观察测试机和对比机的rsrp(代表信号强读)值情况,如果测试机比对比机rsrp值差据较大(10db以上),可能就是本终端的OTA性能较差,需要调试OTA性能. 5. 其他硬件方面问题 检查终端天线是否松动脱落等.
+参考FAQ: FAQ122637
+### 问题: UMW2652的SPEC中关于管脚定义中，部分管脚的FUNCTION1为DBx或WBx，代表什么意思？
+解决方案: 代表这些管脚可以复用为芯片调试接口,DB是BTDebug用的,WB是WiFi Debug用的,客户一般不会使用该功能,所以不必关心.
+参考FAQ: FAQ122656
+### 问题: 宏FP_PS_RATE 如何配置
+解决方案: FP_PS_RATE_72M_384: 表示下行支持DPA7.2M,上行不支持UPA,速率最大384kBps FP_PS_RATE_72M_2M: 表示下行支持DPA7.2M,上行支持2M的UPA速率, 如果硬件平台支持UPA,就可以配置支持后者;
+参考FAQ: FAQ122643
+### 问题: SL8521ET的BT4.0支持LE 1M带宽还是LE 2M带宽？
+解决方案: SL8521ET的BT4.0支持LE 1M带宽
+参考FAQ: FAQ122675
+### 问题: UMP510G的DNS_D0（M6）/DNS_D1（M7）作用是什么？
+解决方案: 主要是通过检测headphone通路的幅值去自动配置模拟和数字增益,提升SNR的功能模块.
+参考FAQ: FAQ122676
+### 问题: SR3595D的LVDS为啥没时钟，只有P、N？
+解决方案: LVDS走线是高速数字信号线,比普通的MIPI线的数据发送量更大,它在传输数据的时候里面就携带了时钟信息,信号解调的时候会从这些数据中抽取时钟信号,所以没有单独的时钟信号
+参考FAQ: FAQ122677
+### 问题: SR3595D的SPI 时钟是多少？
+解决方案: SPI的时钟固定是48MHz
+参考FAQ: FAQ122678
+### 问题: UMS312控制RF PA的MIPI时钟是多少？
+解决方案: MIPI的时钟是26MHz
+参考FAQ: FAQ122679
+### 问题: UMW2652 buffer mode和XO mode的区别是什么？
+解决方案: XO mode外部只需要接一个crystal,而buffer mode通常需要外部接一个Oscillator
+参考FAQ: FAQ122680
+### 问题: SDIO电源设计
+解决方案: 1. TF卡设备有两路电源:CORE 和 IO. 我们在TF卡电路中看到VDDSDCORE和VDDSDIO两路电源,VDDSDCORE是为TF卡供电的,电压始终为3V.而VDDSDIO是为BB侧IO接口PAD供电的,3V/1.8V可变;实际上,TF卡内部也存在LDO为TF卡IO接口PAD供电,也是3V/1.8V可变的; 2. 首先,VDDSDIO以3V来初始化TF卡,与TF卡协商后,如果主从均要支持SDIO3.0则 VDDSDIO切1.8V、TF卡内部LDO也将输出1.8V,这样SDIO将工作于SDIO3.0模式;如果双方任一方不支持SDIO3.0, 则双方IO电压保持3V不变; 3. 所以,设计TF电源时,VDDSDCORE应始终为TF卡供电.为了支持SDIO3.0,BB侧VSD应使用单独的VDDSDIO供电;如果设备不支持SDIO3.0, VSD可以直接使用VDDSDCORE来供电,这时不要忘记对软件进行配置.
+参考FAQ: FAQ122722
+### 问题: PMU VDDSDCORE电流输出能力是否足够？
+解决方案: 1. 展锐现行平台中,SDIO已经支持SDR104模式,也就是UHS-I模式的卡; 2. 但从协议中获知,UHS-I模式的卡可能需要800mA的电流.这时请确认您使用的PMU VDDSDCORE是否满足要求.否则,要实现T卡的全部功能则必须增加一颗外置LDO,比如"3V/1A-LDO-WL2817DA30-8/TR".
+参考FAQ: FAQ122730
+### 问题: UMS512 UART IDLE状态下是否可以输出低电平?
+解决方案: 1. "UART_CTRL0寄存器的SEND_BRK_EN位"置位后,UART_TX在idle状态下则输出Low;但这个不符合UART的通用协议,不建议客户使用.
+参考FAQ: FAQ122743
+### 问题: UMS512T/UMS512上transceiver不用时，VDDMODEM是否可以不接？
+解决方案: 挂载在VDDMODEM上的内部电路较多,即使transceiver不用VDDMODEM也不能悬空,需按照参考设计给其供电.
+参考FAQ: FAQ122760
+### 问题: SC2721G shipping mode 电路设计注意事项
+解决方案: 1.需使用带shipping mode功能的charger IC. 2.如果PMU的PBINT电压域和charger IC的QON电压域不同,则按键触发退出shipping mode 的按键电路设计推荐如下: 2.1将PMU的PBINT与charger IC的QON通过2个二极管短接,2个二极管正极分别接PBINT和QON. 2.2.按键一端接地,一端接2个二极管的负极.
+参考FAQ: FAQ122764
+### 问题: SC2721G ADCI1-ADCI4引脚小量程电压精度是多少？
+解决方案: SC2721G ADCI1-ADCI4引脚小量程电压精度是+/-15mV.
+参考FAQ: FAQ122784
+### 问题: NemoG(SC6531E)是否支持4.4V高压电池？
+解决方案: 硬件上支持. 软件上需修改NV参数:charge_end_vol、bat_saftey_vol、recharge_voltage、dischg_bat_tab. 另外硬件上充电截止电压为CHGR_END_V,CHGR_CV-V两个寄存器的和: Vcc-cv = CHGR_END_V + CHGR_CV-V. 目前NV中只能设置 CHGR_END_V,需要在charge_sc6531efm.c中增加针对4.4V高压电池充电截止电压设置CHGR_CV-V的宏.
+参考FAQ: FAQ122788
+### 问题: UMS512T平台的7个UART是否可以同时使用？
+解决方案: 1. UMS512T有7个UART接口、13个controller,但是只有3个controller可以被AP使用;请参考规格书 3.5.1.2 uart_matrix_mtx_cfg章节: 2. 比如uart_inf6_sys_sel寄存器,表示芯片的uart6接口可以mux到0-12个uart contrller,但是只有ap_uart0/1/2三个contrller是AP的.依此类推;
+参考FAQ: FAQ122787
+### 问题: 平台是否支持SensorHub功能？
+解决方案: 不支持.虽然平台BB芯片内嵌了CM4微处理器,但是由于RAM空间的局限无法实现Sensor Hub(ADSP)功能.
+参考FAQ: FAQ122799
+### 问题: PMU_26M_IN时钟的作用是什么？
+解决方案: BB芯片输入给PMU的26M有两个作用: 1. 通话时用于Modem与Codec之间时钟同步; 2. ADC采样时钟;
+参考FAQ: FAQ122800
+### 问题: 展锐有哪些PMU支持展锐快充协议？
+解决方案: 展锐如下PMU支持展锐快充协议(SFCP): • UMP510G • SC2721G/SC2721GT 对SFCP的详细描述可以参考isupport上的如下文档: UNISOC Fast Charge Application Note V1.0.pdf
+参考FAQ: FAQ122820
+### 问题: 如何快速确认W测量小区主辅路信号强度
+解决方案: Time:504230 meas: Stored meas result, ARFCN = 10588, PGC = 92, ECN0_2 = -204,
+RSCP = -939, RSSI = -736 
+Time:504290 meas: Stored meas result, (DIV), ARFCN = 10588, PGC = 92, ECN0_2 = -
+90, RSCP = -770, RSSI = -681
+参考FAQ: FAQ122832
+### 问题: WCDMA模式下手动搜网流程
+解决方案: WCDMA主模式下,会先搜索WCDMA模式下的小区,之后再去搜索其他模式的小区,关键trace为PLMN. 搜网的过程分为对WCDMA的PLMN_LIST以及对GSM以及LTE 的PLMN_LIST两个阶段.
+参考FAQ: FAQ122872
+### 问题: 查询当前驻留BAND的方法
+解决方案: 确认当前band方法: 1.进入工程模式 2.查看net info 3.NW info 4.查看UARFCH_DL,通过下行信道的频点我们可以查得当前驻留的band 例: band1:10562 – 10838, band8:2937 – 3088
+参考FAQ: FAQ122858
+### 问题: SC2721G PBINT/EXTRSTN 引脚有效电平（低电平）电压触发点是多少？
+解决方案: 电压由高到低下降时,有效低电平电压触发点是0.6V. 电压由低到高上升时,有效高电平电压触发点是1.3V.
+参考FAQ: FAQ122891
+### 问题: AndroidQ如何打开MediaProvider模块的log？
+解决方案: 在AndroidQ上,MediaProvider模块的log目前默认没有打开,如果需要打开MediaProvider模块的log,请参考如下步骤: 1.adb shell setprop log.tag.MediaProvider D 2.adb shell 进入手机端 3.ps -A | grep -ri "media" 找到android.process.media进程的PID号 4.kill -9 PID号 然后先清空ylog,再复测问题,再导出ylog即可. 具体操作步骤可以参考如下图所示:
+参考FAQ: FAQ124804
+### 问题: Simba校准WCDMA  minpower fail 问题
+解决方案: 部分客户用Simba校准的时候会遇到 如下的 "minpower fail" 如图此处的spec 15~21,因为前面有minpower的标示 客户会以为是minpower 达不到,实测minpower实满足要求的<-49dbm. 其实此处并不是minpower fail,此处spec是针对PA low mode下线性度.检查范围是2~-15dbm,按照8个控制字1db步进理想值是18dB,spec(15,21)db 解决此问题的方法是优化PA low mode下的线性度,通常方法是调整匹配或者优化对应的bias如下图. 优化bias 无改善也可以微调对应的 DCDC电压 调整完后要验证小功率下ACLR ,ILPC等指标确保pass 建议调整到16左右
+参考FAQ: FAQ122902
+### 问题: 什么是SMPL
+解决方案: SMPL(Sudden Momentary Power loss ):VBAT低于UVLO 的门限值2.65V时, SMPL timer开始计时(默认设置为0.25s,最大到7s )当电压低于2.65V的时间超过timer 设定时间,PMU将不会重启,在设定时间内PMU会重启.(SMPL 功能默认是关闭的,需要寄存器配置打开.
+参考FAQ: FAQ122907
+### 问题: SC7701 WHTLED_IB0-WHTLED_IB3 四路LED 驱动可否单独控制
+解决方案: SC7701 的 WHTLED_IB0-WHTLED_IB3 不能分开单独控制:内部WHTLED_IB0-3 开关通路及电流控制是共用一个电路模块,无法单独控制.
+参考FAQ: FAQ122913
+### 问题: SC6531E在越南地区以紧急呼叫方式拨打113，114，115
+解决方案: 1. 在越南地区,113,114,115都是以普通号码方式拨打的,若以紧急呼叫方式拨打,拨打过程中网络会返回DISCONNECT消息,cause=31,Normal unspecified 2. 客户需要修改MMI代码,将113,114,115从紧急呼叫列表中删除 static const char* const s_emergency_call[] = { "112", "911" }; static const char* const s_emergency_call_no_sim[] = { "000", "08", "110", "999", "118", "119" }; 若在上述紧急呼叫列表中发现113,114,115,则删除号码
+参考FAQ: FAQ122956
+### 问题: UWE5621平台的UART分别作什么用？
+解决方案: UWE5621平台共有三组UART,UART0为4wire,UART2和UART3是2wire.UART0通常作为BT与AP通信接口,UART2用作CPlog串口.UART3可复用成I2C.UWE5621 module产测时,UART0是用来做下载端口用,而UART3用来做测试接口,所以在做testboard时需要注意.
+参考FAQ: FAQ122959
+### 问题: 黑屏唤醒功能中，gsensor侦测双击动作不灵敏的解决办法？
+解决方案: 唤醒成功率低的解决方法: 1. 请先校准加速度sensor之后,再验证一下黑屏唤醒功能是否得到改善. 2. 黑屏唤醒功能对操作手法有要求:靠上方1/3处双击(靠近gsensor位置),敲击时,手机不要平放,最好拿起来45度角的时候比较容易.多试几次,可以找到规律. 3. 请联系sensor厂商支持,提高acc sensor的采样,再验证是否好转. 4. 如果还是不行,请抓取ylog并提交问题到bug平台.
+参考FAQ: FAQ122986
+### 问题: 如何关闭sensorhub log？
+解决方案: 关闭sensorhub log,有两种方法: 1、通过节点关闭 adb shell su echo log off > /dev/sctl_pm 2、通过工模app关闭 在customer scene 里自定义log输出,即: YLOG-> settings->customer scene,新建一自定义场景. 关闭Sensorhub Log,其他都打开,commit后切换场景到新建的customer scene即可.
+参考FAQ: FAQ122991
+### 问题: 终端拨打VoLTE电话，什么情况下通话界面会显示HD图标？
+解决方案: 终端通话界面的HD图标标识的是终端通话过程使用的语音编码方式是宽带编码. 终端拨打VoLTE电话时,电话发起INVITE消息一般会默认携带AMR-WB、AMR两种编码方式,支持EVS的终端还会携带EVS编码方式. 在VoLTE电话建立过程中,终端与网络协商决定VoLTE电话过程中使用的语音编码方式.如果协商结果为AMR-WB或EVS,则通话过程使用宽带编码,通话界面显示HD图标;如果协商结果为仅支持AMR,则通话过程使用窄带编码,通话界面不显示HD图标(如果显示4G,是VoLTE;否则,是非VoLTE). 因此,终端拨打VoLTE电话时,通话界面是否显示HD图标,取决于终端和网络的媒体协商结果,与对端手机是否支持VoLTE没有直接关系.
+参考FAQ: FAQ123107
+### 问题: UMS312 audio VBC 有几路iis？默认分别用做什么？
+解决方案: UMS312 VBC 有5路IIS,一路主IIS(IISM),4路只能做slave 的IIS,分别为IIS0\IIS1\IIS2\IIS3. IISM用作接smartpa,IIS0 用作music coedc play,IIS1 用作sound codec record, IIS2用于USB audio,IIS3用于BT、FM audio.
+参考FAQ: FAQ123034
+### 问题: 请问如果将关机电压设置为3.4V以下，对于SC6531E分别会有哪些风险?
+解决方案: 1.spec中要求电压在3.2V-4.5V 之间. 2.考虑到GSM PA/audio PA/背光电路/USB 供电等因素,通常将关机电压设置在3.4V. 3.如果要将关机电压设置在3.4V以下,需要客户自行评估如下风险: 3.1 GSM PA 最小工作电压通常在3.4V,电压小于3.4V时射频性能可能受损. 3.2 audio PA供电为AVDDVB,此电源默认输出电压为3.3V,电压小于3.4V时AVDDVB LDO电压输出可能无法稳定,引起音频性能受损. 3.3 背光电源取自VBAT,过小的VBAT电压与压降较大的背光管压降可能引起WHTLED_IB 电流源无法恒流,引起背光闪烁. 3.4 USB供电VDDUSB默认输出电压为3.3V,VBAT电压小于3.4V时VDDUSB LDO电压输出可能无法稳定,引起USB电路异常.
+参考FAQ: FAQ123051
+### 问题: 【BBAT】自动测试加速度传感器x/y轴值概率为0导致fail问题
+解决方案: 修改方案:调整sensor取值精度,从小数点后三位改到后6位,软件和工具都需要修改. 软件:旧方案软件在获取到sensor的坐标值后默认乘以1000返回给工具,新方案需要乘以1000000后在返回给工具. 工具:SP_BBAutoTester_G3_R2.0.0004及之后版本已解决该问题,在sensor测试项中有个"PrecisionValue"的参数用于精度设置,只能设置为"1000"或"1000000".
+参考FAQ: FAQ123477
+### 问题: SC2721G/SC2720A如果不使用内置电量计时电路设计注意事项
+解决方案: 1.如果不使用内置电量计(FGU)采样电阻可以不加. 2.去除采样电阻后SENSE_P/SENSE_N要接PCBA主板地,不建议悬空.
+参考FAQ: FAQ123486
+### 问题: SC2721G/SC2720A 同一种电池的电池参数是否可在不同项目不同平台上复用？
+解决方案: 同一种电池的电池参数可在不同项目不同平台上复用.
+参考FAQ: FAQ123488
+### 问题: 如何为不同运营商配置不同的FGI
+解决方案: 1.请先确认清楚该项目需要上报的FGI的具体值 2.修改方法为,修改deltaNV中的运营商文件,如UK_xx_S.nv文件,增加类似如下值 PS_NV_PARAMS\NV_PARAM_TYPE_SIM_DELTA_NV\las_sim_nvinfo\FGI_delta=0x...\\1～32bit PS_NV_PARAMS\NV_PARAM_TYPE_SIM_DELTA_NV\las_sim_nvinfo\FGIadd_r9_delta=0x..\\32~64bit PS_NV_PARAMS\NV_PARAM_TYPE_SIM_DELTA_NV\las_sim_nvinfo\FGI_r10_delta=0x0 PS_NV_PARAMS\NV_PARAM_TYPE_SIM_DELTA_NV\las_sim_nvinfo\fgi_feature_switch=0x1 生成delta NV并烧写后复测.
+参考FAQ: FAQ123197
+### 问题: charge的NTC电阻是否可以删除？
+解决方案: charge NTC电阻主要用来采集充电时,充电电路的发热情况,配合温升算法,精确调控整机升温.如果不做手机产品,不考虑温升问题,可以不用贴NTC电阻,预留位置就行
+参考FAQ: FAQ123153
+### 问题: 展锐参考设计中，接外部WCN的GPIO可以更换为其它的GPIO吗？
+解决方案: 不能,展锐提供的WCN的驱动是bin文件,不是源码.硬件更换成为其它GPIO,软件同步无法修改.
+参考FAQ: FAQ123151
+### 问题: UMTS/HSDPA/HSPA如何正确显示图标
+解决方案: 在UMTS,HSDPA,HSPA网络下,有两种能力上报方式,由nv项:cellcap_current 来控制. 1. cellcap_current = 0x0, 表示按照支持的最高能力上报 2. cellcap_current = 0x1, 表示按照当前小区能力进行上报
+参考FAQ: FAQ123206
+### 问题: UMW2651和UMW2652芯片中的T_DIG信号做什么用？
+解决方案: UMW2651和UMW2652需要一个26M的时钟输入,当时钟方案为PMIC提供26MHz给芯片时.需要将PMIC上的T_DIG连接至UMW2651或UMW2652的T_DIG(MTCK引脚复用成T_DIG).该引脚的作用是传输稳定信息的temperature digital传输给GPS以克服温度漂移.
+参考FAQ: FAQ123226
+### 问题: 如何快速获取产品CP版本
+解决方案: 1、通过Pandora或者Mobiletester连接手机或单板,进入校准模式. 2、通过工具的read software version读取UE中软件的CP版本号,但须注意读取后反馈的AP version并不是实际版本,此方法仅用于HW确认Modem版本.
+参考FAQ: FAQ123232
+### 问题: NVEditor修改权限问题
+解决方案: NVEditor由于需要兼容2G/3G平台,默认的工具权限并未全部打开,对一些read only的NV item(如PSNV部分WCDMA的搜网NV)无法直接修改. 在NV bring up阶段,如需修改一些read only的NV item,可以把NVEditor的super权限打开(默认super=2,将其改为super=1):
+参考FAQ: FAQ123235
+### 问题: 关于分集RX设计，LTE B7分集与B41 fullband(2496-2690MHz)设计是否可以共用SAW及接收通路？
+解决方案: 不可以,此种设计会导致B7灵敏度de-sense. 原因是: Band7是FDD,TX与RX同时工作,此种做法会导致B7 主路Tx(2500-2570Mhz)能量通过天线耦合到B41 fullband Div RX通路(B41 full band saw对B7 TX是直通的), 故会导致B7灵敏度de-sense.
+参考FAQ: FAQ123273
+### 问题: Phase2.5 PA RPM6743-31 WCDMA OLPC fail, 主要是WCDMA 各BAND OLPC @RX Upper dynamic end NG？怎么解决？
+解决方案: 解决方案是: 将Reg0x0从PA Mode中的配置挪到PA enable里,具体见NV修改截图. 此修改会同步合入到NVAide V3.3.0之后版本.
+参考FAQ: FAQ123277
+### 问题: 关于B41频段及各种带宽，软件及硬件的支持情况？
+解决方案: 目前平台B41软件及硬件支持情况如下图. 其中B41 140Mhz/B41 新100M(2575~2675Mhz)暂不支持,此部分如客户有紧急需求,请提交开发需求至CPM.
+参考FAQ: FAQ123279
+### 问题: SC6531E RX LEVEL不准问题解决？
+解决方案: 1.SC6531E平台CFT请先更新到CFT_R21.0.0003. 2.常规RF匹配调试及校准检查. 如还有问题,请提交CQ至展锐.
+参考FAQ: FAQ123281
+### 问题: SC9863A EXT_LNA 注意事项？
+解决方案: 请参考指导文档《Sharkl3 Navajo Platform EXT_LNA Design Guide For Customer》,可以参考并注意其中注意事项. 如有客户其它的Band的新需求,请提交需求至CPM. 并提供如下信息: Band信息;单主,单辅,还是主加辅信息,三种情况均不一样;LNA信息,主要是器件Gain.
+参考FAQ: FAQ123282
+### 问题: EDGE在NV中已经关闭了，但手机界面显示EDGE图标？
+解决方案: 需要修改两处: 1.常规的关闭EDGE地方: PS_NV_PARAMS -> NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP -> support_egprs 设置成"0x0" 2. GSM_nv_classmark -> egprs_supported 从"0x1"改成"0x0"
+参考FAQ: FAQ123283
+### 问题: sensorhub的sensor校准数据存储位置
+解决方案: 不同的andriod版本,存储位置有点差异,如下: //Android 9.0,10.0 #define CALIBRATION_NODE "/mnt/vendor/productinfo/sensor_calibration_data/" //Android 8.1 #define CALIBRATION_NODE "/productinfo/sensor_calibration_data" 恢复出厂设置后,不会被擦出.
+参考FAQ: FAQ123300
+### 问题: 如何查看网络是否给UE配置了EFACH DRX
+解决方案: 1.可以从SIB5中查看hs-dsch-DrxCellfach-info,如果有这一项就可以在其中看到T321,drxcycle,drxburst,drxinterruption等参数的值,如果没有说明网络没有配置EFACH DRX. 2.可以从log中查询关键字EFACH_DRX_ACTIVE,如果其值为1说明网络配置了EFACH DRX.
+参考FAQ: FAQ123306
+### 问题: 如何查看 ddr freq的当前频点
+解决方案: 在userdebug版本下 adb shell su lookat 0x3000012c 得到的结果的bit[8-9]的值 VALUE DDR Freq/MHz 0 DDR_CLK0 (./chipram/include/configs/工程.h) 1 DDR_CLK1 2 DDR_CLK2 3 DDR_CLK3
+参考FAQ: FAQ123317
+### 问题: 获取emmc的manfid,name,prv,oemid的信息
+解决方案: 在userdebug 模式下 adb shell su cat /sys/block/mmcblk0/device/manfid cat /sys/block/mmcblk0/device/name cat /sys/block/mmcblk0/device/prv cat /sys/block/mmcblk0/device/oemid
+参考FAQ: FAQ123318
+### 问题: 实现SIM1和SIM2卡槽交换
+解决方案: 将NV中配置的sim_slot_cfg进行修改. 默认情况下是0x10302,要进行卡1和卡2进行互换,则将其修改成0x00010302,这样就可以实现卡槽互换. 7701的目录一般在 TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_MN_CFG\sim_slot_cfg 9820E等在路径 PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_MN_CUSTOMER_SETTING\sim_slot_cfg 对于NV不区分客户NV及研发NV的,路径为PS_NV_PARAMS\NV_PARAM_MN_CFG\sim_slot_cfg
+参考FAQ: FAQ123362
+### 问题: 单卡产品modem侧配置
+解决方案: 对于单卡产品,或是SIM2不用作卡功能时,需要配置modem侧自启动卡配置NV auto_poweron_sim 默认值是3,是双卡开卡,为了让卡2做其它功能,或是单卡产品,不开启卡2,可以将这个NV设置成1. 有客户NV和研发NV区分的产品,NV路径在: PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_MN_CUSTOMER_SETTING\auto_poweron_sim 如果客户NV和研发NV不区分,则 PS_NV_PARAMS\NV_PARAM_TYPE_MN_CFG\auto_poweron_sim
+参考FAQ: FAQ123364
+### 问题: BCH early fail问题
+解决方案: (1)场景:当小区信号质量差(ECNO<-120)或信号强度弱(RSCP<-760),导致BCH数据长时间收不全,物理层会上报BCH EARLY FAIL. (2)物理层上报BCH EARLY FAIL的具体判断标准是:SIB连续8次解不对,或者其他类型BCH数据如MIB、SFO等连续32次解不对.(以下任一情形都表示当前帧数据没解对:CRC为0、CRC为1但具体数据内容为0、fng combiner not ready)
+参考FAQ: FAQ123343
+### 问题: 什么是UE的CQI？如何从LOG中查看
+解决方案: CQI(Channel Quality Indicator)是信道质量的信息指示,代表当前信道质量的好坏,和信道的信噪比大小相对应,取值范围0～30,代表终端对接收数据格式的期望值. 从UE Log中,可以搜索 hal wrx: debug CQI: hal wrx: debug hu3geb CQI: 分别查看主辅载波的CQI
+参考FAQ: FAQ123373
+### 问题: 在SC9863A平台验证通过的LPDDR4 memory芯片，作为LPDDR4X使用时是否要重新认证？
+解决方案: LPDDR4X需要重新验证,不能直接用LPDDR4的认证结论
+参考FAQ: FAQ123377
+### 问题: UMS312平台，CS图纸中SR3595D 的LVDS线 BBA_UL/BBB_UL 串联的电阻可以删除吗？
+解决方案: 目前 UMS312_B_CS_A_SCH_V0.0.2_UMP510G_SR3595D_UMW2652_6M_eMMC_LPDDR3 图纸中,上行LVDS通路串联0ohm. 符合LVDS走线要求前提下(参考UMS312_PCB_Design_Guide文档),0ohm电阻可以删除.
+参考FAQ: FAQ123378
+### 问题: SC7731E参考设计中线性充电部分的200ohm电阻精度
+解决方案: 参考设计SC7731_A_CS_E_SCH_V1.0.1_SC2720_eMMC_LPDDR3中,200ohm用了1%精度,但客户可以更换为5%精度,没有不良影响.这个电阻是为了增强防浪涌性能.
+参考FAQ: FAQ123379
+### 问题: UMS512T是否支持并口摄像头
+解决方案: UMS512T本身不支持并口摄像头.如果有非mipi接口的摄像头,需要外部转换芯片转成MIPI信号.
+参考FAQ: FAQ123380
+### 问题: UMS512T是否支持SPI屏
+解决方案: UMS512T理论上可以支持SPI屏幕,但没有调试过. 如果需要用SPI连接副屏,请提交新开发需求给CPM.
+参考FAQ: FAQ123381
+### 问题: UMS312是否支持SPI屏幕
+解决方案: UMS312理论上可以支持SPI屏幕,但没有调试过. 如果需要用SPI连接副屏,请提交新开发需求给CPM.
+参考FAQ: FAQ123383
+### 问题: UMS312平台双摄方案，副摄不支持YUV格式摄像头
+解决方案: UMS312平台双摄方案,摄像头都要使用RAW格式,不支持YUV格式.
+参考FAQ: FAQ123384
+### 问题: UMS512T平台MIPI CSI接口支持接收12bit raw数据格式，但DCAM不能处理
+解决方案: 符合一般camera sensor mipi输出格式(有Hsync/Vsync等),只是数据位数12bit的话,CSI可以接收,但DCAM无法处理12bits数据.CSI/DCAM(bypass)可以把数据直接写入DDR,供后续软件使用.
+参考FAQ: FAQ123385
+### 问题: forbidden tracking areas的list，什么时候会被清除
+解决方案: 1. UE关机 2. SIM卡拨出 3. 周期性擦除(周期为12小时到24小时之间,具体时间由终端决定)
+参考FAQ: FAQ123612
+### 问题: 高低温极限测试下GSM网络同步不上问题
+解决方案: 在高低温极限测试情况下,因为给Modem 提供主频的晶体如果性能不好/不满足极限工作条件, 容易产生温漂,频率偏移较大;导致基带信号处理出现异常,对网络无线信号不能正确解码,从而和网络失步; 因此首先保证晶体的稳定性达标,正常工作温度范围达标(例如选取 精度可达到 +/- 2PPM 或者更高精度的晶振,晶振工作温度范围在 -40摄氏度 ～ 105摄氏度,或者更高温度范围的物料);
+参考FAQ: FAQ123527
+### 问题: 如果设置4G/3G/2G multi mode, 那么选网时RAT优先级是怎么样的？
+解决方案: 1. 首先会使用SIM卡中设定的PLMN+RAT的优先级, 比如说需要选择的PLMN在SIM卡中的RAT优先级是LTE优先,那么按照协议,终端会优先选择LTE.
+
+2. 如果SIM卡中,相关PLMN的RAT优先级是2G/3G/4G为相同优先级,那么会按照终端的优先级进行找网. 目前,4G/3G/2G multi mode默认设置一般为4G优先.
+参考FAQ: FAQ123611
+### 问题: 使用TCXO为什么还要增加32K？
+解决方案: 主要是考虑待机时候的功耗问题; 因为如果使用TCXO,又不想增加32K,就只能从TCXO 26M来分频产生32K,但这样的话待机时TCXO就要打开,TCXO需要供电,功耗较大,这样会引起待机电流大,所以需要再增加32K来保证系统待机时候工作; 使用TSX或DCXO,器件本身不需要供电,可以进入低功耗模式,故能通过TSX或DCXO 26M分频产生32K,所以外部可以不用贴32K.
+参考FAQ: FAQ123636
+### 问题: 部分平台搭配的RF部分是SR3595D,但参考设计是4天线设计？能否优化为2个天线？
+解决方案: 具体天线方案是根据项目具体RF频段及CA组合情况决定的; 与SR3595D无关,即SR3595D也可以做2个天线设计(主集1根,分集1根),知悉.感谢
+参考FAQ: FAQ123637
+### 问题: RPM6743-31 PA input是否要加隔直电容？
+解决方案: RPM6743-31 PA input电路强烈建议参考对应平台参考设计; MB 需要加隔直; HB / LB 内部有隔直电容,故可酌情省略,建议至少放一个π型网络;
+参考FAQ: FAQ123639
+### 问题: 如何通过修改NV设置w单模
+解决方案: 用NVTool将nv中的"multi_rat_mode"修改为0xB即可.
+参考FAQ: FAQ123686
+### 问题: 7701产品如何设置pin码
+解决方案: 可以使用如下pin接口: ERR_MNPHONE_CODE_E MNPHONE_ResponsePinEx( MN_DUAL_SYS_E dual_sys, MNSIM_PIN_INDICATION_E pin_num, // CHV1 BOOLEAN pin_is_lock, // is block? MN_BLOCK_T *pin_value_ptr, MN_BLOCK_T *unblock_pin_value_ptr )
+参考FAQ: FAQ123702
+### 问题: 实现进出飞行模式的API
+解决方案: 可以使用如下API实现进出飞行模式: MNPHONE_PowerOffPsEx //进入飞行模式 MNPHONE_PowerOnPsEx//出飞行模式
+参考FAQ: FAQ123703
+### 问题: 什么是精确校准功能？
+解决方案: 针对高测量精度的要求,我们对现有的校准测试流程进行修改,在保证校准流程和仪表测试正常的前提下,将测量的滤波过程和校准测试的流程进行了优化,校准的结果和仪表的测试结果看能很好的满足+/-0.5db的测量精度要求,我们称该功能为精确校准.该功能不影响基本功能,仅是校准测试过程的优化,且目前仅能提供BAND5/4438频点的校准.如有相关功能性需求,可以进行版本升级.
+参考FAQ: FAQ123705
+### 问题: 单软多硬delta NV制作注意事项
+解决方案: 单软多硬delta NV生成中不可带任何calibration参数. 正常流程"下载PAC-->校准"没有问题,主要是考虑""下载PAC-->校准-->OTA升级/重刷PAC",那么在OTA升级/重刷PAC,delta NV会再做一次merge操作,将delta NV中的calibration参数merge到手机中,导致手机的校准信息变成delta NV的校准参数.
+参考FAQ: FAQ123708
+### 问题: UEA2/UIA2上报的屏蔽和开启
+解决方案: 需要在NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY(这个地方是设置W的NV的)
+下设置sec_cap 屏蔽上报:
+ 设置NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\sec_cap 
+ 
+ ciph_algo为7(7代表支持UEA0,UEA1,UEA2) 
+ 
+ integ_algo为6(6代表支持UIA1,UIA2) 
+ 
+ 
+ 开启上报: 
+ 
+ 设置NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\sec_cap 
+ 
+ ciph_algo为3(3代表支持UEA0,UEA1) 
+ integ_algo为2(2代表支持UIA1)
+参考FAQ: FAQ123720
+### 问题: 如何导出多媒体数据库信息？
+解决方案: 导出多媒体数据库的方法请参考如下: adb root adb remount adb pull data/data/com.android.providers.media 指定目录 指定目录为导出后存放数据库文件的地方,例如要放在d盘的media目录下,这里的命令为 adb pull data/data/com.android.providers.media D:\media 备注,如果是Android4.4,请使用 adb pull data/data/com.android.providers.media/databases 指定目录
+参考FAQ: FAQ123757
+### 问题: 如何从log中查找fet是否使能
+解决方案: 变量g_fet_enable判断fet是否使能,g_fet_enable=1说明fet已使能,g_fet_enable=0说明fet没有使能
+参考FAQ: FAQ123783
+### 问题: UMW2652芯片各UART口功能是什么？
+解决方案: UMW2652平台一共4组UART,UART0/1为4线制UART,带有硬件流控功能,通常用来给BT或者GNSS传输数据使用.不过具体需要看软件定义BT数据走UART还是SDIO.如果走SDIO可以不用接,UART1默认用来传输GNSS数据.UART2为两线UART,建议预留测试点可以出CP LOG,方便debug使用.UART3可以当作sensor hub接口使用,如无需求也不用接.
+参考FAQ: FAQ124504

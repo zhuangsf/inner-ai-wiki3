@@ -1,0 +1,213 @@
+### 问题: WCDMA下如何修改PAM的VDDWPA供电电压
+解决方案: VDDWPA为DCDC供电,为了节省功耗,VDDWPA的电压会随着射频功率大小进行调节;调节电压的大小可以通过修改NV dcdc_index值来实现,每个功率段的电压都可以修改,dcdc_index值对应的step为0.05V,VddWPA=Max Voltage-dcdc_index*0.05, 因此dcdc_index 0x0 = Max Voltage(平台默认设置电压3.34V), 以WBand1,NV2.0为例,打开CustNV,修改位置如下: 对应每个功率段下的电压都可以进行修改,修改电压后需注意ACLR等射频指标以及电流的变化,
+参考FAQ: FAQ202173081,含图片
+### 问题: UMS512平台如何提高耳机输出的THD+N和底噪指标？
+解决方案: 可以通过增大HPL&&HPR上的串联电阻(默认5.1欧姆)来提高耳机输出的THD+N和底噪指标. 耳机部分原理图见下图: 相关测试数据见下图: 由上表可知,耳机左右声道上串联的这个电阻的阻抗越大,耳机输出侧的THD+N和底噪指标越好.但是同时耳机输出幅度就会越小. 当串联电阻在15欧姆时,可以得到一个比较均衡的值.
+参考FAQ: FAQ202173083,含图片
+### 问题: UMS9230平台如何提高耳机输出的THD+N和底噪指标？
+解决方案: 可以通过增大HPL&&HPR上的串联电阻(默认5.1欧姆)来提高耳机输出的THD+N和底噪指标. 耳机部分原理图见下图: 相关测试数据见下图: 由上表可知,耳机左右声道上串联的这个电阻的阻抗越大,耳机输出侧的THD+N和底噪指标越好.但是同时耳机输出幅度就会越小. 当串联电阻在15欧姆时,可以得到一个比较均衡的值.
+参考FAQ: FAQ202173084,含图片
+### 问题: 如何理解BayerNr_radius 1D里lum0/1/2_flat_thresh_coef0/1/2参数含义
+解决方案: 答:通常情况下,图片四角噪声相较于中心来说,噪声偏多.BayerNr_radius 1D 的作用是把四角分到不同的区域,跟中心或需要保护的地方区分开,以达到使用不同的去噪强度. 其中, lum0/1/2_flat_thresh_coef0/1/2是分频阀值变化率,用来控制保护半径外(径向)的分频;若flat_thresh_coefx (x为0/1/2中任意值)的值为正,值越大,保护半径外(四角)越容易分到flatx,再施以较强的去噪强度,就可以将四角噪声去除且不影响保护半径内的清晰度;另外,四角的去噪强度还是用保护半径内的去噪强度参数来控制的; 总之,radius 1D 的flat_thresh_max与flat_thresh_coef值是用来将四角分到去噪最强的flat区域的;
+参考FAQ: FAQ202173086
+### 问题: 如何理解CNR3参数里的layer0~layer4
+解决方案: 答: Layer0～4为金字塔分解的前五层,每一层都会做单独的滤波处理, 去彩噪的程度亦有所不同: 1.对于大面积彩噪,建议调大内层,如layer2, layer 3, layer 4 2.对于小颗粒彩噪,建议调大外层,如layer 0,layer 1
+参考FAQ: FAQ202173087
+### 问题: 在T310平台中，把LPDDR4X当作LPDDR4使用，可不可以直接把UMS312的VDDMEMQ引脚直接接到LPDDR4的VDDQ'上面，相当于VDDMEMQ接的VDDMEM。
+解决方案: 我司相关参考图纸如下,是预留了VDDQ给VDDMEMQ的,不可以直接把UMS312的VDDMEMQ引脚直接接到DDR4的VDDQ'上面,虽然LPDDR4理论上可以让VDDMEMQ和VDDMEM都用1.1V供电,但实际上有些LPDDR4物料的VDDMEMQ用1.1V有可能没那么稳定,电压可能需要微调(实际在该平台调试LPDDR4时VDDQ的供电电压为0.8V时LPDDR4运行最稳定),所以需要预留VDDQ这一路DCDC. 另外若使用LPDDR4X必须使用这一路DCDC提供VDDQ电压给BB端VDDMEMQ和颗粒端VDDQ,且电压为0.6V.
+参考FAQ: FAQ202173091,含图片
+### 问题: DreamCamera2 app，如何关闭电子视频防抖（EIS）？
+解决方案: 答,persist.vendor.cam.ip.eis.pro是控制eis防抖的persist,可通过adb命令设置为0.如需在文件中设置需要在md.mk文件中配置persist.vendor.cam.ip.eis.pro=0. 1.adb设置: adb root adb remount adb shell setprop persist.vendor.cam.ip.eis.pro 0 2.md.mk文件设置: md.mk文件文件参考路径:/sprdroidr_trunk_21a/device/sprd/qogirn6pro/ums9620_1h10/module/camera/md.mk 在md.mk里添加这个persist=0,PRODUCT_PROPERTY_OVERRIDES 表示全局变量. PRODUCT_PROPERTY_OVERRIDES += persist.vendor.cam.ip.eis.pro=0
+参考FAQ: FAQ202173095
+### 问题: 在LTE only的模式下主板贴TCXO校准AFC时simba如何设置
+解决方案: 1、需在LTE only模式下对AFC进行校准时,可选择simba中支持LTE only下校准的seq文件,如SC9820E+SR3593A(LTE Only); 2、当主板晶体贴TCXO时,只需在simba中勾选AFX(LTE)(XO)进行AFC进行校准,如图所示,当主板晶体为TSX时,需将AFC下几项同时进行勾选; 3、LTETsxStart*AFC*\LTETsxCal*AFC*\LTETsxFinal*AFC*是校准TSX时对温度参数进行校准,若校准TCXO时勾选会报错.
+参考FAQ: FAQ202173096,含图片
+### 问题: 如何取得摄像头YUV数据
+解决方案: 在DCAMERA_StartPreview中注册ISP_SERVICE_CALLBACK_DISPLAY回调,就能在注册的回调函数中获取预览时的图像数据. 参考: ISP_ServiceRegister(ISP_SERVICE_CALLBACK_DISPLAY, _DCAMERA_PreviewDisplayCallback); _DCAMERA_PreviewDisplayCallback 的函数参数就是 ISP_FRAME_T 类型的指针,ISP_FRAME_T 结构中有图像的yuv buffer地址、宽度、高度.
+参考FAQ: FAQ202173100
+### 问题: GSM RX level如何补偿
+解决方案: 
+参考FAQ: FAQ202173102,含图片
+### 问题: UMP510G5芯片的PBINT和PBINT2管脚内部上拉电阻及PBINT的高低电平门限
+解决方案: UMP510G5芯片的PBINT和PBINT2管脚内部有上拉电阻,阻值是20K欧,上拉到VBAT电压域. 随温度差异及Process不同,PBINT和PBINT2的 高低电平门限在0.75V~1.15V之间,没有迟滞.
+参考FAQ: FAQ202173106
+### 问题: 为什么收到的短信内容为问号
+解决方案: 由于某些短信中心或接收终端不支持National Language Single Shift Tables方式编码方式,遇到这样的短信,会将其转换为?, 例如,在T-Mobile Hungarian 网络下使用GSM bit7发送字符á
+参考FAQ: FAQ202173109
+### 问题: WCDMA timing error 调试位置
+解决方案: 调试位置在WCDMA_optimize下,具体位置如下图: 以WCDMA band1为例,调试位置为WCDMA_optimize\WCDMA_download_params_optimize\pa_en_timer_adjustment\band\band[0]\pa_on_timer_adjustment. 0XFFD7为补码,若timing-errror case fail,可微调该处数据.
+参考FAQ: FAQ202173110,含图片
+### 问题: GSM timing error调试位置 for NV2.0
+解决方案: GSM timing error调试位置gsm_platform\system_param_dsp_use_platform\action_tables_struct\saved_action_table\[0x11F],如下图: 修改方式:若Timing error测出偏差-1T,修改单位4bit/1T,故上图修改为:0X60-4=0X5C
+参考FAQ: FAQ202173111,含图片
+### 问题: UIS8910DM GPIO几种上拉类型halIomuxPullType_t的区别
+解决方案: halIomuxPullType_t类型的区别与上下拉电阻对应关系如下: halIomuxPullType_t类型 是否上拉 上拉电阻 是否下拉 下拉电阻 HAL_IOMUX_PULL_DEFAULT 否 / 否 / HAL_IOMUX_FORCE_PULL_NONE 否 / 否 / HAL_IOMUX_FORCE_PULL_UP 是 20k 否 / HAL_IOMUX_FORCE_PULL_UP_1 是 20k 否 / HAL_IOMUX_FORCE_PULL_UP_2 是 4.7k 否 / HAL_IOMUX_FORCE_PULL_UP_3 是 1.8k 否 / HAL_IOMUX_FORCE_PULL_DOWN 否 / 是 40k/50k
+参考FAQ: FAQ202173116
+### 问题: SC9863A WCDMA B5\B8吞吐量测试
+解决方案: SC9863A WCDMA B5\B8吞吐量测试,若出现吞吐量偏低情况的话,建议按照下面尝试: 1、CP0版本升级到4G_MODEM_20A_W21.15.3_P13(含此版本或之后版本); 2、若暂时没计划升级CP0版本的话,需要打补丁,补丁已正式通过Uni-support发布,编号: PATCH20001259; 同时在NV中按照如下路径修改数值: WCDMA_optimize\WCDMA_download_params_optimize\trx_path_config=0X4000(NV中默认若是0x1,修改为0X4001,若是0X0,修改为0X4000).
+参考FAQ: FAQ202173119
+### 问题: 平台（SC9863A/UMS312/UMS512/UMS512T/UMS9230/UMS9230H/UMS9230T）SD卡容量可以支持到多少？
+解决方案: SC9863A/UMS312/UMS512/UMS512T/UMS9230/UMS9230H/UMS9230T以及衍生的平台 SDIO使用的是SDIO3.0协议,目前可以支持市面上1TB的SD卡. 但是由于主板设计不同(SD卡走线过长)或者不同厂家的1TB SD卡信号驱动能力不同,在实际使用时候可能需要调整平台SDIO的驱动能力,因此需要根据具体主板设计以及不同型号的SD卡来进行适配SDIO的驱动力. 由于市面的高容量卡大部分都支持SDR104模式,如果需要支持SDR104模式需要注意如下: 1.SC9863A平台机衍生的平台 需要增加一个外置的800mA的LDO给SD卡供电; 2.UMS312/UMS512/UMS512T/UMS9230/UMS9230H/UMS9230T搭配的PMIC给SD卡供电能力足够,因此不需要增加额外的LDO供电.
+参考FAQ: FAQ202173122
+### 问题: MOCOR平台如何获取YUV和RAW图
+解决方案: YUV函数全名: ISP_ServiceDumpToFile,需要打开开关ISP_DUMP_YUE RAW拍照的宏开关是RAW_CAPTURE_FOR_RAW_SENSOR,需要在mk里面打开宏开关
+参考FAQ: FAQ202173125
+### 问题: 横屏项目如何正常显示开机logo
+解决方案: 原因分析: 开启横屏项目的宏之后,UI会根据设置的角度旋转90°、180°、270°, 但是开机Logo的图片显示的时机较早,MMI中对图片的旋转处理还未生效, 横屏项目的开机Logo图片并按设置的角度旋转. 解决方法: 将横屏项目的开机Logo按设置的旋转角度手动旋转90°或180°或270°后存放在之前的路径下. 编写版本后开机Logo图片能正常显示.
+参考FAQ: FAQ202173127
+### 问题: 获取并设置Mocor平台支持语言
+解决方案: 1. 从str_table.xls和str_table1.xls的首行的语言ID可以获取支持的语言. 2. 在str_table表格中包含某种语言的翻译前提下,将工程的mk文件中,类似为IM_ARABIC_SUPPORT的宏置为TRUE, 平台将支持这种语言,置为FALSE不支持这种语言. 宏中第二个词表示语言. 扩展: Mocor平台显示的字符串绝大部分是存放在str_table表格中,在项目中表格又细分为str_table.xls和str_table1.xls两个表格. 首列是字符串ID,其他列是某种语言下所有字符串的翻译.首行是语言ID,其他行是同一个字符串在不同语言下的翻译. str_table和str_table1这两个表格包含的语言是"加"的关系,除中文、英文外str_table包含的语种是唯一的. 如果str_table.xls和str_table1.xls中有语言ID则支持这个语言.只需在编译的工程的mk文件中将这个宏置为TRUE即可.
+参考FAQ: FAQ202173129
+### 问题: WCDMA校准RSSI FAIL如何处理
+解决方案: 1.先确认是否是单板问题,其余主板RSSI的余量是否充足? 2.确认校准偏上下限主板的灵敏度是否满足贵司要求? 当所有主板RSSI余量都不充足,并且校准fail的主板测试灵敏度满足贵司要求时,此时可以将RSSI的门限进行适当放宽,具体位置如下: 十进制显示情况下,三者必须满足以下关系ref_rssi_up_pri=10*ref_rssi_pri=100*ref_rssi_down_pri 当校准值偏下限-20,可以将三个值/2处理 当校准值偏上限0,可以将三个值*2处理 例:当主路校准值偏下限,辅路校准值偏上限时 修改结果如下图:
+参考FAQ: FAQ202173130,含图片
+### 问题: 通过工程模式配置NV参数
+解决方案: 开发人员在开发过程中,通过在工程模式中添加菜单,通过菜单动态控制NV的状态. 如:为了动态的开关uart log.在工程模式中添加菜单,再用向如下接口传参TRUE或FLASE,实现动态开关的功能. PUBLIC void MMIENG_SetLogUartIsOpen(BOOLEAN is_open) { MMINV_WRITE(MMIENG_NV_IS_UART_LOG_OPEN,&is_open); }
+参考FAQ: FAQ202173133
+### 问题: RF-TESTER测试Cat1产品7.4 Maximum input level fail
+解决方案: CAT1支持下行64QAM,但是协议36.306 TS4.1-1对cat1有TBSize不能超过10296bit的限制,因此Max input level测试时RB不能配满,RF tester直接在主界面选在Cat1产品测试即可;
+参考FAQ: FAQ202173136,含图片
+### 问题: 2G/3G网络传导信号格数测试方法及门限
+解决方案: 测试方法: 手机传导连接CMU,测试2G/3G下,手机读取场强信号强度和信号格数; 测试要求: (a)2G模式手机读取场强信号强度一般比CMU设置值误差要小于2dB;大于2dB判为FAIL; (b)3G模式手机读取场强信号强度一般比CMU设置值要小3~5dB,大于5dB判为FAIL; 注意事项: 根据3GPP协议,3G状态手机读取信号强度为RSCP,而RCSP=RSSI+ECNO,ECNO的范围是-3.3～-20dB,所以正常状态下会比RSSI低3dB;
+参考FAQ: FAQ202173137
+### 问题: UMS9230充电温控策略
+解决方案: 充电时会随时监控电池的温度,正常通过BAT_TEMP_ADC去监控.具体的关系需要依据电的特性去配置,具体可参考电池的规格书.如下是某电池推荐的温度和充电电流的关系.
+参考FAQ: FAQ202173140,含图片
+### 问题: 充电温控策略
+解决方案: 充电时会监控电池的温度,正常通过BAT_TEMP_ADC去监控.具体的关系需要依据电池的特性去配置,具体可参考电池的规格书.如下是某电池推荐的温度和充电电流的关系
+参考FAQ: FAQ202173141,含图片
+### 问题: OTA测试GSM/WCDMA/LTE时天线开关标志位
+解决方案: GSM:OTA测试时,测量主+分性能时,会测到分集没有加成,需要将分集设置成常开状态. WCDMA:该制式分集是动态开启,在OTA测试时,测量主+分性能时,会测到分集没有加成,需要将分集设置成常开状态. LTE:该制式主辅都是一直开启的,OTA测试需要测试单主集,单分集灵敏度,需要在NV中将设置单主,单辅. 另一种修改方法:1.开机通过暗码进入工程模式(平台默认*#*#83781#*#* ),在"HARDWARETEST"页面找到 "天线设置" 2.进入天线设置,按需求选择该制式的天线配置,重启后生效.
+参考FAQ: FAQ202173142,含图片
+### 问题: LTE制式下各频段不同带宽下参考灵敏度的上行链路RB配置
+解决方案: 3GPP协议规定(TS36.521-1)规定不同带宽下的ULRB设置如下图: 客户测试时需按照上图进行配置,否则测试数据存在异常.
+参考FAQ: FAQ202173144,含图片
+### 问题: 展锐Android4.4平台是否支持NFC
+解决方案: 展锐Android4.4平台默认不集成NFC相关,如果客户需要支持,请联系NFC第三方提供完整的方案,包括驱动、APP以及Setting中的相关设置项均需要第三方提供.
+参考FAQ: FAQ202173149
+### 问题: LTE PUCCH 整个band功率偏低或偏高调试
+解决方案: 现象: 1.而在同一环境和同一条件下,PUCCH和PUSCH的功率测量偏差较大,导致功控相关case测试fail或余量不足. 2. 整个band高中低信道上,PUCCH和PUSCH的功率偏差现象保持一致. 2. 修改pdet_temp和pdet_rb对PUCCH功率调试不起作用. 原因: LTE PUCCH状态下,pdet机制不工作,故修改pdet_temp和pdet_rb均不会影响PUCCH目标功率. APC_temp通常使用平台默认参考值,且其在最大功率状态下仍是生效的. 只是当APC_temp不适宜时,将导致LTE PUCCH的功率异常;而PUSCH 由于pdet机制工作将会对目标功率强行补偿较大值,从而保持功率维持在目标功率范围内. 解决方法: 只需要调试APC_temp,将只修改了PUCCH的功率大小而不会影响PUSCH. NV修改位置及方法如下图:
+参考FAQ: FAQ202173150,含图片
+### 问题: EDGE Ramp曲线在NV中的调试位置
+解决方案: EDGE DCS Ramp曲线调试位置如下: GSM_optimize\GSM_calibration_param_optimize\rf_param_dsp_use\rf_dcs_param_dsp_use\RF_ramp_table\stage14 注:EDGE Ramp调试不区分PCL,其他Band的调试位置在对应Band目录下 调试技巧: 1.当PVT曲线贴近内侧曲线fail时,可以将最大值0X352个数向两侧延伸,如下图所示: 2.当PVT曲线贴近外侧曲线fail时,可以适当减少最大值的配置个数.
+参考FAQ: FAQ202173151,含图片
+### 问题: Android11是否支持VSIM功能，如何配置？
+解决方案: Android11版本支持VSIM,但默认不参与编译,需要进行如下配置: 例如,当前工程为UIS8581E: device/sprd/mpool/module/telephony/msoc/sharkl3/sharkl3.mk 需在该文件中添加属性 persist.vendor.radio.primarysim=1 \ ro.vendor.radio.fixed_slot=true \ persist.sys.callforwarding=2 \ persist.vendor.radio.vsim.product=2 PRODUCT_PACKAGES += VsimService 其他情况说明: 在支持vsim的平台上,需要客户或第三方提供支持vsim功能的app,在与展锐提供的接口和流程适配成功后,才能做vsim的功能验证.
+参考FAQ: FAQ202173153
+### 问题: UMS512平台在通话时快速调节音量键，下行语音中的pop音如何消除？
+解决方案: 可以通过打开下行ALC模块来抑制这种场景下的语音中Pop. 在通话时,快速按音量下键,会有按键音和语音的并发,导致语音信号在较短时间内发生急速变化,导致POP. 由于音量等级设定的增益在Rx_Dgain 模块里,平台Audio DSP在RX_Dgain之后的ALC处理模块中加入语音渐入渐出算法,来减弱音量等级改变带来的语音幅度的急剧变化. 注意:1.下行增益尽量设置在ALC之前的模块,如RX-Dgain里面,然后适当调整模拟增益.见下图: 2.避免把大部分增益或者音量等级设定放到ALC之后的VBC里面(RX_Vdg),否则Pop音无改善.
+参考FAQ: FAQ202173154,含图片
+### 问题: UMS9230平台在通话时快速调节音量键，下行语音中的pop音如何消除？
+解决方案: 可以通过打开下行ALC模块来抑制这种场景下的语音中Pop. 由于在通话时,快速按音量下键,会有按键音和语音的并发,导致语音信号在较短时间内发生急速变化,导致POP. 目前平台ADSP在ALC模块加入渐入渐出算法,以改善在这种场景下的POP音.所以需要打开ALC模块. 注意:下行增益尽量设置在ALC之前的模块,一般设置在RX-Dgain里面,然后适当调整模拟增益.见下图: 避免把增益全部放到VBC里面(RX_Vdg).因为此模块在ALC处理之后,此时渐入渐出效果会严重减弱.
+参考FAQ: FAQ202173155,含图片
+### 问题: 系统休眠后，仍会有AT指令频繁唤醒系统，如何减少这类唤醒？
+解决方案: Google原生设计(Android8.1起)中,充电时机器休眠将不关闭信号上报,不充电时机器休眠将关闭信号上报. 一些产品(如车载产品)存在需要一直连接USB的情况,这时上层将认为这是充电状态,进而不关闭信号上报,也就使得系统休眠后仍有大量AT唤醒系统. 改善方案: 不区分充电和非充电状态,系统灭屏后关闭信号上报(亮屏后会恢复信号上报). 具体修改: DeviceStateMonitor.java中,将该类中所有相关方法(如isLowDataExpected(),shouldTurnOffSignalStrength()...)中的充电状态(mIsCharging)变量屏蔽. 注意:不同版本中相关方法名和方法数量可能存在差异,以实际代码为准. 补充:因DeviceStateMonitor中log开关默认关闭,如果这类问题需要展锐FAE帮助分析,请先配置该类中DBG = true,并且从开机开始抓取log(需含radio log).
+参考FAQ: FAQ202173158
+### 问题: 工程模式LTE FDD MODE未显示BAND65-BAND80中的频段
+解决方案: 1.首先确认modem是否上报频段信息 2.确定底层上报频段信息后,添加NV信息,即在mmieng_nv.h中添加NV项ID,在mmieng_nv.c中定义这个ID的数据长度. 3.添加读取新增NV项ID的接口 4.在MMIENG_SetALLBandSupportInfo(void)中添加存储Band65_80的32位变量用于存储从底层上报的经转换后的信息. 用em_al_get_locked_lte_multiband替换em_al_get_locked_lte_multiband_for_scan.用于获取fdd_65_80的信息 5.将fdd_65_80的信息存储到NV中 6.在窗口处理函数中添加从NV中获取fdd_65_80的值的代码,当某个bit位是1时用list控件显示这个频段,某个bit位为0时不显示这个频段.
+参考FAQ: FAQ202173159
+### 问题: 未拷贝闭源IDH包报错找不到system_ext文件
+解决方案: [原因分析]: Log来看是cd到system_ext目录后未找到文件或目录,而这个vendor/sprd/proprietories-source/proprietories-prebuilt/Android.mk就是负责对闭源IDH包下的闭源apk进行二次签名的,因此极有可能是没找到闭源apk,即很有可能是客户未拷贝IDH包内的闭源包到源码中所导致. [解决方案]: 以ums512_lwfq_1h10_ctcc-userdebug-native 工程为例: 需要将vendor/sprd/release/IDH/ums512_lwfq_1h10_ctcc-userdebug-native/ 下的bsp/out 和out目录分别 copy 到源码bsp 和 根目录下. 之后再进行编译即可: source build/envsetup.sh choosecombo 1 ums512_lwfq_1h10_ctcc userdebug native make -j16
+参考FAQ: FAQ202173161
+### 问题: 编译IDH包时,未下载/获取gms包报错,找不到gms包
+解决方案: [原因分析]: LOG来看是找不到gms包所导致,从源码来看是在判断当lunch gms工程时vendor/partner_gms路径下是否有gms包. build/envsetup.sh 786 if [ "$style" = "gms" -a ! -d "vendor/partner_gms" ] 787 then 788 echo 789 echo "** can not find gms build path" 790 return 1 791 fi [解决方案]: 因gms版本我司不直接提供gms包,如果客户需要gms包, 需要客户自行下载gms包后再编译.
+参考FAQ: FAQ202173162
+### 问题: Chromium浏览器名称是否支持随语言动态变化？
+解决方案: Chromium 浏览器的名称,要么为"Chromium",要么为"浏览器",目前不支持跟随语言动态切换,Google的设计如此;跟Chrome一样,不管在什么系统语言,Google Chrome浏览器的名称都是"Chrome". 注意:如果Chromium要显示为中文的"浏览器",请提CQ以获取相应的apk.
+参考FAQ: FAQ202173170
+### 问题: UIS8910DM NV项包括哪些数据类型，如何新增字符串类型的NV项
+解决方案: 1、nvm文件nv项类型由ITEM_TYPE字段指定,包括如下类型: STRUCT ASTRING LONG SHORT CHAR ARRAY 2、字符串类型参考以下文件新建: \idh.code\prebuilts\modem\8910\cat1_UIS8915DM_BB_RF_SS_cus\nvitem\ims_nv.nvm文件 BEGIN_ITEM ITEM_NAME = ss_imsiSim1 ITEM_ID = 2048 ITEM_TYPE = 6 (ASTRING) ITEM_SIZE = 16 ITEM_CONTENT = ITEM_INDEX = 1 ITEM_PARENT = 0 ITEM_DESC = END_ITEM
+参考FAQ: FAQ202173171
+### 问题: DEFAULT_USE_COMPACTION 是否可以设置为true？
+解决方案: 1、DEFAULT_USE_COMPACTION 直接置为true即可,无需其他修改 2、DEFAULT_USE_COMPACTION启用的原理是通过频繁清理缓存来减少应用程序占用的内存,这样导致页缓存命中率大大降低. 3、启用后的影响: (1)好处:可用内存(RAM)会变多 (2)坏处:导致冷启动都需要从ROM加载大量文件,所以冷启动的速度会变慢,实测耗时会增加20%左右,同时因为频繁的清理缓存,整体的功耗会略有上升.
+参考FAQ: FAQ202173172
+### 问题: Go版本预置facebook，如何解决deviceinfo.apk检测出现AppStandby whitelist项fail？
+解决方案: 可打开config_enableAutoPowerModes解决: <bool name="config_enableAutoPowerModes">true</bool> 注意以下说明: config_enableAutoPowerModes 是控制light doze/doze功能的,而doze功能依赖sensorhub, Go版本因为硬件不支持sensorhub,所以该项默认配置为false. 打开之后会使能light doze/doze功能,因为没有sensorHUB,所以doze功能不会起效,只有light doze在灭屏待机大概5分钟后就会起效.light doze起效后,会限制一些后台应用的网络访问. 另外,light doze是通过alarm来维护状态转换的.所以在灭屏待机后,会有一些多余的alarm产生.
+参考FAQ: FAQ202173190
+### 问题: 如何默认某应用不受流量限制？
+解决方案: 可将对应应用的包名按下面方式,添加到frameworks/base/data/etc/platform.xml 中: <allow-in-data-usage-savepackage="com.android.providers.downloads" /〉 注意com.android.providers.downloads替换为对应应用的包名
+参考FAQ: FAQ202173191
+### 问题: Android 11 如何恢复原生的省电模式？
+解决方案: 恢复Android原生省电功能: debug版本调试时,可以通过adb直接设置下列属性为0恢复Android原生省电功能 adb shell setprop persist.sys.pwctl.enable 0 修改配置文件恢复Android原生省电功能.在device/sprd/mpool/module/power/main.mk 中将TARGET_PWCTL_ULTRASAVING设置为false,属性persist.sys.pwctl.enable 设置为0.
+参考FAQ: FAQ202173192
+### 问题: PMU中LDO的current limit 与short current limit  区别？
+解决方案: PMU规格中介绍LDO时有如下电流限定值: current capacity: 指在额定输入电压下LDO电流输出能力. current limit :LDO输出电流超过该值后其输出电压会迅速下降,在current capacity 和current limit之间电压也会下降,但是下降缓慢. short curremt limit :指该LDO发生短路保护后输出的最大电流值,正常该值不会超过current limit的一半,当LDO触发短路保护后,电流会被限制在short current limit值以下.
+参考FAQ: FAQ202173193,含图片
+### 问题: 设置多国语言时，多国语在语言设置列表中的名称
+解决方案: 
+参考FAQ: FAQ202173194,含图片
+### 问题: 马达干扰WIFI/BT灵敏度
+解决方案: 在马达线上串100nH,到地接33pF,验证灵敏度是否达标. 如果有改善却不达标,在上面基础上继续调试. 如果没改善或改善不明显,请提CQ/Bug给展锐,再针对PCB和整机进行分析.
+参考FAQ: FAQ202173196
+### 问题: A平台上认证pass的DDR物料是否可以不经认证在B平台上直接使用？
+解决方案: 不可以. 原因: 1) 不同平台的DDR最高运行频率不同.比如SC9863平台LPDDR4/LPDDR4X最高运行频率是933MHZ,而UMS512平台LPDDR4/LPDDR4X 最高运行频率是1866MHZ.UMS9230平台LPDDR4X最高运行频率是1600MHZ. 2) 不同平台memory部分layout存在差异. 3) 不同平台间的DDR PHY存在差异,与memory匹配的最优参数不尽相同.
+参考FAQ: FAQ202173199
+### 问题: 开启Rtos中bootloader支持LCD显示功能
+解决方案: 在项目MK文件中将LCD_BOOTLOADER_SUPPORT=FALSE改为LCD_BOOTLOADER_SUPPORT=TRUE即可.
+参考FAQ: FAQ202173201
+### 问题: UIS8910DM 蓝牙的MTU是多少？是否可以修改？相关接口是什么？
+解决方案: 蓝牙的MTU配置为:server mtu为200,client mtu为247, 修改方法:请求mtu的接口为exchange_mtu_req,位于结构体btgatt_server_interface_t.
+参考FAQ: FAQ202173204
+### 问题: 如何调整语言设置中语言的显示顺序
+解决方案: display language菜单中的语言按mmi_base_common.h中 MMISET_LANGUAGE_TYPE_E列举的语言的顺序显示, 调整语言的显示顺序分为两步: 1.调整MMISET_LANGUAGE_TYPE_E中语言对应的枚举值的顺序,枚举值调整到前面,对应的语言也会靠前显示. 2.调整mmiset_func.c中s_lang_set[MMISET_MAX_LANGUAGE+1]中各语言的顺序与MMISET_LANGUAGE_TYPE_E中定义的语言顺序保持一致.
+参考FAQ: FAQ202173207
+### 问题: FM传导灵敏度测试对音频参数的要求
+解决方案: 1.FM传导灵敏度测试,是通过FM射频电路将FM信号接收进来,再解调为音频信号输出,再测试音频信号来判断FM性能. 2.所以,音频参数差,会影响FM传导灵敏度测试结果.音频参数调试达标后,才能测试FM传导灵敏度 3.FM传导灵敏度测试,对音频参数要求如下 ①.SNR(dB):＞37dB ②.Distortion(%):＜2.3% ③.Output Voltage(mV):＞200mV
+参考FAQ: FAQ202173209
+### 问题: 9863A的TypeC充电线要求
+解决方案: 9863A不支持PD充电,所以当使用线材为非正常typec线,且是一个带emark芯片的PD线材,在插入充电时,PMIC会识别为POWERED CABLE,即log显示state为6:sc27xx-typec sc27xx-typec: now works as DRP and is in 6 state, event 1,此时VBUS没有电压,不能充电. 解决方法:需要使用普通typec线.
+参考FAQ: FAQ202173210
+### 问题: 展锐平台是否有第三方充电IC的Ship mode模式配置
+解决方案: 展锐平台默认没有关于ship mode模式配置的参考代码,如果需要,客户可以通过增加adb节点控制ship mode模式
+参考FAQ: FAQ202173211
+### 问题: UMS9230平台在通话时快速调节音量键，下行语音中的pop音如何消除？
+解决方案: 可以通过打开下行ALC模块来抑制这种场景下的语音中Pop. 在通话时,快速按音量下键,会有按键音和语音的并发,导致语音信号在较短时间内发生急速变化,导致POP. 由于音量等级设定的增益在Rx_Dgain 模块里,平台Audio DSP在RX_Dgain之后的ALC处理模块中加入语音渐入渐出算法,来减弱音量等级改变带来的语音幅度的急剧变化. 注意:1.下行增益尽量设置在ALC之前的模块,如RX-Dgain里面,然后适当调整模拟增益.见下图: 2.避免把大部分增益或者音量等级设定放到ALC之后的VBC里面(RX_Vdg),否则Pop音无改善.
+参考FAQ: FAQ202173217,含图片
+### 问题: android app如何启动init.rc里的service
+解决方案: 假如有一个service,需要在特定场景下通过app触发,那么该如何实现呢? 假定.rc文件里有如下服务,该服务默认是不启动的: service XXX_service /system/xbin/XXX.sh class main disabled oneshot app可以通过SystemProperties.set("ctl.start", "XXX_service"); 启动服务 可以通过SystemProperties.set("ctl.stop", "XXX_service"); 关闭服务 注意,此app需要系统权限,因此需要: 1、需要配置系统属性android:sharedUserId="android.uid.system" 2、需要使用系统签名即app是一个系统app
+参考FAQ: FAQ202173220
+### 问题: Vchg电压说明
+解决方案: UMP510G搭配的平台中,当充电器插入时,Vchg电压在3.3V以上时就会触发BC1.2检测,充电电流由充电IC控制,但是存在VINDPM门限,VINDPM电压不是固定的,可在充电 ic中配置,通常VINDPM门限设置为4.5V左右,因此充电IC的Vchg检测到的电压大于VINDPM门限才能有充电电流.
+参考FAQ: FAQ202173225
+### 问题: 射频传导测试6.3.3_Transmit OFF Power 测试Fail解决方法
+解决方案: 如遇到射频传导测试6.3.3_Transmit OFF Power Fail问题应先检查如下NV配置情况: 确认Fail的频段,按如下修改进行调试,可参考相近频段的NV配置/
+参考FAQ: FAQ202173227,含图片
+### 问题: WCDMA下如果单独修改每个BAND的VDDWPA供电电压
+解决方案: WCDMA下的VDDWPA DC DC最大供电电压通常默认为MAX Voltage=3.34V,每个band在不同的功率下电压可以通过修改dcdc_index值来改变,step为0.05V, Eg. 0x0=Max Voltage, 0x17=Max Voltage-23*0.05; 以NV2.0 BAND1为例,修改位置如下:
+参考FAQ: FAQ202173228,含图片
+### 问题: 如何调节人脸录入尺寸
+解决方案: 上层settings需要修改以下代码中的WIDTH、HEIGHT为对应尺寸即可: /packages/apps/Settings/src/com/android/settings/biometrics/face/FaceEnrollPreviewFragment.java 72 private static final int WIDTH = 3 == SystemProperties.getInt(FACEID_VER_PROP, 1) ? 1440 : 960; 73 private static final int HEIGHT = 3 == SystemProperties.getInt(FACEID_VER_PROP, 1) ? 1080 : 720;
+参考FAQ: FAQ202173238
+### 问题: 4G产品上SR3595D1关于ext-LNA和CDMA制式的支持情况
+解决方案: 答1:3595D1不支持ext-LNA. 答2:3595D1不支持CDMA制式.
+参考FAQ: FAQ202173242
+### 问题: WCDMA  5.5.2 Transmit ON OFF Time mask 项ON Power值偏高
+解决方案: WCDMA 测试 5.5.2 Transmit ON OFF Time mask,当出现on power值偏高时,可以修改对应Band的prach功率,位置及修改方式如下: 注:apc_comp_item_selection的bit 6是max_prach_power的使能标志位,需将bit6置1, max_prach_power设置的值才会生效
+参考FAQ: FAQ202173245,含图片
+### 问题: DPDT天线动态切换测试注意事项
+解决方案: 当DPDT开关在射频测试座前端时,若是在动态开启的状态下进行射频传导和OTA测试,TX和RX的一些测试case在场景切换时会出现结果异常的现象 故当DPDT开关存在时,射频传导,认证和OTA测试均需要在固定天线状态下进行,具体锁天线方式如下: 首先进入工程模式下(拨打*#*#83781#*#*),然后选择HARDWARE--ASDIV设置,根据测试需求固定上下天线 注:1.当手机重启后,DPDT回归动态切换状态. 2.当DPDT开关在射频测试座后端时,射频传导,认证和OTA测试不会受到DPDT动态切换的影响,故测试不需要进行天线锁定.
+参考FAQ: FAQ202173246
+### 问题: USB的DP/DM什么时候切换至BC1.2模块什么时候切换至USB PHY？
+解决方案: 当插入USB后,Vchg检测到中断先做BC1.2检测,当检测到CDP或者SDP后会将DP/DM切到USB模块,如果检测到DCP,平台默认不会将DP/DM切到USB模块.可以配置DCP_SWITCH_EN为0,当检测为DCP会切换至USB模块.
+参考FAQ: FAQ202173249,含图片
+### 问题: UMP510G下电时序
+解决方案: 1.UMP510G规格书中option1=0 and option2=0 or option1=0 and option2=1 or option1=1 and option2=0 方案 描述的下电时序如下,如果UI关机后测试时序,无法得到这种时序,规格书上的时序是在EVB上测试得到的.如要得到这种下电时序可以通过ADB命令将POWER_PD_HW的PWR_OFF_SEQ置0,之后机器会走硬件关机流程,得到如下的下电流程. 2.如果通过UI关机,除DCDCCPU受DCDCCPU_EN控制外,由于大系统的存在,其他电源也会受各function的软件控制,其中固定的时序可参考如下.如果使用32K less方案,VDDDCXO不会下电,32K方案会下电.
+参考FAQ: FAQ202173250,含图片
+### 问题: ums512/512T如何修改USB寄存器信号质量
+解决方案: UMS512/512T芯片中影响USB眼图信号质量的寄存器地址为0x323B0064 bit[26:25]影响眼角张开成图,值越大,上升沿越陡峭 bit[24:19]影响眼高,值越大,眼高越低 修改方法:通过串口进行修改 su lookat 0x323B0064 lookat -s 0x00FBD0C0 0x323B0064 (修改值在前,地址在后) 注:该方法只用于测试时,插拔USB会恢复初始值.
+参考FAQ: FAQ202173252
+### 问题: I2C数据传输时候SCL波形被拉低一段时间没有被释放，正常吗？
+解决方案: 如下图的红色标记区域:测试过程发现数据在传输结束后SDA是拉高的,但是SCL被拉低一段时间没有被释放. 这是因为I2C在数据传输时候如果是多位的连续数据传输(N＞2)时候,只有在数据最终传输完成后才会有停止信号,在数据传输期间没有stop信号,这时候由于软件的任务调度机制问题,i2c在处理完中断后会将CPU让出来,这个时候CPU在执行其他任务,i2c就会处于被hold的状态.因此一直保持SCL为低,一直到下一个数据的传输开始. 所以,这时候的SCL被拉低是正常的.
+参考FAQ: FAQ202173265,含图片
+### 问题: CC1/CC2管脚的电压和上拉电阻可以选择吗？
+解决方案: SC2721G和UMP510G内部CCC1和CC2管脚的电压是通过电流源流过下拉电阻产生的电压,电压的大小与外部电阻和Vbat电压有关: 1.当CC1/CC2外部悬空时候,由于电流源是被Vbat上拉,所以CC1/CC2电压的幅值是等于Vbat; 2.当CC1/CC2外接设备后有下拉电阻,这时候电压是Min(80uA*外部下拉电阻,Vbat). 如果把这个管脚用作输入的ADC功能并且有分压电阻的存在,要考虑CC管脚的下拉电阻精度10%. 由于该CC脚的驱动电流只有80uA,所以不能用用于大负载的供电电源.
+参考FAQ: FAQ202173266,含图片
+### 问题: 开机过程EMMC初始化了几次？
+解决方案: 开机的过程中软件经历了ROMcode加载SPL.SPL加载uboot.uboot加载kernel程序,这其中,EMMC被初始化的地方有 ROM code chipram,uboot,kernel阶段.所以在开机时候测试EMMC的3V电源会看到这个电源会有三次的上电过程.
+参考FAQ: FAQ202173267
+### 问题: 8910FF平台更换2016封装26M晶体注意事项
+解决方案: 8910FF平台如果更换2016封装26M晶体,CP版本需要升级到MOCOR_20B_SW_W21.11.2之后的版本,CP软件升级后,工具版本也需要同步升级到Simba_R8.21.2001及以后版本的校准.
+参考FAQ: FAQ202173273
+### 问题: Unisoc 4G平台支持的WCDMA频段注意事项
+解决方案: WCDMA目前最大支持5个频段,默认是WCDMA B1/2/5/8/4, 开发过WCDMA B1/2/5/8/6/19,其中WB6只需要配置PS NV,不需校准直接使用WB5的校准参数,WB19的逻辑配置在band10位置,WB19校准参数存放于band4位置,这要搭配具体的modem版本,目前已合入分支是4g_modem_20a,其他分支需提CQ咨询软件.
+参考FAQ: FAQ202173274

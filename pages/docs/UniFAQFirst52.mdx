@@ -1,0 +1,306 @@
+### 问题: apr.xml这个文件的作用是什么
+解决方案: apr.xml文件存在于/data/sprdinfo/目录下面,用于记录统计系统稳定性类问题比如重启,native crash,java crash,anr,modem assert等异常发生的时间,类型、软件版本信息等.
+参考FAQ: FAQ100754
+### 问题: 如何通过下载工具调整ddr频率?
+解决方案: 1、 工具加载测试pac包; 2、 点击Downlaod settings-> Vol-Freq Turnning, 3、 如下图红圈处,修改为想要设置的频率如 400000000.
+参考FAQ: FAQ100768
+### 问题: androidN LMK水位配置的方式有哪些？
+解决方案: 主要有两种方式: 第一种采用android 原生的方式,LMK水位是根据分辨率和总内存自动计算出来的. 第二种就是在rc文件中,人为配置好一组值. 采用哪种方式受device/sprd/xxxx/common/rootdir/root/init.ram.rc 中lmk.autocalc属性的控制. 当 lmk.autocalc=true 时,采用的就是android 原生的方式. 当 lmk.autocalc=false时,lmk水位数值采用init.ram.rc中配置好的一组值.
+参考FAQ: FAQ100776
+### 问题: 进程下面binder线程的名字是如何命名的
+解决方案: binder线程的命名方式是 Binder:pid_s 的形式,其中,pid是当前的主进程号,s是binder的计数
+参考FAQ: FAQ100792
+### 问题: android如何得到葡萄牙语的字符串的code page编码
+解决方案: 葡萄牙语的编码是Code page 860
+(详细见网站https://en.wikipedia.org/wiki/Code_page_860)
+可通过如下方法把Ｓｔｒｉｎｇ转化成葡萄牙语Code page 860编码
+ String.getBytes("Cp860");
+参考FAQ: FAQ100795
+### 问题: 亮屏待机功耗：TOP命令显示Name为kworker类别的异常内核态线程CPU占有率偏高如何排查？
+解决方案: 1、 kworker 指工作者线程,用来执行工作队列中的work. 2、可在process_one_work函数中添加函数打印log,即可判断出workqueue中具体哪个函数引起的cpu占用率偏高. kernel/kernel/workqueue.c static void process_one_work(struct worker *worker, struct work_struct *work) { ...... + printk(KERN_ERR "process_one_work=%pF\n", worker->current_func); worker->current_func(work); + printk(KERN_ERR "current_func()\n"); ...... }
+参考FAQ: FAQ100831
+### 问题: 蓝芽耳机模式下通话中支持按键音、拨号音从蓝牙耳机出吗？
+解决方案: 通话中来电,按键音以及拨号音ˋ播放的是Generic tone 此格式是无法设置route 的,因此是不支持蓝芽耳机输出
+参考FAQ: FAQ100855
+### 问题: Verify apps over USB开关如何默认开启
+解决方案: 在frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java文件中的loadGlobalSettings方法中,查看是否有如下代码: loadBooleanSetting(stmt, Settings.Global.PACKAGE_VERIFIER_INCLUDE_ADB, R.bool.def_verifier_verify_adb_installs); 如果存在,就将R.bool.def_verifier_verify_adb_installs的值修改为true 如果不存在,就添加如下代码: loadBooleanSetting(stmt, Settings.Global.PACKAGE_VERIFIER_INCLUDE_ADB, true);
+参考FAQ: FAQ101049
+### 问题: Android7.0中，来电振动默认振动时间在哪里定义的？
+解决方案: 来电振动的振动默认时间不在Settings应用中设置,其默认振动时间在 packages/services/Telecomm/src/com/android/server/telecom/Ringer.java中的VIBRATION_PATTERN中定义 private static final long[] VIBRATION_PATTERN = new long[] { 0, // No delay before starting 1000, // How long to vibrate //振动的时间 1000, // How long to wait before vibrating again };
+参考FAQ: FAQ101057
+### 问题: 设置 - 安全 - 手机加密 ，进行加密操作后是否可以解密？
+解决方案: 手机加密即FDE功能(全磁盘加密)是针对物理磁盘进行加密,所以整个过程是不可逆的,无法解密. 如果没有开启自动加密,可以通过恢复出厂设置让磁盘恢复成未加密的状态,而此时相当于磁盘被重新格式化了,并不是解密. 如果开启了自动加密,恢复出厂设置开机后又会重新加密,所以恢复出厂设置也无法将磁盘恢复成未加密状态.
+参考FAQ: FAQ101071
+### 问题: android7.0中，如何将计算器默认显示模式设置为DEG模式？
+解决方案: 在packages/apps/ExactCalculator/src/com/android/calculator2/Evaluator.java中 将 mDegreeMode = mSharedPrefs.getBoolean(KEY_PREF_DEGREE_MODE, false); 修改为: mDegreeMode = mSharedPrefs.getBoolean(KEY_PREF_DEGREE_MODE, true);
+参考FAQ: FAQ101072
+### 问题: 展锐UWE5621平台2.4G-WIFI下支持的模式
+解决方案: 支持11b-20M,11g-20M,11n-20M,11n-40M
+参考FAQ: FAQ114000
+### 问题: SC9850KL平台支持LTE载波聚合（CA)吗?
+解决方案: SC9850KL平台不支持CA.
+参考FAQ: FAQ101093
+### 问题: SC9850K平台LTE载波聚合CA支持情况？
+解决方案: SC9850K平台LTE CA支持情况如下:
+参考FAQ: FAQ101098
+### 问题: SR3595A芯片有2个power detector端口，这两个端口可任意使用吗？
+解决方案: 两个端口pin U5(PDETA)和T6(PDETB)有区别. 对于WCDMA需使用PDETA; 对于LTE可使用PDETA或PDETB,平台推荐使用PDETA.
+参考FAQ: FAQ101101
+### 问题: SC6531E按键灯电路KPLED_CTRL的最大电流是多少？
+解决方案: 最大支持80mA
+参考FAQ: FAQ101144
+### 问题: SC6531E背光电路WHTLED_IB0的最大电流是多少？
+解决方案: 最大支持80mA
+参考FAQ: FAQ101146
+### 问题: SC6531E充电时充电电流固定每隔10s充电电流断1s是否正常？
+解决方案: 这种现象是正常的,目前我司只有SC6531E这个平台充电时10s充电电流断1s. 这种充电的优势是,在暂停的1s中可以实时监控电压.
+参考FAQ: FAQ101147
+### 问题: 使用mid格式的来电铃声，声音太大，破音，请问如何调试？
+解决方案: 如果只是播放mid格式的声音太大,可以在music里面handsfree里,把pre gain里面的mid gain减小.
+参考FAQ: FAQ101149
+### 问题: 二合一喇叭，为什么音乐均衡器是外放的话没有效果？
+解决方案: 请把nv的audio_arm\audio_arm\Handsfree\AudioStructure\app_config_info_set\app_config_info\app_config_info[0]\eq_switch这一项改为0xf.
+参考FAQ: FAQ101150
+### 问题: 请问Secure Boot状态是否支持AT指令的方式查询状态？
+解决方案: 不支持,可以使用checkx工具查询.
+参考FAQ: FAQ101154
+### 问题: ThermalConfig 中的温度单位的关机温度对应的摄氏度为多少？
+解决方案: 温度数值以"温度*1000"表示: <temp>110000</temp> 表示温度为110度.
+参考FAQ: FAQ101159
+### 问题: SC6531E平台怎么调试3合1喇叭震动？
+解决方案: audiotester就可以调试,在music模式的handsfree里面,调试vibrator的gain就可以改变震动大小,一般来说改到-12~-18dB的震动强度基本就够了,也可以按贵司需求修改.改完后导出音频参数合入nv即可.
+参考FAQ: FAQ101229
+### 问题: 请问SIMLOCK同一台电脑是否支持同时接入两个加密狗,能否支持双开,设置不同的端口？
+解决方案: 目前方案不支持.server程序不支持多开,即使配置不同IP也无法在同一台PC上架设多个服务器. 与此同时,为保证方案的稳定性,我们不建议使用单台PC架设多服务器的操作.
+参考FAQ: FAQ101232
+### 问题: 如何测试手机听筒的功率？
+解决方案: 测试听筒功率,可以用8960与手机建立通话,通过8960发送给手机1K的音源,用万用表交流档测试听筒两端电压,算出功率即可,电阻值取32欧姆.
+参考FAQ: FAQ101235
+### 问题: 如何修改CFT工具综测的功率范围？
+解决方案: 在CFT中选择Final Test->standard. GSM修改level项,TDS\WCDMA\LTE修改max power及tolerance.
+参考FAQ: FAQ101252
+### 问题: SC6531E支持GPS吗？
+解决方案: 支持GPS,使用SC6531G搭配SC2393 GPS芯片.
+参考FAQ: FAQ101255
+### 问题: SC6531E使用GPS接口是哪些？
+解决方案: GPS_TXD,GPS_RXD,GPS_CTS,GPS_RTS,GPS_CLK_REQ,GPS_PDN,CON_32K_IN.
+参考FAQ: FAQ101286
+### 问题: SC2342B支持Bluetooth v2.1和BLE双模吗？
+解决方案: 支持.
+参考FAQ: FAQ101334
+### 问题: SC9820A支持的3D Graphics是什么？
+解决方案: 支持OpenGL,ES1.1/1.2/2.0 3D graphic.
+参考FAQ: FAQ101312
+### 问题: SC9820A支持的image sensor像素？
+解决方案: JPEG image sensor sizes up to 8M pixel YUV image sensor sizes up to 3M pixels raw-RGB image sensor sizes up to 13M pixels YCbCr, and JPEG format, support both CCIR601 and CCIR 656
+参考FAQ: FAQ101342
+### 问题: SC9820W是否支持SIM卡热插拔 ？
+解决方案: 支持.
+参考FAQ: FAQ101367
+### 问题: SC9820W是否支持T卡热插拔 ？
+解决方案: 支持.
+参考FAQ: FAQ101371
+### 问题: 展锐UWE5621平台5G-WIFI下支持的模式
+解决方案: 支持11a-20M,11n-20M,11n-40M,11ac-20M,11ac-40M,11ac-80M
+参考FAQ: FAQ114001
+### 问题: 4.4V高压电池配置
+解决方案: 路径: kernel/arch/arm/boot/dts/sprd-battery.dtsi 修改: chg-end-vol = <4400>; chg-end-vol-check = <4380>; chg-bat-safety-vol = <4480>; rechg-vol = <4320>; jeita-cccv-tab = <4400 4400 4400 4400 4400 4400>;
+参考FAQ: FAQ109220
+### 问题: SC6531E平台是否支持无电池下载
+解决方案: 支持
+参考FAQ: FAQ101568
+### 问题: SC9820A平台手机SD卡不识别的原因分析和对策
+解决方案: 不识别SD卡的原因大体分为: 1.劣质的SD卡---需要换用品牌卡 2.射频干扰导致---相关命令和数据信号线上加滤除特定频率的电容,或者贴导电布乃至改板 3.命令和数据线上多贴了电容---需要增加相关信号的驱动能力. 4.SDIO时序不是最佳导致--需要调整时序到最佳状态. 5.其他干扰--需要针对特定主板做具体分析
+参考FAQ: FAQ101438
+### 问题: SC9820W平台的项目，少数LCD在同样背光亮度设置参数下，亮度偏低的对策
+解决方案: 1.尽量选用背光一致性好的LCD. 2.更新软件中对于Backlight_whtled的控制方式, 请向展讯客户支持索取samplecode,将whitled驱动方式改成rgb驱动方式解决.
+参考FAQ: FAQ101442
+### 问题: 手机使用电源正负极直接供电测试，开机后，提示温度异常，然后关机，请问怎么解决
+解决方案: 1 使用带有NTC功能假电池供电; 2 SW 在dts中找到修改代码把temp-support = <1> 这个修改为 0,关闭电池温度检测.
+参考FAQ: FAQ101439
+### 问题: SC9820A encoder decoder支持哪些视频编解码？
+解决方案: 支持H.264,H.263,VP8,MPEG4编解码.
+参考FAQ: FAQ101345
+### 问题: SC9820A硬件复位方式有哪些？
+解决方案: 同时拉低EXTRSTN and PBINT信号7S以上可以触发复位,单独拉低PBINT 7S以上也可以复位.
+参考FAQ: FAQ101462
+### 问题: SC9820A SIM0，SIM1都支持4G吗？
+解决方案: SIM0和SIM1只能选择一个卡支持2G/4G,如果其中一个SIM卡支持4G/2G,另一个SIM卡则只支持2G.
+参考FAQ: FAQ101463
+### 问题: SC6531E可以同时支持并口摄像头和LCD吗？
+解决方案: SC6531E不能同时支持并口摄像头和LCD,如果摄像头支持并口,则LCD只支持串口;如果LCD支持并口,则摄像头只支持串口.
+参考FAQ: FAQ101464
+### 问题: SC2342B蓝牙支持低功耗Bluetooth v4.2模式吗？
+解决方案: SC2342B蓝牙支持低功耗Bluetooth v4.2 Low Energy (LE),同时也支持Bluetooth specification v2.1 + EDR Bluetooth specification v2.1 + EDR Bluetooth v4.2 Low Energy (LE)
+参考FAQ: FAQ101490
+### 问题: SC9820W是否支持USB OTG？
+解决方案: SC9820W支持USB OTG,但需要外加5V的升压芯片,并保证满足供电.
+参考FAQ: FAQ101513
+### 问题: SC2342B是否支持WIFI 5G?
+解决方案: 不支持
+参考FAQ: FAQ101535
+### 问题: SC2342A是否支持WIFI 5G?
+解决方案: 不支持
+参考FAQ: FAQ101536
+### 问题: 测试CTS Verifier模块NOTIFICATIONS中的Condition Provider test时点击“LAUNCH SETTINGS“ 跳转到”CTS Verifier”开关界面，这个开关置灰不能操作，导致测试无法进行
+解决方案: 原因分析:测试过程中跳过Condition Provider test模块测试后面的模块导致一些权限或开关与出现问题的模块冲突 解决方法:Notification->Notification Listener Test->LAUNCH SETTINGS->Notification access->把开关关闭;如下图2,图3 图2 图3 击模块Notification Listener Test,下拉到底部单击"LAUNCH SETTINGS"跳转到"Notification access"界面,把开关关闭, 退出模块Notification Listener Test,就可以重新测试模块Condition Provider test了.
+参考FAQ: FAQ101817
+### 问题: GPS APK(*#*#2266#*#*)中SGPS功能介绍
+解决方案: 请参考isupport系统发布的客户公开课之GPS测试介绍课件文档,详见"GPS测试模式介绍"篇,谢谢!
+参考FAQ: FAQ101957
+### 问题: GPS静态模式测试
+解决方案: 请参考isupport系统发布的客户公开课之GPS测试介绍课件文档,详见"GPS log抓取"、"GPS静态测试"篇,谢谢!
+参考FAQ: FAQ101958
+### 问题: adb devices查找不到设备的解决方法
+解决方案: 手机连接电脑后,adb devices查找不到设备的解决方法: 1. 确认设置-->开发者选项-->"USB调试"选项打开了. 2. 在设备管理器中检查adb驱动是否正常. 3. 再检查C:\Users\当前用户名XXX\.android下面的adb_usb.ini文件,是否写入了展讯平台的VID 1782,如果没有写入则需要写入,如附件adb_usb.ini,写入完成后,需要执行adb kill-server和adb start-server重新启动adb. 4. 手机第一次连接电脑出现"是否允许USB调试"弹框,勾选允许并确定. 5. 如果以上四点都确认以后还是设别不到手机,请检查、更换USB端口或者尝试更换数据线.
+参考FAQ: FAQ102040
+### 问题: GPS外场测试和测试报告生成是如何规定的？
+解决方案: 请参考isupport系统发布的客户公开课之GPS测试介绍课件文档,详见"GPS log抓取"、"GPS动态测试"篇,谢谢!
+参考FAQ: FAQ101959
+### 问题: 如何抓取完整的GPS LOG？
+解决方案: 请参考isupport系统发布的客户公开课之GPS测试介绍课件文档,详见"GPS log抓取"篇,谢谢!
+参考FAQ: FAQ101961
+### 问题: 如何使用AT命令AT+SPIMEI写入IMEI
+解决方案: AT+SPIMEI使用方法如下: Description: Set and read IMEI Set command: AT+ SPIMEI=<card_id>,<imei> Return :OK Read command: AT+ SPIMEI? Return :xxxxxxxxxxxxxxx OK Parameter: <card -id>: 0 sim1; 1 sim2 <imei> xxxxxxxxxxxxxxx(15 IMEI characters) --注意,设置IMEI需要用""将IMEI括起来,否则会返回ERROR. 例如: 读取IMEI: >at+spimei? 867400021128669 OK 设置IMEI: >at+spimei=1,"867400021128667" OK
+参考FAQ: FAQ101972
+### 问题: SC6531e平台如何蓝牙定频测试？
+解决方案: 蓝牙非信令测试请开启宏控 BT_NONSIG_SUPPORT 后编译,并更换蓝牙庫文件 需要洽询TAM取得相应Patch 测试时,两种测试方式: 1,#*8378#1#进入工程模式 10 Bluetooth Info ? NON SIGNAL菜单,里面有蓝牙非信令的各项测试设置; 2,展讯自己的Connectivity Test,Pandora等工具,可以点击界面菜单各项按钮,工具会发AT命令给手机,进行测试;
+参考FAQ: FAQ101994
+### 问题: LTE项目用T4010系统测试复杂case时，无法得出有效数据的解决方法
+解决方案: 入网入库测试RF\RRM等仪表类Case的时候都是在手机界面上关闭数据连接,这样也就避免了各种app有上行数据从而影响正常测试. 测试前的设置检查: 1. 下拉顶部状态栏,点击顶部最右边浅蓝色按钮,关闭数据连接(灰色即为关闭); 2. 进入拨号盘,输入"*#*#83781#*#*",进入首页TELEPHONY列,点击"CFU",选择"Always Not Query"; 3. 如果是非VoLTE的测试项,请关闭VoLTE功能,关闭方法如下:依次进入"设置"->"更多..."->"移动网络"-"VoLTE"->"VoLTE是否启用",关闭即去掉勾选.
+参考FAQ: FAQ102045
+### 问题: SC9850K/SC9853I/SC9860G/+SR3595A/AL lvds part layout guide
+解决方案: 为了降低LVDS噪声对RF rx port的干扰,LVDS走线的过孔直径应该采用0.4mm,而不是0.45mm.此外,LVDS过孔和pin脚之间的走线要尽可能短,并尽量远离RF rx port(包括主路和分集rx port),否则可能会对LTE/W/G的主分集灵敏度造成干扰.
+参考FAQ: FAQ102046
+### 问题: 如何防止DCDC开关频率噪声对GSM ORFS和G/W/LTE blocking造成影响
+解决方案: 为了防止DCDC开关频率噪声对GSM ORFS和G/W/LTE blocking造成影响,建议在sharkls/pikel/pikew/sharkl2/Isharkl2/whale2等平台上DCDC电源的地都需要隔离到主地.
+参考FAQ: FAQ102047
+### 问题: Android7.0中，设置—无障碍菜单下的"说出密码"是什么功能?
+解决方案: 说出密码(Speak Passwords)功能是提供给有视觉障碍的人士使用的,需要有语音相关的软件进行辅助,如Talkback、google voice等应用,当用户输入密码时,会有相应的语音播报提示.
+参考FAQ: FAQ102099
+### 问题: 设置-内存和设置-开发者选项-正在运行服务两个菜单中的可用内存有什么区别？
+解决方案: 设置-开发者选项-正在运行服务菜单中的关于内存的数据,是直接获取/prop/meminfo这个文件中的内存数据 其中可用内存是:MemFree + Cached,代表系统未使用的内存容量和高手缓存使用的内存容量 代表的是当前系统的可用内存数据. 设置-内存菜单中关于内存的数据,总内存是获取自/prop/meminfo文件中的数据 而已使用内存和可用内存数据都是基于界面上选择的一个比较长的时间段内平均内存使用情况,计算方法比较复杂,此处不再赘述. 所以两个菜单中的可用内存数据的计算方式不一样,数值可能会不一样.代表的意义也不一样.
+参考FAQ: FAQ102108
+### 问题: googleGMS认证环境布局和测试交流 VTS环境搭建显示pip.douban.com报错，需要升级pip
+解决方案: 这时候就需要添加douban源 Linux下,修改~/.pip/pip.conf [global]
+trusted-host=pypi.douban.com  index-url = http://pypi.douban.com/simple 没有pip.conf 的话 先创建.pip文件夹,再创建 pip.conf 文件 其他云报错同理,如阿里云 清华 等
+参考FAQ: FAQ107446
+### 问题: Android7.0中，如何添加Settings中没有的时区并设置为默认时区？
+解决方案: 在Settings中新增时区和设置默认时区是两个不同的功能 1,新增时区,以Asia/Manila为例,可以分为两个步骤 a、查看frameworks/base/core/res/res/xml/time_zones_by_country.xml文件,确认是否有Manila, 这个文件表示系统目前支持的时区列表,如果新增的时区该文件中没有,则无法新增该时区 b、当步骤a中确认已支持要添加的时区,则编辑frameworks/base/packages/SettingsLib/res/xml/timezones.xml文件,参照该文件中的格式添加时区即可,如 <timezoneid="Asia/Manila"></timezone> 2,设置默认时区 找到 androidRoot/device/目录下的产品对应的system.prop文件,添加或修改 persist.sys.timezone=Asia/Manila
+参考FAQ: FAQ102302
+### 问题: PhoneBook中各文件的存储内容是什么
+解决方案: PhoneBook中各个文件的英文简称、中文简称、存储内容介绍如下表所示: 英文简称 中文简称 存储内容 PBR 电话号码簿参考文件 电话号码簿下的文件结构 ADN 缩位拨号 电话号码和姓名 IAP 电话号码簿索引管理 类型是'A9'的文件的记录号 EXT1 扩展文件1 ADN中长度超出20的那部分电话号码内容 PBC 电话簿控制 每个电话号码簿条目的控制信息和隐藏信息 GRP 群组文件 每个电话号码簿条目的群组名称标识符 AAS 附加号码a串 附加号码的类型,比如"办公电话" GAS 群组信息a串 群组名称 ANR 附加号码 附加号码 SNE 第二名称 Sim联系人的第二个名称 CPP1 能力容量配置参数1 承载能力信息元 UID 唯一标识符 每个号码簿条目的唯一标识符 EMAIL 电子邮件地址 电子邮件地址
+参考FAQ: FAQ102303
+### 问题: TDD LTE B39 走STM7910-31
+解决方案: 若支持TDD B39, 那么B39通路最好选择走 SPM224-21 或者SPM6743-12. 建议不要使用STM7910-31+ Vramp通路, 这个通路的一致性不好,不同PA,用同一index值,输出的功率偏差可能会大于dB.
+参考FAQ: FAQ102308
+### 问题: Flash 有几种硬件实现方式？
+解决方案: Flash 硬件主要有以下几种实现模式. 1:PMIC Flash mode 2: 外接 Flash IC GPIO 控制模式 I2c+GPIO控制模式 3:LCD屏幕做flash(前闪方案)
+参考FAQ: FAQ116010
+### 问题: SL8521E支持的WCDMA协议版本
+解决方案: SL8521E下列特性都支持: 1、UMTS:3GPP Release4, up to 384 Kbps DL and UL
+2、HSPA:3GPP Release7, up to 14.4Mbps, category 10,5.76M bps UL,category 6
+3、HSPA+:3GPP Release8, up to 21.6Mbps ,category 14, 5.76M bps UL, category 6
+参考FAQ: FAQ116056
+### 问题: 如何check平台端otp数据是否正确？
+解决方案: 输入adb shell setprop debug.camera.save.otp.raw.data 1命令,然后重启手机,然后观察data/vendor/cameraserver(andriod9.0版本)目录下是否有bin文件生成,如有,打开isp tool,点选otp bin tool,导入bin文件,对照map表格,看参数设置是否正确.
+参考FAQ: FAQ116035
+### 问题: GPRS多时隙能力
+解决方案: 多时隙能力是UE能够支持的上下行时隙能力,是UE所能够达到最到最大理论速率的关键变量之一,GPRS的多时隙能力分为1～29 class.目前我司芯片的GPRS和EDGE的多时隙能力最高支持class 12.calss 12包括3个条件:1.上行最多支持4个时隙 2.下行最多支持4个时隙 3.上行和下行时隙时隙数总和不超过5个.实网下GPRS和EDGE典型时隙配置为4下1上,少数为3下2上. PS:版本在NV中已经将多时隙能力设置为class 12了,客户不需要另行设置.
+参考FAQ: FAQ112526
+### 问题: WIFI空口包的解密方法
+解决方案: 1)在Omnipeek工具里打开New Capture 2)在802.11里面点击Edit Key Sets,再点击insert,创建一个解密方式 3)Name随意编辑,Key type选择对应的AP加密方式,需要在具体连接的AP设置中无线设置-安全设置查看 4)Key Set中Phrase设置AP的密码,SSID中设置AP的名字,Key不用填写,会自动生成 5)在802.11页面的Encryption栏中选择对应的key set即可. 注:按上述步骤设置好后,建议抓取空口包时,最好包含有一次wifi连接的过程,方便研发分析.
+参考FAQ: FAQ102367
+### 问题: 手机定屏死机时怎么抓log
+解决方案: 1,确认adb、及Menu、back、home键是否可用 2,如果插了sim卡,提前记录卡号,请确定可否打通电话 3,请说明定在了哪个应用、画面上,最好做个截屏或拍照附在log里, 提供发生问题时间 4,确定power键是否有反映(记录按power key的时间点) 5,如果可以adb shell,请进行bugreport,可以用adb shell bugreport > PC目录,最后连同log一起上传 6,长按7s进行sysdump,并上传该版本的vmlinux文件
+参考FAQ: FAQ102368
+### 问题: 手机出现Modem Assert时，如何在线抓取log
+解决方案: 在线log抓取modem assert: 1, Modem Assert时会出现下面Assert窗口,在如下光标处输入字符t,再回车,之后会自动 Dump memory, 等Dump 完成后,会有提示"modem_memdump_fiaish",点击关闭后,在Armlog 工具上保存 Log,即Assert memory 已经抓好; 正常的 Assert Memory Log 目录下有一个.ass 文件(约3k---2M左右),和一个.mem文件(约几十兆),有该两个文件的 Assert Memory 才是完整的 Memory,否则需要重抓; 2,user版本在抓取modem assert的问题时,因为在工程模式里Modem Reset是默认开启的,要输入*#*#83781#*#* ->App settings->Modem Reset ->Disable,关闭Modem Reset.
+参考FAQ: FAQ102372
+### 问题: Log Manager中的full log的功能
+解决方案: 为减少log丢失,ylog1.0增加了ylogd机制(ylogd只存在于ylog1.0版本中). ylogd默认关闭,可以通过:工程模式->DEUBG&LOG->LogManager->tools-full log 来打开或者关闭ylogd,打开ylogd后log保存在android目录下log段文件中.把log pull到本地通过python analyzer.py解析后会得到以.ylog后缀和.log后缀的文件,其中以.ylog后缀的文件是由ylogd捕获的
+参考FAQ: FAQ102375
+### 问题: 通话功耗：灭屏通话功耗偏高如何查AP侧问题？
+解决方案: 灭屏通话过程中,AP是可以进入睡眠状态的,检查AP是否进入睡眠即可.如果没有进入睡眠,查看谁在持有锁(详见FAQ100312),找对应模块解决即可.这里需要关注是否因为psensor不支持睡眠状态唤醒系统的主动持锁行为.
+参考FAQ: FAQ102382
+### 问题: CTest目前哪些工具可以使用
+解决方案: 目前集成到CTEST系统上的在线工具: AutoScenario appBenchmark ItestPlus ConnectivityEX InsertdataEX monkey MultiMediaEX NetworkSettingsEX RebootEX CTS NLCT 请参考《CTest测试解决方案》
+参考FAQ: FAQ102390
+### 问题: 为什么外部电源供电后板级电源会停止供电？
+解决方案: 外部电源供电要比板级供电电压高0.1V左右,此时LDO/DCDC的反馈端电压会变高 1, 对DCDC来说,controler部分会控制DCDC的上下MOS管关闭, DCDC停止工作; 2,对LDO来说,反馈电压变高会是放大器输出高电平,放大器输出端会控制LDO 输出MOS管关闭; LDO/DCDC停止工作,此时板极电源停止供电,耗电由外部电源提供.
+参考FAQ: FAQ102409
+### 问题: CFT校准时出现assert，如何抓取有效的assert dump memory log?
+解决方案: 1.CTF工具出现assert后出现如下提示框,点击确认后CFT工具会随之关闭(如果CFT工具未自动关闭,请手动关闭,因为此时CFT工具占据着端口),切记此时不要断开手机的连接. 2.打开armlog工具,按照如下步骤来设置armlog工具. 3.如上设置armlog工具连接成功,选择Assert—Open Assert Frame选项,调出assert窗口. 4.先输入"0"(零)回车确认,打点停止后再输入"t"回车确认,直到打点结束dump完成. 5.提供对应时间点文件夹内的完整armlog给研发分析.
+参考FAQ: FAQ102465
+### 问题: 流畅性测试是否仅看FPS就可以
+解决方案: 除了fps之外,还需要考虑连续掉帧数以及出现的概率,详情请参考《系统性能测试方案》流畅性度量方法
+参考FAQ: FAQ102455
+### 问题: 如何制定性能测试策略？
+解决方案: •客户机器与平台样机在变更部分的场景需要重点验证 •对比机的选择需要考虑到性能相关性影响
+参考FAQ: FAQ102456
+### 问题: 什么渠道可以获取平台样机作为性能对比测试参考？
+解决方案: 通过CPM可以获取平台样机以及关键性能测试数据作为参考
+参考FAQ: FAQ102457
+### 问题: 插入SIM卡的手机开机以后选网的流程是什么
+解决方案: 开机后,先读取相关SIM文件获取RPLMN,EHPLMN,UPLMN和OPLMN信息,同时读取NV获取当前手机支持的无线接入技术(lte/wcdma/td/gsm),根据读取的信息,按照以下优先级从高到低选网:RPLMN-> EHPLMN -> UPLMN -> OPLMN. 当高优先级PLMN支持的各个无线接入技术下都无网时,就选择下一个优先级的PLMN,直到所有的PLMN都尝试过后,如果还是无网,就发起ANY选网. 选网过程中一旦接入层上报了所选网络的系统消息或者直到ANY选网都无法驻留到网络,开机自动选网流程结束. 参考协议章节如下: 3GPP 23.122 chapter 4.4.3.1.1 Automatic Network Selection Mode Procedure 名词缩写的含义见协议3GPP 21.905
+参考FAQ: FAQ102505
+### 问题: 如何排查由NV与modem版本不匹配导致的VOLTE注册失败问题
+解决方案: 支持VOLTE功能的手机在打开VOLTE开关的情况下不能驻网VOLTE: 1. 确认更新手机的modem版本时,同步更新了对应版本的NV文件; 2. 抓取手机开机modem log,在log trace中搜索"READ CSM NV FAIL"字段,如搜索到该字段,则表明当前NV与modem不匹配.
+参考FAQ: FAQ102528
+### 问题: 如何手动切换USB接口功能
+解决方案: 可以通过如下方式来进行端口切换: adb root adb remount adb shell setprop sys.usb.config A,B,… A,B可以是: mtp,adb\ptp,adb\cdrom,adb\rndis,adb\mass_storage,adb和rc文件中定义的其他sys.usb.config的值
+参考FAQ: FAQ102578
+### 问题: UE给网络报EDGE的上行8PSK能力的条件
+解决方案: UE会在attach消息中,给网络上报EDGE的上行8PSK能力. 上行8PSK能力的上报,会根据软件能力、NV中8PSK能力以及EDGE校准标志位进行确定,只有三项全部满足才能上报支持8PSK能力. 因此当遇到UE上报不支持8PSK的情况时,需要重点关注EDGE校准情况,一定要保证PASS.
+参考FAQ: FAQ102637
+### 问题: SC9820W参考原理图上WCN部分控制信号的意义
+解决方案: 1.BT_HOST_WAKE:AP通过拉高该信号向WCN发送请求,等待WF_WAKE_HOST拉高. 2.WF_WAKE_HOST:WCN发现BT_HOST_WAKE拉高后,会拉高WF_WAKE_HOST作为回复,完成握手,确定WCN还活着,然后BT_HOST_WAKE和WF_WAKE_HOST都拉低,等待下一次check. 3.BT_WAKE_HOST: WCN给AP的信号 4.WF_COEXIST:WCN通知LTE关闭发射以保护BT/WIFI接收; 5.WCN_LTECOEXIST_RX:LTE通知BT/WIFI LTE正在接收,需要BT/WIFI减小发射功率或关闭发射; 6.WCN_LTECOEXIST_TX:LTE通知BT/WIFI LTE正在发送
+参考FAQ: FAQ102764
+### 问题: SC9850K硬件没有LTE等RF功能，能否省transceiver
+解决方案: 可以省掉transceiver, 26M直接用TCXO 一拖二,给到AP和WIFI
+参考FAQ: FAQ102780
+### 问题: BB CHIP 9820A四个EXT_XTL_EN0-3 PIN脚和PMU SC2723G2 EXT_XTL_EN0 PIN 脚有什么区别？
+解决方案: 没区别,都是外设用来对26M时钟的请求,可以相互替换.
+参考FAQ: FAQ102782
+### 问题: Userdebug版本Recovery log如何抓取？
+解决方案: 如恢复出厂设置或者ota升级出错了,并且重启后无法开机,则可在recovery模式下选择"mount system"菜单并连接adb,通过如下命令获取recovery的log: 1. adb root 2. adb pull /tmp/recovery.log D:\log 3. D盘log下的recovery.log即是所需要的log 如恢复出厂设置或者ota升级完成并重启成功,通过如下命令获取log: 1. adb root 2. adb pull /cache/recovery D:\log 3. D盘下面log里面的各文件即recovery log.
+参考FAQ: FAQ102885
+### 问题: CMCC定制终端后评估测试中超期定义及处理规则
+解决方案: 首轮超期未送测:7个工作日内未在TSP登记测试信息或样机未送齐到终端公司,CMCC市场部即刻停止营销库IMEI录入,停串后5个工作日内如未送齐,视为不合格退库. 复测超期未送测:通知测试结果后10个工作日内完成整改,并送齐样机, 如未全部送齐,视为不合格退库.
+参考FAQ: FAQ102848
+### 问题: CMCC智能终端测试策略
+解决方案: 智能终端包含个人/家庭/行业智能终端及物联网终端,执行入库前测试,最大测试轮次两轮,每轮完成全模块测试后严重问题不超过5个可以走复验流程,单个问题复验最多2次机会.
+参考FAQ: FAQ102851
+### 问题: CMCC对于推荐的新特性是如何要求的？
+解决方案: 1.对于推荐支持的新特性,如果终端厂商在测试申请时选择支持,则需进行测试验证. 2.若厂终端商选择支持新特性,测试不通过,则测试报告上该项目结果为测试不通过,请谨慎选择.
+参考FAQ: FAQ102852
+### 问题: CMCC对于硬件结构的要求有无变化？
+解决方案: 硬件结构测试中发现的问题,将提交普通级别问题,建议厂商修改,不做强制修改要求.
+参考FAQ: FAQ102855
+### 问题: SC9863A平台PDN设计，哪些pin的地需要做割地？
+解决方案: VBAT_DRV 输入电容的地pin,DCDCCORE,DCDCCPU,DCDCGEN1V4,DCDCGEN1V85,DCDCWPA的输出电容的地pin,和PMU VSS_DRV PINs 都需要割地.
+参考FAQ: FAQ120798
+### 问题: 对于入CMCC营销库但暂未量产或未出货的终端，是否必须在入库后一定期限内送测机器?
+解决方案: 如果未量产出货不必启动后评估测试.产品入营销库且录入串码数量达1000之后,移动服务窗口会邮件通知厂商于次日起7个工作日内,完成TSP测试资料登记并将样机送至终端公司
+参考FAQ: FAQ102867
+### 问题: CMCC对于送测产品包装的要求是怎样的？
+解决方案: 后评估产品需要完整包装.基础检查以及转前测产品不需要提供包装.
+参考FAQ: FAQ102868
+### 问题: CMCC定制终端何种情形下会被判定不合格做退库处理？
+解决方案: 1.首轮测试有关键质量问题(例如:内存降配、电池降配、芯片降配或重大变更、报备单卡实为双卡产品以及核心业务问题); 2.二轮测试遗留必选用例问题; 3.因超期未送测.
+参考FAQ: FAQ116889
+### 问题: SC7701平台是否所有GPIO口都可以作为中断输入
+解决方案: 可以
+参考FAQ: FAQ103065
+### 问题: Uart口RX是否支持唤醒功能？
+解决方案: 不支持RX唤醒.
+参考FAQ: FAQ102969
+### 问题: SC9820E/SC9832E AUX_CLK可输出时钟
+解决方案: SC9820E/SC9832E 一共有3路AUX_CLK 可用来输出时钟给外设:AUX_CLK0/1/2 在AON_CGM_CFG 0x402E0088寄存里可以配置下面两项 可选的时钟源: 4'b0000 : 32K 4'b0001 : 26M (RF0) 4'b0010 : 26M (RF1) 4'b0011 : 48M (TDPLL) 4'b0100 : 52M (CPLL) 4'b0101 : 51.2M (WPLL) 4'b0110 : 37.5M (MPLL) 4'b0111 : 40M (WIFIPLL1) 4'b1000 : 66M (DPLL) 4'b1001 : 40M (WIFIPLL2) 可选的分频比:1~16
+参考FAQ: FAQ113577
+### 问题: SC9820E/SC9832E/SC7731E 如何做多物理按键应用
+解决方案: SC9820E/SC9832E/SC7731E 1.平台原生支持11个按键:Key Matrix可以支持3x3共9个按键,PBINT和EXTRSTN各占一个按键 2.超过11个物理按键,可以使用GPIO扩展键盘的方式,即GPIO通过物理按键接到GND,Pinmap需要使能施密特触发特性去抖 3.如果GPIO口不够用,可以外接扩展按键IC方式支持更多的物理按键
+参考FAQ: FAQ113583
+### 问题: SC9820A搭配的RDA5876是否可以在NV中调整BT功率
+解决方案: 不支持在NV中调整功率,目前只能修改bt_rda_test.c文件后合入版本的方法进行功率调整.
+参考FAQ: FAQ103076

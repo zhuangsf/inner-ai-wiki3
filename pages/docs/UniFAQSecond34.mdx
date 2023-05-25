@@ -1,0 +1,400 @@
+### 问题: GSM网络下短消息接收不到或者接收很慢是什么原因
+解决方案: 1. 短消息发送和接收流程,请先参考 FAQ123516 《GSM网络下短信收发流程简介》, 大概了解短消息接收和发送原理; 2. 短消息如果很长很长时间之内一直接收不到,请做如下排查: a. 确认短消息发送端是否发送成功?或者更换手机向当前接收短消息手机发送短消息看手机是否能接收到; b. 排查短消息接收端SIM是否处于正常业务状态(没有欠费,在当前网络下有正常服务); c. 查看当前手机网络信号是否正常,是否处于弱场环境下; d. 排查短消息接收端短信存储区是否存满,请删除部分短信存储再等待一段时候观察; 3. 为什么有时候短消息接收很快,有时候接收间隔时间很久? 在保证发送端的信息都正常发送成功后,接收端的短信接收快慢首先取决于网络(短消息中心)转发/下发短消息的调度; 然后取决于接收端手机的当前网络环境以及接收端手机自身状况; 如第1点的《GSM网络下短信收发流程简介》FAQ描述,
+完整回答请参考FAQ: FAQ123525
+### 问题: 【BBAT】TypeC3.0的USB如何实现生产测试？
+解决方案: 实现原理: TypeC3.0支持USB2.0和USB3.0及正反插,正常的BBAT方案无法完全cover. 目前展锐生产方案采用的是通过不同工位插不同传输带宽的USB接口和正反插来实现对CC0/CC1/USB2.0/USB3.0的测试. 工具端增加命令读取USB状态数据传输带宽及正反插,命令如下: PC-->MS 7E xx xx xx xx 08 00 38 20 7E 读取 状态 MS-->PC 7E xx xx xx xx 0a 00 38 00 xx yy 7E 其中 xx 代表正反插, 00 代表 CC1 正插, 01 代表 CC2 正插 yy 代表 Type C 数据传输带宽, 00 代表 USB2.0,01 代表 USB3.0 MS-->PC 7E xx xx xx xx 08 00 38 01 7E 则代表测试失败. 工具配置: SIMBA工具对应的测试项:BBAT--TY
+完整回答请参考FAQ: FAQ124514
+### 问题: 设置PIN码加密，关机闹钟铃声为“咚咚咚”的声音
+解决方案: (1) 该情况是由谷歌要求加入fbe feature(要不cts/gts过不了)导致,目前大版本包含属性:vold.decrypt=trigger_reset_main确认打开加密功能. 某些手机不支持fbe加密,未解锁也能正常访问铃声资源,所以不存在当前现象.
+   
+对于fbe加密的设备,设备重启后如果一直没有解锁,系统没有起来,本地的铃声文件无法访问,无法成功创建播放器,只能用系统备用铃声(通常是R.raw.fallbackring)创建并播放,这就导致响铃为咚咚咚的声音.
+
+另外,重启开机后解锁一次,两分钟后关机闹钟时间到的铃声便能够与设置的自定义铃声保持一致.
+
+这个现象是正常的,属于谷歌原生行为.
+
+ (2) 如果需要在fbe加密下让关机闹钟铃声为默认闹钟铃声,可以对代码进行以下调整 /vendor/sprd/platform/packages/apps/Spr
+完整回答请参考FAQ: FAQ123687
+### 问题: [Android 9.0]录音机中删除或者重命名电话录音文件，为什么要授权允许？
+解决方案: Googole原生只允许主卡有写权限,而副卡只能读不能写,并且有专门的CTS CASE会检测该要求.
+所以应用如果想要在副卡上进行读写,目前有两种方式:
+1.通过存储访问架构SAF,以URI形式间接访问存储
+2.操作应用自己的专有目录:如storage/0000-12D9/Android/[data/media]/packageName
+
+录音机应用中,录音文件保存在sd卡上的专有目录是:如storage/0000-12D9/Android/media/com.android.soundrecorder/recordings/
+通话应用中,通话录音文件保存在sd卡上的专有目录是:如storage/0000-12D9/Android/media/com.android.dialer/voicecall/
+
+对sd卡文件的写操作,不同应用之间写文件是权限受限的,必须经过授权才可
+完整回答请参考FAQ: FAQ123721
+### 问题: 如何check LTE EVENT A2
+解决方案: 1. 3Gpp 协议36.331如下A2 定义 5.5.4.3 Event A2 (Serving becomes worse than threshold) Inequality A2-1 (Entering condition) Ms+ Hys < Thresh Ms is the measurement result of the serving cell, not taking into account any offsets.就是实际测量值 Hys is the hysteresis parameter for this event (i.e. hysteresis as defined within reportConfigEUTRA for this event).是迟滞 Thresh is the threshold parameter for this event (i.
+完整回答请参考FAQ: FAQ123731
+### 问题: 如何将AndroidP的APN配置文件迁移到AndroidQ项目上
+解决方案: 对于不采用展锐软件平台发布的APN配置,有自行维护APN配置文件的客户,如果客户需要将AndroidP及其之前Android版本相关项目的APN配置文件迁移到展锐平台AnroidQ相关项目上,需要注意以下几个问题: 1.Emergency APN的更新 展锐平台AndroidP及以前的项目上,Emergency APN是配置在volte-conf.xml这个配置文件中.但是在AnroidQ上,volte-conf.xml配置文件被移除,对应的Emergency APN移到APN配置文件apns-conf_8_v2.xml中. 因此,客户在迁移维护的APN配置文件到AndroidQ时,需要参考展锐AndroidQ平台软件APN配置表apns-conf_8_v2.xml,将其中APN Type是emergency APN条目追加到客户维护的APN配置文件中. 如如下条目: <apn carri
+完整回答请参考FAQ: FAQ123774
+### 问题: SC6531E 平台 为什么非实网的仪器功耗测试需要关闭呼叫转移查询功能？
+解决方案: Dear all 在用CMW500等仪器测试功耗时,不仅需要把arm log、dsp log等log都关闭,还需要在工程模式把呼叫转移查询功能关闭. 在实网中,网络端能响应手机的呼叫转移查询指令,但在用CMW500等综测仪测试时,仪器无法响应手机侧的呼叫转移查询指令. 这个时候如果不关闭呼叫查询功能,手机会按照如下查询机制查询,这样会造成待机功耗的增加. 对于呼叫转移此查询机制,目前我司是这样设计的: 共分为3阶段: 1. 前 20 次 ,间隔20s ; 2. 20 ~ 40 次,间隔 1 min; 3. 超过40此,间隔10 min. 加入此机制的原因是,在某些地区信号不好的情况下,是存在一次查询不成功的情况的. 这个查询,在查询到结果后,就会停下来,不是一直在做查询动作. 并且,一般情况下,都是一次查询成功的! 和其他平台的区别如下: 高X和MXX平台的查询机制是只查询一次,不管是否查
+完整回答请参考FAQ: FAQ123805
+### 问题: 如何支持伪基站检测和屏蔽功能
+解决方案: 目前防伪基站功能只针对GSM网络,可以通过NV控制,其使用的是运营商动态NV,即可以设置移动运营商支持防伪基站,联通运营商防伪基站,如果要设置移动运营商支持防伪基站,可以在如下NV修改:
+
+移动运营商:		   
+\OperatorNV\Operator_Cfg\CN_CMCC_P.nv中增加如下:
+PS_NV_PARAMS\NV_PARAM_TYPE_PLMN_DELTA_NV\gas_plmn_nvinfo\avoid_pseudo_base_station=1
+
+联通运营商:
+\OperatorNV\Operator_Cfg\CN_CUCC_P.nv中增加如下:
+PS_NV_PARAMS\NV_PARAM_TYPE_PLMN_DELTA_NV\gas_plmn_nvinfo\avoid_pseudo_base_station=1
+
+其他运营商同上修改,avoid_
+完整回答请参考FAQ: FAQ123872
+### 问题: 修改LTE最小输出功率
+解决方案: LTE最小功率NV配置说明: NV2.0结构修改位置如下: LTE_optimize\LTE_download_rf_cal_backup_cc0_optimize\LTE_APT_config_PCC\APT_CONFIG_ARRAY\ 以B3为例,我们需要修改以下几个位置: 1、切换点中的最小功率;例如,将0XF430→0XF460,即从-43dBm修改为-46dBm: LTE_optimize\LTE_download_rf_cal_backup_cc0_optimize\LTE_APT_config_PCC\APT_CONFIG_ARRAY\Band_no1\LTE_PWR_SWITCH_config\LPM_Stop_power=0XF460 2、补足功率电压序列;原本的功率序列为0dBm→-43dBm,现切换点改为-46dBm,需要补足中间的功率电压序列,-44dBm/0x80
+完整回答请参考FAQ: FAQ123873
+### 问题: AndroidQ写IMEI号（进校准模式）时电流超出范围，拆除屏后，电流正常，怎么使其不显示?
+解决方案: 1、校准模式下uboot阶段是不开lcd和背光的 需要check代码如下: boot_mode.c (bsp/bootloader/u-boot15/common/loader) void calibration_mode(void) { vlx_nand_boot(RECOVERY_PART, BACKLIGHT_OFF, LCD_OFF);//关lcd和backlight 2.kernel pwm_bl.c (bsp/kernel/kernel4.14/drivers/video/backlight) + static bool cali_mode; + static int boot_mode_check(char *str) +{ + if (str != NULL && !strncmp(str, "cali", strlen("cali"))) + cali_mode = tr
+完整回答请参考FAQ: FAQ124710
+### 问题: LTE time mask  on/off 时间模板 调整位置 for NV2.0
+解决方案: 此case 一般fail点在 off power[before], 解决方法是调整PA switch BB之间打开的时间.其中PA timing和switch timing在NV中可调.现在介绍在NV2.0中的调试位置. 目前使用的NV2.0架构的平台为 9863A以及之后的平台,包括9832E/9820E NV2.0版本 调试位置开放在custom NV中 1.检查调试标志位确保标志位打开. LTE_logic\LTE_download_rf_common_cc0_logic\LTE_ANTENNA_SWITCH\antenna_switch_no\Band_no1\switch_config_cc0\Switch_TX_On\reserved1=0X3 注:标志位为reserved1,9832E/9820 NV2.0的部分早期版本个别频段存在将reserved0=0x3的情况注意改正.
+完整回答请参考FAQ: FAQ123921
+### 问题: AndroidQ上NewGallery2应用货架化对应apk的介绍
+解决方案: AndroidQ上NewGallery2应用货架化对应apk的简单介绍,请参考如下: (1)vendor/sprd/platform/packages/apps/NewGallery2/prebuilt/apk/app_discover/NewGallery2.apk 该apk对应图库应用, Launcher上包含了图库和视频播放器入口,native版本为此应用. (2) sprd/platform/packages/apps/NewGallery2/prebuilt/apk/app_gms/USCPhotoEdit.apk 该apk用于GMS版本的图库应用,Launcher上没有入口,用于google photos或者google GalleryGo查看平台特殊图片,例如虚化拍照的图片及有声照片. (3) vendor/sprd/platform/packages/apps/NewGal
+完整回答请参考FAQ: FAQ124429
+### 问题: 录音时，按返回键，需要自动保存录音文件并退出录音机应用，请问如何修改？
+解决方案: 平台录音机应用,目前的做法是,在录音过程中,如果按返回键,则会在后台录音;如果用户要求按返回键时自动保存录音文件并退出录音机应用,请参考如下修改: 修改文件为: vendor/sprd/platform/packages/apps/DreamSoundRecorder/src/com/sprd/soundrecorder/RecorderActivity.java --- a/src/com/sprd/soundrecorder/RecorderActivity.java +++ b/src/com/sprd/soundrecorder/RecorderActivity.java @@ -238,6 +238,7 @@ public class RecorderActivity extends Activity { @Override protected void onDestroy() 
+完整回答请参考FAQ: FAQ123955
+### 问题: 南美运营商CMUgo耦合箱测试GSM制式射频功率，发现信道间差异较大，如何处理？
+解决方案: ①首先不需要担心这个结果会导致测试Fail,通过查询3GPP标准,我们可以发现3GPP标准对GSM制式的射频发射功率要求是比较松的,只要摆放位置合理一般都能通过测试. PCL |Power 5 |33 ±3 dB (note 1) ±4 dB (note 1) 6 |31 ±3 dB ±4 dB 7 |29 ±3 dB (note 1) ±4 dB (note 1) 8 |27 ±3 dB ±4 dB 9 |25 ±3 dB ±4 dB 10 |23 ±3 dB ±4 dB 11 |21 ±3 dB ±4 dB 12 |19 ±3 dB ±4 dB 13 |17 ±3 dB ±4 dB 14 |15 ±3 dB ±4 dB 15 |13 ±3 dB ±4 dB 16 |11 ±5 dB ±6 dB 17 |9 ±5 dB ±6 dB 18 |7 ±5 dB ±6 dB 19 |5 ±5 d
+完整回答请参考FAQ: FAQ123954
+### 问题: 充电时长超出预期的硬件排查点
+解决方案: 移动终端产品电池容量越来越大,客户对充电时间要求越来越高,很多客户在测试时发现充电时长超出预期,针对此问题硬件上可从以下几点排查: 1、电池参数是否经过测试,是否正确合入软件? ——提供三块电池给到展锐测试,或自行购买设备参考《《The Test Method of Battery Parameters for CT-3008》测试. 2、主板上FGU检测电阻(电池负极到地的10豪欧或20豪欧电阻)的实际值是否测试并合入rsense-real? ——准备三块或以上主板,下载debug版本软件,参考《FGU电压及电流检测测试及校准方法》测试并合入软件. 3、充电器输出电压是否足够,充电线缆压降会不会太大,造成充电芯片输入端电压低于预期? ——充电器输出电压要高于5V或能够随负载动态调整,充电线材压降要小,保证充电芯片输入端电压不低于5V. 4、充电电流检测电阻的封装、精度及走线是否OK,实际
+完整回答请参考FAQ: FAQ123922
+### 问题: SC6531E 不用9Pf的26M crystal会有什么风险？
+解决方案: Dear all: 由于早期6531有几个版本,7.36pf和8.5pf的料是在早期6531C上验证的物料.QVL集成了早期验证物料清单. 但是确认SC6531E上要使用CL=9PF的物料. 7.5pf的物料会造成严重频偏,同时影响AFC校准.最严重的是目前6531E是32k less的方案,32K是通过26分频得来的;时钟不准,会影响开机驻网,和待机驻网. 选26M时还要关注Aging 这个参数我们平台选取的基本是1-2ppm/year. 下面是我是推荐的物料型号. PlatformName ChipName ComponentTypeName ComponentSubTypeName s/n ItemDescription Pakage Manufacturer mpn SupportVersion NemoG SC6531E RF DCXO/TCXO DCXO 31504001152
+完整回答请参考FAQ: FAQ124008
+### 问题: 平台录音机中，录音文件保存超过一页时，在录音列表界面需要显示滚动条，请问如何修改？
+解决方案: 平台录音机中,录音文件保存超过一页时,如果在录音列表界面需要显示滚动条,请参考如下差分代码进行修改,把录音列表的滚动条颜色修改为主题颜色(#05c0e8)即可显示滚动条. vendor/sprd/platform/packages/apps/DreamSoundRecorder --- a/res/layout/recording_file_list.xml +++ b/res/layout/recording_file_list.xml @@ -43,6 +43,7 @@ android:id="@android:id/list" android:layout_width="match_parent" android:layout_height="match_parent" + android:scrollbarThumbVertical="@color/list_view_scroll
+完整回答请参考FAQ: FAQ124053
+### 问题: Google Photos识别平台特有图片时，如果media签名有变化,请问如何修改？
+解决方案: Google Photos通过和展锐平台的SprdPhotosProvider交互,能够识别平台特有图片,例如HDR,景深照片,有声照片等. 此时需要添加SprdPhotoEdit.apk和SprdPhotosProvider.apk及media签名,请参考如下代码: /vendor/partner_gms/products/gms.mk # SPRD Applications PRODUCT_PACKAGES += \ SprdPhotosProvider \ SprdPhotoEdit # Once we add SprdPhotosProvider above, we also have to configure these properties below: ifneq ($(TARGET_BUILD_VARIANT),user) PRODUCT_SYSTEM_DEFAULT_PR
+完整回答请参考FAQ: FAQ124036
+### 问题: WIFI的主动扫描和被动扫描
+解决方案: 扫描类型分两种,一种是主动扫描(active scanning),另一种是被动扫描(passivescanning) 1.主动扫描(activescanning) 首先,手机(工作站STA)以主动的方式,在每个信道上发出Probe Request帧,请求某个特定无线网络予以回应.主动扫描是主动寻找网络,而不是静候无线网络声明本身的存在,具体流程如下: a.跳至某个信道,发射Probe Request信号,然后等候来帧指示(indicationofan incoming frame)或者等到ProbeDelay定时器超时,如果在这个信道收到帧,就证明该信道有用户在使用. b.如果发现该信道被占用,则会跳至下一个信道发probe request帧,等待AP响应probe response . C.所在的区域存在多个接入点(AP),当手机发出Probe Request帧时,多个接入点(AP)通过
+完整回答请参考FAQ: FAQ124050
+### 问题: 平台录音机，插入耳机录音，耳机拔出时需要暂停录音，请问如何修改？
+解决方案: 进入平台录音机,插入耳机录音,如果耳机拔出时需要暂停录音,请参考如下差分代码进行修改:在执行录音的Service 中,注册耳机拔出的广播,在监听到此广播时进行录音暂停. vendor/sprd/platform/packages/apps/DreamSoundRecorder/ diff --git a/src/com/sprd/soundrecorder/service/RecordingService.java b/src/com/sprd/soundrecorder/service/RecordingService.java index 38f292c..4b5103a 100755 --- a/src/com/sprd/soundrecorder/service/RecordingService.java +++ b/src/com/sprd/soundrecorder/servi
+完整回答请参考FAQ: FAQ124052
+### 问题: 为什么终端在一个新的网络下驻不上VoLTE？
+解决方案: 在一个新的网络下,终端开启VoLTE功能后只能驻上4G而驻不上VoLTE,可能是以下原因: 1. 网络不支持VoLTE 该运营商网络还不支持VoLTE,可使用相同SIM卡插入对比机进行排查. 2. SIM卡没有开通VoLTE业务 如果SIM卡没有开通VoLTE业务,终端驻网VoLTE会失败,可使用相同SIM卡插入对比机进行排查. 3. 运营商网络没有加入终端VoLTE白名单 如果运营商网络没有加入终端VoLTE白名单,则终端不会发起VoLTE注册.由于目前并不是所有运营商的VoLTE业务支持都很完善.为避免用户在VOLTE功能不完善的网络中使用VOLTE产生问题,在陌生网络或我们已知VOLTE支持不完善的网络中,终端默认关闭VOLTE功能.只有对于我们已经测试过并已知网络支持VOLTE功能已经很完善的网络(如中国移动),VOLTE功能默认打开.可参考FAQ119972,检查VoLTE白名单
+完整回答请参考FAQ: FAQ124077
+### 问题: 进入平台music播放器，需要在均衡器sound effects设置界面左上角添加返回按键，请问如何修改？
+解决方案: 进入平台music播放器,如果需要在均衡器sound effects设置界面左上角添加返回按键,请参考如下修改: packages/apps/MusicFX/src/com/android/musicfx/ActivityMusic.java diff --git a/src/com/android/musicfx/ActivityMusic.java b/src/com/android/musicfx/ActivityMusic.java index 4047062..3dee000 100644 --- a/src/com/android/musicfx/ActivityMusic.java +++ b/src/com/android/musicfx/ActivityMusic.java @@ -44,6 +44,7 @@ import android.view.View; impor
+完整回答请参考FAQ: FAQ124096
+### 问题: 进入平台music播放器，需要在音乐播放主界面MediaPlaybackActivity的左上角添加返回按键，请问如何修改？
+解决方案: 进入平台music播放器,如果需要在音乐播放主界面MediaPlaybackActivity的左上角添加返回按键,请参考如下修改: vendor/sprd/platform/packages/apps/NewMusic/ diff --git a/src/com/android/music/MediaPlaybackActivity.java b/src/com/android/music/MediaPlaybackActivity.java index a63b386..4e75ae0 100644 --- a/src/com/android/music/MediaPlaybackActivity.java +++ b/src/com/android/music/MediaPlaybackActivity.java @@ -41,6 +41,7 @@ import android.vie
+完整回答请参考FAQ: FAQ124143
+### 问题: 在平台录音机应用中，如何去除通话录音列表？
+解决方案: 有的手机不支持通话录音功能,在平台录音机应用中,需要去除通话录音列表,请参考如下修改: vendor/sprd/platform/packages/apps/DreamSoundRecorder/
+--- a/src/com/sprd/soundrecorder/RecordListActivity.java
++++ b/src/com/sprd/soundrecorder/RecordListActivity.java
+@@ -162,13 +162,13 @@ public class RecordListActivity extends AppCompatActivity {
+         mToolbar = (Toolbar) findViewById(R.id.id_toolbar);
+
+         mPageTitle.add(getResources(
+完整回答请参考FAQ: FAQ124163
+### 问题: 如何设置终端VoLTE视频电话编解码类型？
+解决方案: 展锐9832E、9863A平台支持H.264、H.265两种VoLTE视频编解码类型.终端默认使用H.264类型视频编解码. 如需修改终端VoLTE视频电话编解码类型,可通过NV进行配置. 9832E平台配置NV路径如下: // video_codec_type: Bitmask: Bit 0:H264,Bit 1: H265 td_nv_type.nvm\PS_NV_PARAMS\NV_PARAM_TYPE_IMS_CSM_SETTINGS\video_codec_type video_codec_type=0x1:H.264; video_codec_type=0x2:H.265; video_codec_type=0x3:H.264 & H.265; 9863A平台配置NV路径如下: // video_codec_type: Bitmask: Bit 0:H264,Bit 1: H2
+完整回答请参考FAQ: FAQ124181
+### 问题: 射频PA的特性及分类
+解决方案: 射频功率放大器,放大Transceiver输出的高频已调信号.功放可以把电源提供的直流能量转化为所需要的交流能量,自身需要消耗一定能量.判定功放性能的两个关键指标是PA线性度及效率. 根据导通状态,功放分为A(甲)类/B(乙)类/AB(甲乙)类/C(丙)类;根据等效电路,分为D(丁)类/E(戊)类/F类/G类/H类等. 1,A类功放线性度最好,理想情况下,输出波形无失真,效率最低(变压器耦合型最高效率50%,直接耦合型25%); 2,B类功放最大效率接近78.5%(PI/4),但在正负半周期转换时会出现交越失真(Crossoverdistortion);AB类功放采用微导通方式,给功率管提供一个微小的静态偏置,可有效克服交越失真,但最大效率略有下降; 3,C类功放静态偏置点位于负半轴,只能对正半周信号进行放大,负半周截止,所以波形完全失真,但效率最高.在导通角为60°~70°时,最大效率可
+完整回答请参考FAQ: FAQ124212
+### 问题: 如何在MusicFX屏蔽掉EQ的user模式？
+解决方案: 如果需要在MusicFX屏蔽掉EQ的user模式,请参考如下修改: packages/apps/MusicFX/src/com/android/musicfx/ActivityMusic.java --- a/src/com/android/musicfx/ActivityMusic.java +++ b/src/com/android/musicfx/ActivityMusic.java @@ -284,7 +284,7 @@ public class ActivityMusic extends Activity implements OnSeekBarChangeListener { // allocate a space for 2 extra strings (CI Extreme & User) final int numPresets = ControlPanelEffect.
+完整回答请参考FAQ: FAQ124255
+### 问题: 在录音机中播放录音，蓝牙耳机如何控制录音文件的播放？
+解决方案: 在录音机中播放录音,目前蓝牙耳机不能控制录音文件的播放,如果需要添加此功能,请添加如下两处修改: 1.\vendor\sprd\platform\packages\apps\DreamSoundRecorder\src\com\sprd\soundrecorder\RecordFilePlayActivity.java private MediaSessionManager.OnMediaKeyListener mMediaKeyListener = new MediaSessionManager.OnMediaKeyListener() { @Override public boolean onMediaKey(KeyEvent event) { int keycode = event.getKeyCode(); int action = event.getAction(); + Log
+完整回答请参考FAQ: FAQ124259
+### 问题: 在录音机列表界面点击左边的播放按钮进行播放，需要支持后台播放，请问如何修改？
+解决方案: 在录音机列表界面点击左边的播放按钮进行播放,平台目前是不支持后台播放的,如果需要支持后台播放,请参考如下修改: /vendor/sprd/platform/packages/apps/DreamSoundRecorder
+--- a/src/com/sprd/soundrecorder/ui/RecordItemFragment.java
++++ b/src/com/sprd/soundrecorder/ui/RecordItemFragment.java
+@@ -176,11 +176,12 @@ public class RecordItemFragment extends Fragment {
+
+     @Override
+     public void onPause() {
+         super.onPause();
+         if (mPre
+完整回答请参考FAQ: FAQ124263
+### 问题: 如何查看LTE邻区信息
+解决方案: 问题背景: 有些客户可能为了方便选点进行场测(切换,重选性能),需要查看当前终端所处的网络环境情况,可以通过查看当前终端驻留小区的同频邻区和异频邻区来实现. 查看方法 目前,开放给客户的查看方法有两种,一种是通过终端工程模式来查看,另一种是通过Armlog中信令携带的消息来查看. 工程模式查看 在电话界面输入*#*#83781#*#*,进入工程模式,选择TELEPHONY标签页,然后选择网络信息(net info)选项,里面有LTE小区的邻区情况. ArmLog查看 终端抓取ArmLog后,用工具打开armlog后,在Internal Messge子窗口中查找MSG_ID_LTE_CPHY_MEAS_INTRA_RESULT_IND 和 MSG_ID_LTE_CPHY_MEAS_INTER_RESULT_IND信令,分别表示同频邻区和异频邻区测量信息,窗口下面会显示该测量信息内容. 下面是
+完整回答请参考FAQ: FAQ124297
+### 问题: 外场测试中出现发起attach、PDP激活请求等没有响应，怎样确定是没有发生成功还是没有收到响应
+解决方案: 按以下步骤检查ARM log来确认: 1. NAS是否把NAS消息发给接入层.发送消息为GMM_LL_UNIDATA_REQ,具体NAS发送的是哪条消息可以通过消息中的data_ptr的前两个字节判断,第一个字节的后4bit为消息类型,4为GMM消息,A为PDP消息,前4bit为任意值,一般为0.第二个字节为具体消息.常见的有attach request为0x0801,RAU request为0x0808,PDP激活请求为0x0A41. 2.检查GAS是否发送.检查消息LLC_RLC_DATA_REQ,检查消息中的字段SAPI是否为1,1表示是NAS消息.然后检查消息buf字段的前两个字节,前两个字节即为NAS消息的前两个字节,通过前两个字节确定发送的是哪条NAS消息. 3.检查NAS消息是否发送成功.发送后检查后续的RLC_LLC_PDU_SEND_CNF消息,这是一个以消息形式呈现的t
+完整回答请参考FAQ: FAQ124303
+### 问题: LTE随机接入流程是什么
+解决方案: LTE随机接入流程 LTE随机接入分为基于冲突的随机接入和基于非冲突的随机接入两个流程.其区别为针对两种流程其选择随机接入前缀的方式.前者为UE从基于冲突的随机接入前缀中依照一定算法随机选择一个随机前缀;后者是基站侧通过下行专用信令给UE指派非冲突的随机接入前缀.具体流程如下: 1.基于冲突的随机接入: a)UE在RACH上发送随机接入前缀; b)ENb的MAC层产生随机接入响应,并在DL-SCH上发送; c)UE的RRC层产生RRC Connection Request 并在映射到UL –SCH上的CCCH逻辑信道上发送; d)RRC Contention Resolution 由ENb的RRC层产生,并在映射到DL –SCH上的CCCH or DCCH(FFS)逻辑信道上发送. 2.基于非冲突的随机接入 a)ENb 通过下行专用信令给UE指派非冲突的随机接入前缀(non-content
+完整回答请参考FAQ: FAQ124327
+### 问题: AndroidQ上设置双卡不同铃声的API接口在哪里？
+解决方案: AndroidQ上设置双卡不同铃声的API接口请参考如下文件:
+/frameworks/base/media/java/android/media/RingtoneManager.java 中的
+setActualDefaultRingtoneUri(Context context, int type, Uri ringtoneUri) 方法,
+通过type去区分双卡,TYPE_RINGTONE为卡1,TYPE_RINGTONE1为卡2
+
+/**
+* Type that refers to sounds that are used for the phone ringer.
+*/
+public static final int TYPE_RINGTONE = 1;
+
+/* unisoc bug 1073321: added for supporting default 
+完整回答请参考FAQ: FAQ124332
+### 问题: AndroidP上设置双卡不同铃声的API接口在哪里？
+解决方案: AndroidP上设置双卡不同铃声的API接口请参考如下文件: /frameworks/base/media/java/android/media/RingtoneManagerEx.java 中的setActualDefaultRingtoneUri()方法. /** * @param type The ringtone type whose default should be returned. * @param uri ringtone uri * @param phoneid phoneid * @return void * @hide */ public static void setActualDefaultRingtoneUri(Context context, int type, Uri ringtoneUri, int phoneId) 设置铃声时,type传入的是Rin
+完整回答请参考FAQ: FAQ124333
+### 问题: GPRS/EGPRS 环回测试中的随机数发送过程
+解决方案: GPRS/EGPRS 环回测试包括数据环回和随机数发送 数据环回是指UE接收到仪表的数据后,马上将原数据返回给仪表 随机数发送是指UE自己产生随机数据,然后发给仪表,不接收仪表数据. 随机数发送时UE自己依据协议产生随机数据发送给仪表,不需要仪表返回数据,为单向数据传输 1. SCT模块收到NAS的GMM_SCT_CMD消息,第一个字节0xf,表示nas层的消息类型为环回测试,第二个字节0x24表示GPRS/EGPRS 数据环回和随机数发送 2. SCT模块将SCT_RLC_CMD消息发给RLC,这里cmd_type=0 表示GPRS_TEST_MODE_CMD,包括数据环回和随机数发送 Test_mode=0x0,表示随机数发送 3. RLC收到随机数发送的命令收开始建立TBF 4.随机数发送的命令RLC_MAC_SCT_TEST_REQ发给MAC层,MAC的随机数发送的状态置位,表示可
+完整回答请参考FAQ: FAQ124331
+### 问题: 【BBAT】对于对三摄或四摄方案，手机软件升级到Android Q导致的BBAT测试camera问题
+解决方案: 问题原因: 工具侧和手机侧的camera ID对应关系不一致导致. 工具侧的camera ID定义如下,Android P及之前的Android版本也采用同样的规则定义: 00:后置1;01:前置1; 02:后置2;03:前置2; 04:后置3;05:前置3; 06:后置4;07:前置4. 但是从Android Q开始,驱动侧摄像头ID编号有变更,ID是从00开始连续不间断的,不会因为没有前2前3,就跳过ID_03和ID_05,所以如果手机是前1后4的camera方案,工具的后3就会对应手机的后置4,工具的后置4则没有camera与之对应导致测试失败. 修改方案: 在手机软件的测试代码中增加一个cameraID的映射关系,以前1后4的camera方案为例: @/vendor/sprd/modules/libcamera/tool/baseband_autotester_camera/tes
+完整回答请参考FAQ: FAQ124446
+### 问题: AndroidQ上Google Photos需要查看平台特殊图片，需要如何配置？
+解决方案: AndroidQ上Google Photos如果需要查看平台特殊图片,需要添加如下配置: Google Photos通过和展锐平台的USCPhotoEdit交互,能够识别平台特殊图片,例如HDR,景深照片,有声照片等. 此时需要添加USCPhotosProvider.apk和USCPhotoEdit.apk及media签名, 请在/vendor/partner_gms/products/gms.mk 中添加如下代码: # Unisoc Applications PRODUCT_PACKAGES += \ USCPhotosProvider \ USCPhotoEdit # Once we add USCPhotosProvider above, we also have to configure these properties below: ifneq ($(TARGET_BUILD_V
+完整回答请参考FAQ: FAQ124434
+### 问题: 待机功耗：为什么无法待机时内核log不打印wakeup source相关信息
+解决方案: 找到打印锁相关代码如下,发现打印的地方是pr_debug函数. kernel4.14/drivers/base/power/wakeup.c void pm_print_active_wakeup_sources(void) { struct wakeup_source *ws; int srcuidx, active = 0; struct wakeup_source *last_activity_ws = NULL; srcuidx = srcu_read_lock(&wakeup_srcu); list_for_each_entry_rcu(ws, &wakeup_sources, entry) { if (ws->active) { pr_debug("active wakeup source: %s\n", ws->name); active = 1; } else if (!a
+完整回答请参考FAQ: FAQ124585
+### 问题: Android 9.0避免特定应用被一键清理杀掉
+解决方案: 采用如下方案:
+1.一键清理的时候跳过应用对应的任务
+2.可以单独清理应用对应的任务
+
+以FM为例,请参考如下修改:
+diff --git a/packages/SystemUI/src/com/android/systemui/recents/views/TaskStackView.java b/packages/SystemUI/src/com/android/systemu
+index 97b47f2..5ed4e0b 100644
+--- a/packages/SystemUI/src/com/android/systemui/recents/views/TaskStackView.java
++++ b/packages/SystemUI/src/com/android/systemui/recents/views/TaskStackView.java
+@@ -1
+完整回答请参考FAQ: FAQ124786
+### 问题: 不依赖VTS环境单独测试vts case方法
+解决方案: 部分VTS的case是有二进制bin,可以不依赖VTS环境单独运行vts case. 以VtsHalBaseV1_0TargetTest为例 在android-vts\testcases\DATA\nativetest\vts_ibase_test下有个vts_ibase_test二进制bin,请将此bin push到/data目录下,单独运行二进制bin
+sp9832e_1h10_go:/ # cd /data
+sp9832e_1h10_go:/data # chmod 777 vts_ibase_test
+-----#如果case运行OK的话,会有如下打印.
+sp9832e_1h10_go:/data # ./vts_ibase_test
+[==========] Running 6 tests from 1 test suite.
+[----------] Global 
+完整回答请参考FAQ: FAQ124788
+### 问题: CTS测试CtsCarrierApiTestCases失败问题自查
+解决方案: CtsCarrierApiTestCases是用来测试Android UICC Carrier API的测试集. 官方的介绍链接如下: https://source.android.google.cn/devices/tech/config/uicc#validation 大致设计将测试APK的签名证书Hash提前写入到测试卡的SE里,这样该测试APK就具有了访问SIM卡接口的权限,否则无权访问. 因此测试的首要要求是需要使用包含CTS APK签名Hash的测试SIM卡,使用其他卡如实网中国移动,中国联通等SIM卡肯定是不行的. 除此之外还可能遇到的问题请参考如下问题列表: 常见问题1: 我们已经插入一张符合CTS要求的白卡,为什么还是有失败項? 解决方案: 如果您的设备支持双卡,则需要插入两张CTS白卡进行测试,因为部分case涉及到双卡测试. 常见问题2: 我们已经将两个卡槽都插入白卡
+完整回答请参考FAQ: FAQ124912
+### 问题: Validationtools后台测试结果有NG项是否会重新测试
+解决方案: ValidationTools支持系统测试支持后台测试fail重新测试. 系统测试结束后,会弹出后台测试结果界面,此时若有FAIL项则会提示是否重新测试fail项. 代码文件: ValidationTools\src\com\sprd\validationtools\ValidationToolsMainActivity.java
+  
+  private void startBackgroundTest() {
+        mBgTest = new ArrayList<BackgroundTest>();
+        mBgTest.add(new BackgroundBtTest(this));
+        mBgTest.add(new BackgroundWifiTest(this));
+        mBgTest.add(new Background
+完整回答请参考FAQ: FAQ124952
+### 问题: AndroidQ CTS CtsOmapiTestCases CtsSecureElementAccessControlTestCases失败处理
+解决方案: CtsOmapiTestCases CtsSecureElementAccessControlTestCases1 CtsSecureElementAccessControlTestCases2 CtsSecureElementAccessControlTestCases3 以上测试集的官方介绍如下: https://source.android.com/compatibility/cts/secure-element 这些Case是用来测试访问SecureElement API的,展锐AndroidQ支持了Google SecureElement on UICC API,允许应用通过原生的OMAPI/SecureElement接口安全访问SIM卡上的SE. 因此如果要确保这些case可以通过,则需要使用特殊的SE SIM卡,这些卡上要有谷歌要求的测试数据. 请采购CTS测试白卡时向卡商明
+完整回答请参考FAQ: FAQ125031
+### 问题: 如何输出clk_aux
+解决方案: 根据各芯片定义的不同,可能会有clk_aux0, clk_aux1, clk_aux2等aux clock.它们的操作方式是类似的. 1、在uboot pinmap文件中配置相关的pin脚为 clk_aux Function,各芯片定义不同,请对照芯片手册配置. 2、在对应芯片平台的clock dts中找到对应clock的定义,比如SL8541E的clock dts文件是: kernel4.4/arch/arm64/boot/dts/sprd/sc9832e-clocks.dtsi 在该文件中能找到"clk_aux0", "clk_aux1","aux0_eb","aux1_eb"等clock定义.
+ 3. 在具体设备的驱动代码中利用标准的linux kernel clock API操作clock
+
+-----#include <linux/clk.h>
+
+static int 
+完整回答请参考FAQ: FAQ125050
+### 问题: 展锐sharkLE平台Strap Pin有哪些？
+解决方案: 1. 展锐sharkLE平台Strap Pin有:KEYIN0, KEYIN1, U1TXD, AUD_DAD1, AUD_DAD0, ADI_SCLK, ADI_D. 2. 芯片RomCode启动过程如下: > Step1:判断KEYIN0 KEYIN1是否同时拉低,如果是,则从SD Card读取bootloader启动;SD卡启动不成功则退出SD Boot进入下一阶段; > Step2:判断U1TXD是否拉低,是则进入USB下载过程;注意,U1TXD拉低进入USB下载后,即使下载不成功也会一直停在哪儿不会退出,没有timeout; > Step3: 如果U1TXD没有被拉低,则判断KEYIN0是否拉低,KEYIN0被拉低则进入USB下载过程.KEYIN0拉低进入USB下载后,如果与PC通信16s不成功则会退出下载模式并进入下一阶段; > Step4: 如果以上Strap Pin均是高电
+完整回答请参考FAQ: FAQ125158
+### 问题: 当手机中不存在图片时，进入图库，显示No Photos字符，请问该字符串在哪里定义？
+解决方案: 当手机中不存在图片时,进入图库,显示No Photos字符,该字符是由两个字符串拼接显示的,请参考如下代码: vendor/sprd/platform/packages/apps/NewGallery2/src/com/android/gallery3d/app/SprdAlbumSetPage.java private void showCameraButton() { if (mNoPhotos == null && !setupCameraButton()) return; ((TextView) mNoPhotos.findViewById(R.id.title)).setText(String.format(mActivity.getString(R.string.no_photo_or_video), mActivity.getString(mCurrentNoPhotoTit
+完整回答请参考FAQ: FAQ125239
+### 问题: WCDMA band如何配置
+解决方案: WCDMA下面相关项nv配置如下: 1.WCDMA band信息: band数目: PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY/Measurement_Capability/NumBandCombination band配置: PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY/Measurement_Capability/FDD_Measurements/FDD_Measurements[0]/FreqBand PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY/Measurement_Capability/FDD_Measurements/FDD_Measurements[1]/FreqBand PS_NV
+完整回答请参考FAQ: FAQ125298
+### 问题: 阿拉伯语时，如何使得录音文件名为数字和划线组合显示？
+解决方案: 录音文件名是根据系统语言进行显示的,当系统语言为阿拉伯语时,文件名显示为阿拉伯语, 如果需要把录音文件名统一修改为数字和划线组合显示,请参考如下两处修改: vendor/sprd/platform/packages/apps/DreamSoundRecorder --- a/src/com/sprd/soundrecorder/service/SprdRecorder.java +++ b/src/com/sprd/soundrecorder/service/SprdRecorder.java @@ -28,6 +28,7 @@ import java.text.SimpleDateFormat; import java.util.Date; import java.util.HashMap; import java.util.Map; +import java.util.Locale; 
+完整回答请参考FAQ: FAQ125479
+### 问题: 阿拉伯语时，如何使得录音机中的录音时间显示成数字？
+解决方案: 录音界面上显示的录音时间对应的字符串是根据系统语言进行显示的,当系统语言是阿拉伯语时,录音时间显示为阿拉伯语, 如果需要把录音界面上显示的录音时间统一修改为按照数字进行显示,请参考如下文件中的两处修改: vendor/sprd/platform/packages/apps/DreamSoundRecorder --- a/src/com/sprd/soundrecorder/RecorderActivity.java +++ b/src/com/sprd/soundrecorder/RecorderActivity.java @@ -40,6 +40,7 @@ import com.sprd.soundrecorder.ui.RecordWaveView; import android.app.ActivityManager.RecentTaskInfo; import java.util
+完整回答请参考FAQ: FAQ125482
+### 问题: 如何打开6531E平台SIM卡热插拔功能？
+解决方案: 6531E平台SIM卡热插拔功能分两种,硬件热插拔、软件轮询热插拔. 硬件热插拔: 硬件热插拔通过硬件GPIO检测SIM卡热插拔.根据客户硬件设计的不同,分成双卡独立GPIO检测热插拔和双卡共用GPIO检测热插拔. 双卡独立GPIO检测热插拔功能打开方式: 
+ 开SIM_PLUG_IN_SUPPORT 双卡共用GPIO检测热插拔功能打开方式: 
+ 开SIM_PLUG_IN_SUPPORT + SIM_PLUG_IN_SHARE_GPIO 
+  
+ 软件轮询热插拔: 
+ 
+ 通过软件轮询的方式来检测SIM卡是否在位 
+ 软件轮询热插拔功能打开方式: 
+ 
+ 开SIM_PLUG_IN_SUPPORT + SIM_PLUG_IN_SUPPORT_BY_CHECK 
+  
+ 
+ 注意:
+ 
+ 1)软件轮询热插拔功能是通过软件轮询的方式来检测SIM卡是否在位,但是反应比较
+完整回答请参考FAQ: FAQ125299
+### 问题: sensor软件架构由sensorhub改为非sensorhub
+解决方案: sensorhub方式修改为非sensorhub,请按照以下步骤修改: 1、 BoardConfig.mk /device/sprd/sharkl3/${customer_product}/BoardConfig.mk 去掉如下sensorhub配置 USE_SPRD_SENSOR_HUB := true # Config Sensor driver SENSOR_HUB_ACCELEROMETER := icm20600 SENSOR_HUB_GYROSCOPE := icm20600 SENSOR_HUB_LIGHT := ltr553als SENSOR_HUB_MAGNETIC := akm09918 SENSOR_HUB_PROXIMITY := ltr553iwhale2 SENSOR_HUB_PRESSURE := null SENSOR_HUB_CALIBRATION :=
+完整回答请参考FAQ: FAQ125551
+### 问题: [Android8.1]如何使得内置的Music应用可以卸载，恢复出厂设置之后可以恢复？
+解决方案: Android8.1自带的Music应用是系统内置应用,以sp9832e_1h10为例,编译生成的apk路径是:out\target\product\sp9832e_1h10\system\app\NewMusic\NewMusic.apk,系统应用用户是不能卸载的,如果需要使得内置的Music应用可以卸载,恢复出厂设置之后可以恢复,请参考如下修改,生成apk的路径是: out\target\product\sp9832e_1h10\system\vital-app\NewMusic\NewMusic.apk. /vendor/sprd/platform/packages/apps/NewMusic --- a/Android.mk +++ b/Android.mk @@ -6,6 +6,8 @@ include $(BUILD_MULTI_PREBUILT) include $(CLEA
+完整回答请参考FAQ: FAQ125615
+### 问题: SC6531E 如何屏蔽band
+解决方案: 1. band屏蔽修改办法: band屏蔽可以通过修改NV_BAND_SELECT. 参数对应如下: 参数为 0x0 代表 EGSM900 参数为 0x1 代表 DCS1800 参数为 0x3 代表 PCS1900 参数为 0x4 代表 UGSM850 参数为 0x2 代表 EGSM900+DCS1800 参数为 0x7 代表 UGSM850+PCS1900 参数为 0xB 代表 EGSM900+DCS1800+PCS1900 参数为 0xC 代表 UGSM850+EGSM900+DCS1800+PCS1900 修改方法有两种: 1) 修改MS_Code\common\nv_parameters\nv_type\nv_type_4band_sc6531efm.nvm中NV_BAND_SELECT ITEM_CONTENT保存后,NEW整个工程,重新下载. 注意:在ResearchDownl
+完整回答请参考FAQ: FAQ126259
+### 问题: SOTER产线部署上传微信服务器失败常见问题
+解决方案: 执行执行D:\SecuritySever\bin\ToolBox>Soter.exe -b SPRD -i wxalexxxxxxxxxxxxxxxx -s XXXXXXXXXXXXXXXXXXXXXX 开始上传微信服务器后有如下报错信息: 1. 错误码41001 :access_token missing hints 检查\SecurityServer\Bin\ToolBox路径下的SoterConfig.ini文件 ,teken参数是从微信公众平台自动获取的 获取token需要将ip地址加到白名单中才能访问. 2. 错误码:40164:invalid ip xxx ...,not in whitelist hint 需要走公司申请将服务器ip添加到微信公众平台IP白名单. 3. 错误码:48001 :api unauthorized hints,appid账号权限问题 一般申请账号时会
+完整回答请参考FAQ: FAQ125660
+### 问题: 如何通过下载工具channel log确认下载过程？
+解决方案: 答: 开始下载前的连接,命令为7E 00 00 00 00 00 00 7E (红色00 表示连接) 正常返回值7E 00 80 00 00 3B 5A 7E (80 表示数据OK) 开始下载7E 00 01 00 08 50 00 00 00 00 00 5B 2E 2D 3B 7E(01 表示开始下载 会传入下载文件目标地址50 00 00 00和数据长度00 00 5B 2E. 手机正常返回值7E 00 80 00 00 3B 5A 7E (80 表示数据OK) 数据传输7E 00 02...(02表示真正的数据传输,会把数据包下载到手机) 可参考下面的log 数据文件下载结束 7E 00 03 00 00 FF FC 7E (03表示数据传输完成) 手机正常返回值7E 00 80 00 00 FF 7F 7E (80 表示数据OK) 执行用户程序 7E 00 04 00 DC C0
+完整回答请参考FAQ: FAQ126336
+### 问题: FactoryDownload下载工具如何配置check二手Memory功能？
+解决方案: 答: FactoryDownload工具提供配置可以打开或关闭二手料检查,其中二手料check的具体配置在其下载工具bin/BMFiletype.ini文件内修改("0"关闭 "1"打开): [MISC] ;NeedCheckOldMemory: if 1, Support to check the memory's used NeedCheckOldMemory =1 //检查二手料总开关,以下REG/EMMC/RPMB check要设1 ;Check Register modified CheckRegModify=1 //检查寄存器是否被写过,ext_csd寄存器的bit6是否被写 ;Check EMMC Partition done CheckEmmcPartition=1 //检查EMMC是否被写过,emmc上是否存在分区 ;Check RPMB written CheckRpm
+完整回答请参考FAQ: FAQ126339
+### 问题: 如何确认RF温度补偿的温度检测是用外部NTC电路还是transceiver内部电路？
+解决方案: 请check nv中下列对应band的temp_comp_status值,默认为0X2,代表使用transceiver内部电路. LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_apc_temp_comp_PCC\apc_temp_comp_PCC\Band_no1\temp_comp_status=0x2 0x0=no temperature compensation; 0x1=enable the temperature compensation, and read the temperature index value from external; 0x2=enable the temperature compensation, read the temperature index value from the i
+完整回答请参考FAQ: FAQ126453
+### 问题: 对WIFI RSSI进行优化补偿
+解决方案: rssi补偿说明见下文. 在connectivity_configure.ini文档如下位置: [SETCTION 5] #------------------------------------------------------------------------------------------------------------------------------------------------------------ # Wifi&BT public config #------------------------------------------------------------------------------------------------------------------------------------------------------------
+完整回答请参考FAQ: FAQ126651
+### 问题: 欧洲经济区(EEA)gts测试失败NullPointerException
+解决方案: 分析: 反编译GtsRegulationComplianceTestCases:
+public boolean checkEEAv2Compliance() throws UiObjectNotFoundException, IOException, InterruptedException, IllegalArgumentException, RemoteException {
+        boolean bOK;
+...
+        String sDSEPlay = ComplianceTestUtils.getSecureSettingValue("selected_search_engine", "com.");
+        String sDSEChrome = ComplianceTestUtils.getSecureSettingValue("sele
+完整回答请参考FAQ: FAQ127437
+### 问题: 欧洲经济区(EEA)GTS测试fail禁用DISABLE键
+解决方案: log显示 DISABLE键 点击可以生效而不符合EEA要求,EEA规定是这个按键是需要禁止的. 需要按规定做如下修改:
+Keeping Search Engine Selector enabled
+Since the Choice Screen can be invoked during the deferred setup procedure, it is required to keep the Search Engine Selector app enabled under all circumstances. Configure your build to comply with this requirement by making an update to the AOSP Settings app. For example, Android 10 Settings can
+完整回答请参考FAQ: FAQ127447
+### 问题: spi lcd怎么降低下初始化参数init data时的速率
+解决方案: 处理客户问题时遇到过这样的例子: 某颗lcd ic 在uboot显示正常,灭屏唤醒后就显示异常了,是因为init data没有下成功, 之所以uboot能正常显示,是因为uboot下初始化参数使用的spi 速率是24M,而在kernel中spi速率是48M. 方法就是在kerne里下init data前把spi速率切成24M,下完init data再切回48M: panel_ops_spi.c (kernel\drivers\video\adf\sprd\drv\panel-if)文件内下初始化前后切换时钟: static int32_t spi_panel_init(struct panel_device *pd) { struct sprd_spi *spi = dev_get_drvdata(pd->intf); struct panel_info *panel = pd->pane
+完整回答请参考FAQ: FAQ127556
+### 问题: 如何配置lcd的spi速率？
+解决方案: kernel修改lcd的spi速率,配置lcd驱动中如下spi_freq变量即可: kernel/arch/arm/boot/dts/lcd/lcd_gc9305_spi_qvga.dtsi spi_freq = <48000000>; kernel中默认是48M,鉴于时钟源选择和整数分频,并不是这里配置多少就能分到多少. 注意若lcd驱动中的spi_freq配置大于48M,kernel/arch/arm/boot/dts/sp9820e-common.dtsi文件内的如下最大频率设定也要配置的不小于spi_freq &spi1 { spi-max-frequency = <48000000>; }; 我司平台默认最大速率就是48M(帧率30至33帧),若大于这个速率,lcd一般满足不了时序要求,性能不能保证. 1、 默认配置spi时钟源是192M,spi_freq=clk_spi/2(n
+完整回答请参考FAQ: FAQ127560
+### 问题: 如何在sl8521e上点mipi lcd？
+解决方案: sl8521e支持mipi lcd最大到VGA 480*640的分辨率. 1、 如在u-boot15/include/configs/sl8521e....h文件内去掉如下三个宏 #define CONFIG_SPI #define CONFIG_SPRD_SPI #define CONFIG_FB_SWDISPC 2、 kernel/arch/arm/boot/dts/sl8521e的主dts如sl8521e-3h10mc-native.dts中include进来的sl8521e-common.dtsi文件换成如下附件里的sl8521e-common-mipi.dtsi文件 见 /ishare/uploadeditor/file/20200703/20200703193043_381.zip 注意: fb_reserved分配的size默认是0x000e1000(计算方法:w*h*4*3
+完整回答请参考FAQ: FAQ127558
+### 问题: 3线9bit spi lcd怎么修改？
+解决方案: spi lcd支持的模式可以参考FAQ105551. 我们sprdroid4.4_sfphone_17f_rls1参考代码默认的一般是4线8bit I型,这里讲的是3线9bit I型或者3线9bit II型的修改方案. 假设使用我们默认的spi1通道,请按如下修改: 1、uboot中 diff --git a/drivers/video/sprdfb/sprdfb_spi.c b/drivers/video/sprdfb/sprdfb_spi.c index 46777c8..ea76721 100755 --- a/drivers/video/sprdfb/sprdfb_spi.c +++ b/drivers/video/sprdfb/sprdfb_spi.c @@ -47,7 +47,8 @@ static void DISPC_SpiWriteCmd(uint32_t cmd) { 
+完整回答请参考FAQ: FAQ127559
+### 问题: 如何优化display的耗时从而加快开机亮屏时间？
+解决方案: 1、 请自行优化所使用的uboot lcd驱动中的延时,包括reset和init data中的主要延时.不确定最小时间是多少的,请联系lcd厂商咨询. 2、 只保留最后一次刷图操作即可,去掉重复的lcd_sync,方法如下: -- a/common/lcd.c +++ b/common/lcd.c @@ -1072,7 +1072,9 @@ int lcd_display_bitmap(ulong bmp_image, int x, int y) default: break; }; +#ifndef CONFIG_FB_SWDISPC lcd_sync(); //加个宏控,去掉这次lcd_sync() +#endif return 0; } #endif 3、 尝试把开启背光的函数往前移到紧跟刷logo之后,当然此方案需要验证其他开机模式是否正常. 若是我司默认背光即把函数set_bac
+完整回答请参考FAQ: FAQ127561
+### 问题: 背光方式从默认的BLTCLED修改为PWM背光方式方案
+解决方案: 在SL8521E系列平台上我们一般都是使用默认的BLTCLED背光,但是如客户把默认的spi修改成mipi lcd后,会同时把背光方式修改成PWM方式.如sl8541e、9832e智能机平台是默认使用PWM背光方式的,就可以参考其board中的背光修改. 具体修改如下: 假设背光芯片输入端LCM_BL_PWM接在我们BB端的GPIO32/PWMA上. pwma(pwm0)40260000 pwmb(pwm1)40260020 pwmc(pwm2)40260040 如下举例是在9820e上,请自行在使用的board对应各文件内一一修改. 一 uboot: 1、 u-boot15/include/configs/sp9820e_1h10.h 去掉CONFIG_BACKLIGHT_WHTLED 2、 u-boot15/board/spreadtrum/sp9820e_1h10/pinmap-sp
+完整回答请参考FAQ: FAQ127562
+### 问题: 怎么把默认的2721 bltcled背光方式改成动态调节rbg电流的方式？
+解决方案: kernel/drivers/video/backlight/sc2721_bltcled_bl.c 默认背光方式是动态调节的pwm占空比来改变亮度. 但是经常遇到一些lcd背光由于电压不稳导致的背光抖动问题,不但要pwm频率很高还得要求rgb波形是固定的一条直线稳压,而不能是高低高的周期方波, 那么就得把pwm占空比配置成100%, 这样一来动态调节rgb电流修改如下: static void sprd_bltc_whtled_set_brightness(u32 level) { /* rtc_clk = 32KHz, pwm_freq = rtc_clk / x_duty */ /* duty_rate = x_duty / (x_mode + 1) */ - u32 duty = level * sprdbl.x_duty / 0xFF; - duty = ((duty ? dut
+完整回答请参考FAQ: FAQ127563
+### 问题: spi lcd使用spi0通道如何配置？
+解决方案: 默认4线8bit I型SPIMODE_4WIRE_8BIT_SDA(模式说明参考FAQ105551),使用的spi1. 一、 uboot15 1、仿照spi1配置spi0的pinmap在你们对应的board目录下如 Pinmap-sp9820e.c (u-boot15\board\spreadtrum\sp9820e_1h10) {REG_PIN_SPI0_CLK, BITS_PIN_AF(0)}, {REG_MISC_PIN_SPI0_CLK, BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_NUL|BIT_PIN_SLP_AP|BIT_PIN_SLP_WPD|BIT_PIN_SLP_Z},//LCM_SPI_CLK?LCM?SPI???? //倘若你们的SPI0_DI接的是屏上的CD(RS)脚,配成gpio: {REG_PIN_SPI0_DI, BITS_PIN
+完整回答请参考FAQ: FAQ127564
+### 问题: lcd spi clk的极性CPOL、相位CPHA配置介绍
+解决方案: CPOL、CPHA组合起来总共四种方式,四种方式均可通过测量波形图加以深入理解. 具体使用哪种是由lcd ic一方决定的,我们默认是使用的3( CPOL=1,CPHA=1 ) 一、uboot 1、相关代码位置 sprdfb_spi.c (u-boot15\drivers\video\sprdfb) struct spi_init_param spi_int_parm[] = { { sck_reverse, tx_pos_edge, rx_pos_edge, ... BOOLEAN sprdfb_sprd_spi_init(struct sprdfb_device *dev) { sprd_spi_init( spi_int_parm);// 去设置SPI_CTL0寄存器的bit0 bit1 bit13 2、 上面配置枚举sck_reverse是1、tx_pos_edge和rx_pos_e
+完整回答请参考FAQ: FAQ127553
+### 问题: AndroidQ GMS版本中为什么Google Photos和NewGallery2应用不能并存？
+解决方案: 在AndroidQ的GMS版本中,Google Photos和NewGallery2应用不能并存的原因如下: 第一,如果Google Photos存在,则Google Photos会覆盖掉平台NewGaller2应用,请参考: vendor/partner_gms/apps/Photos/Android.mk LOCAL_OVERRIDES_PACKAGES := Gallery2 DreamGallery2 NewGallery2 第二,GMS版本使用的相册是Google Photos,Photos是GMS认证必需的应用,因Photos不能查看和编辑特殊照片,如景深照片和有声照片,是借助于NewGallery2应用进行查看的,此时为了和NewGallery2应用区分开来,编辑特殊照片的apk是USCPhotoEdit.apk,只是在Launcher界面没有对应的入口而已. USCPhot
+完整回答请参考FAQ: FAQ202071843
+### 问题: UIS8910FF的SPI LCD硬件接法
+解决方案: UIS8910FF支持3种SPI LCD模式 a.4线8bit b.3线9bit 1data c.3线9bit 2data 具体硬件SPI信号连接如下 4线8bit LCD_SPI_CSN接AD25脚(SPILCD_CS/GPIO3) LCD_SPI_CLK接AE27脚(SPILCD_CLK/GPIO2) LCD_SPI_RS接AD26脚(SPILCD_SDC/GPIO1/SDA3) LCD_SPI_DIO接AE26脚(SPILCD_SIO/GPIO0) 3线9bit 1data LCD_SPI_CSN接AD25脚(SPILCD_CS/GPIO3) LCD_SPI_CLK接AE27脚(SPILCD_CLK/GPIO2) LCD_SPI_DIO接AE26脚(SPILCD_SIO/GPIO0) 3线9bit 2data LCD_SPI_CSN接AD25脚(SPILCD_CS/GPIO3) LC
+完整回答请参考FAQ: FAQ202071845
+### 问题: AndroidQ开启BBAT测试OTG功能
+解决方案: @/bsp/kernel/kernel4.14/arch/arm/configs/sprd_sharkl3_defconfig 3558 CONFIG_SPRD_AUTOTEST=y 3559 CONFIG_SPRD_AUTOTEST_GPIO=y 3560 CONFIG_SPRD_AUTOTEST_PINCTRL=y -- # CONFIG_SPRD_AUTOTEST_OTG is not set ++ CONFIG_SPRD_AUTOTEST_OTG=y #编译添加otg.o @/device/sprd/sharkl3/s9863a?h?0/rootdir/prodnv/BBAT.conf 44 42 1 MAKECALL -- 43 0 OTG ++ 43 1 OTG #打开使能 46 44 1 CHARGE @/device/sprd/sharkl3/common/EngpcCom
+完整回答请参考FAQ: FAQ202071859
+### 问题: 修改uart0输出串口LOG
+解决方案: 1.修改所在工程中的pinmap文件,用来配置UART0 PAD对相应的UART0 控制器,其它芯片也有类似的寄存器用来配置不同的pad对应不同的控制器,请查看相应的芯片spec 例如: bsp/bootloader/u-boot15/board/spreadtrum/sp9863a_1h10/pinmap-sp9863a.c {REG_PIN_UART_MATRIX_MTX_CFG,0xE4261C00},//UART0->AP_UART0;UART1->AP_UART1;UART2->TGDSP_UART0;UART3->SP_UART1;UART4->ITEDSP_UART0;UART5->BTWF_UART0;UART6->GNSS_UART0; 2.配置了uart0 pad对应uart0控制器后,还需要将log的输出定位到uart0控制器上来,uboot中UART的驱动在/bsp
+完整回答请参考FAQ: FAQ202071860
+### 问题: 7s reset相关配置总结
+解决方案: 1.修改7s reset时间与单双键: 例如,其它项目类似 u-boot15/include/configs/*.h #define CONFIG_7S_RST_2KEY_MODE 1 //0:1Key--Normal mode; 1:2KEY #define CONFIG_7S_RST_THRESHOLD 7 //7S, hold key down for this time to trigger 2.查看7s reset相关文件节点,adb模式下进入以下路径: /sys/class/misc/sprd_7sreset 或者 /sys/bus/platform/devices/sc27xx-7sreset 需要查看相应代码中sprd_7sreset_drv 中定义的名字 3.有的客户会想让本该长按reset的的功能变为长按power off,硬件上并不支持,但一个较好的解决方法时,仍然r
+完整回答请参考FAQ: FAQ202071862
+### 问题: GPIO debug方法小结
+解决方案: 1.cat d/gpio(或者cat /sys/kernel/debug/gpio)会得到类似以下反馈,前面的gpiochip是指GPIO控制器,GPIOs后的数字,是这个控制器开始和结束的gpio号,这些号是kernel整体安排的,跟硬件上的号 有差异,比如客户用了keyin0做GPIO功能,SPEC上写的是gpio124,它在SPEC上属于402c0000的gpio控制器,那么他在这个列表中对应的gpio编号就是124+192 = 316. 这个列表也显示了相应GPIO的输入输出,以及电平状态. gpiochip5: GPIOs 176-191, parent: platform/sc27xx-eic, sc27xx-eic: gpio-176 ( |vbus ) in hi IRQ gpio-177 ( |Power Key ) in hi IRQ gpiochip4: GPIOs 
+完整回答请参考FAQ: FAQ202071863
+### 问题: Android4.4 sc9820e 修改状态栏系统图标最大显示个数
+解决方案: 默认状态栏蓝牙、闹钟等系统图标最大显示个数为1,可通过配置下述值改变最大显示个数,使得系统图标可以显示多个: 需注意状态栏显示图标空间,不宜配置个数过多 diff --git a/packages/SystemUI/res/values/config.xml b/packages/SystemUI/res/values/config.xmlindex 4999b77..9b4b7a5 100644 --- a/packages/SystemUI/res/values/config.xml +++ b/packages/SystemUI/res/values/config.xml @@ -46,7 +46,7 @@ <!--Bug 703569:The statusbar blink or these statusbar icon show incompletely.@{--> <!--Th
+完整回答请参考FAQ: FAQ202071864
+### 问题: 7731E、9832E、9863A平台在android Q版本上开启投屏功能的方法
+解决方案: 7731E、9832E、9863A平台在android Q版本上开启投屏功能,可以分为两步: 1.打开投屏功能开关,默认关闭 文件路径:device\sprd\<芯片名称>\<项目名称>\overlay\frameworks\base\core\res\res\values\config.xml --- a/<项目名称>/overlay/frameworks/base/core/res/res/values/config.xml +++ b/<项目名称>/overlay/frameworks/base/core/res/res/values/config.xml @@ -81,6 +81,8 @@ ActivityManager based on screen size. --> <integer name="config_extraFreeKbytesAdjust">0</integer
+完整回答请参考FAQ: FAQ202071865
+### 问题: 安全锁界面，防止底部上滑触发人脸解锁与绘制图案锁冲突
+解决方案: 原生在KeyguardSecurityContainer.java中,当滑动至安全锁界面时,如果设置了人脸解锁,会上滑再次触发人脸解锁. 此时若是图案解锁,会时有发生图案锁绘制与上滑触发人脸解锁冲突的情况,造成图案锁无法正常绘制. 可选择将mSwipeUpToRetry设为false,去掉上滑出发人脸解锁,保证图案锁正常绘制,如下所示: diff --git a/packages/SystemUI/src/com/android/keyguard/KeyguardSecurityContainer.java b/packages/SystemUI/src/com/android/keyguard/KeyguardSecurityContainer.java
+index 5a65336..0718d16 100644
+--- a/packages/SystemUI/src/com/and
+完整回答请参考FAQ: FAQ202071866
+### 问题: 手势操作设置操作，对动画格式的要求
+解决方案: 当需要替换手势操作动画,需要保证新动画与原动画的格式保持一致. 以10_Trunk_19C上9863A平台为例:原动画格式:system_nav_2_button.mp4: 视频格式:AVC,分辨率:890*890 ,画面比例:1.000 无音频 (重点关注:视频格式,分辨率.使用工具:mediainfo) 更改动画格式工具:格式工厂软件 当替换动画格式不一致时,MediaPlayer报错信息: 05-26 17:05:46.575 6125 6125 D MediaPlayer: create failed: 05-26 17:05:46.575 6125 6125 D MediaPlayer: java.io.IOException: Prepare failed.: status=0x1 05-26 17:05:46.575 6125 6125 D MediaPlayer: at a
+完整回答请参考FAQ: FAQ202071867
+### 问题: android 10.0 11.0 vts testElfDependency 测试fail分析
+解决方案: Android 10.0 及之上版本进行vts testElfDependency测试时,如果出现case运行fail的话,可以通过log 分析错误的原因,一般在vts 的LOG中有module_VtsVndkDependency_output_files_armeabi-XXX的压缩包,将压缩包解压,里面有test_run_details_ERROR.txt文件.此LOG文件一般描述VTS 运行错误的原因. 常见的ERROR LOG有: " 07-15 18:24:19.010 ERROR 1 disallowed dependencies: /vendor/lib/hw/face.default.so: libfaceid_ca.so 07-15 18:24:19.011 ERROR 1 != 0 Total number of errors: 1 07-15 18:24:19.011
+完整回答请参考FAQ: FAQ202071879
+### 问题: 软件如何修改马达输出电压？
+解决方案: 1.pmic sc2720,vibr_ctr0 0x200 的LDO_VIBR_V [2:0] 文档描述如下: VIBR LDO program bits:100mv/step,2.8V到3.5V;default 3.0V,3'b010 2.原因:lookat 0x403c8e00 值是0x00004f06 说明uboot 默认设置振动电压3.4v bsp/bootloader/u-boot15/drivers/misc/vibrator.c 17 #define LDO_VIBR_V_U (0xB4) 50 ANA_REG_MSK_OR(ANA_VIBRATOR_CTRL0_U,LDO_VIBR_V_U,LDO_VIBR_V_U); 将bit3置1 所以是2.8+0.6V=3.4V 3.修改bsp/bootloader/u-boot15/drivers/misc/vibrator.c +
+完整回答请参考FAQ: FAQ202071882
+### 问题: 如何读写RPMB
+解决方案: 在TA中读写RPMB所涉及的接口如下: /**   * storage_open_session_async() - Opens a storage session async.   * @session_p: pointer to location in which to store session handle   *             in case of success.   * @type:      One of STORAGE_CLIENT_TD_PORT, STORAGE_CLIENT_TDEA_PORT or   *             STORAGE_CLIENT_TP_PORT.   * @timeout_ms: wait for port in timeout_ms   *   * Return: NO_ERROR on success, or an er
+完整回答请参考FAQ: FAQ202071883
+### 问题: 横屏之后，修改人脸录入界面取景框过大
+解决方案: 人脸录入界面默认强制竖屏,若是改为横屏显示,face preview会过大,造成录入困难. 可按照以下修改,按需缩小face_preview_scale的值: diff --git a/res/values/dimens.xml b/res/values/dimens.xml old mode 100755 new mode 100644 index c702a7d..a13174a --- a/res/values/dimens.xml +++ b/res/values/dimens.xml @@ -225,7 +225,7 @@ <!-- Face --> <dimen name="face_preview_translate_y">0dp</dimen> <dimen name="face_preview_translate_x">0dp</dimen> - <item name="
+完整回答请参考FAQ: FAQ202071884
+### 问题: Android8.1/9.0/10.0 Go版本是否支持Widget问题
+解决方案: Android8.1/9.0/10.0 Go版本均不支持Widget Android 9.0/10.0: 在google文档《Android P-Go Device Configuration Guide.pdf》/《Android Q-Go Device Configuration Guide.pdf》中,关于Widget(小部件)的描述如下: Launcher: Widgets should not be supported in both custom launchers and AOSP Launcher3Go . Android8.1: 在google文档《Android8.1(Go Edition) Change Description》中,关于Widget(小部件)的描述如下: Widget support has been removed from AOSPLauncher
+完整回答请参考FAQ: FAQ202071888
+### 问题: AndroidQ Go Recent样式替换
+解决方案: 若要替换recent样式,请使用Launcher3QuickStepGo,Launcher3QuickStepGo会比Launcher3GoIconRecents要多耗5M左右的内存,请根据项目考虑是否要使用. 修改方法: vendor/sprd/generic/misc/launchercfg/LauncherPackages.mk中的: ifeq ($(strip $(CHIPRAM_DDR_CUSTOMIZE_SIZE)),0x20000000) LAUNCHER_PACKAGE_NAME := Launcher3GoIconRecents else # LAUNCHER_PACKAGE_NAME := Launcher3QuickStepGo # In order to save memory, use Launcher3GoIconRecents for Go devices L
+完整回答请参考FAQ: FAQ202071889
+### 问题: W GCF case 测试中常见的pics项与能力项不匹配问题
+解决方案: W GCF case 测试中常见的pics项与能力项不一致问题,pics项与nv项对应关系总结如下: 1. pics项: pc_SupportOfUTRAN_ToGERAN_NACC 对应nv项: PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY/multi_rat_cap/utran_to_geran_nw_assisted_cell_change_supported 2. pics项: pc_AbsolutePriorityReselection 对应nv项:PS_NV_PARAMS/NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY/measurement_Capability/PriorityReselection_Supported 3. pics项: pc_UeBasedAgps 对应n
+完整回答请参考FAQ: FAQ202071891
+### 问题: 配置Client ID的方法
+解决方案: 代码位置:/device/sprd/XXX/common/DeviceCommon.mk (备注:XXX 指 pike2、sharkl3、sharkle等) 例如:修改client ID: FEATURES.PRODUCT_PRODUCT_PROPERTIES += \ ro.com.google.clientidbase=android-google //指定内容 修改search_client_id: ro.com.google.clientidbase=android-google +++ ro.com.google.clientidbase.ms=//指定内容 其他属性也是相同配置方法: search_client_id 对应属性:ro.com.google.clientidbase.ms chrome_client_id 对应属性:ro.com.google.clientidba
+完整回答请参考FAQ: FAQ202071892
+### 问题: 关于提交指纹相关CQ时Component的选择
+解决方案: 1. 有关设置中指纹的显示类问题请选择Android_APP_Setting; 2. 指纹解锁的显示相关问题请优先选择Android_APP_StatusBar/LockScreen; 3. 指纹驱动相关问题请选择BSP_Fingerprint; 4. 指纹BBAT工厂测试问题,请先搜索"ENGPC"和"BBAT_FINGER"确认是否抓取到有效log(log获取可参考FAQ202071893),如果ENGPC没有调用testAutotestFingerprint则选择Android_DRV_ENGPC模块处理,若testAutotestFingerprint被调用了找不到工厂测试库,首先确认有无与指纹厂商适配工厂测试库,其次可参考FAQ202071894,若问题点在执行指纹厂测库实现的接口内部,或相关selinux权限问题均请联系指纹厂商处理,其余情况可选择Android_APP_Fin
+完整回答请参考FAQ: FAQ202071895
+### 问题: 如何使状态栏不显示volte图标，只在下拉状态栏显示volte图标
+解决方案: 水滴屏、刘海屏项目,状态栏图标显示区域空间不够,为解决此问题,可去掉状态栏volte图标,保留下拉状态栏volte图标,以增加状态栏显示区域: diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java b/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java old mode 100755 new mode 100644 index 383d53a..f86f790 --- a/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java +++ b/packages/Sys
+完整回答请参考FAQ: FAQ202071897
+### 问题: 使用指纹灭屏解锁，解锁失败且lockout后如何自动点亮屏幕
+解决方案: 默认指纹认证连续错误5次后会进入lock out模式,指纹库同时会上报错误给上面的监听者,如锁屏时,frameworks/base/packages/SystemUI/src/com/android/keyguard/KeyguardUpdateMonitor.java调用startListeningForFingerprint()发起指纹认证请求,发生lock out error时会通过其注册的回调对象mFingerprintAuthenticationCallback中的onAuthenticationError()方法获得通知.     private FingerprintManager.AuthenticationCallback mFingerprintAuthenticationCallback              = new AuthenticationCallbac
+完整回答请参考FAQ: FAQ202071903
+### 问题: 视频编码中的I帧、P帧、B帧的概念和特点
+解决方案: 在视频压缩中,每帧都代表着一幅静止的图像.在实际的视频压缩编码时,会采取各种算法减少数据的容量,其中IPB帧就是最常见的一种算法. I帧:帧内编码帧(intra picture),又称全帧压缩编码帧.I帧通常是每个GOP(MPEG所使用的一种视频压缩技术)的第一个帧,经过适度地压缩,作为随机访问的参考点,可以当成静态图像. P帧:前向预测编码帧(predictive-frame),通常将图像序列中前面已经编码帧的时间冗余信息充分去除来压缩传输数据量的编码图像,也称为预测帧. B帧:双向预测内插编码帧(bi-directional interpolated prediction frame),既考虑源图像序列前面的已编码帧,又顾及源图像序列后面的已编码帧之间的时间冗余信息,来压缩传输数据量的编码图像,也称为双向预测帧. 基于以上对IPB帧的定义,以下从解码的角度来理解IPB帧: I帧:自身可
+完整回答请参考FAQ: FAQ202071909
+### 问题: 常见的视频编码格式和视频封装格式（容器）介绍
+解决方案: 常见的视频编码格式: 视频标准 发布组织/年份 主要特征 H.261 (又称P*64 ) ITU-T/1990 1.第一个实用的数字视频编码标准 2.混合编码框架 MPEG-1 (ISO/IEC11172-2) ISO/IEC/1992 1.关于位速率约为1.5Mbit/s的视频型号的压缩编码的规定 2.压缩后的数码率因能存储在光盘(VCD)、数字录音带DAT或可写磁光盘等媒体中 MPEG-2 (ISO/IEC13818-2) ISO/IEC/ITU-T/1994 1.在许多情况下,MPEG-2表示成MPEG-1的一个超集 2.广泛应用于DVD、SDTV和HDTV中 MPEG-4 (ISO/IEC14496-2) ISO/IEC/1998 1.采用了基于对象(Object-Based)编码等的第二代编码技术 2.具有鲁棒性和纠错能力,从而保证在易出错的通信环境下实现安全的低码率编码和传输.
+完整回答请参考FAQ: FAQ202071911
+### 问题: 在android 10.0上临时关闭AFBC功能
+解决方案: AFBC(ARM Frame Buffer Compression,ARM 帧缓冲压缩技术)的作用是降低媒体系统中的带宽,使用该技术能够最大程度地减少 Soc 内 IP 块之间的数据传输量,将系统级别的总体带宽和功耗最多降低 50%. 在android 10.0系统上需要临时关闭该功能时,可参考以下修改.(以AVC解码为例) diff --git a/vendor/sprd/modules/media/omx-components/video/avc/dec/hw/SPRDAVCDecoder.cpp b/vendor/sprd/modules/media/omx-components/video/avc/dec/hw/SPRDAVCDecoder.cpp @@ -1284,12 +1284,12 @@ OMX_ERRORTYPE SPRDAVCDecoder::setConfig( mD
+完整回答请参考FAQ: FAQ202071915
+### 问题: 在android R上临时关闭AFBC功能
+解决方案: AFBC(ARM Frame Buffer Compression,ARM 帧缓冲压缩技术)的作用是降低媒体系统中的带宽,使用该技术能够最大程度地减少 Soc 内 IP 块之间的数据传输量,将系统级别的总体带宽和功耗最多降低 50%. 在android R系统上需要临时关闭该功能时,可参考以下修改. diff --git a/vendor/sprd/modules/media/v2/libstagefrighthw/SprdVideoDecoderOMXComponent.cpp b/vendor/sprd/modules/media/v2/libstagefrighthw/SprdVideoDecoderOMXComponent.cpp @@ -364,12 +364,12 @@ OMX_ERRORTYPE SprdVideoDecoderOMXComponent::internalSe
+完整回答请参考FAQ: FAQ202071916
+### 问题: android Q如何使特定应用的通知，只在下拉栏显示，而不在状态栏显示通知图标
+解决方案: 如果想要通知不显示在状态栏上,可以发送通知时设置通知channel的重要程度为IMPORTANCE_MIN,但是 这种修改来通知的时候也不会弹出提醒,所以可以在显示的地方进行屏蔽修改,可以在下面地方通过参数 NotificationEntry获得通知的key或者channel进行屏蔽 /frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/NotificationIconAreaController.java protected boolean shouldShowNotificationIcon(NotificationEntry entry, boolean showAmbient, boolean showLowPriority, boolean hideDismissed, boolea
+完整回答请参考FAQ: FAQ202071918
+### 问题: 灭屏模式下使用指纹解锁，连续认证错误进入lockout模式后如何自动亮屏
+解决方案: 默认指纹认证连续错误5次后会进入lock out模式(平台方案默认锁定30s),在lock out模式中,再次验证指纹时,指纹厂商虽然有中断检测,但其内部判断到lock out状态,并不会往上层上报fail或error消息,用户体验表现为没有指纹错误震动提示. 如果想要亮屏提示用户,可以在连续认证错误的第5*N次(N={1, 2, 3}),即进入lock out模式的节点采用以下参考方式亮屏. 在lock out模式期间再次验证指纹时,平台指纹厂商默认方案无法做到亮屏提示,原因如前所述,指纹厂商不会上报事件或消息给到上层软件. 以下给出参考代码: /frameworks/base$ git diff
+diff --git a/services/core/java/com/android/server/fingerprint/AuthenticationClient.java b/serv
+完整回答请参考FAQ: FAQ202071920
+### 问题: 如何去掉google开机向导中的人脸识别或者指纹识别设置
+解决方案: 这个是google的原生设计,默认会启动生物识别设置,如果不需要,可参考下面的修改,建议维持原生设计并加强测试验证. diff --git a/src/com/android/settings/biometrics/BiometricEnrollIntroduction.java b/src/com/android/settings/biometrics/BiometricEnrollIntroduction.java index d5414c9..a04f623 100644 --- a/src/com/android/settings/biometrics/BiometricEnrollIntroduction.java +++ b/src/com/android/settings/biometrics/BiometricEnrollIntroduction.java @@ -36,7
+完整回答请参考FAQ: FAQ202071921
+### 问题: 关于指纹的LOCKOUT和LOCKOUT_PERMANENT状态
+解决方案: 1. 先看一下AuthenticationClient中指纹认证的回调函数onAuthenticated()中对指纹认证失败的处理: frameworks/base/services/core/java/com/android/server/fingerprint/AuthenticationClient.java 213          if (!authenticated) { 214              if (receiver != null) { 215                  vibrateError(); 216              } 217              // allow system-defined limit of number of attempts before giving up 218              int lo
+完整回答请参考FAQ: FAQ202071922
+### 问题: 超广角模式相机设置菜单中增加[自动夜景增强]功能选项
+解决方案: diff --git a/res/values/dream_camera_arrays_photo_part.xml b/res/values/dream_camera_arrays_photo_part.xml index f68e8bb..88325f3 100644 --- a/res/values/dream_camera_arrays_photo_part.xml +++ b/res/values/dream_camera_arrays_photo_part.xml @@ -961,12 +961,14 @@ <item>@string/pref_camera_countdown_duration_key</item> </integer-array> <integer-array name="photo_back_mode_ultra_wide_angle_setting_di
+完整回答请参考FAQ: FAQ202071928
+### 问题: sensorhub架构下sensor方向如何调整？
+解决方案: sensorhub架构下,各个sensor方向调试都由postion控制,以磁传感器为例, 1、方向设置由vendor/sprd/modules/sensors/libsensorhub/ConfigSensor/magnetic/magnetic_xxx.cpp 中.Postion 参数修改,position的取值0~7. postion 方向调整 0 X : Y : Z 1 Y : -X : Z 2 -X : -Y : Z 3 -Y : X : Z 4 Y : X : -Z 5 X : -Y : -Z 6 -Y : -X : -Z 7 -X : Y : -Z 2、修改编译后可以通过adb push so快速验证: out目录下:obj/SHARED_LIBRARIES/libsensorsdrvcfg_intermediates/libsensorsdrvcfg.so ---对应 ve
+完整回答请参考FAQ: FAQ202071929

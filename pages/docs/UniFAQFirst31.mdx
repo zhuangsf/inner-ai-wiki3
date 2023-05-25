@@ -1,0 +1,300 @@
+### 问题: [sc7731]摄像头最大可以支持几百万的？什么格式的数据？
+解决方案: 1.MIPI接口的phyA/phyB分别用于支持前/后(后/前)摄像头,后摄像头8M分辨率输出帧率约15fps,用于支持ZSL功能;如无需支持ZSL功能,一般用2M输出做预览,能支持30fps和以上的帧率 2.无前摄像头的应用,MIPI接口的phyA和phyB均用于后摄像头,则可支持30fps的8M预览
+参考FAQ: FAQ58392
+### 问题: SC7715用下载工具无法下载 出现错误 read dluid failed
+解决方案: 下载工具版本未及时更新,尽量使用最新版本NPI工具
+参考FAQ: FAQ58394
+### 问题: SC7715校准后再下载原PAC包时报错"Failed:NV data read in phone is crashed"
+解决方案: NvEditor工具使用不当导致,在save image 不要勾选write dsp
+参考FAQ: FAQ58418
+### 问题: 如何确认wifi无法连接AP是由硬件射频RF问题导致的
+解决方案: 可以从以下几方面check: 1. 连接过程中被AP主动DEAUTH 2. 从空口包中能够看到连接过程中包有较多重传现象,特别是关键帧如DHCP 3. 让硬件帮忙焊接一根导线代替天线引出来,是否很快就能连接上 4. 让硬件射频 check 射频相关指标是否达标
+参考FAQ: FAQ58466
+### 问题: [SC7715]是否支持印度地区号码归属？是否有印度地区号码归属地区号资源？
+解决方案: 归属地数据库是要根据地区自行做国际化适配的,android原生系统是没有归属地数据库的. 目前归属地数据库只有中国国内的地区信息,只适用于国内; isSupportGoogleGeocode()接口是后来加的,以备扩展用的. 如果出海外产品,可以自行更新当地数据
+参考FAQ: FAQ58468
+### 问题: 如何从底层kernel log查看2351 wifi是否休眠（主要指android 的休眠策略）
+解决方案: check kernel log是否在对应的时间点有如下打印信息: 12-24 17:26:52.336 <6>[ 2975.189561] c0 net wlan0: itm_wlan_close 如果有说明wifi正常休眠
+参考FAQ: FAQ58474
+### 问题: 如何check GPS版本
+解决方案: 1.从手机里直接check: *#*#2266#*#* =>INFORMA=> GPS version 2.代码里面check如下: /vendor/sprd/gps/CellGuide_2351$ cat supl.xml | grep GPS <PROPERTY NAME="VERSION" VALUE="GPS_CG_14A_W14_51.3,2014.12.17"/>
+参考FAQ: FAQ58476
+### 问题: gps无法搜星问题原因
+解决方案: 需要check如下几点: 1. 检查GPS总电源2.8v是否正常 2. 检查LNA的vcc电压是否正常,enable是否正常 3. 检查射频天线是否正常
+参考FAQ: FAQ58478
+### 问题: [7715]将蓝牙名重命名为空格，重新开关机后，没有蓝牙名字显示，空格也不显示
+解决方案: 当蓝牙名字设置为空格的时候,在重新关机开机的时候,蓝牙会通过tinyxml2提供的接口GetText来获取名字 通过打印可以看到GetText获取的名字已经为空.查看tinyxml2中提供的一些接口,发现tinyxml2在load配置文件、读取字符串的时候会过滤空格,所以如果修改这个问题的话,需要修改tinyxml2中的一些接口,由于tinyxml2并非蓝牙专用,所以对tinyxml2的接口的修改可能会导致其他模块出现异常.建议不进行修改.使用N5(android原生代码)对比机也存在与本手机相同的现象
+参考FAQ: FAQ58483
+### 问题: [7715]TTS是否支持泰语？
+解决方案: PICO-TTS引擎不支持泰语
+参考FAQ: FAQ58488
+### 问题: 是否支持孟加拉语bn_IN？
+解决方案: 支持印度孟加拉语bn_IN 合入的资源放在各个模块的values-bn中.可以直接在frameworks/base/core/res/res下增加values-bn-rIN的文件夹. 复制values-bn中的strings.xml到此文件夹中即可.
+参考FAQ: FAQ58485
+### 问题: 关机充电拔除充电线自动开机
+解决方案: 答:可以做到自动开机.方法如下: 修改vim vendor/sprd/open-source/apps/charge/ui.c中如下函数 void *power_thread(void *cookie) { for (;!is_exit;) { if(battery_ac_online()==0 && battery_usb_online()==0){ LOGE("charger not present, power off device\n"); is_exit = 1; //reboot(RB_POWER_OFF); reboot(RB_AUTOBOOT); usleep(200); } } return NULL; }
+参考FAQ: FAQ58508
+### 问题: 内存访问越界的原因及预防
+解决方案: a) 由于使用错误的下标,导致数组访问越界 b) 搜索字符串时,依靠字符串结束符来判断字符串是否结束,但是字符串没有正常的使用结束符 c) 使用strcpy, strcat, sprintf, strcmp, strcasecmp等字符串操作函数,将目标字符串读/写爆.应该使用strncpy, strlcpy, strncat, strlcat, snprintf, strncmp, strncasecmp等函数防止读写越界.
+参考FAQ: FAQ58517
+### 问题: Sprd NPI工具的log如何开启
+解决方案: 在工具所在文件夹,/Bin/Channel文件描述中Level按需求修改,默认值为0 [Log] ; Text log level ; 0, No text log ; 1, Log errors,default value ; 2, Log warnings ; 3, Log runtime information ; 4, Log data only ; 5, Log everything Level = 0
+参考FAQ: FAQ58539
+### 问题: 在只有音量加减键的情况下，如何调整键值实现按组合键进fastboot模式的功能
+解决方案: 在u-boot\board\spreadtrum\sp7731gea\sprd_kp.c里面调整下面这个函数就可以实现调整键值实现组合键进fastboot模式了. unsigned int check_key_boot(unsigned char key) { if(KEY_VOLUMEUP == key) return BOOT_CALIBRATE; else if(KEY_HOME == key) return BOOT_FASTBOOT; else if(KEY_VOLUMEDOWN== key) return BOOT_RECOVERY; else return 0; }
+参考FAQ: FAQ58624
+### 问题: 蓝牙服务类的通用属性包括哪些类型？
+解决方案: 通用属性是适用所有服务记录的服务属性,但并不是每一条服务记录都必须包含所有的通用服务属性,其中servicerecordhandle和Seviceclassidlist属性是所有服务记录都具有的,而企鹅他属性是可选的,通用属性主要包含以下类型:
+参考FAQ: FAQ58617
+### 问题: 如何通过命令来打包slog
+解决方案: 可以通过执行命令adb shell slogctl dump来打包当前的slog,打包后的slog放于sdcard 目录下面
+参考FAQ: FAQ58606
+### 问题: 蓝牙服务发现协议中数据元的类型有哪些？
+解决方案: 蓝牙SDP中,数据元由头字段和数据字段两部分组成,头字段占1个字节,由类型描述符和尺寸描述符两部分组成,前者确定了数据字段的含义,后者确定了数据字段的长度,数据元主要有以下几种类型:
+参考FAQ: FAQ58604
+### 问题: JNI ERROR (app bug): Local reference table overflow (max=512)  是什么异常
+解决方案: 虚拟机在创建的时候会初始化一个Local reference table,当一个Dalvik虚拟机线程在执行JNI方法的时候,可能会需要访问Java层的对象.这些Java层对象在被JNI方法访问之前,需要往当前Dalvik虚拟机线程的JNI方法本地引用表添加一个引用,以便它们不会被GC回收 ,而Local reference table就是用来存放这些Local Reference的,初始值是512个,如果在未返回java层时频繁的创建Local Reference,就会导致add到这个table里的引用达到512后无法再添加,就会报这个异常,在报出该异常后会进行table表(最后10项)然后abort VM.
+参考FAQ: FAQ58566
+### 问题: linux shell
+解决方案: linux shell主要是给用户提供一个界面,并负责接收,解释用户的请求.最后把用户的请求传达给内核的一个保护层的程序.
+参考FAQ: FAQ58567
+### 问题: 蓝牙服务发现协议中数据元的长度可以取哪些值？
+解决方案: 蓝牙SDP中,数据元由头字段和数据字段两部分组成,头字段占1个字节,由类型描述符和尺寸描述符两部分组成,前者确定了数据字段的含义,后者确定了数据字段的长度,数据元长度主要有以下几种取值:
+参考FAQ: FAQ58608
+### 问题: 蓝牙服务发现协议中服务属性采用的UUID是什么?
+解决方案: UUID是国际标准化组织(ISO)提出的通用唯一标识符,长度为128bit,每一个UUID值都可以保证绝对的唯一性.SDP在服务属性中采用UUID,就可以以一种标准的方法来标识服务.为了降低存储和传输负担,已预先分配了一部分UUID值.根据蓝牙号码分配文件,预先分配的第一个UUID称为蓝牙基本UUID,为00000000-0000-1000-8000-00805F9B34FB.预先分配的UUID值都以16位或32位值表示,称为16位UUID或者32位UUID.
+参考FAQ: FAQ58611
+### 问题: 如何判断视频是否属于硬解
+解决方案: log里搜索openDecoder,如发现使用libomx_avcdec_hw_sprd.so,属于硬解. 12-19 08:58:00.823 120 120 I SPRDAVCDecoder: SPRDAVCDecoder, video_cfg: 0 12-19 08:58:00.823 120 120 I SPRDAVCDecoder: openDecoder, lib: libomx_avcdec_hw_sprd.so
+参考FAQ: FAQ58618
+### 问题: android sharepreference 文件权限
+解决方案: android给我们提供了三种模式: 私有(MODE_PRIVATE):仅有创建程序有权限对其进行读取或写入 全局读(MODE_WORLD_READABLE):不仅创建程序可以对其进行读取或写入,其他应用程序也读取操作的权限,但没有写入操作的权限 全局写(MODE_WORLD_WRITEABLE):创建程序和其他程序都可以对其进行写入操作,但没有读取的权限
+参考FAQ: FAQ58626
+### 问题: ART模式与Dalvik模式不同点
+解决方案: ART模式与Dalvik模式最大的不同在于,在启用ART模式后,系统在安装应用的时候会进行一次预编译,在安装应用程序时会先将代码转换为机器语言存储在本地,这样在运行程序时就不会每次都进行一次编译了,执行效率也大大提升. 从这方面来看,ART模式确实能够改善Android平台一直以来在兼容性方面的妥协,但另一方面,应用经过预编译后的容量,以及应用是否兼容该模式也是需要重点考虑的问题.
+参考FAQ: FAQ58631
+### 问题: androiid java代码中打印堆栈
+解决方案: Java代码打印堆栈比较简单, 堆栈信息获取和输出,都可以通过Throwable类的方法实现.目前通用的做法是在java进程出现需要注意的异常时,打印堆栈,然后再决定退出或挽救.通常的方法是使用exception的printStackTrace()方法: try { ... } catch (RemoteException e) { e.printStackTrace(); ... } 当然也可以只打印堆栈不退出,这样就比较方便分析代码的动态运行情况.Java代码中插入堆栈打印的方法如下: Log.d(TAG,Log.getStackTraceString(new Throwable()));
+参考FAQ: FAQ58664
+### 问题: 如何调整zoom等级菜单
+解决方案: 在文件vendor/sprd/open-source/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h sprd_back_camera_hardware_config数组中调整zoom相关内容, 比如调整为3级. {"max-zoom", "3"}, {"zoom-ratios", "100,110,120,130"}, {"zoom", "0"},
+参考FAQ: FAQ58668
+### 问题: android C++代码中打印堆栈
+解决方案: C++也是支持异常处理的,异常处理库中,已经包含了获取backtrace的接口,Android也是利用这个接口来打印堆栈信息的.在Android的C++中,已经集成了一个工具类CallStack,在libutils.so中.使用方法: #include <utils/CallStack.h> ... CallStack stack; stack.update(); stack.dump(); 使用方式比较简单.目前Andoid4.2版本已经将相关信息解析的很到位,符号表查找,demangle,偏移位置校正都做好了.
+参考FAQ: FAQ58665
+### 问题: SC7715如何设置配置成默认卡2为3G主卡
+解决方案: 1. 此修改仅限于支持主WCDMA卡槽可以动态切换的版本,MocorDroid4.4_3.10_7715_P14.30.2_P7版本及其后续版本. 2. 将调用Settings.Global.getInt读取Settings.Global.PREFERRED_NETWORK_MODE_SUB0的默认值 preferredNetworkMode改成RILConstants.NETWORK_MODE_GSM_ONLY 3. 将调用Settings.Global.getInt读取Settings.Global.PREFERRED_NETWORK_MODE_SUB1的默认值 RILConstants.NETWORK_MODE_GSM_ONLY改成preferredNetworkMode
+参考FAQ: FAQ58681
+### 问题: SC7701是否支持视频通话
+解决方案: 支持,需要合入平台patch.
+参考FAQ: FAQ58684
+### 问题: sprd-battery.dtsi文件和rd-scx35_sp7731gea.dts文件的关系是什么？
+解决方案: .dts文件是一种ASCII 文本格式的Device Tree描述,此文本格式非常人性化,适合人类的阅读习惯.基本上,在ARM Linux在,一个.dts文件对应一个ARM的machine,一般放置在内核的arch/arm/boot/dts/目录.由于一个SoC可能对应多个machine(一个SoC可以对应多个产品和电路板),势必这些.dts文件需包含许多共同的部分,Linux内核为了简化,把SoC公用的部分或者多个machine共同的部分一般提炼为.dtsi,类似于C语言的头文件.其他的machine对应的.dts就include这个.dtsi 在sprd-scx35_sp7731gea.dts中包含了sprd-battery.dtsi 30 /include/ "sprd-battery.dtsi"
+参考FAQ: FAQ58692
+### 问题: 如何默认关闭输入法设置中的“Auto correction”
+解决方案: 默认关闭请修改SettingsProvider中的databaseHelper.java内的 loadSecureSettings函数,在函数尾部添加 loadBooleanSetting(stmt,Settings.Secure.SPELL_CHECKER_ENABLED,false);
+参考FAQ: FAQ58694
+### 问题: 如何修改Power button ends call的默认值
+解决方案: 修改 frameworks\base\core\java\android\provider\Settings.java 中 public static final int INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT = INCALL_POWER_BUTTON_BEHAVIOR_SCREEN_OFF; 修改为 public static final int INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT = INCALL_POWER_BUTTON_BEHAVIOR_HANGUP;
+参考FAQ: FAQ58698
+### 问题: 为什么拨打视频电话时无彩铃？
+解决方案: 视频电话的多媒体彩铃与语音电话的彩铃是不同的业务,所以测试视频电话的多媒体彩铃时需要单独开通此项业务.
+参考FAQ: FAQ58695
+### 问题: 如何修改Enhance web accesibility的默认值
+解决方案: frameworks\base\packages\settingsprovider\res\values\Defaults.xml 中 <bool name="def_accessibility_script_injection">false</bool> 修改为 <bool name="def_accessibility_script_injection">true</bool>
+参考FAQ: FAQ58699
+### 问题: WCDMA的快速校准FDT的特点是？
+解决方案: 上下行(TX、RX)同时进行校准,一个band内所有信道同时校准,可以灵活配置step
+参考FAQ: FAQ58700
+### 问题: testFeatureGoogleBuild失败
+解决方案: 这两条case是在检查设备上是否有如下两个system feature: com.google.android.feature.GOOGLE_BUIL com.google.android.feature.GOOGLE_EXPERIENCE 需要删除/etc/permissions/下的features.xml就可以
+参考FAQ: FAQ58703
+### 问题: DDR DRAM大小对底电流的影响
+解决方案: DRAM容量大一倍,自刷新电流就会大一倍 因此不同容量的MCP会对底电流有影响, 如果发现8Gb的memory平台比4Gb的memory平台的底电流有0.5-1mA的差别,是正常的范围
+参考FAQ: FAQ58709
+### 问题: 7731双卡项目手动搜网提示错误问题。
+解决方案: 7731双卡项目,客户反馈手机在插入双卡开机后,将卡2设为数据的主卡时,此时对卡1手动搜网,会提示搜网错误问题. 该问题原因是是由于,展讯双卡项目目前的设计,如果卡2在做PS业务,这时对卡1进行手动搜网是不允许的. 故此时报错误是正常的.
+参考FAQ: FAQ58710
+### 问题: SC7715工程模式EUT功能说明
+解决方案: 拔号盘进入工程模式*#*#83781#*#* -> CONNECTIVITY -> BT eut, 说明:设置蓝牙是否支持多样化的终端接入方式,默认为关,当打开后,会发送AT命令下去,通过 socket方式,将eng bt dut_mode_configure 1设置发送下去完成,具体实现功请参考代码. 一般硬件同事先关闭蓝牙,然后打开此EUT选项,可以进入EUT模式,进行蓝牙硬件相关的测试.
+参考FAQ: FAQ58712
+### 问题: APN中的authtype是什么意思？
+解决方案: authtype是身份验证类型,其中选项包括None,PAP,CHAP,PAP or CHAP. PAP和CHAP都是PPP协议中基本认证协议. PAP(Password Authentication Protocol)是简单二次握手身份验证协议,用户名和密码明文传送,安全性低. CHAP(Password Authentication Protocol)是一种挑战响应式协议,三次握手身份验证,口令信息加密传送,安全性高.
+参考FAQ: FAQ58723
+### 问题: emmc中闪存区域是怎样划分的?
+解决方案: emmc闪存区域默认分为4个区域: boot area partition1; boot area partition2; RPMB partition; user area partition. 其中两个boot area用于存放启动的bin:一个用于存放spl bin,一个用于存放uboot; RPMB(relay protected memory block) area用于安全机制; user area partition即为我们存放数据的区域,Android系统的逻辑分区在此区域实现.
+参考FAQ: FAQ58722
+### 问题: 蓝牙服务原语是什么意思？
+解决方案: 服务原语(orimitive)是以输入和输出参数的形式对服务接口的一种抽象描述,在实际中,可以通过相应的软硬件以交换这些参数的方式实现服务原语所描述的服务功能(常常是API的形式).
+参考FAQ: FAQ58760
+### 问题: SDP的发现模式有哪些？
+解决方案: SDP定义了两种服务发现模式: 1、服务搜索——查询具有特定服务属性的服务; 2、服务浏览——简单地浏览全部可用服务
+参考FAQ: FAQ58777
+### 问题: 7731项目cts测试BLE case失败问题
+解决方案: 客户7731项目在: MocorDroid4.4_3.10_14B_tshark_W14.37.6版本上. CTS verifier测试中 BT相关BLE case测试失败问题. 该问题原因是由于:cts 该测试项属于BT 4.0测试项,而展讯7731项目connectivity BT目前支持为:BT 2.1+EDR 故该测试项目前不支持. 客户可以联系展讯cpm获取TR文档说明.
+参考FAQ: FAQ58784
+### 问题: 服务发现机制？
+解决方案: 服务发现协议的服务发现机制如下图所示:服务器中有一份服务记录(Service Record)列表,其中包含了与服务器想送的服务及其特征,客户端通过发送SDP请求从服务记录列表中获得服务记录信息,如果客户端决定使用其中某一服务,它必须与该服务提供者建立单独连接.
+参考FAQ: FAQ58783
+### 问题: lmp DH和DM间的信道切换
+解决方案: 某一类型的分组数据吞吐量依赖于射频信道的质量.测量接收器的质量可以动态控制远程设备发送的分组类型,以优化数据吞吐量. 协商过程如下: 1、设备A想让远程设备B拥有控制权,它将发送一个LMP_Auto_Rate PDU; 2、这样每当设备B想改变设备A所发送的分组类型时,就可发送LMP_Prefered_Rate PDU. 注意: 1.该PDU内的一个参数可决定首选的编码方式和时隙中的首选分组大小; 2.设备A不一定按照指定的参数来改变分组类型.
+参考FAQ: FAQ58794
+### 问题: 蓝牙服务发现协议的服务记录是什么？
+解决方案: SDP服务以服务记录的形式对每一个服务进行描述,每一条服务记录都包含有一个服务记录句柄(Service Record Handle)和一组服务属性,所有的服务记录组成一份服务记录列表,如下图所示:
+参考FAQ: FAQ58795
+### 问题: 进程和程序的区别
+解决方案: 程序是存储在某种存储介质上的可执行文件,是目标码和用户数据的集合. 程序装载进内存后可以执行,处于可执行状态的程序称为进程.但是进程并不仅仅局限于一段可执行代码以及一些用户数据,通常它还要包括很多其他的资源,比如打开的文件,用于保存临时数据的堆栈,挂起的信号等.因此,进程可以看作处于执行状态的程序以及它所包含的资源的总称. 从内核的角度来看,进程是操作系统分配内存,CPU时间片等资源的基本单位,为正在运行的程序提供的运行环境.他代表了程序的一个执行过程,是一个动态的实体,随着程序中指令的执行而不断变化. 进程与程序的主要区别如下: 1 程序是静态的,进程是动态的.程序作为一个静态文件存储在硬盘等存储介质中,而进程则是为处于执行状态的程序提供的动态运行环境. 2 1个程序可以对应多个进程,但1个进程只能对应1个程序. 3 进程从创建直至推出具有一定的生命期,而程序则只是指令与数据的集合.
+参考FAQ: FAQ58792
+### 问题: 蓝牙基带分组遵循的格式
+解决方案: 1.基带分组的编码序列遵循小端格式; 2.射频电路最先发送LSB,最后发送MSB.
+参考FAQ: FAQ58800
+### 问题: SDP协议的三个基本概念是分别指什么？
+解决方案: 1. 数据元:是SDP对属性值中的数据进行描述的一个基本结构单元,它使属性值能够表示各种可能类型和复杂度的数据信息. 2. UUID:它是国际标准化组织提出的通用惟一标识符(UniversallyUnique Identifier),每一个UUID值都可以保证绝对的惟一性. 3. 服务类:每一条服务记录都代表了一个服务类的实例,每个服务类用一个UUID表示,包含在ServiceClassIDList属性中.
+参考FAQ: FAQ58801
+### 问题: 蓝牙设备地址
+解决方案: 全世界每个蓝牙收发器都有被唯一分配了一个遵循IEEE802标准的48位蓝牙设备地址(BD_ADDR). 1.LAP:低地址部分(24位);UAP:高地址部分(8位);NAP:无效地址部分(16位); 2.NAP和UAP共同构成了设备的机构唯一标识符(OUI),由SIG的蓝牙地址管理机构分配给各个蓝牙设备制造商; 3.各个蓝牙设备制造商有权对自己生产的产品进行编号,编号放置在LAP中.
+参考FAQ: FAQ58806
+### 问题: SC7731组合键进入工厂测试模式怎么操作？
+解决方案: 默认组合键方式为音量上键+Power键,操作方式:先按住音量上键,然后再一起按住Power键,两键一起按住一会儿,等键盘灯亮起后,释放掉两个键,等待一会儿后会进入到工厂测试界面.
+参考FAQ: FAQ58808
+### 问题: 从ga 换到ea 后，灭屏白屏，ga是正常的
+解决方案: 根源是:CONFIG_MACH_SP7715EA是我们公司自己的并联背光驱动,而 客户使用的是串行的背光驱动,代码进行了修改,而由于修改是在GA版本下进行的修改,EA版本下还保存了默认平台的背光代码所导致. 解决:在\kernel\drivers\video\backligh目录下sprd_backlight.c文件里面 将CONFIG_MACH_SP7715EA定义下的相关代码注释掉后就OK了.
+参考FAQ: FAQ58804
+### 问题: 蓝牙主从设备的概念
+解决方案: 1.如果一个设备主动向其他设备发起连接,他们就形成了微微网; 2.主动发起连接的设备为微微网的主设备; 3.对设备的连接请求进行响应的设备成为从设备.
+参考FAQ: FAQ58807
+### 问题: 7731平板进入相机，在相机预览界面出现切屏现象
+解决方案: 问题的主要根源是打开了kernel中和HAL层的camera调试log,另外要注意的是有的顾客会自己添加了一些log也会导致这个问题,每显示一帧,从kernel到hal层,再到APP层,都在打印log,导致显示不能连续. 解决办法是:将一些每一帧都打印的log去掉,这个就减少的CPU的切换及保证了数据的流畅.
+参考FAQ: FAQ58809
+### 问题: linux shell
+解决方案: Bourne shell,由Stephen Bourne开发 Korn shell,由David Korn开发 C shell,由Bill Joy开发
+参考FAQ: FAQ58815
+### 问题: Linux中设备号的分配函数
+解决方案: Linux中设备号的分配与管理主要有两个: 1.kernel\fs\char_dev.c 中int register_chrdev_region(dev_t from, unsigned count, const char *name) 2.int register_chrdev_region(dev_t from, unsigned count, const char *name)
+参考FAQ: FAQ58816
+### 问题: 产线检测照相机ok，装机后发现sensor打不开
+解决方案: 主要原因是客户的夹具测试是直接开机进行测试的,如果直接进行开机测试的话,就一定要使用同一个摄像头.原因是:不使用一个设想头也是可以的,但一定要进行恢复出厂设置,因为identy的保存信息是第一次保存的. 所以在产线的时候只能用测试模式里面打开camera,这样你换了camera直接开机就可以了,因为测试模式和直接开机是两套不同的系统.
+参考FAQ: FAQ58822
+### 问题: 7731 Nand ECC
+解决方案: ECC 支持 1/2/4/8/12/16/24/40/60 bits,Max to 60 bits.
+参考FAQ: FAQ58821
+### 问题: 7731 Memory支持情况
+解决方案: 7731目前支持LPDDR2, LPDDR3.同时支持Nand + LPDDR2, or Nand + LPDDR3,eMMC + LPDDR2, or eMMC +LPDDR3几种组合.
+参考FAQ: FAQ58835
+### 问题: 触摸屏相关events
+解决方案: 触摸屏Event 事件如下 EV_SYN 0x00 同步事件 EV_KEY 0x01 按键事件 EV_REL 0x02 相对坐标 EV_ABS 0x03 绝对坐标 EV_MSC 0x04 其它 EV_LED 0x11 LED EV_SND 0x12 声音 EV_REP 0x14 Repeat EV_FF 0x15 力反馈 EV_PWR 电源 EV_FF_STATUS 状态
+参考FAQ: FAQ58845
+### 问题: Linux Nand ECC校验
+解决方案: 文件为drivers/mtd/nand/nand_ecc.c 解释和说明文档在Documentation/mtd/nand_ecc.txt
+参考FAQ: FAQ58857
+### 问题: onServiceDisconnected方法何时会被调用
+解决方案: unbindService,并不会调用onServiceDisconnected.它的调用时机是当Service奔溃或被异外销毁时,比如内存资源不足时.
+参考FAQ: FAQ58865
+### 问题: 关于bindService参数flags
+解决方案: 绑定一个服务,方法如下: bindService(Intent service, ServiceConnection conn, int flags) 其标志位flags可以为以下几种(这里列出3种): 1).Context.BIND_AUTO_CREATE 说明:表示收到绑定请求的时候,如果服务尚未创建,则即刻创建,在系统内存不足需要先摧毁优先级组件来释放内存,且只有驻留该服务的进程成为被摧毁对象时,服务才被摧毁 2). Context. BIND_DEBUG_UNBIND 说明: 通常用于调试场景中判断绑定的服务是否正确,但容易引起内存泄漏,因此非调试目的的时候不建议使用 3). Context. BIND_NOT_FOREGROUND 说明: 表示系统将阻止驻留该服务的进程具有前台优先级,仅在后台运行. 注意 :绑定服务的以异步方式运行的.
+参考FAQ: FAQ58867
+### 问题: Debuggerd的功能与使用方法
+解决方案: debuggerd是android的一个daemon进程,负责在进程异常出错时,将进程的运行时信息dump出来供分析.debuggerd生成的coredump数据是以文本形式呈现,被保存在 /data/tombstone/ 目录下(名字取的也很形象,tombstone是墓碑的意思),共可保存10个文件,当超过10个时,会覆盖重写最早生成的文件.从4.2版本开始,debuggerd同时也是一个实用工具:可以在不中断进程执行的情况下打印当前进程的native堆栈.使用方法是: debuggerd -b <pid> 这可以协助我们分析进程执行行为,但最最有用的地方是:它可以非常简单的定位到native进程中锁死或错误逻辑引起的死循环的代码位置.
+参考FAQ: FAQ58869
+### 问题: ISP 效果调试如何进行前期准备
+解决方案: 需要填写"ISP摄像头项目完成材料表格"(CPM会先行发给客户PM填写,需要确定首选项、PageThree对应的Sensor型号、模组厂商等信息、以及OTP信息,最后软件工程师还要填写测试标准、各种场景下的帧率等信息).填写中途有疑问多和供货商、客户硬件工程师以及我司AE联系,谢谢!
+参考FAQ: FAQ58871
+### 问题: Android中，如何实现控件抖动效果？
+解决方案: 利用Android自带的动画效果,实现控件的抖动效果,效果资源文件shark.xml <?xml version="1.0"encoding="utf-8"?> <translate xmlns:android="http://schemas.android.com/apk/res/android" android:fromXDelta="0" android:toXDelta="10" android:duration="500" android:interpolator="@anim/cycle_7" > </translate> 使用非常简单Animation shakeAnimation = AnimationUtils.loadAnimation(context, R.anim.shake);//加载动画资源文件 button.startAnimation(shakeAnimation);
+参考FAQ: FAQ82133
+### 问题: 对焦时候的马达根据什么来移动的，每次移动的范围是多少？
+解决方案: 马达是按照ISP tuning参数中AF模块的设定来前后移动的 1、设定的移动范围根据马达本身的性能测试得出,最大范围为1-1023 2、马达移动范围确定后,粗扫描表将移动范围等分,按照粗扫描表做第一遍移动;粗扫描表最多可分为32步 3、初步位置确定后,细扫描表将粗扫描表的一步等分(将间隔等分),在粗扫描表找到的相对最清楚的地方,按照细扫描表做第二遍移动;细扫描表最多可分为32步 4、通过细扫描表最终确定清晰点,粗扫描表推荐12-16步,细扫描表推荐5步,以保证对焦速度,也可根据需求设定
+参考FAQ: FAQ82338
+### 问题: ISP调试的流程概述以及注意点
+解决方案: ISP调试的流程概述: 1. 前期准备工作(详情可搜索ISP调试的准备工作FAQ); 2. 初步参数; 3. 客观调试;(中间调试AE和客户测试可能有多次反复的确认和修改过程) 4. 主/客观调试;(中间调试AE和客户测试可能有多次反复的确认和修改过程) 调试中要注意及时提供客户的客观测试标准,同时注意及时推动客户验收调试效果.
+参考FAQ: FAQ58873
+### 问题: ISP调试OTP模组的注意点
+解决方案: ISP调试OTP模组的注意点: 如果模组有OTP,一定要按照OTP模组调试需求. 1. 一般需要模组厂生产至少30pcs良好模组,从中挑选,模组的基数越多越好; 2. 至少两颗AWB Golden模组,模组厂提供两种Golden的模组典型值(R/G B/G,要写入OTP); 3. 至少两颗Lens shading的golder模组(不用OTP写入,模组厂要测试出来);
+参考FAQ: FAQ58874
+### 问题: GTS与WideVine的关系与以及测试注意点：
+解决方案: GTS与WideVine的关系与以及测试注意点: GTS需要终端厂商联系google提供widevine集成包,集成到版本中,才能送GTS. GTS测试时需要连网,这个是在线播放高清视频的.
+参考FAQ: FAQ58875
+### 问题: 什么是谷歌的CTS认证？如何通过谷歌CTS认证？
+解决方案: 谷歌CTS,英文为Compatibility Test Suite,中文意思是兼容性测试,手机设备需要通过Android的兼容性测试(CTS),以确保在android上开发的程序在手机设备上都能运行.     Google并没有在源代码中提供Android Market应用,因为他们希望所有设备生产商能够通过CTS测试.如果他们通过了CTS测试,那么就可以向Google申请使用Android market,Google才会给Market应用.
+参考FAQ: FAQ58876
+### 问题: 什么叫CAT测试
+解决方案: CAT测试,全称: CTS Audio Play Back Quality Test,是google 音频测试的一种,主要是测试Media play back和recorder录制效果的测试,有一系列的标准,详细参数见google 网站.
+参考FAQ: FAQ58877
+### 问题: T卡卡槽选型
+解决方案: 如果T卡卡槽有det pin,无论是插入T卡还是拔出T卡,det pin均不能连接到和T卡相关的电源上,这会导致T卡接口在3v接口电压时工作异常.所以只能使用det pin连接到GND的卡槽,而不能使用det pin连接到T卡相关的电源上的卡槽. 具体不良现象:系统可以识别能工作在1.8v/3v接口电压的卡,而不能识别只工作在3v接口电压的卡.比如一般标识有class4的T卡一般都是只能工作在3v接口的T卡,class10的T卡一般都可以工作在1.8v/3v接口电压,所以不良表现为只识别class10的T卡而不识别class4的T卡.
+参考FAQ: FAQ104262
+### 问题: 如何通过Intent启动Camera应用时打开前置摄像头？
+解决方案: 通过设置Intent的Extra参数可以打开前置摄像头 Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);// 开启相机应用的intent intent.putExtra("android.intent.extras.CAMERA_FACING", 1); //设置打开前置摄像头;设置为0或者不设置时,打开后置摄像头
+参考FAQ: FAQ59026
+### 问题: [SC7731]前camera支持闪光灯功能
+解决方案: 在dcam_v4l2.c中,函数sprd_v4l2_setflash(),需要添加所实现的前摄像头闪光灯驱动: 1.case FLASH_XXXX"对应于SPRD参考代码中对后闪光灯的控制; 2.case FLASH_FRONT_XXXX"对应于REVOVIEW实现的前闪光灯控制.
+参考FAQ: FAQ59071
+### 问题: [SC7731]为什么在界面切换的时候出现红色边框
+解决方案: google原生设计,在user版本上关闭严格模式,eng版本无法关闭. eng版本上要关闭该功能,可以做如下修改即可: 在相应项目的system.prop(比如device/sprd/scx35_sp7730ec/system.prop)下加上如下两句. persist.sys.strictmode.visual=0 persist.sys.strictmode.disable=1即可.
+参考FAQ: FAQ59073
+### 问题: [SC7731]免提通话MIC无声
+解决方案: 由于参考设计使用的是双MIC方案, 如果现在使用的是单MIC方案(主MIC), 请使用audiotest 工具,把 path_set 修改为值0618,如:audio_dsp_codec/dsp_codec_config/handsfree/audioStructure/path_set: 0xA18改成0x618
+参考FAQ: FAQ59078
+### 问题: 相机应用未重写onPreviewFrame方法，怎么实现的预览
+解决方案: 相机应用并不需要实现onPreviewFrame方法,而是在HAL层receivePreviewFrame的时候,通过mPreviewWindow->dequeue_buffer,交由SurfaceFlinger再通过Gralloc模块向帧缓存区写入预览数据从而显示的. onPreviewFrame方法一般用在应用需要接收数据帧做进一步处理的情况,比如cts测试或者视频通话软件上,使用方式可查阅FAQ28366、FAQ28832以及Camera.java中的方法注释.
+参考FAQ: FAQ59260
+### 问题: [android4.4]视频壁纸是否可以和视频播放器中的画中画同时播放？
+解决方案: 视频壁纸和视频播放器中的画中画不能同时播放,当视频壁纸设置后,如果进入视频播放器进行画中画播放,则会弹出一个toast提示:不支持画中画播放功能.因为如果此时能够打开画中画功能,返回到launcher界面时,就会出现同时播放视频壁纸的视频和画中画的视频,同时播放两个视频会出现内存不足的情况导致播放失败,所以视频壁纸不能和视频播放器中的画中画同时播放.
+参考FAQ: FAQ59333
+### 问题: FM场景下如何将音频PA类型由D类改为AB类
+解决方案: 在FM场景下,可以通过下面的修改将PA的类型由D类改为AB类: /system/etc/audio_para 按如下修改: (1) 将 audio_arm\audio_arm\Handsfree\AudioStructure\reserve\reserve[47]=0x210 改为: audio_arm\audio_arm\Handsfree\AudioStructure\reserve\reserve[47]=0x10 (2) 将 audio_arm\audio_arm\Headfree\AudioStructure\reserve\reserve[47]=0x210 改为: audio_arm\audio_arm\Headfree\AudioStructure\reserve\reserve[47]=0x10
+参考FAQ: FAQ59369
+### 问题: 如何解决使用2351内置FM搜台少的问题
+解决方案: 要使台数增多,可以通过修改FM的功率阈值,具体就是需要将FM_REG_MONO_PWR寄存器的threshold1(bit8～0)和threshold2(bit24～16)同时减小,FM_REG_MONO_PWR的定义可以查看产品手册,阈值占用9个bit并用补码形式保存,例如FM_REG_MONO_PWR寄存器默认设置值为0x019C0192,其中19C的对应阈值为-100,17C对应的阈值为-132.可以尝试将这两个值都减小0x20,即0x017C172,这样能增加搜到的台的个数,但是如果出现假台就需要往回调. 通过上面的办法调试好效果以后,可以将相应的值写到代码里,具体位置: Sr2351_fm_rf.c (kernel\drivers\misc\fm_2351) write_fm_reg(FM_REG_MONO_PWR , 0x019C0192);
+参考FAQ: FAQ59385
+### 问题: 如何设置wifi热点安全性的默认值？
+解决方案: 目前wifi热点安全性的默认值是WPA2 PSK,如果需要修改为其它 在\idh.code\frameworks\base\wifi\java\android\net\wifi\WifiApConfigStore.java文件中,修改函数 setDefaultApConfiguration即可.
+参考FAQ: FAQ59546
+### 问题: BT/WIFI的配置文件放在什么地方？
+解决方案: 展讯的BT/WIFI的默认的配置文件是放在vendor\sprd\open-source\res\productinfo下,在编译后会在system\etc\生成一份,在需要确认或修改配置文件时,通过push 或pull 操作system\etc\connectivity_configure.ini即可.
+参考FAQ: FAQ59554
+### 问题: 如何更新BT/Wifi的配置文件？
+解决方案: 在硬件做好BT/Wifi的发射功率测试后,会更新一个connectivity_configure.ini的配置文件,此文件需要更新至Code中,否则BT/Wifi的配置文件还是默认的,具体的做法是将硬件修改好的配置文件,更新至\vendor\sprd\open-source\res\productinfo\scx35_sp7731g_connectivity_configure.ini,重新编译将会生成至system\etc\connectivity_configure.ini,下载至手机后开机生效.
+参考FAQ: FAQ59556
+### 问题: 如何从log中判断前一次重启是非正常重启
+解决方案: 一、为加快开机时间,并做异常关机保护,加入了开机校验机制,原理是: 1、对系统中的每一个odex文件(在其生成的时候),做一个CRC或者相关的校验,并生成与odex对应的文件,用于保存校验和; 2、在系统安装或者删除应用时,对相应的odex文件校验和进行同步处理(添加或者删除); 3、系统异常关机后,首先对所有的odex文件做反校验,如果校验正确,则正常开机,否则再将/data/dalvik-cache文件删除,并重新建立,以减少开机时间. 二、典型的上一次非正常关机的log如下: appproc : last shutdown unnormal,check the crc of odex files
+参考FAQ: FAQ60087
+### 问题: SC7715 使用16Bit  RGB565格式 LCM硬件上怎么连接？
+解决方案: RGB565 D[ 15:11 ]àR[ 4:0 ] , D[ 10:5 ]àG [ 5:0 ] , D[ 4:0 ]àB [ 4:0 ]
+参考FAQ: FAQ59768
+### 问题: SC7715 使用18Bit  RGB666格式 LCM硬件上怎么连接？
+解决方案: RGB666 D[ 17:12 ]àR[ 5:0 ] , D[ 11:6 ]àG [ 5:0 ] , D[ 5:0 ]àB [ 5:0 ]
+参考FAQ: FAQ59772
+### 问题: SC7715 使用24Bit  RGB888格式 LCM硬件上怎么连接？
+解决方案: RGB888 D[ 23:16 ]àR[ 7:0 ] , D[ 15:8 ]àG [ 7:0 ] , D[ 7:0 ]àB [ 7:0 ]
+参考FAQ: FAQ59774
+### 问题: LCM 串联背光驱动IC 要使用怎样的GPIO来控制？
+解决方案: 建议使用带PWM 功能的GPIO来控制串联背光驱动IC
+参考FAQ: FAQ59778
+### 问题: SC7731平台项目要使用QHD(960X540)分辨率MIPI LCM，在原理上应连接几组LANE？
+解决方案: 如使用QHD MIPI LCM,原理上建议使用3 lane 或以上
+参考FAQ: FAQ59783
+### 问题: SC7731平台项目要使用WVGA(480X800)分辨率MIPI LCM，在原理上应连接几组LANE？
+解决方案: 如使用WVGA MIPI LCM,原理上建议使用2 lane 或以上
+参考FAQ: FAQ59781
+### 问题: SC7715平台电池电压2.05V~3.05V 时，充电电流是多少？
+解决方案: 电池电压2.05V~3.05V 时充电电流: D+和D-短接时为450mA , D+和D-没有短接为70mA.
+参考FAQ: FAQ59785
+### 问题: 营运商要求手机支持OMA DM具体指的是什么？
+解决方案: OMA最初由WAP论坛(WAP FORUM)和开放式移动体系结构(OPEN MOBILE ARCHITECTURE) 两个标准化组织通过合并而成.随后,区域互用性论坛(LIF), SYNCML,MMS互用性研究组(MMS-IOP)和无线协会(WIRELESS VILLAGE), 这些致力于推进移动业务规范工作的组织又相继加入OMA. OMA主要是寻求一种与系统无关的、开放的,使各种应用和业务能够在全球范围内的各种终端上实现数据同步的标准. OMA DM(Device Manage)是OMA组织定义的一套专门用于移动与无线网络的管理协议,是OMA的一个分支.该协议主要包括如下信息的配置及管理: 1.设置设备的初始化配置信息 2.安装及更新设备信息 3.从设备获得相关的管理信息 4.处理设备生成的事件及报警信息
+参考FAQ: FAQ59829
+### 问题: 视频编码格式是X264的视频是否支持？
+解决方案: 视频编码格式是X264的,属于不支持格式,类似的相关的log会有如下unsupported video format的信息: 01-01 08:09:57.940 160 471 W AVIExtractor: Unsupported video format 'X264' 01-01 08:09:57.940 160 471 I AVIExtractor: strh Unsupported video format 'X264'
+参考FAQ: FAQ59920
+### 问题: 7701 UA 信息
+解决方案: UA设置逻辑逻辑如下: 1、先判断工程模式 -> App Set -> UA SETTING -> User agent开关是否打开,打开的话就用此处设置的UA(我们默认是关闭的) 2、上述工程模式开关关闭的话就使用函数MMIBROWSER_GetDefaultUserAgent返回的UA,该函数先根据插入sim卡的mcc、mnc信息从s_mcc_mnc_ua_tabel匹配,匹配不到就使用平台默认UA(MMIBROWSER_DEFAULT_DORADO_UA),这个默认UA就是贵方手机登录http://whatsmyuseragent.com/ 返回的字串了
+参考FAQ: FAQ59958
+### 问题: 如何修改照片Exif中缩略图的大小？
+解决方案: 平台android.hardware.Camera.Parameters中提供了可以设置Exif中缩略图的大小 public void setJpegThumbnailSize(int width, int height) 如果应用没有调用该方法设置,那么平台默认生成的缩略图为320x240.
+参考FAQ: FAQ59930
+### 问题: uart0与蓝牙通信数据格式是否需要配置
+解决方案: Uart0数据收发的接口不开放,只给BT_PS使用
+参考FAQ: FAQ59963
+### 问题: BT用PCM的频率是多少
+解决方案: BT用PCM的频率是51.2M
+参考FAQ: FAQ59965

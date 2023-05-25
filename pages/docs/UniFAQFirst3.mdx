@@ -1,0 +1,300 @@
+### 问题: 如何在java类析构的时候打印出来log
+解决方案: 查看类是否有 finalize 方法,如有,修改.如没有,按照下面的代码: 在类的增加如下方法: @Override protected void finalize() throws Throwable { // TODO Auto-generated method stub Log.d("classs ", "this: " + this);//具体的log可以修改. super.finalize(); } 类析构的时候,即可打印出来log.
+参考FAQ: FAQ22945
+### 问题: 使用800MA/1000MA大电流充电时要注意哪些因素？
+解决方案: 1,在使用800mA或1A充电的时候需要注意遵守走线规范和器件选型的规范,保证器件工作在规格书允许的范围内. 2、充电电流大于800mA,电池上应该要有NTC温度检测电阻来监控电池的温度,防止电池温度过高造成爆炸.
+参考FAQ: FAQ22948
+### 问题: 为什么HTMLViewer打开文本文件显示乱码
+解决方案: 在android4.4中,通过HTMLViewer打开文本文件时,经常会遇到打开文件时显示乱码的现象.这主要是因为HTMLViewer采用的是WebView进行渲染显示,而WebView默认的编码为Latin-1编码,被打开的文本文件编码格式各不相同,有GB编码,UTF8编码等,如果当前文件编码为非Latin-1编码将会出现乱码.为解决打开文本显示乱码的问题,可以通过先检测当前文件的编码,再用对应的编码格式进行打开显示,对于检测文件编码方法,可以通过Java开源方法cpdetector来实现,也可以自行编写一个检测类来实现,对于采用指定的编码格式打开文本则可以通过以下方法实现: WebSettings s = mWebView.getSettings(); s.setDefaultTextEncodingName(fileEncode);
+参考FAQ: FAQ22987
+### 问题: WriteSN工具操作界面如何显示英文
+解决方案: WriteSN工具默认界面显示为中文,当有海外客户需要使用此工具时,就有必要要显示为英文,展讯平台工具是支持中英两种语言切换的,只要工具根目录下的bin\目录下,找到WriteSN有Language一项,将值改为1即可,0为中文、1为英文.
+参考FAQ: FAQ28978
+### 问题: 后置摄像头Preview旋转问题
+解决方案: 如果预览界面转了90度 在device\sprd\scxXXXX\BoardConfigCommon.mk中, #back camera rotation TARGET_BOARD_BACK_CAMERA_ROTATION := false 将 TARGET_BOARD_BACK_CAMERA_ROTATION 这个宏的配置改为true. 平台会做rotation操作,但这样会消耗系统资源,建议重新打样模组解决该问题.
+参考FAQ: FAQ25772
+### 问题: [SC7715]kernel如何在代码中改变一个gpio脚的功能
+解决方案: 以SDA1/GPIO55引脚为例: long fun = __raw_readl(SPRD_PIN_BASE + 0xF8); // 备份SDA1 PINMAP __raw_writel(fun | 0x0030, SPRD_PIN_BASE + 0xF8); // 设置SDA1为GPIO模式 // 读写SDA1/GPIO55 (P809) gpio_direction_output(55, 1); // 设置方向 gpio_set_value(55, 0); // 设置电平为0 gpio_set_value(55, 1); // 设置电平为1 __raw_writel(fun,SPRD_PIN_BASE + 0xF8); // 还原SDA1 PINMAP
+参考FAQ: FAQ23018
+### 问题: USB_OTG_CABLE_DETECT检测脚做什么功能用?
+解决方案: 4.4参考机是支持的,也就是软件版本是支持的,具体可以看下,kernel/drivers/usb/gadget/dwc_otg/路径下的文件.和该工程的sp7715ga-native_defconfig文件: CONFIG_USB_GADGET_SPRD_DWC=y CONFIG_USB_SPRD_DWC=y 而且, CONFIG_SPRD_USB_DEVICE_ONLY=y 也就是不支持Host的功能. 这样的话应该那个冲突.
+参考FAQ: FAQ23019
+### 问题: ffos monkey测试说明和使用
+解决方案: 在LINUX环境下,首先确定adb可以正常连接 1.将monkey.test.rar或monkey.test.tar.gz压缩包解压后,查看monkey.test下的文件是否为可执行文件,如果不是,使用命令chmod a+x *,把monkey.test下的文件都加上执行的权限.类似各个文件夹里的文件都加下权限. 2.执行monkey测试,进入monkey.test/test-config下, a:修改测试时间是在7715-hudson-config中的export MTCFG_TEST_TIME_LIMIT=12 ,默认是测试12h,可以进行修改. b:修改下run-7715-hudson.sh 修改为./_monkey.sh test-config/7715-hudson-config test 执行,在monkey.test/test-config下,输入命令./run-7715-hudson.sh
+参考FAQ: FAQ29735
+### 问题: 功率电感如果要求工作电流1A，那么可以选择参数饱和电流是1A的产品吗
+解决方案: 不能,如果要求电感的工作电流是1A,选择电感的饱和电流(Isat)一定要比1A大,最好超过30%,因为一般饱和电流(Saturation Current)是电感值下降到30%的电流,如果选择工作电流和饱和电流一样的产品,会导致感量下降过大而造成电路应有功能的下降,甚至是失效. 同时电感选择的时候也要注意温升电流Irms,电感产品自我温升温度不超过一定温度时的电流,工作电流也已一定要小于温升电流 所以,客户在选择功率电感的时候,一定要选择饱和电流Isat和温升电流Irms的参数,比实际工作电流大的产品
+参考FAQ: FAQ23074
+### 问题: 7715如何去掉对焦选项
+解决方案: 默认情况下前摄像头是没有对焦选项的,因为考虑到前摄像头一般是使用30万像素无自动对焦功能的摄像头,这种情况下焦距都是无限远. 如果要把后摄像头的对焦选项也去掉,那么可以按以下修改: idh.code/vendor/sprd/open-source/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h #define CONFIG_CAMERA_AUTOFOCUS_NOT_SUPPORT
+参考FAQ: FAQ23096
+### 问题: 如何调整Edit控件中的字体间距？
+解决方案: 如果需要调整Edit控件中的字体间距,可以通过调整宏MMITHEME_EDIT_CHAR_SPACE的大小来实现. 该宏控制Edit控件中绘制Text时对应的字体间距大小.
+参考FAQ: FAQ23104
+### 问题: drm如何同步本地时间和服务器时间
+解决方案: drm获得的文件时间权限是绝对权限,所以如果时间不对或者用户手动修改一个非法的时间,那么它的权限判断就是错误的, 所以获得正确的时间是相当重要,drm是通过ntp服务器获取时间,获取时间是用轮询的方式,但这样会需要大量的CPU,所以为了综合考虑,只在以下两种情况下会重新校正本地时间也即是从ntp服务器重新获取时间: 1.每次开机的时候; 2.网络连接上的时候; 为了性能考虑,但不会一直轮询,目前设定的次数为3.
+参考FAQ: FAQ23127
+### 问题: drm用的ntp服务器地址？
+解决方案: 用的ntp服务器地址为:202.120.2.101,相应的端口为:123;这是上海交通大学网络中心NTP服务器地址,一直还是比较稳定的.
+参考FAQ: FAQ23130
+### 问题: drm native如何监测到网络发生改变？
+解决方案: 在系统init的时候会创建一个socket来监测网络变化,代码为: socket drm_connectivity stream 660 drm system 文件具体路径为: system/core/rootdir/init.rc 然后ConnectivityService.java在网络连接成功的时候,就会往drm_connectivity写值,drmserver是常驻进程,就会轮询此socket.drmserver堵塞轮询此socket,如果发现有值改变就去相应的ntp服务器获取时间.
+参考FAQ: FAQ23131
+### 问题: 预置APK的三种方式
+解决方案: 第一种:/system/app 预置在该目录下的APK,用户不能卸载 第二种:/data/app 应用是可以卸载 第三种:/system/preloadapp 应用用户可以卸载,但是恢复出厂设置时可以还原
+参考FAQ: FAQ22695
+### 问题: 修改系统亮度的默认值为何无效
+解决方案: 只修改frameworks/base/packages/SettingsProvider/res/values/defaults.xml文件中的 <integer name="def_screen_brightness">是无效的,需要修改 device/sprd目录对应项目下/overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml 文件. 系统在编译过程中会将framework目录下对应的文件覆盖为device中的文件
+参考FAQ: FAQ23142
+### 问题: 双Sensor的设计需要注意什么?
+解决方案: 在设计双sensor时,可以把两个sensor的总线挂在一起,只是用不同的Power Down信号去分别控制2个Sensor,但同时需要注意两个Sensor的Reset信号是否一致,即是否都是高电平复位或者都是低电平复位,如果不一致还需把两个Sensor的Reset信号分开
+参考FAQ: FAQ23161
+### 问题: SC7715是否支持3线SPI控制的LCD屏？
+解决方案: 支持
+参考FAQ: FAQ24555
+### 问题: SC7715 SPI3线模式Data线是哪根？
+解决方案: 3线模式SPI Data线为7715的SPI_SDI信号
+参考FAQ: FAQ24557
+### 问题: SC7715是否支持720P视频播放
+解决方案: 7715支持H.264、H.263、MP4、VC1、VP8主流的720P视频
+参考FAQ: FAQ24560
+### 问题: [sc7715] lcd物理旋转180度，tp怎样配合旋转180度？
+解决方案: tp物理旋转有2种方式: 1. 厂家配合修改firmware, 在tp IC端将坐标点转换 2. 在tp driver 驱动中,强制转换X/Y坐标轴,然后上报系统. 旋转180度较简单,X/Y坐标轴只需要用屏幕分辨率分辨减去X/Y值即可. X = ScreenX - X; Y = ScreenY - Y; TP 上配合的MENU/BACK/HOME等功能键需要根据驱动处理方式不同分别处理: 1. 如果MENU等按键是单独处理的,点按MENU键时,直接上报固定的位置坐标值或按键值,则不要处理. 2. 如果MENU等按键是直接上报坐标值的,在处理时,MENU区域的按键坐标不能进行转换.
+参考FAQ: FAQ24563
+### 问题: 手机不插卡，使用mobiletest进入WCDMA cal post mode能注册上网，为啥无法连接仪器
+解决方案: cal post mode带虚拟卡功能,但WCDMA模式需要在仪器端把SIM卡的鉴权关掉,关掉之后就能连上仪器
+参考FAQ: FAQ24565
+### 问题: 为什么rm及rmvb的视频播放时会提示“无法播放”
+解决方案: 因为rm及rmvb格式的视频涉及到版权问题,所以正常情况下此类视频是不能支持播放的,因此播放时会提示"无法播放".
+参考FAQ: FAQ23236
+### 问题: SC7715平台VDDARM Target Impedance？
+解决方案: Chipset Process (nm) Fmax (MHz) Voltage (V) Zmax(mΩ) DC-1MHz Zmax(mΩ) 1-20MHz Zmax(mΩ) At 100MHz SC7715 40 1000 1.2 20 140 700
+参考FAQ: FAQ23246
+### 问题: 在什么情况下从视频播放器播放视频退出后，再次播放时会提示“是否继续播放还是重新播放”
+解决方案: 进入视频播放器播放视频时,是否继续播放还是重新播放,我们拿android4.4来举例说明,详情请参考MoviePlayer.java中的getBookmark(Uri uri),即有如下三个条件: 1.如果上次退出播放器的播放时间点小于30s; 2.如果该视频的总时长小于2分钟; 3.如果总时长减去上次播放的时间点后的时间不超过30s即剩余时间小于30s; 以上三个条件满足任何一个则不会弹出"是否继续播放还是重新播放"的提示框,只有当以上三个条件都不满足时,则会弹出"是否继续播放还是重新播放"的提示框.
+参考FAQ: FAQ23238
+### 问题: SC7715平台VDDCORE Target Impedance？
+解决方案: Chipset Process (nm) Fmax (MHz) Voltage (V) Zmax(mΩ) DC-1MHz Zmax(mΩ) 1-20MHz Zmax(mΩ) At 100MHz SC7715 40 1000 1.1 20 160 800
+参考FAQ: FAQ23259
+### 问题: android 下chmod命令
+解决方案: 在linux下将文件用户权限分为owner,group和other: owner是这个文件的创建者,在linux下通常可以认为是登录状态下的用户名; group则是创建这个文件的owner所属的用户group; 而other就是除了这个group之外的用户. 比如一个文件test.txt,它的权限是_rwxrwxrwx,那么就是表示这个文件的权限是:owner可读写执行,组用户读写可执行,其它用户是读写可执行,用数字表示就是创建者组用户和其它用户权限是777,各权限位r是4,w是2,x是1,组成了777. 所以我们若是需要更改text.txt文件权限为owner读写,组和其它是只读,那么权限就是_rw_r__r__,对应数字权限位就是644,所以更改方式是: chmod 644 test.txt
+参考FAQ: FAQ24436
+### 问题: 测试视频播放器的声道请注意
+解决方案: 播放视频时可以设置声道:左声道,双声道,右声道,但是如果需要测试设置不同声道的效果,测试者必须使用立体声耳机进行测试,一般的普通耳机是测不出声道效果的.
+参考FAQ: FAQ23255
+### 问题: SC7715平台VDDMEM Target Impedance At LPDDR？
+解决方案: Chipset Process (nm) Fmax (MHz) Voltage (V) Zmax(mΩ) DC-1MHz Zmax(mΩ) 1-20MHz Zmax(mΩ) At 100MHz SC7715 40 1000 1.2 20 100 300
+参考FAQ: FAQ23272
+### 问题: SC7715平台VDDMEM Target Impedance At Baseband？
+解决方案: Chipset Process (nm) Fmax (MHz) Voltage (V) Zmax(mΩ) DC-1MHz Zmax(mΩ) 1-20MHz Zmax(mΩ) At 100MHz SC7715 40 1000 1.2 20 100 350
+参考FAQ: FAQ23282
+### 问题: 什么是HLS？
+解决方案: HLS即HTTP Live Streaming,是一个由苹果公司提出的基于HTTP的流媒体网络传输协议,工作原理是把整个流分成一个个小的基于HTTP的文件来下载,当媒体流在播放时,客户端可以选择从许多不同的备用源中以不同的速率下载同样的资源,允许流媒体会话适应不同的数据速率.另外,视频源编码后的格式必须是H.264视频和AAC音频.
+参考FAQ: FAQ23338
+### 问题: Smartphone平台的uart1如果没接出来，怎么抓log？
+解决方案: 可以通过修改软件,将log从其他UART口输出.
+参考FAQ: FAQ23341
+### 问题: 什么是饱和度
+解决方案: 饱和度(Saturation)是色彩的构成要素之一,饱和度是指色彩的鲜艳程度,也称色彩的纯度.饱和度取决于该色中含色成分和消色成分(灰色)的比例.含色成分越大,饱和度越大,色彩表现越鲜明;消色成分越大,饱和度越小,色彩表现则较黯淡 Camera中用CameraSettings.KEY_CAMERA_SATURATION定义饱和度preference public static final String KEY_CAMERA_SATURATION = "pref_camera_saturation_key"; 可以调用下面的方法设置饱和度 void android.hardware.Camera.Parameters.setSaturation(String value)
+参考FAQ: FAQ23386
+### 问题: service中如何启动Activity？
+解决方案: 在Service中开启一个Activity时注意 添加:mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 否则程序会报错!
+参考FAQ: FAQ23453
+### 问题: service中的启动的Activity和这个Activity所在app不在同一个task中？
+解决方案: 当有FLAG_ACTIVITY_NEW_TASK时 首先会查找是否存在和被启动的Activity具有相同的亲和性的任务栈(taskAffinity),如果有,刚直接把这个栈整体移动到前台,并保持栈中的状态不变,即栈中的activity顺序不变,如果没有,则新建一个栈来存放被启动的activity. 默认情况下同一个应用程序中的activity的taskAffinity是一样的,但是android允许每个Activity可以自己设置taskAffinity,当service中启动的Activity的taskAffinity和app中其他Activity不同时,他们就不会在一个task中. (同个app中有多个taskAffinity会导致长按home健时出现的列表有多个相同的app现象)
+参考FAQ: FAQ23454
+### 问题: 如何让自己的服务不处于后台运行
+解决方案: 如何让自己的服务不处于后台运行中,因为在后台运行的服务优先级会降低,也就极有可能会被系统给回收掉,关于这个Google推荐我们将服务运行到前台 当栈顶中的Activity不是本应用的了,我们的服务也就相应的降低了优先级,也就说系统需要内存的时候,首先就会回收此服务消耗的内存.此时,我们只需将服务设置为前台运行即可: 1.设置为前台:第一个参数是通知ID,第二个参数是Notification对象 startForeground(SERVICE_NOTIFICATION, n); 2.停止前台服务可调用:true代表清除通知栏 stopForeground(true);
+参考FAQ: FAQ23462
+### 问题: 图库中图片列表的行数如何确定？
+解决方案: 正常分辨率,会使用res/values/dimens.xml中的如下配置: <integer name="album_rows_land">2</integer> <integer name="album_rows_port">4</integer> album_rows_land:横屏时2行 album_rows_port:竖屏时4行 这个决定了图片列表的行数,然后,根据view的width和height,计算出每一列的显示位置即可. 大分辨率时,使用res/values-xlarge/dimensions.xml中的配置.其值如下: <integer name="album_rows_land">3</integer> <integer name="album_rows_port">5</integer>
+参考FAQ: FAQ23459
+### 问题: 文件的权限
+解决方案: 在Linux上,文件的权限由三个bit位来控制,分别是读,写和执行,对应的就是bit 3 ,bit 2,bit 1. 如果有写和读,没有执行权限,那么就是6,读写执行均有,就是7. 那么哪些用户和组对文件有权限是怎么控制的呢? 文件的权限是由owner ,group, other三个组的权限位来控制的. owner,就是文件的所有者. group,某个用户组. other,其他. 假设owner有RWX权限,group有RW权限,other有R权限,那么这个文件的权限就是: 764,如果ls -l 看这个文件就是: -rwx-rw-r chmod 可以改变文件的权限,使用方法如下: chmod xxx filepath
+参考FAQ: FAQ23473
+### 问题: 如何使得相机在0、90、180、270度时所拍出的照片在PC上看都是正的
+解决方案: 在4.4平台上,实现的具体方法是: 在device\sprd\scxXXXX\BoardConfigCommon.mk或BoardConfig.mk中, 将 TARGET_BOARD_CAMERA_ROTATION_CAPTURE 这个宏的配置改为true. 它会在编码时,根据角度对照片进行旋转.
+参考FAQ: FAQ23483
+### 问题: rtsp流媒体H.264视频组包时支持的负载NALU类型？
+解决方案: H.264视频格式的RTP负载中,第一个字节的后五位表示NALU类型,目前android平台支持的NALU类型有: 1～23 NAL单元 一个RTP包就是一个NALU 24 STAP-A 多个相同时间戳的NALU放在同一个RTP包中 28 FU-A 一个NALU由多个分片组成,每个分片放在一个RTP包中
+参考FAQ: FAQ27927
+### 问题: MMS中RecipientsEditor第二次输入任何字符都有匹配联系人显示
+解决方案: 上述问题现象只是表现在4.4上: 这是google4.1之后的原生设计,新添加的功能如下: (主要在FW层中的BaseRecipientAdapter.java中实现) 在mms中RecipientsEditor输入字符匹配号码的时候, 每次搜索之后,会在保存本次搜索结果在mTempEntries这个list数组中 如果下次输入字符,没有匹配结果就会显示这个mTempEntries中list列表, 这样就表现如下: 第二次输入任何字符都有搜索结果匹配. 所以这是一个正常的现象,Google原生设计.
+参考FAQ: FAQ23503
+### 问题: 什么是oom-kill以及如何查看当前的内存信息
+解决方案: Linux 有一个特性:OOM Killer,oom-killer 是在内存严重不足时,系统为了继续运转,内核会挑选一个进程将其杀掉,以释放内存缓解内存不足情况,不过这种保护是有限的,不能完全的保护进程的运行.通常在低内存的情况下,内存碎片过多,导致应用无法申请到连续的内存区域时,也会触发oom-killer. 发生oomkiller时,在日志文件中会有如下信息: Out of Memory: Killed process [PID] [process name]. 通过如下命令来查看当前的内存信息: 查看当前 MemFree 值: cat /proc/meminfo | grep MemFree 查看 LowMem 内存碎片: cat /proc/buddyinfo 查看应用程序占用内存信息:adb shell procrank
+参考FAQ: FAQ23603
+### 问题: 如何去掉Launcher中快捷联系人widget的功能
+解决方案: 该FAQ是针对Launcher自带的快捷联系人widget,不是联系人、直接拨打电话、直接发送短信等快捷方式! 针对SprdLauncher1和Sprdlauncher2: 进入res/xml/home_widget.xml,里面配置的launcher自己的widget 有一项<homewidget name="contact_widget"/>,就是快捷联系人widget 如果不需要快捷联系人widget,直接删除这一行即可!
+参考FAQ: FAQ28260
+### 问题: 如何启用ListView右边的快速滚动滑块
+解决方案: 在世界时间添加界面的城市列表是一个ListView,启用ListView的快速滚动滑块,有两种方法: 1.在xml布局的ListView节点中加入如下属性: android:fastScrollEnabled="true" 2.在代码中添加如下设置: myListView.setFastScrollEnabled(true);
+参考FAQ: FAQ28270
+### 问题: Android 下ln命令
+解决方案: 在android下ln命令是对linux下的symlink和link函数的封装.主要使用方式如下: 1、软链接 ln -s src dst 2、硬链接 ln src dst 主要的区别是:硬链接在删除源文件后dst不会被删除,但是软链接时在删除源文件后dst会失效.
+参考FAQ: FAQ23695
+### 问题: dolphin平台是否支持SLC和MLC工艺的MEMORY
+解决方案: 目前我们平台上只有dolphin平台才支持SLC和MLC,但没有调试过MLC工艺的memory.也就是说目前实际上只支持SLC工艺的MEMORY.
+参考FAQ: FAQ23709
+### 问题: Dolphine平台是否支持MEMS_MIC
+解决方案: Dolphine平台支持硅麦克风,相关的参考设计设置user_guide.
+参考FAQ: FAQ23711
+### 问题: android4.4如何设置精准定时器
+解决方案: android4.4的AlarmManager类部分接口已经改变了原先的定义, public void set(int type, long triggerAtMillis, PendingIntent operation) 在android4.4以前的版本中,此接口用来设置精准定时器.但是在android4.4上此接口用来设置粗略定时器,其触发有个窗口时间. 在android4.4上,如果需要设置精确定时器,则需要调用以下接口: public void setExact(int type, long triggerAtMillis, PendingIntent operation)
+参考FAQ: FAQ23727
+### 问题: shark和dolphine平台SC7715,SC8810 UART1口没有接出来，怎样抓LOG？
+解决方案: 不能采用修改NV文件的方法,但是可以通过修改软件,使LOG从其他UART口输出.
+参考FAQ: FAQ23725
+### 问题: SC7715平台MEMORY时钟EMCLK_DP/DM
+解决方案: 可以通过修改软件,调整这个时钟的正负端口.
+参考FAQ: FAQ23756
+### 问题: 非标准接口耳机插入检测，按键检测在原理设计上是怎么实现的？
+解决方案: 1,在耳机没有插入情况下,GPIO电压为VDDIO电压,即为高电平 2,在耳机插入情况下,R3和耳机组成分压电路,GPIO电压为0V左右,即为低电平 3,R4和C1组成滤波电路,滤除外部干扰 4,耳机按键检测电路由HeadMIC_IN 管脚实现
+参考FAQ: FAQ23825
+### 问题: 从google play商店下载或更新应用时下载报错, 错误代码921该如何解决？
+解决方案: 从Log里可以找到Google play相关的错误log,如下: D Finsky : [1] 2.onErrorResponse: Received VolleyError 921 (Error retrieving information from server. [RPC:S-7:AEC-7]) 原因:因从Play商店Server存取资讯有问题而致手机端无法下载或更新应用回传错误 解决方式: 1. 至设置 -> 应用程序 -> 全部 -> 找到"Google 服务框架"及"Google play 商店" -> 清除缓存 2. 至设置 -> 账户-> 删除google帐号 3. 重启手机后-> 重新加入google帐号并登入 4. 再至play商店重新下载应用
+参考FAQ: FAQ63813
+### 问题: android4.4 非UUI版本，如何调整拨号盘UI
+解决方案: android4.4 非UUI版本,拨号盘UI控制. 拨号盘的所有Layout文件有四个,逻辑上是嵌套关系.具体如下: packages\apps\Dialer\res\layout\ dialtacts_activity.xml //搜索条,通话记录等按钮的总布局文件 <---dialpad_fragment.xml //拨号盘,拨号等按钮的布局文件 <---dialpad.xml//拨号盘的布局文件 <---dialpad_key.xml//按键样式 例:需要修改拨号盘的背景颜色: 修改: dialpad_fragment.xml android:background="@color/background_dialpad" >
+参考FAQ: FAQ23830
+### 问题: android4.4 UUI版本如何调整拨号盘UI
+解决方案: android4.4 UUI版本,拨号盘UI 主要是资源修改 对应修改如下目录资源图片: vendor\sprd\UniverseUI\ThemeRes\xxx\DialerRes 其中xxx = SimpleStyle等. UUI 拨号盘的所有Layout文件有四个,逻辑上是嵌套关系.具体如下: packages\apps\Dialer\res\layout\ dialtacts_activity_sprd.xml //搜索条,通话记录等按钮的总布局文件 <---dialpad_fragment_sprd.xml //拨号盘,拨号等按钮的布局文件 <---dialpad.xml//拨号盘的布局文件 <---dialpad_key_sprd.xml//按键样式
+参考FAQ: FAQ23857
+### 问题: android4.4 拨号盘输入P值
+解决方案: android4.4 如果需要输入P, 一:确认已经输入至少一个字符 二:长按*键,当输入出现","时,即输入P. 因为4.4版本没有将","在UI上转换为P,所以输入","即是输入P.
+参考FAQ: FAQ23862
+### 问题: android4.4 拨号盘输入W值
+解决方案: android4.4 需要输入W 一:确认已经输入至少一个字符 二:长按#键,当出现";"时,即为输入W. 因为在android4.4版本,并没有将";"在UI上转换为W,所以当输入";"即为输入W.
+参考FAQ: FAQ23863
+### 问题: 7731 FM自动搜阀值如何修改
+解决方案: kernel/drivers/misc/fm_2351/sr2351_fm_rf.c,对FM_REG_MONO_PWR 进行配置 默认值为0x019C0192,bit8～0为threshold1(192),bit24～16为threshold2(19C). threshold值增加为减小阈值,减小为增加阈值.修改时请对threshold1和2同时进行增减,并增减相同的值,例如同时加5或减5. 每次修改不要增减太多,修改完反复测试以保证阈值调到最佳.
+参考FAQ: FAQ53215
+### 问题: recovery模式屏幕上出现的android机器人的图片在哪里？
+解决方案: 背景知识: Android手机开机后,会先运行 bootloader.Bootloader 会根据某些判定条件(比如按某个特殊键)决定是否进入 recovery模式.Recovery模式会装载recovery 分区,该分区包含recovery.img.recovery.img包含了标准内核(和boot.img中的内核相同)以及recovery根文件系统. 图片位置: bootable\recovery\res\images\
+参考FAQ: FAQ23940
+### 问题: 为什么android4.4中的邮件移动功能无效？
+解决方案: android4.4的Email中查看邮件内容界面,会有一个[收件箱]的小按钮,用于将当前邮件移动到其他文件夹,但是有时点击这个小按钮会发现只显示[系统][所有文件夹]两个列表项,无法进行任何移动操作. 出现这种具体原因如下: 创建邮件账户可以选择三种类型,包括Exchange,IMAP和POP3 因为点击[收件箱]显示的文件夹列表是服务器文件夹,而pop3类型的账户没有服务器文件夹,所以无法移动,而imap和exchange类型的账户有服务器文件夹,所以可以移动.
+参考FAQ: FAQ23955
+### 问题: 如何不插usb线执行一些命令
+解决方案: 命令后面加上&即可,如: top -m 5 >/data/xx.txt & 会fork出一个进程来执行这个命令,而不是脱离了shell后就会被stop.
+参考FAQ: FAQ23956
+### 问题: 如何将batterysrv的root权限改掉？
+解决方案: 首先进入device 下对应board的init.sc8830.rc文件. 搜索batterysrv service batterysrv /bin/batterysrv class core 所属分类 user system 权限将user后的root改为system则表示将root权限改为system权限了 group system shell 所属分组 此表示属于system shell两个分组 disabled 表示默认是不起这个进程的,如果需要起这个进程一般不设这个. oneshot 代表只起一次,如果kill之后就不会再起了
+参考FAQ: FAQ23980
+### 问题: push和install命令执行过程
+解决方案: push 的过程是:当用adb push 命令push某个apk时,它只是将apk放到要push的目录下,并不去安装.如果要将apk push到 system/app目录下的话,由于这个目录是系统apk目录,所以packagemanageservice会去监听这个目录是否有apk更新,当检查到这个目录下有新apk更新后就去安装它. install 命令的安装过程是直接执行安装,同可视化安装(通过点击apk跳出安装界面)时一样的. 如果已经安装了一个apk,再通过push命令去push这个apk时,因为这个apk已存在了,所以不会去安装这个apk,并且不会出现提示.这样会导致我们push的apk实际并没有得到运行,在实际工作中需要注意.
+参考FAQ: FAQ26931
+### 问题: LCD RGB接口和并行接口的兼容关系
+解决方案: 在BB侧:RGB565--D[15:11]-->R[4:0]; D[10:5]-->G[5:0];D[4:0]-->B[4:0]; RGB666--D[17:12]-->R[5:0]; D[11:6]-->G[5:0];D[5:0]-->B[5:0]; RGB888--D[23:16]-->R[7:0]; D[15:8]-->G[7:0];D[7:0]-->B[7:0];
+参考FAQ: FAQ26976
+### 问题: 充电时，Vbus电压小于4.5V就不充电了，是否正常？
+解决方案: 这个是正常的.
+参考FAQ: FAQ26946
+### 问题: debug版本开启wcn reset机制的方法
+解决方案: 开启reset机制 修改device/sprd/scx35/device.mk ifeq ($(TARGET_BUILD_VARIANT),user) PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.sprd.modemreset=1 \ ro.adb.secure=1 \ persist.sys.sprd.wcnreset=1 \ persist.sys.engpc.disable=1 else PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.sprd.modemreset=0 \ ro.adb.secure=0 \ -- persist.sys.sprd.wcnreset=0 \ ++ persist.sys.sprd.wcnreset=1 \ persist.sys.engpc.disable=0 endif # TARGET_BUILD_VARIANT == user
+参考FAQ: FAQ24003
+### 问题: 7715 平台关闭 长按power键7秒重启
+解决方案: 关闭 长按power键7秒重启 修改如下: u-boot/arch/arm/cpu/armv7/sc8830/misc.c void misc_init(){ ..... #if defined CONFIG_PBINT_7S_RESET_V1 -pbint_7s_rst_cfg(1, 0); +pbint_7s_rst_cfg(0, 0); #elif defined CONFIG_PBINT_7S_RESET_V0 ..... }
+参考FAQ: FAQ29256
+### 问题: 流媒体点播播放过程中被其他事件打断10分钟以上，继续播放时是否需要提示超时？
+解决方案: 超时提示的意思是如果点播流媒体播放过程中被其他事件(例如流媒体入库case 5.5,5.6和5.7等)打断后,例如被短彩信打断后,不能恢复播放,则给予超时提示,如果被打断一段时间后仍然可以继续恢复播放,则不需要超时提示,这样用户体验是更好的,原来的SC8825也是这么做的,移动入库没问题,所以流媒体点播播放过程中被其他事件打断10分钟以上,如果能够继续播放则属于正常的,并不需要弹出"超时"提示信息.
+参考FAQ: FAQ24067
+### 问题: 7715 7730无法写IMEI
+解决方案: 7715 7730无法写IMEI需要勾选工程里的shark选项
+参考FAQ: FAQ24105
+### 问题: 图库编辑图片功能中有多少种边框效果？
+解决方案: 图库编辑图片功能中的边框效果,顾名思义就是给所编辑的图片添加边框, 系统自带的效果如下: 4X5,笔刷,破损,水墨,胶带,黑框,圆角黑框,白框,圆角白框,混合,圆角混合
+参考FAQ: FAQ24107
+### 问题: GCF case20.7 测试步骤
+解决方案: 在gcf测试时,gsm case20.7.在step d时,请按下面操作,提前准备好两张sim卡,以便测试中更换. Step d: Please place the MS in Cell Test Operation Mode; (change SIM administrative data field to 04FFFF) Press a key to continue ... 修改sim卡 准备两张sim卡,此步骤需要换sim卡 (change SIM administrative data field to 04FFFF).
+参考FAQ: FAQ73664
+### 问题: 不同格式的视频文件如何做音视频分离？
+解决方案: 视频文件有很多种格式(例如avi,mp4,flv等),文件中包含编码后的音频流及视频流,通过不同的extractor可以做demux操作将音视频流分离,选取extractor的主要实现在MediaExtractor.cpp文件中Create函数: (1)通过sniff查找匹配度最高的分离器 (2)当sniff成功后获取MIME类型 (3)根据MIME类型创建对应的分离器对象,负责后续音视频数据的分离
+参考FAQ: FAQ24123
+### 问题: android4.4 Alarm设置如何控制窗口时间大小
+解决方案: 从android4.4开始,从省电角度出发,AlarmManagerService引入了Batch机制,即把触发时间相近的Alarms归结到同一个Batch对象,在某一次唤醒一起触发,达到减少唤醒的次数,最终达到省电效果. 为了保证alarm唤醒时间和设置的时间不会偏差太大,AlarmManager提供以下接口: public void setWindow(int type, long windowStartMillis, long windowLengthMillis, PendingIntent operation); 此接口可以保证alarm在某个窗口时间之内被触发,窗口时间大小由参数windowLengthMillis提供.
+参考FAQ: FAQ24145
+### 问题: 7701平台软件如何识别区分GSM四个频段
+解决方案: 上层软件可以判断当前是否支持那些频度,如接口 :MNPHONE_GetBandEx(),MN_PHONE_BAND_GSM 900M、 MN_PHONE_BAND_DCS 1800M 、 MN_PHONE_BAND_PCS 1900M、MN_PHONE_BAND_GSM850 850M,是否支持其中一种,或支持其中几种. 然后可以选择当前手机在那中频段上工作,如接口 MNPHONE_SelectBandEx().
+参考FAQ: FAQ24148
+### 问题: 在4.4中如何设置蓝牙默认可见性以及时间
+解决方案: 在external/bluetooth/bluedroid/btif/src/btif_dm.c中有btif_dm_get_adapter_property函数,里面有 case BT_PROPERTY_ADAPTER_SCAN_MODE,这里设置设备可见性,默认值为 BT_SCAN_MODE_NONE,可以定义为 BT_SCAN_MODE_NONE,BT_SCAN_MODE_CONNECTABLE,BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE 分别代表不可搜索不可链接,可链接不可搜索,可搜索可链接 case BT_PROPERTY_ADAPTER_DISCOVERY_TIMEOUT,这里设置可见性时间,默认值为120s.
+参考FAQ: FAQ24127
+### 问题: SC7715电源仿真PASS的标准
+解决方案: 在100MHZ下,SC7715A电源仿真标准是: VDDARM:0.7ohm VDDCORE:0.8ohm BB-VDDMEM:0.35ohm VDDMEM:0.3ohm 任何客户的板子必须过电源仿真,才能发板!
+参考FAQ: FAQ24197
+### 问题: 何时jpeg格式的图片在图库中显示的缩略图为其自带缩略图？
+解决方案: jpeg格式图片本身包含了其缩略图信息(极个别可能不包含),通过ExifInterface这个接口,图库中可以获取jpeg格式图库的缩略图信息. 获取到该图片的缩略图信息后,首先确认该缩略图信息是否为null,不为null,继续判断该缩略图的宽和高相对于屏幕的分辨率是否够大,在android4.4中,会计算出一个targetSize,该值为当前屏幕的宽度和高度值中较大的那一个值的五分之一.缩略图的宽度和高度需要同时大于targetSize,才会使用该缩略图作为图片的显示的缩略图.
+参考FAQ: FAQ24204
+### 问题: 音乐静音播放功耗问题
+解决方案: 音乐静音播放时,speaker、听筒、耳机这些设备仍然开着但没有实际作用只是增加功耗,所以必要的时候要关闭这些设备以达到某些场景降低功耗的目的. Android4.4平台在\frameworks\av\services\audioflinger\Threads.cpp中的MixerThread::prepareTracks_l函数里通过音轨的流类型、流音量、音轨个数等条件决定是否关闭不必要的设备. 当只有一个音轨、且音轨流类型为AUDIO_STREAM_MUSIC、流音量为0时认为此时属音乐静音播放,应该关闭空耗设备.
+参考FAQ: FAQ24223
+### 问题: 音乐列表中有最近添加的歌曲，"最近"时间有多长？
+解决方案: 歌曲信息存到多媒体数据库中时,会将添加歌曲的时间放入到"date_added"字段.进入"最近添加的歌曲"列表时,会根据date_added和当前时间将2周内的歌曲列出来.
+参考FAQ: FAQ24272
+### 问题: 如何知道CPU支持的所有频率
+解决方案: 在调试功耗的时候,往往需要将CPU锁定到某一频率再测量电流值. 但是CPU的频率并不是可以随便设置的,它一般只支持有限的几种频率. 通过以下命令可以知道CPU支持的所有频率. cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+参考FAQ: FAQ24295
+### 问题: 如何抓取界面布局？
+解决方案: 对于出现UI显示的问题,最好能提供出现问题时的UI布局信息.Android SDK中提供了这样的工具—— UI Automator Viewer 通过运行\sdk\tools\uiautomatorviewer.bat 可以打开UI Automator Viewer 步骤: 1.把手机连接到电脑 2.运行UI Automator Viewer,运行后的工具界面如下: 3. 点击左上角的dump图标,可以把手机上的当前的界面dump出来. 4. dump之后的界面 5. 再点击左上角的save图标,选择保存路径后保存即可 此时会生成两个文件 dump_****.png dump_****.uix 把这两个发给平台即可.
+参考FAQ: FAQ24289
+### 问题: 什么是PTP？
+解决方案: PTP是英语"图片传输协议(picture transfer protocol)"的缩写.PTP是最早由柯达公司与微软协商制定的一种标准,符合这种标准的图像设备在接入Windows系统之后可以更好地被系统和应用程序所共享.通过USB数据线把图像设备连上Windows操作系统,能在"我的电脑"中见到它.用户可把它当做U盘一样使用,例如对其进行目录、文件的浏览和拷贝等操作.
+参考FAQ: FAQ24307
+### 问题: android4.4满足拍照或摄像的存储空间条件？
+解决方案: camera中设置拍照或摄像的空间上限是20M,当小于20M时会出现无法拍照和摄像的提示.空间的计算分两种情况 1.从第三方或信息中进入camera拍照或摄像,获取的空间为data的剩余空间; 2.直接进入相机拍照,若存在T卡则根据t卡的剩余空间来判断是否可以拍照,若没有T卡的话,会获取data的剩余空间进行判断 另外变量的定义路径 packages\apps\Camera2\src\com\android\camera\Storage.java public static final long LOW_STORAGE_THRESHOLD_BYTES = 20 * 1024 *1024;
+参考FAQ: FAQ24312
+### 问题: 为什么微信中打开相机后台运行后，再打开其它相机应用都会失败
+解决方案: 部分微信版本在后台运行时,并未调用release接口释放掉CameraService,当其它相机应用去连接CameraService时,会报client exists异常,无法连接.这个问题需要微信再来优化后台运行时对Camera的操作流程.
+参考FAQ: FAQ24317
+### 问题: memory的VREF电压为什么需要串一个0.01uf到VDDMEM上？
+解决方案: memory的VREF串一个0.01ufVDDMEM能使DDR SCAN有1%~2%的改善.
+参考FAQ: FAQ24374
+### 问题: audiotester连手机使用什么端口？
+解决方案: 手机的USB连上电脑后,在电脑的设备管理器中出现一个DIAG的端口.audiotester的界面的port配置DIAG对应的端口后,最好点击audiotester的connect,audiotester就能连接上手机了.
+参考FAQ: FAQ24375
+### 问题: 如何使用Eclipse导入Android代码
+解决方案: 1.将development/ide/eclipse下的.classpath拷贝至代码根目录下. 2.启动Eclipse,按照以下步骤选择:File->New->Project->Java->Java Project 3.取消Use Default Location选项 4.点击Browse,选择步骤1存放classpath的路径 注意: Eclipse是根据.classpath文件进行导入,如果发现需要查看的文件没有导入,请按照.classpatch的格式增加文件路径.
+参考FAQ: FAQ24377
+### 问题: 如何定位多国语言中的某一种语言定义在哪个文件
+解决方案: Android中各个语言的支持在 res/values-<lan>[-r<reg>]中定义的,其中: - <lan>为语言码,在ISO639-1标准中定义; 比如:汉字为zh - <reg>为国家/地区码,在ISO3166-1标准中定义,也可以没有. 比如:大陆为CN;台湾为TW. 查某种语言定义的字符串有问题,对照标准中定义的缩写码,找到res/values-<lan>[-r<reg>],修改其中的strings.xml中的字符串即可.
+参考FAQ: FAQ25582
+### 问题: 7715如何修改或添加apn参数配置
+解决方案: 首先找到apn参数配置文件: vendor\sprd\operator\cucc\specA\res\apn\apns-conf.xml 为cucc的apn参数配置文件, vendor\sprd\open-source\res\apn\apns-conf.xml 为非cucc如cmcc的apn参数配置文件. 一般情况下,为了保持一致最好两个都一起改,特殊情况下,如同一个apn配置,联通要求显示成沃3G之类的,移动要求显示为CUCC 2G,则需分别做不同的修改或保留. 修改方法则是在相应的apns-conf.xml文件中,根据mcc,mnc进行搜索,并对相应需要更新的项做修改;如果没有搜索到,则可自行添加.
+参考FAQ: FAQ24494
+### 问题: 7715如何查看是否支持某个NAND?
+解决方案: 查看chipram和u-boot下的头文件sprd_nand_param.h,看表sprd_nand_param_table中是否包含NAND对应的ID, 如果包含,表示支持; 如果不包含,则要确认NAND是否能采用本身的ID及程序提供的默认参数,能则支持,不能则不支持,需要在sprd_nand_param_table增加相应的参数来支持. 注意,为了保证系统稳定性,所有采用的NAND必须为展讯验证通过的NAND.
+参考FAQ: FAQ24821
+### 问题: 软件如何设置32k作为PWM的时钟源？
+解决方案: 请按以下修改: 将函数sprd_backlight_probe中的: ext_26m = clk_get(NULL, "ext_26m"); if (IS_ERR(ext_26m)) { printk("Can't get pwm's ext_32k"); return -ENODEV; } clk_set_parent(sprdbl.clk,ext_26m); 改为 ext_26m = clk_get(NULL, "ext_32k"); if (IS_ERR(ext_26m)) { printk("Can't get pwm's ext_32k"); return -ENODEV; } clk_set_parent(sprdbl.clk,ext_26m);
+参考FAQ: FAQ24498
+### 问题: 7715怎么实现添加内置歌曲？
+解决方案: 1.将test.mp3文件置于当前工程目录中,可独立建个文件夹mp3,如device\sprd\scx15_sp7715ga\mp3. 2.修改工程文件,如scx15_sp7715gaplus.mk,在PRODUCT_COPY_FILES定义的最后增加一行,如$(BOARDDIR)/mp3/test.mp3:system/media/test.mp3 (注意前一行的末尾要加上" \").
+参考FAQ: FAQ24576
+### 问题: Activity启动标签FLAG_ACTIVITY_TASK_ON_HOME的含义
+解决方案: activity的启动如果添加了标签 FLAG_ACTIVITY_TASK_ON_HOME,则代表把当前新启动的任务置于Home任务之上,也就是按back键从这个任务返回的时候会回到home,不会返回到最后看见的activity,这个标记必须和FLAG_ACTIVITY_NEW_TASK一起使用
+参考FAQ: FAQ24583
+### 问题: android4.4 如何手动Assert Modem
+解决方案: 如果需要手动Assert Modem,有两种方法 方法一: 步骤1:检查*#*#83781#*#* 进入工程模式,App Settings-->不要勾选Modem Reset 步骤2:*#*#83781#*#* 进入工程模式,Para Set-->Debug Param-->点击"Manual Assert" 方法二: 手机连上PC,使用ArmLogel.exe,连上手机后,Assert选项下,选择Assert MS.
+参考FAQ: FAQ24603
+### 问题: DHCP确定wifi连接是否成功
+解决方案: DHCP是wifi连接需要和热点进行ip配置的重要一环,分4步完成 1:UE: DHCP discovery UE在物理子网上发送广播来寻找可用的服务器. 2:Server: DHCP Offer 当DHCP服务器收到一个来自客户的IP租约请求时,它会提供一个IP租约. 3:UE: 发送一个DHCPREQUEST消息,其中包含提供租约的服务器的IP.当其他DHCP服务器收到了该消息后,它们会收回所有可能已提供给客户的租约 4:Server:DHCP ACK包含租期和客户可能请求的其他所有配置信息
+参考FAQ: FAQ40337
+### 问题: 软件pac包里FDL1文件的作用？
+解决方案: FDL1:初始化SDRAM,与PC通信下载FDL2到SDRAM,并运行FDL2;
+参考FAQ: FAQ24639
+### 问题: CFT9.0.001版本是否支持SC7710的FDT模式校准？
+解决方案: CFT9.0.001不支持,而CFT8.0.001支持.
+参考FAQ: FAQ24640
+### 问题: 如何解决更换电池后电池的电量没有改变的问题
+解决方案: 为了解决性能较差的电池,在进行一次开机的过程电池的电压就会有下降而导致电池电量显示跳变的问题,充电代码内部设计一套记录电池电量的机制,该机制在机器运行时会定期地把电池的电量记录下来,当重新开机后,就会将实际读到的电池电量与关机前最后一次记录的电池电量进行比较,如果差值大于一定的范围,就会选择显示实际读到的电量,否则显示关机时记录的电量. 这套机制会引入一种情况,就是更换电池后,显示的电量有可能不能反应实际的电量.位置适应这种情况.差值的范围代码内部是使用宏的方式定义的(单位是%): #define SPRDBAT_VALID_CAP 30 该宏的值可以根据实际的情况进行修改,它的意义是:例如这里,开机后,实际读到的电池电量与关机前最后一次记录的电池电量差值大于30%就会显示实际读到的电池电量,否则显示显示关机时记录的电量 该值可以根据实际的需要修改,一般性能较好的电池能减少到10～15
+参考FAQ: FAQ24678
+### 问题: SC7701平台如何内置一个号码到语音信箱
+解决方案: 语音信箱功能和营运商相关,需要营运商的支持,且语音信箱对应的号码都是保存在SIM卡上,但并非所有的SIM卡都支持语音信箱,如SIM卡不支持cphs协议,就不支持语音信箱. 语音信箱的 保存接口函数为 SaveVMAddr2SimByType(). 如果要设置一个默认号码,可以在合适的时机,如拨号盘长按1号键,或进通话设置->语音信箱时,先调用该接口,写入一个默认值.但是写入前,要判断SIM卡中是否已经设置有语音信箱号码. 获取语音号码接口MMISMS_GetVoiceMailAddr();
+参考FAQ: FAQ24689
+### 问题: SC7715平台product文件中配置孟加拉语，编译后发现语言设置中没有孟加拉语
+解决方案: Android 4.4 平台的编译多语版本需要添加MULTILANGUAGE_SUPPORT=true,除了在product配置文件中加相关的语言配置外,还要开启多国语言编译配置. 即编译命令为 $source buile/envsetup.sh $lunch $kheader $MULTILANGUAGE_SUPPORT=true make
+参考FAQ: FAQ24692
+### 问题: 代码中设置了动画，为什么没有效果？
+解决方案: 请检查[设置]-->[开发者选项]-->[绘图]选项下的"窗口动画缩放"、"过度动画缩放"、"动画程序时长缩放"三个选项,如果设置为了"关闭动画",那么修改为其他值.
+参考FAQ: FAQ24696

@@ -1,0 +1,300 @@
+### 问题: Email可支持的账户个数
+解决方案: Email client端可建立的账户个数无限制.
+参考FAQ: FAQ57015
+### 问题: 如何修改listbox控件列表选中项背景（即高亮条）？
+解决方案: listbox控件列表的选中项,其背景有两种显示方式:图片与颜色. 见:MMITHEME_GetListStyle @ mmitheme_list.c (1)如果要使用"颜色"的方式: list_style_ptr->is_disp_hilight_image = FALSE; //这里设置为FALSE,表示采用"颜色"填充 list_style_ptr->highlight_back_color = MMI_GRAY_WHITE_COLOR;//这里填写颜色值 (2)如果要使用"图片"的方式: list_style_ptr->is_disp_hilight_image = TRUE; //这里设置为TRUE,表示采用"图片"填充 list_style_ptr->highlight_back_image = IMAGE_COMMON_SELECTED_BAR;//这里放置图片ID
+参考FAQ: FAQ56900
+### 问题: SC7731带dt工程如何配置最大充电电压？
+解决方案: SC7731平台默认最大的充电是4.2V,如需调整最大的充电电压,在带dt的工程只需修改配置文件 在路径:\kernel\arch\arm\boot\dts\sprd-battery.dtsi 将下面的三个常量同步增加 chg-end-vol-h = <4225>; chg-end-vol-pure = <4200>; chg-end-vol-l = <4150>; 例如:最大充电电压为4.3V,即4300mv-4200mv=100mv, chg-end-vol-h = <4325>; chg-end-vol-pure = <4300>; chg-end-vol-l = <4250>;
+参考FAQ: FAQ56906
+### 问题: Android平台怎样在字符串中使用引号？
+解决方案: 字符串中的值虽然可以任意指定,但遇到特殊符号时,如双引号、单引号等就需要采取特殊的方法进行处理. 如果是单引号( ' ),可以使用转意符( \ ) 或使用双引号( " )将整个字符串刮起来.如果是双引号,可以在双引号前使用转意符(\).如下: <!-- 输出 This'll work --> <string name="str1">"This'll work"</string> <!-- 输出 This'll also work --> <string name="str2">This\'ll also work</string> <!-- 输出 "Spreadtrum" --> <string name="str3">\"Spreadtrum\"</string>
+参考FAQ: FAQ56929
+### 问题: SC7731(7715)是否支持BIP协议？
+解决方案: BIP:Bearer Independent Protocol 承载独立协议,7731和7715支持BIP协议. 智能SIM卡鉴权发起的,通过手机与OTA交互网络数据的功能,目前就是主要依赖于手机支持的BIP协议,因此测试一台手机对BIP支持的优劣,也就是从一个侧面反映了通过OTA远程写卡在此手机上被支持的优劣.
+参考FAQ: FAQ56942
+### 问题: 如何添加一个时区到家中时区
+解决方案: 请先到Timezone_ID.txt找到所要添加的时区id,比如马里(根据城市的英语名称去搜索)Africa/Bamako,然后将Africa/Bamako添加到timezone_values这个数组中,同时也请在timezone_labels数组中添加要显示的城市名,timezone_labels不同语言里面也需要添加. (注:两个数组的数量一定要一致,并且新增的时区统一添加到数组最后)
+参考FAQ: FAQ56972
+### 问题: 如何修改待机界面时间日期显示为首写字母大写
+解决方案: 请做如下修改: frameworks\base\packages\Keyguard\res\values(请选择当前手机分辨率)\styles.xml 把textAllCaps属性值改为false. <style name="widget_label"> <item name="android:textStyle">bold</item> - <item name="android:textAllCaps">true</item> + <item name="android:textAllCaps">false</item> <item name="android:fontFamily">sans-serif-condensed</item> <item name="android:textSize">@dimen/widget_label_font_size</item> </style>
+参考FAQ: FAQ56976
+### 问题: 平台是否支持BIP协议？
+解决方案: BIP:bearer independent protocol承载独立协议, 是SIM卡接口测试中的一项,目前modem平台全线均支持此功能.
+参考FAQ: FAQ56973
+### 问题: 第三方浏览器下载的内容是否会在系统的下载应用中显示？
+解决方案: 第三方浏览器下载的内容不会显示在系统的下载应用中,只有通过系统原生浏览器下载才会在下载应用中显示.
+参考FAQ: FAQ56980
+### 问题: 如何查看闹钟铃声中的媒体存储的铃声列表
+解决方案: 请做如下操作: adb root --> adb remount --> adb shell --> cd system/media/audio/alarms --> ls
+参考FAQ: FAQ56983
+### 问题: 7731是否支持ART模式
+解决方案: 当前只支持dalvik模式,对ART模式尚不支持.
+参考FAQ: FAQ56978
+### 问题: 闹钟的默认铃声是在哪里定义的
+解决方案: 闹钟的默认铃声是定义在build\target\product\core_base.mk中的: ro.config.alarm_alert=Alarm_Classic.ogg
+参考FAQ: FAQ56985
+### 问题: 日历如何默认显示周数
+解决方案: 修改日历模块,general_preferences.xml文件中preferences_show_week_num的默认值 android:defaultValue="true"即可.
+参考FAQ: FAQ56990
+### 问题: SC7701 是否支持定时短信功能？
+解决方案: 7701默认未开启定时短信的支持,如需支持需要打开宏MMI_TIMERMSG_SUPPORT.
+参考FAQ: FAQ57108
+### 问题: SC7701 软件上如何实现SIM1\SIM2卡槽交换
+解决方案: 可以通过修改NV来实现.对应的NV项为TD_TIANJI2_NV_TYPE->NV_PARAM_TYPE_MN_CFG->sim_slot_cfg. 初始值为0x10302,即0x00010302,标识的意义为: 00:card1 01:card2 02:card3 03:card4 如需交换SIM1\SIM2卡槽,只需修改为0x1000302,保存后重新下载手机NV即可生效.
+参考FAQ: FAQ57104
+### 问题: SC7701 彩信必现可以发送但是无法接收的问题
+解决方案: 遇到彩信出现发送正常,但是无法接收的现象时,请检查宏MMI_OTA_SUPPORT是否开启,如没有开启,请开启后再进行验证. 原因是:彩信的push消息解析是在函数MMIAPIOTA_DecodePush中完成的. 此函数由宏MMI_OTA_SUPPORT控制,因此开启彩信功能时,也要同时保证MMI_OTA_SUPPORT开启. 如果开启后依然出现无法接收彩信的现象,请抓取对应的log提供给展讯客户支持人员分析.
+参考FAQ: FAQ57109
+### 问题: SC7701 是否支持手动注册网络的过程中进行取消？
+解决方案: 平台可以支持在手动搜索网络的过程中进行取消,但是不支持在注册网络的过程中进行取消.
+参考FAQ: FAQ57112
+### 问题: Contacts 字母导航条
+解决方案: bladeView控件弹出框的修改在BladeView类的showPopup()函数中, 修改弹出框大小: mPopupWindow = new PopupWindow(this.getResources().getDimensionPixelSize( R.dimen.contact_bladeview_popup_width), this.getResources() .getDimensionPixelSize(R.dimen.contact_bladeview_popup_width)); 修改弹出框显示位置: mPopupText.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+参考FAQ: FAQ57084
+### 问题: 7731 LPDDR3配置后为什么不能下载？
+解决方案: 目前7731平台已支持LPDDR3类型的DDR,但是目前只有200M、400M、500M这三个频点可以使用. 如果在《工程名.h》头文件中,配置了LPDDR3,需要确认DDR_FREQ是否是这三个频点,如果不是,请修改为其中一个. 另外需要注意的是,头文件中#define DDR_AUTO_DETECT宏是否有效.若没有打开此宏开关,请合入DDR自适应的相关patch.
+参考FAQ: FAQ57136
+### 问题: 如何修改PDA风格浏览器Start Page上的固定导航页（Popular boutique）？
+解决方案: PDA风格浏览器Start Page如下图所示: 其中固定导航页是在g_fix_nav_default_info(@mmibrowser_func.c)中定义的,修改该数组可实现对固定导航页的定制.
+参考FAQ: FAQ57147
+### 问题: PDA形态工程如何修改浏览器Start Page风格？
+解决方案: PDA形态工程提供两种浏览器风格,是在release_app_macro.mk/app_macro.mk定义的,其中: BROWSER_START_PAGE_THEME1对应显示效果如下: BROWSER_START_PAGE_DEFAULT对应显示效果如下: 默认使用BROWSER_START_PAGE_THEME1风格.
+参考FAQ: FAQ57150
+### 问题: TP调试时IIC1工作不起来
+解决方案: I2C1不能工作需要注意以下两点: 1.I2C1 pinmap配置,需要注意最后一位BIT_PIN_SLP_Z; 2.I2C1对应的pin scl/sda的I/O电压域VIO_2 配置不能遗漏,主要是1.8V/3.0V分别.
+参考FAQ: FAQ57159
+### 问题: 7731项目无法显示特殊图片问题？
+解决方案: 客户提供一些问题图片,经过查看图片的size为5500*5500 ,在7731平台手机中图库中无法显示,也无法设置为墙纸问题. 该问题是由于展讯平台底层解码时对解码memery做了限制,最大只支持4096*4096 大小的图片. 如加大可能会引起oom问题,建议客户不做修改.
+参考FAQ: FAQ57158
+### 问题: 2351 WIFI 无法搜索到AP
+解决方案: 主要原因是 SR2319A的控制没有起作用,即BT_TX_EN、WIFI_TX_EN、 W/B_RX_EN这几个PIN电平为0,需要修改pin 的配置,主要是以下两点: 1.pinmap 设置是否正确; 2.pin的电压域设置,即使寄存器PIN_CTRL_REG4中对应位的设置.
+参考FAQ: FAQ57163
+### 问题: SC7731平台，接充电器显示充电后，很快就停止充电可能原因是什么？
+解决方案: SC7731平台,会定时检查电池温度,如果检测温度过高或过低,会停止充电,还有因为焊接或电路问题,造成ADC温度采样时,误报错误的温度,也会引起这个现象.
+参考FAQ: FAQ57184
+### 问题: 7731项目 同一电池分别放在两个手机上显示的电量不一致问题。
+解决方案: 该问题导致的原因: 用户在手机上更换电池时,android手机会记录之前电池的电压,同时也会检测新电池的电压,如果两块电池电压相差小于30%,手机会依旧显示之前电池的电量,此时客户继续新电池使用过程中,手机会平滑的变化到真实的新电池电量.对比友商样机也都有此问题.建议不做修改.
+参考FAQ: FAQ57174
+### 问题: 设置定时开机，时间到，机器并未自动开机
+解决方案: 在展讯平台,设置应用实现了个定时开机功能.如果改变了RTC驱动的起始时间,则设置写到对比文件的时间的起始时间也需要改变. 在rtc-sprd.c文件中,宏CONFIG_RTC_START_YEAR定义了RTC的起始年份,这个可以根据自己的需求进行更改. 在设置应用中,Alarms.java文件,alarm_flag_setup方法是设置开机时间,把时间写到/productinfo/poweron_timeinmillis文件,这个时间的开始年份一定要和RTC中的一致. private static void alarm_flag_setup(final long alarmTimeInMillis) { Calendar c = Calendar.getInstance(); c.set(2012, 0, 1, 0, 0, 0); //这个时间要一致. ... }
+参考FAQ: FAQ57209
+### 问题: Mocor乱码显示时“口”是如何实现的？
+解决方案: 基于SPML显示,当遇到不能显示的字符时,显示引擎会统一显示成"口".显示引擎内部的处理逻辑是:当指定的unicode在字库中的数据为NULL时,会绘制一个"口"形状的矩形,来指示字符无法显示.
+参考FAQ: FAQ57238
+### 问题: 阿拉伯语字符集说明
+解决方案: 在Unicode规范中,阿拉伯语字符集的区间段为:0x0600~0x06FF
+参考FAQ: FAQ57240
+### 问题: SC7715/SC6815平台为什么来电界面会出现不一样的现象？
+解决方案: 不是不固定,在SC7715/SC6815平台接听界面有两种方式: 1、在锁屏界面下,或灭屏时,来电会出现滑动接听界面,这样为了避免误操作导致接听(例如如果是按钮接听,放到口袋中来电容易触到接听按钮而导致误接听). 2、在非锁屏界面来电,会出现按钮接听界面.
+参考FAQ: FAQ57243
+### 问题: 支持几种充电器识别
+解决方案: 目前支持三种: CDP:平台支持BC1.2,CDP需要host端口支持,主板大电流充电 DCP:标准AC充电,将D+ D-短接直接由VBUS供电 SDP:标准USB充电器,目前平台不支持非标准充电器和USB充电器的区分 通过读取状态寄存器:ANA_REG_GLB_CHGR_STATUS (0x400388c4)来判断充电器类型 ADP_TYPE_CDP bit5 ADP_TYPE_DCP bit6 ADP_TYPE_SDP bit7
+参考FAQ: FAQ57332
+### 问题: 充电过程分为几种状态
+解决方案: 1、激活充电: 电池电压为0的时充电电流为5mA,手机处于激活充电状态,将手机电池电压充到1.1V 2、小电流充电 当手机电池电压大于1.1V且小于2.05V的时候使用50mA小电流充电 3、大电流充电 电池电压大于2.05V小于3.05V的时候,硬件提供450ma充电电流,将电池冲到可开机状态 4、恒流充电 电池电压大于3.05V的时候进入恒流充电过程,此时充电电流为设置电流 5、恒压充电 电池电压处于4.2V附近的时候进入恒压充电,此时充电电流慢慢减小,当充电电流小于80mA的时候,充电停止. 6、脉冲充电 电池自放电电压到设置的recharge点时候重新启动充电
+参考FAQ: FAQ57338
+### 问题: Call模块中Add wait功能介绍及如何测试
+解决方案: 一.Add wait功能介绍 Add wait功能的中文意思为延长等待时间.一些公司有分机的时候,可以使用此功能直接进行拨号,在拨号的过程中,手机会有提示框弹出来需要确认是否拨打此分机号码.Add 2-sec pause功能不同的地方在于会出现提示框让用户确认是否正常拨打 二.Add wait如何测试 1.手机点击Call应用图标进入到Call模块的拨号界面,在不输入任何号码的情况下点击菜单按钮的时候,手机Call菜单上是不会显示Add wait的菜单选项 2.输入公司的总机后,再次点击手机的菜单按钮,Call的菜单中会出现Add wait的菜单选项,点击此选项 3.点击此选项后,手机的拨号界面会在公司的总机号码后面显示一个";",再次输入想拨打的分机号码,点击拨号按钮,手机会弹出是否拨打分机号码的提示框
+参考FAQ: FAQ57319
+### 问题: 联通入库体验问题：在群发短信时，若接收人中含有电子邮件，会被自动变成彩信，为何没有明显提示？
+解决方案: 对于联通入库的软件,需要定义系统属性ro.operator为"cucc". 在此种场景下,Mms应用是这样处理的: 1. 如收件人中包含电子邮件,在自动转换成彩信时,会有Toast提示"正在转换为彩信"; 2. 如收件人中包含电子邮件,信息正文编辑完后,此时点击"发送",弹出提示Dialog,包括三个选项"只发送短信","发送彩信"和"取消".如果选择"只发送短信"后,email地址被去掉. 以上处理符合联通入库的体验要求.
+参考FAQ: FAQ57530
+### 问题: 运营商名称的显示有哪几种策略？
+解决方案: 在锁频和状态栏中显示的运营商名,可以来自所注册的网络(PLMN),也可以来自SIM卡上存储运营商信息的文件(SPN). 因此,显示运营商名的策略有以下3种: 1. 只显示SIM卡上的SPN; 2. 只显示网络PLMN(对应的)名称; 3. 显示网络PLMN | SIM卡SPN.
+参考FAQ: FAQ57535
+### 问题: 网络运营商名称是如何处理的？对于新的网络PLMN，如何增加对应的名称？
+解决方案: Modem通过At命令(COPS),给AP传来当前网络的PLMN和运营商名,然后AP通过预定义的PLMN数字到运营商名的表,最终得出来自网络侧的运营商名. 这里有两张表:numeric_to_operator和operator_need_update,位于frameworks/base/core/res/res/values/numeric_operator.xml. 其中numeric_to_operator表在At命令没有传来运营商名时起作用,operator_need_update表在At命令传来了运营商名时起作用. 如果有新的网络PLMN,可以在以上两张表中新增一条记录.
+参考FAQ: FAQ57538
+### 问题: CTA问题：系统第一次开机，安全能力配置应用启动后，默认5秒会自动关闭，如何修改？
+解决方案: 由于安全能力配置应用是以apk的形式提供的,因此如需修改退出的超时,请联系展讯修改此应用. 另外,如果项目使用了专有的签名key,请修改相应的Android.mk(例如:vendor/sprd/partner/prebuilt_apps),加入LOCAL_CERTIFICATE :=platform.
+参考FAQ: FAQ57539
+### 问题: 联通入库问题：为什么在访问mp4的流媒体资源时，只能选择播放而不能下载？
+解决方案: 在联通入库测试中,视频不会选择下载的原因是Android浏览器对mp4格式的视频,默认是支持直接播放的,所以不会走下载的流程. 浏览器对文件格式的支持是在external\chromium_org\net\base\mime_util.cc中的proprietary_media_types[]. 如果希望对mp4格式的视频,需要提示打开或下载对话框,可去掉"video/mp4";同样如果要修改mp4格式的音频的流程,可去掉"audio/mp4".
+参考FAQ: FAQ57542
+### 问题: 裁剪Android4.4 GMS包必须要保留那些文件?
+解决方案: 裁剪GMS包时是在对应的gms.mk中进行的,如下文件是必须要保留的. com.google.android.media.effects.jar \ google_generic_update.txt \ GmsCore \ GoogleLoginService \ GooglePartnerSetup \ GoogleServicesFramework \ Phonesky \ SetupWizard \ 备注:开机向导虽然也可以去掉,但是去掉开机向导由于可能导致初始化失败,导致一些不可预知的稳定性问题;所以也要求保留.
+参考FAQ: FAQ57540
+### 问题: 在彩信中预览某音频文件，为什么在播放时不显示播放时长？
+解决方案: 彩信中播放音频的时间是默认隐藏的,在点击界面空白处后该时间就会显示.
+参考FAQ: FAQ57546
+### 问题: Android上层应用如何唤醒屏幕
+解决方案: Android上层应用可使用以下代码唤醒屏幕: PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE); if(!pm.isScreenOn()) { pm.wakeUp(SystemClock.uptimeMillis()); }
+参考FAQ: FAQ57545
+### 问题: MOCOR如何调整长按按键的时间值？
+解决方案: MOCOR平台MMK在收到Key Down消息后会启动长按消息timer,如果timer到时未收到对于按键的up消息,则判断为长按消息.如果需要修改判断长按按键的时间值,可以修改MMI_KBD_LONG_KEY_VALUE(@mmi_theme.h)宏定义(默认为1500 ms)
+参考FAQ: FAQ57553
+### 问题: Android原生工程模式
+解决方案: 支持,可通过暗码*#*#4636#*#*进入.
+参考FAQ: FAQ57574
+### 问题: 如何查看Android应用使用情况
+解决方案: 通过暗码*#*#4636#*#*进入原生工程模式,点击"使用情况统计数据",可查看应用的使用次数和时间.
+参考FAQ: FAQ57575
+### 问题: 查看手机电池信息
+解决方案: 通过暗码*#*#4636#*#*进入原生工程模式,点击"电池信息",可查看当前电池状态、电量、电压、温度等信息.
+参考FAQ: FAQ57576
+### 问题: Q ：Warm Start TTFF的含义?
+解决方案: A : 接收机已知粗略的时间信息,位置误差在300km内,卫星的历书已知、星历未知的条件下的启动模式
+参考FAQ: FAQ58206
+### 问题: WCDMA校准中出现的DP的意思
+解决方案: DP就是Dynamic power, DP的实际操作就是给手机配置一个发射功率的控制字序列,使手机以固定step的方式发射,控制仪器一次测量完高增益到低增益所有功率.
+参考FAQ: FAQ57629
+### 问题: 在配置NV的时候，WCDMA_arm_RFGPIO_config这一项用于存放哪些参数？
+解决方案: A:WCDMA_arm_RFGPIO_config用于存放主路,辅路天线开关控制,以及PA的控制,包括PA的使能,增益模式控制等参数.
+参考FAQ: FAQ57644
+### 问题: 块设备有哪几种地址映射方式？
+解决方案: 文件系统层传递下来的地址参数为虚拟块号,而实际的块设备的读写单位是页.因此需要完成虚拟块与物理页之间的映射,映射方式有以下三种: 页映射:每一个逻辑页地址映射到一个物理页地址 块映射:块地址加偏移量的映射方式,偏移量即是页在块中的偏移 混合映射:由块映射发展而来,进一步对一些块内部的页进行映射
+参考FAQ: FAQ57641
+### 问题: 基于SC7731 pad平台如何配置hotplug sdcard？
+解决方案: SC7731 pad平台对于hotplug sdcard的功能基本支持的,关键是配置card detect,主要是以下修改: 1.CONFIG_HOTPLUG=y; 2. sdcrad detect GPIO设置,比如gpio71最为侦测脚,直接在工程对应的dts文件sdhci0: sdhci@f5117000 结构体里面,加一项:cd-gpios = <71>即可.
+参考FAQ: FAQ57640
+### 问题: 如何查看各个eMMC下载分区对应的块设备
+解决方案: adb shell cd dev/block/platform/sprd-sdhci.3/by-name ll 根据上面显示的信息,可以看出来各个分区和块设备之间的对应关系.
+参考FAQ: FAQ57642
+### 问题: 对于nand存储方案和eMMC存储方案，如何确定SD卡的设备路径？
+解决方案: 按照kernel下MMC设备的命名规则, nand存储方案SD卡对应的设备路径:"/dev/block/mmcblk0p1" eMMC存储方案SD卡对应的设备路径:"/dev/block/mmcblk1p1"
+参考FAQ: FAQ57649
+### 问题: 7731平台如何获取系统软件版本号？
+解决方案: 在开机状态下,可通过如下方法获取版本号:设置->关于手机->版本号 也可以通过如下方式获取: property_get("ro.build.display.id", buffer, "");
+参考FAQ: FAQ57650
+### 问题: 在配置NV的时候，WCDMA_CalibrationParam这一项用于存放哪些参数？
+解决方案: A:WCDMA_CalibrationParam用于存放手机校准之后的参数,包括AFC,AGC和APC参数.
+参考FAQ: FAQ57645
+### 问题: 在配置NV的时候，WCDMA_DownloadParam这一项用于存放哪些参数？
+解决方案: A:WCDMA_DownloadParam用于存放其他射频相关参数: transceiver端口配置定义,温补参数,电压补偿参数,时隙补偿参数,DC-DC设置参数,HDT设置参数,增益切换点设置参数,初始化寄存器参数等
+参考FAQ: FAQ57651
+### 问题: 7715平台出现u-boot-spl-16k.bin size over怎么办？
+解决方案: 这种问题一般是由客户chipram增加flash配置,导致超size,平台版本默认情况不会超标. 可以将sprd_nand_param_table中没有用到的nand配置去掉,节省空间以解决此问题
+参考FAQ: FAQ57666
+### 问题: Q ：TTFF（Time to First Fix）的含义?
+解决方案: A : 即GPS从启动开始到得到用户得到位置所花的时间.这是GPS接收机性能的一个重要指标.同样的启动模式,TTFF越小,则接收机的性能就越好. 接收机在没有位置、卫星星历和历书的条件下的启动模式.
+参考FAQ: FAQ58201
+### 问题: android4.4平台CMCC/CUCC/CTA/GCF送测时如何设置？
+解决方案: 开机输入暗码*#*#83781#*#*,进入DEBUG&LOG->Design For Test菜单,进行各项测试的具体设置.
+参考FAQ: FAQ57689
+### 问题: factorytest中某些不需要用户干预的测试项目显示测试结果后很快自动退出，如何延长结果显示时间？
+解决方案: 由于factorytest中有汇总所有测试结果的一项,而且factorytest设计时是考虑使每项测试尽快完成,所以如果某项测试不需要人工干预的话,测试完成后会很快退出.如果需要延长测试结果的显示时间,可以在测试程序中加入一定的延时. 例如sdcard测试,测试完成后会很快自动退出,如果想延长结果的显示时间,则可以修改以下代码: vendor/sprd/open-source/apps/factorytest/testitem/sdcard.c int test_sdcard_start(void) { ...... usleep(500*100); //请根据需要适当加长,参数单位us. return ret; }
+参考FAQ: FAQ57763
+### 问题: 如何客制化factorytest中的TP测试？
+解决方案: 1. 首先确保正常开机后TP能正常使用,否则要先调试好TP驱动. 2. 在factorytest源码中修改SPRD_TS_INPUT_DEV为TP注册的实际设备名称,如下: vendor\sprd\open-source\apps\factorytest\testitem\tp.c, #define SPRD_TS_INPUT_DEV "focaltech_ts"
+参考FAQ: FAQ57722
+### 问题: 7731平台如何查看ddr clk的值？
+解决方案: 确认7731平台DDR 频率,需要查看多个寄存器的值确认.具体步骤如下: 1、查看寄存器 使用adb或trace32等工具查看寄存器0x402E3074、0x402D0024的值. 2、计算DDR CLK的值 0x402E3074 的 bit31～bit12的值 为 y 0x402E3074 的 bit5～bit0的值 为 x 0x402D0024 的 bit9～bit8的值 为 z DDR_CLK = ( ( ( y*26/1048576 ) + ( x*26 ) ) / ( z+1 ) ) / 2 DDR_CLK 单位为MHz.
+参考FAQ: FAQ57732
+### 问题: SC7731是否支持FAST DORMANCY？
+解决方案: 支持,可以在工程模式下开启这个功能.默认这个功能是关闭的. 操作步骤: *#*#83781#*#* -> TELEPHONY ->Fast Dormancy 点击开关-》输入毫秒数,就可以打开并指定多少毫秒进入快速睡眠.
+参考FAQ: FAQ57741
+### 问题: 如何解决手机连到电脑ADB经常断掉并且手机进入待机后ADB就断掉了问题
+解决方案: 更新ADB工具可解决这个问题.
+参考FAQ: FAQ57768
+### 问题: 解决手机在上电的瞬间按键灯会亮一下的问题
+解决方案: 控制按键灯的GPIO口在手机reset后默认输出拉高,则会亮一下,这个无法通过软件解决,需要更改灯的GPIO控制口.
+参考FAQ: FAQ57792
+### 问题: 如何更改factorytest中测试界面的字符信息？
+解决方案: 如果需要客制化相关字串信息,可以在以下文件中修改: vendor/sprd/open-source/apps/factorytest/res/string_cn.h 例如要把"展讯工厂测试模式"修改为"XXXX工厂测试模式",则修改MENU_TITLE_ROOT宏对应字串即可. #define MENU_TITLE_ROOT " XXXX工厂测试模式 "
+参考FAQ: FAQ57790
+### 问题: SC7715/SC7731平台怎样获取对应的信号强度dbm和asu的值？
+解决方案: Android上信号强度定义了两种信号类型,dBm(1毫瓦的分贝数)和asu(alone signal unit 独立信号单元). 在我们SC7715/SC7731上获取这些信号强度可以通过PhoneStateIntentReceiver.java中的 public int getSignalStrengthDbm() public int getSignalStrengthLevelAsu() 来分别获取对应的dBm和asu的值. 对于GSM网络,他们之间的关系为: dBm = -113 + (2 * asu); 其他网络他们间的关系较复杂,具体可以参见frameworks\base\telephony\java\android\telephony\SignalStrength.java中的实现 .
+参考FAQ: FAQ57824
+### 问题: Android service 的生命周期有哪些?
+解决方案: Android service 的生命周期有分两种,正常启动与绑定启动. 正常启动: onCreate(), onStartCommand(), OnDestroy(); 绑定启动:onCreate(), onBind(), onUnBind(),OnDestroy().
+参考FAQ: FAQ57860
+### 问题: 如何默认打开短信发送报告？
+解决方案: /packages/apps/Mms/src/com/android/mms/transaction/SmsMessageSender.java中 将 public static final boolean DEFAULT_DELIVERY_REPORT_MODE = false; 改为 public static final boolean DEFAULT_DELIVERY_REPORT_MODE = true;
+参考FAQ: FAQ57877
+### 问题: SC7731 camera最大能支持多少像素？
+解决方案: 1) 不使用零延时拍照功能,2lane能支持1300W像素 2) 使用零延时拍照功能,2lane只能支持500W像素 3) 使用零延时拍照功能且想使用500W以上的camera,则通过增加一个MIPI切换开关来实现使用4lane
+参考FAQ: FAQ57970
+### 问题: 针对VCHG抗EOS，在PCB设计上，有什么需要注意的？
+解决方案: 充电电流通道应该直接连接到电池座
+参考FAQ: FAQ57971
+### 问题: PCB设计时，对于热处理，layout工程师需要注意哪些
+解决方案: 1.各发热器件之间应保持适当的距离,不能挨在一起造成热源集中 2.PCB的第N层建议为地层,尽量单面布局,地层可以考虑大面积亮铜,且铜厚最少为0.5Oz 3.发热器件下部尽量多打热孔,对于BGA封装,建议从表层打热过孔至N-1层,有焊盘类器件直接从焊盘打通孔至N层
+参考FAQ: FAQ57973
+### 问题: 用8960仪器连接手机查看IMEI号，为什么最后一位（第15位）变成了0
+解决方案: 1. 根据3GPP相关协议,IMEI号最后一位作为checked digit,都是以0的方式提交给网络 2. 正常情况下,仪器显示IMEI号时,仪器会自己算出最后一个check digit. 3. 而有些机器的版本比较老,最后一位不会计算补充,传什么就显示什么,因此显示0
+参考FAQ: FAQ57980
+### 问题: 针对VBAT抗EOS，在PCB设计上，有什么需要注意的？
+解决方案: 所有的VBAT走线都经过Zener diode后再给其他系统供电
+参考FAQ: FAQ57997
+### 问题: 睡眠后保持VDDSIM2供电的方法
+解决方案: 1. 进入deepsleeo后VDDSIM2关闭是因为u-boot中ldo_sleep.c中设了POWERDOWN ENABLE, 2. 因此找到相应位置注释掉POWERDOWN ENABLE就行了,如下 BIT_SLP_LDOSIM2_PD_EN | //注释掉此句
+参考FAQ: FAQ57999
+### 问题: CMCC测试 宽带互联网 TestCase6默认界面下表格显示不完整
+解决方案: 测试网页中,表格2框线显示不全. 原因是手机屏幕相对原始网页的尺寸较小,所以网页会缩小以适配屏幕, 而框线原本就非常细,缩小后显示的部分太小了以至看不见,这是由于手机支持缩放的原因, 对比其它小屏幕手机也有同样现象. 只要横屏,或者放大屏幕,或者设置网页以原始方式显示(修改设置/高级/以概览模式打开网页,去掉这个选项),都能正常显示, 可以符合移动的case要求.
+参考FAQ: FAQ58003
+### 问题: 播放MP4视频过程中来电，拒接后不能继续播放流媒体这是什么原因
+解决方案: mp4格式的视频,Google浏览器原生是支持直接播放的,所以不会调用媒体播放器, 浏览器播放视频的逻辑就是切换到后台恢复后,视频会处于暂停状态,需要手动播放, 这是浏览器的实现,不需要修改. 如果希望对mp4文件和rtsp文件做同样的处理, 可以修改mime_util.cc proprietary_media_types[] 去掉"video/mp4"这一项,这样对mp4格式视频的链接,点击后就会调用媒体播放器播放. 但这样修改后,浏览器就不会支持直接播放mp4视频了,功能的取舍这需要定制需求的人员做评估.
+参考FAQ: FAQ58012
+### 问题: 百度图片下载成功后提示2次，这是什么原因？
+解决方案: 如果抓取cap包,可以看到确实下载了2次, 在点击下载后百度服务器返回了两条下载地址,这样浏览器就会认为有两次下载请求, 而在其它网站上并没有这种情况发生,可疑认为这是目前百度服务器存在的问题.
+参考FAQ: FAQ58017
+### 问题: SC7731平台充电娟流450mA,如果长期在这个条件下使用，对电池寿命是否有影响？
+解决方案: 电池放电到3.2V时,就已经关机了,理论上用户几乎碰不到2.05～3.05V 450mA充电这个场景.而且现在电池电量都在1000mAH以上,450mA充电电流对电池来说并不大,不会影响电池寿命.
+参考FAQ: FAQ58070
+### 问题: GPIO LIST表。
+解决方案: 没写的代表at reset 状态和atf reset 状态是一样的.
+参考FAQ: FAQ58071
+### 问题: 如何解决OTA差分包升级失败的问题
+解决方案: spl image在用research download下载的过程中,会在前面字节填充maggic等数据,但是做包的过程并没有加上,所以差分包中有spl的差分的时候,就会出错.解决的措施就是OTA升级的时候不对uboot和spl升级.修改的代码是: --- a/tools/ota/releasetools.py +++ b/tools/ota/releasetools.py @@ -14,7 +14,7 @@ import edify_generator OPTIONS = common.OPTIONS OPTIONS.modem_update = True -OPTIONS.uboot_update = True +OPTIONS.uboot_update = False OPTIONS.wipe_product_info = False OPTIONS.cache_path = "/cache"
+参考FAQ: FAQ58078
+### 问题: 不修改nv，如何开关band1,8？
+解决方案: 测试RF时,有时需要固定band 通路,如开关1,8 AT命令如下: AT+SPFDDBAND=1,1,0 关掉 Band I 设置不支持 band 1 AT+SPFDDBAND=1,1,1 打开 Band I 设置支持 band 1 AT+SPFDDBAND=1,8,0 关掉 Band 8 设置不支持 band 8 AT+SPFDDBAND=1,8,1 打开 Band 8 设置支持 band 8
+参考FAQ: FAQ58106
+### 问题: 如何去掉邮箱的预制帐户，点击邮箱直接进入到账户设置界面？
+解决方案: 文件src/com/android/email/activity/UiUtilities.java: 将: public class UiUtilities { // SPRD: 247690, add account guide in UUI. public static final boolean UNIVERSEUI_SUPPORT = SystemProperties.getBoolean("universe_ui_support",false); 改成: public class UiUtilities { // SPRD: 247690, add account guide in UUI. public static final boolean UNIVERSEUI_SUPPORT = false; //即UNIVERSEUI_SUPPORT为true时有预置帐户功能,false则无.
+参考FAQ: FAQ58105
+### 问题: 从google商店下载WhatsApp提示版本不兼容,如何修改?
+解决方案: 把frameworks/native/data/etc 下面的 android.hardware.locations.gps.xml中的<feature name="android.hardware.location.network" />, android.hardware.locations.xml中的<feature name="android.hardware.location.network" />, handheld_core_hardware.xml中的<feature name="android.hardware.location.network" />和 <feature name="android.hardware.sensor.compass" />打开.
+参考FAQ: FAQ58116
+### 问题: Mocor SC7701 蓝牙芯片相关宏说明
+解决方案: SC7701支持客制化蓝牙芯片,其中BT_CHIP 表明蓝牙芯片宏,默认软件配置宏为BT_CHIP = BEKEN .如果蓝牙芯片不是BEKEN的,请一定要修改此宏.
+参考FAQ: FAQ58127
+### 问题: 在设置壁纸时有时会弹出启动器停止运行原因分析
+解决方案: 如果发现是这个错误: E AndroidRuntime: Caused by: java.lang.SecurityException: Uid 10011 does not have permission to uri content://com.android.providers.media.documents/document/image 说明是启动器权限不够,需要在AndroidManifest.xml 里面添加: + <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+参考FAQ: FAQ58132
+### 问题: Mocor SC7701更换蓝牙芯片时蓝牙应用注意事项
+解决方案: 蓝牙应用文件(\mmi_app\app\bt)存在蓝牙芯片宏BT_CHIP_BEKEN控制应用代码,SC7701更换其他蓝牙芯片后,需要在蓝牙应用有BT_CHIP_BEKEN代码处,添加其他蓝牙芯片宏.
+参考FAQ: FAQ58129
+### 问题: Mocor如何获取当前系统的输入语言？
+解决方案: 如果需要获取当前系统的输入语言设置,可以使用函数MMIAPIIM_GetLanguage来实现.
+参考FAQ: FAQ58160
+### 问题: Mocor如何获取系统当前默认的输入类型？
+解决方案: 如果需要获取系统当前默认的输入类型,可以通过函数MMIIM_GetKeyBoardType来实现.
+参考FAQ: FAQ58161
+### 问题: 如何内置widevine?
+解决方案: Widevine是google在ICS版本上新推出的一种DRM数字版权管理功能,有这个功能的话,就能从google指定的服务器上,下载经过google加密的版权文件,例如视频、应用等等. 将下载下来的Widevine内置在/vendor/widevine/下:把其中的libwvdrmengine 和proprietary 文件夹放到/vendor/widevine/ 下面进行全编.
+参考FAQ: FAQ58163
+### 问题: Mocor虚拟键盘大小共有哪些类型？
+解决方案: 虚拟键盘大小共有如下类型: typedef enum { MMIIM_KEYBOARD_SIZE_BIG, MMIIM_KEYBOARD_SIZE_NORMAL, MMIIM_KEYBOARD_SIZE_SMALL, MMIIM_KEYBOARD_SIZE_MAX } MMIIM_KEYBOARD_SIZE_T;
+参考FAQ: FAQ58167
+### 问题: Mocor如何根据语言类型获取对应的语言字符串？
+解决方案: 如果需要获取某种语言类型对应的语言字符串,比如需要获取英语(MMISET_LANGUEGE_ENGLISH)对应的字符串"English",可以使用函数MMIAPISET_GetInputLanguageString来实现.
+参考FAQ: FAQ58168
+### 问题: 设置->安全->“未知来源”，如何修改为默认开启？
+解决方案: 修改方法如下: \frameworks\base\packages\settingsprovider\res\values\Defaults.xml 中, def_install_non_market_apps改为true即可. 默认设置成false是关闭的.
+参考FAQ: FAQ58192
+### 问题: MOCOR MMK timer最大支持数目是多少？
+解决方案: MOCOR MMK timer最大支持32个,可参考宏MMK_MAX_TIMER_NUM定义. 注意: 此宏不建议修改,如果出现timer超过最大限制死机,建议检查是否有timer未正常关闭.
+参考FAQ: FAQ58196
+### 问题: 蓝牙耳机通话噪音问题座机端
+解决方案: 1、检查座机网络是否正常,有些网络差的座机,拿起电话就有很大电流声; 2、如果座机正常,检查:vendor\sprd\open-source\libs\audio\at_commands_generic.c这个文件 更改回音消除: if (adev->bluetooth_nrec) { at_cmd = "AT+SSAM=5"; } else { at_cmd = "AT+SSAM=6"; }
+参考FAQ: FAQ58235
+### 问题: 蓝牙耳机的声道模式
+解决方案: 声道模式 Mono 单声道 Dual Channel 双声道 Stereo 立体声 Joint Stereo 联合立体声
+参考FAQ: FAQ58237
+### 问题: 蓝牙耳机通话音频的编码方式
+解决方案: 1、64kbps电信级语言质量音频流 2、CVSD continuous variable slope delta 连续可变斜率增量. 3、PCM pulse code modulation .PCM存在斜率效应.CVSD使用音节压缩算法,编码步长根据信号斜率变化自动调整,是现在比较好的编码方案,提高语言的抗干扰能力.
+参考FAQ: FAQ58242
+### 问题: RFCOMM帧类类型
+解决方案: RFCOMM帧类型如下: SABM 异步平衡模式设置指令 UA 未加编号的确认响应 DM 断开连接模式响应 DISC 断开连接指令 UIH 带头校验的未编号信息命令和响应
+参考FAQ: FAQ58245
+### 问题: 分析唤醒慢，启动慢问题时loglevel设置注意事项
+解决方案: 分析唤醒慢,启动慢问题时loglevel的设置一定要设成1.设置成7会有大量kernel串口log输出,影响CPU性能.找到 u-boot/include/configs/XXX.h文件,将里面的loglevel=7改成loglevel=1再编译uboot.bin.
+参考FAQ: FAQ58239
+### 问题: MOCOR如何在打包文件名上添加项目名和项目版本信息？
+解决方案: 可按如下方式修改(以SC7701为例,比如生成pac名字为:sc7701_128X160BAR_32MB_384K_CUSTOMER01_V_0_1.pac): 1、主mk工程的名字命名为sc7701_128X160BAR_32MB_384K_CUSTOMER01_V_0_1.mk 2、主mk中PRODUCT_BASELIB_DIR,将其指向工程lib(如IDH默认使用的是sc7701_128X160BAR_32MB_384K下库文件,修改为PRODUCT_BASELIB_DIR = sc7701_128X160BAR_32MB_384K)
+参考FAQ: FAQ58257
+### 问题: MOCOR是否支持工程模式查询SN号？
+解决方案: 支持,可通过"####2222#"指令查看SN号
+参考FAQ: FAQ58308

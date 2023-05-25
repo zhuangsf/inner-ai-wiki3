@@ -1,0 +1,306 @@
+### 问题: 7715项目 如何确认背光亮度值?
+解决方案: 客户经常反馈一些功耗异常问题,如通话亮屏功耗大, 播放mp4亮屏功耗大问题, 此时可以先对比展讯参考机及客户机器的默认屏幕亮度值,来确认是否亮度不一导致. 方法: userdubug版本上 adb root adb shell cat /sys/devices/platform/sprd_backlight/backlight/sprd_backlight/brightness 对比打印出来的值.
+参考FAQ: FAQ36559
+### 问题: 为什么升级新协议栈的版本后出现模拟器无法接打电话而手机拨打电话正常？
+解决方案: 因为 \MS_Code\MSL\l4\inc\mn_events.h 中增加 EV_MN_APP_CALLING_NAME_IND_F 新的一种Msg type导致. 对应的 MS_Code\MS_MMI_Main\source\winsimulator_tp\win_platform\bin\ 模拟器控制相关的lib文件和dll和控制台相关的文件也需要做相关调整,保持消息通知一致性,否则会出现问题.但调整模拟器系列文件意义不大,只需要做好对应的模拟器宏控就可以了. 修改: \MS_Code\MSL\l4\inc\mn_events.h EV_MN_APP_ECT_INVOKE_IND_F, #ifndef WIN32 // add for simulator not use this IND EV_MN_APP_CALLING_NAME_IND_F, #endif EV_MN_APP_FORWARD_STATUS_IND_F,
+参考FAQ: FAQ36568
+### 问题: 为何开机后在T卡中会发现一个cachedisk文件
+解决方案: 针对7715ga项目. cache_to_sd功能,主要针对海外客户. 这个功能的由来是海外要求装GMS包,其中有一个google服务,对cache的大小有一定的要求,否则应用无法下载安装.ga工程配的cache空间比较小,只有几M.所以才做了cache_to_sd这个功能. 这个功能的意思就是说把sd卡上划分一部分空间(也就是文件cachedisk),挂载到cache目录,这样cache空间就会比较大了,从而满足了google服务的要求了. 如果不需要这个功能,可以通过修改scx15_sp7715ga/system.prop中的 persist.sys.mount2sd_enable = true改成false就行了.
+参考FAQ: FAQ36573
+### 问题: 如何隐藏T卡中的cachedisk文件？
+解决方案: cache_to_sd功能,会在T卡中创建一个cachedisk文件,但用户有可能在不知情的时候误删此文件. 先可以通过隐藏此文件的方法防止误删. 修改方法:文件vendor/sprd/open-source/tools/mkcached/mkcached.sh中的所有cachedisk都改为.cachedisk 备注:cache to sd功能见FAQ36573
+参考FAQ: FAQ36576
+### 问题: 在内卡和data共用空间的前提下，如何修改data预留的空间大小？
+解决方案: 在data和内卡共用空间的前提下,在使用内卡的时候容易把data空间填满,这样会引起手机异常. 基于此data需要预留一部分空间,这部分空间只能给data使用,内卡无法使用. 具体修改方案:在产品配置文件中(如scx15_sc7715eaplus.mk)添加persist.sys.data_reserved=20.其中20就表示20M,这个大小可以根据需要指定.
+参考FAQ: FAQ36577
+### 问题: 为何设置->存储中的内部存储空间没有图片，音频，视频这些选项，而sd卡有这些选项？
+解决方案: 手机的中的内部存储空间指的就是data空间.目前data中的数据没有办法统计图片,音频,视频这些选项的. 而sd卡中的这些选项是通过mediaprovider数据库获取的,故能够正常显示出来.
+参考FAQ: FAQ36579
+### 问题: 如何手机USB连接电脑的时候默认选中MTP模式？
+解决方案: 1、修改产品配置文件(如scx15_sp7715eaplus.mk)中的persist.sys.usb.config=mass_storage改成persist.sys.usb.config=mtp. 2、修改SprdUsbReceiver.java文件 mUsbManager.setCurrentFunction( - UsbManager.USB_FUNCTION_MASS_STORAGE, false); + UsbManager.USB_FUNCTION_MTP, false); Settings.Global.putInt(context.getContentResolver(), - Settings.Global.USB_CURRENT_FUNCTION, 0); + Settings.Global.USB_CURRENT_FUNCTION, 5); }
+参考FAQ: FAQ36580
+### 问题: 为何使用MTP功能在pc端显示的空间是会比T卡本身空间少一点？
+解决方案: 因为在代码中针对MTP功能做了预留空间. 这个预留的值是可以改变的.可以通过修改文件storage_list.xml.其中mountPoint="/storage/sdcard0"表示的是T卡,android:storageDescription="@string/storage_internal"表示的内部存储. android:mtpReserve="100"表示的MTP功能预留了100M.可通过修改这个值来改变预留的值.但是不建议修改太小,如果修改太小会导致data容易填满而导致异常.
+参考FAQ: FAQ36583
+### 问题: android4.4 如何去除系统语言跟随sim卡地区变换功能？
+解决方案: 如果想去除 系统语言跟随sim卡地区变换的功能按照如下方法修改 frameworks/opt/telephony/src/java/com/android/internal/telephony/MccTable.java文件中 updateMccMncConfiguration()函数 注释 locale = getLocaleFromMcc(context, mcc); 或注释掉 if (locale != null) {中如下两句 config.setLocale(locale); updateConfig = true;
+参考FAQ: FAQ36600
+### 问题: 如何判断来电自动接听是打开工程模式中选项导致
+解决方案: 可以在android log中查找AutoAnswerReceiver或者AutoAnswerService关键字.因为此选项如果没被勾选是不会启动相关service的.
+参考FAQ: FAQ36606
+### 问题: 基于L2CAP层蓝牙协议链路建立流程
+解决方案: 基于L2CAP层蓝牙协议链路建立流程请见下图:
+参考FAQ: FAQ36611
+### 问题: 几种ION支持的内存分配机制
+解决方案: ION支持的内存分配机制种类由ion_heap_type定义. 具体如下: ION_HEAP_TYPE_SYSTEM:memory allocated via vmalloc ION_HEAP_TYPE_SYSTEM_CONTIG:memory allocated via kmalloc ION_HEAP_TYPE_CARVEOUT:memory allocated from a prereserved carveout heap, allocations are physically contiguous ION_HEAP_TYPE_DMA:memory allocated via DMA API ION_HEAP_TYPE_CUSTOM: custom defined.
+参考FAQ: FAQ36655
+### 问题: SDP链路建立流程
+解决方案: RFCOMM链路建立流程如下图所示:
+参考FAQ: FAQ36661
+### 问题: OBEX session建立流程
+解决方案: OBEX session建立流程如下图所示:
+参考FAQ: FAQ36654
+### 问题: 解读图像传感器（Image Sensor）参数与相机成像效果关系
+解决方案: 图像传感器成像性能主要可以通过以下几项来评价: 1.有效像素数(active array size),即分辨率 此项参数值越高越好,如同类芯片中分辨率为5百万的普遍比2百万成像效果更清晰,细节更丰富. 2.信噪比(SNR) 信噪比越大,则相同条件下成像噪点越少,成像品质越高 3.动态范围(dynamic range) 动态范围越大则可以同时表现出来的明暗细节更多.举例来说,室内对着明亮的窗口拍照,高动态范围的传感器芯片可以将室内及窗外的景象同时清晰呈现出来,而低动态范围传感器芯片则只能看到窗口一片白,室内则全黑. 4.灵敏度(sensitivity) 这一参数越大,则表明sensor的光电转换效率越高,则同等环境亮度情况下,可以以更快时间获得目标亮度图像,实现高帧率,高成像画质.同时具有高灵敏度的传感器芯片与低灵敏度芯片相比,在低光下更容易获得较好成像.
+参考FAQ: FAQ38980
+### 问题: Contacts中判断是电话还是平板布局的依据是什么
+解决方案: android系统会根据设备的最小边、像素密度来计算一个参数,如果这个参数<600,则使用默认的布局;反之则使用平板布局.但是在各个应用的代码中还需要判断以执行不同流程,如Contacts中提供方法PhoneCapabilityTester.isUsingTwoPanes(Context来判断),这里使用的依据是资源config.xml文件中config_use_two_panes项的布尔值,在小尺寸设备中这个值是false,而在大尺寸中的值是true
+参考FAQ: FAQ36670
+### 问题: android4.4 是否支持自动重拨功能
+解决方案: android4.4 不支持自动重拨. code中的Settings.Global.CALL_AUTO_RETRY是CDMA的属性,不能直接使用.
+参考FAQ: FAQ36684
+### 问题: android4.4 为什么使用ITelephony接口，有时会无效？
+解决方案: android4.4 ITelephony中部分接口需要验证权限,如果权限验证不通过,会无效. 例如: 使用cancelMissedCallsNotification消除未接来电图标,需要添加android.Manifest.permission.MODIFY_PHONE_STATE权限.
+参考FAQ: FAQ36691
+### 问题: 如何扩展输入法应用中的符号输入？
+解决方案: 在输入法应用中,如果使用窗口MMIIM_SP_SYMB_WIN_TAB进行符号输入,在这种情况下扩展符号输入,可以通过扩展数组symb_cfg中某种符号类型对应的符号表来实现.
+参考FAQ: FAQ36713
+### 问题: 蓝牙发送文件，进度条至100%后没有停止，数值继续上升，为什么？
+解决方案: 这种情况一般是测试人员发送一个正在增长的log文件导致. 进度条的百分比有两个属性进行控制: mTransInfo.mCurrentBytes 与 mTransInfo.mTotalBytes 而这两个属性从obex中拿到.mTotalBytes是在开始就要确定好的. 但是现在是正在传输一个log文件,此时该文件一直在增加,也就是说mCurrentBytes一直在增加,最终会超过mTotalBytes的大小. 所以会造成该现象.
+参考FAQ: FAQ38330
+### 问题: 为什么 SR3131 上 WCDMA BAND8 可以与 GSM900  共用接收通路
+解决方案: 为什么 SR3131 WCDMA BAND8 可以与 GSM900 共用接收通路. 一、从频率的角度来看: 二者几乎重合. Downlink(Mhz) Uplink(Mhz) WCDMA BAND8 927.4 957.6 882.4 912.6 GSM(EGSM)900 925 960 880 915 二、从成本经济考虑: 此时GSM900 RX 通过 BNAD8 Duplexer实现RX滤波,可以节省GSM900 Saw filter. 三、其它方面 可以类推:WCDMA BAND5 与 GSM850 ,也可以共用接收通路.
+参考FAQ: FAQ36711
+### 问题: 如何在输入法应用中避免因按键复用引起的功能之间的相互干涉？
+解决方案: 在输入法应用中进行按键功能扩展时,通常会将按键进行复用,即在一个按键下触发两个功能. 比如在Mutitap输入法模式下,需要只使用*键一个按键去同时支持"字母输入"和"弹出符号输入窗口"两种功能, 此时如果将"字母输入"功能和"弹出符号输入窗口"功能分别放到MMIIM_SP_MSG_KEY_PRESS和MMIIM_SP_MSG_KEY_LONG_PRESS下来触发,因消息顺序会首先上报MMIIM_SP_MSG_KEY_PRESS,然后再上报MMIIM_SP_MSG_KEY_LONG_PRESS,这样功能之间就会相互干涉. 为了避免这种情况,可以将这两个功能分别放到MMIIM_SP_MSG_KEY_LONG_PRESS和MMIIM_SP_MSG_KEY_RELEASE下来触发.
+参考FAQ: FAQ36719
+### 问题: 保存编辑好的图片后，原图没有了吗？
+解决方案: 如果你编辑一张图片xx/local02.jpg,保存后,原来的图片将会移动到当前目录下的xx/.aux/local02.jpg.需要在文件浏览器中打开'隐藏文件显示'才能从文件浏览器中浏览显示,而图库是不读取这类可隐藏文件,显示不出来.
+参考FAQ: FAQ36728
+### 问题: 7715 Android4.4如何修改PLMN参数？
+解决方案: 获取运营商的PLMN参数后,在下面文件中进行修改: vendor\sprd\operator\cucc\specA\res\apn\apns-conf.xml 为cucc的apn参数配置文件, vendor\sprd\open-source\res\apn\apns-conf.xml 为非cucc如cmcc的apn参数配置文件. 为了保持一致最好两个都一起改,如果有些项没有,就不用配置.
+参考FAQ: FAQ36731
+### 问题: 7715 多次切换墙纸后launcher会异常停止
+解决方案: 多次横竖切换墙纸后,launcher会异常停止,查看log都有下面提示: android.graphics.BitmapFactory.nativeDecodeAsset及 java.lang.OutOfMemoryError. 分析原因:Dalvik虚拟机会为应用程序分配固定大小的heap ,如果使用超过了这个heap的大小,且没有可被回收对象,就会报oom.此处由于多张较大图片墙纸切换,即会迅速占用内存空间而造成oom. 解决: 1).将图片减小,这样在点击选中墙纸的时候,基本没有出现异常停止 2).在选择墙纸界面,不让其旋转,进行规避.
+参考FAQ: FAQ36741
+### 问题: 如何调整字符串显示时字符之间的间距大小？
+解决方案: 在字符串显示时,通常会基于显示效果的考虑,需要增加或减小字符之间的间距,如果要控制这个间距,可以通过调整绘制字符串接口GUISTR_DrawTextToLCDInRect中的style_ptr.char_space来实现.
+参考FAQ: FAQ36730
+### 问题: 将T卡卸载后，为什么无法接收蓝牙文件？
+解决方案: 此方案不支持卸载外置SD卡后挂载内置存储空间功能,所以会出现卸载SD卡后不能接收文件的情况.且卸载SD卡的操作属于用户行为,不能接收文件会有提示没有SD卡的提示
+参考FAQ: FAQ38323
+### 问题: android4.4如何用工具抓取audio memory
+解决方案: 1.进入CHANNELSERVER工具,选择type为uart,port选为SPRD DIAG,winsocket server的port选为36666. 2.进入Logel_for_TD工具,close dll, 进入IP Setting配置type为Channel Server,address为127.0.0.1,port为36666,然后点击connect和logging,然后在at命令窗口输入"at+spdsp=65535,0,0,4096",当返回ok时表明已经配置成功并开始抓取log, 3.进入DSPLOGGER,然后进入setting配置选择Socket IP address,Baud Rate为20000,Port为36666,点击connect,然后点击start logging test points,此时开始抓取log. 4.测试结束后选择save all,在dsp log文件夹下有.mem文件,此文件即为audio memory文件.
+参考FAQ: FAQ36694
+### 问题: [SC7715]分辨率为720P的MPEG4视频，播放时卡顿的原因分析
+解决方案: 特殊视频播放时出现卡顿现象,通常和视频源的分辨率,帧率及比特率有关,目前SC7715所支持的MPEG4视频,播放时所支持的最大分辨率是720P,最大帧率是30fps,最大比特率是20Mbps,如果播放一个720P的MPEG-4视频,其帧率超过30fps,视频解码器会尽量去解码播放,由于其帧率超过了最大支持范围其分辨率也达到了最大支持范围,所以播放时会出现卡顿的现象,比如如下视频的帧率是59.94fps,就远远超过3ofps,因此播放时会出现视频卡顿的现象.
+参考FAQ: FAQ36835
+### 问题: android 预加载drawable资源在什么地方定义
+解决方案: 在源码的frameworks/base/core/res/res/values/arrays.xml中,可以看到有名为"preloaded_drawables"的项,它列出的是Android在启动时预加载的图形资源.这样在某个应用程序需要这些图形资源时就不必再加载了.但是这样有一个显而易见的弊端:这些资源会占据更多内存空间.
+参考FAQ: FAQ36784
+### 问题: crash中如何查看某个进程运行时间
+解决方案: 在crash中加载vmlinux和dump后,可使用ps -t命令查看某个进程运行时间信息 例如: crash32> ps -t zygote PID: 155 TASK: d889f700 CPU: 1 COMMAND: "zygote" RUN TIME: 00:28:56 START TIME: 12 UTIME: 242 STIME: 1048
+参考FAQ: FAQ36810
+### 问题: 如何临时关闭ZRAM功能
+解决方案: 如果想要临时关闭下ZRAM分区,可按如下方法: 1. root权限adb shell登录系统 2. 找到zram设备文件 # ls /dev/block/ 有/dev/block/zram0 3. # swapoff /dev/block/zram0 4. 通过cat /proc/meminfo 信息来确认 如果如下两项为0,说明zram已被关闭 SwapTotal: 0 kB SwapFree: 0 kB
+参考FAQ: FAQ36783
+### 问题: 如何禁用ZRAM功能
+解决方案: 可以通过如下方法,在产品中禁用ZRAM功能. 1 ./kernel/arch/arm/configs/<产品对应的defconfig> 文件 将 CONFIG_ZRAM=y 改为 # CONFIG_ZRAM is not set 2 ./device/sprd/<产品对应的路径>/system.prop 文件 将 ro.config.zram.support=true 改为 ro.config.zram.support=false 加载重新编译后的系统镜像后,ZRAM将被禁用.
+参考FAQ: FAQ36800
+### 问题: crash中如何查看某个dentry的具体信息
+解决方案: 在crash中加载vmlinux和dump后,可使用files -d命令查看某个dentry的具体信息 例如: crash32> files -d d92dd4b8 DENTRY INODE SUPERBLK TYPE PATH d92dd4b8 d8c4c488 da161300 CHR /dev/slog_wcn
+参考FAQ: FAQ36806
+### 问题: crash中如何查看某个进程组信息
+解决方案: 在crash中加载vmlinux和dump后,可使用ps -g命令查看某进程组的信息 例如: crash32> ps -g zygote PID: 155 TASK: d889f700 CPU: 1 COMMAND: "zygote" PID: 9919 TASK: c2ff3200 CPU: 2 COMMAND: "ReferenceQueueD" PID: 9920 TASK: c2ff1900 CPU: 2 COMMAND: "FinalizerDaemon" PID: 9921 TASK: c47c4a00 CPU: 2 COMMAND: "FinalizerWatchd"
+参考FAQ: FAQ36808
+### 问题: crash中如何查看内核线程信息
+解决方案: 在crash中加载vmlinux和dump后,可使用ps -k命令查看内核线程信息 例如: crash32> ps -k PID PPID CPU TASK ST %MEM VSZ RSS COMM 0 0 0 c09e1bf0 RU 0.0 0 0 [swapper/0] 0 0 1 db85d900 RU 0.0 0 0 [swapper/1] > 0 0 2 db85de00 RU 0.0 0 0 [swapper/2] > 0 0 3 dba60000 RU 0.0 0 0 [swapper/3] 2 0 1 db85f700 IN 0.0 0 0 [kthreadd] 3 2 0 db85c500 IN 0.0 0 0 [ksoftirqd/0] 5 2 0 db85ca00 IN 0.0 0 0 [kworker/0:0H] 7 2 0 db85cf00 IN 0.0 0 0 [migration/0] ...
+参考FAQ: FAQ36820
+### 问题: SC7731有几组SIM接口？
+解决方案: 有三组,SIM0,SIM1,SIM2.
+参考FAQ: FAQ36817
+### 问题: crash中如何查看用户进程信息
+解决方案: 在crash中加载vmlinux和dump后,可使用ps -u命令查看用户进程信息 例如: crash32> ps -u PID PPID CPU TASK ST %MEM VSZ RSS COMM 1 0 0 db85c000 IN 0.1 692 364 init 119 1 0 da071e00 IN 0.0 608 180 ueventd 145 1 2 d8c45e00 IN 0.0 1432 108 healthd 146 1 1 d8c46d00 IN 0.0 1012 188 servicemanager 147 1 1 d8c45900 IN 0.0 4684 124 vold ...
+参考FAQ: FAQ36821
+### 问题: 7731支持多少位LPDDR2？
+解决方案: 支持32bit LPDDR2
+参考FAQ: FAQ36841
+### 问题: 7731上VDDEMMCCORE与VDDEMMCIO有什么区别？
+解决方案: VDDEMMCCORE is for EMMC controller only. VDDEMMCIO both for SC7731 and EMMC
+参考FAQ: FAQ36833
+### 问题: 7731支持几个data lane的MIPI屏？
+解决方案: 支持2,3,4 mipi data lane(2lane 使用lane0,lane1;3lane使用lane0,lane1,lane2)
+参考FAQ: FAQ36844
+### 问题: 如何彩信大小限制值——300K？
+解决方案: 国内运营商支持的彩信大小通常为300k,但海外运营商支持的彩信大小超过此值(如600K),如何对应修改彩信大小限制值? 修改MmsConfig.java值 mMaxMessageSize = 600 * 1024 maxTDDownloadLimit = 600 * 1024 修改mms_config.xml值 <int name="maxMessageSize">614400</int> <int name="maxTDDownloadLimit">614400</int>
+参考FAQ: FAQ38404
+### 问题: 关于提性能方面问题的建议
+解决方案: 在cq中经常会提一些性能方面的问题.如monkey测试完后使用音量键变化慢. 或者进入某个应用花费时间长等问题.诸如此类问题,建议在出现这些问题时 除了提交log外,最好提供一下出问题时的视频,这样能很快定位出问题时的具体 时间点.加快定位问题的速度.
+参考FAQ: FAQ38410
+### 问题: 长短信到达几条时会自动转换彩信？
+解决方案: 长短信到达几条时会自动转换彩信? 查看MmsConfig.java中对mSmsToMmsTextThreshold的注释可追溯到mms_config.xml <int name="smsToMmsTextThreshold">10</int> 到达10条短信后,再增加文字至 > 10条,则自动转换为彩信. 此值可做适当更改
+参考FAQ: FAQ38408
+### 问题: 如何获取lcd的显示宽度和高度
+解决方案: 获取lcd的显示宽度和高度的关键代码如下,大家可以参考videoview.java中的initVideoView()方法. Display display = ((WindowManager) mContext.getSystemService(Context. WINDOW_SERVICE)).getDefaultDisplay(); mWinWidth = display.getWidth(); mWinHeight = display.getHeight(); 例如,如果lcd的分辨率是480×854的, 那么竖屏时,获取的mWinWidth=480,mWinHeight=854; 那么横屏时,获取的mWinWidth=854,mWinHeight=480;
+参考FAQ: FAQ36845
+### 问题: 前摄像头预览拉伸
+解决方案: 这个问题的本质是有两种: 1 如果是显示的角度没问题,而拉伸特别厉害,那是camera打样有问题,那需要打开TARGET_BOARD_FRONT_CAMERA_ROTATION := true,然后再去调角度,在如下结构体里面调试: const CameraInfo SprdCameraHardware::kCameraInfo[] = { { CAMERA_FACING_BACK, 90,/*orientation*/ }, #ifndef CONFIG_DCAM_SENSOR_NO_FRONT_SUPPORT { CAMERA_FACING_FRONT, 270,/*orientation*/ }, #endif }; 2 如果是显示的角度没问题,而拉伸不怎么厉害,一般检查是否是是图像在preview的比例跟在屏上显示的比例不一致所导致的,需要将它们的比例修改一致,主要是修改屏上显示的大小让其跟cmos输出的比例一致.
+参考FAQ: FAQ36916
+### 问题: 短信状态报告不带“+”号
+解决方案: 网络返回给l4层的状态报告是否带+号,取决于发送短信时收件人是否有"+"号.比如: 发送短信时收件人为13812345678,返回的状态报告号码就是13812345678,存储在号码中. 发送短信时收件人为+8613812345678,返回的状态报告号码就是+8613812345678.其中+号存储在号码类型中,8613812345678存储在号码中.
+参考FAQ: FAQ36963
+### 问题: 开启蓝牙重启手机，wifi已经打开但为什么蓝牙没有被打开，而是过一段时间才被打开？
+解决方案: 蓝牙与wifi不同,wifi的开机启动是在SytemServer中加载系统服务后,便将wifi开启.是随系统一起开启 android 4.4 蓝牙架构有所变化 蓝牙的开机启动是由于收到了系统发的ACTION_BOOT_COMPLETED,进而启动了蓝牙. 也就是说蓝牙启动是在系统开机完成之后,才将蓝牙开启 这样做的好处是不与系统在同一时间争抢资源,缩短开机时间,
+参考FAQ: FAQ38317
+### 问题: 如何修改电话本支持加载的SIM卡联系人总个数
+解决方案: USIM卡可以支持500个或者更多的联系人存储.在平台中,电话本加载的SIM卡联系人总个数和宏MMIPB_SIM_MAX_RECORD_NUM的值有关.可以通过修改该宏的值来控制最多加载的SIM卡联系人个数,修改后会影响到电话本模块对RAM的消耗.
+参考FAQ: FAQ36964
+### 问题: 彩信Anonymous send(匿名发送)功能
+解决方案: Anonymous send(匿名发送):是指发送彩信时是否匿名发送.该功能需要服务端支持. 彩信设置中,勾选匿名发送后,如果彩信服务端支持,那么对端接收到的信息发件人名称会根据彩信服务端的设置进行显示.如果设置前后对端接收到的收件人姓名或号码没有变化,说明彩信服务端不支持匿名发送.
+参考FAQ: FAQ36965
+### 问题: 彩信Advertisement（接收广告）功能
+解决方案: Advertisement(接收广告):是指设置终端是否支持接收广告彩信.该功能需要服务端支持. 当接收到彩信的message_class_value为0x81时,即代表该条信息为广告信息.假设终端拒绝接收广告彩信,那么这条信息就不会被接收;如果设置为允许,那么这条信息就会被接收.
+参考FAQ: FAQ36966
+### 问题: FragmentTransaction的commit()方法与commitAllowingStateLoss()方法的区别
+解决方案: commit方法会对执行操作fragment所在activity状态进行检查,如果activity处于执行onSaveInstanceState保存状态阶段之后,那么调用commit方法会抛异常,因为在activity保存状态后commit会丢失,一般建议不要在这个阶段做commit操作.如果一定要commit,可以调用commitAllowingStateLoss方法,该方法不会检查activity状态,因此在保存状态时不会抛异常,但是很可能会由于提交丢失造成ui显示与预期有差别
+参考FAQ: FAQ36951
+### 问题: 工程模式下的充电单项测试不能一直实时刷新电压、电流值的情况说明
+解决方案: 目前平台设计就这样不能实时获取电压、电流值, 工程模式下充电测试,主要用于验证充电器插入能充电,有显示电压电流等信息,能代表充电正常即可.
+参考FAQ: FAQ36976
+### 问题: SC7715 USB DP和USB DM两信号之间预留一个电容位置的作用？
+解决方案: SC7715 USB DP和USB DM电容后续调试USB眼图.
+参考FAQ: FAQ37590
+### 问题: atexit()函数的使用
+解决方案: atexit()函数是用来注册程序正常终止时要被调用的函数. atexit()函数的参数是一个函数指针,函数指针指向一个没有参数也没有返回值的函数.atexit()的函数原型是:int atexit(void(*)(void)); 在一个程序中最多可以用atexit()注册32个处理函数,这些处理函数的调用顺序与其注册的顺序相反,即最先注册的最后调用,最后注册的最先调用. Unix环境中,8种进程结束方式: 常用的五种方式: 1、从main函数返回; 2、调用exit函数(会关闭数据流,进行一些处理后再调用内核函数); 3、调用_exit函数或者是_Exit函数(直接调用内核函数); 4、从最后一个线程中返回; 5、从最后一个线程中调用pthread_exit; 三种非正常的结束方式: 1、调用abort; 2、接收到信号; 3、应答最后一个线程的取消请求.
+参考FAQ: FAQ36946
+### 问题: 功能机是否支持短信MOVE和COPY功能
+解决方案: 平台支持短信在手机与sim之间的move、copy功能,需在Mk中开启相关宏: #短信复制功能 MCFLAG_OPT += -DMMI_SMS_COPY_SUPPORT #短信移动功能 MCFLAG_OPT += -DMMI_SMS_MOVE_SUPPORT
+参考FAQ: FAQ37004
+### 问题: 蓝牙与低功耗蓝牙功耗等常用数据信息对比表
+解决方案: 技术规范 蓝牙(2.1 &3.0) 低功耗蓝牙(4.0) 无线电频率 2.4GHz 2.4GHz 距离 10米/100米 30米 数据速率 1-3Mbps 1Mbps 应用吞吐量 0.7-2.1Mbps 0.2Mbps 发送数据的总时间 100ms <6ms 耗电量 1 0.01至0.5 最大操作电流 <30mA <15mA(最高运行时为15 mA) 主要用途 手机,游戏机,耳机,立体声音频流,汽车和PC等 手机,游戏机,PC,表,体育和健身,医疗保健,汽车,家用电子,自动化和工业等
+参考FAQ: FAQ37016
+### 问题: 蓝牙协议堆栈的系统构成
+解决方案: 1、无线射频单元(Radio):负责数据和语音的发送和接收,特点是短距离、低功耗.蓝牙天线一般体积小、重量轻,属于微带天线. 2、基带或链路控制单元(LinkController):进行射频信号与数字或语音信号的相互转化,实现基带协议和其它的底层连接规程. 3、链路管理单元(LinkManager):负责管理蓝牙设备之间的通信,实现链路的建立、验证、链路配置等操作. 4、蓝牙软件协议实现:如上图紫色部分,协议栈软件实现部分.如L2CAP、RFCOMM、SDP、A2DP等高层协议实现.
+参考FAQ: FAQ37024
+### 问题: [SC7730]如何获得平台默认User Agent Profile文件？
+解决方案: 展讯的UA profile 默认都放在如下地址 http://www.spreadtrum.com/wap/ 我们使用http://www.spreadtrum.com/wap/8810G_UAProfile.xml 7730 目前使用8810G_UAProfile.xml
+参考FAQ: FAQ37035
+### 问题: troutII 和SR2351的区别
+解决方案: 1、Trout II :蓝牙芯片MCU+RF; TroutII is a single chip that includes the WiFi/BT/FM baseband core and their RF. 2、SR 2351 :蓝牙、WIFI、GPS、FM射频收发芯片,2351不是真正意义上的蓝牙芯片,必须要配合相对应的CP The SR2351 is a 4-in-1 connectivity RF transceiver including WiFi/Bluetooth/GPS/FM tuner functionalities. 3、Shark芯片中集成的蓝牙基带CP2:搭配SR2351使用 4、troutII \SR2351在系统中的连接方式:
+参考FAQ: FAQ37031
+### 问题: 如何修改下拉通知栏的高度
+解决方案: 通知栏的高度是固定的,正常只能考虑在固定的高度内布局,使用方法是自定义一个布局赋值给notification.contentView,这个高度是限定的,没有办法修改.在android4.1系统以后,添加了新的属性bigContentView,在当前的notification不是在通知栏顶部的时候是显示notification.contentView布局,在当前的notification是在通知栏的顶部的时候显示的是notification.bigContentView布局,这个bigContentView可以自定义高度,布局,也就解决了修改下拉通知栏的高度的问题.
+参考FAQ: FAQ37067
+### 问题: fprtinf没有log输出？
+解决方案: 1) 比如sdcard.c(system/core)文件,android中采用的打印函数是fprintf.采用fprintf,默认情况下对应的strerr信息会发送到dev/null设备中,一般用户只能在console中看到对应的log. 之所以这么做,是因为sdcard.c最终生成的是bin文件是类似于mv的一个可执行文件,一般用户使用过程中看到出错信息比较直观. 但是调试就变的麻烦,解决方法如下: 1) 调用LOGE进行打印 2) 手动写一个简易的打印函数 比如 static int my_fprintf(FILE *stream, const char *format, ...){ va_list ap; va_start(ap, format); __android_log_vprint(ANDROID_LOG_DEBUG, "XXX", format, ap); va_end(ap); return 0; }
+参考FAQ: FAQ37116
+### 问题: slog为何抓不到开机过程的audio服务及铃声播放等内容
+解决方案: 这是因为slog服务启动晚于mediaserver、bootanim等服务. 要想抓取开机过程mediaserver及bootanim等的信息需要把slog服务提前. slog服务在Init.scx15.rc (device\sprd\scx15) mediaserver、bootanim在Init.rc (system\core\rootdir)
+参考FAQ: FAQ37126
+### 问题: 分区没有变化,下载时为什么会提示Incompatible partition?
+解决方案: 每次开始下载时fdl会发送BSL_INCOMPATIBLE_PARTITION的信号,然后根据工具发送的分区信息来判断分区是否有变化,如果有变化则会重新分区. 工具则必须勾选Repartition选项才会向fdl发送分区信息,否则工具就会提示Incompatible partition.
+参考FAQ: FAQ37136
+### 问题: 手机做便携式热点时，可以连接的station数量是多少
+解决方案: 手机做便携式热点时,支持连接的station数量最多为８个
+参考FAQ: FAQ37168
+### 问题: wifi最多可以搜索到的热点数量是多少
+解决方案: 受芯片内存限制,wifi在一次搜索中最多可以搜索到20个热点
+参考FAQ: FAQ37169
+### 问题: 为什么在休眠时wifi热点关闭后，系统长时间才能再次休眠
+解决方案: 当手机用wifi连接一个热点后,灭屏等待系统休眠后,然后关闭wifi热点. 此时手机因有断开wifi热点的动作会从睡眠中唤醒. 但此时断开后系统需要大概60多秒才能再次进入睡眠. 这里需要60多秒才能再次进入睡眠的原因是因为wifi断开后,系统会申请一个60秒的wakelock锁, 并尝试切换到其它网络连接,如果成功切换,则主动释放此锁,系统会随后进入休眠. 如果此时没有sim卡或者其它可有网络连接,则这个锁会一直持续到60秒超时后才会释放,系统才能再次进入休眠. 所以当没有sim卡时,此时需要60秒左右才能进入休眠. 这个锁定义的地方如下,可以通过改变此值来改变超时的时间 frameworks/base/core/res/res/values/config.xml <integer name="config_networkTransitionTimeout">60000</integer>
+参考FAQ: FAQ37171
+### 问题: 在pads logic原理图文件中，如何查找元件和芯片的PIN？
+解决方案: 有时需要快速在原理图文件中查找某个元件或者某个芯片的PIN,可以通过如下方式: 在pads logic界面,直接输入's 元件位号'.比如要查找电阻'R3501',则输入's R3501'就能将鼠标自动定位到这个电阻上.如果想搜索IC的某个PIN,假设CPU位号为'U1000',要查找CPU的PIN名字为'P30',则输入's u1000.p30'就能找到这个PIN了.
+参考FAQ: FAQ37172
+### 问题: 怎么开通sim卡的wlan流量业务
+解决方案: wlan业务是移动提供的基于sim卡的wlan热点服务. 移动在一些公共场所提供名字为cmcc和cmcc－auto热点, 当开通了sim的wlan业务时,就可以连接这些热点来使用其提供的wlan流量服务. 开通方式如下: 发送　KTWLAN5　到10086
+参考FAQ: FAQ37173
+### 问题: 工程机器wifi mac地址存放的位置
+解决方案: 当机器还处于研发阶段时,工程机是不具备有效的mac地址的, 为了正常测试使用wifi,需要临时随机生成一个可用的mac. 此mac是存放在文件里的,以避免再次开机时会发生变化,从而导致不能正常测试. 存放位置如下: /data/misc/wifi/wifimac.txt
+参考FAQ: FAQ37176
+### 问题: 如何选择NTC电阻
+解决方案: NTC电阻是用来检测温度的,系统读取相应电压值后,根据一定关系式算出NTC电阻位置处的温度. 通常来说,平台直接定义换算关系,要求客户选用平台指定的NTC电阻值,这样NTC特性与平台换算公式能对应起来,客户不需要做任何debug就可以直接用NTC功能.当前我们的原理图中,通常只是标明了NTC值和精度,却并没有提B值(B值是NTC的斜率),这样一旦客户选用了与平台不一致的B值,就会出现'在25度左右准确,而其他温度越来越偏'这样的问题.
+参考FAQ: FAQ37180
+### 问题: 工程机器wifi mac地址是怎么生成的
+解决方案: 工程机在研发阶段会随机生成有效的mac来用于使用和测试. 生成逻辑是在wcnd这个bin里做的. wcnd会随着开机启动,并在启动时生成随机mac,并保存在文件中/data/misc/wifi/wifimac.txt 然后系统在启动wifi时去此文件里读取mac并设置到芯片. wcnd主要是由wcnd.c编译生成. 路径:vendor\sprd\open-source\apps\wcnd\wcnd.c 生成流程 main() -->generate_wifi_mac();
+参考FAQ: FAQ37181
+### 问题: 第三方Launcher添加小部件的时候为何为弹出权限提示框？
+解决方案: 在使用第三方Launcher的作为系统默认Launcher的时候,如果添加小部件,会弹出一个权限提示框! 需要勾选后才能添加成功. 原因是添加小部件会需要<uses-permission android:name="android.permission.BIND_APPWIDGET" />权限, 此权限需要Launcher在编译的时候生成在system/app/目录下.
+参考FAQ: FAQ37195
+### 问题: 上市机器wifi mac地址是怎么生成的
+解决方案: 上市机器的mac是在产线上用WriteIMEI工具写入的. 这个mac地址是向相关部门购买的全球唯一的地址. 写入的地方就是nv分区,productinfo分区. 具体位置为. productinfo/wifimac.txt
+参考FAQ: FAQ37229
+### 问题: 如何添加分享菜单项？
+解决方案: 在AndroidManifest.xm中添加如下注册,可实现添加共享菜单 <intent-filter> <action android:name="android.intent.action.SEND" /> <category android:name="android.intent.category.DEFAULT" /> <data android:mimeType="video/*" /> </intent-filter>
+参考FAQ: FAQ37208
+### 问题: IO类ANR问题如何定位？
+解决方案: IO类ANR问题定位操作步骤:
+(1)	确定发生ANR进程号,时间点:
+首先通过ANR的log,定位发生ANR的时间点,以及前台进程名称与PID;
+(2)	其次,分析问题时刻IO信息:
+通过block层io统计信息和mmctrace的log,分析问题发生前,block层和mmc层的IO请求的情况,得到尽可能多的辅助信息:例如是否有某个进程在频繁读写IO, 是否有大量随机读写,是否有大量小数据块的读写等.
+(3)	找出问题跟因
+根据步骤(1),(2),定位出可疑的后台进程和时间范围.利用blktrace,根据发生ANR进程PID号,查找每个IO请求的tracepoint,得到在哪个阶段所花时间最多,最后结合步骤(2)的信息,查找出问题跟因.
+参考FAQ: FAQ37363
+### 问题: 上市机器wifi mac地址存放的位置
+解决方案: 当手机上市时wifi需要一个全球唯一的mac地址,此地址是需要花钱购买的. 此时这个mac地址是存在于nv分区的,即非易失性分区.防止在升级时mac地址被改变. 此mac保存的路径如下: productinfo/btmac.txt 其中productinfo就是nv分区,用于保存一些升级版本时不想被覆盖的内容.
+参考FAQ: FAQ37225
+### 问题: 使用mm编译时出错退出
+解决方案: 使用mmm和mm编译时出现以下提示退出: No private recovery resources for TARGET_DEVICE xxxxxxx make: Entering directory `MocorDroid4.4_3.10_XXXXXXXXX' make: Nothing to be done for `all_modules 原因是已经编译过,并且没有改动,所以没有什么可做. 这时可以去out目录下删掉生成的模块文件或者检查要build的文件是否已改对.
+参考FAQ: FAQ38396
+### 问题: Chromium WebView的主要组成
+解决方案: Chromium WebView主要由如图4部分组成: 上图主要有四个部分,其中跟WebView相关的主要是上面三个部分,首先是WebView接口部分,它提供对外编程接口,同时它的内部实现可以基于桥接代码,也就是第二个部分.桥接部分的代码主要有两个作用,其一是实现WebView接口对实现的调用,第二是调用下面一层的代码,这里面有个重要的部分就是需要设置AwContents为了绘图而需要设置的两组函数数组.它的代码可以在frameworks/webview/chromium部分找到.以上两个部分都是AOSP部分代码,而第三个部分是AwContents是在Chromium项目中的,主要是构建被桥接代码使用的接口,这一部分主要基于Content接口,里面有很多不同于Chrome浏览器的实现.Android的开源代码为了编译上的方便,直接将Chromium 版本30代码包含到external/chromium_org目录中.
+参考FAQ: FAQ38156
+### 问题: 在log中如何快速定位到wifi连接与断开、休眠与唤醒？
+解决方案: 在一段与wifi相关的slog中,可以通过查找与wifi相关的字段来确定wifi的关、闭和休眠、唤醒时间点,这样就可以 快速的定位到与之相关的问题. 开关wifi在log中的关键字: c0 net wlan0: sprdwl_open//用户通过工程模式打开wifi c0 net wlan0: sprdwl_close//用户通过工程模式关闭wifi 休眠唤醒中wifi在log中的关键字: sprd_wlan sprd_wlan.0: sprdwl_suspend//wifi进入休眠状态 sprd_wlan sprd_wlan.0: sprdwl_resume//wifi重新唤醒状态 这样 样就可以通过slog中的关键字段来分析wifi相关的功耗问题.
+参考FAQ: FAQ37263
+### 问题: 如何确认通过slab分配器分配内存的点是否存在内存泄漏？
+解决方案: slabs分配器分配内存的点指的是通过内核分配接口kmalloc进行内存分配的点,其是否存在内存泄漏可以 通过查看/proc/meminfo中SReclaimable+SUnreclaim的值是否异常来判断,比如上述两项加起来 的值超过100M,那么通过slab分配器分配内存的点有很大可能存在内存泄漏.
+参考FAQ: FAQ37293
+### 问题: 修改kernel 驱动代码后，下载bootimage，为什么启动系统更改没生效？
+解决方案: 修改kernel中对应的驱动代码,然后烧写整个bootimage,重新启动,发现kernel修改的驱动没有生效. 解决: 1、首先需要确定kernel中的代码是否编译,查找kernel中生成的.config文件,查看是否有对应的宏. 2、其次确认此驱动模块是编译进内核还是模块编译. (1)如果是编译进内核,需要重新下载整个bootimage; (2)如果是驱动模块加载的形式,此时ko文件是生成到system目录下,重新下载bootimage是无效的.可以通过adb push ko的形式到机器的system/lib/modules/目录下;或者重新编译systemimage下载到机器.
+参考FAQ: FAQ37307
+### 问题: 蓝牙HCI协议事件分组格式
+解决方案: 蓝牙HCI协议事件分组格式如下图:
+参考FAQ: FAQ38183
+### 问题: 工厂将2351的 bt/wifi mac address 写入到哪个分区及路径?
+解决方案: bt/wifi对应分区路径分别如下: productinfo/btmac.txt productinfo/wifimac.txt
+参考FAQ: FAQ37335
+### 问题: 如何查看CP2 WIFI/ CP2 是否sleep
+解决方案: 对应控制寄存器:REG_PMU_APB_PWR_STATUS2_DBG ,ADDRESS: 0X402B00BC 其中27-24bit表示 PD_CP2_WIFI_STATE具体: 0000 对应 domain wakeup, 0111 对应 domain shutdown, 其中23-20bit表示 PD_CP2_ARM9_STATE 具体: 0000 对应 domain wakeup, 0111 对应 domain shutdown, 可以使用lookat -l n ADDRESS查看实时情况
+参考FAQ: FAQ37327
+### 问题: WCDMA校准概率性的出现SendDivAgcResulttoPhone Fail怎么分析？
+解决方案: 1. 客户反馈WCDMA校准概率性出现失败,如下图示: 2. 看工具左下角,有SendDivAgcResulttoPhone Fail error code 11,通过这可以看出是发送数据给手机出现失败; 3. 这种情况一般跟客户电脑安装的旧USB驱动有关,需要把旧USB驱动卸载掉,重现安装最新NPI发布包里USB驱动;
+参考FAQ: FAQ37337
+### 问题: 如何判断wifi打开失败是由于AP/CP2的zero copy 版本不匹配导致的？
+解决方案: 可以寻找是否有如下kernel log 关键字: [ 162.439069] c0 itm_wlan_mac_open_cmd AP: zero copy; CP: non zero copy
+参考FAQ: FAQ37340
+### 问题: 联通入库产品ro.operator相关配置说明
+解决方案: ro.operator = cucc 这个属性打开后会支持联通认证的一些功能及case项的修改,注意:过联通认证的版本,公开市场版本根据客户需求打开. 不同的运营商对软件有不同的要求,ro.operator是用来区分运营商,从而采用不同的规范. ro.operator=cucc和ro.operator=cmcc分别对应联通和移动的方案. 浏览器上,因为联通和移动的规范对书签、主页和网页的载入方式的要求都有所不同,所以对联通入库需要设置ro.operator=cucc,对移动入库需要设置ro.operator=cmcc
+参考FAQ: FAQ37339
+### 问题: 如何通过基站定位（GSM网络）得到当前的位置信息
+解决方案: 使用6531等芯片+GPS模块做定位功能设备时,在 GPS 信号弱的时候,想通过基站定位(GSM网络)得到当前的位置信息可以用下面接口获取基站信息: MNPHONE_GetMeasReportEx可以获取相应的信息,其中 ncell_meas_ptr 是邻小区的信息,scell_meas_ptr是当前驻留小区的信息 #*8378#1# -> Net Info可以查看,可在工程模式中搜索此函数的用法和意义.
+参考FAQ: FAQ37347
+### 问题: emmc器件的状态迁移图
+解决方案: 
+参考FAQ: FAQ37374
+### 问题: emmc中断的处理流程
+解决方案: 相关代码在sdhci_sprd.c,如下图所示:
+参考FAQ: FAQ37380
+### 问题: 如何获取系统完整内存信息？
+解决方案: 1,内存信息: /proc/meminfo 2,buddy 信息:/proc/buddyinfo 3, slab信息:/proc/slabinfo 4, pagetypeinfo信息(获取不同migrate type 内存信息):/proc/pagetypeinfo 5, sprd page信息:/proc/sprd_pages 6, 内存分布:/sys/kernel/debug/sprd_debug/mem/phymemdist 7, 内存区域地址信息:/sys/kernel/debug/sprd_debug/mem/phymemmap 8, 不同类新内存汇总信息:/sys/kernel/debug/sprd_debug/mem/phymempages 9, 用户空间内存信息:/sys/kernel/debug/sprd_debug/mem/userprocmem
+参考FAQ: FAQ37368
+### 问题: 如何使得KERNEL 宏在USRDEBUG版本起作用但是在USR版本不起作用？
+解决方案: 以7715为例,我们可以修改/device/sprd/scx15/user_diff_config文件达到KERNEL 宏在USRDEBUG版本起作用但是在USR版本不起作用效果,例如: kernel deconfig文件中定义了CONFIG_SPRD_DEBUG,那么在USRDEBUG版本会生成相应DEBUG节点:/sys/kernel/debug/sprd_debug, 如果我们不想在USR版本输出上述信息,那么可以修改user_diff_config文件,在其中增加一行即可:DEF:CONFIG_SPRD_DEBUG
+参考FAQ: FAQ37392
+### 问题: 前摄像头拍照图像旋转90度
+解决方案: 这个问题是由于客户的前置设想头没有按我们的前置camera打样的垂直原则进行打样,是直接买了样品,前置和后置都是平行原则,而我们的默认配置里面TARGET_BOARD_FRONT_CAMERA_ROTATION := true,这样导致前置事实上是旋转了90度的,所以解决这个问题的办法是设置 TARGET_BOARD_FRONT_CAMERA_ROTATION := false TARGET_BOARD_CAMERA_ROTATION_CAPTURE := true 这个问题就能解决.
+参考FAQ: FAQ37409
+### 问题: 如何通过adb命名控制Slog开关及清除log?
+解决方案: adb shell $slogctl disable//控制slog关闭 $slogctl clear//控制slog清除log $slogctl enable//控制slog开启
+参考FAQ: FAQ37463
+### 问题: SC7715是否支持NFC功能？
+解决方案: 支持.
+参考FAQ: FAQ37478
+### 问题: 为什么蓝牙搜索时，可用设备列表刷新很快？
+解决方案: 这是因为原生的android系统中,google主要根据以下几点对可用设备列表进行刷新: 1、周围蓝牙设备名称改变; 2、蓝牙信号强度改变; 3、蓝牙btClass改变; 4、发现新设备; 以上四点中,第三点的更新机制中有个bug,会增加刷新的频率,但导致刷新频繁的最主要原因在于信号强度的改变,这是一个数值,基本每次搜到的值都不一样,所以导致了可用设备列表的频繁刷新.
+参考FAQ: FAQ37395
+### 问题: SC7715VBATBK上加备用电池是为什么要串4.7K电阻？
+解决方案: VBATBK内部没有串接电阻,接纽扣电池需要同时串接4.7K限流电阻.
+参考FAQ: FAQ37508
+### 问题: 录音时如何获取录音的音量大小
+解决方案: 在使用Mediarecorder进行录音时,Mediarecorder中已经提供方法getMaxAmplitude(),获取当前这段时间内最大的采样 点的值,其代表了录入的声音的最大振幅.
+参考FAQ: FAQ38871
+### 问题: SC7701是否支持EAP SIM
+解决方案: SC7701不支持EAP SIM
+参考FAQ: FAQ38800

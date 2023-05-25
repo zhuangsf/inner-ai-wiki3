@@ -1,0 +1,416 @@
+### 问题: 2/3g下，ACTIVATE PDP CONTEXT REQUEST消息重传时长为30s是否合理？
+解决方案: UE向网侧发送ACTIVATE PDP CONTEXT REQUEST消息,UE会启动T3380,在第一次T3380超时(T3380时长协议规定为30s),UE会重传ACTIVATE PDP CONTEXT REQUEST消息,最大重传次数为4次, 在第5次定时器超时,UE将会中止激活pdp流程. 参考协议:24008;章节:6.1.3.1.5和11.2.3 6.1.3.1.5 Abnormal cases The following abnormal cases can be identified: a) Expiry of timers In the mobile station: On the first expiry of the timer T3380, the MS shall resend the ACTIVATE PDP CONTEXT REQUEST and shall 
+完整回答请参考FAQ: FAQ118814
+### 问题: 展锐终端Volte电话DTMF的两种形式
+解决方案: 目前展讯终端Volte电话过程中的DTMF有两种形式: 1. 电话建立过程中经过telephone-event协商,电话建立后通过特定的RTP数据发送,对应NV:support_named_televt设置为1 2. 不经过协商,电话建立后将对应的Tone音混入上行数据中发送(同CS电话),对应NV:support_named_televt设置为0 Reliance网络下遇到过特殊的测试场景: 手机拨打手机终端,保持后拨打类似10086的服务号,合并通话,会议中使用方法1的DTMF失效. 如上场景中使用方法2(即NV设置为0)可解决问题,所以此问题后的个别版本的文档配置中NV设置为0.但此配置没有考虑到对普通电话场景的影响,普通电话场景只有方法1生效. 总结来说就是: 1.终端拨打类似10086的服务号,只有NV设置为1,DTMF生效 2.如上的特殊会议场景,只有NV设置为0,DTMF生效
+完整回答请参考FAQ: FAQ119642
+### 问题: 为什么GPS搜星等待一段时间过后，搜星偏多
+解决方案: GPS搜星等待一段时间过后,搜星偏多,关于这点的解释如下: SGPS: 首次烧完版本需要等待12.5分钟卫星颗数从3/4颗变成大于6颗,接着再发起定位,比较快会有大于5颗卫星参与定位原因解释如下: a)在保证OTA性能的条件下,首次冷启动手机中并没有辅助数据,需要和卫星通信解调出卫星的星历用以定位. b)一般条件下一颗信号强的卫星解出星历最快大约需要20s左右,信号比较弱的卫星解调出卫星星历的时间会更长. c)GPS卫星定位至少需要4颗卫星(在有高度等条件下3颗卫星也可以定位),为了加快首次定位时间TTFF,提高用户体验,在收齐4颗卫星星历满足最低定位需要的卫星颗数之后,接收机会进行定位.这时可以看到参与定位卫星只有4颗. d)首次定位成功后,接收机会继续和卫星通信,解调出更多卫星的星历,让更多的卫星参与定位,这时看到的参与定位卫星颗数越来越多(后面看到7-9颗卫星). AGPS: 1)在
+完整回答请参考FAQ: FAQ118893
+### 问题: 9863A如何通过nv修改lte band list
+解决方案: 使用"\tool\debug_tool\NVTool\Bin\NVTool.exe"打开以下目录nv工程文件 \build\sharkl3_pubcp_builddir\nv\sharkl3_pubcp_nvitem\RDNV\rd_nvitem.xprj TDD LTE: 支持的TDD LTE band数目: PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\numOfEUTRATDDBand 支持的TDD band信息配置,例如配置band38可以写作38或0x26,不支持的band须置0 PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\eutraTDDBandList\eutraTDDBandList[0] PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\eutraT
+完整回答请参考FAQ: FAQ118970
+### 问题: 如何解读wifi Tx参数CCDF
+解决方案: wifi Tx 参数当中有一个非常重要的参数CCDF,由于该参数很少出现Fail的情况,所以大家平时关注度比较少,但是它确非常重要 CCDF:功率互补累计分布曲线,该曲线显示了有多少时间处于或高于一个给定的功率电平. 如下图,给定的每条横线代表一个明确的高于平均功率的电平.信号处于参考电平横线之上的时间百分比 定义为该功率电平的概率,一个CCDF曲线就是功率电平相对概率的图表 比如:Y抽上当t=1%时,对应的X抽均峰比是7.5dB.这表示信号功率在1%的时间超过了平均功率7.5dB, 从时域上观察,经过调制以后,信号的包络变化并非恒定,信号的瞬时功率也并非恒定,出现的概率也不尽相同. 各种概率下的峰均比曲线就形成了CCDF(互补积分曲线)峰均比一般用来评估非理想线性的影响,如果峰均比越大, 要求系统中的PA,ADC/DAC等部件有足够大的动态范围,这将会导致这些部件的效率降低,一旦部件的动
+完整回答请参考FAQ: FAQ118998
+### 问题: android.text.util.cts.LinkifyTest#testAddLinks_unsupportedCharacters CTS测试项fail的解决方案
+解决方案: 1.1 修改原理 该测试项是8.1 vts R8上新增的case,fail的原因是googlerelease的8.1 R8 SPL 2019-05-05 gsi版本不包含如下安全patch: commit 4b035ba00dcf68c5e9454084665c582f758ca52d Author: Abodunrinwa Toki <toki@google.com> Date:   Fri Jan 4 17:18:39 2019 +0000     RESTRICT AUTOMERGE Do not linkify text with RLO/LRO characters.         Also don't show smart actions for selections in text with unsupported     characters.         Bug: 
+完整回答请参考FAQ: FAQ119040
+### 问题: GPRS/EGPRS 环回测试中的数据环回信令过程
+解决方案: GPRS/EGPRS 环回测试包括数据环回和随机数发送 数据环回是指UE接收到仪表的数据后,马上将原数据返回给仪表 随机数发送是指UE自己产生随机数据,然后发给仪表,不接收仪表数据. 1. SCT模块收到NAS的GMM_SCT_CMD消息,第一个字节0xf,表示nas层的消息类型为环回测试,第二个字节0x24表示GPRS/EGPRS 数据环回和随机数发送 2. SCT模块将SCT_RLC_CMD消息发给RLC,这里cmd_type=0 表示GPRS_TEST_MODE_CMD,包括数据环回和随机数发送 Test_mode=0x1,表示数据环回 3. RLC收到数据环回的命令收开始建立TBF,并且将环回命令RLC_MAC_SCT_TEST_REQ发给MAC层 4. GL1获取数据后,直接将数据返回给仪表,不发消息给RLC模块,将数据发出去的时候,使用RLC_MAC_DATA_REQ来TRAC
+完整回答请参考FAQ: FAQ119063
+### 问题: 展锐平台如何增加NFC功能及BBAT测试NFC
+解决方案: 1. 主要流程: NFC开发集成步骤: 1) NFC选型 2) 硬件设计 3) 从NFC芯片厂家获取对应NFC方案 4) 软件集成 5) 调试验收 6) 过认证(如有需求) 2. 方案说明: NFC芯片厂商会提供完整解决方案,客户需从NFC厂商获取方案及技术支持. 3. 角色说明 1 ) NFC厂商:提供方案(代码及集成文档),技术支持. 2 ) UNISOC:驱动支持/工厂测试. 3 ) 天线厂商:配合NFC厂商调试性能. 4. 常见问题: 1 ) 驱动以NFC厂商发布的为主,平台主要支持客户配置Pinmap/dts等,且相关配置需要根据客户当前硬件设计和NFC DS来确认,相关问题如有需求可以提问题到平台,其他问题请先找NFC芯片厂商支持. 2 ) 工厂测试,由于平台不带NFC功能,bbat/native mmi需要各厂商给出相应接口,封装成so库给平台调用,这部分需要客户和NFC厂商
+完整回答请参考FAQ: FAQ119160
+### 问题: 影响GPS性能的四大突出问题点
+解决方案: 一.传导CNR: 1.决定因素:Rf trace,LNA,匹配电路 2.影响:卫星信号CNR低会造成解调难,定位慢,容易丢失定位 3.改善措施:RF trace做50欧姆阻抗控制,走线越短越好且严格包地保护,LNA靠近天线端布局降低系统级NF 二.天线效率: 1.决定因素:结构,天线形状 2.影响:天线效率低会造成终端接受卫星信号的强度低,从而造成CNR低 3.改善措施:设计结构之初就需要给GPS天线预留足够的空间 三.clock status: 1.决定因素:clock走线,TCXO/TSX 净空,热源与晶体距离 2.影响:clock drift太大会造成定位慢,clock drift rate 太大会造成即使在强信号下定位时间也很长甚至无法定位 3.改善措施:TCXO/TSX晶体要远离2G/3G/4G PA(15mm),距离transceiver 4~6mm,晶体要留有足够的净空区以抵
+完整回答请参考FAQ: FAQ119192
+### 问题: 鼠标手显示有锯齿
+解决方案: 1.1 修改方案 diff --git a/services/input/SpriteController.cpp b/services/input/SpriteController.cpp index fd9c66b..42b1d39 100644 --- a/services/input/SpriteController.cpp +++ b/services/input/SpriteController.cpp @@ -30,6 +30,7 @@ #include <SkPaint.h> #include <SkXfermode.h> #include <android/native_window.h> +#include <math.h> namespace android { @@ -153,8 +154,8 @@ void SpriteController::doUpdateSp
+完整回答请参考FAQ: FAQ119231
+### 问题: 更新大版本后，工厂测试中，key test测试不过，左软件点亮的是ENDCALL，开机键没有对应键值，最后留下左右软键按钮无法pass的解决方案
+解决方案: 1.1 修改原理 让power 键透传给工厂模式软件 1.2 修改方案 如果您想要您的测试软件能接收到power事件,可参考如下修改               case KeyEvent.KEYCODE_POWER: { +                if (isTopFactoryKeyTestActivity) { +                       return ACTION_PASS_TO_USER;  +               }                   // Any activity on the power button stops the accessibility shortcut                 cancelPendingAccessibilityShortcutAction();                 re
+完整回答请参考FAQ: FAQ119232
+### 问题: 【BBAT】G3盒子是否支持无mic项目音频测试？
+解决方案: BBAT G3测试音频默认使用的时loop方案,即手机speaker/receiver/耳机左右声道输出,mic/sub mic/耳机mic输入方式. 如果需要支持无mic项目的speaker/receiver/耳机左右声道测试需要升级G3盒子的固件及修改工具默认配置. 一. 控制盒固件升级:2019.06之后销售的G3盒子固件已升级,如果使用之前的盒子需要走售后流程升级固件. 二. 工具配置:parameter.csv文件中的525/526/625子项分别对应speaker/receiver/耳机左右声道的测试,需要在对应平台的Modules.txt文件audioloop测试项下面增加对应的子项然后在工具设置界面配置. 三. 夹具接线:Speaker/Receiver按正常接线即可,耳机左右声道因为耳机座规格和测试原理问题,不能直接插入普通的三段式或四段式耳机,只需要将耳机左右声道接入控
+完整回答请参考FAQ: FAQ119239
+### 问题: 使用google的人脸解锁，如何解锁后直接进入应用界面，而不需要再进行滑动解锁？
+解决方案: google 人脸解锁原生设计,解锁完成后还需要滑动界面解锁,可通过人脸解锁成功后回调的接口,直接调用dismissKeyguard将滑动锁解除. 由于修改的是公共接口,所以可能会影响其他第三方apk的表现,请自行评估确认是否修改,具体可参考如下: /frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/KeyguardMonitorImpl.java --- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/KeyguardMonitorImpl.java +++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/KeyguardMonitorI
+完整回答请参考FAQ: FAQ119338
+### 问题: 为什么同一型号产品，每台都需要重新安装USB驱动？如何做到仅安装一次USB驱动？
+解决方案: 因为电脑上根据硬件ID号和SN号来识别设备; 可以通过修改电脑的注册表来屏蔽SN,即可达到同一产品仅需安装一次USB驱动即可. 具体操作步骤如下: 1、找到需要屏蔽的设备的硬件ID号; 使产品连接上电脑,在电脑的设备管理器内查看.具体如下图: 如图要屏蔽的硬件ID为: 1782 4012 2、编辑屏蔽SN的注册表文件: 可以新建一个文本文档,键入如下两行.注意硬件ID号17824012需要对上. 另将文本文档的后缀名".txt"修改为".reg".即将文本文档修改成批处理文件,运行此批处理文件即可完成修改电脑注册表. [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\UsbFlags] "IgnoreHWSerNum17824012"=hex:01 3、查看注册表是否有屏蔽项写入 打开电脑注册表,找到如下位置. HKEY_LOCAL_
+完整回答请参考FAQ: FAQ119744
+### 问题: 长按power键弹出的对话框，如何使最后一个菜单的背景与前面的一致？
+解决方案: 这个是google的原生设计,如果要修改可参考以下方案: /frameworks/base/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java --- a/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java +++ b/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java @@ -894,9 +894,9 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener, Acti
+完整回答请参考FAQ: FAQ119341
+### 问题: GTS 测试：com.google.android.comms.MessagesTests#testAcsaRequirements fail
+解决方案: 请贵司确认该项目是否和google签订了Acsa协议,此项为相关测试,检查错误堆栈是否如下:
+
+TestRunner: failed: testAcsaRequirements(com.google.android.comms.MessagesTests)
+TestRunner: ----- begin exception -----
+TestRunner: java.lang.RuntimeException: ACSA requires that CS is the default IMS handler
+
+如匹配,请按如下步骤check:
+一.gms.mk 或 gms_go.mk PRODUCT_PACKAGES 有没有加入 CarrierServices,没有请加入.
+
+二.在项目对应的 vendor.xml 加入以下
+<carrier_config>
+  <
+完整回答请参考FAQ: FAQ119492
+### 问题: 如何分析AM模式下的传输？
+解决方案: 在RRC的重配消息中指定承载的传输模式和LogicalChannelIdentity(LCID),下面的RRCCONNECTIONRECONFIGURATION 消息片段中指定drb-Identity为2的承载上传输模式为AM,对应的LCID=4 25158012-1      19:10:48.184   SIM2         LTE   --       <- RRCCONNECTIONRECONFIGURATION           
+drb-ToAddModList
+......
+         drb-Identity = 2
+         pdcp-Config
+                   discardTimer = infinity
+                   rlc-AM
+                           
+完整回答请参考FAQ: FAQ119495
+### 问题: XCAP协议http中的字段含义？
+解决方案: <notify-caller>true</notify-caller> <reveal-identity-to-caller>true</reveal-identity-to-caller> <reveal-identity-to-target>true</reveal-identity-to-target> 以上三个网络可选项在CMCC网络下要求携带,具体含义: <notify-caller>true</notify-caller> notify-caller: An optional element that can be used to disable the default behaviour that the caller is notified that the call is being forwarded. ----即通知MO 电话被转接,默认是true,这个设置为true
+完整回答请参考FAQ: FAQ119645
+### 问题: 如何配置CAT4
+解决方案: UE category与是否支持UL 64QAM是关联的,设置的时候需要搭配组合,具体组合如下: CAT4并且支持UL 64QAM,设置如下: "PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategory=4 PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategoryDL=4 PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategoryUL=5 PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\UL64QAMSupportCap=1/2/3(1:TDD, 2:FDD, 3:TDD&FDD)" CAT4并且不支持UL 64QAM,设置如下: "PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOME
+完整回答请参考FAQ: FAQ119943
+### 问题: 如何配置短信超过一定页数后自动转为彩信发送
+解决方案: 原生Messaging/MMS: MmsConfig.java 中找到 getSmsToMmsTextThreshold,直接返回客制化的页数值即可. Google Messaging: 可以通过CarrierConfig配置,一共涉及三类配置文件: 1. packages\apps\CarrierConfig\assets\carrier_config_xxxxx.xml xxxxx为mccmnc,例如carrier_config_46000.xml是仅适配于CMCC的配置. 2. packages\apps\CarrierConfig\res\xml\vendor.xml 一般通用配置可在此添加.如存在vendor\sprd\platform\packages\apps\CarrierConfig\res\xml\vendor.xml,请修改vendor下的配置. 3. vendor\
+完整回答请参考FAQ: FAQ119969
+### 问题: 如何完全关闭OTG功能不测试cts相关
+解决方案: 1.1.1 修改方案 diff --git a/common/DeviceCommon.mk b/common/DeviceCommon.mk index feab757..35157ad 100644 --- a/common/DeviceCommon.mk +++ b/common/DeviceCommon.mk @@ -223,7 +223,6 @@ PRODUCT_COPY_FILES += \      frameworks/native/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml \      framework
+完整回答请参考FAQ: FAQ120013
+### 问题: 【BBAT】G3工具如何增加、删除和调整测试项？
+解决方案: 1. 增加测试项 修改工具Platform文件夹对应的Modules.txt文件,按照平台文件夹进行划分,详细路径如下: \SP_BBAutoTester_G3_R2.0.0001\BBATProject\Addons\Setting\Platform 1)按照图示插入位置方法添加测试项,添加测试项的位置灵活性强(工具默认顺序配置是经过验证通过,不建议随意进行添加以防止存在测试项之间的干扰); 2)主测试项添加完成后,需要添加子项目ID; 3)子项ID的添加及修改(ParameterList.csv); 子项ID内容从ParameterList.csv文件中读取获取(Platform同级目录下): ParameterList.csv文件定义测试项内容,根据子项ID进行顺序配置,比如2001 NFC,若还需要使用NFC_ONLY_READ子项,在Modules.txt下的子项ID配置如下: 
+完整回答请参考FAQ: FAQ120194
+### 问题: 图案锁界面输入错误的图案，如何使错误的连线保留并显示红色
+解决方案: 目前通过LockPatternView.java中的mFadePattern控制,且在该文件中提供了设置的接口,需要连线设置setFadePattern(false)即可 public void setFadePattern(boolean fadePattern) { mFadePattern = fadePattern; } 参考以下修改验证 --- a/packages/SystemUI/src/com/android/keyguard/KeyguardPatternView.java +++ b/packages/SystemUI/src/com/android/keyguard/KeyguardPatternView.java @@ -142,6 +142,7 @@ public class KeyguardPatternView extends LinearLayout imp
+完整回答请参考FAQ: FAQ120276
+### 问题: 销量统计功能发送短信后，如何不保留已发销量统计短信的记录？
+解决方案: 使用SmsManager.sendMultipartTextMessageWithoutPersisting/SmsManager.sendTextMessageWithoutPersisting发送SMS即可,这两个API不会将已发SMS写入数据库. 例如: SmsManager smsManager = SmsManager.getDefault(); smsManager.sendTextMessageWithoutPersisting("xxxxxxxxxxx",null,"xxx",null,null); 请注意: 1. 如上方案仅适用于销量统计APP放在Android源码中编译的情况. 2. sendMultipartTextMessageWithoutPersisting、sendTextMessageWithoutPersisting在API 28才去掉@hide,所以An
+完整回答请参考FAQ: FAQ120310
+### 问题: “消息推送”介绍
+解决方案: "推送"这一概念在1996年由PointCast 网络公司提出,旨在为用户提供更准确、更实时的消息推送.推送技术主要经历3个阶段,从轮询方式、SMS短信推送方式逐渐发展到长连接推送方式. 1、轮询方式 轮询是由客户端主动发起请求的推送方式.客户端通过与服务器的网络连接,以定时任务的方式询问服务器端是否有新的推送消息.这种方式的效率取决于请求频率的设计,如果请求频率过高,会消耗较多的资源;而若请求频率较低,则消息的延时较高,实时性得不到保证. 2、SMS短信推送方式 短信方式通过运营商的短信通道将消息发往客户设备. 由于要向运营商按推送量进行付费,因此成本较高,通常作为补充手段应用. 3、长连接推送方式 长连接推送方式是最为通用也是研究最多的推送方式.不同于"轮询"的消息传递方式,服务方通过保持与客户端的长连接,掌握了消息推送的主动权. 服务器端按一定频率向客户端发送一个心跳以保持长连接,当
+完整回答请参考FAQ: FAQ120335
+### 问题: android9.0如何修改动态导航栏的布局
+解决方案: 在开启动态导航栏的情况下,如果需要修改导航栏个控件的位置布局,可以修改 vendor\sprd\platform\frameworks\base\packages\SystemUI\res\values\config_ex.xml里的以下属性值 back键在左不带pull键布局: <string name="config_navBarLayout_right" translatable="false">hide[.5W],back[1WC];home;recent[1WC],space[.5W],menu_ime[.5W]</string> back键在右不带pull键布局: <string name="config_navBarLayout_left" translatable="false">hide[.5W],recent[1WC];home;back[1WC],space[.5W]
+完整回答请参考FAQ: FAQ120540
+### 问题: GSM上行和下行绝对频率和ARFCN对应关系
+解决方案: GSM850: CH_Arfcn: 128 ~ 251; 手机上行发射频率 FU(n) = 824.2MHz + ( n - 128 ) * 0.2MHz ; n = (128 ~ 251) 手机下行接收频率 FD(n) = FU(n) + 45MHz; GSM900: CH_Arfcn: 0~124, EGSM:975~1023; 手机上行发射频率 FU(n) = 890.0MHz + n * 0.2MHz ; n = (0 ~ 124) 手机上行发射频率 FU(n) = 880.2MHz + ( n - 975 ) * 0.2MHz ; n = (975 ~ 1023) 手机下行接收频率 FD(n) = FU(n) + 45MHz; DCS1800: CH_Arfcn: 512~885 ; 手机上行发射频率 FU(n) = 1710.2MHz + ( n - 512 ) * 0.2MH
+完整回答请参考FAQ: FAQ125201
+### 问题: 无线信号的重要指标参数：信噪比和信号强度简介
+解决方案: 在无线通信系统中,判断无线信道质量的指标最基本的有接收信号的强度(RSSI:Receive Signal Strength Indicator)和信号的信噪比(SNR:signal-to-noise ratio); RSSI简介: RSSI 单位为dbm,绝对功率值,其计算公式为 10lg(信号功率/1mw);例如信号1W功率其转换为dbm单位为: 10lg(1000mw/1mw) = 30dbm; 一般我司GSM系统实现中,底噪(背景噪声,最小信号强度)功率为-110dbm;例如问题分析中,从log发现手机接收到的相对信号强度为30db,则其绝对功率为-80dbm(-110 + 30); 信号强度RSSI值的大小会影响信号的传输距离;例如在相同的传输环境下,相同频率的无线信号,信号强度(RSSI)越大,信号传输距离越长; SNR简介: 顾名思义,信噪比是指有用信号与噪声的功率比例.对于G
+完整回答请参考FAQ: FAQ120506
+### 问题: GTS 测试：com.google.android.comms.MessagesTests#testMessagesInstalledCorrectly fail: CS should be default IMS handler
+解决方案: 查看host_log_xxx.txt,错误堆栈如下: 08-07 16:19:21 I/ModuleListener: [1/1] com.google.android.comms.MessagesTests#testMessagesInstalledCorrectly fail: java.lang.AssertionError: CS should be default IMS handler at org.junit.Assert.fail(Assert.java:88) at org.junit.Assert.assertTrue(Assert.java:41) at com.google.android.comms.MessagesTests.testMessagesInstalledCorrectly(MessagesTests.java:82) Root cause: 此ca
+完整回答请参考FAQ: FAQ120525
+### 问题: android9.0项目GTS7.0 R1 GtsPlacementTestCases com.google.android.placement.gts.ComplianceTest#testMADACompliance测试fail
+解决方案: 使用GTS7.0 R1套件测试 GtsPlacementTestCases里的com.google.android.placement.gts.ComplianceTest#testMADACompliance项如出现fail,可以参考如下分析 此项case测试的security & location 界面GPP功能及菜单显示的是否正常 测试流程大致如下: 1:启动setting-》security & location界面, 2:分别寻找界面中是否有 security status、Google Play Protect、Find My Device、Security update、Apps scanned,如无则测试失败 3:分别点击Google Play Protect、Find My Device、Security update,如出现点击失败,测试fail 可以检查测试log里是
+完整回答请参考FAQ: FAQ120539
+### 问题: 内置GoogleDialerGo应用导致GTS7.0 R1套件com.google.android.comms.DialerTests#testDialerInstalledCorrectly项测试失败
+解决方案: 如果内置了GoogleDialerGo应用,在使用GTS7.0 R1套件测试出现com.google.android.comms.DialerTests#testDialerInstalledCorrectly项测试失败的情况. 可检查是否是以下错误: java.lang.RuntimeException: Missing 'com.google.android.dialer.support.jar' 如果是,可参考如下修改: diff --git a/apps_go/GoogleDialerGo/Android.mk b/apps_go/GoogleDialerGo/Android.mk index 3be6927..9b5d746 100644 --- a/apps_go/GoogleDialerGo/Android.mk +++ b/apps_go/GoogleDialerGo/An
+完整回答请参考FAQ: FAQ120626
+### 问题: GTS测试：com.google.android.comms.MessagesTests#testMessagesVersionCheck fail？
+解决方案: 此项主要检查Google Message和Carrier Services版本号是否符合google服务器端的版本号检查要求? 分有以下两种情形: 1.Message版本号低于服务器要求,如以下fail即需要将Message版本升级到3.9 或以上,建议同时用最新版本的Message和CarrierServices替换旧版本验证; com.google.android.comms.MessagesTests#testMessagesVersionCheck fail java.lang.RuntimeException: AM should be 3.9 or later 2.Carrier Services版本号低于服务器要求,如以下fail即需要将Carrier Services版本升级到19.0或以上,建议同时用最新版本的Message和CarrierServices替换旧版本验证;
+完整回答请参考FAQ: FAQ122179
+### 问题: 如何在开机动画BootAnimation.cpp中读取/mnt/vendor下的文件的解决方案
+解决方案: 1.1 修改原理 /mnt/vendor 目录必须 system 用户和组才能使用: 可以adb shell中用如下方式验证: s9863a1h10:/mnt/vendor # su shell s9863a1h10:/mnt/vendor $ echo 1 >  1.txt /system/bin/sh: can't create 1.txt: Permission denied 1|s9863a1h10:/mnt/vendor $ exit 1|s9863a1h10:/mnt/vendor # su system s9863a1h10:/mnt/vendor $ echo 1 > 1.txt s9863a1h10:/mnt/vendor $ cat 1.txt 1 s9863a1h10:/mnt/vendor $ id uid=1000(system) gid=1000(system)
+完整回答请参考FAQ: FAQ120748
+### 问题: 关于SIP Timer相关疑问的解答
+解决方案: 疑问1:运营商给的定时器有4个分别是T1=2S T2=16S Time E=2s Time F=16s 这个定时器分别代表这什么作用是什么? (1)T1定时器: 参见RFC3261 17.1.1.1中的描述: For unreliable transports (such as UDP), the client transaction retransmits requests at an interval that starts at T1 seconds and doubles after every retransmission. T1定时器是使用不可靠传输(UDP)的消息的重发定时器,每次重发时间间隔会加倍. PS: <1>这个定时器长度在RFC3261中定义是500ms,但因为移动网络的IMS实际是依据3GPP 24.229实现的,在3GPP系统中这个定时器的长度是2s.长度定义见
+完整回答请参考FAQ: FAQ120759
+### 问题: IMS短信发送失败收到错误码的处理？
+解决方案: 问: 当发送sms_over_ims 手机终端接收到NW 返回如下error code的时候,手机终端是如何处理的? Operator determined barring(8) Destination out of order(27) Invalid short message transfer reference value(81) Semantically incorrect message(95) Information element non existent or not implemented(99) 答: 协议上没有明确说明终端在IMS发短信收到错误原因应该如何处理. 为了提高短信发送的成功率,目前版本中的通用做法是收到这些错误原因会从SGs(NAS)信令进行重试. 当然如果网络有特殊要求,不要求从SGs重试,终端也可以控制起来,不进行重试. 附: 简单介绍一下IMS短信的
+完整回答请参考FAQ: FAQ120760
+### 问题: 在图库的侧边栏相册中，如何修改为只显示图片文件，不显示视频文件？
+解决方案: 在图库的侧边栏相册中,如果只需要显示图片文件,不显示视频文件,请参考如下修改:即把DataManager.INCLUDE_ALL (包含图片和视频)全部修改为DataManager.INCLUDE_IMAGE. /vendor/sprd/platform/packages/apps/NewGallery2/src/com/android/gallery3d/app/GalleryActivity.java /vendor/sprd/platform/packages/apps/NewGallery2/src/com/android/gallery3d/app/PhotoPage.java --- a/src/com/android/gallery3d/app/GalleryActivity.java +++ b/src/com/android/gallery3d/app/GalleryAc
+完整回答请参考FAQ: FAQ120884
+### 问题: Android8.1，如何移除“待机界面底部线性渐变效果”
+解决方案: Android8.1 Launcher3中,在待机界面底部存在线性渐变效果,此效果只在使用特殊壁纸例如灰色壁纸时,才会较为明显. 移除"待机界面底部线性渐变效果",方案如下: packages/apps/Launcher3/src/com/android/launcher3/graphics/GradientView.java ... ... private final int mScrimColor; + + private static final boolean showGradientMask = false; public GradientView(Context context, AttributeSet attrs) { ... ... updateColors(); - mAlphaGradientMask = createDitheredAlphaMask(); + if
+完整回答请参考FAQ: FAQ120892
+### 问题: Android9.0上是如何获取辅助机的P2P的device name
+解决方案: 先说一下P2P的scan流程,在测试机和辅助机进入wifi direct界面后,测试机会在1、6、11三个信道发送ssid为"direct-"的probe req帧,辅助机同样也是如此. 辅助机收到probe req后,会回复一个ssid为"direct-"的probe rsp帧,它会包含P2P的一些info,包括device name,下面是本次抓取的probe rsp帧: 可以看到包含一个ID为13的IE,他就是P2P Device info,它里面会有一个Device Name的字段,这就是P2P的device name,CP侧收到probe rsp帧后,会把它透传到driver,然后driver杭报给supplicent,由supplicant来解析. supplicant解析的log如下(仅作为例子): M032C6E 08-26 10:23:37.901 9120 9120 D
+完整回答请参考FAQ: FAQ121020
+### 问题: Audio profile中的触摸提示音如何默认关闭
+解决方案: 主要需要修改三个文件: 1、frameworks/base/packages/SettingsProvider/res/values/defaults.xml 
+把
+<bool name="def_sound_effects_enabled">true</bool>
+修改为:
+<bool name="def_sound_effects_enabled">false</bool>
+
+2、packages/apps/AudioProfile/src/com/sprd/audioprofile/AudioProfileProvider.java 
+ private void createProfileTable(SQLiteDatabase db) { 
+        ContentResolver resolver = mContext.getContentResolver(
+完整回答请参考FAQ: FAQ121055
+### 问题: Android P​如何满足GMS Requirements: 5.4 Edge Flashing Animation and White Orb Animation?
+解决方案: 关于此要求的适用时间、适用对象、具体要求,Google官方说明如下: 5.4 Edge Flashing Animation and White Orb Animation [GMS-M-5.4-001] From September 3, 2019 onwards, all new DEVICES MUST: implement the Flash Screen setting to indicate to the end user that the context is shared with the Google Assistant, as defined in the CDD section 3.8.4. Search, [C-2-1]. disable White Orb animation effect (in red rectangle in the below image)
+完整回答请参考FAQ: FAQ121072
+### 问题: GSM网络下，32K / 32K_Less时钟方案配置错误会有怎样的影响和表现？
+解决方案: GSM DSP在正常处理基带信号(编解码)的时候,一般主要是由26M的晶体产生时钟心跳并倍频到几百兆HZ之后驱动DSP工作; 为了节省功耗,当GSM DSP处于空闲睡眠(Sleep)状态时,其时钟心跳主要由 32K / 32K_Less时钟驱动; 32K时钟方案的时钟来源为真实的32K晶体产生; 而32K_Less时钟来源为26M晶体分频得来,并没有32K实物晶体,此方案可以节约物料成本; 因此32K / 32K_Less时钟方案是否配置正确,及其时钟精确度,只会影响GSM网络的稳定情况; 而GSM网络如果不稳定,会增加GSM DSP接收信号的次数;甚至导致GSM网络频繁掉网,找网,这样同时增加GSM DSP工作时间(减少DSP Sleep时间),因此会增加功耗开销; 因此如果32K,32K_Less时钟方案配置错误,或者时钟不精确,手机就会有如下一种或者几种表现: 1.GSM网络不稳定;
+完整回答请参考FAQ: FAQ121138
+### 问题: GTS-7.0R2测试无法生成测试报告，PC端显示OutOfMemoryError
+解决方案: 请您先确认是否如下情形: 1.GtsYouTubeTestCases已经全部测试完成,并且均已pass:
+
+I/ConsoleReporter: [0442233956030353] armeabi-v7a GtsYouTubeTestCases completed in 25m 22s. 177 passed, 0 failed, 0 not executed
+
+2.出错堆栈信息显示:在GTS测试框架的tradefed command中处理logExecuteShellCommand命令内存溢出;
+E/CommandScheduler: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+    at java.util.Arrays.copyOf(Arrays.java:3332)
+    at jav
+完整回答请参考FAQ: FAQ121168
+### 问题: POLL INTERVAL是多长时间，日志如何查看
+解决方案: //根据测试协议相关的要求,及测试结果,我们现在设置的轮询时间是26S
+ 
+	但是会根据paging的周期,会对轮询时间会做微调,所以时间范围在23到26.
+ 
+
+ 
+	LOG中的检索方法如下:
+ 
+
+ 
+	
+ 打开CP LOG搜索下面消息就可以看到轮询时间
+
+1	1279563-1	11:46:21.950	MSG_ID_SIM_TIMER_EXPIRY	MOD_TIMER->MOD_SIM_1
+2	1373265-1	11:47:00.136	MSG_ID_SIM_TIMER_EXPIRY	MOD_TIMER->MOD_SIM_1
+3	1423176-1	11:47:26.141	MSG_ID_SIM_TIMER_EXPIRY	MOD_TIMER->MOD_SIM_1
+4	1467656-1	11:47:52.147	MSG_ID_SIM_TIMER_E
+完整回答请参考FAQ: FAQ121210
+### 问题: 上层如何去读写NV值
+解决方案: AP侧可以使用at+snvm指令.具体参数解释如下: Description: The command is used to data management of NVITEM, also used to brief data records of writing and reading. [note]: the function only supports by module, and the amount of data of NVITEM depends on module capacity. Set command: AT+SNVM =<type>,<nvitem_id>[,<nvitem_id_end>] Return:OK/ERROR Test command: AT+SNVM=? Return: +SNVM:(0-4),(0-1199),(0-1199) OK Paramet
+完整回答请参考FAQ: FAQ121211
+### 问题: 如何更改设置一级菜单列表中Google 菜单项前面的图标？
+解决方案: 参考如下修改: frameworks/base/packages/SettingsLib/src/com/android/settingslib/drawer/TileUtils.java     public static List<DashboardCategory> getCategories(Context context,
+            Map<Pair<String, String>, Tile> cache, boolean categoryDefinedInManifest,
+            String extraAction, String settingPkg) {
+            .....
+(tile.intent.getComponent().getClassName().equals("com.sprd.settings.na
+完整回答请参考FAQ: FAQ121233
+### 问题: 如何默认关闭Settings->Apps & notifications->Default apps->Assist app->Flash screen选项？
+解决方案: Google要求所有的新设备必须关闭 Flash Screen 效果,也就是长按home键的时候没有闪烁边框, 
+ 功能选项路径:Settings->Apps & notifications->Default apps->Assist app->Flash screen. 
+ 可以参考以下修改方法: frameworks/base/core/res/res/values/config.xml:
+<!-- Flag indicating whether the assist disclosure can be disabled using
+ASSIST_DISCLOSURE_ENABLED. -->
+- <bool name="config_allowDisablingAssistDisclosure">false</bool>
++ <bool name="config_allo
+完整回答请参考FAQ: FAQ121237
+### 问题: 开启屏保时，如何隐藏底部的虚拟导航键？
+解决方案: 需要修改四个文件,修改的方法思路一致: 1. packages/screensavers/Basic/src/com/android/dreams/basic/Colors.java import android.util.Log; import android.view.SurfaceHolder; import android.view.SurfaceView; +import android.view.View; +import android.os.Build; import android.os.Handler; import android.os.HandlerThread; @Override public void onAttachedToWindow() { super.onAttachedToWindow(); setInteractive(false); setLow
+完整回答请参考FAQ: FAQ121238
+### 问题: 怎样在Modem log中查看短信的类型?
+解决方案: 短信有3种类型:(1)VOLTE(SMS-over-IP)(2)NAS信令(SMS-over-SGs)(3)CS域短信. 4G下仅支持SMS-over-IP(VOLTE) 和SMS-over-SGs(non VOLTE),3G和2G下仅支持CS域短信. 可以通过Armlogel工具中的Air Messages窗口中的消息以下信令,确认短信是使用哪种方式发送的. There are 3 types of SMS, SMS-over-IP, SMS-over-SGs, SMS in CS domain. 4G support SMS-over-IP(VOLTE) and SMS-over-SGs(non VOLTE), 3G and 2G support SMS in CS domain. You can check following signaling in Air Messages wi
+完整回答请参考FAQ: FAQ121289
+### 问题: android8.1上sysdump使用
+解决方案: 1、查看和设置sysdump功能开启状态 SYSDUMP功能使能状态是user版本默认关闭,userdebug版本默认打开. SYSDUMP功能查看状态、使能/禁止可以通过"工程模式"或者"命令方式"中操作完成. 1)使能/禁止SYSDUMP操作后就可以正常使用,不需要设备重启 2)重新开机后,SYSDUMP 的状态会保持上一次的使能/禁止状态 工程模式中查看和设置使能状态(有些设备上并未实现工程模式): 工程模式(*#*#83781#*#*)-->DEBUG&LOG-->YLog-->Settings-->Sysdump Enable 命令查看sysdump使能状态 adb shell getprop persist.sys.sysdump #disable对应off,enable对应on 命令设置sysdump使能状态 1)使能 adb shell setprop debug.sysd
+完整回答请参考FAQ: FAQ121295
+### 问题: android9.0上sysdump使用
+解决方案: 1、查看和设置sysdump功能开启状态 SYSDUMP功能使能状态是user版本默认关闭,userdebug版本默认打开. SYSDUMP功能查看状态、使能/禁止可以通过"工程模式". 1)使能/禁止SYSDUMP操作后就可以正常使用,不需要设备重启 2)重新开机后,SYSDUMP 的状态会保持上一次的使能/禁止状态 工程模式中查看和设置使能状态(有些设备上并未实现工程模式): 工程模式(*#*#83781#*#*)-->DEBUG&LOG-->YLog-->Settings-->Sysdump Enable 2、在user版本上默认开启sysdump功能 uboot code中common/loader/sysdump.c文件,可以将sysdump是否打开的判断去掉 void write_sysdump_before_boot(int rst_mode) { ...... /*将此处判
+完整回答请参考FAQ: FAQ121300
+### 问题: CBS参数以及对功耗的影响
+解决方案: CBS周期分为 DRX level 1 和 DRX level 2 1. DRX level 1:(SIB5) Mtti:CTCH fach 信道的 TTI N:CTCH下行接收周期 Mtti <=N <= 256 K:CBS FRAME OFFSET 0<=K<=N-1, K是Mtti的倍数 2. DRX level 2:(BMC schedule message) Message Type : 消息类型,表明是schedule message还是data message offset: CBS block起始偏移 length:CBS接收的长度,连续多少个N bitmap:CBS接收的长度内,那些CBS是必须接收的,哪些是可以不收的. 启动CBS后,如果功耗比较大,首先应该看N值是否配的太小,其次看BMC schedule message是否配的比较密,最后看是否在前一个DRX lev
+完整回答请参考FAQ: FAQ121384
+### 问题: 9832e平台怎么修改lcd的dpi时钟源dpi_clk_src？
+解决方案: 9832e平台dpi时钟源有如下三个: enum{ DISPC_DPI_SEL_96M = 0, DISPC_DPI_SEL_128M, DISPC_DPI_SEL_153_6M, }; 默认是128M dpi时钟源,若更改为153.6M(或者改为96M): 1、u-boot15/drivers/video/sprdfb/sprdfb_chip_9835.h - #define DISPC_DPI_SEL_DEFAULT DISPC_DPI_SEL_128M + #define DISPC_DPI_SEL_DEFAULT DISPC_DPI_SEL_153_6M // DISPC_DPI_SEL_96M - #define SPRDFB_DPI_CLOCK_SRC (128000000) + #define SPRDFB_DPI_CLOCK_SRC (153600000) //960000
+完整回答请参考FAQ: FAQ121418
+### 问题: 怎样查看手机现在驻网在哪个LTE频段
+解决方案: 查当前驻留的lte band可以有以下方式:
+1,通过工程模式查看,
+进入工程模式后,依次点击:
+TELEPHONY->NetInfo->SIM0(若是卡槽2的话点击"SIM1")->nw cap->服务小区
+这里面能看到当前服务小区的信息,包括band信息:
+BAND:39,0            //表示band 39
+
+2,通过modem log里的trace查看
+搜索trace:"configure band",搜索结果类似于下面这种形式:
+LRRC:PAL:In SIB1 config msg, configure band=3, DL_earfcn=0x5b8, earfcn_bandControl=2,TAC = 0x1bbc, servingCellID = 0x4a006,isWideBandMeas = 0,isAllSymbolMeas 	LRRC
+完整回答请参考FAQ: FAQ121458
+### 问题: GMS版本中为什么Google Photos和NewGallery2不能并存？
+解决方案: GMS版本使用的相册是Google Photos,Photos是GMS认证必需的应用,因Photos不能查看和编辑特殊照片,如景深照片和有声照片,是借助于NewGallery2应用进行查看的,为了和NewGallery2应用区分开来,编辑特殊照片的apk是SprdPhotoEdit.apk,只是在Launcher界面没有对应的入口而已. SprdPhotoEdit应用的模块名定义请参考/vendor/sprd/platform/packages/apps/NewGallery2/gms/Android.mk中的如下定义: LOCAL_PACKAGE_NAME := SprdPhotoEdit 因为NewGallery2应用的包名和SprdPhotoEdit应用的包名是一样的,如果NewGallery2和SprdPhotoEdit并存,则会存在NewGallery2应用安装失败的情况,两者只
+完整回答请参考FAQ: FAQ121564
+### 问题: 安全锁方式为PIN码或者password时，如果解锁时输入小于4位，如何提示长度不够
+解决方案: 目前android P默认在解锁界面输入小于4位或者输入错误的密码时,会提示密码错误,如果要提示长度不够,请参考以下方法,可自行修改相关提示语: --- a/packages/SystemUI/res-keyguard/values/strings.xml +++ b/packages/SystemUI/res-keyguard/values/strings.xml @@ -130,6 +130,8 @@ <string name="kg_wrong_pattern">Wrong Pattern</string> <!-- Message shown when user enters wrong password --> <string name="kg_wrong_password">Wrong Password</string> + <string name="kg_invalid_p
+完整回答请参考FAQ: FAQ121917
+### 问题: 如何处理外界干扰导致的LTE RSSI校准超标
+解决方案: 已有客户在外界校准B40 B8等国内运营商频段出现RSSI数据异常,实际测试灵敏度正常的案例,对于这种问题可以修改RSSI上限处理,但更加建议用simba7.0版本修改RSSI参考信道. (Q:如何分辨是外界干扰导致的RSSI测试Fail?A:在屏蔽房环境中测试接收灵敏度正常,RSRP RSRQ显示正常;在屏蔽房中校准RX正常,在外界环境中校准出现RSSI超过上限,即在外界环境中,手机接收到同频信号偏高,将仪表信号淹没,可确认为外界干扰导致.辅助确认手段:频谱仪连接测试用天线,在外界环境中捕捉到很强的干扰信号.) 修改RSSI上限方法如下: 请用记事本或notepad++等编辑器打开量产seq,并查询以下字段: <MaxRSSI Description="Upper limit of RSSI.">7</MaxRSSI> 将Maxrssi改成12,可以提高校准直通率: <MaxRSSI D
+完整回答请参考FAQ: FAQ121591
+### 问题: Android9.0连接Vowifi时，如何使状态栏上只显示Vowifi，而不显示Wifi图标
+解决方案: 在Android9.0系统中,打开Vowifi开关时,需要使用到Wifi功能,因此在连接VoWfi时,默认是会同时显示Vowifi和Wifi两种图标.若想在状态栏上仅仅显示Vowifi图标,则只需在控制Wifi显示逻辑处增加一个Vowifi是否正在显示的判断逻辑,修改方式如下所示: --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarSignalPolicy.java +++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarSignalPolicy.java @@ -88,6 +88,8 @@ public class StatusBarSignalPolicy implements NetworkCon
+完整回答请参考FAQ: FAQ121620
+### 问题: Android9.0如何添加BenchMark POWER_HINT 场景白名单
+解决方案: BenchMark白名单应用在前台运行时会触发POWER_HINT_VENDOR_DDR 场景,可以按照如下方法添加: 以Android9.0 sharkl3为例 device/sprd/sharkl3/common/sprd_performance_config.xml <item name="BenchMark"> <string-array name= "pkgName"> <string>****</string> //**** 为需要添加的应用包名 <string>tptest</string> <string>mobilexprt</string> </string-array> <hintType>POWER_HINT_VENDOR_DDR</hintType> </item> POWER_HINT_VENDOR_DDR场景是boost ddr的,具体配置定义如下 vendo
+完整回答请参考FAQ: FAQ121662
+### 问题: GSM下语音编码格式AMR - WB 和 AMR - NB简介
+解决方案: 1. AMR : Adaptive Multi-Rate,自适应多速率编码; AMR-WB: Adaptive Multi-rate - Wideband,即 自适应多速率宽带编码; AMR-NB: Adaptive Multi-rate - Narrowband 即 自适应多速率窄带编码; 2. AMR-NB,语音带宽范围:300－3400Hz,8KHz抽样; AMR-WB,语音带宽范围: 50－7000Hz,16KHz抽样; AMR-NB 一共有16种编码方式, 0-7对应8种不同的编码方式, 8-15 用于噪音或者保留用. Frame Type Frame content (AMR mode, comfort noise, or other) 0 AMR 4,75 kbit/s 1 AMR 5,15 kbit/s 2 AMR 5,90 kbit/s 3 AMR 6,70 kbit/s
+完整回答请参考FAQ: FAQ121738
+### 问题: GSM频段在CMU200或者CMW500仪表上报显示问题？
+解决方案: 此部分需要在NV中配置,由于GSM band搜网配置与GSM band能力上报是两个地方,仪器上上报能力显示问题是因为一般客户会只配置GSM band搜网配置,知悉.故需要下面两个地方都做配置才可以. 1.GSM band搜网配置: PS_NV_PARAMS/NV_BAND_SELECT: 0x0: EGSM900 0x1: DCS1800 0x2: EGSM900/DCS1800 0x3: PCS1900 0x4: GSM850 0x5: EGSM900/PCS1900 0x6: GSM850/DCS1800 0x7: GSM850/PCS1900 0x8: GSM850/EGSM900 0x9: GSM850/EGSM900/PCS1900 0xA: GSM850/EGSM900/DCS1800 0XB: EGSM900/DCS1800/PCS1900 0XC: GSM850/EGSM
+完整回答请参考FAQ: FAQ121748
+### 问题: LTE上报W测量结果的测报中正值utra-EcN0和W物理层测量值中的负值ECN0_2区别？
+解决方案: LTE上报W测量信息的测报中utra-EcN0指示的是EC/N0,单位是dbm;WPHY测量结果trace中的EC_NO指的是8倍精度的EC/N0,单位是dbm,即EC_NO = 143/8=17dbm. utra-EcN0和trace中的EC_NO都是EC/N0转化为单位为dbm的正值表示,两者就是精度不一样. ECN0_2指的是8倍精度的EC/N0,单位是db,即EC/N0=-167/8=-21db. EC/N0指示的是每个码片的能量和带内噪声功率谱密度的比值,通常用来指示信号质量. WPHY测量结果trace: srch: SRCH_INTER_RAT_WHH*8dBm:rssi = -754 EC_NO = 143 RSCP =121 meas: Stored meas result, ARFCN = 10562, PGC = 274, ECN0_2 = -167, RSCP = 
+完整回答请参考FAQ: FAQ121767
+### 问题: 如何默认GoogleDialer拨打紧急号码时显示地理位置信息
+解决方案: 请参考以下方案修改, path:packages/services/Telecomm diff --git a/res/values/config.xml b/res/values/config.xml index caca9ba..2354a1a 100644 --- a/res/values/config.xml +++ b/res/values/config.xml @@ -53,7 +53,7 @@ <!-- Determines if the granting of temporary location permission to the def during an emergency call should be allowed. --> - <bool name="grant_location_permission_enabled">false</bool> + <bool 
+完整回答请参考FAQ: FAQ121808
+### 问题: 如何在对应的安全锁界面添加相应的安全锁提示
+解决方案: 9.0原生在安全锁界面就是没有提示的,请参考以下方案修改验证,目前是在各个安全锁的上面添加了提示语 diff --git a/packages/SystemUI/src/com/android/keyguard/KeyguardPINView.java b/packages/SystemUI/src/com/android/keyguard/KeyguardPINView.java index c1cff9e..fd3f6c0 100644 --- a/packages/SystemUI/src/com/android/keyguard/KeyguardPINView.java +++ b/packages/SystemUI/src/com/android/keyguard/KeyguardPINView.java @@ -67,7 +67,7 @@ public class Keygua
+完整回答请参考FAQ: FAQ121907
+### 问题: modem log中对应信息查找
+解决方案: modem log中对应信息如下: 1. Packet Switch Handover to LTE 3G网络下,请在internal message中搜索下面信息: MSG_ID_TM_UTRAN_CHG_TO_LTE_REQ 2. AMR NB 3G网络下,是默认必须支持AMR NB的,不支持NB的话,3G call都打不起来. 如果在3G下打电话,可以通过搜索下面关键字查看AMR NB的信息: "WRLC:IMP:AMR:NB:RX:" "WRLC:IMP:AMR:NB:TX:" 3. LTE Cell Reselection from Fach 3G网络下,目前不支持fach态下往lte的重选. 4. C-DRX 请在log的internal message中,搜索MSG_ID_LTE_CPHY_CONNECTED_MODE, 其中如下两条消息中包含drx的配置. MSG_ID_L
+完整回答请参考FAQ: FAQ121925
+### 问题: Display显示异常如何定位到DPU和GSP?
+解决方案: 在出现闪屏,花纹等等显示异常场景,需从应用资源,surfaceflinger合成送显,底层显示等场景排除 adb online 录屏后,录屏资源未有该现象.可排除送显资源问题. 在setting -> Developer options -> Disable HW overlays,使能后未能复现.续进一步定位DPU或者GSP 以9863A为例 9832E 7731E可适用此方法 1.User版本下删除DPU和GSP 删除DPU device/sprd/sharkl3/XXX/XXXX_Base.mk # sprd hw module PRODUCT_PACKAGES += \ -- dpu.$(TARGET_BOARD_PLATFORM) \ 软件rebuild && download && boot观察是否复现 删除GSP device/sprd/sharkl3/XXX/XXXX_Ba
+完整回答请参考FAQ: FAQ122021
+### 问题: SC6531E怎样将将网络功能全部关闭？
+解决方案: 关闭网络功能有如下两种方法,客户可以根据需求应用哪种方法: 1. 在MMI设置界面里将GPRS service的勾去掉.网络相关的应用不能使用. 2. 关闭GPRS_SUPPORT相关宏开关.GPRS相关代码不参与编译.需要重新提供库文件(l4.a ps.a layer1.a layer1_dsp.a daps.a)给客户. 客户拿到新的库文件后,拷贝到相应的lib文件夹下,然后客户按如下方法修改,重新编译版本. 1). 修改.mk BROWSER_SUPPORT = FALSE BROWSER_SUPPORT_DORADO = FALSE SNTP_SUPPORT = FALSE MMS_SUPPORT = NONE SYNCTOOL_SUPPORT = FALSE TCPIP_SUPPORT = FALSE SSL_SUPPORT = FALSE HTTP_SUPPORT = FALS
+完整回答请参考FAQ: FAQ121948
+### 问题: SC9863A 使用PWMA 作为pwm backlight 配置
+解决方案: 1. PWMA pin如下 Pin Name Function 0 Type Function 1 Type Function2 Type Function 3 Type GPIO32 RFCTL13 O PWMA O DBG_BUS13( G0) O GPIO32 I/O/ T 2. Pinmap配置 /u-boot15/board/spreadtrum/sp9863a_xxx/ pinmap-sp9863a.c {REG_PIN_GPIO32, BITS_PIN_AF(1)}, {REG_MISC_PIN_GPIO32, BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_NUL|BIT_PIN_SLP_AP|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE}, 3. 其uboot 相关配置如下 /u-boot15/board/spreadtrum/sp
+完整回答请参考FAQ: FAQ121994
+### 问题: SC9863A平台支持 芯片pin uart5 对应节点
+解决方案: 1. 9863a 芯片内部为 5 控制器 对应dts 配置如下 ,对用节点ttyS0 ttyS1 ttyS2 ttyS3 ttyS4 uart0: serial@70000000 { compatible = "sprd,sc9863-uart", "sprd,sc9836-uart"; reg = <0x70000000 0x100>; interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>; clock-names = "enable", "uart", "source"; clocks = <&apapb_gate CLK_UART0_EB>, <&ap_clk CLK_AP_UART0>, <&ext_26m>; status = "disabled"; }; uart1: serial@70100000 { compatible = "sprd,
+完整回答请参考FAQ: FAQ122030
+### 问题: DDR扫描软件怎么编译
+解决方案: 1.把DDR SCAN的宏定义打开. chipram/arch/arm/cpu/sprd_dmc/r3p0/dmc_sprd_r3p0.h -//#define CONFIG_DDR_SCAN +#define CONFIG_DDR_SCAN 2.串口不出log,需要把串口输出转换到UART1,串口已经能出"DDR"相关字样的log,这一点不需要修改. chipram/arch/arm/cpu/sprd_dmc/r3p0/dmc_sprd_r3p0.c @@ -1845,6 +1845,7 @@ int sdram_init(void) u32 regval; + REG32(0x402A0008) = 0x60400090; dmc_print_str("DDR init start\r\n"); 3.下面修改跟DDR SCAN没有关系,但是由于打开的DDR SCAN后代码量增加,超过了
+完整回答请参考FAQ: FAQ122080
+### 问题: SC9863A 使用PWMB或PWMC 作为pwm backlight 配置
+解决方案: 1.PWMB /C pin如下 我们可以看到,PWMB或PWMC都有两组pin,而PWMA是只有一个pin,PWMA参考"FAQ121994 SC9863A 使用PWMA 作为pwm backlight 配置" Pin Name Function 0 Type Function 1 Type Function2 Type Function 3 Type RFCTL16 RFCTL15 O PWMC(G1) O DBG_BUS15( G0) O GPIO7 I/O/ T GPIO33 RFCTL14 O PWMB(G1) O DBG_BUS14( G0) O GPIO33 I/O/ T U0CTS U0CTS I PWMC(G0) O DBG_BUS12( G1) O GPIO62 I/O/ T KEYOUT2 KEYOUT2 I/O/ T PWMB(G0) O CM4_GPIO7 I/O/
+完整回答请参考FAQ: FAQ122018
+### 问题: LCD和TP的suspend顺序调整
+解决方案: 目前平台默认的休眠流程是lcd suspend 然后进入tp suspend, 对于某些no flash的TP,需在lcd suspend之前,tp suspend完成. kernel/drivers/video/adf/sprd/drv/sprd_adf.c int sprd_adf_interface_dpms_off(struct sprd_adf_interface *intf) { static int adf_blank = DRM_MODE_DPMS_OFF; struct pipe *pipe = intf->data; struct sprd_dispc *dispc; if (!dpms_state) { pr_info("dpms off\n"); return 0; } ++ evdata.info = intf; ++ evdata.data = &adf_bla
+完整回答请参考FAQ: FAQ122053
+### 问题: eMMC降速怎么修改
+解决方案: 1,可以修改平台端 eMMC总线工作模式配置,在kernel工程dts文件,默认配置为最高HS400 模式打开Enhanced Strobe &sdio3 { sprd,hs400es-dly = <0x55 0x7f 0x38 0x38>; sprd,hs400-dly = <0x55 0xd3 0x35 0x35>; sprd,hs200-dly = <0x7f 0xcd 0xcd 0xcd>; sprd,ddr52-dly = <0x32 0x23 0x18 0x18>; vmmc-supply = <&vddemmccore>; voltage-ranges = <3000 3000>; bus-width = <8>; non-removable; cap-mmc-hw-reset; mmc-hs400-enhanced-strobe; mmc-hs400-1_8v; mmc-h
+完整回答请参考FAQ: FAQ122070
+### 问题: SP9863编译眼图方法
+解决方案: 1.在项目工程头文件chipram/include/configs/sp9863_1h10.h//按照如下修改,这里以1h10为例子 #ifdef CONFIG_NAND_SPL #define CLK_DDR_FREQ 933000000 #else -#define CLK_DDR_FREQ 311000000 +#define CLK_DDR_FREQ 933000000 //311000000 eyelog frequency #endif +#define RD_DDR_SCAN 1 //add here for eyelog 2.编译出ddr_scan-sign.bin; 3.下载工具"Main Page" -> SPL_LOADER选项选择编译出来的ddr_scan-sign.bin进行下载后抓取开机到串口停止的log. 4.如果打开了RD_DDR_SCAN后编译,有出现"s
+完整回答请参考FAQ: FAQ125180
+### 问题: 开机向导中的copy apps & data界面后这个选项界面，Go项目不会出现“An iPhone device”这个选项是否正常？
+解决方案:     正常现象,开机向导应用判断低内存版本会隐藏了这个菜单.
+
+    /* access modifiers changed from: private */
+    public void reloadAvailableOptions() {
+        if (!isDestroyed()) {
+            Item restoreWithAndroid = (Item) this.mAdapter.findItemById(R.id.restore_choice_android_device);
+            Item restoreWithIos = (Item) this.mAdapter.findItemById(R.id.restore_choice_ios_device);
+            boolean canStart
+完整回答请参考FAQ: FAQ122107
+### 问题: 从log中是否可以看出锁卡的白名单
+解决方案: LOG在trace中搜索关键字:SIMLockDataReadAndIntegrityCheck, SIM LOCK 例如: SIMLockDataReadAndIntegrityCheck,num_pn:6,numLocks:6;num_pu:0,numsublocks:0;num_sp:0,numsplocks:0;num_cp:0,numcplocks:0 MN_AL 可以看到配置的锁类型为网络锁,白名单个数为6,以及所有白名单列表信息: 11063-1 13:26:53.241 MNRSF:SIM LOCK locks network_num[0x06] MN_AL 11064-1 13:26:53.241 MNRSF:SIM LOCK locks network mcc[0x01cc],mnc[0x0001],mnc_num[0x0002] MN_AL 11065-1 13:26
+完整回答请参考FAQ: FAQ122194
+### 问题: UWE5622和UWP5662的boot模式有哪些？
+解决方案: UWP5662共有两个CPU,一个是BTWF sys,共有3种boot模式:SDIO boot、NOR flash boot、ROM code boot.另一个是GNSS sys,也存在3种boot模式:SDIO boot、ROM code boot、RAM boot from BTWF.而UWE5622为BT/WIFI二合一芯片,不包含GPS.这几种boot模式均由三个strapping pin(RFCTL7、RFCTL6、RFCTL5)来控制.各boot模式描述如下: SDIO BOOT:由host通过SDIO将boot程序下载到IRAM中直接执行. ROM CODE BOOT:通过判断strapping pin状态,如果80ms内通过UART收到连续的三个0x7e,则通过UART与上位机交互下载可执行的程序然后运行.否则sys将处于循环等待状态直到接收到连续的三个0x7e. SPI 
+完整回答请参考FAQ: FAQ122226
+### 问题: Gts7.0 R2测试套件testDeviceProvisioningPackageName项测试fail
+解决方案: 检查gts test log是否有类似以下log信息: 11-06 19:02:31 I/XtsHostTestBase: Test com.google.android.gts.provisioning.ProvisioningAppTest#testProvisioningPackageName: FAILURE 11-06 19:02:31 W/XtsHostTestBase: org.junit.ComparisonFailure: OobConfig must be the device provisioning package when installed. expected:<[com.google.android.apps.work.oobconfig]> but was:<[]> at org.junit.Assert.assertEquals(Assert.java:1
+完整回答请参考FAQ: FAQ122241
+### 问题: SC6531E如何使用AT command来读写IMEI？
+解决方案: feature_phone版本可以使用AT+CGSN读取IMEI modem版本可以使用AT+CGSN读取IMEI,或者使用AT+SGMR读/写IMEI 命令使用方法: 1. AT+CGSN: 直接输入AT+CGSN执行 示例:读IMEI AT+CGSN 2. AT+SGMR: 设置或者获取手机SV,SN,IMEI和Calibration信息 AT+SGMR=<dual_sys>,<op>,<type>,<str> dual_sys: 0:设置或获取SIM卡1信息 1:设置或获取SIM卡2信息 2:设置或获取SIM卡3(如果存在)信息 3: 设置或获取SIM卡4(如果存在)信息 op: 0:读操作 1:写操作 type: 0:SN (忽略dual_sys参数设置) 1:IMEI 2:SV (忽略dual_sys参数设置) 3:Calibration Info (仅支持读操作,且忽略dual
+完整回答请参考FAQ: FAQ122247
+### 问题: 如何检查特定security patch合入情况
+解决方案: Google的Security Patch一般都会在Android Security Bulletins(https://source.android.com/security/bulletin/index.html)网站查找. 此网站可以查找所有的Google Security Patch. 比如要查看CVE-2017-13272 security patch的合入情况.可以参考以下步骤: 1:在Android Security Bulletins网站中的search里直接搜索CVE-2017-13272. 2:一般会有两条结果,打开结果以Android Security Bulletins开头的网页. 3:在新的Android Security Bulletins界面Crtl+F 搜索界面内容CVE-2017-13272. 4:搜索到的内容一般如下,点击对应的References 即可
+完整回答请参考FAQ: FAQ122238
+### 问题: Google CDD要求默认关闭flash screen和去掉orb动画效果
+解决方案: Google CDD要求默认关闭flash screen和去掉orb动画效果,请参考如下修改: --- a/core/res/res/values/config.xml +++ b/core/res/res/values/config.xml @@ -2864,7 +2864,7 @@ <!-- Flag indicating whether the assist disclosure can be disabled using ASSIST_DISCLOSURE_ENABLED. --> - <bool name="config_allowDisablingAssistDisclosure">false</bool> + <bool name="config_allowDisablingAssistDisclosure">true</bool> --- a/packages/System
+完整回答请参考FAQ: FAQ122245
+### 问题: 关于外场环境下，短时间内，之前能测量到的小区未上报
+解决方案: 1.确认是否小区的一阶段就不过门限 log:SRCH: Get Stage1 Threashold (card srchState  Threashold Srch_Mode) 
+ 上述trace用于获取一阶段门限Threashold,如Threashold为308 
+ log:hal_srch: stage1 result 
+ 根据上述log的打印,获取Peak_Energy值, 
+ 例如: 
+ Time: 335564 SRCH: Get Stage1 Threashold (card srchState  Threashold Srch_Mode) (0 1 308 1) 
+ Time: 335564 hal_srch: stage1 result, Peak_Energy[0] = 458, Raw_PSC_Location[0] = 2770	WL1_HAL 
+ T
+完整回答请参考FAQ: FAQ122504
+### 问题: SC2721G DCDC和LDO上电时序具体描述在哪里？有哪些测试建议？
+解决方案: DCDC和LDO上电时序请参考《SC2721G Device Specification_V0.3.pdf》 5.17.1.2 timing章节,时序示意图请参考Figure 5-16,时序参数请参考Table 5-13.  测试建议如下:
+1,将以下电源或信号从测试点或者大电容上飞线.
+2,手机供电3.8V,按下power key触发开机,使用示波器测试时序并保存波形,每相邻两次的测试需要有共同信号.建议顺序如下:
+2.1, 以PBINT为基准,测试PBINT与DCDCCORE相对时序,时序要求: TPWR0+TPWR1.
+2.2, 以DCDCCORE为基准,测试DCDCCORE/DCDCGEN/VDD28/VDDDCXO四个电源的相对时序, 时序要求: DCDCCORE/DCDCGEN/VDD28请参考TPWR2;VDD28/VDDDCXO同时上电,相互间隔50us以内.
+2
+完整回答请参考FAQ: FAQ122536
+### 问题: SC2721G长按Powerkey双键或单键 reset的原理
+解决方案: 长按powerkey(pbint拉低) 触发7s reset功能详述请参考SC2721G Device Specification_V0.3.pdf章节"5.17.3.4 Power key 7s Reset".
+此处做简单介绍如下:
+ 
+	7s resset触发时间可在2s-16s之间配置,由寄存器域"PBINT_7S_RST_THRESHOLD"控制(时间由32K RTC时钟计时,如果无时钟则无法复位).
+按触发方式分类,此功能可以有2种配置,由寄存器域"KEY2_7S_RST_EN"控制:
+1.双键复位,需PBINT+EXT_RSTN配合触发,此配置为芯片默认配置.
+2.单键复位,仅需PBINT触发.
+ 
+
+ 
+	按执行方式分类,此功能可以有4种配置,由寄存器域"PBINT_7S_RST_MODE"和"PBINT_7S_RST_SWMODE"控制:
+1.硬件长复
+完整回答请参考FAQ: FAQ122620
+### 问题: SC2720A&SC2721G PMIC对外置充电IC开启延迟时间的要求
+解决方案: 要求: PMU通过CHG_PD使能charge IC,使能生效到charge IC开始充电的延迟时间不能大于46ms. 带路径管理的充电IC,若PMIC VBATA供电取自充电IC的VSYS输出,则没有此要求. 风险:当电池电压在3V以下,PMU芯片使能充电芯片充电无效,导致电池电压无法继续提高,继而无法正常开机. 原因: 1. PMU在充电开机FGU POCV(校准电池初始电量)过程中,会通过CHG_PD引脚关闭charge IC充电功能,以获取较准确的电池OCV电压. 2. 在POCV过后,PMU通过CHG_PD使能charge IC. 3. 若所用充电IC充电开启时间大于46ms,当电池电压过低,如2.7V,低于UVLO电压,则会发生充电尚未开启PMU就发生重启的现象. 4. PMU重启后,将再次重复上述步骤,导致充不进去电,机器反复重启. 若不得以使用了不满足要求的充电IC,wor
+完整回答请参考FAQ: FAQ122718
+### 问题: 如何修改录音文件默认为3gpp格式？
+解决方案: 目前录音文件默认为是mp3格式,如果需要默认为3gpp格式,请参考如下修改,编译DreamSoundRecorder模块,安装新的DreamSoundRecorder.apk后,进入录音机app info,把缓存数据清空后再测试验证即可.
+vendor/sprd/platform/packages/apps/DreamSoundRecorder
+--- a/src/com/sprd/soundrecorder/SettingActivity.java
++++ b/src/com/sprd/soundrecorder/SettingActivity.java
+@@ -513,7 +513,7 @@ public class SettingActivity extends Activity {
+     }
+
+     public static int getRecordSet
+完整回答请参考FAQ: FAQ122729
+### 问题: [Android 9.0]如何使得Google Photos可以查看有声照片和景深照片？
+解决方案: GMS版本使用的图库是Google Photos,Photos应用本身不能查看和编辑特殊照片,如景深照片(Bokeh )和有声照片,是借助于Gallery应用进行查看的,所以需要做一些适配,添加SprdPhotoEdit.apk和SprdPhotosProvider.apk及签名,请参考如下修改: /vendor/partner_gms/products/gms.mk 加入如下代码后再全部编译,然后复测验证. # SPRD Applications PRODUCT_PACKAGES += \ SprdPhotosProvider \ SprdPhotoEdit # Once we add SprdPhotosProvider above, we also have to configure these properties below: ifneq ($(TARGET_BUILD_VARI
+完整回答请参考FAQ: FAQ122742
+### 问题: Micro USB插入检测过程是什么样的？
+解决方案: 1. 当产品使用Micro USB连接器时,信号连接情况如下: 1.1. VBUS 连接至 PMU VCHG_D信号,作用:PMU充电电路供电、VBUS电压值检测、触发USB枚举Host过程; 1.2. DP/DM 通过PMU桥接至BB端,作用:PMU用于BC1.2检测,理论上通信过程中PMU不会影响DP/DM的电气特性; 1.3. USB_ID 连接至 BB芯片的中断脚,作用:低电平有效,用于触发系统检测Device设备; 2. 当USB OTG线插入时: step1,系统被唤醒:USB_ID被拉低,BB侧产生中断,系统被唤醒; step2,上电:充电芯片OTG功能开机,手机为USB外设供电,BB侧USB3V3模块上电; step3,USB DP/DM检测来自Device的中断,执行USB枚举过程; 3. 当手机作为Device,attach到Host/标准充电器/非标充电器时: ste
+完整回答请参考FAQ: FAQ122796
+### 问题: 开机进入kernel后屏幕会闪一下
+解决方案: 原因分析:uboot与kernel对背光默认亮度都设置为25,但由于两部分配置方式并不相同(uboot部分直接利用电流大小来控制;kernel部分把电流配置为最高,利用duty/mod来控制),所以会导致开机过程中闪屏现象. 解决方案:uboot部分改为与kernel部分一致的控制方式. 修改set_backlight()函数如下: /sprdroid4.4_sfphone_17f_rls1/u-boot15/board/spreadtrum/sl8521e_2h10/sprd_bl.c
+
++#define OUTPUT_CURRENT  0x1F
+ void set_backlight(uint32_t brightness)
+ {
+ ......
+ 
++	#if 0
+ 	if(brightness <= 16)
+ 	{
+ 		__raw_writel(0,0x403
+完整回答请参考FAQ: FAQ122826
+### 问题: [Android8.1]如果不需要DreamSoundRecorder应用，请问如何裁剪？
+解决方案: Android8.1上的录音机应用是DreamSoundRecorder,代码路径位于vendor/sprd/platform/packages/apps/DreamSoundRecorder. 如果项目中不需要编译DreamSoundRecorder应用,请参考如下修改进行裁剪: 1.DreamSoundRecorder应用在系统中有被其他应用相关联,需要去掉关联之处. 例如:vendor/sprd/platform/packages/apps/SprdBrowser/Android.mk 里面有关联DreamSoundRecorder模块,请在关联DreamSoundRecorder的代码前加"#"屏蔽掉,即SprdBrowser应用不再关联DreamSoundRecorder模块. #LOCAL_REQUIRED_MODULES := DreamSoundRecorder 2.需要在
+完整回答请参考FAQ: FAQ122941
+### 问题: UMS321平台如何通过tinyalsa 录音
+解决方案: tinymix -D 0 "VBC ADC0 DG Set" 24 24 tinymix -D 0 "agdsp_access_en" 1 tinymix -D 0 "agdsp_access_a2dp_en" 1 tinymix -D 0 "VBC_IIS_RX2_WD_SEL" 1 tinymix -D 0 "ag_iis1_ext_sel" 1 tinymix -D 0 "ADC LRCLK Select" 1 tinymix -D 0 "ADC1 LRCLK Select" 1 tinymix -D 0 "Mic Function" 1 tinymix -D 0 "ADCL Mixer MainMICADCL Switch " 1 tinymix -D 0 "AUD ADC0L Switch" 1 tinymix -D 0 "AUD ADC0R Switch" 1 tinymix 
+完整回答请参考FAQ: FAQ123029
+### 问题: UMS321平台如何通过tinyalsa 直接播放wav
+解决方案: tinymix -D 0 "VBC DAC0 DSP MDG Set" 0 1024 tinymix -D 0 "VBC DAC0 DG Set" 25 25 tinymix -D 0 "VBC_MUX_DAC0_IIS_PORT_SEL" "VBC_IIS_PORT_IIS0" tinymix -D 0 "VBC_MUX_DAC1_IIS_PORT_SEL" "VBC_IIS_PORT_IIS0" tinymix -D 0 "VBC_MUX_IIS0_PORT_DO_SEL" "IIS_DO_VAL_DAC0" tinymix -D 0 "VBC_MUX_IIS2_PORT_DO_SEL" "IIS_DO_VAL_DAC2" tinymix -D 0 "VBC_MUX_IIS3_PORT_DO_SEL" "IIS_DO_VAL_DAC2" tinymix -D 0 "agdsp_acce
+完整回答请参考FAQ: FAQ123030
+### 问题: VoLTE注册时是否必须使用IMPI、IMPU、Domain参数？
+解决方案: IMPI、IMPU、Domain参数用于标识用户身份.在VoLTE注册构建REGISTER信令时必须使用IMPI、IMPU、Domain参数. IMPI:用户的私有用户身份;IMPU:用户的公共用户身份;Domain:IMS服务器地址. 如果SIM卡中有包含IMPI、IMPU、Domain参数的EF文件(ISIM),则终端使用卡里的参数进行VoLTE注册; 如果SIM卡中没有包含IMPI、IMPU、Domain参数的EF文件(USIM),则终端按照3GPP协议自组以上参数进行VoLTE注册. 使用卡IMSI及PLMN按照协议生成的IMPI, IMPU, Domain参数格式: IMPI:<IMSI>@ims.mnc<MNC>.mcc<MCC>.3gppnetwork.org IMPU:sip:<IMSI>@ims.mnc<MNC>.mcc<MCC>.3gppnetwork.org Doma
+完整回答请参考FAQ: FAQ123113
+### 问题: CLIR 菜单显示
+解决方案: Hide Id 即 CLIR,有些界面显示是call id,全称 CALLING line identification restrication ,在PS域的附加业务中叫OIR(originating identification restriction) 界面菜单 一般显示就是call id或是hide id 子菜单一般有三个选项: 1. Hide ID: CLIR suppression ----就是隐藏主叫号码 2.display own id: CLIR invocation ----就是显示 主叫号码 3. dispaly ID by network decide 网络决定号码的显示隐藏. 无论在CS域还是PS域设置都是在本地设置,也就是说这个值只在本地设置,不会同步到网络.那怎么才能在网络生效呢. 在电话时,对于上面1,2两个选项,UE会将其带到网络. 对于CS域,终端只将号
+完整回答请参考FAQ: FAQ123134
+### 问题: UE上报GSM能力与实际支持频段不符问题
+解决方案: GSM搜网频段在PS_NV_PARAMS\NV_BAND_SELECT中定义: 0x0: EGSM900 0x1: DCS1800 0x2: EGSM900/DCS1800 0x3: PCS1900 0x4: GSM850 0x5: EGSM900/PCS1900 0x6: GSM850/DCS1800 0x7: GSM850/PCS1900 0x8: GSM850/EGSM900 0x9: GSM850/EGSM900/PCS1900 0xA: GSM850/EGSM900/DCS1800 0XB: EGSM900/DCS1800/PCS1900 0XC: GSM850/EGSM900/DCS1800/PCS1900 0XD: DCS1800/PCS1900 0XE: GSM850/DCS1800/PCS1900 GSM 上报频段在PS_NV_PARAMS\NV_PARAM_TYPE_P
+完整回答请参考FAQ: FAQ123236
+### 问题: SC9863A DDR电压修改
+解决方案: 9863A DDR电压的修改有两处, 一个是工程头文件 #if (CFG_DRAM_TYPE == DRAM_LPDDR3) #define LDO_MEM 1200 #else #define LDO_MEM 1100 #endif 另一个是ddr/ddr_init/init/ddrc/r1p0/ddrc_r1p0.c void ddr_power_cfg(void) { if(DRAM_LPDDR3 == ddr_chip_cur.chip_type) { regulator_set_voltage("ldomem",1200); } else { regulator_set_voltage("ldomem",1100); lpddr4x_vddq_en(); } } 比如,要把lpddr4的ddr电压升高50mv a, 工程头文件 #if (CFG_DRAM_TYPE == DRAM
+完整回答请参考FAQ: FAQ123245
+### 问题: sc7731e, sc9820e, sc9832e ddr scan 不出scan log的处理方法
+解决方案: 存在如下两个原因: 1, 需要正确打开DDR SCAN功能,且下载正确的bin 打开CONFIG_DDR_SCAN, chipram\arch\arm\cpu\sprd_dmc\r3p0\dmc_sprd_r3p0.h /*configed burst length.Uncommitted to enable it*/ //#define CFG_BL 4 //#define CONFIG_DDR_SCAN + #define CONFIG_DDR_SCAN //#define CFG_DRAM_TYPE DRAM_LPDDR3 #define CFG_IS_UNSYMMETRY_DRAM 0 #define CFG_UNSYMMETRY_DRAM_MODE DDR_6Gb_10_COL_MODE 下载编译出来的的是u-boot-spl-16k-sign.bin,不要下载ddr_scan-
+完整回答请参考FAQ: FAQ123250
+### 问题: SENSORHUB平台如何调试一颗新SENSOR
+解决方案: 在sensorhub平台,客户若要调试一颗新的sensor,sensorhub是没有具体的sensor驱动,sensor驱动是opcode方式,即是填寄存器.可以参考以下步骤,涉及到的文档都可以在isupport上搜索: 1、准备sensor的opcode文件 参考文档 《sensorhub_opcode客户化配置文档》,里面介绍如何写单独sensor的opcode文件; 也可以参考平台自带同一类型sensor的opcode来修改,一般来说sensor厂商的fae对自家芯片寄存器比较熟悉,可由fae提供. 2、添加新sensor opcode 参考faq:FAQ113517 如何在支持sensorhub的平台添加新的acc sensor或plsensor? 3、debug 先确认是否正常读到id,读id方式参考FAQ : FAQ113507 sensorhub调试过程中如何读取sensor
+完整回答请参考FAQ: FAQ123261
+### 问题: GSM信道接收灵敏度受26MHz倍频影响，在NV中配置dc-remove方法
+解决方案: 参考主板射频匹配调试完毕后的GSM灵敏度全信道扫描结果,发现部分信道传导灵敏度较低,问题体现为单个信道灵敏度不达标,比如GSM900 CH5灵敏度只有-105,但CH4 CH6灵敏度正常,手动信令测试接收灵敏度-108以下.这种情况一般是26MHz杂讯泄露到相关信道导致的接收机钝化.对该信道进行去直流配置是处理此问题的一种方法. 与26MHz倍频点重叠的信道号(NV默认存储了以下信道) BAND ARFCN RANGE ARFCN ARFCN HEX NV VALUE BAND NV VALUE HEX GSM 900 EGSM 900 [0~124] [975~1023] 5 5 0 5 70 46 46 DCS 1800 [512~885] 521 209 1000 1209 586 24A 124A 651 28B 128B 716 2CC 12CC 781 30D 130D 846
+完整回答请参考FAQ: FAQ123428
+### 问题: 手机显示当前小区信号强度和真实输入（现网或者仪表输入）有较大偏差该怎么办
+解决方案: 1. 首先确认SIM卡是否插入,如果插入,SIM卡是否是有效SIM卡;如果无SIM卡,或者空SIM卡,则现网下手机可能会紧急驻留,紧急驻留的时候,手机界面应该不会显示小区信号强度(显示的值为0); 2. 确认当前软件版本是否正确,更换其他版本软件包是否可以解决问题?如果解决,可能排除手机硬件有问题;手机NV等配置选项有问题可能性比较大,建议对比正确版本和异常版本之间的NV差异; 3.如果更换很多软件包测试之后,手机界面显示信号强度和真实信号强度仍然偏差很大,请再看看相同型号其他测试机是否都是如此问题?如果只有单一 一台测试出现问题,则此手机硬件出问题可能性比较大; 如果所有测试机都是类似问题,则软件包NV配置错误可能性比较大; 建议继续对手机做综测校准(当前做GSM网络下测试,因此主要校准GSM),看校准是否可以pass(AGC相关选项校准必须pass); 如果综测校准fail,请首先解决
+完整回答请参考FAQ: FAQ123515
+### 问题: GSM网络下短信收发流程简介
+解决方案: 1. 短消息中心(SC) 短消息中心是独立与GSM网络的一个业务处理系统,主要功能是提交,存储,转发短消息;并完成与PSTN(公共电话网络)、ISDN(综合业务数字网)、PSPDN(分组交换数字网)等网络的互通,以实现来自其他短消息节点的短消息传递; 2. 手机发送短消息流程 a. 移动台MS向VLR提交访问请求和可选的鉴权请求; b. 移动台MS向MSC(移动交换中心)提交短消息; c. MSC向网关SMS-IWMSC上传短消息; d. SMS-IWMSC向SC提交短消息; e. SC向SMS-IWMSC回答应答(ACK 或 error); f. SMS-IWMSC向MSC回答应答(ACK 或 error); g. MSC向MS回答应答(ACK 或 error); 以上MO流程较为简单; 3. 手机接收短消息流程 a. 短消息中心SC向网关SMS-GMSC提交消息传送请求; b. 网关S
+完整回答请参考FAQ: FAQ123516

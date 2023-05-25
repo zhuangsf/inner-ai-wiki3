@@ -1,0 +1,328 @@
+### 问题: How to fix bluish or yellowish of phase 2 when using flash
+解决方案: In some phone it always shows bluish or yellowish when preview or captured pictures with flash on. It is because the flash led has different CT during pre-flash and major flash. So in this case, it needs to tune the RGBs of pre-flash and major flash respectively. The new isp tools(V1.1.0.7 and newer) support tuning flash major-flash and pre-flash online. In dark-room, using Mlog (setting awbd.txt 
+完整回答请参考FAQ: FAQ68956
+### 问题: 如何用ISP新算法继承老算法参数和效果
+解决方案: 处置思路 老算法只有一组参数,而新算法有多组参数,并且根据环境选择使用哪一组参数.在新参数的数据结构中,老算法对应下标为0的那一组.所以,可以将各组参数配置为老算法参数,让新算法实际根据环境切换时,参数一直不变就可以达到老算法的效果. 处置步骤 Step 1: 将awb的alg_id置为1 检查驱动文件和参数文件,将awb的alg_id置为1. 这里需要强调必须检查驱动文件中的Sensor_InitRawTuneInfo函数,不应有sensor_ptr->awb.alg_id = 0,这样的代码出现,如果有则把与之有关的这些都删掉,让Sensor_InitRawTuneInfo函数是一个空函数是最安全的做法. Step 2: 连接手机,打开参数文件,并保存 对于1.1.1.0以后的ISP tool版本,需要进行这一步操作.连上手机后打开参数文件,不做任何修改,点击保存. Step 3: 文
+完整回答请参考FAQ: FAQ68959
+### 问题: android5.1 user版本如何开启usb调试模式
+解决方案: 在user版本下开启usb调试会影响手机性能,请谨慎使用. 修改方法如下: 1、打开usb调试 alps/build/core/main.mk 请将user版本下也改为ro.debuggable = 1(0为不打开usb调试,1为打开usb调试) 2、关闭授权框提示 device/sprd/scx35/device.mk 这个ro.adb.secure=0(0为不显示信任此电脑,1为显示信任此电脑) 3、关闭Slog,执行完第一步之后Slog会默认打开,所以这里可以选择将其判断条件改为根据ro.build.type属性打开或者关闭Slog. /vendor/sprd/open-source/tools/slog/parse_conf.c - property_get("ro.debuggable", buffer, "") - if (strcmp(buffer, "1") != 0) {
+完整回答请参考FAQ: FAQ80027
+### 问题: 为何在配置邮件帐户时弹出的“无法连接到服务器”的提示框中含有乱码？
+解决方案: 在新建邮件帐户时,会通过packages\apps\Email\src\com\android\email\activity\setup\AccountCheckSettingsFragment.java文件中的AccountCheckTask类的doInBackground()方法,获取服务器的返回结果.调用reportProgress()方法显示进度信息.如果验证出差,会调用CheckSettingsErrorDialogFragment.getErrorString()获取提示信息,并最终显示在提示框中. 在CheckSettingsErrorDialogFragment.getErrorString()的default case中,会根据MessagingException中包含的message信息,组织提示内容.若message信息为空,则直接提示"无法连接到服务器";若mess
+完整回答请参考FAQ: FAQ68978
+### 问题: 如何删除搜索应用和浏览器中的搜索引擎
+解决方案: 由于搜索应用与浏览器的搜索绑定,在删除浏览器的搜索引擎的同时也需要删除搜索应用中的引擎. 以删除百度和bing搜索引擎为例: 1.搜索应用中的修改如下: packages/apps/SprdQuickSearchBox/src/com/android/quicksearchbox/preferences/SearchEngineFragment.java diff --git a/src/com/android/quicksearchbox/preferences/SearchEngineFragment.java b/src/com/android/quicksearchbox/preferences/SearchEngineFragment.java old mode 100644 new mode 100755 index c97146b..cd3d160 --- a/src/com
+完整回答请参考FAQ: FAQ69011
+### 问题: 在native mmi的工厂测试模式下如何添加重启手机的功能
+解决方案: 在native mmi下添加reboot手机的功能,需要两方面的修改: 1,菜单的添加: 将菜单添加在展讯工厂测试模式的主界面,方法如下: vendor/sprd/open-source/apps/factorytest/res/menu_root.h MENUTITLE(0,0,PHONE_REBOOT, phone_reboot) //添加此项 vendor/sprd/open-source/apps/factorytest/res/string_cn.h #define MENU_PHONE_REBOOT "< 重启" //添加此项 2,reboot的实现: 在vendor/sprd/open-source/apps/factorytest/factorytest.c下面添加如下修改: static int phone_reboot(void); //添加此声明 static int
+完整回答请参考FAQ: FAQ69055
+### 问题: 1、定时器ID是如何分配的，相同的定时器ID是随机分配的吗？
+解决方案: MMI调用 create 函数返回定时器ID,目前有两种封装,最终都是调用 mmk_timer.c里面的LOCAL uint8 CreateTimer( MMI_HANDLE_T owner_handle, MMI_TIMER_FUNC func, //timer callback uint32 param, //timer param uint32 time_out, //Specifies the expire value in milliseconds BOOLEAN is_period, //the period timer if is_period is TRUE //the once timer if is_period is FALSE const char* file_name_ptr, uint32 file_line ) 接口来获取timer ID,默认从0x00到0x
+完整回答请参考FAQ: FAQ69088
+### 问题: ro.build.fingerprint 属性超长修改
+解决方案: 修改方式: 组成ro.build.fingerprint的各项prop是在build/tools/buildinfo.sh中设置的; 路径:frameworks\base\core\java\android\os\build.java 在build.java中这个属性是由如下属性组合而成: finger = getString("ro.product.brand") + '/' + getString("ro.product.name") + '/' + getString("ro.product.device") + ':' + getString("ro.build.version.release") + '/' + getString("ro.build.id") + '/' + getString("ro.build.version.incremental") + ':' + ge
+完整回答请参考FAQ: FAQ69073
+### 问题: 一键清理无法退出FM、音乐等后台应用
+解决方案: 进入menu 左右滑动清除应用调度的是ams.removetask,removetask主要做的操作是 removeTask()—>cleanUpRemovedTaskLocked()方法以及最后执行到Process类的killProcessQuiet()方法,在cleanUpRemovedTaskLocked()方法中根据当前进程设置的SchedGroup来判断是否需要立即杀死进程,还是等待 因为音乐应用当前有service在前台运行,设置了其进程默认的组别为 Process.THREAD_GROUP_DEFAULT,进入proc kill时设置了等待kill,进程没有被kill ,service没有被停止 if (pr.setSchedGroup == Process.THREAD_GROUP_BG_NONINTERACTIVE) { pr.kill("remove task", tr
+完整回答请参考FAQ: FAQ69157
+### 问题: 修改DDR参数后导致OTA升级出错。
+解决方案: 展讯平台对于spl-16k及bootload 和modem bins都采用整包升级的方式, 出现这个问题, 看起来好像是客户base版本和手机里的版本不一致导致的, 实际上请客户做了对比, 确认没有问题. 另, 如果客户回退DDR参数修改后可以升级, 那就说明和base版本不一致无关. 从代码流程上看来, 目前出错是由于spl采用了差分升级方式导致的, 由于spl-16k在展讯平台OTA升级过程中需要做一些处理, 所以必须要整体升级的方式升级, 请客户检查modem.cfg是否包含了spl-16k, 另请检查下面的地方: vendor/sprd/open-source/tools/ota/releasetools.py中下面语句中spl_merge的值是否为true partion_spl = PartitionIncrementalUpdater("/spl", "u-boot-spl-
+完整回答请参考FAQ: FAQ69162
+### 问题: 在userdata或system分区预置内容后， 工具下载失败
+解决方案: 工具下载失败时, 请在工具可在执行目录下, 修改BMTimeout.ini和Channel.ini文件: 将BMTimeout.ini中的 [Log] Enable = 0 修改为 [Log] Enable = 1 将Channel.ini中的 Level = 0 修改为 Level = 5 然后去下载, 看是否有下面的错误信息: 16:44:07:156(3.379148) Start Data( Partition:"userdata", Size:0x0EC352AC): Fail. [138:Image size is over its partition] 16:44:07:156(3.379281) Fail at end YAFFS_IMG2---DownloadByID operation 出现这个错误, 如果对比使用fastboot下载又不出错; 则就是download时
+完整回答请参考FAQ: FAQ69247
+### 问题: 如何实现从内置SD卡升级。
+解决方案: 展讯平台默认支持当内置SD卡为物理卡时从内置卡升级. 如果内置SD卡为模拟卡, 即和data分区共享同一分区空间, 则可以参考下面的修改来支持从内置卡升级: 1. 首先确认内置卡是模拟卡还是物理卡, 如果是物理卡, 本身就是支持的. 检查device/sprd/xxx_product.mk中STORAGE_INTERAL的定义是emulated还是physical. 2. 如果是模拟卡, 在device/sprd/platform/storage_device.mk中添加下面的定义: +$(warning warning :STORAGE_INTERNAL: $(STORAGE_INTERNAL)) +ifeq ($(STORAGE_INTERNAL), emulated) +# recovery config: update from interanl storage + $(warni
+完整回答请参考FAQ: FAQ69248
+### 问题: 软件上如何规避音量键按一次会概率性响应两次按键事件
+解决方案: 如果想软件上对音量键进行防抖处理,可以这样修改: 在frameworks\base\policy\src\com\android\internal\policy\impl\phonewindowmanager.java文件中做以下修改: //在类中定义成员变量: private boolean isDropVolumeKey = false; //定义handleMessage处理的消息ID: private static final int MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK = 4; private static final int MSG_DROP_VOLUME_KEY_EVENT = 5; //handleMessage处理消息: private class PolicyHandler extends Handler { @Ov
+完整回答请参考FAQ: FAQ69302
+### 问题: 刷机和恢复出厂设置的时候重置 RTC 的时间到默认值
+解决方案: 1、刷机重置 RTC请在以下函数中加入 sprd_clean_rtc();: u-boot64/common/cmd_download.c int do_download(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]) 2、恢复出厂设置重置 RTC请在以下函数中加入 sprd_clean_rtc();: 请在bootable/recovery/recovery.cpp中 添加reset_rtc_time()函数并在擦除data分区后调用之. 具体函数定义为: static void reset_rtc_time(void) { struct tm tm; int fd; tm.tm_sec = 0; tm.tm_min = 0; tm.tm_hour = 0; tm.tm_mday = 1; tm.tm_mon = 0;
+完整回答请参考FAQ: FAQ69336
+### 问题: 为何5.1之后闹钟应用即使设置小于5s的定时器，触发的时间同样是5s
+解决方案: 因为上层闹钟应用在设置一个action = times_up 的定时器下来的时候,到Framework层,会有相关判断 在AlarmManagerService.java中 final long nowElapsed = SystemClock.elapsedRealtime(); final long nominalTrigger = convertToElapsed(triggerAtTime, type); // Try to prevent spamming by making sure we aren't firing alarms in the immediate future final long minTrigger = nowElapsed + MIN_FUTURITY; //MIN_FUTURITY =5 ×1000 final long triggerElapsed 
+完整回答请参考FAQ: FAQ69348
+### 问题: 5.1上设置重复闹钟的时间最小是1min
+解决方案: 5.1 之后AlarmManagerService.java中的代码对于上层设置的重复 alarm (这里称为警报器服务,不仅仅指闹钟)的时间会有相应的限制 // Sanity check the recurrence interval. This will catch people who supply // seconds when the API expects milliseconds. if (interval > 0 && interval < MIN_INTERVAL) { Slog.w(TAG, "Suspiciously short interval " + interval + " millis; expanding to " + (int)(MIN_INTERVAL/1000) + " seconds"); interval = MIN_INTERVAL; } 上述代
+完整回答请参考FAQ: FAQ69349
+### 问题: 5.1之后拨号盘长按出现的 背景圆圈的半径很大，如何修改
+解决方案: 5.1之后每次touch的事件之后都会有一个向外扩散的动画,这是新增的:Ripple.具体的实现是在Ripple.java 这里举例拨号盘的设置: packages/apps/PhoneCommon/res/drawable/btn_dialpad_key.xml <ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="?android:attr/colorControlHighlight" android:background="?android:attr/selectableItemBackground" //这里可以设置圆圈的背景色 /> 这里先讨论如何解决圆圈大小的问题, 在RippleDrawable.java中有很多的公共api接口. 针对拨号盘的修改如下: --- a/
+完整回答请参考FAQ: FAQ69352
+### 问题: Camera seneor 驱动如何实现特定的上下电函数
+解决方案: Camera sensor主要在sensor_drv.c中实现上下电: 上电: Sensor_Open -> _Sensor_PowerUpHandle->Sensor_PowerOn(SCI_TRUE) 下电: Sensor_Close->Sensor_PowerOn(SCI_FALSE); 具体函数如下: LOCAL void Sensor_PowerOn(BOOLEAN power_on) { ... // call user func if(PNULL != power_func) { power_func(power_on);//如果在SENSOR_IOCTL_FUNC_TAB_T结构体中注册了上下电函数,即使用注册的 } else//否则走下面默认的上下电时序 { if(power_on) { // Open power Sensor_SetVoltage(dvdd_val, 
+完整回答请参考FAQ: FAQ69366
+### 问题: 在视频播放器中如何添加只有一个按钮的线控耳机功能？
+解决方案: 新功能需求:针对使用只有一个按钮的线控耳机听视频时,短按耳机上的按钮可以实现暂停/播放功能,长按该按钮可以实现播放下一个视频的功能,其中短按功能在代码中已经实现,长按功能请参考如下代码进行修改: 修改文件如下: /packages/apps/Gallery2 --- a/src/com/android/gallery3d/app/MoviePlayer.java +++ b/src/com/android/gallery3d/app/MoviePlayer.java @@ -1322,9 +1322,16 @@ public class MoviePlayer implements MediaPlayer.OnErrorListener, // Below are key events passed from MovieActivity. public boolean onKeyDown(
+完整回答请参考FAQ: FAQ69501
+### 问题: insmod ko version magic不一致，如何插入ko
+解决方案: 在开发kernel driver时,总是会遇到讨人厌的vermagic检查,只要目前在run的kernel版本跟driver编译时用的kernel版本不一致,就没办法insmod.
+insmod sdio.ko
+sdio: version magic '2.6.28-271-gec75a15 preempt mod_unload modversions ARMv7 '
+should be '2.6.28 preempt mod_unload ARMv7 '
+insmod: init_module 'sdio.ko' failed (Exec format error)
+这大大降低了开发速度,尤其是当你拿不到客户在用的kernel时,又要开发driver给他用,真的是很麻烦……
+ 有一个简单的办法可以尝试一下, 修改kernel 检测代码不做版本检测: kernel/module
+完整回答请参考FAQ: FAQ69532
+### 问题: 使用谷歌搜索替换原生的系统搜索时，请在视频播放器中做如下修改？
+解决方案: 因为视频播放器中原来跳转到搜索是默认为跳转到系统搜索,如果手机端使用谷歌搜索替换了原生的系统搜索,请修改如下文件: /packages/apps/Gallery2 --- a/src/com/android/gallery3d/app/MovieActivity.java +++ b/src/com/android/gallery3d/app/MovieActivity.java @@ -30,6 +30,7 @@ import android.app.KeyguardManager; import android.app.ProgressDialog; import android.app.Service; import android.content.AsyncQueryHandler; +import android.app.SearchManager; import android
+完整回答请参考FAQ: FAQ69566
+### 问题: 功耗测试过程中，如何抓取smsg log？
+解决方案: smsg log即smsg信息,用于进一步分析cp唤醒ap,sipc 通道上的log,输出在kernel log中,smsg 关键字的log. smsg log能将cp侧的操作更为详细的显示在kernel log中,抓取smsg log可以让研发更准确定位问题. 抓取方法: 1.adb root 2.adb shell 3.echo "file smsg.c +p" > /d/dynamic_debug/control(手机掉电后需重新执行如上命令开启smsg log) 例如: 开了会多如下红色部分,根据channel 信息,可基本判断是什么原因CP 唤醒AP 07-09 04:34:12.438 <4>[12067.649291] c0 wake up by cp0 07-09 04:34:12.438 <6>[12067.649291] c0 Suspended for 0.235 s
+完整回答请参考FAQ: FAQ69595
+### 问题: CTS测试出现常见fail项如何进行初步排查
+解决方案: CTS常见手机配置相关fail项以及修改方法: (1)libcore.java.net.InetAddressTest-- test_isReachable 无法登入国外网站,需要翻墙wifi,请重新连接翻墙wifi (2)com.android.cts.aadb.TestDeviceFuncTest-- testSyncFiles_extStorageVariable junit.framework.AssertionFailedError at junit.framework.Assert.fail(Assert.java:48) -- testSyncFiles_normal 以上两条是测试的时候没有调整时区. (3)android.admin.cts.DeviceAdminActivationTest—testActivateGoodReceiverDisplaysActivati
+完整回答请参考FAQ: FAQ69652
+### 问题: 7731 5.1平台camera应用中如何调整拍照分辨率菜单？
+解决方案: 7731 5.1平台基线自带camera应用中,如需调整拍照分辨率菜单,可参考以下步骤. 1. 确认所需的最高拍照resolution,根据该尺寸修改BoardConfig.mk中的定义: CAMERA_SUPPORT_SIZE := xM FRONT_CAMERA_SUPPORT_SIZE := yM BoardConfig.mk所在路径: /device/sprd/<board_name>/BoardConfig.mk 所修改的定义会影响/vendor/sprd/open-source/libs/libcamera/Camera.mk中哪一个编译开关被打开: LOCAL_CFLAGS += -DCONFIG_CAMERA_SUPPORT_xM LOCAL_CFLAGS += -DCONFIG_FRONT_CAMERA_SUPPORT_yM 进而影响/vendor/sprd/open-s
+完整回答请参考FAQ: FAQ69766
+### 问题: 修改FM2351驱动模块中搜索频率范围
+解决方案: 在/kernel/drivers/misc/fm_2351/sr2351_fm_ctrl.h文件中针对50kHz和100kHz搜台步长分别定义了起止搜索频率宏定义MIN_FM_FREQ和MAX_FM_FREQ,首先需要对它们进行修改.下面列出的代码便是91~106.4MHz的宏定义. #ifdef CONFIG_FM_SEEK_STEP_50KHZ #define MAX_FM_FREQ 10640 #define MIN_FM_FREQ 9100 #else #define MAX_FM_FREQ 1064 #define MIN_FM_FREQ 910 #endif 另外,2351频率搜索的过程没有针对频率上限进行处理,具体修改方法如下. 在/kernel/drivers/misc/fm_2351/sr2351_fm_rf.c文件中的sr2351_fm_seek函数中,在对输出参数*f
+完整回答请参考FAQ: FAQ69854
+### 问题: 蓝牙打开和关闭时，蓝牙会发出什么广播？
+解决方案: 广播为: BluetoothAdapter.ACTION_STATE_CHANGED 发出的地方在: BluetoothManagerService.java bluetoothStateChangeHandler函数中 Intent intent = new Intent(BluetoothAdapter.ACTION_STATE_CHANGED); intent.putExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, prevState); intent.putExtra(BluetoothAdapter.EXTRA_STATE, newState); intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT); if (DBG) Log.d(TAG,"Bluetooth S
+完整回答请参考FAQ: FAQ69862
+### 问题: 正确修改sensor name
+解决方案: 是支持参数push调试的. 出问题的原因是由于客户修改了驱动文件中的sensor name,但是没有正确修改参数文件中的名字 SENSOR_INFO_T g_sensor_hi551_mipi_raw_FS031_CF9_info结构体下的sensor_name 2592, // max width of source image 1944, // max height of source image "hi551_FS031_CF9", // name of sensor 参数文件名字为sensor_hi551_raw_param_FS031_CF9.c 正确的配置应该是sensor_sensorname_raw_param.c,即sensor_hi551_FS031_CF9_raw_param.c; 打开文件后发现内部的所有数据结构名字是以hi551作为sensorname的,应该是以
+完整回答请参考FAQ: FAQ69871
+### 问题: WIFI Direct是如何扫描到其他设备的？
+解决方案: P2P Device Discovery的工作流程包含两个状态和两个阶段. 两个状态: Search State:在该状态中,P2P Device将在2.4GHz的1,6,11频段上分别发送Probe Request帧.这几个频段被称为Social Channels.为了区别非P2P的Probe Request帧,P2P Device Discovery要求必须在Probe Request帧中包含P2P IE. Listen State:在该状态下,P2P Device将随机选择在1,6,11频段中的一个频段(被选中的频段被称为Listen Channel)监听Probe Request帧并回复Probe Response帧.值得指出的是,Listen Channel一旦选择好后,在整个P2P Discovery阶段就不能更改.另外,在这个阶段中,P2P Device只处理那些包含了P2P
+完整回答请参考FAQ: FAQ69881
+### 问题: android5.1如何使通话界面点击添加通话过程中，不转变静音状态
+解决方案: 添加通话时做了mute操作.如需修改,请做以下修改:packages/apps/InCallUI/src/com/android/incallui/CallButtonPresenter.java的public void addCallClicked() public void addCallClicked() { // Automatically mute the current call /* SPRD: fix bug 432259 @{ */ if (mCall != null && mCall.getIsVideoStateChange()) { Toast.makeText(getUi().getContext(), R.string.call_video_state_change_add, 0).show(); return; } /* @} */ /*mAutomatica
+完整回答请参考FAQ: FAQ82604
+### 问题: 2351FM模块代码结构
+解决方案: FM2351软件共分为五层,其具体代码实现主要分布在APP、Framework、HAL、Driver层中,如下图所示为FM整体软件架构. 其中APP位于目录packages/apps/FMPlayer/下;Framework层位于目录frameworks/base/core/java/android/hardware/fm/下,其具体文件及作用如表1所示;HAL层实现文件为vendor/sprd/partner/trout/libfm/libfm_trout.c,生成库文件fm.sc8830.so用于打开misc节点,调用驱动层ioctl函数;JNI包含两个文件,frameworks/base/core/jni/fm/android_hardware_fm.cpp和frameworks/base/core/jni/fm/KTFmImpl.cpp,生成库文件libandroid_runtim
+完整回答请参考FAQ: FAQ69890
+### 问题: 蓝牙配对过程中有时会出现两台机器弹出的密码不一致
+解决方案: 通过查看log,发现在收到user confirm request之后,发现还没有取得对端的名字,因此调用函数BTM_ReadRemoteDeviceName去获得对端名字,等名字获取成功之后,调用bta_dm_pinname_cback来完成配对过程.但是由于没有将passkey存入到bta_dm_cb.num_val,导致放的依然是上一次的值,所以导致两端不匹配. 这里只需将保存passkey的操作移到获取对方的名字之前就可以了,代码如下: ++bta_dm_cb.num_val = sec_event.key_notif.passkey = p_data->key_notif.passkey; if(BTM_SP_CFM_REQ_EVT == event) { /* Due to the switch case falling through below to BTM_SP_KEY_
+完整回答请参考FAQ: FAQ69898
+### 问题: WIFI Direct 连接成功后MAC地址是否会改变？
+解决方案: WIFI Direct连接成功后,使用的MAC地址会改变; 在进行WIFI Direct连接过程中,Android使用的是p2p0接口的MAC地址,用来和对端通信, 在Group Negotiattion过程中,会协商出一个虚拟MAC地址用来进行通信: P2P Attribute ID: 13 P2P Device Info [75] Length: 33 [76-77] Device Address: 66:EB:59:34:37:CD [78-83] Config Methods: 0x0188 [84-85] xxxx xxx. .... .... Reserved .... ...1 .... .... Keypad: yes .... .... 1... .... Pushbutton: yes .... .... .0.. .... NFC Interface: no ....
+完整回答请参考FAQ: FAQ69899
+### 问题: 7731平台LCD背光最大亮度占空比大约70%不到100%
+解决方案: 展讯平台默认LCD背光使用的是PWM mode,占空比的设置与亮度是对应的,亮度的范围是从0到255,对应的占空比就是0%到100%,之所以将亮度值调到最大0xff,占空比不到100%,硬件测量出来大约70%,原因是我们的背光代码中对占空比进行了类似限流方面的处理,具体的代码路径如下: 1. 没定义CONFIG_THERMAL_BL宏 sprd_backlight.c sprd_bl_pwm_update_status函数 led_level = led_level * 67 / 100; 根据需要可以将67改为需要的数值,如果希望是100%的占空比,那就改为: led_level = led_level * 100 / 100; 或者直接注释掉.这个有可能会影响功耗,需要验证. 2.定义了CONFIG_THERMAL_BL宏 #ifdef CONFIG_THERMAL_BL if(led
+完整回答请参考FAQ: FAQ69957
+### 问题: 802.11(wifi)的MAC层功能
+解决方案: MAC层是802.11的主要功能部分.上层应用通过调用MAC层提供的接口原语调用MAC层的功能. MAC一共向上提供了2大类接口原语,共30种.数据(1)和管理(29).数据部分就是提供普通数据包的收发接口,管理部分是主要功能部分,例如发起认证、连接、信道扫描等其它所有管理功能,如下表所示:(并非所有的原语都是可调用的,一部分是indication形式的向上通知.有request的是可以调用的()) 数据部分 数据 MA-UNITDATA 管理部分 电源管理 MLME-POWERMGT 信道扫描 MLME-SCAN 时间同步 MLME-JOIN 认证 MLME-AUTHENTICATE 断开认证 MLME-DEAUTHENTICATE 建立连接 MLME-ASSOCIATE 重新连接 MLME-REASSOCIATE 断开连接 MLME-DISASSOCIATE 复位 MLME-RESET
+完整回答请参考FAQ: FAQ69913
+### 问题: wifi 省电模式原理简介
+解决方案: 802.11为STA定义了两种和电源相关的状态,分别是Active模式和PS(Power Save)模式. 处于PS模式下,无线设备将关闭收发器(transceiver)以节省电力. STA为了节电而关闭数据收发无可厚非,怎么保证数据传输的连贯性呢?下面讨论基础结构型网络中省电模式的知识.在这种网络中,规范规定AP为了保证数据传输的连贯性,其有两个重要工作. 1、AP需要了解和它关联的STA的电源管理状态.当某个STA进入PS状态后,AP就要做好准备以缓存发给该STA的数据帧.一旦STA醒来并进入Active模式,AP就需要将这些缓存的数据发送给该STA.注意,AP无须PS模式,因为绝大多数情况下,AP是由外部电源供电(如无线路由器).在AP中,每个和其关联的STA都会被分配一个AID(Association ID). 2、AP需要定时发送自己的数据缓存状态.因为STA也会定期接收信息(相
+完整回答请参考FAQ: FAQ70053
+### 问题: 如何关闭USB PHY的DMA
+解决方案: 对于USB模块: 现在支持DMA模式,在手机作为slave的时,支持使用DMA Descriptor.在手机作为Host的时候,支持使用DMA buffer. 那么如何关闭和打开这个功能呢? 可以做如下修改: --- a/drivers/usb/gadget/dwc_otg/dwc_otg_driver.c +++ b/drivers/usb/gadget/dwc_otg/dwc_otg_driver.c @@ -164,8 +164,8 @@ struct dwc_otg_driver_module_params { static struct dwc_otg_driver_module_params dwc_otg_module_params = { .opt = -1, .otg_cap = 2, - .dma_enable = 1, - .dma_desc_enable = 1, 
+完整回答请参考FAQ: FAQ70083
+### 问题: Android 4.4 的UUI版本中如何调整滑动解锁界面上相机、信息、拨号和解锁这四个的位置？
+解决方案: 系统默认位置为:上——>信息,下——>拨号,左——>相机,右——>解锁. 以将其对应位置改为:上——>相机,下——>拨号,左——>信息,右——>解锁为例: 定位到 /frameworks/base/packages/Keyguard/res/values/Arrays.xml 修改前:     <array name="lockscreen_targets_with_camera_uui">
+        <item>@drawable/ic_lockscreen_unlock</item>
+-        <item>@drawable/ic_lockscreen_sms</item>
+-        <item>@drawable/ic_lockscreen_camera</item>
+        <item>@drawable/ic_lockscreen_call<
+完整回答请参考FAQ: FAQ79927
+### 问题: USB slave端的中断处理
+解决方案: 7731平台上,手机作为slave设备的时候,需要及时的相应vbus上的中断,而这个中断处理是在哪儿做的呢? 中断处理例程,定义在dwc_otg_pcd_linux.c中: static irqreturn_t usb_detect_handler(int irq, void *dev_id) { struct gadget_wrapper *d; int value = 0; #ifndef DWC_DEVICE_ONLY /* *if otg cable is connected , id state =0 *as host turn on vbus, in this case shouldn't call this handler */ if(!usb_get_id_state()) return IRQ_HANDLED; #endif d = gadget_wrapper; if 
+完整回答请参考FAQ: FAQ70088
+### 问题: OTG的中断在哪儿进行处理？
+解决方案: 针对7731平台,多家客户要求支持OTG功能,而这个otg idpin的中断是在哪儿做的接收和处理呢? 接收中断:dwc_otg_hcd_linux.c中: static irqreturn_t usb_otg_cable_detect_handler(int irq, void *dev) { dwc_otg_device_t *otg_dev = dev; int value = 0; int vbus_irq; vbus_irq = usb_get_vbus_irq(); value = usb_get_id_state(); if (value){//idstate为1,高电平,表示有设备拔出.idstate为0,低电平,表示有设备插入. pr_info("usb otg cable detect plug out\n"); usb_set_id_irq_type(irq, OTG
+完整回答请参考FAQ: FAQ70091
+### 问题: 如何在android5.1的launcher界面的AOSP日历图标上添加未读日程事件数目？
+解决方案: 修改文件:/packages/apps/Launcher3/src/com/android/launcher3/SprdUnreadInfoManager.java +    private static ComponentName sCalendarComponentName = new ComponentName("com.android.calendar",
++          "com.android.calendar.AllInOneActivity");
+
++    private static final int MATCH_CALENDAR = 5;
+     static {
+         sURIMatcher.addURI("call_log", "calls", MATCH_CALL);
+         sURIMatcher.addURI("m
+完整回答请参考FAQ: FAQ81033
+### 问题: android5.1上如何使用dismissKeyguardLw()有效地dismiss 锁屏界面？
+解决方案: dismissKeyguardLw()方法是public属性的,位于frameworks/base/policy/src/com/android /internal/policy/impl/PhoneWindowManager.java文件中.通过调用该方法可以dismiss掉锁屏界面. 值得注意的是: 只有在亮屏状态下,dismissKeyguardLw()方法才可以有效地dismiss掉锁屏界面;在灭屏状态下,调用该方法不能够dismiss掉锁屏界面. 所以,在调用dismissKeyguardLw()方法前要先判断屏幕的点亮状态.若为亮屏,则可直接调用该方法;若为灭屏,则要先点亮屏幕再调用该方法,如下: 以在PhoneWindowManager.java文件中为例, wakingUp() ;//点亮屏幕,或者使用KeyguardDelegate.onScreenTurnedOn(Ke
+完整回答请参考FAQ: FAQ79926
+### 问题: 为什么FM正在录音，有通知铃声，录音会自动停止并保存？
+解决方案: 当系统播放通知铃声的时候,会申请AudioFocus资源.申请的audiofocus类型为 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK. 而这时FM就会丢失AudioFocus资源,失去audiofocus类型为 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK. 此时FM 为了避免Audio播放异常,会释放占用的Audio资源,因此也会停止录音,并自动保存. 详情参考代码: 在packages\apps\FMPlayer\src\com\thunderst\radio\FMPlayService.java中 requestAudioFocus()方法,有如下定义 mAudioFocusListener = new AudioManager.OnAudioFocusChangeListener
+完整回答请参考FAQ: FAQ81043
+### 问题: android5.1如何使在sim pin/sim puk输入界面不能进入手机？
+解决方案: 1. frameworks/base/packages/Keyguard/res/values/config.xml +   	<!-- Allow the cancel key for SIM PIN/PUK visible -->
++     <bool name="config_cancel_key_visible">false</bool> 2. frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java        protected void onFinishInflate() {
+           super.onFinishInflate();
+           ......
+           mSimImageView = (ImageView)
+完整回答请参考FAQ: FAQ81039
+### 问题: 如何从log上判断WCN芯片是2351还是Marlin
+解决方案: 主要通过通信接口的区别来判断,2351芯片采用sipc通信,而marlin是sdio通信.通信过程中打印的log自然不一样,可以打开wifi,然后对比kernel log来区分. 2351芯片用的是sipc通信,标志性log为"sbuf" "sblock" 等关键字,如下: 08-29 14:52:23.245 <4>[ 856.160452] c0 sbuf 3-4 ring 7 rxbuf is empty! 08-29 14:52:23.245 <7>[ 856.160460] c0 no dirty data in sbuf 08-29 14:52:23.349 <6>[ 856.263693] c0 ieee80211 phy9: itm_wlan_cfg80211_scan 08-29 14:52:23.349 <7>[ 856.263724] c0 trigger scan 
+完整回答请参考FAQ: FAQ70122
+### 问题: 如何通过ADC读取usb线上DP DM电压值
+解决方案: 2713提供一组寄存器开关用来打开ADC与DP DM的连接通道 寄存器名称:ANA_REG_GLB_MP_DCDC_DEDT_CTRL 地址:0x4003_8800 偏移:0x014c bit: BIT3 此寄存器没有在2713的spec上涉及,用来打通DP DM连接到ADC的通道开关,具体设置方法如下: sci_adi_write( ANA_REG_GLB_MP_DCDC_DEDT_CTRL , BITS_DCDC_ARM_DEDT_EN(2) , BITS_DCDC_ARM_DEDT_EN(2)); 设置之后DP DM分别与ADC CH30 CH31连接. 可以通过读取ADC值来获取到DP DM电压: #define ADC_CHANNEL_USBDP 30 #define ADC_CHANNEL_USBDM 31 dp_adc = sci_adc_get_value(ADC_CHAN
+完整回答请参考FAQ: FAQ70137
+### 问题: u-boot中进native mmi的工厂测试模式的流程
+解决方案: 流程基本一样的: 对于4.4:/u-boot/property/cmd_cboot.c do_cboot()-----> s_boot_func_array----> get_mode_from_keypad----->check_key_boot: if(KEY_VOLUMEUP == key) return BOOT_CALIBRATE;------->case BOOT_CALIBRATE: return CMD_ENGTEST_MODE; ------>cmd_mode_regist----->MODE_REGIST(CMD_ENGTEST_MODE,factorytest_mode);------>factorytest_mode:vlx_nand_boot(BOOT_PART, CONFIG_BOOTARGS " androidboot.mode=factorytest", B
+完整回答请参考FAQ: FAQ70193
+### 问题: 如何在下拉状态栏添加自动亮度调节快捷开关按钮？
+解决方案: 关于如何在下拉状态栏新增一个快捷按钮的步骤,请参考FAQ67959. 至于FAQ67959中的第3步:功能实现,假设在SystemUI/src/com/android/systemui/qs/tiles下新增的文件命名为AudioBrightnessTile.java,具体代码实现如下: package com.android.systemui.qs.tiles;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.os.UserHandle;
+import android.provider.Settings;
+import android.util.Log;
+import com.android.systemui.R;
+import com.andr
+完整回答请参考FAQ: FAQ79389
+### 问题: sd卡升级报failed to verify whole-file signature
+解决方案: 类似的问题, 一般都是客户在编译整包和制作差分包的时候, 签名使用的key不匹配或者修改了签名使用的key导致的问题. 可以通过以下的方式确认: 1 请确保base版本是user/debug版本,同时base版本和target版本的target包都是user/debug版本设置情况下编制出来的. 请确认编译整体编译和制作整包时, build/core/Makefile中使用的BUILD_KEYS的赋值是否一致, 可以使用下面的语句输出其值看一下是否一致: $(warning $BUILD_KEYS value is $(BUILD_KEYS) 制作整包或者差分的BUILD_KEYS也可以观察编译Log最后的输出: running: java -Xmx2048m -jar out/host/linux-x86/framework/signapk.jar -w build/target/pro
+完整回答请参考FAQ: FAQ70242
+### 问题: marlin芯片wifi扫描结果是如何上报的
+解决方案: marlin上正常扫描结束是CP2上报WIFI_EVENT_REPORT_SCAN_FRAME事件,WIFI_EVENT_SCANDONE目前没有使用.WIFI_EVENT_REPORT_SCAN_FRAME事件分两种ops上报给host Typedef enum { REPROT_SCAN_FRAME = 0, //扫描到一帧了 REPORT_SCAN_DONE = 1, //信道list扫描完毕了,告知host本轮扫描结束 } REPROT_SCAN_TO_HOST_TYPE; 每扫到一个结果就ops置REPROT_SCAN_FRAME上报给host侧,缓存在 vif->cfg80211.scan_frame_array = vmalloc(MAX_SCAN_FRAME_BUF_NUM * sizeof(buf_scan_frame_t)); 当所有信道扫描完毕时ops置REPORT_
+完整回答请参考FAQ: FAQ70241
+### 问题: wifi framework与wpa_supplicant如何通信
+解决方案: 整个通信是基于unix域的socket通信: unix 4 [ ] DGRAM 882 /dev/socket/wpa_wlan0 unix 2 [ ] DGRAM 5106 /data/misc/wifi/sockets/wpa_ctrl_599-1 unix 2 [ ] DGRAM 5107 /data/misc/wifi/sockets/wpa_ctrl_599-2 //supplicant层server端socket建立 8 socket wpa_wlan0 dgram 660 wifi wifi Client 端socket建立 int wifi_connect_on_socket_path(const char *path) { ..... ctrl_conn = wpa_ctrl_open(path); // 下发命令给supplicant monitor_conn = wp
+完整回答请参考FAQ: FAQ70253
+### 问题: 怎么确认FM是否已经注册？
+解决方案: 打开kernel文件夹下log文件,并搜索sr2351或其他有效关键字,有如下打印显示,则说明FM已经正常注册. sr2351_fm sr2351_fm_parse_dts-263 -- find the fm_sr2351 node! sr2351_fm sr2351_fm_parse_dts-276 -- fm reg base is 0xe14f8000 sr2351_fm sr2351_fm_parse_dts-289 -- apb reg base is 0xe1fa0000 sr2351_fm sr2351_fm_parse_dts-302 -- pmu reg base is 0xe1fc0000 sr2351_fm sr2351_fm_parse_dts-315 -- pmu reg base is 0xe14fa000 sr2351_fm sr2351_fm_parse_
+完整回答请参考FAQ: FAQ70254
+### 问题: 修改系统字体大小后 android.webkit.cts.WebSettingsTest testAccessTextSize测试不通过，如何修改？
+解决方案: 需求修改系统字体大小, frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java loadSetting(stmt, "font_scale", 0.85); 使浏览器webkit对应的字体不匹配,导致android.webkit.cts.WebSettingsTest testAccessTextSize测试不通过, 解决方案: frameworks\base\core\java\android\webkit\WebSettings.java 会初始化TextSize的值 public enum TextSize { SMALLEST(50), SMALLER(75), NORMAL(100), LARGER(150), LARGEST(200); Te
+完整回答请参考FAQ: FAQ70272
+### 问题: 当关机闹钟和定时开机同时触发时，优先触发定时开机
+解决方案: diff --git a/old/property/alarm_mode.c b/new/property/alarm_mode.c index 5686594..923254d 100644 --- a/old/property/alarm_mode.c +++ b/new/property/alarm_mode.c @@ -114,15 +114,15 @@ int alarm_flag_check(void) time_lead = get_alarm_lead_set(); time = time - now_rtc; time1 = time1 - now_rtc; - if((time < time_lead +180) && (time > time_lead -10)) + if((time1 < time_lead +180) && (time1 > time_lead 
+完整回答请参考FAQ: FAQ70285
+### 问题: 如何修改秒表累积记录的最高次数
+解决方案: 进入时钟,选择秒表界面,开始计时,点击左下角的计次按钮,记录次数,累积记录的最高次数为#98,如果要修改最高次数,需要修改Stopwatches.java中MAX_LAPS的值. 如将最高次数修改为#99,请做如下修改: diff --git a/src/com/android/deskclock/stopwatch/Stopwatches.java b/src/com/android/deskclock/stopwatch/Stopwatches.java --- a/src/com/android/deskclock/stopwatch/Stopwatches.java +++ b/src/com/android/deskclock/stopwatch/Stopwatches.java @@ -52,7 +52,7 @@ public class Stopwatches { publi
+完整回答请参考FAQ: FAQ70304
+### 问题: 7701平台如何增加一个单卡工程？
+解决方案: 以sc7701_240X320BAR_64MB_72M工程作为base工程为例,增加一个单卡工程大概需要如下几步: (1)拷贝一个双卡工程mk文件,如:project_sc7701_240X320BAR_64MB_72M.mk,拷贝后重新命名,如:project_sc7701_240X320BAR_64MB_72M_S.mk.把MMI_MULTI_SIM_SYS = DUAL 改为 MMI_MULTI_SIM_SYS = SINGLE (2)把lib下的工程对应的库文件拷贝一份,如:sc7701_240X320BAR_64MB_72M文件夹,重命名为:sc7701_240X320BAR_64MB_72M_S (3)如果版本射频包含单软多硬功能,还需把\project\config_nv下的 sc7701_240X320BAR_64MB_72M文件夹拷贝一份,重命名为:sc7701_240X
+完整回答请参考FAQ: FAQ70338
+### 问题: android4.4以上版本修改【关于手机】中内核版本号方法
+解决方案: 内核版本:3.10.6512345-dirty + XXX@andorid#6 + 日期 上层是从/proc/version中获取,上层修改方式: 在packages\apps\Settings\src\com\android\settings\DeviceInfoSettings.java formatKernelVersion(String rawKernelVersion) { final String PROC_VERSION_REGEX = Matcher m = Pattern.compile(PROC_VERSION_REGEX).matcher(rawKernelVersion); return m.group(1) + "\n" + //3.10.6512345-dirty m.group(2) + " " + m.group(3) + "\n" + // x@y.com
+完整回答请参考FAQ: FAQ70309
+### 问题: 如何修改秒表点击圆圈范围之内任意位置不开启计时，只能点击下方中间图标才开始计时
+解决方案: 进入时钟,选择秒表界面,点击圆圈范围之内任意位置,不开启秒表计时,只能点击下方中间图标才开始计时,请做如下修改: diff --git a/src/com/android/deskclock/stopwatch/StopwatchFragment.java b/src/com/android/deskclock/stopwatch/StopwatchFragment.java --- a/src/com/android/deskclock/stopwatch/StopwatchFragment.java +++ b/src/com/android/deskclock/stopwatch/StopwatchFragment.java @@ -321,7 +321,7 @@ public class StopwatchFragment extends DeskClockFragment tog
+完整回答请参考FAQ: FAQ70381
+### 问题: 进入备份与恢复应用（SprdAppBackup）后，为什么会提示“备份与恢复功能为中国移动定制机特有功能”
+解决方案: 因为SprdAppBackup是移动入库要求的一个应用,移动入库要求进入备份与恢复应用要有这个提示,如果是非移动入库版本,可以将这个提示去掉,不影响SprdAppBackup的功能. 去掉这个提示,请做如下修改: diff --git a/src/com/sprd/appbackup/activities/MainActivity.java b/src/com/sprd/appbackup/activities/MainActivity.java --- a/src/com/sprd/appbackup/activities/MainActivity.java +++ b/src/com/sprd/appbackup/activities/MainActivity.java @@ -3047,7 +3047,7 @@ public class MainActivity extends Ac
+完整回答请参考FAQ: FAQ70386
+### 问题: 如何修改时钟应用中下面一排“闹钟”，“世界时钟”,倒计时"，“秒表”这几个字的大小
+解决方案: 需要修改TextView控件textSize为合适的值,如: diff --git a/res/layout/clocks_tab_new_ui.xml b/res/layout/clocks_tab_new_ui.xm --- a/res/layout/clocks_tab_new_ui.xml +++ b/res/layout/clocks_tab_new_ui.xml @@ -16,7 +16,7 @@ android:layout_height="wrap_content" android:layout_gravity="center" android:gravity="center" - android:textSize="12sp" + android:textSize="15sp" android:textColor="@color/actionbar_select_text
+完整回答请参考FAQ: FAQ70388
+### 问题: 蓝牙共享网络连接失败的常见原因
+解决方案: 现在为止客户报出共享网络失败的问题有如下两种常见情况: 1. 操作步骤有误,正确步骤如下: 作为server手机,连接wifi或使用2G/3G上网,能正常访问网页; 在server手机的"网络共享与便携式热点"选上"蓝牙共享网络"; server手机和client手机配对成功; 在client手机的配对详情里勾选"互联网连接"选项; 此时client即可以上网. 2.mac地址有误: 蓝牙地址不合法导致的不能正常上网,main log里会有如下log: 03-12 12:35:08.575 1579 2783 E bt-btif : Could not set bt address for interface:bt-pan, errno:Cannot assign requested address 共享网络端mac地址为:0x11-06-12-14-50-36 1 按照蓝牙SIG规定,蓝
+完整回答请参考FAQ: FAQ70417
+### 问题: 如何在下拉状态栏点击飞行模式图标开启飞行模式时弹出二次确认对话框？
+解决方案: 请在frameworks/base/packages/SystemUI/src/com/android/systemui/qs/tiles/AirplaneModeTile.java中修改: 1、导入如下包: import android.app.AlertDialog; import android.content.DialogInterface; import android.view.WindowManager; 并定义如下变量: private AlertDialog mOpenAirplaneModeDialog; 2、按如下修改handleClick()方法: public void handleClick() { if (!mState.value) showOpenAirplaneModeDialog(); //当需要开启飞行模式时弹出确认对话框 else setEnabl
+完整回答请参考FAQ: FAQ82033
+### 问题: GTS测试Fail： testPermitAccessibilityServices
+解决方案: 此测项fail, 如果log打印如下 08-12 03:31:15.225 9407 9424 I TestRunner: at junit.framework.Assert.assertFalse(Assert.java:41) 08-12 03:31:15.225 9407 9424 I TestRunner: at com.google.android.xts.deviceowner.PermitAccessibilityServicesTest.setUp(PermitAccessibilityServicesTest.java:59) 通常为系统内缺少Accessibility Service导致, 如何确定系统内有无Accessibility Service, 请至Settings->Accessibility内观察Services栏位内是否有TalkBack或其他servic
+完整回答请参考FAQ: FAQ70465
+### 问题: Android 5.0/5.1 Smart Lock, Face Unlock, Voice Unlock 如何启用
+解决方案: 目前Android L原生新设计已将智能解锁的功能例如脸部解锁, 声音解锁全部整合进smart lock内, 由Google Play Service整合. 先确认gms.mk内是否有内置 PRODUCT_PACKAGES += \ GmsCore \ FaceLock \ Velvet \ Samrt lock要开启需确认以下几点. 1.连结翻墙网路并登入google帐号. 如果未登入smart lock会直接显示Disabled by administrator. 2.Settings->Security->Screen lock调整锁屏方式, 将锁屏调整成Pattern或PIN或Password. 3.Settings->Security->滑动到最底点击Trust agents->确认Smart Lock有打开. 4.Settings->Security->Smart Lock->
+完整回答请参考FAQ: FAQ70468
+### 问题: 什么是Android For Work (afw)
+解决方案: Android for Work 是一个企业行动管理服务(EMM)平台,公司可运用这个平台为员工提供安全,有效率而多元化的行动环境. 以Android for Work为基础所建立的解决方案具有以下特性: 资料安全独立 支援员工自有装置和公司配发装置 远端管理 无缝接轨的使用环境 简化应用程式部署作业 Divide Productivity 套件 如要使用Android For Work,必须具备下列条件: 备有搭载的Android5.0以上版本的装置,并且支援受管理的工作档(支援多用户功能). 备有google帐户,装置内置gms包含 google play service, google play, AndroidForWork. 目前下列国家/地区的使用者可使用Android For Work: 阿根廷 澳洲 奥地利 比利时 巴西 保加利亚 喀麦隆 加拿大 象牙海岸 赛普勒斯 捷克共
+完整回答请参考FAQ: FAQ70472
+### 问题: CTS测试包从4.4_r3升级到4.4_r4，哪些升级包需要合入？
+解决方案: CTS测试包从4.4_r3升级到4.4_r4后,目前有19个google已知问题,需要合入的安全更新列表: 1. libcore.java.io.SerializationTest#testDeserializeProxyInvocationHandlerWasSerializable test validating Java IO Serialization recommendation: apply CVE-2014-7911 2. libcore.java.io.SerializationTest#testDeserializeUnserializableField same as #1 3. libcore.java.io.SerializationTest#testDeserializeUnserializableField same as #1 4. libcore.java.
+完整回答请参考FAQ: FAQ70474
+### 问题: CTS Verifier测试项Screen Pinning Test测试fail，如何解决？
+解决方案: 此项测试FAIL的原因是因为测试过程中屏幕固定之后,unpin操作失败,按照5.1 CDD第3.8.8章节,screen pinning 功能是必选项: 3.8.8. Activity Switching As the Recent function navigation key is OPTIONAL, the requirements to implement the overview screen are OPTIONAL for Android Television devices and Android Watch devices. The upstream Android source code includes the overview screen [ Resources, 32 ], a system-level user interface for task switc
+完整回答请参考FAQ: FAQ70478
+### 问题: 如何在Android 5.0/5.1 gms包内升级特定App
+解决方案: 一般而言google定期会结合各app较稳定的版本然后释出一版gms包, 可由gms包内gms.mk, ro.com.google.gmsversion此属性得知目前gms包的版本 例如: ro.com.google.gmsversion=5.1_r2, 即为Android 5.1 gms包r2版本. 原则上google定期释出的原生gms包已将bug发生的机率降至非常低, 但有时难免还是会出现原生bug, 例如google play service概率性crash等, 此类问题通常可由用户至play store下载最新版google play service或play store自动更新即可解决, 但部分客户要求出货前必须解决此问题, 此种情况就必须对gms包内特定App升级. 以升级Photos为例. 取得新版Photos apk后, 将apk以一般zip档解压缩方式打开, 观察apk
+完整回答请参考FAQ: FAQ70473
+### 问题: android.host.security测试多项测试失败
+解决方案: android.cts.security测试SELinux安全策略,因为这个测试包里面的所有CASE全部在PC端运行,所以出错时要看host_log而不是logcat: 08-29 12:36:47 I/0123456789ABCDEF: android.cts.security.SELinuxHostTest#testAllEnforcing FAIL junit.framework.AssertionFailedError: The following SELinux domains were found to be in permissive mode: /tmp/SELinuxHostTest3510582376402808822.tmp: error while loading shared libraries: libstdc++.so.6: cannot open share
+完整回答请参考FAQ: FAQ70485
+### 问题: android-cts_4.4-r4测试包中android.theme.cts.ThemeHostTest#testHoloThemes测试FAIL
+解决方案: 这个CASE测试holo主题下的控件布局和显示是否与原生相同,错误log显示有1128张图片显示结果与原生不一致: android.theme.cts.ThemeHostTest#testHoloThemes FAIL junit.framework.AssertionFailedError: 1128 failures in theme test at junit.framework.Assert.fail(Assert.java:50) at junit.framework.Assert.assertTrue(Assert.java:20) at android.theme.cts.ThemeHostTest.testHoloThemes(ThemeHostTest.java:284) at sun.reflect.NativeMethodAccessorImpl.invoke0(Na
+完整回答请参考FAQ: FAQ70486
+### 问题: CTS Verifier测试时，MANAGED PROVISIONING测试项缺失
+解决方案: CTS Verifier的手动测试项是根据设备支持的Feature来显示, 按照原生的设计,配置ro.config.low_ram=true情况下,FEATURE_MANAGED_USERS这个功能必须关闭; 也就是<512MB的版本不支持多用户功能,所以不会显示多用户测试项: FeatureTest.java (cts\tests\tests\content\src\android\content\pm\cts) ...... public void testNoManagedUsersIfLowRamDevice() { if (mPackageManager == null || mActivityManager == null) { Log.w(TAG, "Skipping testNoManagedUsersIfLowRamDevice"); return; } if (mAct
+完整回答请参考FAQ: FAQ70487
+### 问题: SC7731,来电接通时，如何收起下拉通知栏？
+解决方案: 来电接通时,要收起下拉通知栏,请做以下修改: packages\apps\Dialer\AndroidManifest.xml <uses-permission android:name="android.permission.WRITE_SMS"/> ++ <uses-permission android:name="android.permission.STATUS_BAR" /> packages\apps\InCallUI\src\com\android\incallui\CallCardPresenter.java import com.google.common.base.Preconditions; ++import android.app.StatusBarManager; ... ... private Context mContext; ++ private Statu
+完整回答请参考FAQ: FAQ70501
+### 问题: SC7731,耳机键接听电话时，耳机听筒中会出现不到一秒的来电提示音，如何修改？
+解决方案: 耳机键接听电话时,耳机听筒中会出现不到一秒的来电提示音,请做以下修改: packages\services\Telecomm\src\com\android\server\telecom\CallsManager.java boolean onMediaButton(int type) { if (hasAnyCalls()) { if (HeadsetMediaButton.SHORT_PRESS == type) { Call ringingCall = getFirstCallWithState(CallState.RINGING); if (ringingCall == null) { mCallAudioManager.toggleMute(); return true; } else { ++ if(mRinger != null){ ++ mRinger.silence();
+完整回答请参考FAQ: FAQ70502
+### 问题: WIFI 界面图标显示的信号强度的格数是在那个函数中计算的？
+解决方案: calculateSignalLevel 用于控制信号格数. frameworks/base/wifi/java/android/net/wifi/WifiManager.java 注意: 修改此函数会导致不能通过CTS测试,如需通过CTS测试,请不要修改. public static int calculateSignalLevel(int rssi, int numLevels) { if (rssi <= MIN_RSSI) { return 0; } else if (rssi >= MAX_RSSI) { return numLevels - 1; } else { float inputRange = (MAX_RSSI - MIN_RSSI); float outputRange = (numLevels - 1); return (int)((float)(rssi - M
+完整回答请参考FAQ: FAQ78051
+### 问题: 解决android5.1工程模式的前后摄像头预览界面拉伸分屏问题
+解决方案: 原因分析: 在android5.1工程模式中前后摄的预览界面设置为全屏,默认配置屏幕显示比例为4:3,如果当前屏幕尺寸比例为16:9或者其他比例,设置的预览分辨率比例与屏的比例不一致,就会产生拉伸和分屏现象. 解决方案: 对应屏幕尺寸修改工程模式camera预览分辨率的宽高和比例. 由于设置camera的分辨率宽高尺寸要求16字节对齐,如果不对齐就会产生异常,如果非16字节对齐的尺寸,需要修改成16字节对齐即可. 16字节对齐公式如下: (x)+15)&(~15) = y 如果x等于y,即16字节对齐,如果不相等,则非16字节对齐,取y值即为16字节对齐的尺寸. 假设当前手机分辨率为854X480,比例约等于16:9 (854+15)&(~15) = 864 (480+15)&(~15) = 480 检查到高854没有16字节对齐,所以设置camera预览分辨率高应改为864,宽为480 
+完整回答请参考FAQ: FAQ70594
+### 问题: android5.1 照相机去掉自动对焦功能
+解决方案: 1.camera hal层的修改 在对应项目的配置文件BoardConfig.mk里,按如下方式配置宏即可以关闭自动对焦 #select camera not support autofocus TARGET_BOARD_CAMERA_NO_AUTOFOCUS_DEV := true #select continuous auto focus TARGET_BOARD_CAMERA_CAF := false 2. framework native层的修改 修改Framework中的接口,使getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)返回false(部分第三方应用用这个接口判断是否支持AF) 步骤如下: 找到如下文件 \device\sprd\scx35_xxx\xxx_dt_com
+完整回答请参考FAQ: FAQ70593
+### 问题: 一类由订制时区引起的开机重启问题。
+解决方案: 这类问题的典型log如下 ttempt to launch receivers of broadcast intent Intent { act=android.intent.action.TIMEZONE_CHANGED flg=0x20000000 (has extras) } before boot completion E/System(549): ************ Failure starting core service E/AndroidRuntime(549): *** FATAL EXCEPTION IN SYSTEM PROCESS: main E/AndroidRuntime(549): java.lang.NullPointerException: Attempt to invoke virtual method 'void com.android.serv
+完整回答请参考FAQ: FAQ70584
+### 问题: 使用System.loadLibrary调用lib库时典型出错问题log及其常见原因。
+解决方案: 1:典型log java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/com.jni.test/base.apk"], nativeLibraryDirectories=[/data/app/com.jni.test/lib/arm, /vendor/lib, /system/lib]]] couldn't find "libtest.so" 常见原因:这种情况多数是由于库文件没有找到引起.需要检查库文件的配置或库名是否对应. 2:典型log Failed to register native method com.jni.test.readVersion()I in /data/app/com.jni.test/base.apk java.lang.Un
+完整回答请参考FAQ: FAQ70587
+### 问题: audio/mpeg格式的音频链接无法弹出打开或下载对话框供用户选择，请问如何修改？
+解决方案: 步骤: 1.打开浏览器 2.打开网址http://www.songspk.link/ 3.选择一个专辑,点击歌曲旁边的下载按钮 现象:点击后直接进入网页播放界面,不弹出选择打开和保存的对话框 [原因分析]: 不会选择下载的原因是Android浏览器对audio/mpeg 格式的音频,默认是支持直接播放的,所以不会走下载的流程. [解决方案]: 浏览器对文件格式的支持是在\external\chromium_org\net\base\mime_util.cc中, 如果客户希望对audio/mpeg 格式的音频,需要提示打开或下载对话框,可以修改mime_util.cc proprietary_media_types[] ,kStandardAudioTypes[] 去掉"audio/mpeg"这项 具体修改见附件,请客户参考. /external/chromium_org$ git diff
+完整回答请参考FAQ: FAQ70631
+### 问题: 当前默认打开进入导航界面，如何更改为默认打开浏览器主页
+解决方案: 修改browser的res/values/strings.xml把browser:home改成需要的网址. 请参考如下修改,谢谢 diff --git a/res/values/strings.xml b/res/values/strings.xml old mode 100644 new mode 100755 index e729885..bac7fca --- a/res/values/strings.xml +++ b/res/values/strings.xml @@ -798,7 +798,7 @@ http://www.wo.com.cn</string> //联通版本改这 <!--SPRD: add for cmcc --> <string name="homepage_base_cmcc" translatable="false"> - browser:home</str
+完整回答请参考FAQ: FAQ70637
+### 问题: 按键震动（home back menu键）忽强忽弱问题
+解决方案: 通过加log,发现设置30ms,时间最大被拉长到了38.3ms. 跟踪代码,之前采用是工作队列方式,这种方式可能会导致时间有一定误差,采用spin_lock方式可避免这样误差. 12-31 19:23:06.641 <4>[ 376.906921] c3 ywen:vibrator_enable 30 12-31 19:23:06.641 <4>[ 376.910766] c3 ###############vibrator_enable##################30 12-31 19:23:06.684 <4>[ 376.918029] c3 ###############set_vibrator##################1 12-31 19:23:06.692 <4>[ 376.956390] c3 ###############set_vibrator######
+完整回答请参考FAQ: FAQ70694
+### 问题: Android5.1平台上相机拍照的相片如何修改详细信息中的制造商的信息
+解决方案: 照片信息中的maker和model,代码中是在vendor/sprd/open-source/libs/libcamera/oem/src/cmr_setting.c中添加的. static cmr_int setting_get_exif_info(struct setting_component *cpt,struct setting_cmd_parameter *parm) { ...... #define EXIF_DEF_MAKER "Spreadtrum" #define EXIF_DEF_MODEL "spxxxx" ...... property_get("ro.product.manufacturer", property, EXIF_DEF_MAKER); //如果没有配置ro.product.manufacturer,则显示默认值EXIF_DEF_MAKER strc
+完整回答请参考FAQ: FAQ70695
+### 问题: 如何配置手机支持的应用协议
+解决方案: 在代码 packages/apps/Bluetooth/res/values/config.xml 中有 <resources> <bool name="profile_supported_a2dp">true</bool> <bool name="profile_supported_hdp">true</bool> <bool name="profile_supported_hs_hfp">true</bool> <bool name="profile_supported_hid">true</bool> <bool name="profile_supported_opp">true</bool> <bool name="profile_supported_pan">true</bool> <bool name="profile_supported_pbap">true</bool> <
+完整回答请参考FAQ: FAQ70701
+### 问题: 在分区合并的情况下，不插T卡时，蓝牙无法接收文件,提示传输失败，如何解决？
+解决方案: 首先要确定有不插T卡蓝牙也可以接收文件的修改,因为android原生的系统是不支持内部存储接收文件的. 分区合并后会导致了存储空间过大,超出了int类型的存储范围,修改为long类型. 具体修改如下: diff --git a/src/com/android/bluetooth/opp/BluetoothOppReceiveFileInfo.java b/src/c index 5e7bc46..1647856 100644 --- a/src/com/android/bluetooth/opp/BluetoothOppReceiveFileInfo.java +++ b/src/com/android/bluetooth/opp/BluetoothOppReceiveFileInfo.java @@ -158,8 +158,8 @@ public class BluetoothOppRe
+完整回答请参考FAQ: FAQ70740
+### 问题: 如何在双卡版本的Settings中添加LTE Only网络模式菜单
+解决方案: 双卡版本如何在Settings中添加LTE Only网络模式菜单 修改步骤: 1. 添加字符串资源, 如下(注意:每个item对应每个value) <string-array name="lte_network_mode_choices_single_sim"> <item>GSM only</item> <item>WCDMA only</item> <item>WCDMA/GSM</item> <item>LTE only</item> <item>LTE/WCDMA/GSM (Auto)</item> </string-array> <string-array name="lte_network_mode_choices_values_single_sim"> <item>"4"</item> <item>"3"</item> <item>"1"</item> <item>"2"</
+完整回答请参考FAQ: FAQ81515
+### 问题: 如何禁止下拉状态栏进入快速设置页
+解决方案: 一些特定情况(如省电模式下,可以查看通知,但不让进入快速设置页去修改各种设置项),希望禁止下拉状态栏进入快速设置页面,但通过下拉状态栏进入通知详情页面需要保留. 则可以通过以下方法实现该需求: 禁止快速设置的位置在frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java private void updateNotificationShade() { ... mNotificationPanel.setQsExpansionEnabled(isDeviceProvisioned()//可在这里增加一个条件 && (mUserSetup || mUserSwitcherController == null || !mUserSwitcherController.
+完整回答请参考FAQ: FAQ81379
+### 问题: FM录音过程中，设置中改变字体大小后，返回FM界面，录音时间显示消失（切换语言也会消失），如何解决？
+解决方案: 这个问题的原因是语言切换后activity会重新oncreate,没有重新更新录音时间,导致录音时间不显示. 具体的修改如下: diff --git a/src/com/thunderst/radio/FMPlay.java b/src/com/thunderst/radio/FMPlay.java index 619afdd..e804519 100644 --- a/src/com/thunderst/radio/FMPlay.java +++ b/src/com/thunderst/radio/FMPlay.java @@ -163,7 +163,7 @@ public class FMPlay extends Activity private ImageButton mPrevStationButton; private ImageView mRecordingState; - p
+完整回答请参考FAQ: FAQ70735
+### 问题: 后台FM播放时，打开相机进行后置拍照，FM暂停了没有恢复播放，如何解决？
+解决方案: 这个问题发生的原因是camera申请audiofocus,拍照完成后没有释放,导致了FM不能申请到audiofocus. 具体修改如下: diff --git a/src/com/ucamera/ucam/modules/BasicModule.java b/src/com/ucamera/ucam/modules/BasicModule.java index 5da0e3b..6a95f3f 100755 --- a/src/com/ucamera/ucam/modules/BasicModule.java +++ b/src/com/ucamera/ucam/modules/BasicModule.java @@ -1107,6 +1107,7 @@ public abstract class BasicModule public JpegPictureCallback(Locatio
+完整回答请参考FAQ: FAQ70738
+### 问题: 什么是回声消除
+解决方案: 回音的产生既复杂也简单.一般喇叭信号出来声音它会传递到麦克风,这个传递过程本身从技术上讲就有一个传递函数,传递本身就已经发生了一些变化,在传递过程中,高频和低频的传递系数是不一样的,通常低频传递的效率更高,高频传递的效率低一点.麦克风跟喇叭的位置靠的越近,声音传递的时间越短,稍微离的远一点,那么延迟的时间会多一点,即使声音直接传过去,信号就已经有时间延时了,麦克风位置的改变,回音也随之改变,传递的声音随着距离位置的改变,它传递的时间也发生改变,接触到信号也就改变了,但声音除了这个直接信号以外,声音在空间中它是往各个方向传递的,它会碰到墙壁、碰到天花板反射回来,然后反射到麦克风,有的反射到桌面然后到麦克风,各个情况都存在,所以这是一个很复杂的问题,所有的信号最终的结果是叠加在一起的,叠加的结果就是有的信号被增强了,有的信号被减弱了,各种各样的都有,然后墙壁对声音信号的反射也不一样,高频低频都
+完整回答请参考FAQ: FAQ70886
+### 问题: android 5.1 的latin输入法如何增加卢比符号？
+解决方案: 1.在如下目录的xml中增加卢比符号. packages/inputmethods/LatinIME/tools/make-keyboard-text/res/values/donottranslate-more-keys.xml - <string name="morekeys_currency_dollar">&#x00A2;,&#x00A3;,&#x20AC;,&#x00A5;,&#x20B1;</string> + <string name="morekeys_currency_dollar">&#x00A2;,&#x00A3;,&#x20AC;,&#x00A5;,&#x20B1;,&#x20B9;</string> - <string name="morekeys_currency_generic">$,&#x00A2;,&#x20AC;,&#x00A3;,&#x00A5;,&#
+完整回答请参考FAQ: FAQ70845
+### 问题: android 4.4 原生LatinIME词典如何增加单词？
+解决方案: 已在英文(en)词典中增加单词为例, 1.解压缩packages/inputmethods/LatinIME/dictionaries/en_wordlist.combined.gz ,解压出en_wordlist.combined 2.把需要的单词填入en_wordlist.combined,填入格式参考packages/inputmethods/LatinIME/dictionaries/sample.combined 3.生成工具方法: 按顺序编译 A)external/hamcrest B)external/junit C)packages/inputmethods/LatinIME/tools/dicttool 工具生成位置:out/host/linux-x86/framework/dicttool_aosp.jar 4.cd 到目录out/host/linux-x86/fram
+完整回答请参考FAQ: FAQ70846
+### 问题: 如何修改多国语言显示当地日期、月份、时间格式、语言名称、地区名称翻译？
+解决方案: 这些字符串资源可能存在的位置为: A)问题模块内部 res/中 B) framework/base/core/res/res/ C) external/icu4c/data 可按照顺序一步步查找. 对于上述A) B)类翻译的问题 ,直接修改资源即可; C)类翻译问题,修改icu4c/data/下资源后, 需要按照对应版本 icu4c编译方法编译,生成新的.dat 文件后修改才可生效. 可参考《MocorDroid多国语言概述》文档,该文档可通过TAM获取.文档中有详细介绍android 各版本icu4c编译方法. PS:对于 external/icu4c/data/目录下各文件存放的翻译内容目前总结如下, (注:每个文件中的内容包括但不限于如下所示内容) icu4c/data/lang:语言名称翻译 icu4c/data/locales:日期、月份、am、pm 名称翻译 icu4c/dat
+完整回答请参考FAQ: FAQ70847
+### 问题: FM中AGC模块的功能
+解决方案: Agc:自动增益控制(Automatic Gain Control) 使放大电路的增益自动地随信号强度而调整的自动控制方法.实现这种功能的电路简称AGC环.AGC环是闭环电子电路,是一个负反馈系统,它可以分成增益受 控放大电路和控制电压形成电路两部分.增益受控放大电路位于正向放大通路,其增益随控制电压而改变.控制电压形成电路的基本部件是 AGC 检波器和低通平滑滤波器,有时也包含门电路和直流放大器等部件.放大电路的输出信号u0 经检波并经滤波器滤除低频调制分量和噪声后,产生用以控制增益受控放大器的电压uc .当输入信号ui增大时,u0和uc亦随之增大.uc 增大使放大电路的增益下降,从而使输出信号的变化量显著小于输入信号的变化量,达到自动增益控制的目的.放大电路增益的控制方法有:①改变晶体管的直流工 作状态,以改变晶体管的电流放大系数β.②在放大器各级间插入电控衰减器.③用电控可变电阻作放
+完整回答请参考FAQ: FAQ70935
+### 问题: FM中RSSI模块的功能
+解决方案: Received Signal Strength Indication接收的信号强度指示,无线发送层的可选部分,用来判定链接质量,以及是否增大广播发送强度. 区别RSSI:Received Signal Strength Indicator ,Rx: Received power 最大的区别:Rx是手机测指标;RSSI是基站测指标 两者是同一概念,具体指(前向或者反向)接收机接收到信道带宽上的宽带接收功率.实际中,前向链路接收机(指手机)接收到的通常用Rx表示,反向链路接收 机(指基站侧)通常用反向RSSI表示.前向Rx通常用作覆盖的判断依据(当然还需结合Ec/Io),反向RSSI通常作为判断系统干扰的依据.下面以反 向RSSI为例解释: 为了获取反向信号的特征,在RSSI的具体实现中做了如下处理:在104us内进行基带IQ功率积分得到RSSI的瞬时值,即RSSI(瞬 时)=sum(I2+
+完整回答请参考FAQ: FAQ70936
+### 问题: FM2351 MODEM对射频信号的处理
+解决方案: MODEM对射频信号处理主要如下图所示. 其中关键流程: ① Quadrautre Downconverter 将100KHZ正交信号转化为基带正交信号I和Q. ② Spur Removal 当FM接收78MHz和104MHz的信号时会出现信号扰动,该部分功能就是去除信号扰动. ③ FIR LPF 在解调前选择channel. ④ RSSI 输入选台后的I/Q信号,估算输入信号的功耗值,转换为db值,用于AGC增益控制和FM输入功耗计算,用于窄带调节. ⑤ WB_RSSI 与RSSI类似,用于宽带调节. ⑥ AGC 自动增益控制,用于防止RF ADC饱和,AGC具有两个功能:产生增益表索引和估算FM输入信号功率,RSSI值与索引表中的某一档进行比较,根据比较结果确定是需要增档还是减档,从而确定增益值. ⑦ Adaptive Configuration 自动调整配置参数,控制某些模块的操作模
+完整回答请参考FAQ: FAQ70943
+### 问题: 静音模式下闹钟无铃声
+解决方案: 此为google 原生设计,Android 5.0及之后代码增加了三种通知音控制打扰模式(无、优先、全部) 如果选择优先,标准模式会自动切换到振动模式,(设定好时间,在振动模式下让闹钟响)这时候闹钟有声音有振动. 如果选择无,标准模式会自动切换到静音模式,会出现一句话(橙颜色的),"零打扰(甚至不发出闹钟提醒)" (设定好时间,在振动模式下让闹钟响) 这时候闹钟既没有声音也没有振动. 所以静音模式下是没有提示音的. 更改如下: diff --git a/services/core/java/com/android/server/notification/ZenModeHelper.java b/services/core/java/com/android/server/notification/ZenModeHelper.java index f370166..fafb6bb 100644
+完整回答请参考FAQ: FAQ71006
+### 问题: com.android.cts.aadb.TestDeviceFuncTest#testSyncFiles_normal 测试FAIL
+解决方案: 这个CASE测试PC端同步文件到手机端,通过adb push命令完成,是否执行同步根据文件时间戳判定: 如果手机端的文件时间戳比PC端新,则不会执行文件同步操作,CASE执行报FAIL: 09-30 14:43:37 I/S102A1ZR56170060: com.android.cts.aadb.TestDeviceFuncTest#testSyncFiles_normal FAIL junit.framework.AssertionFailedError at junit.framework.Assert.fail(Assert.java:48) at junit.framework.Assert.assertTrue(Assert.java:20) at junit.framework.Assert.assertTrue(Assert.java:27) at com.android.
+完整回答请参考FAQ: FAQ72148
+### 问题: android 5.1平台如何修改camera AVDD,DVDD,IOVDD电压？
+解决方案: android 5.1平台修改camera AVDD,DVDD,IOVDD电压是在camera sensor的驱动文件中. 以ov5648为例,在sensor信息的结构体中可以看到: SENSOR_INFO_T g_ov5648_mipi_raw_info = { ... /* voltage of avdd */ SENSOR_AVDD_2800MV, ... /* voltage of iovdd */ SENSOR_AVDD_1800MV, /* voltage of dvdd */ SENSOR_AVDD_1500MV, ... }; 只要根据sensor所需的电压值修改此处结构体中的定义即可. 需要注意,这里允许的电压值并不是任意的,对于7731平台,合法的电压值只有如下几个: AVDD:1.8/2.5/2.8/3.0v DVDD:1.2/1.3/1.5/1.8v IOVDD:1
+完整回答请参考FAQ: FAQ71057
+### 问题: Lollipop ConnectivityManager网络type申请
+解决方案: Android 5.1版本mms/dm/stock等网络类型pdp激活请求与4.4不同, KitKat版本中的StartUsingNetworkFeature和RequestRouteToHost建议后续版本deprecated,为了兼容原有应用,使用这2个method的应用仍可以工作,但是新开发的app会使用requestNetwork方法进行网络pdp激活请求. Lollilop版本的网络请求: public void requestNetwork(NetworkRequest request, ConnectivityManager.NetworkCallback networkCallback) 其中NetworkRequest通过NetworkCapabilities对申请的网络类型进行规范定义, 如NET_CAPABILITIES_MMS, NET_CAPABILITIES_S
+完整回答请参考FAQ: FAQ71055
+### 问题: 如何确定google Play Service版本与目前装置匹配 (google play service版本号解析)
+解决方案: 首先查询google play service版本号可至 Settings -> Apps -> All -> Google Play services点击进去后, 假设版本号为7.5.71(1955121-430) 其中430是有其含意的, 版本号末三码以XYZ表示. X 代表适合的Android系统版本: 0 for Android < 5.0 2 for Android 5.0 and 5.1 starting with Play Services v8 4 for Android 5.0 and 5.1 before Play Services v8, Android >= 6.0 after 7 for Android 5.0 8 for Android TV Y 代表CPU类型: 1 for armeabi 3 for armeabi-v7a 4 for arm64-v8a 7
+完整回答请参考FAQ: FAQ71066
+### 问题: android5.0以上版本usr版本adb获取root权限方法
+解决方案: A、解压boot.img $./split_boot.pl boot.img 输出: Page size: 2048 (0x00000800) Kernel size: 10106872 (0x009a37f8) Ramdisk size: 334008 (0x000518b8) Second size: 0 (0x00000000)Board name: Command line: console=ttyS1,115200n8 Writing boot.img-kernel ... complete. Writing boot.img-ramdisk.gz ... complete. B、解压ramdisk $mkdir ramdisk $cd ramdisk $gzip -dc ../*-ramdisk.gz | cpio -i $ cd .. C、修改ramdisk/default.
+完整回答请参考FAQ: FAQ86963

@@ -1,0 +1,319 @@
+### 问题: SC9820E/SC9832E USB 如何实现插拔检测
+解决方案: 需要USB的VCC接到SC2721G的VCHG做插拔检测
+参考FAQ: FAQ113591
+### 问题: SC9820E/SC9832E/SC7731E MCLK如何接
+解决方案: 如果是前后摄,可以将共用MCLK0,也可以后摄使用MCLK0,前摄使用MCLK1 如果是双后摄,或双前摄,建议主摄使用MCLK0、副摄使用MCLK1
+参考FAQ: FAQ113592
+### 问题: SC9820E/SC9832E/SC7731E 是否支持USB Hub功能
+解决方案: 不支持USB Hub功能,也无法支持外接USB Hub芯片
+参考FAQ: FAQ113595
+### 问题: 关于FDE开启方式的说明
+解决方案: FDE使能方式分为默认开启和手动开启,两者的区别是,默认开启是第一次开机后手机加密状态即是已加密;手动开启是第一次开机后手机加密状态为未加密,然后通过"设置"->"安全性与位置信息"->"加密手机"进行加密. 其中手动开启后可以通过恢复出厂设置将设备重新恢复为未加密.
+参考FAQ: FAQ113662
+### 问题: 如何确认指纹中断是否注册成功及其响应次数？
+解决方案: 执行cat proc/interrupts看中断申请及响应情况. 例如: irq序号 CPU0 CPU1 中断类型 中断号 中断触发方式 中断名 89: 33 0 irq-ap-eic 13 Edge fingerprint 备注: 从irq序号列到中断类型列的中间是各CPU(每CPU对应一列)对该irq的中断响应次数.
+参考FAQ: FAQ113657
+### 问题: 是否支持BIP,如果支持是以什么样的方式支持？
+解决方案: 是否支持BIP,如果支持是以什么样的方式支持? 我司STK方案是AP+CP的方案,BIP实现逻辑主要在AP侧,modem负责透传SIM上报网络的数据和向SIM发送所需的数据
+参考FAQ: FAQ113246
+### 问题: 附加业务是否需要打开数据连接?
+解决方案: 附加业务是否需要打开数据连接? 1)在网路引入IMS之前,附加业务都是在CS上进行,所以不需要打开数据连接. 2)在网络引入IMS之后,IMS下运营商的附加业务会基于UT口来配置承载协议是HTTP,所以需要通过数据业务来实现.
+参考FAQ: FAQ113245
+### 问题: USSD与CSD是否都支持？
+解决方案: USSD与CSD是否都支持? USSD: unstructured supplementary service data 支持 CSD: circuit switch data call 不支持
+参考FAQ: FAQ113244
+### 问题: 如何通过AT查询或设置edge能力
+解决方案: 如何通过AT查询或设置edge能力 set command: AT^ SPEDGE =<n> Return :OK/ ERROR Read command: AT^ SPEDGE? Return :^ SPEDGE: <n> <n> Description 0 Not support EDGE 1 Support upstream 8 PSK 2 Not support upstream 8 PSK
+参考FAQ: FAQ113242
+### 问题: AT+SPTESMODE/SPTESTMODEM 修改的nv项名称是？
+解决方案: AT+SPTESMODE/SPTESTMODEM 修改的nv项名称是? 修改的nv项是lte_test_mode[0]表示卡1的模式 lte_test_mode[1]表示卡2的模式
+参考FAQ: FAQ113236
+### 问题: 如何监听SIM卡热插拔？
+解决方案: 如何监听SIM卡热插拔? 可以通过ecind主动上报来监听 SIM卡热插拔的消息 +ECIND: 3,100 PLUN IN +ECIND: 3,1,34 PLUG OUT
+参考FAQ: FAQ113234
+### 问题: 7731E平台是否支持EDGE？支持哪些MCS（modulation and coding scheme）？
+解决方案: 
+参考FAQ: FAQ113229
+### 问题: 请问SC9863A平台各个制式下的调制方式是什么？
+解决方案: 
+参考FAQ: FAQ113204
+### 问题: 7731E平台各制式下都支持哪些调制方式？
+解决方案: 
+参考FAQ: FAQ113203
+### 问题: 电流测试时，7701平台 WCDMA Paging工作底电流正常值大约多少？
+解决方案: 电流测试时,WCDMA Paging工作测量底电流正常值大约多少? W收paging时的测量工作的底电流大概是80mA. WCDMA收paging的周期DRX cycle =2a frame(6<=a<=9,1frame=10ms),国内的基站配置的a=6,即DRX周期是640ms.也就是说在测试电流时,会看到每640ms会有80mA的电流凸起,这是正常的凸起.
+参考FAQ: FAQ113199
+### 问题: GMM_GRR_PROC_END_REQ消息的含义
+解决方案: GMM_GRR_PROC_END_REQ消息解读 当前流程处于ATTACH或RAU结束时,NAS通过GMM_GRR_PROC_END_REQ通知GRR,流程结束了,可以接收系统消息 ATTACH/RAU流程结束了,发送GMM_GRR_PROC_END_REQ给GRR,end_type表示 #define GMM_ATTACH_END 1 #define GMM_RAU_END 2 #define GMM_NON_END 3 is_gmm_proc_success 表示流程是否成功 0 表示失败 1 表示成功 b)SIM1通知GRR_1,现在可以接收系统消息了,将tc_mask置位. c) ATTACH/RAU流程结束了,发送GMM_GRR_PROC_END_REQ给GRR_2,该消息对应卡为当前流程. d)SIM2通知GRR_2,现在可以接收系统消息了,将tc_mask置位. 至此,ATTACH/RAU流程结束了,GRR现在可以接收系统消息了.
+参考FAQ: FAQ113631,含图片
+### 问题: 设备的AES速率如何测算？
+解决方案: CTS测试case中android.security.cts.EncryptionTest#testEncryption对应的测试代码中会通过android_security_cts_EncryptionTest_aesIsFast来测试当前的aes速率. 通过单包测android.security.cts.EncryptionTest#testEncryption,在Log中将会有如下类似信息打印: 11-13 16:53:08.836 11376 11393 E : EncryptionTest::aesIsFast: 100 iterations in 4752 ms (21.0 MiB/s) (threshold 2000 ms) 注:其中的速率会随着测试设备的性能差异而存在变化.
+参考FAQ: FAQ113664
+### 问题: 在默认开启FDE的设备上能否将设置屏幕锁定方式时弹出的“安全启动”窗口去除？
+解决方案: 不可以,去除后将导致CTS测试项:Full disk encryption enabled--fail
+参考FAQ: FAQ113665
+### 问题: 播放所有的视频格式，大部分视频格式无法播放
+解决方案: 部分视频格式无法播放(rmvb、asf、flv、m4v、rm、swf、ts、vob、wmv)
+1.SC9863A的支持格式如下:
+.3gp, .mp4, .mkv, .flv,.avi, .webm,
+2.对于flv文件,用文件管理器、谷歌播放器等方式都可以正常播放flv文件.只有在设置->存储->SD卡->点击flv文件无法播放.
+原因是:
+ 谷歌播放器的问题.更换其他播放器验证没有问题.
+documentsui发出视频的view action,指定type video/flv,但是没有谷歌播放器对此类文件的支持信息.
+通过documentsui打开flv的流程和直接用谷歌播放器播放flv的处理流程不一致,所以会产生两者测试结果的不一致.
+这个问题属于谷歌播放器处理缺陷,平台无法处理.播放器的设计差异,客户也无需处理.
+参考FAQ: FAQ113666
+### 问题: Google搜索的图片下载后无法打开
+解决方案: Google搜索的图片下载完成后,点击下载完成通知无法打开图片. 分析: 1.旧版本的Google包,使用Google search搜索的图片资源,长按是只有一个"share image"分享菜单;但是升级Google search后,再去长按图片,就会多一个"Download image" 下载菜单. 2.无法打开时因为点击图片后在media数据库中查询不到记录.查询不了mediaProvider是因为图片下载到download的cache中,media对于这个存储路径的数据库记录默认为不对用户开放.所以google search存在矛盾的地方在于,允许图片下载,但是又下载到了对用户不开放的cache中.这个问题属于google search应用的设计问题,平台无法处理,需要google后续优化升级.
+参考FAQ: FAQ113667
+### 问题: 咨询MNPHONE_AFC_SetExternalCondition这个接口的用法
+解决方案: NPHONE_AFC_SetExternalCondition接口的功能为设置AFC功能开启的外部条件.
+在校准模式下,如果当前网络为no service状态或紧急呼叫状态,如果外部条件设置为TRUE,则开启AFC自动调整功能.开启此功能UE会针对实际晶体频偏超出找网门限情况,尝试调整晶体频率再次找网.
+参考FAQ: FAQ113670
+### 问题: MNPHONE_AFC_SetExternalCondition这个接口的实现原理
+解决方案: 此接口调用后,物理层不区分温度补偿还是aging补偿,就是针对实际晶体频偏超出找网门限,尝试调整晶体频率再次找网.通过自动扫频进行搜网功能,根据UE支持band进行每个频点搜网找网.
+参考FAQ: FAQ113676
+### 问题: sharkl3_cm4.bin如何下载到手机端？
+解决方案: Sharkl3_cm4.bin下载到手机端有两种方法: 1, 用ResearchDownload工具下载: 加载手机中下载的pac包,选择FDL1,FDL2,再勾选DFS(对应分区名称为:pm_sys),选择需要替换的sharkl3_cm4.bin的路径,然后点击下载即可 2, 通过fastboot命令下载到对应的分区: 将可执行文件fastboot.exe(可以从网上下载)放在d:/tools 下面(路径自己指定即可) 进入到该路径,在开机的状态下执行如下命令: D:\tools>adb reboot bootloader //执行成功后,手机进入fastboot mode并在手机端显示 接着执行如下命令把该sharkl3_cm4.bin文件写到了pm_sys分区中了 D:\tools>fastboot flash pm_sys "D:\ sharkl3_cm4.bin" 然后执行如下命令重启手机进入正常模式: D:\tools>fastboot reboot
+参考FAQ: FAQ113669
+### 问题: SC9820E/SC9832E/SC7731E/SC9863A/SL8521E/SL8541E 如何进入下载模式
+解决方案: 以下有3种情况都会进入USB download模式: 1.BB上电之前U1TXD短接到GND,然后再开机 2.BB上电之前KEYIN0短接到GND,然后再开机 3.BB上电之前KEYIN0和KEYOUT0短接,然后再开机
+参考FAQ: FAQ113732
+### 问题: SC9820E/SC9832E/SC7731E/SC9863A/SL8521E/SL8541E PBINT和PBINT2的区别
+解决方案: PBINT2没有硬件复位的相关功能, PBINT有单键复位和双键复位(和extrstn组合使用),详见各平台spec 软件上PBINT2没有做关机功能,所以PBINT2一直接地可以上电自动开机,一般用于自动化测试
+参考FAQ: FAQ113751
+### 问题: 获取BB芯片UID的方法
+解决方案: UID即芯片的ID,是芯片唯一的识别码. 在需要查询芯片的ATE数据时,需要先读取芯片的UID,通过UID查询对应的ATE数据. 1、使用ADB命令,读取数组后解析得到UID(适用于较老芯片) adb root adb remount adb shell cat sys/class/misc/sprd_efuse_otp/dump 2、使用 WriteIMEI 工具,读取IMEI码的时候可以同时读取到UID. 3、使用ADB命令直接读取UID(适用于较新芯片) adb root adb remount adb shell cat /sys/class/misc/sprd_otp_ap_efuse/uid
+参考FAQ: FAQ113735
+### 问题: SL8521E/SL8541E 多物理按键
+解决方案: 1.平台原生支持11个按键:Key Matrix可以支持3x3共9个按键,PBINT和EXTRSTN各占一个按键 2.超过11个物理按键,可以使用GPIO扩展键盘的方式,即GPIO通过物理按键接到GND,Pinmap需要使能施密特触发特性去抖 3.如果GPIO口不够用,可以外接扩展按键IC方式支持更多的物理按键
+参考FAQ: FAQ113746
+### 问题: SL8521E/SL8541E/SC7731E 是否支持OTG
+解决方案: 支持OTG,USB_ID请接到有EXTINT标识的管脚,该类管脚有硬件去抖
+参考FAQ: FAQ113769
+### 问题: SC9820E/SC9832E/SL8521E/SL8541E/SC9863A Transceiver 给BB的WCN_26M_IN时钟作用是？
+解决方案: WCN_26M_IN时钟是预留给集成在SC9863A内部的GPS模块使用的,目前内部的GPS模块共用的AP_26M_IN时钟,并没有单独使用WCN_26M_IN
+参考FAQ: FAQ113773
+### 问题: 如何通过AT命令来设定Forbidden PLMN？
+解决方案: 在我们设计中,是可以通过AT+CUFP命令,人为实现Forbidden PLMN的. 对于如何设定Forbidden PLMN, 可以直接通过AT命令来设置.格式如下: AT+COPS=1,2,"46000",7 //先做手动选网 再执行 AT+CUFP=0,"46000"(将46000列入Forbidden PLMN) Return:OK/ERROR(OK代表成功) 注:有些平台我们可能不支持这条命令. (end)
+参考FAQ: FAQ113787
+### 问题: 宽屏壁纸，切换成阿拉伯国家语言时，显示壁纸相对偏移是否正常
+解决方案: 阿拉伯国家文化中,阿拉伯语自右而左书写,阅读时须从右到左看. 对于launcher待机界面来说,如果存在多页时,带有google搜索框的默认页在最左页,而阿拉伯语等从右到左语言,如果存在多页时,带有google搜索框的默认页在最右页. 如果launcher待机界面在默认页(最左页)切换为阿拉伯语后,默认页成为最右页,所以壁纸相应地显示壁纸资源的右侧,反之亦然. 所以宽屏壁纸,切换成阿拉伯国家语言时,显示壁纸相对偏移是正常的.
+参考FAQ: FAQ113820
+### 问题: SC9820E平台做不需要GPS的项目，能否用DCXO方案
+解决方案: SC9820E平台如果做不需要GPS的项目,可以用DCXO方案,需要提交我司评审,并做好备注
+参考FAQ: FAQ113837
+### 问题: LL_SNDC_SENDDATA_CNF这个log的打印是否代表分组数据已经从空口发出？
+解决方案: 答:不是,LL_SNDC_SENDDATA_CNF是接入层通知DSM自身的一些能力(DSM是接入层的上层),比如当前收数据的能力,如果接入层不能收数据,DSM会将数据缓存起来.
+参考FAQ: FAQ113840
+### 问题: SNDC_LL_UNITDATA_REQ与LL_SNDC_SENDDATA_CNF是一对一的关系还是多对一的关系？
+解决方案: 答:SNDC_LL_UNITDATA_REQ与LL_SNDC_SENDDATA_CNF不是一一对应的关系.SNDC_LL_UNITDATA_REQ是通知底层要发数据了,LL_SNDC_SENDDATA_CNF是接入层告诉DSM自身的一些能力.
+参考FAQ: FAQ113842
+### 问题: modem 的pcap log是从哪一层抓取的？
+解决方案: 答:TCP/IP层
+参考FAQ: FAQ113844
+### 问题: SC9863A如何关闭DDR的DFS功能
+解决方案: 需要在chipram/include/configs/工程H文件里增加如下宏定义即可, #define DDR_MODE 1 其中, bit[0] dfs使能,1表示关闭dfs, 0表示打开dfs bit[1] retention使能,1表示关闭retention,0表示打开retention
+参考FAQ: FAQ123180
+### 问题: modem log中是否有log可以显示已经将GSNDCP请求发送的数据发送出去了？
+解决方案: 答:modem log中如下两条消息的N(u)一致,说明GSNDCP请求发送的数据发送出去了.
+LLC_RLC_DATA_REQ    MOD_GLLC->MOD_GRLC
+		N(U) = 0
+
+RLC_LLC_PDU_SEND_CNF   MOD_GRLC->MOD_GLLC 
+		N(U) = 0
+参考FAQ: FAQ113845
+### 问题: 如何判断发送数据时网络调度资源较慢？
+解决方案: 答:一般2G下相邻数据包的发送间隔为20ms,如果相邻数据包的发送间隔较长(大于20ms),说明当前网络调度资源较慢,导致发送数据也较慢. modem log中相邻数据包发送间隔就是相邻两条RLC_MAC_DATA_REQ消息的时间间隔
+参考FAQ: FAQ113848
+### 问题: 服务小区频点和业务频点有什么区别？
+解决方案: 答:在一个小区中,会有一个服务小区频点,就是C0载波的频点,UE驻留到某个小区的时候,都是指的驻留在C0载波的频点.在这个小区中,网络会配置若干个频率不同的业务频点,这些频点也是实际物理频点.当UE做业务时,BSC会根据一定的算法,将UE分配在服务频点或者是某个业务频点.此时UE并没有做切换,只是工作的频点变化,UE仍然驻留在该服务小区.
+参考FAQ: FAQ113851
+### 问题: SC9863A 如何编译DDRSCAN BIN
+解决方案: 不需要做任何修改,编译spl时就会生成ddr scan bin
+参考FAQ: FAQ123167
+### 问题: SC7731E 如何上调MEM电压
+解决方案: 需要修改chipram/include/configs/工程H文件 #define DCDC_CORE 1000 #define DCDC_GEN 1875 +++ #define DCDC_MEM +++ #define LDO_MEM 1300
+参考FAQ: FAQ113861
+### 问题: SC7731E DDR驱动能力的修改
+解决方案: chipram/arch/arm/cpu/sprd_dmc/r3p0/dmc_sprd_r3p0.h /*pub drv support:5(240ohm),10(120ohm),15(80ohm),20(60ohm),25(48ohm),30(40ohm)*/ #define DDR_DRV_CFG 30 /*mem drv support:34ohm,40ohm,48ohm,60ohm,80ohm*/ #define DDR_DRV_MEM_CFG 40 第一个宏DDR_DRV_CFG是更改soc pub ds 第二个宏DDR_DRV_MEM_CFG是更改ddr ds 但是目前, lpddr2 不支持更改ddr ds,只能改pub ds(ddr那边是支持更改的 但是code没写) lpddr3 两个宏都支持,两边都可以改 ohm越大,驱动能力越弱
+参考FAQ: FAQ113863
+### 问题: 在使用SIMBA工具进行WIFI测试时，功率是否可以修改或者调整大小？
+解决方案: SIMBA工具测试WIFI功率的指令只有WIFI最大功率的指令,目前没有指令接口可以发送不同WIFI功率的指令,可以更改Connectivity INI文件来控制功率大小.
+参考FAQ: FAQ113867
+### 问题: SC9863A平台项目若有不同RF频段配置，如何设计能共用一套软件？
+解决方案: 可以用单软多硬方式实现,通过ADC 值来区分硬件版本/RF band. 具体硬件电路和软件配置可以参考平台释放文档《SC9863A_Single_Software_For_Multi-Hardware_Application_Note_V1.0》P19~31进行设计.
+参考FAQ: FAQ113868
+### 问题: 用UPGRADEDOWNLOAD工具下载软件版本，怎么设置判断校准标志位的？
+解决方案: UPGRADEDOWNLOAD工具可以检查手机校准标志位: 1、在UPGRADEDOWNLOAD工具UpgradeDownload.ini文件内有"CheckCali = 1"总开关,置"1"为检查,置"0"为不检查. 2、不同项目需要检查GSM&WCDMA&TD&LTE不同制式的校准标志位差异,是在软件.pac包内的.xml文件设置的.<File backup="1" CheckCali="GSM,WCDMA,LTE">
+参考FAQ: FAQ113873
+### 问题: nand方案中如何查看有几个MTD分区
+解决方案: 方法一: uboot代码中include/configs/工程文件中的MTDPARTS_DEFAULT宏 #define MTDPARTS_DEFAULT" mtdparts=sprd-nand:256k(spl),768k(2ndbl),512k(kpanic),-(ubipac)" 上面是4个mtd分区,分别是spl,2ndbl,kpanic,ubipac 方法二: adb连上机器,通过命令 cat /proc/mtd 比如,显示如下: dev: size erasesize name mtd0: 00040000 00040000 "splloader" mtd1: 000c0000 00040000 "uboot" mtd2: 00080000 00040000 "kpanic" mtd3: 1fe80000 00040000 "ubipac" 显示4个mtd分区,分别是spl,2ndbl,kpanic,ubipac
+参考FAQ: FAQ123163
+### 问题: SL8521E RGB_LED是否可以并联使用?
+解决方案: 可以并联使用,最大可输出83.1mA.
+参考FAQ: FAQ113963
+### 问题: SC7731E 如何编译DDRSCAN bin
+解决方案: chipram/arch/arm/cpu/sprd_dmc/r3p0/dmc_sprd_r3p0.h 按如下修改,重新编译,烧录spl即可 //#define CFG_BL 4 - //#define CONFIG_DDR_SCAN + #define CONFIG_DDR_SCAN //#define CFG_DRAM_TYPE DRAM_LPDDR3 #define CFG_IS_UNSYMMETRY_DRAM 0
+参考FAQ: FAQ113887
+### 问题: SC9863A平台支持LPDDR4X类型的memory吗？
+解决方案: SC9863A平台LPDDR4和LPDDR4X类型memory都可以支持,平台DDR CLK最高为933 MHz.
+参考FAQ: FAQ113894
+### 问题: SC9863A平台可以做分离式的memory吗？
+解决方案: 可以使用分离式memory,硬件设计请参考SC9863A的SPM_discrete.
+参考FAQ: FAQ113898
+### 问题: SC9832E在WCDMA网络下的上行最高速率是5.76Mbps还是 11Mbps？
+解决方案: SC9832E支持上行cat.7,因此HSUPA最高速率为11Mbps
+参考FAQ: FAQ113899
+### 问题: SC7731E项目若发现DDR频率干扰GPS CN0，有何调试方法？
+解决方案: 当LCD ON时,如果DDR频率工作在533MHz,其高次谐波可能会落在GPS接收频段范围内,可以通过微调DPLL_CFG寄存器中KINT和NINT值来微调DPLL的输出频率,使DPLL高次谐波或其边带避开GPS. 如果使用微调DPLL_CFG寄存器没有改善,可以通过切换DDR档位的的方法切换到384/256档位看GPS干扰有无改善. 切换方法,adb连接手机,依次输入如下命令: su cd /sys/class/devfreq/scene-frequency/sprd_governor/ echo 384 > scaling_force_ddr_freq
+参考FAQ: FAQ113901
+### 问题: SC9863A平台是否可以用IIS接口的数字接口的硅麦
+解决方案: SC9863A平台可以用IIS接口的数字接口的硅麦,不过需要注意打电话时候的采样率只能配成8K或16K,这个要和MIC厂确认,但如果是VOIP通话模式可以配成48K采样率
+参考FAQ: FAQ113905
+### 问题: SC9820E平台所有IIC全部支持HS模式 3.4Mb/S吗
+解决方案: 是的,SC9820E平台所有IIC全部支持HS模式 3.4Mb/S
+参考FAQ: FAQ113906
+### 问题: SC7731E是否可以做喇叭听筒马达三合一
+解决方案: SC7731E芯片内部VBC支持,软件版本需要更改和完善这个功能.
+参考FAQ: FAQ113907
+### 问题: SL8521ET是否支持eMMC5.1?
+解决方案: 支持
+参考FAQ: FAQ113911
+### 问题: SL8521ET是否支持3.0V电压的SIM卡？
+解决方案: 支持,此平台支持1.8V和3.0V SIM卡
+参考FAQ: FAQ113914
+### 问题: SL8521ET蓝牙是否支持V2.1+EDR?
+解决方案: 支持
+参考FAQ: FAQ113923
+### 问题: SL8521ET FM支持那些频率?
+解决方案: FM支持65MHz~108MHz
+参考FAQ: FAQ113926
+### 问题: android8.1 vts测试，google systmeimge版本选择？
+解决方案: vts测试前烧的google systemimage 非android go平台,选择system.img文件需要选64位的system-aosp_arm64_a-2018-09-05.img, android GO平台,则选择system-aosp_arm_a-2018-09-05.img 若版本不匹配,则会出现无法开机现象.
+参考FAQ: FAQ113927
+### 问题: SC6531E支持edge吗
+解决方案: SC6531E上行edge和下行edge都不支持,SC6531E支持GPRS
+参考FAQ: FAQ113933
+### 问题: SC9832E平台支持Camera光学防抖吗？
+解决方案: 光学防抖主要由模组内部实现,如果选用的模组内部自带陀螺的小闭环防抖,那么SC9832E是支持的
+参考FAQ: FAQ113934
+### 问题: SC9820E/SC9832E/SC9863A共板选用哪个平台仿真？
+解决方案: SC9820E/SC9832E/SC9863A共板选用SC9863A平台进行仿真;所有共板项目都需要支持最高阶的芯片作为仿真标准,保证能向下兼容.
+参考FAQ: FAQ113847
+### 问题: SC9820E平台如何用按键阵列实现30个按键
+解决方案: SC9820E KEYIN和KEYOUT可以组成3*3矩阵,所以可以使用3x3键盘矩阵+ GPIO扩展键盘方式 具体设计如下: 3x3 键盘 有9个按键,加上EXTRSTN1个按键,power键1个按键,有11个按键,然后再使用19个GPIO口做为扩展按键,做成30个按键即可
+参考FAQ: FAQ113937
+### 问题: SC9820E平台是否支持TD-SCDMA（B34,B39）模式.如果不支持可以支持TDD B39吗？
+解决方案: SC9820E不支持3G TDSCDMA B34,B39;4G TD-LTE B34是可以支持的
+参考FAQ: FAQ113944
+### 问题: SC2342B是否支持40MHz带宽WiFi？
+解决方案: SC2342B不支持40MHz WiFi,最高支持20MHz.
+参考FAQ: FAQ113941
+### 问题: SC6531E平台当电池没有NTC电阻的时候，CPU的电池温度检测脚K18可以悬空吗
+解决方案: 电池没有NTC电阻时,6531E芯片的BATDET(K18) PIN可以悬空,软件上需关闭电池在位检测的宏,初始版本是默认关闭,但是还是要检查代码,确认这个宏是否关闭
+参考FAQ: FAQ113948
+### 问题: 展锐UWE5621平台最多支持几个天线
+解决方案: 最多支持2*2 MU-MIMO
+参考FAQ: FAQ113983
+### 问题: 展锐UWE5621平台的BT支持的版本号是
+解决方案: 最高支持BT5.0
+参考FAQ: FAQ113985
+### 问题: 展锐UWE5621平台的BT5.0支持的具体规格是
+解决方案: 支持BR和LE,高功率模式,mesh组网,直接配对和长距离传输
+参考FAQ: FAQ113986
+### 问题: 展锐UWE5621平台的WIFI和BT是如何独立使能的
+解决方案: 目前可以通过修改内部寄存器来独立disable,没有外部引脚用于独立使能
+参考FAQ: FAQ113993
+### 问题: 展锐UWE5621平台软件如何知道主板上的天线数目
+解决方案: 可以通过2个GPIO连接配置电阻来区别主板用了1个,2个,3个,4个天线
+参考FAQ: FAQ113995
+### 问题: SC9832E平台能支持LTE CA CAT7吗？
+解决方案: 不支持
+参考FAQ: FAQ113998
+### 问题: SC9863A平台支持的LPDDR4和LPDDR4X的频率有多高
+解决方案: 最高支持到933MHz
+参考FAQ: FAQ114027
+### 问题: 无线设备校准的意义和目的
+解决方案: 这是由于生产这些无线发射、接收设备时,所用元器件的绝对精度通常不足以满足设备频率、功率电平和其它参数的性能目标.通常,降低系统性能偏差的方式之一就是使用更加昂贵的、精度更高的、一致性更好的元器件. 但是,在现实情况下,每个无线设备生产厂商都刻意要给用户提供价廉物美的产品,因此在成本的压力下,设计人员通常不会选用昂贵的、精度更高的、一致性更好的元器件作设计,而是走到了相反的方向,这样校准就成为研发生产中不可或缺的一环,它会极大地减少无线发射、接收设备对元器件的要求,降低材料成本,最终降低整个无线发射、接收设备的成本.
+参考FAQ: FAQ114721
+### 问题: 校准无线设备的大体流程
+解决方案: 1)、通过计算机将无线设备设为测试模式; 2)、配置各种仪表,形成校准的无线环境; 3)、设置仪表和无线设备,使之进入要求的状态; 4)、让仪表(或无线设备)发出无线信号; 5)、让无线设备(或仪表)进行测量,并读取测量值; 6)、重复步骤3到5,得到一组测量结果(有些时候,有些项目不需要重复步骤3到5); 7)、基于测量值进行计算,得到某项指标的校准结果; 8)、将测量结果写入无线设备(有些时候,有些项目不执行此步); 9)、重复步骤2到8,完成所有项目的校准; 10)、将所有的校准结果写入无线设备; 在以上流程中,有些校准是不需要执行第十个步骤的,倒不是说不需要将校准结果写入无线设备,恰恰相反,如果不把校准结果写入无线设备中,校准是起不到作用的,不需要执行第十个步骤的原因是,在执行步骤八时,就已经把所有的校准结果写入无线设备里了.
+参考FAQ: FAQ114720
+### 问题: GSM idle态下行链路故障的判定标准
+解决方案: GSM下行链路故障的判定标准是基于计数器DSC. 当MS驻留GSM小区时,DSC会被初始化为90/BS_PA_MFRMS,其中BS_PA_MFRMS表示以多少个复帧作为寻呼子信道的一个循环,BS_PA_MFRMS的值在系统消息3中有指示. 若MS成功解码寻呼子信道的消息,DSC数值加1,若解码失败,DSC数值减4,当 DSC<= 0时,MS就会认为下行链路故障. ps:下行链路故障会导致小区重选.
+参考FAQ: FAQ114024
+### 问题: HAC在结构设计的时候有什么注意事项么？
+解决方案: 一般测HAC时,HAC工作时,SPK,CAMERA不用同时工作的电路,影响不大.对于这类电路走线确保不和HAC走线相邻重叠.一般是VBAT相关的走线要远离,射频天线馈点要远离HAC,不建议天线放在HAC线圈区域.
+参考FAQ: FAQ114577
+### 问题: SL8521E平台memory支持类型
+解决方案: SL8521E平台memory支持类型:8bit NAND flash、LPDDR2/3 EMCP或分离式EMMC+LPDDR2/3 .
+参考FAQ: FAQ114026
+### 问题: Simba工具能否支持主板上两组RF射频头主板一站校准？
+解决方案: 可以. 具体校准配置方法如下(综测配置方法雷同): 1、在Simba工具中,校准位置增加一组与原校准算法相同的校准步骤; 2、配置第二组RF射频所需校准的band信息,并修改Antmode如下图; 3、设置仪表RF Port与主板RF Connector的对应关系;确认保存后,在工具界面点击"应用".
+参考FAQ: FAQ114744,含图片
+### 问题: Simba工具是否支持自动重置扫描参数？
+解决方案: Simba在工具设置界面的"重置扫描参数"需要手动点击重置扫描参数,可通过如下方法实现自动重置扫描参数: 删除掉Simba工具/bin/sys目录下的相关seq.scan文件,Simba工具就会自动开启扫描. sys文件夹默认是隐藏的,win7系统可在"计算机"-"组织"-"文件夹和搜索选项"-"查看"中勾选"显示隐藏的文件、文件夹和驱动器". 注意事项:1.重置扫描参数只是为了提高校准效率,不能从根本上解决产线一致性引起的校准Fail问题; 2.删除seq.scan文件之前建议做好备份,不需自动重置功能时可还原.
+参考FAQ: FAQ114740
+### 问题: SC9863A平台LTE是否支持Category13
+解决方案: 可以支持:Support TDD/FDD LTE Category 13 for UL 150 Mbps,Category 7 for DL 300Mbps
+参考FAQ: FAQ114040
+### 问题: LTE B12和LTE B17是否可以同时支持
+解决方案: 二者Co-band,可以同时支持
+参考FAQ: FAQ114042
+### 问题: SC9863A平台GSM RX diversity是否支持
+解决方案: 支持
+参考FAQ: FAQ114049
+### 问题: SC9863A平台Sensor hub是否可以控制普通GPIO
+解决方案: 可以控制,需把普通GPIO配置成GPIO_PLUS功能(CM4可以直接控制GPIO_PLUS).
+参考FAQ: FAQ114051
+### 问题: SC2721G 主副MIC的MIC_BIAS 支持的电压范围是多少
+解决方案: MICBIAS的电压范围是2.2V-3.0V
+参考FAQ: FAQ114053
+### 问题: MIPI Layout rules
+解决方案: MIPI Layout rules: 1 MIPI differential pairs should be routed as 100ohm impedance 2 MIPI traces must be shielded by GND in PCB layout
+参考FAQ: FAQ114054
+### 问题: 7731E如何配置长按 power key 重启及长按的时间
+解决方案: 若客户没有使用EXT_RST_PIN,而又需要长按 power key 重启,按如下修改:
+ 以下实现的是长按power键15s重启 在 u-boot15/inclue/configs/工程.h如下,
+-#define CONFIG_7S_RST_2KEY_MODE		1	//0:1Key--Normal mode; 1:2KEY
+-#define CONFIG_7S_RST_THRESHOLD		7	//7S, hold key down for this time to trigger
++#define CONFIG_7S_RST_2KEY_MODE		0	//0:1Key--Normal mode; 1:2KEY
++#define CONFIG_7S_RST_THRESHOLD		15	//7S, hold key down for this time to trigger PS:长按重启时间最大只能设置15秒,不能到20秒
+参考FAQ: FAQ114055
+### 问题: RSCP RSSI ECNO的含义以及关系
+解决方案: ECNO是码片能量与总干扰能量密度的比值; RSCP是接收信号码功率; RSSI是指特定频带内的功率包括了干扰,是接收信号的强度指示; 即当计算单位为功率的瓦或者毫瓦(w或者mw)时,ECNO=RSCP/RSSI,换算为dBm单位时RSCP=RSSI+ECNO,注意此时的单位为dBm. 如果ECNO信号变差,RSSI变化不大,会导致RSCP也较差.而ECN0在软件上是经过一定的方法计算出来的. 且物理层打印的RSCP RSSI为负几百时,换算成dbm单位是要除以8的. 范围:ECN0: -24dbm——0dbm RSCP: -120dbm—— -25dbm
+参考FAQ: FAQ114052
+### 问题: 什么是  type3i？
+解决方案: 什么是 type3i? type3i是为了去除同频小区的干扰.干扰小区的加入和删除由测量控制,根据小区能量在一段时间(frame级别)的滤波值决定加入或者删除干扰小区.最多支持两个干扰小区. 看log里面是否有type3i小区配置可以搜索trace: type3i cell
+参考FAQ: FAQ114038
+### 问题: gdb调试中，如何在单步调试时显示源码和汇编的对应关系
+解决方案: gdb调试中,如果想在单步调试时显示源码和汇编的对应关系,可以使用 set disassemble-next-line on 命令,执行后,gdb会自动反汇编后面要执行的代码.
+参考FAQ: FAQ114061
+### 问题: SC9863A 2Lane MIPI是否可以支持8M Camera 30fps？
+解决方案: SC9863A 2Lane MIPI可以支持8M Raw Data的Camera 30fps.
+参考FAQ: FAQ114075
+### 问题: UE在2G下支持哪几种数据业务切换，即​PS handover?
+解决方案: UE在做数据业务期间,不支持2->2 PS handover; UE在做数据业务期间,不支持2->3 PS handover; UE在做数据业务期间,若UE支持LTE,那么UE支持2->4 PS handover;
+参考FAQ: FAQ114079
+### 问题: UE在2G下支持CDMA2000系统互操作吗？
+解决方案: UE在2G下不支持CDMA2000系统互操作,包括2G下不会测量CDMA2000小区,2G下不会重选到CDMA2000小区,2G下不会handover 到CDMA2000小区; 若UE支持GSM + TDSCDMA,那么GSM与TDSCDMA存在互操作; 若UE支持GSM + WCDMA,那么GSM与WCDMA存在互操作; 若UE支持GSM + LTE,那么GSM与LTE存在互操作;
+参考FAQ: FAQ114080
+### 问题: 什么是ETWS，GSM模式下支持ETWS吗？
+解决方案: ETWS全称是Earthquake and Tsunami Warning System; GSM模式下支持ETWS;
+参考FAQ: FAQ114081
+### 问题: GSM专用态无线链路故障的判定标准
+解决方案: 当MS在通话过程中,语音(或数据)质量恶化到不能接受,且无法通过RF power control 或者handover来改善时,MS启动呼叫重建或者强行拆链(release).由于强行拆链实际上引入了一次掉话,因此必须保证只有在通信质量确实无法接受时,MS才认为无线链路故障. 无线链路故障的判定标准是基于无线链路计数器S.当收到专用信道的立即指派时,S需要初始化为RADIO LINK TIMEOUT(其值会在系统消息3中指示).每当MS解码SACCH信道的消息失败时,S减1,成功解码SACCH信道消息时,S加2.当S值小于等于0时,MS就会判定无线链路故障.
+参考FAQ: FAQ114095
+### 问题: SC6531E支持喇叭，听筒，马达三合一吗？
+解决方案: SC6531E支持喇叭,听筒,马达三合一,硬件部分说明如下图所示 软件和NV部分说明如下:
+参考FAQ: FAQ114125,含图片
+### 问题: SC7731E平台用RGB_LED做指示灯时，系统能否进入待机状态?
+解决方案: SC7731E平台系统可以进入睡眠,只需要PMU的RGB模块工作即可
+参考FAQ: FAQ114126
+### 问题: SC9832E支持内置的SmarAmp音频方案吗？
+解决方案: SC9832E平台的PMU是2721G,是支持内置的SmarAmp音频方案,原理图需要注意一下几点: 关于原理图几点说明 1.R6111默认不贴 2.R6113/R6110默认贴0ohm 3.VSELpin到VDD_SMARTAMP_VSEL中间串联NC电阻 另外BOX需要我司确认,因此在做项目前请提供一下BOX的spec及样品5pcs,我司要测试相关指标,谢谢.
+参考FAQ: FAQ114127
+### 问题: SC7731E平台RF方案是否可以使用单端的双工器
+解决方案: SC7731E平台RF方案,目前只支持差分双工,如果要用单端,需要加BALUN
+参考FAQ: FAQ114128

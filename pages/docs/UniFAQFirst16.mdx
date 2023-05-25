@@ -1,0 +1,305 @@
+### 问题: 为什么SC7715平台阿拉伯语的launcher界面（sprdLauncher2)，滑动方向与常规方向相反？
+解决方案: sprdLauncher2默认在pageview增加了页面滑动根据排版方向滑动,由于阿拉伯式右排版,会看到页面滑动方向与常规语言的滑动方向相反. 如果要改动,可以将pagedview.java中判断排版方向的mIsRtl变量相关内容去掉 PS:也可以直接联系展讯支持人员获取修改方法
+参考FAQ: FAQ41084
+### 问题: 7715上W CBS如何修改
+解决方案: TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_EM_CFG\is_cbmc_enable=0x0 此值改为0,关闭W CBS.
+参考FAQ: FAQ41238
+### 问题: 7715 ffos如何关闭zRAM？
+解决方案: 路径:device/sprd/scx15_sp7715ga/system.prop #zram config ro.config.zram.support=true //关掉zram将此处改为false即可
+参考FAQ: FAQ41145
+### 问题: 怎样enable debug版本的FTU(开机后进入主界面前的向导)？
+解决方案: 修改方法如下所示: device/sprd/scx15/device.mk ifeq ($(strip $(NOFTU)),) ifeq ($(TARGET_BUILD_VARIANT), user) //编译的是user版本 export NOFTU=0 else export NOFTU=1 //此处为1表示disable FTU,若要改为enable,将此处改为0即可. endif endif 注:默认userdebug版本FTU关闭,因为打开会影响monkey test,有需要的可按上述方法打开.
+参考FAQ: FAQ41139
+### 问题: 为何user版本无法抓取js文件中的log?
+解决方案: gaia/build/settings.js文件中的如下语句: if (config.TARGET_BUILD_VARIANT != 'user') { // We want the console to be disabled for device builds using the user variant. settings['debug.console.enabled'] = true; //此处只有在非user版本时才将debug.console.enabled设置为true,因此若是希望user版本也可输出console log,可修改此处.
+参考FAQ: FAQ41141
+### 问题: 7715 ffos 如何关闭连续自动对焦？
+解决方案: --- a/apps/camera/js/config/settings.js +++ b/apps/camera/js/config/settings.js @@ -15,7 +15,7 @@ module.exports = { caf: { // Set this property to true if you want to disable continuous auto focus // even on hardware that supports it. - disabled: false + disabled: true }, previewGallery: {
+参考FAQ: FAQ41146
+### 问题: 如何去除Idle界面外其他界面的状态栏？
+解决方案: 平台默认对于176X220、128X160分辨率的项目,除Idle界面外其他界面都是没有状态栏的,如果其他分辨率也需要实现该效果,需要修改以下3处: 1、release_app_macro.mk/app_macro.mk中打开MMI_ONLY_IDLE_DISP_STATUSBAR; 2、MMK_CreateDefaultControl、MMK_IsWinIncludeStatusbar(@mmi_default.c)中判断除Idle界面外其他界面都不创建状态栏的代码处增加对该分辨率的支持; 3、mainmenu_win.c中修改相应主菜单风格对应的窗口表,去除其中的WIN_STATUSBAR(此步不是必需的,需要根据项目使用的主菜单风格判定,某些风格的主菜单默认即不显示状态栏).
+参考FAQ: FAQ41152
+### 问题: 为什么monkey测试时要将settings加入黑名单
+解决方案: 1. 由于设置中有一些设置会影响monkey测试的结果,如恢复出厂设置,一旦monkey点击,手机重启数据丢失,monkey测试停止. 2. 特别是android4.4平台加入了自动开关机功能,一旦monkey进行了设置就会影响测试结果.因此进行monkey测试时要将com.android.settings加入黑名单中.
+参考FAQ: FAQ41157
+### 问题: 为什么SC7715平台状态栏无法透明显示？
+解决方案: android系统4.4版本提供了状态栏透明的方法,即在Activity里添加一个WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS属性即可. SC7715平台添加该属性后,状态栏并不会透明显示,这是由于systemui中在透明时会判断系统是否是低内存配置.因为状态栏透明会消耗一定的ram,所以对于低内存配置的项目,即使在app中设置了透明属性.也会被systemui转换为不透模式. SC7715平台由于mk文件中ro.config.low_ram配置为ture,属于低内存版本,所以不透明. 如果期望在SC7715平台支持状态栏透明,可参考FAQ41279的解决方案.
+参考FAQ: FAQ41282
+### 问题: 在使用agilent测试功耗时,agilent软件提示DataLogging Error，该如何处理？
+解决方案: 使用Agilent 14565B DCS长时间功耗测试时,软件提示"DataLogging Error Integration Time0.0050076timeout,connect fail"时,需要进入source选择Data Logging Settings中Integration time0.0050076修改数字为0.01即可
+参考FAQ: FAQ41280
+### 问题: sc7715抓取串口log时，黑盒子该如何设置？
+解决方案: 抓取串口log时,黑盒子需要将充电选择为off,下载选择为Uart,输出电平选择2v8
+参考FAQ: FAQ41300
+### 问题: 7715 ffos如何默认关闭短信发送完成后的提示音？
+解决方案: 修改文件:gaia/build/config/common-settings.json 修改位置:"message.sent-sound.enabled": true, //将此处改为false
+参考FAQ: FAQ41289
+### 问题: 7715 ffos如何默认关闭mail发送完成后的提示音？
+解决方案: 修改文件:gaia/build/config/common-settings.json 修改位置:"mail.sent-sound.enabled": true, //将此处改为false
+参考FAQ: FAQ41303
+### 问题: 电池温度检测电流控制原理是什么?
+解决方案: ADC通路会给出微安级电流,同时读电压,完成电池温度的检测.
+参考FAQ: FAQ41322
+### 问题: 如何查看cpu的负载情况
+解决方案: CPU负载是指某一时刻系统中运行队列长度之和加上当前正在CPU上运行的进程数,而CPU平均负载可以理解为一段时间内正在使用和等待使用CPU的活动进程的平均数量.在Linux中"活动进程"是指当前状态为运行或不可中断阻塞的进程.通常所说的负载其实就是指平均负载. 1. 利用如下命令可查看: cat proc/loadavg 2. 输出: 5.00 5.01 4.49 2/574 1954 3. 含义: 前三个值分别对应系统在1分钟、5分钟、15分钟内的平均负载;第四个值的分子是正在运行的进程数,分母是进程总数,最后一个是最近运行的进程ID号. 注:当发生ANR时,在log中也会打出cpu负载情况(就是通过上述命令获得),如下: Load: 1.47 / 1.31 / 1.13
+参考FAQ: FAQ41323
+### 问题: 打开多国语言支持后，有几种语言无法显示问题
+解决方案: 平台版本中若需要支持旁遮普、藏语、古吉拉特语、阿撒姆语这四门语言,需要更新对应的字库; ( 替换frameworks/base/data/fonts/下Gujarati.ttf、Punjabi.ttf、Tibetan.ttf、 Assamese.ttf这四个字库) 若不需要支持,则直接删除对应项目.mk文件中PRODUCT_LOCALES中的bo_CN、bo_IN、 gu_IN、pa_IN pa_PK、as_ET.
+参考FAQ: FAQ41373
+### 问题: 手机wifi信号强度怎样量化？
+解决方案: 推荐 在测试手机上安装,Wifi Analyzer 进行 WIFI热点参数获取
+参考FAQ: FAQ41378
+### 问题: 什么是库伦计的零点偏移现象？
+解决方案: 由于制造工艺原因,芯片库伦计测电流时有零点偏移现象,就是当电路流过电流为零时,采样的ADC反映出电流并不为零,校准目的就是获得这个固定的偏置量,库伦计真正工作时,系统计算电量时就会减去这个固定的偏置电流,以便精确计算电量.
+参考FAQ: FAQ41381
+### 问题: DDR扫描 wlcdl,rlcdl,acdll三个参数的意义？
+解决方案: 这三个参数分别代表写、读以及地址信号三种timing参数.
+参考FAQ: FAQ41382
+### 问题: DDR扫描 Fdl1里的ddr频率设置?
+解决方案: 为了保证ddr_scan_xxx.bin能正确下载,fdl1.bin内初始化ddr时候的频率不能太高,客户可以通过下载工具自行修改fdl1.bin内ddr的频率,修改方法如下: 在/chipram/include/configs/目录下的工程配置.h文件内,找到DDR_FREQ这个宏,改成需要的值即可. 譬如sp7731的工程就在sp7731.h里将DDR_CLK改成需要的值
+参考FAQ: FAQ41385
+### 问题: 什么是B2G？
+解决方案: FireFox Os,其开发项目名称为Boot to Gecko,简称B2G,是Mozilla主导研发的开放源代码移动操作系统,采用Linux核心,应用于智能手机.它采用开放Web技术,以Gecko浏览器引擎为核心,采用HTML5来开发. Firefox OS有着许多吸引人的特性:HTML5语言简单易上手,使得应用开发门槛大幅度降低,而且完全开源,所有人都能获得源代码.Firefox OS没有授权费用,而且主要针对低端智能手机市场,将以低价入门机型为主,对于无力进入中高端手机市场的设备厂商来说,早日推出Firefox OS智能手机无疑能为其增加新的卖点.而应用市场的收费应用由电信运营商代收取,目前有包括中国联通在内的十余家电信运营商宣布支持Firefox OS系统.
+参考FAQ: FAQ41393
+### 问题: FireFoxOS 框架结构是怎样的？
+解决方案: 从此图可以看出,B2G分为三层:Gaia、Gecko、Gonk.其中Gaia相当与Android的App层,是用户和Firefox Os的接口层,其中Html实现其界面,JavaScript实现其逻辑,Css实现其布局,通过API来和底层进行交互,而这些API通过Gecko实现.Gecko层相当于Android 的Framework层,它提供了Html/JavaScript/Css的开放标准,并使之运行起来,像Browser Engine、Domcument Parser、JavaScript InterOreter必不可少.Gonk层包括lib库、Linux Kernel和Hal,从图中看,有两个HAL,下面的HAL和Android中的HAL功能一样,上面的hal是Gonk层与Android Kernel之间的接口,以此可以实现跨平台.
+参考FAQ: FAQ41395
+### 问题: FireFoxOS 如何编译？
+解决方案: 全编: ./build.sh 单编Gecko: ./build.sh gecko ./flash.sh gecko 单编Gaia: 在gaia目录执行 make install-gaia
+参考FAQ: FAQ41402
+### 问题: 手机设置为滑动解锁，如何禁止锁屏界面下拉状态栏？
+解决方案: android原生设计为如果当前使用的非安全锁屏(比如滑动解锁),则允许用户在锁屏界面下拉状态栏显示扩展界面.如果需要禁用该功能,可按照下面的方法修改. 定位到\frameworks\base\packages\Keyguard\src\com\android\keyguard\KeyguardViewMediator.java 修改前: private static final boolean ENABLE_INSECURE_STATUS_BAR_EXPAND = true; 修改后: private static final boolean ENABLE_INSECURE_STATUS_BAR_EXPAND = false;
+参考FAQ: FAQ41410
+### 问题: FireFoxOS中的XPCOM是什么?
+解决方案: XPCOM: Cross Platform Component Object Module 跨平台组件对象模块.基于Mozilla的浏览器现在可以通过使用XPCOM组件添加它们自己的功能. XPCOM是一个框架,它允许对项目进行模块化设计,将整个开发划分为多个组件. XPCOM 的目标是使软件的不同部分分别开发, 相互独立. 为了是应用的不同组件之间能够互操作, XPCOM 把组件的实现与接口分开. 同时 XPCOM 还提供了加载和操纵这些组件的库和工具以及服务, 以帮助开发人员编写跨平台的代码和组件版本管理; 因此组件可以在不破坏应用或者重新生成应用的同时被替换被更新.
+参考FAQ: FAQ41411
+### 问题: 如何打开android4.4的hwcomposer的调试开关
+解决方案: 请按如下步骤操作: 1.adb shell setprop debug.hwc.info 1 //启动调试开关 2.adb shell getprop debug.hwc.info //若显示为1,则表示此开关打开了 再次抓取log后,就会看到如下图般的信息,描述了hwc是如何do composition和commit的
+参考FAQ: FAQ41398
+### 问题: FireFoxOS Bluetooth模块的流程调用是怎样的？
+解决方案: 
+参考FAQ: FAQ41416
+### 问题: sc7715 产品上slog service是如何被启动的？
+解决方案: sc7715项目上,slog service是由init进程开机默认启动的,并且具有root权限. 对应的文件: device/sprd/scx15/init.scx15.rc service slog /system/bin/slog -t class main user root
+参考FAQ: FAQ41414
+### 问题: FireFoxOS中在使用setTimeout要注意些什么？
+解决方案: setTimeout(func,1000)等待一秒后,执行func,注意两点: a)JavaScript 是单线程执行的,也就是无法同时执行多段代码,当某一段代码正在执行的时候,所有后续的任务都必须等待, 形成一个队列,一旦当前任务执行完毕,再从队列中取出下一个任务.这也常被称为 "阻塞式执行".所以一次鼠标点击, 或是计时器到达时间点,或是 Ajax 请求完成触发了回调函数,这些事件处理程序或回调函数都不会立即运行,而是立即排队, 一旦线程有空闲就执行. b)如果等待时间设为 0,就代表立即插入队列,但不是立即执行,仍然要等待前面代码执行完毕. 所以 setTimeout 并不能保证执行的时间,是否及时执行取决于 JavaScript 线程是拥挤还是空闲.
+参考FAQ: FAQ41418
+### 问题: M-Send业务上怎么分析和查看
+解决方案: M-Send业务提供了MMS Client向MMS-Relay提交多媒体彩信,并获得响应信息的基本机制, 在MMS Client向MMS Relay提交的PDU(Protocol Data Unit)中,包含有能唯一标识其自身的ID字段,该字段使得请求/回应(req/resp)被对应关联起来;当 MMS Relay服务器 收到一个M-Send.req PDU时,它会回应一个M-Send.conf数据包,其中包含有请求处理结果的状态代码.
+参考FAQ: FAQ41427
+### 问题: Bkav（越南的手机安全软件）为什么不能拦截黑名单的短信
+解决方案: 操作步骤: Bkav(越南的手机安全软件)版本号:v3.0.10.17: -- 短信黑名单无效(将号码拉入短信黑名单,依然能够收到并显示对应号码发过来的短信); 原因分析: Android4.4对短信添加了相应的安全权限限制,非默认应用没有操作数据库的权限,因此拦截软件不能操作相应的数据库进行删除等操作.对比三星等4.4的样机,安装同样的软件均不能实现短信的拦截. 解决方案: 第三方应用本身的问题,不建议修改.
+参考FAQ: FAQ41470
+### 问题: 灵犀语音助手，听新闻，来电接通电话后仍然有语音播报声音是什么原因
+解决方案: 操作步骤: 1.进入灵犀语音助手(v3.0.1695)-选择听新闻-点击右侧的喇叭图标-正常读出新闻的标题 2.测试机来电-电铃声响起-语音仍然继续播报-接通电话后仍然有语音播报的新闻 原因分析: 铃声响起会抢占audio focus,遵守audio focus声音冲突管理机制的应用一般都会停止播放. 这个灵犀语音助手没有遵守这个规则,没有声音焦点了还在播放. 解决方案: 这是第三方应用的问题,需要第三方修改.
+参考FAQ: FAQ41477
+### 问题: 如何屏蔽搜索的可搜索项中的日历
+解决方案: 需要将packages\apps\Calendar\res\xml\searchable.xml中android:includeInGlobalSearch的值修改为false,即: android:includeInGlobalSearch="false"
+参考FAQ: FAQ41495
+### 问题: 如何限制UUI版本拨号盘搜索输入框最大输入长度？
+解决方案: 如果需要对UUI版本拨号盘界面搜索输入框最大输入内容长度做限制,可修改packages\apps\Dialer\res\layout\dialtacts_activity_sprd.xml文件,在名为search_view的EditText添加android:maxLength="40"设置(注:最大长度可根据需要设置,40仅供参考) 修改如下: <EditText android:id="@+id/search_view" ... ... android:ellipsize="end" + android:maxLength="40" ... ... android:textSize="@dimen/search_text_size_sprd" />
+参考FAQ: FAQ41502
+### 问题: 如何在不能操作TP的情况下保持屏幕常亮
+解决方案: android4.4上添加了一个command :svc,我们可以通过svc来控制一些系统服务,比如power. 连接usb后: adb shell svc power stayon true 即可打开常亮 adb shell svc power stayon false 关闭常亮 adb shell svc power stayon usb 在插入usb的时候保持常亮 还可以参考 adb shell svc power stayon 的帮助信息.
+参考FAQ: FAQ41510
+### 问题: 设置了默认时区，恢复出厂设置后无效
+解决方案: 默认时区修改可参考FAQ00060; 该问题是由于打开了自动获取时区功能,获取了当前网络的时区信息. 可关闭自动获取时区功能后再进行确认;
+参考FAQ: FAQ41503
+### 问题: 如何区分wakelock是上层应用持有还是底层驱动持有
+解决方案: 通过读取下面wakelock节点的信息,可以得到整个系统所有的唤醒锁的状态: proc/wakelocks 但是通过该节点无法知道这些锁当中哪些是上层应用持有的,哪些是底层驱动持有的,这不利于定位系统无法睡眠是上层问题还是底层的问题,这可以通过下面两个节点解决该问题: /sys/power/wake_lock /sys/power/wake_unlock 其中wake_lock是记录应用层注册且上锁的wakelock,wake_unlock是记录应用层注册但未上锁的wakelock.通过这两个节点,我们就可以知道应用层持有锁的状态.
+参考FAQ: FAQ43043
+### 问题: 如何模拟滑动事件
+解决方案: 在某些场景,如需要产生平滑匀速的滑动事件的时候,就可以使用如下的模拟方法. adb shell input swipe x1 y1 x2 y2 t0 此命令的意思就是从点(x1,y1) Move到点 (x2,y2),共花费t0的时间. 如在launcher界面,输入: adb shell input swipe 400 400 100 400 500 就会产生一个500ms的左移事件,位移的距离为 400-100 = 300.
+参考FAQ: FAQ41532
+### 问题: 用lookat命令校正闪光灯电流的方法
+解决方案: 解决: 对应寄存器地址:0x400388d0,其中BIT3-0为电流设置值,[FAQ29667] :《SC7715平台设置闪光灯电流值的方法》描述了芯片设计规范的参考值;BIT7为使能位. 客户可用lookat命令设置相应的寄存器,实测Flash Driver的电流值, 如下的命令设置了参考值50mA lookat -s 0x00008001 400388d0
+参考FAQ: FAQ41564
+### 问题: 对于某些网页显示异常的问题，如何获取该网页的html文件？
+解决方案: 对于某些网页显示异常的问题,需要提供该网页的html文件分析,具体操作方法如下: 待网页完全打开,选择菜单中的Save -> Save as offline pages,在打开的保存页面中填入文件名,选择存储路径(U盘/SD卡)后保存即可.保存好的html文件存储在U盘/SD卡的\\Browser\\Snapshot目录.
+参考FAQ: FAQ41576
+### 问题: 新的MMI native与原有的MMI  工厂测试有何区别？
+解决方案: 原有的MMI是在android层用app实现的,每次启动测试都要等待android开机,时间很长.并且app通过android framework调用各模块API,代码流程长,当测试出错时排查起来不方便. 新的MMI native是在native层直接执行测试程序,只需要启动linux kernel,大大缩短了每次测试的等待时间.并且C语言调用底层API,debug时可避开android层的干扰. 所以,对产线时间有压缩需求的建议采用新的方式. 新的MMI native的操作方式与原来的MMI一致,同时按住音量上键与电源键开机即可进入测试界面.
+参考FAQ: FAQ43223
+### 问题: 平台支持的WAP协议版本是什么？
+解决方案: 平台同时支持WAP1.2、WAP2.0两个版本,具体使用哪个版本由运营商的互联网账户信息决定,可通过互联网账户设置中的高级设置界面查询/修改.其中WAP对应WAP1.2,HTTP对应WAP2.0. WAP2.0的一个关键特性是将WWW协议引入WAP环境,在2.5G和3G上提供比WAP1.X效率更高的无线网络传送协议.新的WAP2.0支持:XHTML、CSS(Cascading Style Sheets)、超文本传输协议(HTTP/1.1)和传输层安全(TLS).另外,协议方面还支持因特网标准的TCP/IP.目前大部分手机上都是使用WAP2.0.
+参考FAQ: FAQ41577
+### 问题: 如何解决用Canvs绘图的时候出现的锯齿现象
+解决方案: 在使用public void drawBitmap(Bitmap bitmap, Matrix matrix, Paint paint) {}这个API方法去绘制特定图片的时候会出现边缘锯齿现象: 相关参数说明: bitmap:需要绘制的bitmap matrix:给这个绘制bitmap限制的矩阵模型(可以限制为一个圆形/矩形等) paint:使用的画笔 出现锯齿的时候:是因为paint画笔没有设置滤波处理. 一般需要在绘制之前设置 paint.setFilterBitmap(true);//设置滤波处理,绘制高质量的图片 同时建议在绘制完成之后,重置这个状态mPaint.setFilterBitmap(false);//因为绘制高质量的图片会占用更多的内存资源
+参考FAQ: FAQ41580
+### 问题: 关于camera模组打样
+解决方案: 对于camera的打样,以前前置摄像头提供了一个所谓的垂直打样原则,是为了处理VT问题作了垂直打样的要求,现在已不再需要. 这里提供一个打样原则就是: "长边对长边,短边对短边"意思是:cmos的长边与屏幕的长边平行,cmos的短边与屏幕的短边平行. 就可以了.
+参考FAQ: FAQ41572
+### 问题: 为何使用同一个画笔（设置同样的画笔宽度）绘制直线的时候，实际宽度不一样
+解决方案: 使用public void drawLine(float startX, float startY, float stopX, float stopY, Paint paint) {}API 绘直线 参数说明: 前四个参数:是这条直线对应的起始点/终点的x,y坐标值 paint:使用的画笔 通常会设置paint.setStrokeWidth(float width);//设置画笔的宽度 使用这个绘制直线,有时候在屏幕边缘的直线和屏幕中间的直线宽度不一样: 是因为:在使用drawLine绘制直线的时候,如果这个直线起始点是贴着其父控件,这时候绘制的宽度就只有原来的一半 如果不是贴近其父控件(起始坐标在父控件内),绘制的直线就是paint设置的正常宽度 这是正常现象,也符合用户的界面体验.
+参考FAQ: FAQ41581
+### 问题: USB网络共享，pc无法上网
+解决方案: 这里还有一个情况需要说明的是在windows 7下是OK的,但在windows xp下不行. 这个是需要更换网卡驱动,而且要替换以前更老版本X86的网卡驱动.
+参考FAQ: FAQ41583
+### 问题: 如何配置TextView/EditText属性，使其字符显示不随语言切换而改变显示
+解决方案: 有时切换语言的时候,某些TextView /EditText的hint显示没有随之切换对应语言下的文字: 这时候需要去检查这个TextView是否有如下设置: 1:在xml中配置:android:freezesText="true" //保存字符显示内容和光标位置 2:在代码中设置setFreezesText(true); 上述配置可能是导致切换语言,显示不随之改变的原因 当然首先是要检查:对应的语言字符下是否有这个翻译,如果没有再考虑上述原因
+参考FAQ: FAQ41584
+### 问题: 拨号盘页面进入通话记录闪黑屏
+解决方案: 这个黑屏是拨号盘页面和通话记录页面之间的切换动画.如果想要去掉此切换动画,可以修改DialtactsActivity的主题设置,添加 <item name="android:windowAnimationStyle">@null</item>
+参考FAQ: FAQ41586
+### 问题: 在slog中，ACT中6和15所代表的网络类型？
+解决方案: 在slog中会看到一些AT上报相关的网络指令,有些数字如6和15分别代表不同的网络类型: 08-02 13:52:31.293 171 226 D use-Rlog/RLOG-AT: [w] Channel0: AT< +CREG: 1,"A802","00A2B181",6 08-02 13:52:33.953 171 226 D use-Rlog/RLOG-AT: [w] Channel0: AT< +CREG: 1,"A802","00A2B181",15 ACT=6 表示网络支持HSDPA 和HSUPA ACT=15 表示HSDPA+ 和HSUPA+
+参考FAQ: FAQ41601
+### 问题: jni函数如何静态注册
+解决方案: 1.先编写java代码,编译生成.class文件; 2.使用javah工具,如javah -o output packagename.calssname,这样会生成一个output.h的头文件,在这个文件中声明了对应的jni函数,只要实现里面的函数即可
+参考FAQ: FAQ41607
+### 问题: jni函数如何动态注册
+解决方案: java native函数和jni函数是一一对应的,在jni相关的一个结构体JNINativeMethod中会记录这种对应关系,动态注册需要定义一个该类型的数组变量,类似如下: static JNINativeMethod gMethods[] = { {"native", "()V", (void *)android_media_MediaScanner_native_init}, ... } AndroidRuntime类提供了一个registerNativeMethods来完成注册工作: AndroidRuntime::registerNativeMethods(..., gMethods, ...) 在java类中使用System.loadLibrary()来加载动态库完后,会查找库中的JNI_OnLoad()函数,可以自己实现这个函数,并调用上述注册native的方法
+参考FAQ: FAQ41608
+### 问题: android4.4如何dump hwc的layer
+解决方案: dump的操作步骤 1.adb shell setprop dump.hwc.flag <number> number: a.HWCOMPOSER_DUMP_FRAMEBUFFER_FLAG ==> 0x08 //dump framebuffer layer b.HWCOMPOSER_DUMP_OSD_OVERLAY_FLAG ==> 0x04 //dump osd layer c.HWCOMPOSER_DUMP_VIDEO_OVERLAY_FLAG ==> 0x02 //dump video layer //打开调试开关 note:可通过adb shell getprop dump.hwc.flag命令来查看是否成功打开,显示为1则表示打开成功 2.adb shell setprop dump.hwc.path <path_name> //对于此路径<path_name>的设置有具体要求==》/data/Image/ 有写权限
+参考FAQ: FAQ41627
+### 问题: SC7701平台海外场测出现短信回执码异常
+解决方案: 确认为网络数据下发中中即带有"2222",在网号是MCC:716 MNC:06 情况下,判断recipient中开头带有该数据,屏蔽即可,在新版本已经解决.
+参考FAQ: FAQ48718
+### 问题: 修改PC机上设备管理器看到的USB驱动的名字
+解决方案: 将PC的USB驱动中的所有INF文件中的SPRD修改为客户的名字,然后重装驱动,重启电脑应该就可以了.
+参考FAQ: FAQ41816
+### 问题: SC7715如何预置最小GMS包？
+解决方案: 
+参考FAQ: FAQ41832
+### 问题: 如何使用adb shell 向editText 输入文字？
+解决方案: 某些场景下,为了排除输入法应用对系统性能的影响,可以直接使用命令输入文字. 命令格式: adb shell input text "string" 该命令就是不通过输入法应用,直接将字符串写入edittext. 注意:手机当前焦点必须在edittext内.
+参考FAQ: FAQ41714
+### 问题: android4.4如何通过adb shell命令关闭hwcomposer
+解决方案: 展讯作为vendor,在hwcomposer模块中实现了通过adb shell关闭hwcomposer 如下是具体的操作步骤: 1.adb shell setprop debug.hwc.disable 1 //关闭了hwcomposer 2.adb shell setprop debug.hwc.disabel 0 //打开hwcomposer note:可通过adb shell getprop debug.hwc.disadble来查看当前hwcomposer是打开还是关闭了.(1为关闭0为开启)
+参考FAQ: FAQ41723
+### 问题: 4.4平台中MonkeyTest.apk的代码在哪里?
+解决方案: 在development\apps\MonkeyTest目录下
+参考FAQ: FAQ41721
+### 问题: 如何去掉4.4平台中MonkeyTest.apk
+解决方案: 这个apk仅在userdebug版才会出现,详见下面定义 idh.code\build\target\product\monkeytest.mk ifeq ($(TARGET_BUILD_VARIANT),userdebug) PRODUCT_PACKAGES += \ MonkeyTest endif 如不需要此功能可直接在 idh.code\build\target\product\full_base.mk中注释如下定义 #Get money for userdebug version $(call inherit-product, $(SRC_TARGET_DIR)/product/monkeytest.mk)
+参考FAQ: FAQ41728
+### 问题: USB-PC internet功能
+解决方案: USB-PC internet功能,是手机连接PC,在手机没有SIM卡和不连接wifi的情况下,可以通过PC访问互联网. 在常见的PC系统,都提供了wifi共享的功能.此时,利用将手机和PC建立的连接,路由到PC的wifi网络上,从而使手机可以访问互联网.
+参考FAQ: FAQ41730
+### 问题: 什么是sim卡心跳检测，其作用是什么？
+解决方案: 手机会定时向sim卡发送一个命令查询来SIM_STATUS, MSG_ID_SIM_TIMER_EXPIREY. 这样是为了在使用过程中如果出现掉卡或者人为拔掉sim卡时将相应信息通知上层,以显示相关信息,并停止有关sim卡相关操作.
+参考FAQ: FAQ47371
+### 问题: 如何使锁屏界面默认不显示通知？
+解决方案: 5.1及其以上版本的手机上锁屏界面是默认显示通知的,若想改为默认不显示通知,可按照如下修改: frameworks\base\packages\SettingsProvider\res\values\defaults.xml -  <integer name="def_lock_screen_show_notifications">1</integer>
+
++  <integer name="def_lock_screen_show_notifications">0</integer> 按照上面修改后,锁屏界面默认不显示通知. 锁屏界面通知的具体显示与否,也可以通过设置->提示和通知->设备锁定时这个选项来控制.
+参考FAQ: FAQ90535
+### 问题: 无法打开Google语音搜索功能
+解决方案: 需确认是否有何入了voicesearch.apk.
+参考FAQ: FAQ47229
+### 问题: 开机或者系统深度睡眠后唤醒屏幕显示慢。
+解决方案: 主要原因是因为在kernel中在唤醒的时候有打印一些log,而如果将 loglevel等级开的很低的话,会打印很多log出来,这样的话,会导致屏幕显示慢很多,所以在uboot中把打印调试信息#define CONFIG_BOOTARGS "mem=512M loglevel=８ console=ttyS1,115200n8 init=/init " MTDPARTS_DEFAULT 把８改成１后,很多log就不会打印出来,这样唤醒显示速度就快了..
+参考FAQ: FAQ41759
+### 问题: IPSec传输模式AH/ESP加密
+解决方案: AH方式向 IP通信提供数据完整性和身份验证,同时可以提供抗重播服务. ESP提供 IP层加密保证和验证数据源以对付网络上的监听.因为 AH虽然可以保护通信免受篡改, 但并不对数据进行变形转换, 数据对于黑客而言仍然是清晰的.为了有效地保证数据传输安全, 在IPv6 中有另外一个报头 ESP,进一步提供数据保密性并防止篡改.
+参考FAQ: FAQ41747
+### 问题: IPSec隧道模式2种模式封包
+解决方案: 在隧道模式下,整个原数据包被当作有效载荷封装了起来,外面附上新的IP报头.其中"内部"IP报头(原IP报头)指定最终的信源和信宿地址,而"外部"IP报头(新IP报头)中包含的常常是做中间处理的安全网关地址. 与传输模式不同,在隧道模式中,原IP地址被当作有效载荷的一部分受到IPSec的安全保护,另外,通过对数据加密,还可以将数据包目的地址隐藏起来,这样更有助于保护端对端隧道通信中数据的安全性.
+参考FAQ: FAQ41777
+### 问题: 7715下载时电流为大出60毫安左右
+解决方案: 经过检查,电流大了主要是vddarm,vddcore等电流变大所致,这个问题是因为我们的7715平台打了一个将CPU升频率的patch所导致,7715的最高频率由以前的1.2G升高到1.25G,而VDDARM是给SOC内部的ARM cpu供电,而VDDCORE是给片内的sram,总线等供电,这些都是跟CPU频率严格匹配的,不能进行修改. 结论:因为CPU频率有所升高,电流变大是正常的.
+参考FAQ: FAQ41765
+### 问题: android上user版本如何默认打开ADB
+解决方案: 屏蔽DatabaseHelper中对user版本的处理. DatabaseHelper.java (frameworks\base\packages\settingsprovider\src\com\android\providers\settings): // Enable adb when eng mode. //if (!SystemProperties.get("ro.build.type", "user").equals("user")) { loadSetting(stmt, Settings.Secure.ADB_ENABLED, 1); //}
+参考FAQ: FAQ41787
+### 问题: SC7715平台是否支持关闭WIFI 14信道
+解决方案: 新版本(MOCORDROID4.4_3.10_14A_W14.19.1_P14.26.6以后的版本)已经合入屏蔽14信道的修改,根据国家区分是否支持14信道.
+参考FAQ: FAQ41788
+### 问题: RGB屏调试在UBOOT下不亮，在kernel中能亮
+解决方案: 这个情况是因为有的RGB屏的驱动IC有问题,在上电reset后需要首先发送resume的命令,然后再进行正常的初始化才能亮. 遇到这种情况的下:就是在init函数的开始加上resume的命令就能解决这个问题.
+参考FAQ: FAQ41783
+### 问题: 修改了frameworks\opt\vcard文件夹下面的代码，如何编译？
+解决方案: 首先编译frameworks\opt\vcard\java\com\android\vcard,接着编译使用到相关代码的模块如:packages/apps/Contacts,最后将编译好的APK PUSH到手机即可,如PUSH Contacts.apk到system/priv-app.
+参考FAQ: FAQ41806
+### 问题: 如何修改媒体音频参数并集成至对应项目工程？
+解决方案: 修改调试音频参数可以使用AudioTest工具,如增大媒体(如mp3音乐播放)音量增益以提高音量大小等. 修改完毕后需要再将媒体音频参数结果合并至项目环境当中以编译集成,具体作法如下: 1.联机通过'adb pull data/local/media/audio_para .'命令将调试修改后的音频参数文件提取至PC环境中. 2.使用1中提取的音频参数文本文件更新项目配置中的同名音频参数文件,如'./device/sprd/scx35_sp5735c2ea/audio_params/audio_para'.
+参考FAQ: FAQ41815
+### 问题: Dolphin平台上如何裁剪u-boot-spl-16k大小？
+解决方案: Dolphin平台上有时需要在uboot的第一阶段即SPL阶段增加一些调试代码或打印信息,往往会超出24k的大小限制,导致编译不过. 解决方法: 1.可在chipram\arch\arm\cpu\armv7\sc8830\dram_cfg.c文件中,将DRAM_INFO_ARRAY[]列表中不用到的DDR配置项屏蔽掉,留下当前工程所用到的DDR配置. 2.若还需要更多空间,还可将该文件中LPDDR1_ACTIMING常量结构体屏蔽掉.
+参考FAQ: FAQ44561
+### 问题: 如果想在某一操作完成时延时一段时间，应该怎么做
+解决方案: 首先,系统延时函数接口:SCI_GetTickCout(). 某一操作完成后,想让系统延时一段时间,可以采取如下操作: func() //func() 这里只是用于泛指某函数名,没有实际意义 { ... uint32 old_time, new_time; old_time=new_time=SCI_GetTickCout(); while(new_time-old_time<N) //N为想要延时的时间单位 { new_time=SCI_GetTickCout(); } ... }
+参考FAQ: FAQ41813
+### 问题: SC7715 user版本开启slog后为什么cp2目录log大小为0KB？
+解决方案: 默认需要将工程模式中打开PC Log选项(除了EngPC Service不需要打开,其他4个选项全开)勾选 上,这样抓取出来的cp2目录大小就不会为0KB了.
+参考FAQ: FAQ41835
+### 问题: 对应activity切换时黑屏的方法
+解决方案: 我们可以通过设置第二个activity的背景以及过场动画来解决这个问题. 以IncallUI为例: <style name="Theme.InCallScreen" parent="@android:style/Theme.Holo.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+</style> 我们将window的透明属性设置为true,过场动画也设定为透明,这样activity切换时就不会有黑屏问题出现.
+参考FAQ: FAQ41836
+### 问题: 7715软件mp3等调好的音频参数如何写入软件
+解决方案: 从audiotest导出来的文件audio_para直接替换掉device/sprd/scx15_sp7715ea(这个是你们使用的目录)/audio_para文件,然后将你们工程的out目录删除,全部重新编译后下载进去.
+参考FAQ: FAQ41842
+### 问题: Eclipse如何查看C代码
+解决方案: 我们需要从网上下载最新的Android Developer Tools包.该压缩包已经将相关的插件加入到eclipse中. 启动Android Developer Tools中的eclipse,点击File->new->Project->C/C++->C Project 点击[use default location],选择C代码即可.
+参考FAQ: FAQ41850
+### 问题: 编译时如何添加一个工程的user选项
+解决方案: 通常在启动编译时的操作步骤是这样的: 1、source build/envsetup.sh 2、lunch 选择某个要编译的工程 3、make 这个过程是这样的: 1)source build/envsetup.sh,是设置一些主要的环境变量,并在device,vendor,build等目录搜索vendorsetup.sh,这些脚本中保存的就是需要编译的分支名,添加之后就会保存在envsetup.sh中的数组LUNCH_MENU_CHOICES中. 2)lunch时会将上面的LUNCH_MENU_CHOICES中元素打印出来,这就是我们看到的选项 3)选择某个选项后会根据选项设置一些环境变量,并依据此决定编译的版本类型. 所以如果需要添加一个user选项就是找到对应工程下的vendorsetup.sh,并在其中加入一个后缀名为user的选项即可.
+参考FAQ: FAQ41880
+### 问题: CTS测试过程中如果取消nvitemd 拥有root权限
+解决方案: 1. nvitemd进程的权限是在启动的init配置文件设置的,需要对应修改,修改文件device/sprd/scx15/init.scx15.rc,修改方法参考下图; 2. 该修改仅对EMMC工程生效,NAND工程由于UBI文件系统操作必须要root权限,不能参考该修改;客户如有需要,且是EMMC工程,可参考该修改;
+参考FAQ: FAQ41899
+### 问题: close fp 没有关闭句柄
+解决方案: 1)kernel close fp并非一定会释放句柄,这取决于用户的操作是否规范. 2)在close fp的时候,kernel会检查fp的引用计数,如果不为0,就不会执行释放操作. 当后续引用计数真的为0后,才会延迟释放句柄. 3)所以遇到这种情况,一般都是由于上层使用不当,还在使用fp的时候,调用close接口. 只有当没有用户使用fp,然后调用close才会真正释放句柄. 4) close的这种行为类似于lazy umount操作
+参考FAQ: FAQ41903
+### 问题: GSM频段下出现无发射功率时怎么办？
+解决方案: 请做如下确认: 1,确认RF TX通路是否有漏贴或误贴器件 2,确认RF连接器的方向及焊接是否正确 3,RF 射频逻辑是否正确,
+参考FAQ: FAQ41906
+### 问题: GSM频段下出现发射功率低时怎么办？
+解决方案: 请做如下确认: 1,确认测试时RF 线跟射频座是否连接良好 2,确认PA VBAT电源供应是否有过大电压跌落 3,调试PA输出匹配
+参考FAQ: FAQ41915
+### 问题: GSM 频段下出现PVT问题怎么办？
+解决方案: 请做如下确认: 1,确认PA VBAT电源质量和PA附近是否有DCDC器件,如LCM的背光IC等 2,修改PA打开的时序,可以通过在MOBILETESTER中修改,但是PA就有关于控制信号和射频输入信号的时序要求,过分修改的话,或许在PVT上有所改善,但是在谐波等问题上会有恶化; 3,断开RX ,确认是否是TX/RX隔离度问题
+参考FAQ: FAQ41916
+### 问题: GSM 频段下出现开关谱问题怎么办？
+解决方案: 请做如下确认: 1,调试Vramp曲线能优化开关谱 2,确认PA饱和功率是否过低,如果PA输出饱和功率过低就需要调试PA 匹配提高PA输出饱和功率
+参考FAQ: FAQ41918
+### 问题: 为什么新加的图片在资源工具ResOver中找不到？
+解决方案: 添加资源,如果要在RESOVER中可以修改,得加上:RES_ADD_IMG_TAG,如: RES_ADD_IMG(IMAGE_THEME_BG2,"\\MMI_RES_##\\IMAG\\Bg\\IMAGE_THEME_BG2.png",IMG_CMP_PNG_ARGB_RLE,0) RES_ADD_IMG_TAG(IMAGE_THEME_BG2,"IMAGE_THEME_BG2")
+参考FAQ: FAQ41921
+### 问题: WiFi Display支持的音视频编码格式？
+解决方案: WiFi Display对所支持的音视频编码格式进行了规定,视频编码格式必须为H.264格式,音频必须支持的编码格式为:LPCM(线性脉冲编码调制)16bits,48kHz采样率,双声道.
+参考FAQ: FAQ41941
+### 问题: sc6815平台如何修改MEM电压？
+解决方案: MEM的电压在代码中已经定义好了,如果需要重新修改,则需要重新定义下: 在Chipram/include/configs/sp7715ea.h #ifndef CONFIG_CLK_PARA #define DDR_CLK 333 #else #define MAGIC_HEADER 0x5555AAAA #define DDR_FREQ 333000000 #define DCDC_ARM 1250 #define DCDC_MEM 1250 //需要增加一行DCDC_MEM的定义 #define DCDC_CORE 1100 #define CONFIG_VOL_PARA #endif
+参考FAQ: FAQ41926
+### 问题: 为什么开启闪光灯时拍照会闪光两次
+解决方案: 开启闪光灯时拍照闪光两次,是正常现象,对焦和拍照各有一次闪光.
+参考FAQ: FAQ42364
+### 问题: 什么是WiFi Display?
+解决方案: WiFi Display(WFD)是WiFi Alliance开发出的一种规范,使多媒体设备之间建立和维持一个基于wifi的连接,并且利用这个连接使音视频可以在目标设备呈现播放,即WiFi Display的核心功能就是让设备之间通过wifi无线网络来分享视音频数据.以一个应用场景为例:有了WiFi Display后,手机和电视机之间就可以直接借助wifi,而无需硬连线(如HDMI)就可将手机中的视频投递到电视上去显示.
+参考FAQ: FAQ41929
+### 问题: 如何使用FONTTOOL工具调整SPML字库中字符的上下偏移？
+解决方案: 当显示方案为SPML显示时,如果遇到由于个别字符过高或过低引起显示不全的情况时,可以将字库中对应的字符进行Y轴方向上的微调,以下是参考方法: 1、使用FONTTOOL工具加载字库LIB文件. 2、选中需要调整的字符,然后点击Adjust Parameters选项,如下图: 3、在弹出的Adjust Parameters对话框中,调整Y Delta的值,当该值为2时,表示向上偏移两个像素;当该值为-2时,表示向下偏移两个像素. 4、重新保存字库LIB文件替换原来的字库.
+参考FAQ: FAQ41909
+### 问题: 使用getDrawable和BitmapFactory.decodeResource加载图片资源区别
+解决方案: 在android中,使用this.getResources.getDrawable和BitmapFactory.decodeResource加载图片资源是有区别的, 1. 用this.getResources.getDrawable方法加载图片资源时,无论对同一个资源加载多少次,堆内存的占用没有变化,也就是说再使用this.getResources.getDrawable加载同一个资源一次和加载100次,内存占用都是一样的 2. 使用BitmapFactory.decodeResource加载图片资源时,对同一个资源,每加载一次,都需要重新分配一下堆内存. 所以平常如果多次使用同一个图片资源文件,建议通过this.getResources.getDrawable方法获得然后全局使用
+参考FAQ: FAQ41969
+### 问题: 手机出现DSP Assert原因一般有哪些？
+解决方案: DSP OVER RUN原因: 1,文件系统内存拷贝DMA CPY/DMA SET,频繁DMA操作会把ARM 执行挂起引起. 2,DCAM 和DMA 间隙抢占ARM总线; 3,长时间屏中断; 4,SYS TIMER和DMA 刷屏交替抢占ARM总线; 5,IRQ 和FIQ中断过于频繁,如1ms一次; 6,在FIQ或是IRQ中执行时间过长导致DSP OVERRUN; 7,SYS TIMER TASK(与LAYER1 同优先级 )中处理过多事情.
+参考FAQ: FAQ41943
+### 问题: 如何检查资源中所使用的字库文件大小？
+解决方案: 如果需要检查资源中所使用的字库文件大小,可以打开编译目录\build\***_builddir\tmp中的文件mmi_res_***_font.txt,查看其中的字库对应的dst_size值,该值即是字库大小.
+参考FAQ: FAQ41967
+### 问题: audioservice对stream mute的管理
+解决方案: audioservice对stream mute的管理从2.3.5开始就是是采用类似引用计数的方式来管理的. 用成员变量mMuteCount来记录mute count 有mute调用时,mMuteCount++ 有unmute调用时,mMuteCount-- (如mMuteCount为0则不进行减操作) 所以对流这个层面进行静音时,需要mute与unmute配对使用,且unmute可多次调用. 即需要满足:unmute次数>=mute次数
+参考FAQ: FAQ41974
+### 问题: 如何默认关闭所有数据连接？
+解决方案: 设置 > SIM 卡管理 > 数据连接设置(或者toggle状态栏"数据"图标),无论单卡或者双卡,我们都想设置为"关闭"状态,即开机后我们想默认关闭数据连接.只需要在对应工程的mk文件中添加下面一句话即可: ro.com.android.mobiledata=false 设置打开指定SIM卡的数据连接,请参考FAQ37944
+参考FAQ: FAQ41968
+### 问题: 如何修改状态栏QuickSettings(快捷设置)每行的个数、每项的高、每项的间隔距离？
+解决方案: 每行的个数: /frameworks/base/packages/SystemUI/res/values/config.xml <integer name="quick_settings_num_columns">4</integer> 每项的高和每项的间隔距离: /frameworks/base/packages/SystemUI/res/values/dimens.xml <!-- The fixed height of each tile --> <dimen name="quick_settings_cell_height">100dp</dimen> <!-- The padding between each tile within the QuickSettings layout --> <dimen name="quick_settings_cell_gap">4dp</dimen>
+参考FAQ: FAQ41983
+### 问题: 状态栏QuickSettings(快捷设置)如何不显示用户信息图标？
+解决方案: 修改如下值,设置为true则显示;设置为false则不显示. /frameworks/base/packages/SystemUI/res/values/config.xml <bool name="quick_settings_show_UserTile">true</bool>
+参考FAQ: FAQ41986
+### 问题: 如何调整字符串多行显示时行间距的大小？
+解决方案: 在字符串多行显示时,如果基于显示效果的考虑需要增加或减小行间距,可以通过调整绘制字符串接口GUISTR_DrawTextToLCDInRect中的style_ptr.line_space来实现.
+参考FAQ: FAQ41982
+### 问题: 如何修改各种流类型的默认音量值
+解决方案: 各种流类型的默认音量值在文件AudioManager.java中定义:可在0～各流类型音量最大值之间修改 public static final int[] DEFAULT_STREAM_VOLUME = new int[] { 4, // STREAM_VOICE_CALL 7, // STREAM_SYSTEM 5, // STREAM_RING 11, // STREAM_MUSIC 6, // STREAM_ALARM 5, // STREAM_NOTIFICATION 7, // STREAM_BLUETOOTH_SCO 7, // STREAM_SYSTEM_ENFORCED 11, // STREAM_DTMF 11, // STREAM_TTS // modified for FM start // add FM default volume 6 // STREAM_FM // modified for FM end };
+参考FAQ: FAQ42019

@@ -1,0 +1,308 @@
+### 问题: 怎样去掉DRM功能？
+解决方案: 去掉drm,方法为: 1.device/sprd/scx15_sp*****/system.prop,可以根据产品选择相应product下的prop,或者直接把所有product中的system.prop文件中的drm.service.enabled=true改为drm.service.enabled=false 2./system/core/rootdir/init.rc中去掉下述代码: #service drm /system/bin/drmserver #class main #user drm #group drm system inet drmrpc
+参考FAQ: FAQ35435
+### 问题: 蓝牙设备的节能模式介绍
+解决方案: 蓝牙设备的节能模式如下: 1)保持模式(hold mode); 2)呼吸模式(sniff mode); 3)休眠模式(park mode).
+参考FAQ: FAQ43650
+### 问题: 用户如何自定义字体
+解决方案: 1.在SD卡中任意目录下添加字体文件(.ttf). 2.进入-设置-显示-字体,点击menu-添加字体-从SD卡中选择ttf文件-确定. 3.点击"用户字体"标签页,点击列表上刚刚添加的字体文件即可.
+参考FAQ: FAQ35461
+### 问题: 如何通过adb下发AT命令
+解决方案: adb进入dev目录,选择相应的tty设备通道比如 stty_w29, root@scx35_sp7730ec:/dev # cat stty_w29 & root@scx35_sp7730ec:/dev # echo -e "at+SPIMEI?\r" > stty_w29 root@scx35_sp7730ec:/dev # echo -e "at+SPIMEI?\r" > stty_w29 如果有双引号,需要加转义符 root@scx35_sp7730ec:/dev # echo -e "at+SPIMEI=\"123456789987654\"\r" > stty_w29
+参考FAQ: FAQ35489
+### 问题: CTS测试运行cts-tradefed脚本错误
+解决方案: 运行cts-tradefed脚本,提示如下错误,这个原因是由于cts测试环境变量CTS_ROOT设置错误导致. Unable to locate /home/apuser/android-cts/android-cts/tools/ddmlib-prebuilt.jar 正确路径设置如下: 如果解压后的CTS目录结构为/home/apuser/android-cts/tools/cts-tradefd, 则应设置环境变量 CTS_ROOT=/home/apuser,而不是CTS_ROOT=/home/apuser/android-cts
+参考FAQ: FAQ35485
+### 问题: 怎样让加入的系统属性带空格
+解决方案: 以加入系统属性ro.product.btname=FPT F24为例, 若在makefile文件中加入ro.product.btname=FPT F24 最终写入build.prop里面会变成: ro.product.btname=FPT F24 若在system.prop这个文件中加入ro.product.btname=FPT F24 则OK,但是 因为不同项目的系统属性定制不一样,需要将各项目的system.prop区分开. 修改方法如下: 在build/core/Makefile文件中抓到以下代码: system_prop_file := $(wildcard $(TARGET_DEVICE_DIR)/system.prop) 将红色部分改成项目定制的system.prop,如改成: system_prop_file := $(wildcard $(TARGET_DEVICE_DIR)/$(REACHPROJECT)/system.prop)
+参考FAQ: FAQ35475
+### 问题: CTS测试对手机的配置是否有特殊要求
+解决方案: 手机设备只有满足CDD的规定并且通过CTS,才有可能获得Android的商标和享受Android Market的权限,才能使用android market. 所谓的CDD就是对手机配置的前提要求,例如对android4.4的CDD如下: RAM: 至少 340M Nand: /data 分区至少 1GB,/cache至少100M 升级: 必须有一种办法可以升级全系统. 可以为:OTA、USB、SD 卡 如果不满足CDD,则CTS测试可能出现未知错误
+参考FAQ: FAQ35494
+### 问题: WriteIMEI工具写IMEI无法成功，是否和工具中的Ap Mode 选项有关？
+解决方案: 打开WriteIMEI工具,选择"设置"按钮,弹出如下界面 AP mode是给9620用的,其他产品不能勾选,如勾选上,会导致写IMEI失败
+参考FAQ: FAQ35505
+### 问题: SC7715如何配置紧急号码
+解决方案: 以添加120为例,将PhoneNumberUtils.java (frameworks\base\telephony\java\android\telephony) 中 return (number.equals("112") || number.equals("911")加上||number.equals("120")),数组CUSTOM_EMERGENCY_NUMBER中添加120
+参考FAQ: FAQ35504
+### 问题: 锁卡版本如何配置默认不锁卡，通过指令加锁
+解决方案: 把nv中的BaseParam->SIM_LOCK_USER_DATA->sim_lock_status默认配置成0就是默认解锁,其他项配置必须和默认锁住的时候配置一样,也就是说默认锁住的版本把此项nv改成0就到了输入解锁密码解锁的状态.界面上的改动可以参考MMISET_SIM_LOCK_SETTING_WIN_TAB这个窗口,默认####8888#进入.
+参考FAQ: FAQ35517
+### 问题: 耳机左右声道接反，软件上如何配置
+解决方案: 需要开启CONFIG_SND_SOC_SPRD_VBC_LR_INVERT宏
+参考FAQ: FAQ35572
+### 问题: 联通卡能上网，移动卡不能上网，3g可以上网，2g不能上网
+解决方案: 需要检查以下2点: 1. edge支持情况,如果PA不支持edge上行,support_egprs需要配置成2 不支持edge,TD_TIANji2_NV_Type\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs=0 PA支持edge上行,TD_TIANji2_NV_Type\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs=1 PA不支持edge上行,TD_TIANji2_NV_Type\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs=2 2. 检查GSM的校准情况
+参考FAQ: FAQ35574
+### 问题: 为什么无法给FDN列表的号码发送短信（FDN功能开启）？
+解决方案: 出现无法给FDN列表的号码发送短信是由于FDN列表中未添加短信中心号码,根据协议规范,需要将短信中心号码加入FDN列表才能正常发送短信.
+参考FAQ: FAQ35576
+### 问题: 在联系人群组页面中选择群发消息，为什么群组中包含邮件地址联系人也会在收件人中
+解决方案: 这是因为信息应用会给包含邮件地址的联系人,通过彩信的方式发送邮件.所以包含邮件地址的联系人也会在信息的收件人中. 其实联系人群组页面菜单中的"群发消息"和"群发邮件",一个是利用邮件应用处理发送的任务,一个是利用消息应用处理任务,只是消息应用能同时处理号码和邮件地址.
+参考FAQ: FAQ35591
+### 问题: 如何修改拨号盘数字键音量大小
+解决方案: DialpadFragment.java中有常量: private static final int TONE_RELATIVE_VOLUME = 80; 修改范围为0-100 0音量最小,100音量最大.
+参考FAQ: FAQ35625
+### 问题: 蓝牙链路分类
+解决方案: 蓝牙基带技术支持两种连接类型:同步定向连接(SCO)类型和异步无连接(ACL)类型.前者主要用于同步话音传送,后者主要用于分组数据传送. A2DP(Advanced Audio Distribute Profile)就是定义在ACL信道上进行高质量的音频分发的协议和过程;
+参考FAQ: FAQ35634
+### 问题: 如何将联系人界面底部的actionbar移至搜索框上面
+解决方案: 将\packages\apps\contacts\src\com\android\contacts\activities\PeopleActivity.java, onCreate()方法中getActionBar().setAlternativeTabStyle(true);设置成false即可.
+参考FAQ: FAQ35637
+### 问题: FM如何调节音量
+解决方案: 按音量键调节FM音量的过程大体如下: 1、audioservice收到音量键消息后后修改在framework记录的FM流类型的音量,然后发出一个广播AudioManager.VOLUME_CHANGED_ACTION 此广播带有3个扩展项,流类型、当前音量,之前音量 2、FM应用收到音量改变的广播后,做相关check后调用audio接口向AudioPolicyService层(APS)传递参数类似"FM_Volume=7" 3、APS会通过AudioFlinger(AF)调用底层的接口去解析参数字符串并改变相关增益值 "VBC STL DG Set"、"VBC STR DG Set"
+参考FAQ: FAQ35673
+### 问题: ListView如何适应不同的数据源——Android设计模式之adapter
+解决方案: 适配器模式:将一个类的接口转换成客户希望的另一个接口.Adapter模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作. ListView作为client,需要将Cursor作为数据源输入,因此定义了一个适配器:CursorAdapter.其中BaseAdapter实现为一个抽象类,并实现了isEmpty()方法,使得其子类无需再实现该方法,这是因为该方法的操作可以作为缺省方法实现以减少子类的逻辑复杂度.该类主要是对各种数据结构适配器进行抽象.这样,ListView仅需对ListAdapter接口编程即可.而对于各中类型的数据结构(cursor,array等)都可以创建对应的adapter,而将这些adapter的公共部分抽象成BaseAdapter类并实现公共方法,减少实现具体adapter的工作量.这样,在写adapter的时候我们只需要实现少数的几个方法即可.
+参考FAQ: FAQ35730
+### 问题: View和ViewGroup的关系——Android设计模式之Compose
+解决方案: 组合模式:将对象组合成树形结构以表示"部分-整体"的层次结构.组合模式使得用户对单个对象和组合对象的使用具有一致性. 以View为例,其中ImageView、TextView等类型均继承于View,为其叶子节点.而ViewGroup是用来定义有枝节点的行为,用来定义容器类.并且在leaf节点无add/remove这类方法,因此是实现的安全方式.这样可以使用户可以一致地使用基本对象和组合对象,用户无需关注对象是单个还是组合的.
+参考FAQ: FAQ35734
+### 问题: 如何查看手机的wlan mac地址和连接的ap的mac地址?
+解决方案: 抓取wifi空口包,需要设置过滤条件或者其他用途时,其中需要查看手机的wlan mac地址和ap的mac地址,方法如下: 查看手机wlan mac地址: 1.通过设置---关于手机--->状态信息--->其他--->wlan mac地址 2.通过设置--->wlan--->连接wifi--->点击连接的ap名称,详情界面查看wlan mac地址即为手机的wlan mac地址 查看ap的mac地址: 1.笔记本连接这个ap后--->登录192.168.1.1--->登录ap的管理员,需要ap的用户名和密码--->登录成功--->运行状态->LAN口状态--->mac地址,即为ap的mac地址 2.手机端安装一个wifi分析仪,可以查看连接ap的mac地址
+参考FAQ: FAQ35681
+### 问题: Thread的使用方式——Android设计模式之command
+解决方案: 命令模式:将一个请求封装为一个对象,从而使你可用不同的请求对客户进行参数化;对请求排队或记录请求日志,以及支持可撤销的操作. 我们在调用的时候大多数是这样用的:new Thread(new Runnable(){}).start(); 也就是下面的ConcreteRunnable类大多数都是匿名类,因此这里就没有画出来.一般命令模式用于把请求操作的对象与知道如何执行操作的对象分隔开,并且增加新的命令也很容易,符合了Open-Closed原则.
+参考FAQ: FAQ35735
+### 问题: CUCC_WEB_5.2.8测试注意事项
+解决方案: 1、首先登录测试网站115.28.129.163,选择web测试,5.2.8重新排版测试 2、在测试页面通过手动放大的方式将该页面放大 ------部分终端在步骤2过程完成后,就会自动完成重新排版,即满足了case的要求;但是根据展讯平台的实现方式,满足该case还需有以下的操作 3、双击网页字体 ------至此,会实现重新排版功能,满足case要求 ------另外,在测试页面如果双击空白处,页面会恢复为原始大小,测试时请特别注意
+参考FAQ: FAQ35755
+### 问题: listView中setTextFilterEnabled的作用介绍
+解决方案: 当listview呈现多条item的时候,可以对item进行匹配,用法如下 listView中setTextFilterEnabled(true); 这样键盘输入"x",listview就只会显示以"x"开头的item.
+参考FAQ: FAQ35759
+### 问题: 在应用管理器中清除缓存后，为什么缓存还显示12K
+解决方案: emmc的data分区用的是ext4文件系统,一个空文件夹大小是4096B.
+
+cache目录下一共有三个空文件夹
+
+cache       4096
+cache/.     4096
+cache/..    4096
+
+三个文件加起来一共就是12K
+参考FAQ: FAQ35804
+### 问题: 如何向android的framework里添加新API
+解决方案: google对于所有的类和API,分为开放式和不开放式两种.所谓的开放式就是javadoc所包含的,在开放式的类中增加了一个变量,而又没隐藏,导致和原API的doc不一致造成的就会有错. 有2个方法可以解决该问题: 1、将新增加的变量或方法加上"@hide" 的注释,注意一点,加"@hide" 不是简简单单的/*@hide */就行了,标准的javadoc要这样 /** */ 而且对于 format 变量 应该加上 { },也就是/**{@hide}*/ 2、修改公共api后,需要: make update-api 这样的话,系统自动将新增加的API添加到framework/base/api 下的current.txt中,并且将current.txt也上传到代码仓库
+参考FAQ: FAQ38221
+### 问题: 系统是如何对安装的APK文件进行重命名的
+解决方案: 重命名的规则: 1)对于全新安装的应用程序,将APK命名为"包名-1" 2)对于覆盖安装,如果已有"包名-1",则将APK重命名为"包名-2",反之如果已有"包名-2",则重命名为"包名-1",只有1和2两个值,循环使用
+参考FAQ: FAQ35798
+### 问题: 怎样打开给SR2351供电的VDDWPA电压，在哪打开
+解决方案: 默认wifi供电在这里: idh.code\kernel\drivers\misc\sprd_2351\sprd_2351.c void rf2351_gpio_ctrl_power_enable(int flag) 修改这个函数
+参考FAQ: FAQ36104
+### 问题: 对于有数字版权的APK，安装后生成的ZIP文件与APK文件有何区别
+解决方案: ZIP文件与APK文件的区别是:ZIP文件中只保留应用程序的res目录、Android Manifest.xml和resources.arsc文件,而assets目录、lib目录、META-INF目录、classes.dex目录,以及其他目录则不会出现在ZIP文件中.这样可以起到保护APK中资源的作用.
+参考FAQ: FAQ35809
+### 问题: SC7731平台VDDARM Target Impedance？
+解决方案: SC7731平台VDDARM要求低于0.45ohm
+参考FAQ: FAQ35820
+### 问题: SC7731平台VDDCORE Target Impedance？
+解决方案: SC7731平台VDDCORE要求低于0.3ohm
+参考FAQ: FAQ35821
+### 问题: 要使MP3播放效果好、音量大在设计中应该注意什么？
+解决方案: 1、选用F0较低的Speaker、且曲线平坦的、还要取决于膜片的材质 2、speaker后音腔体积尽量大且密封 3、speaker有前音腔并且前音腔和后音腔最好隔离
+参考FAQ: FAQ38440
+### 问题: SC7731平台VDDMEM Target Impedance？
+解决方案: SC7731平台VDDMEM BB侧要求低于0.3ohm, MEM侧要求低于0.25ohm
+参考FAQ: FAQ35824
+### 问题: 如何配置SprdLauncher1中workspace界面的最多最少页数
+解决方案: SprdLauncher1中workspace界面最多最少页数的配置是在: workspace.java: public static final int MIN_WORKSPACE_SCREEN_COUNT = 2;//最少为2页 public static final int MAX_WORKSPACE_SCREEN_COUNT = 12;//最多为12页 根据需求修改以上值即可.
+参考FAQ: FAQ35823
+### 问题: SC7731 DDR支持几个CKE？
+解决方案: SC7731 DDR控制器只有一个CKE,无论MCP是单CKE或者双CKE都直接连接到此信号上.
+参考FAQ: FAQ35830
+### 问题: SC7731支持哪种LCD背光？
+解决方案: SC7731未集成背光控制,需要外围电路提供LCD背光
+参考FAQ: FAQ35831
+### 问题: SC7731是否支持双MIC降噪？
+解决方案: SC7731支持双MIC降噪功能
+参考FAQ: FAQ35833
+### 问题: 如何不显示launcher的指导页？
+解决方案: Launcher中配置是否显示指导页(cling)在: 文件:Launcher.java private static final boolean DISABLE_CLINGS = false; 把DISABLE_CLINGS设置成true则不显示指导页.
+参考FAQ: FAQ35832
+### 问题: SC7715 DDR扫描通过还需要做SI仿真吗？
+解决方案: SC7715 DDR扫描通过不一定表示DDR的走线没有问题,需要做SI仿真.
+参考FAQ: FAQ35869
+### 问题: SC7731平台T卡电源VDDSD0靠近芯片端的去耦电容是否能去掉？
+解决方案: 不能去掉.
+参考FAQ: FAQ66161
+### 问题: SC7701是否支持WCDMA BAND4，BAND19频段
+解决方案: 支持,BAND4,BAND19是low band,连接BAND5,BAND8通道.
+参考FAQ: FAQ68253
+### 问题: Dolphin平台VDDMEM电压是否可以调整？
+解决方案: 1. 可以通过在chipram/include/configs/projectname.h中 #define DDR_FREQ 333000000 #define DCDC_ARM 1200 #define DCDC_CORE 1100 #define DCDC_MEM 1250 //默认没有此行配置,默认是1.2V,如需要调整在此修改 #define CONFIG_VOL_PARA 2. 通过Research Download工具Settings->Vol-Freq Tunning微调DCDC MEM选项 注意,此功能只建议用于调试阶段,一般情况下绝大多数memory的供电1.2V就能保证稳定,只有个别物料或是硬件不过关的情况下才可能需要升压保证稳定性,但会增加功耗
+参考FAQ: FAQ35876
+### 问题: 7715 手机上是否支持语音识别，打开相机功能？
+解决方案: 最新GMS 包中的 google search支持此功能: 1. 7730/7715适配的GMS包,需要安装有velvet.apk(google search); 2. 将系统语言切换为英文; 3. 确保手机能够连接google 服务(例如,在国外等); 4. 打开google search, say "ok google",然后再 说 "take a photo" ,即可打开camera; 注:已经在7730手机上验证可以使用; 谷歌升级安卓搜索APP:用语音快速打开摄像头 http://tech.163.com/14/0320/09/9NP7QBB9000915BF.html
+参考FAQ: FAQ35887
+### 问题: 为什么SPRD参考设计，不能在飞行模式下播放FM？
+解决方案: 为避免对飞行的干扰,飞行过程中是要求关闭相关无线电信号收发设备的,FM radio 也是要关闭的. 所以在SPRD的参考设计的代码中对此有专门的处理,在飞行模式下是会关闭FM并且不能打开FM的. 另,由于FM广播覆盖范围问题,不同城市的的FM频道频点基本都不相同,即使在飞机上收听,由于飞机飞行速度快,一个频道听不了多长时间就飞出覆盖范围了,需要频繁换台,所以排除飞行安全以及相关法律的问题不考虑,即使打开也实用性不大. 所以飞行模式下不能打开FM是专门的设计,设计如此,且不建议修改.
+参考FAQ: FAQ35965
+### 问题: umount fail的问题分析
+解决方案: 拔出SD卡的时候,有时候提示card busy 无法拔出,对于这种问题的分析步骤: 1) 通过lsof 检查有没有哪个进程SD卡,访问SD卡,一般是这个原因会导致卸载失败,但是android 的 vold已经对于这种情况作了保护,如果有发现哪个进程访问SD卡,会kill掉,在system.log可以看到相关的打印. 2)无法不是第一种情况,就需要分析挂载点的情况,主要是看 是否走到了put_super函数,是否释放了超级块;如果没有那就是是有进程对挂载点做冗余的动作(比如bind),导致挂载点计数不满足卸载要求. (注:对应的代码在namespace.c),这种情况下,问题的根源一般是上层,但是底层可以看到上层大概的出错方向.
+参考FAQ: FAQ35891
+### 问题: 如何查看对应APK所在文件夹是否存在对应的.odex文件？
+解决方案: .odex文件定义: Odex全称optimize dalvik package,Odex是安卓上的应用程序apk中提取出来的可运行文件,是通过apk安装包的中的dex优化过的,再把apk包里的dex文件删除,APK中的classes.dex文件会保留.这样做可以加快软件的启动速度,预先提取,减少对RAM的占用,因为没有odex的话,系统要从apk包中提取dex再运行 查看.odex文件的方法(需使用userdebug版本): adb shell ls su(su=switch user,切换用户,获取查看权限,类似adb root,adb remount功能) cd data/dalvik-cache(找到安装的对应apk名称即可,如图片圈红区) 备注:如果是第三方的apk,查看不存在.odex文件时,spreadtrum因无权限,无法对此apk进行优化.
+参考FAQ: FAQ35983
+### 问题: FM 在启动时，如何得知当前系统正处在飞行模式中的？
+解决方案: FM 在启动时处理 MSG_OPEN 的时候,通过 System.getInt(getContentResolver(), System.AIRPLANE_MODE_ON, 0) 来获得系统是否处于飞行模式中. 如果返回值为0则认为当前系统没有在飞行模式否则认为系统处于飞行模式当中
+参考FAQ: FAQ35969
+### 问题: FM 在播放中如何得知系统进入了飞行模式？
+解决方案: FM 在播放中通过监听 Intent.ACTION_AIRPLANE_MODE_CHANGED 来得知系统进入了飞行模式 在FM onCreate 中增加飞行模式的Action的过滤: filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED); 并在onReceive函数中增加判断收到的Intent是否为飞行模式 if (action.equals(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+参考FAQ: FAQ35971
+### 问题: FM 在播放中如何得知用户对系统语言进行了修改？
+解决方案: FM 在播放中通过监听 Intent.ACTION_LOCALE_CHANGED 来得知系统修改了语言 在FM onCreate 中增加语言修改的Action的过滤: filter.addAction(Intent.ACTION_LOCALE_CHANGED); 并在onReceive函数中增加判断收到的Intent是否对语言进行了修改,然后进行相应的处理 if (Intent.ACTION_LOCALE_CHANGED.equals(action))
+参考FAQ: FAQ36525
+### 问题: avc错误
+解决方案: selinux是谷歌引入的安全linux的一套策略,相比于以前策略,该策略更严谨 在开发过程中,比如引入新的文件系统,可能会触发selinux权限控制,从log中可以看到avc错误. 为了方便调试可以用setenforce 0 命令临时关闭selinux,方便调试 具体策略的修改主要涉及到external/sepolicy 和 /device/sprc/xxx/sepolicy 中的文件 修改的方法简单举例如下: 简单的出错log如下:可以看到vold对于unlabeled文件系统没有umount权限, avc: denied { unmount } for pid=140 comm="vold" scontext=u:r:vold:s0 tcontext=u:object_r:unlabeled:s0 tclass=filesystem 可以修改vold.te,添加如下,就ok的. allow vold unlabeled:filesystem unmount;
+参考FAQ: FAQ35988
+### 问题: 插SD卡启动，内置SD卡没有正常挂载
+解决方案: 1)确认手机根目录下的init.rc里面SD卡的存储方案是否是storage3,4(相关配置在device/sprd/scx***目录下). 2) 启动过程中中systemlog是否有如下异常 MountService: Error processing initial volume state 3)那就基本可以确认问题了, 对于内置SD卡存储方案,需要新增分区,分区信息如下 01-01 08:31:25.560 111 169 D NetlinkEvent: NL param 'PARTN=22' 01-01 08:31:25.560 111 169 D NetlinkEvent: NL param 'PARTNAME=internalsd' 解决方法,修改分区表增加该分区即可
+参考FAQ: FAQ35994
+### 问题: adbd是如何获取root权限的
+解决方案: adbd在init.rc中的声明如下: service adbd /sbin/adbd class core socket adbd stream 660 system system disabled seclabel u:r:adbd:s0 因此,在adbd被init启动的时候,默认的用户是root. 在检测到当前不允许root时,会降权,设置自己的usd和gid为shell,所以默认情况下我们的adbd是shell组. 而在非user版本输入adb root,或者是设置了service.adb.root为1并重启adbd后,adbd会跳过降权,直接以root身份运行.
+参考FAQ: FAQ36025
+### 问题: 如何修改主菜单默认显示风格
+解决方案: 主菜单默认风格是由MMISET_DEFAULT_MENU_STYLE_E(@mmi_custom_define.h)定义的,修改该宏定义值可实现主菜单默认风格的改变. 平台根据项目形态,默认的主菜单风格有以下几种: GUIMENU_STYLE_ICON GUIMENU_STYLE_TITLE_ICON GUIMENU_STYLE_GO
+参考FAQ: FAQ36030
+### 问题: SC7731 LCD支持的最大分辨率是多大？
+解决方案: LCD最大支持1280*800分辨率
+参考FAQ: FAQ36131
+### 问题: 手机/system/etc/permissions/目录下的platform.xml文件的作用和内容
+解决方案: 该文件用于定于底层进程的UID和GID与Android定义的的权限名之间的映射关系. 在platform.xml文件中使用四种标签表示这种映射关系: 1)<permission> 用于指定权限的名称 2)<group> 是<permission>的子标签,用于为指定的组ID分配指定的Android权限 3)<assign-permission> 用于为指定的用户ID分配指定的Android权限 4)<library> 指定系统扩展库,又名共享库
+参考FAQ: FAQ36128
+### 问题: SC7731支持那些LCD接口？
+解决方案: SC7731支持MIPI和LVDS两种接口方式
+参考FAQ: FAQ36132
+### 问题: 手机/data/system/packages.xml文件中，package标签中是否可以同时存在userId和sharedUserId属性
+解决方案: 不可以,属性userId和sharedUserId是互斥的,即他们之间只有一个会存在于一个package标签中,因为一个应用程序要么单独地使用一个Linux用户ID,要么与其他应用程序共享同一个Linux用户ID
+参考FAQ: FAQ36134
+### 问题: 如何在nand方案上打开cache2功能？
+解决方案: 在nand方案上分出的cache比较小,但海外的部分项目装GSM包,对cache大小有要求.这样可以 将T卡分出一部分,挂载到cache目录上,原有的cache分区挂载到cache2上.做法如下: 在device/sprd/scx35_sp7730ga/init.board.rc文件起始添加如下代码 # add for mount cache to sdcard @{ on init mkdir /cache2 0770 system cache # @} 在device/sprd/scx35_sp7730ga/system.prop文件末尾添加 # SPRD: add for mount cache to sdcard @{ persist.sys.mount2sd_enable = true # @}
+参考FAQ: FAQ36143
+### 问题: Traceview Profile Panel界面各个项的意义
+解决方案: 列名 描述 Name 该线程运行过程中所调用的函数名 Incl Cpu Time 某函数占用的CPU时间,包含内部调用其它函数的CPU时间 Excl Cpu Time 某函数占用的CPU时间,但不含内部调用其它函数所占用的CPU时间 Incl Real Time 某函数运行的真实时间(以毫秒为单位),内含调用其它函数所占用的真实时间 Excl Real Time 某函数运行的真实时间(以毫秒为单位),不含调用其它函数所占用的真实时间 Call+Recur Calls/Total 某函数被调用次数以及递归调用占总调用次数的百分比 Cpu Time/Call 某函数调用CPU时间与调用次数的比.相当于该函数平均执行时间 Real Time/Call 同CPU Time/Call类似,只不过统计单位换成了真实时间
+参考FAQ: FAQ36183
+### 问题: 智能机上如何查看当前连接网络的基站小区信息？
+解决方案: Android 智能机上,在拨号盘中输入 *#*#4636#*#* ,然后查看手机信息,查看对应的 LAC 及 CID,就为当前网络注册连接上的小区信息. IPhone:在拨打电话界面输入*3001#12345#*查看相应的基站信息. 如果想根据这些基站信息,查找对应的地理位置,需要联系对应的数据服务商,如 http://www.minigps.net/cellsearch.html ,输入对应的LAC 及CID就可以查找到对应的所在的位置.
+参考FAQ: FAQ36192
+### 问题: Android智能机上如何查看当前的网络状态、信号强度等？
+解决方案: Android 智能机上,在拨号盘中输入 *#*#4636#*#*,进入手机信息,就可以看到对应的信号强度、网络类型及状态,选择的网络类型等.
+参考FAQ: FAQ36206
+### 问题: sysdump与coredump区别是什么？
+解决方案: sysdump是指dump kernal log,而coredump是指dump native crash时的log
+参考FAQ: FAQ40086
+### 问题: 7715 ffos 如何修改默认背光亮度
+解决方案: 修改gaia/build/config/common-settings.json文件中的screen.brightness的值,mozilla默认背光亮度为最大,目前7715 ffos中此值的取值范围为0.04～1. "screen.brightness": 1,
+参考FAQ: FAQ36226
+### 问题: ffos 7715如何修改支持的音频格式
+解决方案: 修改文件:gecko/toolkit/content/devicestorage.properties 修改内容:music=*.mp3; *.ogg; *.m4a; *.m4b; *.m4p; *.m4v; *.m4r; *.3gp; *.mp4; *.aac; *.m3u; *.pls; 注意:此处添加的格式必须是手机硬件支持的格式.
+参考FAQ: FAQ36227
+### 问题: ffos 7715如何修改支持的视频格式
+解决方案: 修改文件:gecko/toolkit/content/devicestorage.properties 修改内容:videos=*.mp4; *.mpeg; *.mpg; *.ogv; *.ogx; *.webm; *.3gp; *.ogg; 注意:此处添加的格式必须是手机硬件支持的格式.
+参考FAQ: FAQ36228
+### 问题: ffos 7715如何修改支持的图片格式
+解决方案: 修改文件:gecko/toolkit/content/devicestorage.properties 修改内容:pictures=*.jpe; *.jpg; *.jpeg; *.gif; *.png; *.bmp; 注意:此处添加的格式必须是手机硬件支持的格式.
+参考FAQ: FAQ36231
+### 问题: ffos 7715如何修改背光亮度的调节范围
+解决方案: 修改文件: gaia/apps/settings/elements/display.html 修改位置: <input aria-labelledby="brightness-heading" type="range" name="screen.brightness" step="0.01" min="0.04" value="0.5" max="1" /> 其中min为最小值,0.04对应亮度值为10.max为最大值,1对应亮度值为255.value为默认值,不过若是gaia/build/config/common-settings.json中中配置了screen.brightness,此处的默认值会被screen.brightness覆盖. 因此修改背光亮度的调节范围可修改此处的min和max两个值.取值范围为0～1.
+参考FAQ: FAQ36239
+### 问题: 下载时碰到失败问题怎么快速解决
+解决方案: 简单说,如果下载工具没有跳出进度条,首先要排查USB口在电脑上是否检出,这步是硬件实现,和软件无关. 通常可以试试换台电脑或USB线或PCB板. 如果下载工具有进度条但是停了或者报红字提示未知的出错,则通常有可能是DDR不稳定或者芯片没焊好. 如果是DDR不稳定,需要改FDL的软件将DDR频率降低试试. 如果是芯片没焊好就再重焊或换PCB板. 如果是下载工具报找不到FLASH设备或者分区size超了等有效出错信息,则可以修改软件解决. 如果是找不到FLASH设备,请在FDL2中添加FLASH驱动,通常是一组ID和对应的时序参数. 如果是分区size超了,请根据编译出来的各个分区bin大小,调整FDL2中分区表.如果FLASH总容量中确实存不下PAC包,则必须裁剪分区或增大FLASH硬件容量.
+参考FAQ: FAQ36243
+### 问题: 如何将手机flash中的数据读出？
+解决方案: 在手机出现开机过程中,出现定屏,或其他不能正常开机现象时,可以将flash中的数据读出,以便分析. 工具:ResearchDownload 使用说明: Settings->Main Page,fdl1、fdl2必选,去掉其它所有烧写选项. Settings->Flash Operations->Read Flash,勾选Active Read Flash,在列表框中双击可更改内容,Base选项需要填写地址,如果加载了相应的PAC包也可填写Main Page中Base1中的地址标号,Size中需要填写需要读出的大小,可以在Main Page中查看对应文件的大小,字节为单位.File选项中选择保存文件路径和文件名.点击OK回到主界面. 按照正常烧写,按下音量—,上电,Start downloading.结束后,在File选项中设置的保存文件路径就可以找到读出的数据文件.
+参考FAQ: FAQ36249
+### 问题: 如何在ubuntu下使用脚本，实现手机自动重启测试？
+解决方案: 手机重启测试,可使用脚本实现自动化测试. 实验条件:adb工具,手机,电源 在ubuntu环境下,制作脚本文件执行. #!/bin/sh num=1 mu=1 while [ "$mu" -eq 1 ]; do #if [ "$num" -eq 14400000 ]; then echo "num is $num" #num=$(($num - $num)) #sleep 2m #sudo adb root #sudo adb reboot #echo "num is $num" #sleep 1m #fi sudo adb wait-for-device sudo adb reboot sleep 70 num=$(($num + 1)) done #sleep 2m #sudo adb reboot
+参考FAQ: FAQ36252
+### 问题: Android cap log 和PC cap log的区别
+解决方案: 目前在测试上网相关问题时,通过slog和pc端的arm log均可抓到相关cap log.这两种log抓取方式不同,各有个的优点,因此用途也会有所区别: Android cap log:通过手机中tcpdump工具来进行抓包.因此可以抓到wifi,gprs,共享热点等各种上网方式的tcp数据.且此数据时间与手机时间同步,方便测试与研发人员确认信息.多用来分析上层应用的问题. PC cap log:通过arm log工具抓取modem 中的cap数据.因此只包含走gprs的数据,且modem中只有相对时间,分析时无法与手机时间同步.但此数据会与arm log中数据高度对应,所以分析底层数据时会比较方便.
+参考FAQ: FAQ36242
+### 问题: 如何禁止屏幕旋转
+解决方案: 在AndroidManifest.xml文件,将需要禁止转向的Activity配置中加入android:screenOrientation="portrait" 属性即可(注:portrait是纵向;landscape是横向).
+参考FAQ: FAQ36264
+### 问题: monkey工具（MonkeyLogAnalyse）为什么生成报告后无任何数据？
+解决方案: 在使用MonkeyLogAnalyse工具时,只需在log路径下放置monkey.log,而不是放置全部slog.如果放置全部slog,在分析结束后,表格中可能无任何数据,特别是如果在monkey测试过程中没有任何anr和crash问题时,分析的报告中连测试时间都没有.
+参考FAQ: FAQ36282
+### 问题: 如何查看当前屏幕的分辨率
+解决方案: 通过以下命令可以查看当前屏幕的分辨率 adb shell gsnap /data/fb.jpg /dev/graphics/fb0
+参考FAQ: FAQ38553
+### 问题: 如何查看CPU温度
+解决方案: 通过以下命令可以查看CPU温度 cat /sys/class/thermal/thermal_zone1/temp
+参考FAQ: FAQ38554
+### 问题: 如何读取芯片的chipid
+解决方案: 通过以下命令可以读取芯片的chipid lookat -l 1 0x402e00FC
+参考FAQ: FAQ38556
+### 问题: 如何关闭CB Message功能
+解决方案: CB Message指的是小区广播消息. 在非洲、俄罗斯等国家,打开了CB Message后有可能导致Modem一直无法睡眠. 通过以下方法可以关闭CB Message功能: 在NV文件中搜索"is_cbmc_enable"这个域,其值是1代表打开、0代表关闭.
+参考FAQ: FAQ38557
+### 问题: 如何关闭Aux Mic功能
+解决方案: 通过以下方法可以在通话时关闭AuxMic功能从而节省功耗. NVitem->audio_dsp_codec->dsp_codec_config->Handset->AudioStructure->path_set 将值从0xEC0改为0x6C0,bit11代表aux mic是否打开
+参考FAQ: FAQ38558
+### 问题: File.listFiles()与File.list()方法的区别
+解决方案: list()方法返回的是没完整路径的文件名; listFiles()方法有完整路径的文件名. 以"C:/test/"路径下分别有文件夹child_test和child_test.txt为例, f = new File("C:/test"); f.list()列出的内容为: child_test child_test.txt f.listFiles()列出内容为: C:/test/child_test C:/test/child_test.txt
+参考FAQ: FAQ36334
+### 问题: 下载版本后第一次开机,如果出现开机慢，应该检查哪些测试细节？
+解决方案: 下载版本后第一次开机,如果出现开机慢,贵司内部应该检查哪些测试细节或者提供哪些测试细节给到解决问题方 1.SIM卡插入情况(单卡/双卡/联通卡/移动卡/2G/3G/4G/卡槽1对应的SIM卡/卡槽2对应的SIM卡等具体细节) 2.SD卡设备类型(品牌与class类型)/确认SD卡格式化的方式/卡内文件类型与数量 3.是否内置GMS,GMS包List给出 4.是否替换第三方Launcher,若有,请排除差异 5.是否内置第三方应用,第三方应用安装位置与版本号,若有,请排除差异 6.是否修改动画资源,若有,请排除差异 7.查看Memory Total是否和平台一致 如果使用对比机做对比测试,需确认以下信息 1.确保同样的测试方法,同样的SIM/SD卡,同样的第三方应用,同样的预置条件 2.确保同等的硬件配置,包括存储方案/RAM容量/屏幕分辨率/Modem制式/CPU频率与核数/Android版本,若实在无法找到同等配置对比机,则将对比机差异信息列出来
+参考FAQ: FAQ36349
+### 问题: 为何锁定GPU频点后，读取出来有时仍会跳动到256M?
+解决方案: 从Android4.4代码开始,我们通过下面方式去锁定GPU到某固定频点 adb shell echo 312000 > /sys/module/mali/parameters/gpufreq_max_limit adb shell echo 312000 > /sys/module/mali/parameters/gpufreq_min_limit 我们在休眠唤醒或者不同的界面切换时,读取出来GPU有时侯会跳变到256M adb shell cat /sys/module/mali/parameters/gpufreq_cur_freq 256000或者312000 其原因是因为在休眠唤醒后或者界面切换时,GPU有个进入light sleep过程,然后再切到active状态.这个过程中GPU频点会先回到默认的256M,然后再回到刚设置的频点312M,所以读取GPU频点时能看见256M情况.
+参考FAQ: FAQ36365
+### 问题: 8830，7730等机型实现自动滑动launcher的操作
+解决方案: 在不同机型对比launcher滑动过程中,可以通过自动实现滑屏操作,然后用相机拍摄滑动效果来对比,使得对比结果更加清楚,直接. 可以通过input命令发送swipe事件来实现左右自动滑屏操作,具体实现方式如下: input keyevent 3 input swipe 100 400 400 400 input swipe 400 400 100 400 第一行首先向手机发送键值为3的键值事件,3对应的就是android上的Home键,使屏幕回到Home; 第二行发送swipe事件使手机滑向下一屏100,400为滑动起始位置的坐标,400,400为滑动结束位置的坐标,实现一次滑动. 第三行将此前的操作反向,也就是将滑动到刚才的那一屏. 可以通过添加更多的坐标信息和swipe时间实现连续滑屏的操作.
+参考FAQ: FAQ36388
+### 问题: RGB格式的LCD接法顺序有要求吗？
+解决方案: RGB顺序是: 0~7 B 8~15 G 16~23 R 这个顺序软件不能更换
+参考FAQ: FAQ36389
+### 问题: 为什么有时候，FM界面上滚动微调频道，界面上频率在变化但是耳机里声音还是之前播放的频道？
+解决方案: 有些地方有些频道比较强会覆盖一个以上的频点,由于微调每次切换相差100K(或50k),所以有可能相邻两个频点都是相同的频道,在这种情况下会出现滚动滚轮微调频道,界面上频率在变化但是耳机里声音还是之前播放的频道,这种情况是正常的. 此时,可以使用对比机或专业的收音机来对比,确认这种情况.
+参考FAQ: FAQ36415
+### 问题: 对于FM来说ACTION_AUDIO_BECOMING_NOISY 有什么用，为什么有了ACTION_HEADSET_PLUG还要ACTION_AUDIO_BECOMING_NOISY？
+解决方案: AudioManager.ACTION_AUDIO_BECOMING_NOISY 是audio发送的消息,只在耳机拔出的时候发送,这个消息可以比 Intent.ACTION_HEADSET_PLUG 更早的发出. 这样FM 处理 AudioManager.ACTION_AUDIO_BECOMING_NOISY 可以更早的得知耳机拔出,并作出相应的处理,可以避免噪音.
+参考FAQ: FAQ36416
+### 问题: 为什么通过VPN进入google play下载不了，facebook网页版本也上不了？
+解决方案: android4.4路由策略改变,VPN连接后route打log中没有ppp0,因此无法翻墙. 具体代码在services/java/com/android/server/ConnectivityService.java文件中 setRoutes方法里没有加入路由信息,可修改这块: public void setRoutes(String interfaze, List<RouteInfo> routes) { for (RouteInfo route : routes) { try { - mNetd.setMarkedForwardingRoute(interfaze, route); + //mNetd.setMarkedForwardingRoute(interfaze, route); + mNetd.addRoute(interfaze, route); } catch (RemoteException e) { } }
+参考FAQ: FAQ36421
+### 问题: 如何根据log判断按下power键是亮屏还是灭屏
+解决方案: 正常情况下power按键响应后kernel.log中有如下log信息: request_suspend_state: sleep (0->3) //代表屏幕由亮到灭 request_suspend_state: wakeup (3->0) //代表屏幕由灭到亮
+参考FAQ: FAQ47015
+### 问题: 如何打印出D状态进程的相关信息
+解决方案: 使用如下命令可以将D状态进程的信息及调用栈打印到kernel.log中 echo "w" >proc/sysrq-trigger 目前在4.4平台,当发生ANR或者watchdog kill重启时都会将D状态进程的信息打印出来.
+参考FAQ: FAQ47022
+### 问题: 如何更改长按powerkey重启的按键时间？
+解决方案: 目前长按power key重启功能需要按power key 7s,但有时会引起 误操作,需要延长按power key的时间,可以在/u-boot/arch/arm/cpu/ armv7/sc8830/misc.c文件中修改CONFIG_PBINT_7S_RST_THRESHOLD 的值即可,不能超过16s.
+参考FAQ: FAQ36444
+### 问题: LMK minfree参数的单位是什么
+解决方案: LMK minfree参数值可以通过如下命令查看: cat /sys/module/lowmemorykiller/parameters/minfree 1024,2048,6144,9216,11264,12288,14336 参数值的单位是页框,即4k.
+参考FAQ: FAQ36462
+### 问题: 如果客户更换了第三方launcher，客户在性能测试中可能会影响到的场景有哪些？
+解决方案: 以下测试场景,需要检查是否替换第三方launcher 1.内置应用进入慢 2.第三方应用进行慢 3.多后台并发场景,系统变慢或者进入应用慢 4.launcher滑动不流畅 原因是launcher占内存比较大,会影响进入应用的速度,并且也会引起launcher滑动不流畅问题
+参考FAQ: FAQ36464
+### 问题: 如何屏蔽掉屏幕处于激活状态时点击power键屏幕熄灭的功能？
+解决方案: 修改power键消息的传递,参见: public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags, boolean isScreenOn) { ...... case KeyEvent.KEYCODE_POWER: { if (interceptPowerKeyUp(canceled || mPendingPowerKeyUpCanceled)) { - result = (result & ~ACTION_WAKE_UP) | ACTION_GO_TO_SLEEP; } } } 将上面那句注释掉就可以了,不会影响到power键的关机等功能.
+参考FAQ: FAQ36485
+### 问题: 怎么在7715平台中添加一种字体
+解决方案: 1. 将相关字体文件添加到vendor/sprd/open-source/res/user_fonts目录下 2.同时修改该目录下的fonts.mk文件,复制一行默认配置,修改相应的名字即可
+参考FAQ: FAQ36501
+### 问题: 如何搭建Android   UiAutomator测试开发环境？
+解决方案: 一.必备条件: 1、JDK 2、SDK(API高于15) 3、Eclipse(安装ADT插件) 4、ANT(用于编译生成jar) 二.搭建步骤 1、安装JDK并添加环境变量. 安装后,一定要通过JAVA_HOME的方式添加环境变量,即先建立JAVA_HOME变量,然后在path中添加%JAVA_HOME%\bin; 2、添加SDK环境变量. 一定要先建立ANDROID_HOME,然后把%ANDROID_HOME%\tools添加到path中; 3、安装Eclipse,并安装ADT插件. 4、安装ANT工具,并添加环境变量. 同样一定要先建立%ANT_HOME%变量,然后在path中添加%ANT_HOME%\bin,测试ant是否安装成功 在开始—》运行中输入cmd——》在打开的窗口输入ant –version
+参考FAQ: FAQ36500
+### 问题: android 4.4如何定制特定键的功能
+解决方案: frameworks\base\core\res\res\xml\global_keys.xml文件中 定义类似如下的配置项: <key keyCode="KEYCODE_VOLUME_UP" component="com.android.example.keys/.VolumeKeyHandler" /> 定义后,系统不会把在文件中配置的按键的事件(例如KEYCODE_VOLUME_UP按键)分发给前台应用,系统会给指定的应用(例如VolumeKeyHandler)发一个广播,广播为android.intent.action.GLOBAL_BUTTON,KeyEvent被放入extra中. 应用收到该广播后,用getExtra()取出KeyEvent,触发特定的功能. 注意事项: android4.4增加的新特性,以前版本不适用
+参考FAQ: FAQ36526
+### 问题: DVFS对性能的影响?
+解决方案: DVFS英文全称为:Dynamic voltage and frequency scaling,中文一般译作动态电压频率调整. DVFS 即动态电压频率调整,动态技术则是根据芯片所运行的应用程序对计算能力的不同需要,动态调节芯片的运行频率和电压 DVFS关闭时,CPU会固定在最高频运转,相当于主频在最高频率,所以性能会比较好.但频率高的时候,其功耗也会随之而增大.从手机的整体角度出发,DVFS默认是开启的.
+参考FAQ: FAQ36483
+### 问题: checkX如何设置检查内容？
+解决方案: 1. checkX工具在主界面通过设置按钮,进入设置界面,根据需要进行检查设置,如下图 2. 设置完确定后,工具在运行完后,会根据设置把结果显示在主界面检查项中;
+参考FAQ: FAQ36529
+### 问题: FM 如何得知长时间失去音频焦点的？
+解决方案: FM 在播放中通过 AudioManager.OnAudioFocusChangeListener() 监听 AudioManager 的 AUDIOFOCUS消息 当收到 AudioManager.AUDIOFOCUS_LOSS 消息时,可以得知FM长时间失去了音频焦点.
+参考FAQ: FAQ36540
+### 问题: 为什么WriteIMEI_R3.0.0001写IMEI失败？
+解决方案: 7715项目写IMEI时需要在工具的设置中勾选WG选项.
+参考FAQ: FAQ36554
+### 问题: 增加一个新tp之后需要修改对应的idc文件
+解决方案: 出现这样的问题主要是idc文件的配置要修改,idc文件的名称必须和tp device名一致(以ft5306为例,需修改为"ft5x0x_ts")
+参考FAQ: FAQ36534

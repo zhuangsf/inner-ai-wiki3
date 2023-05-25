@@ -1,0 +1,313 @@
+### 问题: 后台播放MP3的时候无法进入短信
+解决方案: 目前设计是为了减少内存占用,我们减少了很多app之间的交互;比如当音乐在背景播放时,限制了打开message去收发信息. 若是不需要这个设计,可以在 MMISMS_WriteNewMessage @ mmisms_appcontrol.c 这里移除关于音乐播放的判断,请务必加强测试.
+参考FAQ: FAQ202172656
+### 问题: 窗口刷新问题
+解决方案: 在全屏窗口中,窗口属性不应该设置为WIN_STYLE( WS_HAS_TRANSPARENT),这个属性会导致在刷新窗口时,将前面的隐藏窗口也进行刷新,从而造成屏幕闪烁的现象.
+参考FAQ: FAQ202172657
+### 问题: Android8.1 搜狗输入法如何在圆形手表正常显示
+解决方案: frameworks/base/core/res/res/values/config.xml ... ... <!-- default window inset isRound property --> - <bool name="config_windowIsRound">false</bool> + <bool name="config_windowIsRound">true</bool>
+参考FAQ: FAQ202172659
+### 问题: SIMBA校准提示 LTE AGC Gain Overlap Delta  FAIL
+解决方案: 这个是AGC线性度判断,最新simba工具默认spec±6,如果FAIL的范围是±4(-5— -13)的话,说明客户用的是老版本simba工具,可以尝试更新到最新simba工具. 如果是spec±6 FAIL,说明AGC线性度差,需要优化匹配,常规是TR芯片出来第一个串联件串电感处理.
+参考FAQ: FAQ202172664
+### 问题: UMS9230免提通话CVS上行麦克设置为IMONO还是MONO
+解决方案: UMS9230免提通话CVS上行麦克需设置为MONO 不管采用的是主麦克还是副麦克,内部通路都送到MONO这一路. 如果免提通话选IMONO则会导致上行麦克通话无声
+参考FAQ: FAQ202172665
+### 问题: STM7916-51 edge EVM /ORFS Fail
+解决方案: 目前SC9863A/UMS512等,使用STM7916 PA的参考设计都是基于STM7916-31 使用STM7916-51的PA需要修改4.7nH为12pF
+参考FAQ: FAQ202172668,含图片
+### 问题: UMS9117平台如何使用usb读写寄存器？
+解决方案: 使用Pandora工具,机器使用debug版本软件,开机后插入USB,选择diag口连接,,选择Memory项,CP项即可读写寄存器.
+参考FAQ: FAQ202172677,含图片
+### 问题: SC9863A GPIO寄存器地址如何查找并控制
+解决方案: SC9863A采用GPIO PLUS功能,与普通GPIO寄存器模式不一样, 配置如下: 举例寄存器控制GPIO_2输出高: 1、首选确认Pin是否配置为GPIO功能,0x402A0284寄存器写值0x30 2、偏移地址0x0008,bit[0]=1,bit[2]=1,bit[3]=1 0x402C0008写0xD,这样GPIO2就输出为高
+参考FAQ: FAQ202172678,含图片
+### 问题: 如何使用ADB控制GPIO高低？
+解决方案: 除了SC9863A平台的GPIO Plus功能,其他平台基本都是采用普通GPIO功能,查找方式如下: 1、将对应的PIN切为GPIO Function,确保该PIN的Function为GPIO,后续的操作才有效 2、配置GPIO对应的gpio_dmask寄存器 3、配置GPIO对应的gpio_dir寄存器 4、配置GPIO对应的gpio_data寄存器 (作为input时为RO)
+参考FAQ: FAQ202172679,含图片
+### 问题: UMS9230支持最大像素摄像头是多少
+解决方案: UMS9230一共3个DCAM,DCAM0/1/2. DCAM0/DCAM1分别支持处理最高24M像素,DCAM2支持最大2M像素; DCAM0/1协同工作后,单独工作的摄像头可以支持48M fullsize@25fps,32M fullsize@30fps.
+参考FAQ: FAQ202172682
+### 问题: TCXO晶体验证有哪些case
+解决方案: TCXO根据平台关键物料选型文档确认各参数是否符合,然后验证如下: 1. 时钟精度测试: 测试A to D interface CLK26M(网络名称PMU_26M_IN), 要求校准后频率计测试结果在+/-10ppm以内; 2. 时钟幅度测试: 测试REF_OUT以及PMU_26M_IN, 要求幅度在0.5~1.8V范围内(用有源探头测试); 3. 起振能力测试: 从VDD_DCXO上电至TCXO输出频率稳定的间隔时间要求<2ms 4. 相噪测试: 相位噪声仪E5052B测试TCXO输出相噪满足其SPEC的值(非必测项).
+参考FAQ: FAQ202172683
+### 问题: 32K晶体验证有哪些case
+解决方案: 根据平台关键物料选型文档,32K晶体各参数是否符合,验证case如下: 1.起振时间:量测VBATBK上电到晶体管脚32KO起振的时间,开机上电测试,SPEC:小于100mS; 2.32k精度:从芯片端引出的信号,比如CLK_32K或AUX_CLK; 常温环境测试Spec:+-20ppm内; 消费级高低温-20度,65度,Spec:+-80ppm内; 工业级高低温-40度,85度,Spec:+-200ppm内.
+参考FAQ: FAQ202172684
+### 问题: UMS512如何使用ADB修改DDR运行频率
+解决方案: adb root adb remount adb shell cd /sys/class/devfreq/scene-frequency/sprd-governor 或者cd /sys/class/devfreq/scene-frequency/sprd_governor cat ddrinfo_freq_table 查看当前支持的DDR频率,例如256 384 512 768 1024 1333 1536 1866 echo xxx > scaling_force_ddr_freq 固定DDR频率, 比如固定DDR频率为1024Mhz:echo 1024 > scaling_force_ddr_freq cat ddrinfo_cur_freq 查看当前DDR频率
+参考FAQ: FAQ202172686
+### 问题: UMS512T如何使用ADB开启和禁用CPU核
+解决方案: 硬件调试过程中,如果碰到问题需要关闭CPU核时,可以通过ADB控制,如下: adb root adb remount adb shell cat /sys/devices/system/cpu/online 查看当前活动CPU 会显示0-7在线 禁用CPU核1 echo 0 > /sys/devices/system/cpu/cpu1/online 启用CPU核1 echo 1 > /sys/devices/system/cpu/cpu1/online
+参考FAQ: FAQ202172687
+### 问题: UMS215T如何使用ADB调整CPU频率
+解决方案: 硬件测试验证过程中,有需要在线验证CPU各个频点,可以使用ADB命令: adb root adb remount adb shell cd /sys/devices/system/cpu/cpufreq/policy0 进入小核目录(policy1/2/3/4/5/7无效) cd /sys/devices/system/cpu/cpufreq/policy6 进入大核目录(policy1/2/3/4/5/7无效) cat cpuinfo_cur_freq 查看当前CPU运行频率 cat scaling_available_frequencies 查看当前cluster支持的所有频率,有1228800/1482000/1536000/1742000/1820000等 echo XXX > scaling_fix_freq 指定运行在某固定频率
+参考FAQ: FAQ202172688
+### 问题: PC透过USB连接手机来使用网际网路
+解决方案: 目前平台不支持该功能(RNDIS/ECB/PPP) 也不建议支持 因为不符合CAT1 BIS的feature phone的产品定位. 谢谢! The platform doesn't support this feature. Because this chipset configures feature phone by CAT 1 BIS. communication. Thank you. Sincerely,
+参考FAQ: FAQ202172692
+### 问题: UMS512T如何使用ADB固定GPU运行频率
+解决方案: 硬件测试调试过程中,有可能需要在线验证GPU各个频点,可以使用ADB命令: adb root adb remount adb shell cd /sys/class/devfreq/60000000.gpu cat available_frequencies 可以支持的所有频率List cat cur_freq GPU 当前频率 max_freq 限定GPU最大频率,echo xxx > max_freq min_freq 限定GPU最小频率, echo xxx > min_freq
+参考FAQ: FAQ202172701
+### 问题: IIC接口的新型sensor（如Sar sensor/测温sensor）连接注意事项？
+解决方案: 答: 对系统功耗没有影响的新型sensor(如Sar sensor/测温sensor)需挂接在AP侧IIC接口上,而非sensor hub IIC接口(G sensor等所接的IIC). 原因: 1. 此类sensor非sensorhub已有类型, 没有支持框架. 2. 此类sensor待机时不会增加系统功耗,可以挂接在AP侧IIC接口上. 3. 若错误的将此类sensor挂接在sensor hub接口上会导致功能无法调通.
+参考FAQ: FAQ202172702
+### 问题: UMS9230平台是否支持PD快充？是否需要外加CC检测逻辑芯片？
+解决方案: 本平台支持PD3.0快充,无需外加CC逻辑检测芯片.
+参考FAQ: FAQ202172703
+### 问题: CC的驱动能力是否可以调整？
+解决方案: CC的驱动能力为80uA,180uA,330uA,默认80uA.可以在TYPEC_MODE寄存器配置bit[3][2]来实现,一般不建议修改
+参考FAQ: FAQ202172705
+### 问题: Marlin3/Marlin3L支持北斗3代
+解决方案: 8521E的GPS走内置,支持北斗二代.只有当外挂Marlin3/Marlin3 Lite WCN芯片才支持北斗3代
+参考FAQ: FAQ202172706
+### 问题: PD通信时，UMP510G可以识别的CC信号最低电平？
+解决方案: 答:根据USB Type-C Spec,vIRDrop最大250mV,手机侧建议-250mV.
+参考FAQ: FAQ202172707
+### 问题: SC9863A平台如何使用ADB命令开启/禁用展频
+解决方案: 由于平台默认开启展频,在测试LCD MIPI信号,或验证屏幕干扰问题时等,需要使用ADB在线开启关闭展频: adb root adb remount adb shell cat /sys/class/display/dphy0/ssc echo X > /sys/class/display/dphy0/ssc 需要亮屏时操作,X=1:enable ;X=0:disable ps:NV设置开启展频:(需要软件合入NV修改) ProductionParam->nv_lcd_freq_param->type,0为关闭LCD动态变频/展频功能,1为开启MIPI动态变频,2为开启RGB屏的动态变频,3为开启MIPI转LVDS屏的动态变频,4为开启展频SSC功能
+参考FAQ: FAQ202172708
+### 问题: SC9863A平台如何使用ADB调节屏幕背光亮度
+解决方案: ADB设置背光亮度或关闭背光: 举例:硬件在调试屏幕干扰问题,排除屏幕背光因素,屏幕在工作时候只关闭背光就需要此Debug手段. adb root adb remount adb shell cat /sys/class/backlight/sprd_backlight/actual_brightness 查看当前屏幕亮度0~255,0为灭屏,255为最亮 echo 0 > /sys/class/backlight/sprd_backlight/brightness 设置屏亮度为0,相当于关闭背光
+参考FAQ: FAQ202172709
+### 问题: AndroidR  如何编译ICU资源
+解决方案: 修改ICU资源后,进行编译时,请在lunch后执行 external/icu/tools/updateicudata.py 脚本,然后编译完整项目,烧录验证
+参考FAQ: FAQ202172710
+### 问题: UMS512+transceiver 3595D是否支持sar功能和空口检测功能?
+解决方案: 答:可以支持sar功能,空口检测功能也可以支持,均已完成调试.
+参考FAQ: FAQ202172711
+### 问题: 充电器同时支持PD快充协议和SFCP协议，系统优先使用哪种协议充电？
+解决方案: 答:如果系统软件已经支持PD快充协议,和SFCP充电功能打开.系统会优先选择使用PD快充协议.充电器头所有支持的供电能力在PD快充协议中均可以体现
+参考FAQ: FAQ202172712
+### 问题: PD快充对USB线的阻抗要求？
+解决方案: 答:协议要求IR drop VBUS上的压降最大不超过500mV,GND不超过250mV,根据30W充电器,pps协议最大电压11V,可以计算最大充电电流2.72A.由此可以计算充电地回路阻抗不超过92豪欧,VBUS上不超过185豪欧.这个阻抗是充电器到主板间的阻抗,需要计算FPC以及连接器等的阻抗.不满足阻抗要求会影响PD通讯.
+参考FAQ: FAQ202172713
+### 问题: 如何快速的通过PISI仿真
+解决方案: PI相关:尽量参考展锐SPM,电源动容尽量摆放在芯片pin下方,电容组合参考PDN design guide SI相关: DDR EMMC线尽量2倍线宽,上下层无重叠,尽量做到单根包地, SDIO尽量两倍以上线宽, RF-ISO的LVDS孔要远离drx的pin,第三层也不能有阴影重叠
+参考FAQ: FAQ202172718
+### 问题: 1. 为什么客户反馈展锐仿真时长为什么要M和Q公司的时长要长。
+解决方案: 从仿真项来看: Q和M只仿真电源,DDR只是走线规则检查. 展锐平台仿真项包括EMMC DDR SD卡 RF-ISO 频域串扰.大电源小电源都会仿真 展锐仿真项多出4项,
+参考FAQ: FAQ202172720
+### 问题: 手表模拟表盘界面功耗大
+解决方案: 手表模拟表盘界面功耗大是因为在表盘界面会起一个timer更新时间,息屏后窗口处理函数HandleLauncherClockWinMsg没有处理息屏消息导致,修改方案如下: 修改函数HandleLauncherClockWinMsg:
+
++++++++ case MSG_BACKLIGHT_TURN_ON:
+        case MSG_GET_FOCUS:
+         ......
+
++++++++ case MSG_BACKLIGHT_TURN_OFF:
+        case MSG_LOSE_FOCUS:
+         ......
+参考FAQ: FAQ202172723
+### 问题: UMS512平台，为什么安卓10的参数放到安卓11不起作用？
+解决方案: UMS512平台,从安卓10升级到安卓11后,由于平台音频参数XML结构的变化,需要使用平台基线版本里面的默认参数进行调试,而不能直接继承安卓10版本的参数.并且需要在我司Uni-support的工具管理界面,下载R3版本的Audio tool工具进行调试,而不能使用R2版本的Audio tool工具. 如果想确认安卓11的XML是否正确,可以在audio_structure.xml搜索Audio_verion(见下图最后一行), 查看对应的标志位是否为0x15. 如果Val=0x15,那么就是正确的XML版本.
+参考FAQ: FAQ202172735,含图片
+### 问题: SC6531E平台三合一喇叭，做蓝牙拨号器时通话震动如何调试？
+解决方案: SC6531E平台三合一喇叭,做蓝牙拨号器功能时,和手机不同.NXP参数和DSP参数只能二选一(见下图),如果DSP参数调试无作用,那么就需要调试NXP参数. 1. DSP方案: 2. NXP方案: 在参数调试时,如果喇叭震动过大,可以尝试提高HPF(高通滤波器)的低频截取频率,一般设置300Hz即有明显的效果.
+参考FAQ: FAQ202172736,含图片
+### 问题: SC9863A是否同时支持Type-C模似耳机跟Type-C数字耳机进行通话?
+解决方案: 不支持TypeC数字耳机的通话.SC9863A支持Type-C模似耳机通话,并可以实现完整的音频应用场景(包括通话,MP3音乐播放,录音等). SC9863A仅支持数字耳机的音乐播放,但是不支持通话上行,录音等通路的功能. 如果需要使用通话,录音等功能,建议使用模拟Type-C耳机实现.
+参考FAQ: FAQ202172737
+### 问题: UMS512是否支持4个K类功放？
+解决方案: 支持.UMS512一般接两个模拟PA(两个模拟PA可以分别接到HPL&HPR或者分别接到Codec的SPK_P/N和 RCV_P/N). 如果要接4个模拟功放,可以使用耳机左右声道分别并接两个外置模拟PA实现. 平台外接功放框图见下: 耳机HPL&HPR分别并接两个外置模拟A;
+参考FAQ: FAQ202172738,含图片
+### 问题: SC7731E GSM  RX blocking
+解决方案: SC7731E GSM RX blocking问题,由于7731E平台是采用sawless方案,带外抑制跟co-band比的话余量会差些.过认证时,若RX Blocking余量低的话,建议把GSM接收通路与WCDMA 接收通路CO-BAND.
+参考FAQ: FAQ202172739
+### 问题: UMS9230是否支持UFS3.1
+解决方案: UMS9230支持UFS2.1协议,不支持UFS3.1协议.
+参考FAQ: FAQ202172747
+### 问题: UMS9230是否支持UFS3.1的Flash
+解决方案: UMS9230支持UFS2.1协议,如果是UFS3.1的Flash,也可以使用,需要新增LDO 2.5V给VCC,LDO 1.2V给VCCQ,Flash向下兼容UFS2.1.
+参考FAQ: FAQ202172748
+### 问题: UMS512T是否支持Band27
+解决方案: 不支持Band27
+参考FAQ: FAQ202172749
+### 问题: 如何实现4个喇叭工作？
+解决方案: 方案1:采用IIS接口,接外置4个数字 PA,每个PA接1个喇叭,实现4个喇叭工作 方案2:HP_L和AMPG_VCOM接2个模拟PA,HP_R和AMPG_VCOM接另外2个模拟PA,总共4个模拟PA供4个喇叭工作
+参考FAQ: FAQ202172750
+### 问题: 关于线性充电的限流保护功能AICL和DPM设定
+解决方案: 线性充电设计,充电时,我们会设定一个门限电压,高于该电压,系统会按dts设定的电流值进行充电; 当输入功率不足以支持负载和电池充电时,即充电电流过大,VCHG下降过多时会触发AICL功能; 此时PMIC会停止调整VDRV信号,系统判定此时为充电器的最大输出能力,不再继续增大充电电流. 搜索PMIC规格书(关键词为CHGR_CTRL0或者CHGR_DPM),以SC2721G为例,可以看到如下设置: CHGR_CTRL0的bit[14:13]为CHGR_DPM. 00:3.9V 01:4.1V 10:4.3V 11:4.5V(default) 备注:AICL(Auto Input Current Limited)自动输入电流限制 DPM(Dynamic Power Management)动态电源管理 AICL电压不能低于电池电压,否则三极管会倒灌,导致充电图标不消失 UMP510G/UMP510G5不支持线性充电,所以无CHGR_DPM寄存器
+参考FAQ: FAQ202172751
+### 问题: UMS512T是否支持USB Camera？
+解决方案: 平台没有做过USB camera,如果需要,客户可以自行调试,kernel已自带UVC驱动.
+参考FAQ: FAQ202172752
+### 问题: 如何修改LTE校准 AGC 门限
+解决方案: 在确认灵敏度OK情况下,为保证工厂直通率可以按照下图修改AGC门限.
+参考FAQ: FAQ202172754,含图片
+### 问题: 9863A是否支持LAA
+解决方案: 9863A不支持LAA
+参考FAQ: FAQ202172755
+### 问题: UMS9230外置LNA的约束是否与9863A是一样的
+解决方案: UMS9230平台外置LNA的约束是继承9863A平台的,请查收,谢谢
+
+
+1)每个band最多使用一颗LNA,要么加在主集上,要么加载分集上
+2)band1不支持使用外置LNA
+3)CDMA不支持外置LNA
+参考FAQ: FAQ202172756
+### 问题: UMS512在带DPDT时非信令与信令是否可以区分不同的主天线
+解决方案: 可以修改,NV路径如下: LTE_Bandinfo LTE_download_rf_common_bandinfo LTE_Band_Support_info Band_noX Band_reserved Reserved[13]: Bit3:NV中分band配置上下天线功能开关 0:该功能关闭 1:该功能打开 Bit0:正常模式下,天线默认配置,0:main 天线;1:div天线 Bit1:校准模式下,天线配置, 0:main 天线;1:div天线(校准模式下,天线不会动态切换) Bit2:非信令综测下,天线的配置,0:main 天线;1:div天线(非信令综测,天线不会动态切换) 如需校准综测使用DIV,信令使用main天线,对应bit3-0为1110,修改为0XE即可.
+参考FAQ: FAQ202172757
+### 问题: 查询终端LTE Category支持能力
+解决方案: 运营商提供的终端支持能力必然会涉及UE Category(下文简称Cat), 下面介绍一下如何填写相关内容,以及Cat定义的变化. 注意,支持部分UL Cat必须要支持64QAM调制. LTE最早的版本是R8/R9,随后不断演进: R8/R9定义了Cat1~5, R11定义了Cat6~10, R12定义了Cat11~12; 只有支持R12的终端才需要严格区分UL DL的Cat,手机的上传速率是UE UL Cat X,下载速率是UE DL Cat Y; 详情可以查表: 查询NV:
+参考FAQ: FAQ202172758,含图片
+### 问题: 怎样确认当前内置音频功放配置的类型
+解决方案: 内置音频功放配置的类型是由NV确认的 使用AUDIO TESTER导入通话NV参数或MUSIC NV参数,也可以直接用AUDIO TESTER连接当前样机读取通话或音乐参数. 查看AUDIO PA选项,根据此项显示确认对应的是CLASS AB或CLASS D
+参考FAQ: FAQ202172763
+### 问题: 手机MIDI格式铃声音质较差该如何解决
+解决方案: MIDI是由于MIDI库大小决定其音质的,由于一些功能机内存的原因,会限制MIDI库大小. MIDI铃声原理是MIDI文件的序列调用MIDI库里面的音源组成一段曲子.它和MP3等格式不同,MP3音质是由采样率和比特率决定的. 一般较小采样率的MP3格式的铃声音质,听起来也会接近高音质的MIDI格式铃声,之前有过案例通过将铃声改为MP3格式解决了铃声音质问题,并且内存占用不会很大. 建议升级MIDI库或者更换为MP3音源的铃声,可以有效提升铃声音质
+参考FAQ: FAQ202172764
+### 问题: GSM网络下支持的语音编码方式
+解决方案: GSM网络下支持的语音编码方式如下: HR AMR (1) supported FR AMR (1) supported GSM EFR (1) supported GSM HR (1) supported GSM FR (1) supported
+参考FAQ: FAQ202172765
+### 问题: UDX710双mic功能audio工具怎么打开
+解决方案: 可以先通过音频工具AUDIO TOOL连接手机,看下手持模式选择CODEC里的SWITCH MATRIX,勾选AUX MIC和MAIN MIC.CVS里的CHANNEL MODE选择DUAL. 这样设置基本上OK了,软件驱动默认是做好了双麦功能的. 如果要确认副麦克是否真的工作了,可以在通话时量测副麦克的MICbias是否供电,以及量测副麦克上的说话时是否有波形. 另外还可以抓取通话时的YLOG(手机里打开语音场景),可以通过解析LOG看到副麦克有没有数据以判定副麦克是否成功打开. 另外详细的文档可以在AUDIO TOOL界面右上角的小问号点一下,会弹出完整的调试手册指导. 该方法同样适用于UMS312,UMS512等平台
+参考FAQ: FAQ202172766
+### 问题: 为什么UMS9117平台用AVI格式录像声音模糊且有杂音而3gp格式是清晰的？
+解决方案: 目前DV录像有两种格式: 1,avi格式,对应音频为ADPCM 2,3gp格式,对应音频为AMR 当前AVI格式录像声音模糊且有杂音主要是由于采样率低导致的,如果升高采样率会导致ADPCM录音数据成倍增大,而且录像时音频的采样率是被强制写死的,目前无法修改. 建议使用3gp+amr格式录像.此格式占用空间较小.
+参考FAQ: FAQ202172768
+### 问题: SC2721G HEADSET_L_INT具体的电压输入范围是多少，高电平支持多少伏的输入?
+解决方案: SC2721G HEADSET_L_INT具体的电压可以通过寄存器配置 低电平检测范围可以从最小25mv到350mv, 高电平检测范围支持1.7v--2.8V的电压. 寄存器如下:
+参考FAQ: FAQ202172770,含图片
+### 问题: DTS中camera sensor的phyid该如何配置
+解决方案: UMS312/UMS512/UMS512T中CSI接口较多,比较容易配置错误导致摄像头打不开,请遵循如下DST中的PHYID配置规则: PHY ID 硬件原理图CSI接口 0 CSI 0 1 CSI2(4lane+csi2clk0) 2 CSI1 3 CSI2_M 4 CSI2_S 对应框图:
+参考FAQ: FAQ202172772,含图片
+### 问题: SC9863A是否支持BAND27
+解决方案: SC9863A平台不支持BAND27.
+参考FAQ: FAQ202172773
+### 问题: UMS512T是否支持2.5K屏
+解决方案: UMS512&UMS512T平台支持2.5K屏,分辨率1600*2560, 需要增加FPGA(LIF-MD6000-6UMG64I),通过SPI或IIC初始化控制,输入4lane MIPI,输出2通道4lane MIPI方式实现. 具体可以参考 UMS512_A_CS_2.5K LCM_SCH参考设计 或UIS7862S_A_CS参考设计.
+参考FAQ: FAQ202172776
+### 问题: IIC的CLK在什么情况下会被拉低
+解决方案: I2C的CLK被拉低有以下几种情况: 1、Device来不及响应,拉低SCL迫使Host处于等待状态直到Device准备好发送数据. 2、先写后读流程,软件开销(CPU被别的中断打掉) 3、写流程,FIFO空 4、读流程,FIFO满
+参考FAQ: FAQ202172779
+### 问题: 8910FF/T117移动多形态自注册在查询平台上查不到注册信息怎么办
+解决方案: 1.首先抓取log,在log中搜索关键词"CCMCC DM"、"lwm2m" log中有"Registration successful"时,说明本次注册成功,有"Registration update successful"时说明心跳注册成功. 2. 在log中确认已经注册成功后,需要检查一下当前使用的密钥是否正确. 3. 确认密钥正确后,在适配平台上依旧查不到注册信息,将调试版网址换成商用版的网址. 4. 换成商用网址后,查询注册信息和心跳注册信息的方法是通过移动官方的QQ群,提供终端的IMEI号以及查询的时间段. 5. 商用版网址、调试版网址、移动官方查询注册信息的QQ群,请使用您申请的账号和密码登录查询平台后,在相关文档中获取.
+参考FAQ: FAQ202172781
+### 问题: 高低温WCDMA trismit on off time mask功率偏高
+解决方案: 测试time mask 是开环测试不会调用温补和PDET,发射的功率是按照最大的Prach 功率发射的. onpower=Prach power +3dB 低温下Onpower偏大,需要按照下图修改Prach power
+参考FAQ: FAQ202172784,含图片
+### 问题: Android R 如何默认时区？
+解决方案: 设置默认时区,需要配置系统属性persist.sys.timezone的值.该系统属性需要配置在product分区.具体配置方法为: 1. 在对应工程下面新建使用该系统属性模块目录,以SC9863A芯片的s9863a3h10工程为例,在device/sprd/sharkl3/s9863a3h10/module路径下创建模块的目录settings; 2. 在settings目录下创建md.mk文件; 3. 在md.mk文件通过PRODUCT_PRODUCT_PROPERTIES宏将系统属性persist.sys.timezone配置到product分区的build.prop文件中.具体配置方法: PRODUCT_PRODUCT_PROPERTIES += \ persist.sys.timezone=Asia/Shanghai
+参考FAQ: FAQ202172789
+### 问题: UIS8910平台是否支持 SMS 和 MMS over IMS
+解决方案: 1. 当前平台终端支持SMS over IMS; 2. 彩信流程不走IMS,因此没有是否支持MMS over IMS这种说法; 发彩信不会经过IMS;收彩信时,IMS支持收彩信头(SMS),彩信数据下载不走IMS. 3. IMS初始函数可以参考 MMIAPISET_InitImsValue, 相关NV为MMINV_SET_VOLTE
+参考FAQ: FAQ202172799
+### 问题: Type C接口的CC脚中断检测
+解决方案: 这个测试应用比较特殊,产品设计上有两个USB接口,micro usb和TYPEC相当于一拖二,在测试TYPEC的CC PIN时micro usb是接到PC上的,也就是说在测试CC PIN中断时,VBUS是常在的,这个和我们平时的测试有区别.而CC PIN识别为DFP后,拔出中断依赖于VBUS,只有在检测到VBUS拔出时,才会上报unattached中断,而这里VBUS是常在的,所以即使CC PIN去掉上拉,也没有中断产生.如果有这种应用,可以不测试CC PIN的上拉,而是测试CC PIN的下拉,因为CC PIN下拉是会识别为UFP,是对外供电的,不依赖于VBUS.
+参考FAQ: FAQ202172801
+### 问题: SR3595D切换SR3595D1操作流程指导
+解决方案: 切换3595D1后校准异常大部原因是,切换操作流程不对 注:SR3595D1不支持 CDMA和外置LNA,带这两个功能的项目禁止切换到SR3595D1 切换流程如下 注:hw_rf744.nv为平台早期版本的配置现在已经不使用,版本中是否包含此文件不影响3595D1的切换.
+参考FAQ: FAQ202172802,含图片
+### 问题: GPRS EDGE多UP功率回退
+解决方案: 降SAR场景,GPRS EDGE多UP功率回退不是基于多UP的最大功率进行回退,是基于1UP最大功率进行回退. 例如:在NV降SAR位置配置3UP DCS回退2db,由于3UP按照协议要求回退4db,所以3UP实际回退4db(软件中会默认调用回退值大的tx factor或gain值) 所以当3UP DCS要在目前基础上回退2db时,需要在NV配置时加上3GPP协议要求的回退值,即配置回退6db. 注: 适用于所有android 版本
+参考FAQ: FAQ202172805
+### 问题: 关于UIS7862S平台RTC时钟
+解决方案: 32k方案: vbatbk的电压范围是2.45-3.35v vbatbk的电流范围是3.5uA-5uA 电池在位时: 常温时32k的频偏在±20ppm,高低温时32k的频偏在±80ppm. 电池不在位时: 与vbatbk的电压,以及温度相关,仿真情况: 温度:-40℃-125℃,电压范围2.5-3.4v之间: normal模式下最大频偏是79ppm 常温2.5v-3.4v之间最大频偏40ppm LP模式下最大频偏89ppm 常温2.5v-3.4v之间最大频偏44ppm 32k less方案 vbatbk的电压范围是2.45-3.35v,维持RC震荡的最小电压是1.1v vbatbk的电流范围是3.5uA-5uA 电池在位时: 正常待机状态,32k主要由26M分频产生,因此32k的精度主要与26M精度有关 32k less的频偏最差是50ppm(关机模式下,这时主要有26M分频来维持,这是时钟精度最差) 电池不在位时: 主要靠RC振荡器来维持,这时大概有2%的误差
+参考FAQ: FAQ202172806
+### 问题: Band71支持情况
+解决方案: SC9863A平台Band71硬件和软件支持情况: 1、硬件方面支持Band71; 2、软件modem(CP0)如下版本已经支持: 4G_MODEM_20A_W21.15.3_P5.01(此版本), 4G_MODEM_20A_W21.10.6_P1(此版本), 4G_MODEM_20A_W21.10.6_P2(此版本), 4G_MODEM_20A_W21.21.3(含此版本或之后版本).
+参考FAQ: FAQ202172811
+### 问题: SL8521E串口波特率范围是多少？
+解决方案: SL8521E带硬件流控的时候UART速率最大支持3Mbps,不带硬件流控略小于3Mbps.
+参考FAQ: FAQ202172812
+### 问题: 请问平台开机电压是否有门限要求，程控电源在3.12V左右就能开机，是否正常？
+解决方案: 平台开机电压是有门限要求的,SC2720pmic规格书有写开机电压在3.05—4.8之间,因此程控电源在3.12V左右就能开机是属于正常的.
+参考FAQ: FAQ202172815
+### 问题: DPDT动态开关开启时如何指定信号走上天线或下天线
+解决方案: 因DPDT开关存在,调试天线时,低\中\高频走的天线通路可能不一样(如低频走下天线,中\高频走上天线). 当DPDT动态开启后,认证过SAR时,若是动态开启的话,可能会影响SAR测试,此时需要指定信号走上天线或下天线(不同天线对SAR影响不一样). 拨号键通过暗码(*#*#83781#*#*)进入工程模式---选择HARDWARE---选择ASDIV设置,里面有不同模式下固定到某个天线的功能(如LTE DPDT固定切换到天线1、LTE DPDT固定切换到天线2等). 手机重启后,此功能恢复到原始DPDT状态.
+参考FAQ: FAQ202172816
+### 问题: 工厂测试如何去掉相机标定验证
+解决方案: 如果系统属性persist.vendor.cam.multicam.cali.veri 为 1则支持相机标定验证,否则不支持
+参考FAQ: FAQ202172818
+### 问题: 关于DCDC的LX电压出现的负压
+解决方案: 关于DCDC的LX测到的负电压,LX 是DCDC 输出的开关点,工作原理是二极管导通时会引起LX 点上出现负电压,该电压值跟二极管的导通电压、电流大小、封装PCB的寄生等因素都相关. 因为芯片存在对地的寄生二极管,所以负压一般会被钳位在一个二极管的压降左右,理论上稳定时不会超过-1V,瞬时值(<20ns)不超过-2V. 当然和测试环境也相关,为了同时观察DC值和AC纹波,建议示波器设置为DC耦合1Mohm, 限制为20MHz带宽下测试,使用接地环,就近接地来测试.
+参考FAQ: FAQ202172819
+### 问题: NV如何修改LTE RSRP补偿
+解决方案: 以B66为例,打开RDNV, LTE_tool_comp\LTE_download_dsp_compensation_cc0_tool_comp\ LTE_BW_GAIN_Tuning\RX_PCC_MAIN\Band_no18\word\ Word[0]: 0x0:disable; 0x1:Enable BW Compensation Word[1]~Word[6]:分别补偿1.4M,3M,5M,10M,15M,20M带宽RSRP,step为0.1dB,负数以补码表示
+参考FAQ: FAQ202172824
+### 问题: 如何在Ylog中关闭ap log
+解决方案: 有两种方式可以关闭ap侧log: 1、手机连接电脑并且打开usb调试,通过adb指令控制: adb root adb shell ylogctl disable (ylogctl enable是打开ylog) 2、修改如下路径的配置文件: debug版本:vendor/sprd/tools/ylog/ylog_common/conf/ylog.conf.debug(默认打开) user版本:vendor/sprd/tools/ylog/ylog_common/conf/ylog.conf.user(默认关闭) 将配置中 status,enable 改为 status,disable
+参考FAQ: FAQ202172826
+### 问题: 使用PMIC SC2721G的项目（如SC9863A/SC9832E）选型充电IC时必看注意事项
+解决方案: 使用PMIC SC2721G的项目,如SC9863A/SC9832E/SC9820E,在选型充电IC时注意: 充电IC一般有一个使能脚EN(或者CE#),使能脚拉低充电IC打开充电.所选充电IC必须满足使能脚拉低46ms 以内完成充电通路打开,此信息可与充电IC厂家确认. 对于使能脚需要拉低46ms以上才能打开的充电IC,不推荐使用,若需使用请与我司联系沟通设计方案. 谢谢
+参考FAQ: FAQ202172827
+### 问题: 中国电信电话会议挂断最后一通电话定制配置方法
+解决方案: 针对A10_U01版本,AP修改随卡参数配置,需要在中国电信响应的carrerconfig配置中,增加 boolean name = "seperate_disconnect_sub_call" value="false" 标签.这样会议电话挂断最后一个成员就会以BYE形式结束会议电话.
+参考FAQ: FAQ202172828
+### 问题: VoLTE开关title定制
+解决方案: 4G通话可以实现运营商定制,目前平台支持三种Title,分别为:VoLTE(0)、高级通话(1)、4G通话(2). 其中默认值KEY_ENHANCED_4G_LTE_TITLE_VARIANT_INT为0,即VoLTE.同时根据KEY_SHOW_4G_FOR_LTE_DATA_ICON_BOOL确定是显示4G通话还是VoLTE.  定制为"高级通话":"KEY_ENHANCED_4G_LTE_TITLE_VARIANT_INT" 配置为1  定制为"VoLTE":"KEY_ENHANCED_4G_LTE_TITLE_VARIANT_INT"、"KEY_SHOW_4G_FOR_LTE_DATA_ICON_BOOL" 均使用默认值,不需要修改.  定制为"4G通话":"KEY_ENHANCED_4G_LTE_TITLE_VARIANT_INT"使用默认值,"KEY_SHOW_4G_FOR_LTE_DATA_ICON_BOOL" 修改为true
+参考FAQ: FAQ202172830
+### 问题: UMS9230平台USB眼图波形调节方式
+解决方案: USB眼图测试fail时可以通过adb命令设置相关寄存器调节信号幅值和斜率进行优化. 1. USB信号波形调节的寄存机器地址是:0X64570010. 其中Bit[26:25]即USB20_TUNEHSAMP设置信号斜率,取值越大,斜率越大; 其中Bit[24:19]即USB20_TFREGRES,设置信号幅度,取值越大,幅值越小. 2. USB波形调节命令 查看寄存器值命令:lookat -l 1 0x64570010 设置寄存器值命令:lookat -s 0x4f3d1c0 0x64570010,其中0x4f3d1c0是要写进去的值. 注意: 使用userdebug版本,通过uart串口工具输入命令,不可用USB输入命令,因为USB拔出后设置的寄存器值会复位.设置值时先读出默认值,基于默认值修改相应bit位.
+参考FAQ: FAQ202172832,含图片
+### 问题: 充电时电量跳变到100%的条件是什么？
+解决方案: 充电充满后,电量从99%跳变到100% 的条件,不同的软件版本会有不同的策略. 当前Android11的策略是:充电进入恒压状态,充电电流低于充电截止电流.
+参考FAQ: FAQ202172833
+### 问题: 电量显示的第一校准如何设置？
+解决方案: 在放电过程中,库仑计误差会逐渐积累,导致电量显示产生偏差,因此需要校准. 展锐平台目前选择在低电量密度区域进行校准. first-calib-voltage——第一校准点电压,mV,通常取2%的OCV first-calib-capacity——第一校准点容量,‰,默认取40‰.
+参考FAQ: FAQ202172834
+### 问题: 电量显示的最后校准点如何设置？
+解决方案: 放电过程中由库仑计积分累积的误差会引起电量偏差问题,除使用第一电量校准外,可以设置最后一个校准点. voltage-min-design-microvolt——校准电压,mV,一般设置为1%电量时的OCV电压.
+参考FAQ: FAQ202172835
+### 问题: 打开录屏功能后，投射也被开启是否正常
+解决方案: 此现象为google原生,屏幕录制应用需要借助于投射管理MediaProjectionManager的方法获取MediaProjection,并通过MediaProjection.createVirtualDisplay创建虚拟Display来实现屏幕录制功能,当打开屏幕录制时,投射的开关获取到device名称会显示屏幕录制相关的tile,且图标处于激活状态,为正常现象.
+参考FAQ: FAQ202172837
+### 问题: 怎么dump网络包
+解决方案: tcpdump使用方法如下: 1.下载tcpdump并push到手机 下载地址:https://www.androidtcpdump.com/android-tcpdump/downloads adb push tcpdump /data/local/ 2.给予tcpdump权限 chmod 777 /data/local 3.抓包 进入到data/local/目录下,执行tcpdump -i any -p -vv -s 0 -w capture.pcap 得到的capture.pcap push出来,以上方法需要root权限.
+参考FAQ: FAQ202172843
+### 问题: 修改手势滑动时的间距判断
+解决方案: 在/frameworks/base/core/res/res/values-sw600dp/config.xml 配置中修改 <dimen name="config_minScalingSpan">32mm</dimen>
+参考FAQ: FAQ202172845
+### 问题: 修改mp3文件的ID3信息
+解决方案: 利用python脚本直接修改 from mutagen import File afile = File("Telcel-tu-boca.mp3") test="Telcel Ríe" #mp3 音乐名称 afile.tags["TIT2"].text[0]=test afile.save()
+参考FAQ: FAQ202172846
+### 问题: 如何修改视频录制时的音频编码格式
+解决方案: 配置文件路径 ./device/sprd/mpool/module/media/codec/msoc/sharkl5Pro/media_profiles.xml 修改如下二个文件 sprd/mpool/module/media/codec/msoc/sharkle/media_profiles.xml sprd/mpool/module/media/codec/msoc/sharkle/media_profiles_turnkey.xml 把其中352*288分辨率的codec格式由amrnb修改为acc. 即可将视频录制时的编码由amrnb改成aac
+参考FAQ: FAQ202172853
+### 问题: 如何用ADB命令读取rfboard.id？
+解决方案: 在单软多硬配置中,软件通过读取rfboard ID来加载相应的delta NV. 有时需要通过读取rfboard ID来确认配置是否正确,可以通过ADB命令实现. adb root adb shell cat /proc/cmdline 即可读取到rfboard.id等信息. 可以结合对应平台的单软多硬文档,确认id是否正确.
+参考FAQ: FAQ202172855
+### 问题: 彩信接收vcard文件
+解决方案: 功能机通过彩信将联系人信息通过vcard方式发送,接收方收到后不能直接导入到电话簿中,需要先保存文件后,从文件管理器中打开保存的.vcf文件,然后通过import菜单导入电话簿.
+参考FAQ: FAQ202172856
+### 问题: 使用CT-4008测试电池参数如何使用模板提取？
+解决方案: 展锐提供了电池参数提取模板,对CT-3008导出的参数可以直接套用提取,但对CT-4008默认方式导出的参数无法直接使用. 可以咨询仪器供应商,修改导出的数据格式,包括单位、调整数据列的位置,与CT-3008导出的数据格式一致后,即可使用模板提取参数.
+参考FAQ: FAQ202172857
+### 问题: SC2721G 的CC脚能否做ADC使用？
+解决方案: 不使用typeC接口,可以把SC2721G的CC脚作为ADC通道使用. 软件上需要修改相应配置,量程范围是0~3.75V.
+参考FAQ: FAQ202172860
+### 问题: 手机电池温度过高，如何弹出报警
+解决方案: 目前上层没有默认的提示,可参考如下实现: 在/frameworks/base/packages/SystemUI/src/com/android/systemui/power/PowerUI.java中接收ACTION_BATTERY_CHANGED广播,通过获取广播中传递的参数,比如电池电量,获取BatteryManager.EXTRA_LEVEL,温度就是BatteryManager.EXTRA_TEMPERATURE的值等,电池的状态信息是 BatteryManager.EXTRA_STATUS (判断是否充电等),当判断达到条件时,可以弹出相应的提示,在PowerUI代码中plugged的值就表示是否插入充电器 具体的弹框参考如下文件中的弹框相关 /frameworks/base/packages/SystemUI/src/com/android/systemui/power/PowerNotificationWarnings.java
+参考FAQ: FAQ202172861
+### 问题: android R go版本不显示bubble通知是否正常
+解决方案: 原生go版本默认不支持,即使强制打开也可能有问题,通过如下放哪敢是判断,谢谢~~ /frameworks/base/services/core/java/com/android/server/notification/BubbleExtractor.java boolean canPresentAsBubble = canPresentAsBubble(record) && !mActivityManager.isLowRamDevice() && record.isConversation() && record.getShortcutInfo() != null && (record.getNotification().flags & FLAG_FOREGROUND_SERVICE) ==
+参考FAQ: FAQ202172863
+### 问题: 点击导航栏上部分区域没有响应是否正常
+解决方案: 点击导航区域偏上部分不会有响应,是导航栏的deadzone区域,点击该部分事件会被消费掉. 这个是原生设计,如果要修改,请参考下面的修改试下 /frameworks/base/packages/SystemUI/res/values/dimens.xml dimen name="navigation_bar_deadzone_size">12dp</dimen> <!-- size of the dead zone when touches have recently occurred elsewhere on screen --> <dimen name="navigation_bar_deadzone_size_max">32dp</dimen> 上面两个值都改成0dp
+参考FAQ: FAQ202172867
+### 问题: android go 关闭屏幕自动旋转,旋转屏幕时不显示屏幕翻转按钮
+解决方案: go版本项目,在如下文件中有判断,go版本原生不会显示旋转的图标 /frameworks/base/services/core/java/com/android/server/wm/DisplayRotation.java int showRotationSuggestions = ActivityManager.isLowRamDeviceStatic() ? Settings.Secure.SHOW_ROTATION_SUGGESTIONS_DISABLED : Settings.Secure.getIntForUser(resolver, Settings.Secure.SHOW_ROTATION_SUGGESTIONS, Settings.Secure.SHOW_ROTATION_SUGGESTIONS_DEFAULT, UserHandle.USER_CURRENT);
+参考FAQ: FAQ202172868
+### 问题: Snapchat界面下方与导航按钮重叠
+解决方案: /frameworks/base/core/res/res/values/config.xml <bool name="config_showNavigationBar">false</bool> //改成true,注意overlay
+参考FAQ: FAQ202172869
+### 问题: 选择连续对焦或微距后，相机崩溃
+解决方案: 8521E平台不支持微距和连续对焦功能,需要在SprdCamera3Setting.cpp文件中删除ANDROID_CONTROL_AF_MODE_MACRO、ANDROID_CONTROL_AF_MODE_CONTINUOUS_VIDEO和ANDROID_CONTROL_AF_MODE_CONTINUOUS_PICTURE的配置,删除后设置界面不再显示"对焦方式"的选项. const uint8_t availableAfModes[] = { ANDROID_CONTROL_AF_MODE_OFF, ANDROID_CONTROL_AF_MODE_AUTO, ANDROID_CONTROL_AF_MODE_MACRO, ANDROID_CONTROL_AF_MODE_CONTINUOUS_PICTURE, ANDROID_CONTROL_AF_MODE_CONTINUOUS_VIDEO};
+参考FAQ: FAQ202172873
+### 问题: 4G开关快捷键显示
+解决方案: 4G开关快捷键是否显示通过config_show_lte_tile随版本配置,默认显示 若需要不显示需配置 <bool name="config_show_lte_tile">false</bool> 路径:/frameworks/base/packages/SystemUI/res-unisoc/values/config_ex.xml 或者相应的运营商版本,例如:/vendor/sprd/carriers/cmcc/overlays/frameworks/base/packages/SystemUI/res-unisoc/values/config.xml
+参考FAQ: FAQ202172874
+### 问题: GSM FDT功率校准提示找不到Factor值
+解决方案: 1、GSM DCS 重置扫描参数校准OK,FDT功率校准 提示找不到Factor值.功率校准Fail的原因是随着Factor值的减小,功率未按步进逐步减小,功率时大时小. 2、其余Band校准OK,此现象与单个Band配置相关,检查ramp发现上升沿最后一个点≠下降沿第一个点(stage0 896≠902;stage12 850≠861),容易造成ramp电压过冲造成PA增益不稳定. 3、将ranp上升沿最后一个点和下降沿第一个点均修改为850,校准OK.校准功率与Factor值呈线性.
+参考FAQ: FAQ202172875,含图片
+### 问题: GSM PVT Ramp调整概率性影响APC校准
+解决方案: 1、拉GSM PVT Ramp过程中,起始的PVT OFF段以及PVT on段,尤其是 PVT ON段,对应Ramp up最后一个点和Ramp down第一个点,不可更改,维持初始850,更改后会概率性出现APC校准Fail. 2、OFF段的数值可以根据各个PA特性更改,主要是调整PVT底噪.
+参考FAQ: FAQ202172878,含图片
+### 问题: 不使用FGU时，SENSE_P、SENSE_N脚怎么接？
+解决方案: SC2720A、SC2721G、UMP510G、UMP510G5不使用FGU(FUEL GAUGE)时,SENSE_P、SENSE_N脚直接接地. 不使用FGU,但使用BAT_DET时,如果SENSE_P、SENSE_N悬空会造成BAT_DET检测值变成正常值的1/2.
+参考FAQ: FAQ202172880
+### 问题: 不使用电池在位检测和电池温度检测时，BAT_DET脚怎么接？
+解决方案: SC6531E系列、SC2720A、SC2721G、UMP510G、UMP510G5不使用电池在位检测和电池温度检测时,BAT_DET脚可以悬空,也可以接地. 无论悬空或接地,软件上都要关闭电池在位检测和电池温度检测的功能,否则会出现无法开机或充电异常的问题.
+参考FAQ: FAQ202172881

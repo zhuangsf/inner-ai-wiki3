@@ -1,0 +1,319 @@
+### 问题: UMS312搭配UMP510G支持哪些快充方案
+解决方案: UMS312平台搭配的 PMU UMP510G 可单独或同时支持: A 展讯快充SFCP2.0,协议握手通过USB_DP,USB_DM信号线完成.外部需要增加charger 如2颗BQ25601,一颗作为主充一颗作为辅充.软硬件流程及方案可参考DCC文档: 《UNISOC Fast Charger Customization Software Guide.pdf》, 《UNISOC Fast Charge Application Note V1.1.pdf》. B 支持 USB PD3.0 ,协议握手通过USB_CCA/USB CCB 信号线完成.
+参考FAQ: FAQ202072394
+### 问题: UMS512/UMS512T平台搭配的 PMU UMP510G 支持哪些快充方案
+解决方案: UMS512/UMS512T平台搭配的 PMU UMP510G 可单独或同时支持: A 展讯快充SFCP2.0,协议握手通过USB_DP,USB_DM信号线完成.外部需要增加charger 如2颗BQ25601,一颗作为主充一颗作为辅充.软硬件流程及方案可参考DCC文档: 《UNISOC Fast Charger Customization Software Guide.pdf》, 《UNISOC Fast Charge Application Note V1.1.pdf》. B 支持 USB PD3.0 ,协议握手通过USB_CCA/USB CCB 信号线完成.
+参考FAQ: FAQ202072395
+### 问题: Mocor 平台横屏LCD配置
+解决方案: 1. 首先,横屏的LCD指的实际size是 320X240(或者 160X128)的LCD屏,不是传统的QVGA(240X320)或者QQVGA(128X160) 2. 需要将Mocor平台应用配置成横屏工程,具体配置方式涉及到 : * MAIN LCD SIZE 配置 成 竖屏大小 如 240X320(或者 128X160) * MMI 资源配置配置成竖屏资源, * MMI使用的LCD 角度,配置成旋转90度 具体配置方法,请参考 FAQ202072071 3. LCD drive相关的配置,需要配置成实际的size: * MAINLCD_DEV_SIZE = 320X240 (或者 160X128) 另外,需要注意的是,LCD驱动文件中: * 函数 XXXX_InvalidateRect中,横竖限制的大小不要错 * 函数 XXX_RotationInvalidateRect中,旋转角度的参数设置不要搞错.
+参考FAQ: FAQ202072397
+### 问题: Mocor平台 MMI 特殊分辨率调试
+解决方案: 我们遇到有的客户要实现非标准的QVGA\QQVGA的界面需求,比如240X300, 但是市场上又没有这种size的LCD,所以用QVGA的LCD硬件来做, LCD底端的部分不显示,而且用产品的外壳进行遮盖. 这就要求App的GUI显示区域控制在240X300的布局中. 可以这样做: 我们平台使用的GUI框架,获取LCD size的函数在guilcd.c中, GUILCD_GetLogicWidthHeight(...) 这个函数的一般实现,是直接返回真实LCD的size大小, 可以修改一下这个函数,使其返回一个我们限定的区域, 比如这个例子,我们这个函数返回: width :240 height:300 这样,我们所有的GUI显示,就控制在240X300的区域内了. 可以实现这种与LCDsize不一致的非标准size的GUI显示效果.
+参考FAQ: FAQ202072399
+### 问题: SR3595D 26M CLK输出配置方法？
+解决方案: 请按照下面说明修改图片所示NV中Reserved8的配置. Bit0/Bit1/Bit2 分别代表refout1/refout2/refou3. 0是打开;1是关闭. 如下Reserved8是0x6,代表只有refout1 打开.
+参考FAQ: FAQ202072400,含图片
+### 问题: SC9863A SC9832E 平台搭配外置WCN芯片的成熟时钟方案是什么
+解决方案: SC9863A SC9832E 平台搭配外置WCN芯片的成熟时钟方案是: 1 DCXO for Tranceiver,TCXO for WCN 或 2 TCXO for WCN (share with Tranceiver)+32K for PMU
+参考FAQ: FAQ202072404
+### 问题: UMS312 UMS512 UMS512T 平台搭配外置WCN芯片的成熟时钟方案是什么
+解决方案: UMS312 UMS512 UMS512T 平台搭配外置WCN芯片的成熟时钟方案是: DCXO for PMU, TCXO for WCN . 另 若因为供货或其他原因不能使用DCXO+TCXO方案,可用TSX方案,(但GNSS性能会降低,以实测为准),但原理图上推荐同时兼容DCXO+TCXO电路不删除. TSX方案为:TSX for PMU, 其中外置芯片为 Marlin3 Lite时(UMW2652 UWE5622 UWP5662),WCN芯片的GPIO0需要接到PMU的PTEST0,用来标识WCN使用的温补信息是来自于外置TSX的温度信息还是PMU 内部OSC的温补信息. 以上所有晶体选型需要对照QVL及关键物料选型Check
+参考FAQ: FAQ202072406
+### 问题: SC2721G,SC2720A ,UMP510G 开机默认的复位方式是什么
+解决方案: SC2721G,SC2720A ,UMP510G 开机默认的复位方式: SC2721G,SC2720A:开机默认的复位方式是双键复位,PBINT+EXTRSTN双键7S复位,系统起来后可修改成单键复位.当系统是内置电池供电且只有一个按键接出,需要将EXTRSTN管脚串联1K/510R电阻与PBINT连接接出,避免系统起来的过程中死机,无法使用双键复位功能. UMP510G 开机默认的复位方式是PBINT单件7s复位,系统起来,软件可执行修改后可修改复位方式,如双键复位.
+参考FAQ: FAQ202072409
+### 问题: UIS8910DM UIS8910FF SIM_DET怎么接
+解决方案: UIS8910DM UIS8910FF 平台没有专用的 SIM_DET接口,可以接到普通GPIO上,但内部上拉只有20K,插卡或不插卡时会有1.8V/20K=90uA漏电,对漏电要求较高的产品,可外置上拉220K电阻,上拉到VDDIO18上,取消内部上拉,减小漏电.
+参考FAQ: FAQ202072410
+### 问题: 修改拍照快门音
+解决方案: 修改frameworks/base/data/sounds/effects/ogg目录下的camera_click.ogg资源文件,可以替换掉系统中的拍照快门音.
+参考FAQ: FAQ202072411
+### 问题: 拒接电话
+解决方案: 如果来电被拒接,拒接电话会记录在已接电话列表中,不会出现在拒接电话列表下,因为目前拒接电话列表会存放因电话黑名单而被拒接的电话,所以手动拒接的电话不会存放在rejected calls上.如果客户希望将手动拒接的电话也放在拒接电话列表下,可以调整函数CC_DisconnecedCallByIndex中calllog_type的赋值,将calllog_type赋值成MMICL_CALL_REFUSED.
+参考FAQ: FAQ202072419
+### 问题: SC7731E 量产组装反馈产线有百分之10不良 测试GPS信号弱，无信号问题
+解决方案: 客户反馈问题现象如下: 1. 客户反馈产线有百分之10不良,测试GPS信号弱,无信号问题,且这个项目是量产项目. 2. 终端客户反馈整机GPS无信号 GPS信号弱 测试整机无信号.我们客户单板拉天线测试GPS无信号或信号弱 , 检查工程模式测试校准记录显示AFC已经校准,但是重新校准AFC后测试信号OK. 问题分析: -由实验可以得知,此问题是由于AFC校准时的CDAC值校准不对,造成输出给GPS用的时钟频偏过大造成搜星问题.怀疑是客户产线仪器或测试问题引起.但是针对此问题,我们在SIMBA工具上做了相关改进,增加了专门单测频偏测试项做拦截.频偏spec设置[-2000,2000],具体设置方法以及设置文件可以找我们的工具组要他们Release.这个问题适用于展锐WCN集成于BB芯片的平台.
+参考FAQ: FAQ202072420
+### 问题: UMS9117平台整机天线调试GSM低频灵敏度干扰问题
+解决方案: 对于UMS9117平台GSM低频干扰问题,其干扰点一般如下: 1). 电源走线的干扰,主要是由于按键表层的电源走线为主,有VDDWPA. 2). 按键走线上也会有少许干扰. 3). LCM SPI走线上的干扰. 针对这些干扰,目前在LAYOUT方面的改善建议如下: 1. VDDWPA干扰最大,且在表层并联滤波电容都没法滤除掉低频段干扰,要禁止走表层,与其它走线要做好隔离,且预留滤波电容位置. 2. LCM SPI干扰,SPI走线保护得还好,但是其走线上还是有干扰,那就只能在其走线并联滤波电容100PF以滤除干扰. 3. VBAT干扰,由于VBAT走线离大的干扰源(电源IC的功率电感)较近,或者是VBAT直接走的DCDC电源的功率电感下方,会带出比较大的干扰,故在LAYOUT时,要注意VBAT一定不能走在DCDC功率电感下方. 4. 由于是功能机,位于天线净空区域的按键DOME经常性的没有与天线馈点做好隔离,故天线净空区域的按键DOME一定要与天线有隔离的地层.
+参考FAQ: FAQ202072421
+### 问题: 如何查询IDH包软件版本号
+解决方案: AP的版本号:可以通过查询 version/version_software_mocor.h得到当前的版本号;
+modem的版本号:可以查询version/version_software_dmbase.h得到当前的版本号;
+参考FAQ: FAQ202072422
+### 问题: 如何获取刚接收到的完整长短信内容
+解决方案: 长短信发送实际上都是一条短信一条短信发出的,只是短信间增加了相关的连接标识符(用于接收组合),接收长短信是也是一条一条接收的,而且接收的短信顺序不定(依赖于运营商网络环境),在某些情况下还会出现丢信息的情况(即长短信中缺了某条或某几条),同时原生代码在未收全的情况下会使用...提示. 由于长短信是逐条收取之后拼接而成,建议先通过 is_concatenate_sms 和 is_receive_all 这两个flag判断长短信已经完整接收后,再通过 MMISMS_ConvertValidDataToDispStr 去解析短信内容. 也可以参考 SetChatItemParam @ mmisms_chatreadwin.c 这里 MMISMS_CHAT_INDEX_SAME_LONG_SMS 拼接长短信的方法(MMISMS_ShowMsgContent -> ChatWinSetLongSmsItemContent)
+参考FAQ: FAQ202072423
+### 问题: 收到短信时，最开始是在哪里解析出短信的号码
+解决方案: MMI在HandlePsMsg @ mmismsapp_main.c 函数收到MN上报的APP_MN_SMS_IND消息,此消息即包含短信地址和内容 协议端上报对端号码变量为 sig_ptr->sms_t.origin_addr_t, 相关资讯保存在orig_num.number,其格式为bcd编码,长度为 orig_num.number_len.可以透过函数 MMIAPICOM_GenDispNumber 先转换为一般字符型态,再以trace打印出确认
+参考FAQ: FAQ202072424
+### 问题: UMS9117是否支持VoWiFi
+解决方案: UMS9117平台(包括UMS9117-L)不支持VoWiFi,即便是带WiFi的版本也是不支持VoWiFi的. 如果需要开发VoWiFi的话,工作量是特别大的,开发周期也会比较长,目前没有计划在UMS9117平台支持VoWiFi.
+参考FAQ: FAQ202072425
+### 问题: 搭配SR3595D平台的C/N requirement(dB)？
+解决方案: 搭配SR3595D平台的C/N requirement(dB)为: GSM:6.2,WCDMA:-9.2,LTE:-0.5.
+参考FAQ: FAQ202072428
+### 问题: Android 10.0 Go版本是否支持新通知屏幕唤醒功能？
+解决方案: Android Go版本出于内存考虑,不支持新通知屏幕唤醒(New notifications)功能. Go版本相关代码: frameworks/base/core/res/res/values/config.xml ... ... <string name="config_dozeComponent" translatable="false"></string> 非Go版本相关代码: device/sprd/XXXX/common/overlay/frameworks/base/core/res/res/values/config.xml ... ... <string name="config_dozeComponent" translatable="false">com.android.systemui/com.android.systemui.doze.DozeService</string>
+参考FAQ: FAQ202072429
+### 问题: 是否可以默认设置锁屏方式为安全锁
+解决方案: 安全锁方式主要有图案锁,密码锁和PIN锁,目前不支持默认锁屏方式为安全锁. 锁屏密码的保存涉及下面路径: /data/system_de/0/spblob /data/misc/keystore /data/system/locksettings.db 其中在spblob下面的文件,不能默认保存,比如0000000000000000.handle是通过设置的密码以及在设置密码过程中随机生成序列进行混合加密的. 0000000000000000.handle 2772a17862a450a2.secdis 2772a17862a450a2.pwd 2772a17862a450a2.spblob 其次密码都是保存在data分区的,刷机和恢复出厂都会被格式化 而且设置的密码必须要gatekeep校验过的,否则在解锁时gatekeep验证不通过会导致不能解锁
+参考FAQ: FAQ202072432
+### 问题: Android 11 Go版本是否支持新通知屏幕唤醒功能？
+解决方案: Android 11 Go版本出于内存考虑,不支持新通知屏幕唤醒(Wake screen for notifications)功能. Go版本相关代码: frameworks/base/core/res/res/values/config.xml ... ... <string name="config_dozeComponent" translatable="false"></string> 非Go版本相关代码: device/sprd/XXXX/common/overlay/frameworks/base/core/res/res/values/config.xml ... ... <string name="config_dozeComponent" translatable="false">com.android.systemui/com.android.systemui.doze.DozeService</string>
+参考FAQ: FAQ202072435
+### 问题: Android Q Settings搜索功能，如何屏蔽搜索特定功能菜单
+解决方案: 注解的方式添加搜索是Android Q上新增的一项变化,主要是在需要添加搜索功能的Fragment类名上添加相应的搜索. 如下例所示: @SearchIndexable(forTarget = SearchIndexable.ALL & ~SearchIndexable.ARC) public class SmartControlsSettings extends DashboardFragment { private static final String TAG = "SmartControlsSettings"; ... ... 如果需要删除整个功能界面的搜索,直接将类名上面的注解删除即可.
+参考FAQ: FAQ202072436
+### 问题: [Android P][APP-BT] 如何移除蓝牙蓝牙应用层功能
+解决方案: 1. 设置／状态栏UI开关等显示
+参考FAQ: FAQ202072438
+### 问题: Android Q 如何默认关闭双击音量上键开启相机？
+解决方案: 在Android Q上,Jump to camer通过双击音量上键开启相机: 要默认关闭该功能,需要配置如下配置项的默认值. 配置项: Settings.Secure.CAMERA_DOUBLE_TAP_VOLUMEUP_GESTURE_DISABLED 文件路径: frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java 修改方法: 该配置项在Secure表中,要在loadSecureSettings方法中配置一下默认值:0为开启,1为关闭. loadIntegerSetting(stmt, Settings.Secure. CAMERA_DOUBLE_TAP_VOLUMEUP_GESTURE_DISABLED,1);
+参考FAQ: FAQ202072440
+### 问题: LCD如何使用DCS协议？
+解决方案: [QUESTION] LCD如何使用DCS协议? [ANSWER] MIPI 默认是使用GEN协议,有些IC需要使用DCS协议. kernel: bsp/kernel/kernel4.14/arch/arm64/boot/dts/sprd/lcd/lcd_r61350_truly_mipi_hd.dtsi ++ sprd,use-dcs-write; uboot: bsp/bootloader/u-boot15/arch/arm/dts/lcd/lcd_r61350_truly_mipi_hd.dtsi ++ sprd,use-dcs-write;
+参考FAQ: FAQ202072446
+### 问题: AndroidQ关闭Selinux后ENGPC线程阻塞问题
+解决方案: 启动system_suspend可以解决这一问题 /device/sprd/PIKE2/common/rootdir/root/init.cali.rc diff --git a/common/rootdir/root/init.cali.rc b/common/rootdir/root/init.cali.rc index a0b5155..cf9fd89 100644 --- a/common/rootdir/root/init.cali.rc +++ b/common/rootdir/root/init.cali.rc @@ -35,3 +35,4 @@ on cali-start start vendor.modem_control start vendor.refnotify start console + start system_suspend
+参考FAQ: FAQ202072447
+### 问题: Android R如何不读ID，强制attach LCD
+解决方案: [QUESTION] Android R如何不读ID,强制attach LCD [ANSWER] bringup阶段或者IC不支持读ID,如何强制attach LCD驱动? bsp/bootloader/u-boot15/arch/arm/dts/lcd/lcd_r61350_truly_mipi_hd.dtsi -- sprd,lcd-id-tokernel = <0x61350>; ++ sprd,lcd-id-tokernel = <0xFFFF>; 如下需要注意,lcd_dummy_mipi也为0XFFFF,需要在lcd_dummy_mipi前include. bsp/bootloader/u-boot15/arch/arm/dts/ums512_1h10.dts ++ #include "lcd/lcd_r61350_truly_mipi_hd.dtsi" #include "lcd/lcd_dummy_mipi.dtsi"
+参考FAQ: FAQ202072451
+### 问题: Android Q 如何默认关闭双击电源键开启相机？
+解决方案: 若Jump to camera快速打开相机是通过按电源键两次打开,要默认关闭该功能,需要配置如下配置项的默认值. 配置项: Settings.Secure.CAMERA_DOUBLE_TAP_POWER_GESTURE_DISABLED 文件路径: SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java 修改方法: 该配置项在Secure表中,要在loadSecureSettings方法中配置一下默认值:0为默认开启,1为默认关闭. loadIntegerSetting(stmt,Settings.Secure.CAMERA_DOUBLE_TAP_POWER_GESTURE_DISABLED,1);
+参考FAQ: FAQ202072458
+### 问题: 为何开发者选项中的内存与实际DDR容量不符？
+解决方案: 开发者选项中显示的内存是MemTotal(可用内存),通常小于实际DDR的容量. 原因是该显示的内存是不包含系统预先预留的内存(MemReserve): MemAll(所有内存) = MemTotal(可用内存) + MemReserve(保留内存) MemAll(所有内存) :所采用内存的大小,比如512MB、1GB等. MemTotal(可用内存) :可通过cat /proc/meminfo中的memtotal获取. MemReserve(保留内存):系统预先预留的内存,不可用作他用 可通过命令adb shell getprop ro.boot.ddrsize,查看ro.boot.ddrsize属性值,也就是实际ddr的大小.
+参考FAQ: FAQ202072460
+### 问题: 为何wifi连接情况下，无法同步时区
+解决方案: 时区更新只有两种方法: 1. NITZ注网消息上报 需要插入SIM卡,并且运营商支持. 2. 注网MCC码解析时区 WiFi只是数据协议,WiFi Only下可以使用NTP更新时间,但不能用WiFi更新时区
+参考FAQ: FAQ202072463
+### 问题: Android R Settings搜索功能，如何屏蔽搜索特定功能菜单
+解决方案: 注解的方式添加搜索是Android Q上新增的一项变化,主要是在需要添加搜索功能的Fragment类名上添加相应的搜索. 如下例所示: @SearchIndexable(forTarget = SearchIndexable.ALL & ~SearchIndexable.ARC) public class SmartControlsSettings extends DashboardFragment { private static final String TAG = "SmartControlsSettings"; ... ... 如果需要删除整个功能界面的搜索,直接将类名上面的注解删除即可.
+参考FAQ: FAQ202072469
+### 问题: 如何调整指南针方向
+解决方案: 指南针数据由acc,gyro,mag等物理sensor数据融合而成,当指南针指向不准确时,先确定各物理sensor的方向是否正确,即 1)acc方向 与地面垂直的轴为正9.8; 2)gyro方向 绕所在轴逆时针旋转方向为正; 3)mag方向 a)用罗盘指南针确定东南西北四个方向,并在纸上记录; b)画8字校准地磁,精度需达到3; c)将x轴与NS平面垂直,此时x轴接近于0,否则需要将趋于0的轴调整为x轴,此时z轴为负;同理确认y轴和z轴方向;将y轴方向平行于45°方向放置(即东北方向),此时x轴为负,y轴为正,若此时x/y数据符号不对,需进行调整. 若物理sensor方向均正确,检查mag硬件布局周围是否有强磁场外设,或优化地磁库.
+参考FAQ: FAQ202072470
+### 问题: /mnt/vendor/sensorhub下的文件是什么？
+解决方案: /mnt/vendor/sensorhub下主要是保存各类sensor特性参数的文件,如: shub_fw_accelerometer_icm20600:保存sensorInfoConfigArray,sSensorOpcode等信息 shub_fw_accelerometer_icm20600_cali:保存eAccCaliDataArray 开机sensor初始化阶段,kernel驱动从该目录下的文件中读取sensor信息
+参考FAQ: FAQ202072474
+### 问题: uboot kernel 开机logo资源如何在源码里替换？如何打包到镜像？
+解决方案: [QUESTION] uboot kernel 开机logo资源如何在源码里替换?如何打包到镜像? [ANSWER] LCD点亮后,会出现默认的logo文件不适配当前分辨率,可以在ResearchDownload 下载工具里直接修改logo文件验证. 验证OK后,如下修改可以打包到镜像. 1.将logo文件放置到如下位置: vendor/sprd/release/bmp/unisoc_bmp 2.在编译里替换文件 vendor/sprd/release/pac_config/s9863a3h10.ini BootLogo=1@./vendor/sprd/release/bmp/unisoc_bmp/unisoc_HD_720_1280_24bit.bmp Fastboot_Logo=1@./vendor/sprd/release/bmp/unisoc_bmp/unisoc_HD_720_1280_24bit.bmp
+参考FAQ: FAQ202172477
+### 问题: LCD DPI配置不对，引起的桌面图标拉伸和变形，如何修改？
+解决方案: [QUESTION] LCD DPI配置不对,引起的桌面图标拉伸和变形,如何修改? [ANSWER] LCD 点亮后,不同的显示模组,LCD DPI不一致,需要咨询模组厂商,获取准确的DPI参数,配置到系统里. device/sprd/sharkl3/s9863a1h10/module/display/md.mk PRODUCT_PROPERTY_OVERRIDES += \ -- ro.sf.lcd_density=480 \ ++ ro.sf.lcd_density=XXX \ 需修改为模组厂推荐的参数
+参考FAQ: FAQ202172478
+### 问题: Android R如何将TP固件打包到vendor/firmware下
+解决方案: [ANSWER] TP固件升级,TP bringup时,可以将TP firmware adb push到手机验证OK后,需要打包镜像. 如下添加 device/sprd/sharkl3/s9863a3h10/module/ts/md.mk PRODUCT_COPY_FILES += \ $(MPOOL)/module/ts/firmware/CT4F3044DSN-1_V04_D01_20190521_app.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/focaltech-FT5x46.bin TP的固件升级文件需要放在如下目录: device/sprd/mpool/module/ts/firmware 仿照如下文件: device/sprd/mpool/module/ts/firmware/CT4F3044DSN-1_V04_D01_20190521_app.bin
+参考FAQ: FAQ202172479
+### 问题: UIS8910FF 开机logo
+解决方案: 开机 logo 会显示显示紫光展锐的二个图示, 客户可自行替换 第一个在 \MS_Code\MS_MMI_Main\source\resource\mmi_res_240x320\IMAGE_TEMPORARY_BOOTUP_DEFAULT.bmp, 第二个在 \MS_Code\MS_MMI_Main\source\resource\mmi_res_240x320\common\MMI_RES_DEFAULT\IMAG\startup\IMAGE_TEMPORARY_BOOTUP_DEFAULT.png
+参考FAQ: FAQ202172481,含图片
+### 问题: T117USER NV目前支持的内容
+解决方案: usernv相关备份选项在 mmi_modu_main.h中有USER_NV_ITEM_E的枚举中有对应的nv 项 目前支持备份的nv如下 电话本 联系人 联系人分组 信息 短信 彩信 CB 通话记录 墙纸设置 铃声/情景模式 相关添加方法如下 1.NV ID的添加 在mmi_modu_main.h 中 USER_NV_ITEM_E枚举中 添加对应的 NV ID ,单条的ID增加请放在 MMIUSERNV_CL_CALL_ALL_CONTENT_BEGIN之前 2.NV ID的size添加 在mmi_modu_main.c 中的s_mmi_usernv_len数组对应添加NV ID的大小 3.然后调用nv的write read接口使用 注意: 1.添加类似短信这种多条的NV 请采用EFS_NvitemWrite 等接口 自己指定 nv size使用 2.请保证s_mmi_usernv_len的size与USER_NV_ITEM_E中的枚举对应
+参考FAQ: FAQ202172494
+### 问题: uart/i2c/iis/spi/sim pin和controller的关系
+解决方案: st
+参考FAQ: FAQ202172495
+### 问题: T117信号棒格数调整
+解决方案: 信号棒的处理在函数HandleScellRssiInd函数中 目前T117的格子数对应的是5格,如果想修改格子数请按照以下内容修改 1.修改g_service_rxlev_map数组的内容为对应的格子数大小 2.修改格子数对应的处理函数算法 减少或者增加if(g_service_rxlev_map[rxlevnindex][xxx] <= srri_ind.rxlev)语句的判断次数 3.修正信号棒图片的显示 \MS_MMI\source\resource\mmi_res_***\common\MMI_RES_DEFAULT\IMAGE\StatusbarIcon中对应的信号格的图片
+参考FAQ: FAQ202172496
+### 问题: T117工具测试相关的防呆站位信息查看
+解决方案: 1.相关的选择被勾选 1. DOWNLOAD: 使用FACTORYDOWNLOAD版本下载工具下载 2. CFT校准: 下载完成后,使用CFT_R16.0.0001_20160426版本下载进行校准,校准功能设置后,确保PhaseCheck勾选上. 3. BBAT测试: 校准通过后,使用BBAT-Tool-ReleasFV8_SC6531_20160426版本进行测试,确保保存测试记录,保存测试信息,写入测试标志,phase check勾选 4.BBAT自动测试通过后,进入QC1测试. 5.QC1测试完成后,使用ANTENNA_R9.0.0001_P6_SC6531_20160426版本进行耦合测试,确保PhaseCheck勾选上 6.耦合测试完成后,使用WRITEIMEI_R5.0.0001_SC6531_20160426版本写IMEI号,确保PhaseCheck选上 2.使用#88378#3#查看各个站位的相关信息
+参考FAQ: FAQ202172499
+### 问题: 高低温下LTE最小功率如何修改
+解决方案: 
+参考FAQ: FAQ202172502,含图片
+### 问题: SC9863A平台安卓10升级到11时，音频参数合入的方法
+解决方案: SC9863A平台,安卓10升级到安卓11之后,需要更改音频参数的合入方式,操作如下: 使用Audio tester调试完毕,写入手机后,使用adb命令从/data/vendor/local/media/下面pull出如下通话部分的参数文件,然后编译时替换原来的文件即可. audioarm audio_arm.xml audio_dsp_ex_smat.xml audio_dsp_ex.xml audiodsp audio_dsp.xml cvs cvs_params.xml dspcodec dsp_codec_config.xml 注意:1. /data/vendor/local/media/路径下可能不止以上10个文件,需要把和以上文件同名的10个文件挑选出来给到软件; 2. Music参数(名称为:audio_para)也在此路径下,合入方式不变(调试完成后,在这个路径下pull出此文件,然后提交给软件合入版本);
+参考FAQ: FAQ202172504
+### 问题: 关闭MMS
+解决方案: 关闭彩信可以只关闭MMI层的代码,而不用修改lib库,按以下步骤进行修改: (1)修改 project_ums9117_240X320BAR_64MB.mk 文件 : CHATMODE_ONLY_SUPPORT = FALSE MMS_SUPPORT = NONE MMS_SMS_IN_1_SUPPORT = FALSE (2)修改 lib\ums9117_240X320BAR_64MB\sprd_macro.txt 删除 -DMMS_SMS_IN_1_SUPPORT -DMMS_SUPPORT 将 -DMMS_SUPPORT_DORADO 修改为 -DMMS_SUPPORT_NONE 修改以上两个文件,就可以关闭上层的彩信,由于chatmode支持是需要彩信的,所以修改后短信是不支持chatmode. (3)若代码中有部分用到MMS接口的代码未用MMS的宏开关控制,编译会出错,需要将相关接口用MMS的宏包住.
+参考FAQ: FAQ202172508
+### 问题: SC9820E平台安卓10升级到11时，音频参数合入的方法
+解决方案: SC9820E平台,安卓10升级到安卓11之后,需要更改音频参数的合入方式,操作如下: 使用Audio tester调试完毕,写入手机后,使用adb命令从/data/vendor/local/media/下面pull出如下通话部分的参数文件,然后编译时替换原来的文件即可. audioarm audio_arm.xml audio_dsp_ex_smat.xml audio_dsp_ex.xml audiodsp audio_dsp.xml cvs cvs_params.xml dspcodec dsp_codec_config.xml 注意:1. /data/vendor/local/media/路径下可能不止以上10个文件,需要把和以上文件同名的10个文件挑选出来给到软件; 2. Music参数(名称为:audio_para)也在此路径下,合入方式不变(调试完成后,在这个路径下pull出此文件,然后提交给软件合入版本);
+参考FAQ: FAQ202172510
+### 问题: SC9832E平台安卓10升级到11时，音频参数合入的方法
+解决方案: SC9832E平台,安卓10升级到安卓11之后,需要更改音频参数的合入方式,操作如下: 使用Audio tester调试完毕,写入手机后,使用adb命令从/data/vendor/local/media/下面pull出如下通话部分的参数文件,然后编译时替换原来的文件即可. audioarm audio_arm.xml audio_dsp_ex_smat.xml audio_dsp_ex.xml audiodsp audio_dsp.xml cvs cvs_params.xml dspcodec dsp_codec_config.xml 注意:1. /data/vendor/local/media/路径下可能不止以上10个文件,需要把和以上文件同名的10个文件挑选出来给到软件; 2. Music参数(名称为:audio_para)也在此路径下,合入方式不变(调试完成后,在这个路径下pull出此文件,然后提交给软件合入版本);
+参考FAQ: FAQ202172511
+### 问题: 触屏下如何关闭输入法界面
+解决方案: 通过关闭宏 #define MMIIM_USE_TOUCH_PANEL可以关闭输入法界面
+参考FAQ: FAQ202172514
+### 问题: NV修改晶体类型
+解决方案: 1.利用Pandora工具读出端口并Entermode,然后释放端口 2.利用NVTOOL工具从客户机导入Image,在Crystal Configuration配置里面修改参数选择需要的晶体类型 note: a.硬件晶体方案更改后,NV里面晶体类型配置不做相应改变,晶体类型配置错误会导致AFC校准无法生成所 需的校准文件; b.在用NVTOOL工具修改NV配置时要打开对应平台的nvitem.xprj,否则会导致加载失败; c.用NVTOOL工具修改NV配置过后,需要重新Load From Phone,检查NV配置是否修改成功.
+参考FAQ: FAQ202172517,含图片
+### 问题: Gsm辐射状态和传导测试分集开启的条件
+解决方案: 两天线合并,主要是考虑到手机硬件可能存在各种可能,使得合并的效果达到最佳,并不出现负作用. 主要条件就是参考每个天线接收信号的强度和信噪比, 1)如果两个天线都很好的条件下,单天线肯定也可以很好工作,就不开启; 2)另外,如果某一个天线信号很差、信噪比也很低的情况下,有可能存在此天线损坏的情况,合并的效果反而更差,这种情况下也不合并,选择使用另一个较好的天线接收. 3)其它情况,进行合并. 分集打开条件: 条件1 SNR < 5 db 条件2 RXLEV < 20 SNR < 10 db 满足任意条件开启分集 分集合并条件 条件1 主集RXLEV相差10db以内, 条件2 分集SNR - 分集SNR < 5db 两个条件同时满足开启分集合并
+参考FAQ: FAQ202172518
+### 问题: 工程命令*#*#83781#*#*里的主集加分集,这种情况下gsm是否会测出两个天线合并的数据
+解决方案: 当满足算法门限时就会合并数据
+参考FAQ: FAQ202172519
+### 问题: gsm传导测试中,从主集切换到分集,手机就会掉线
+解决方案: 因为GSM发射只能主路发射,数据合并也是把分集的数据合并到主集,如果测试时把主集信号断开,UE上行就会没办法发到仪表上,因此出现掉话是正常现象.
+参考FAQ: FAQ202172520
+### 问题: GSM分集数据合并条件
+解决方案: 分集打开条件: 条件1 SNR < 5 db 条件2 RXLEV < 20 SNR < 10 db 满足任意条件开启分集 分集合并条件 1. 主集RXLEV相差10db以内, 2. 分集SNR - 分集SNR < 5db 两个条件同时满足开启分集合并 TIS无法提升实验室环境问题分析: 这个和OTA TIS测试逻辑有关,TIS在测试过程中一般流程描述如下, 1. cell power提升很高,这一步目的应该是方便UE快速驻留. 2. cell power 瞬间降低到灵敏度附近,然后测试过程持续1s左右.这段时间应该是TIS真正测试时间. 目前我司算法过程中关于合并条件判决是依赖SACCH信道的SNR/RXLEV的历史数据的,SACCH帧周期是26复帧,每次更新1/8,所以cell power从高到低的过程中,数据更新完成时间大概是4.615×26×8 = 959.92ms ,所以当算法判断当前数据需要合并的时候,TIS测试过程中已经过去了大半时间,所以从测试结果来看,TIS无明显增益.
+参考FAQ: FAQ202172521
+### 问题: HSDPA Throughput测试fail
+解决方案: HSDPA Throughput测试fail,下行吞吐量(尤其WCDMA B5、B8)达不到21Mbit/s时,nv中按照如下路径修改数值:WCDMA_optimize\WCDMA_download_params_optimize\trx_path_config=0X4000
+参考FAQ: FAQ202172523
+### 问题: GSM，WCDMA，LTE模式下降SAR(功率回退)或功率提升
+解决方案: GSM,WCDMA,LTE模式下降SAR(功率回退)或功率提升: 1、若是Android9或10的话,请参考指导文档(SC9863A+SR3595D Power Back And Power Up Design Guide V1.2); 2、若是AndroidR(11)的话,请参考文档:android R(11)SC9863A+SR3595D 多场景下功率回退提升指南. 不同的Android系统,NV中功率回退或提升标志位不同.
+参考FAQ: FAQ202172524
+### 问题: UMS9117是否支持蓝牙拨号器
+解决方案: UMS9117/UMS9117-L不支持蓝牙拨号器功能,即不能打开BT_DIALER_SUPPORT这个宏定义. 由于蓝牙拨号器功能涉及到蓝牙协议栈和MMI的开发和调试工作,工作量比较大,暂时没有安排开发计划. 总的开发工作量预计会非常大,开发周期也会比较长.如果您确实有强烈的需求,可以和CPM沟通一下,看看是否有必要提一个RAT开发需求.
+参考FAQ: FAQ202172525
+### 问题: T117中国移动多形态终端自自注册如何从log中确认注册是否成功
+解决方案: 测试前提 1. 终端需要使用中国移动的sim卡,不能使用其他运营商的sim卡 2.终端使用的版本包含中国移动多形态方式入库的功能 log抓取 终端开机自动发起自注册流程,有时测试人员无法成功抓取log. 为保证能抓取log,需要提前开启Pin码.当终端已经成功连接log后,再输入pin码. 搜索log中的关键词判断自注册是否成功 1.搜索关键词"CCMCC DM"、"lwm2m" 2.在包含关键词"CMCC DM""lwm2m"的log中有"Registration successful"时,说明本次注册成功
+参考FAQ: FAQ202172526
+### 问题: 如何快速判断中国联通自注册发起流程是否符合要求
+解决方案: 前提条件 1.使用中国联通的sim卡进行测试 2.烧写版本后首次开机 判断依据 中国联通自注册要求在第一次发起自注册流程前,向用户提示需要搜集数据.在获得用户授权后才能发起自注册流程. 授权后,再次开机发起自注册流程时不需要用户授权,直接发起自注册流程 判断结果 1 在烧写完版本首次开机测试时终端出现弹框,提示用户需要收集数据并请求用户授权,则自注册流程符合要求. 2 如果烧写版本后首次开机,提示信息并请求用户授权.则当前版本不符合要求,需要修改版本后再进行测试
+参考FAQ: FAQ202172527
+### 问题: 多个字库定义同样unicode代码字符，会依照哪个字库显示?
+解决方案: SPML显示字符时并不是依据define的语言、或是系统语言去显示,而是会去比对现有的字库是否有此字符来显示.也就是通过 MMIRES_GetFontLibPtr@mmi_resource.c 把 mmi_res_prj_def.h 中有字义的字库load到SPML中. 如果有多个载入的字库定义同一个unicode,则会依据在mmi_res_prj_def.h增加的顺序而定,会按照后增加的字库显示.
+参考FAQ: FAQ202172532
+### 问题: 概率性呼入失败问题
+解决方案: 鉴于客户抓取呼入失败问题通常抓取无用DEBUG信息,特此说明,针对呼入概率性失败的问题,如何有效抓取有用DEBUG信息. 呼入失败,即MT端收不到来电通知,此种情况仅抓取MT端LOG是不够的,需要注意一下问题提供LOG: 一、必须提供的 1. 测试前,务必请先校准测试工程机射频; 2. MO、MT两端手机最好都是用工程测试机; 2. MO、MT两个手机的系统时间调整设置一致后,复现此问题; 3. 概率性问题,需要压测,20次起,出现问题后再多测试10次,根据MT的calllog记录漏寻呼时间,精确到秒; 4. 如果只有一个工程机,建议MT端使用可以抓取MODEM log的智能机. 二、非必须提供 1. 同一张SIM卡使用对比机作为MT端的MODEM LOG; 2. 根据以上分析情况提供开发所需的必要测试.
+参考FAQ: FAQ202172533
+### 问题: 如何修改图片资源
+解决方案: 直接替换法 1.首先确定替换的图片及其存储路径 2.将新的图片直接存放到该路径下的文件夹内 3.删除原图片,将新图片文件的名称修改成原图片文件名称 新增图片法 1.首先确定要修改的图片的存储路径 2.将新的图片存储到该路径下的文件夹内 3.定义图片资源ID 以sample模块为例,打开资源定义头文件sample_mdu_def.h,添加如下语句 RES_ADD_IMG(HELLO_SPRD_TEST,"\\MMI_RES_##\\IMAG\\HELLO_SPRD_TEST.bmp",IMG_CMP_BMP_16_565_RAW,0) 主要参数说明:第一个参数是图片ID; 第二个图片是图片的相对路径,其中"HELLO_SPRD_TEST.bmp"为图片文件名称,与添加在资源目录中的文件名相同. 4.用新图片的资源ID替换原来图片资源ID 注意: 替换资源后,重新编译一下资源
+参考FAQ: FAQ202172535
+### 问题: Android R版本上fastboot工具无法正常烧入boot-debug.img
+解决方案: [关键log] fastboot: error: Couldn't parse partition size '0x'. 1. 使用platform_tool下windows版的fastboot.exe, 版本信息如下: 1.1 执行fastboot.exe flash boot_a boot-debug.img, 报错信息如下 2. 使用platform_tool下linux版的fastboot, 版本信息如下: 2.1 执行fastboot flash boot_a boot-debug.img, 报错信息如下 3. 使用工程编译的fastboot工具执行上述指令结果跟上述相同, [解决办法] 建议变更为以下指令, 经过测试确认可成功烧入且开机正常 fastboot flash:raw boot_a boot-debug.img a). win工具执行画面 b). linux工具执行画面
+参考FAQ: FAQ202172538,含图片
+### 问题: LTE UL CA最大功率温补值如何修改
+解决方案: LTE UL CA最大功率温补需要修改apc temp温补NV,以B41为例修改位置如下: LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_apc_temp_comp_PCC\apc_temp_comp_PCC\Band_no6\apc_pcc_comp_channel\comp_value\comp_value[0]=0XFFE8
+参考FAQ: FAQ202172540
+### 问题: SC2721G上的Mic_bias断电后，Mic_P/N管脚上仍有电压，是什么原因？
+解决方案: 展锐平台Codec,Mic_Bias给麦克风供电,Mic_P/N内部有LDO供电,电压大概为1.6V左右(1/2 AVDDVB).
+参考FAQ: FAQ202172541
+### 问题: 如何默认关闭自动更新时区开关，不更新时区？
+解决方案: 默认关闭自动更新时区开关,具体如下: 将自动更新时区开关def_auto_time_zone的值设置为false. 文件路径:platform/frameworks/base/packages/SettingsProvider/res/values/defaults.xml
+参考FAQ: FAQ202172544
+### 问题: hal层光感数据正常，但fw层光感数据为0
+解决方案: AndroidR上,FW层对光感值进行数据转换时会用到sSensorList中的resolution,若resolution配置太大,FW层的光感数据就有可能为0,如 static struct sensor_t sSensorList[] = { { 1.0f, //maxRange 100000.0f, //resolution }; 而AndroidR之前FW层未对分辨率进行使用,因此没暴露问题,所以需联系sensor fae重新配置成实际的值.
+参考FAQ: FAQ202172547
+### 问题: WiFi 支持的加密算法及长度
+解决方案: 目前WiFi支持主流的加密类型,wep,wpa, wpa2,wpa3,wapi等. 加密算法通常是tkip和aes(ccmp); 加密长度来说: 1. wep为40位和104位两种; 2. tkip使用128位; 3. aes有128,和256,384,512多种.目前wpa和wpa2的aes使用的是128位,ieee802.11r使用的是256位,而wpa3会根据不同的group(目前,我们的wpa3应该只支持group 19)使用的长度不同: Group 19: 256 Group 20: 384 Group 21: 512
+参考FAQ: FAQ202172549
+### 问题: 如何给指定的app获取DeviceOwner权限
+解决方案: 设置device owner命令如下: adb shell dpm set-device-owner 'packagename/ReceiverClass' 其中packagename为对应app的packagename ReceiverClass为app中继承的DeviceAdminReceiver类的完整路径 更多信息可以参考官网说明: device-admin
+参考FAQ: FAQ202172550
+### 问题: UMS9117 平台模拟时钟的绘制
+解决方案: 1. T117平台的代码中,有模拟时钟的绘制功能,需要打开下面宏开关支持: ANALOG_CLK_SUPPORT = TRUE 注意,上面的宏,需要在IDH发布的时候,闭源库display.a中打开,如果您的idh包发布的时候没有开启,需要联系更新. 2. 主要的绘制函数接口是: PUBLIC uint32 GRAPH_DrawClock (const CLOCK_DRAW_IN_T *draw_int_ptr, CLOCK_DRAW_OUT_T draw_out_ptr); 3. 具体使用场景,可以参考 mmiclock.c 中的使用方式.
+参考FAQ: FAQ202172553
+### 问题: UMS9117 平台开机Gif动画慢的问题
+解决方案: T117平台Gif图片的实现,最低的帧间隔是100ms,如果开机动画Gif的设计帧间隔时间,低于100ms,那么在平台上面刷新的就会"看起来变慢". 建议客户设计开机动画的Gif图片,不要选择100ms以下的.
+参考FAQ: FAQ202172554
+### 问题: Android R上V-AB架构下，不支持recovery模式的差分升级
+解决方案: Android R上V-AB架构下,不支持recovery模式的差分升级.原因是: 当前的userdata加密,在recovery模式下无法解密userdata,故无法收集userdata中那些空闲的数据块来进行snapshot的数据存储.
+在ota升级时,不进行snapshot存储,整包可以采取的办法是直接写super的子分区,差分升级时是以当前super分区数据为基础打上patch然后存放在userdata的snapshot来进行,故无法进行.
+
+综上,Recovery模式无法支持差分升级.
+只支持整包升级,后续请不要再进行recovery模式的差分升级验收.
+参考FAQ: FAQ202172557
+### 问题: WAS不清除历史频点
+解决方案: WCDMA 保存在NV中的历史频点,经过AP测的处理,在关机或掉电时不会清除,一直得到保留. 在W下找网的过程中,会使用到历史频点,可以在trace中搜网如下关键字: Get History ARFCN
+参考FAQ: FAQ202172561
+### 问题: WCDMA制式下，随机接入连续失败需要有惩罚机制的NV配置说明
+解决方案: rach失败多少次需要bar小区的配置: NV_PARAM_TYPE_EXPORT_WAS_CUSTOMER_SETTINGS\wcdma_rach_fail_times_for_bar
+取值0～255  default: 2
+0: not bar,1:one times rach fail for bar, 2:two timers rach fail for bar, ...,  255:255 times rach fail for bar bar的时长的配置: NV_PARAM_TYPE_EXPORT_WAS_CUSTOMER_SETTINGS\wcdma_rach_fail_bar_timer
+取值0～255  default: 21min
+0: not bar;1:1mim,2:2min, ..., 255:无限时长的bar
+参考FAQ: FAQ202172562
+### 问题: WCDMA MFBI 功能
+解决方案: WCDMA 已经支持部分MFBI,即LTE邻区的MFBI, 具体实现依据MFBI相关协议.
+参考FAQ: FAQ202172563
+### 问题: 使用fastboot 工具烧录逻辑分区，为何触发resize的动作
+解决方案: Android10.0 以及后版本,如果使能动态分区,动态分区所包含的逻辑分区的大小都是按需分配,如果使用fastboot 工具烧录的目标逻辑分区跟当前的逻辑分区的大小有差异时,工具自动会进行resize操作,将目标分区的size 调整为当前所需的大小,如果当前的空间大,则多余的空间格式化为预留空间,如果当前的空间不足时,则分配预留空间满足当前的需要.
+参考FAQ: FAQ202172564
+### 问题: UMS9230平台MIPI RF Front-End Control Interface (MIPI-RFFE)支持版本
+解决方案: UMS9230平台MIPI RF Front-End Control Interface (MIPI-RFFE)版本支持V1.0 共两组MIPI-RFFE接口
+参考FAQ: FAQ202172565
+### 问题: UMS9230 RF配置单软多硬，默认HW版本与board ID对应关系
+解决方案: 默认单软多硬方案是用ADCI3引脚检测电压,下拉不同阻值的电阻读取八档电压值,做8个射频频段组合的HW配置. 配置扩容方案: 当有>8个RF配置需求时,可以再增加一个GPIO识别高低电平,用于扩充8个RF配置; 理论上每增加 n 个GPIO参与识别,就能将支持配置扩容到 8*2n 个配置,一般16个配置就可以满足普遍的设计需求; 单软多硬扩容功能均是以patch的方式向客户释放.
+参考FAQ: FAQ202172567,含图片
+### 问题: 命名pac文件
+解决方案: 如果为了方便识别,希望每次输出的pac文件名不一致,可以修改makefile中的IMGFILENAME,改为下面 IMGTIME = $(shell date "+%G%m%d_%H%M%S") IMGFILENAME = $(strip $(PLATFORM))_$(PROJECT)_$(IMGTIME)
+参考FAQ: FAQ202172570
+### 问题: CMW RUN脚本测试如何设置AT COMMAND(自动测试）模式
+解决方案: 1. cmwrun设置AT模式:打开对应脚本 DUT Power Cycles -->Automtion--> AT Modem Commands 2. CMWRUN设置AT 端口:Resources--》serial port---》DUTO1 COM端口. 3. AT 电脑端口选择:开机后插入USB,电脑查看端口 选择:SPRD AT(COM端口) 2.对应端口和3.对应端口一样.
+参考FAQ: FAQ202172571,含图片
+### 问题: UMS9230平台GSM Calibration触发了ReCalibration测试Pass后会覆盖Simba已保存的扫描参数吗？
+解决方案: GSM AGC APC校准支持的二次扫描测试功能,如FDT校准发现DUT与初次扫描参数差异很大,会重新进行一次慢扫描(同第一次慢校),如慢扫描结果满足要求,此主板校准参数以慢扫描参数为准,且不会覆盖原本的已保存扫描参数.
+参考FAQ: FAQ202172573
+### 问题: Transceiver 3595D Power Detector （PDET）输入功率范围和测量精度
+解决方案: Input power range:-15dBm~3dBm Absolute Accuracy:±0.25dB
+参考FAQ: FAQ202172574
+### 问题: NV中如何查看WCDMA是否支持双载波
+解决方案: 9863A平台,WCDMA默认是开启双载波的. NV中按照如下路径查看3G的category支持情况: 1、PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_WAS_CUSTOMER_SETTINGS\edch_Category=7 (十进制,若数字为6代表上行吞吐量为5.76Mbit\s ; 若数字为7代表上行吞吐量为11.5Mbit\s) 2、PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_WAS_CUSTOMER_SETTINGS\HS_DSCH_Category=24 (十进制,若数字为14代表上行吞吐量为21Mbit\s ; 若数字为24代表上行吞吐量为42Mbit\s)
+参考FAQ: FAQ202172575
+### 问题: 如何客制化调整状态栏电量显示格数状态
+解决方案: 请参考 MMIAPIPHONE_GetBatCapacity() @ mmiphone_charge.c 此函数主要是从底层获取当时剩余的电量,然后转换成电量格数. 底层获取的电量范围为 0~100,可以依据此电量值按客需求调整成对应的格数. ex: if(bat_level < 12) { bat_level = 0; } else if((bat_level >= 12) && (bat_level < 21)) { bat_level = 0; } else if((bat_level >= 21) && (bat_level < 58)) { bat_level = 2; } ... 如果从底层获取到的电量值小于21,电量格数为0,如果是30(21和58之间),则会转换电量格数为2.同理可自行按需求修改边界值和格数.
+参考FAQ: FAQ202172585
+### 问题: 如何获取GID/SPN/PNN/IMSI信息？
+解决方案: T117平台调用底层接口获取SIM卡中的GID/IMSI信息; 获取GID接口: MNSIM_GetGidEx 获取IMSI接口: MNPHONE_GetImsiEx PNN信息需要驻网成功后依据当前网络信息进行匹配,匹配成功后保存至MMI侧,可通过如下接口间接获取: MMIPHONE_GetNetworkNameInfo SPN信息在SIM卡准备好后通过调用接口MMIAPIPHONE_SyncSimSPN将SIM卡中的SPN保存至全局变量s_network_name中的对应卡的spn字段,可通过如下接口间接获取: MMIPHONE_GetNetworkNameInfo
+参考FAQ: FAQ202172587
+### 问题: 如何判断当前设备是否需要显示漫游图标？
+解决方案: 当前设备是否显示漫游图标的判断分为如下两个步骤: 1. 底层上报的网络消息APP_MN_NETWORK_STATUS_IND中携带漫游标志(plmn_is_roaming为TRUE) 2. 如果当前底层上报的是漫游状态,上层接口CheckIsRealRoaming检查当前是否允许显示漫游标记返回TRUE 针对第二个步骤做出以下解释: 印度等国家运营商对应的mcc及mnc较多,有部分运营商要求这种情况下漫游不显示漫游图标,针对这种情况,MMI侧通过接口CheckIsRealRoaming检查当前是否需要显示漫游图标. 特殊要求的运营商当前驻网的mcc/mnc和SIM卡中保存的mcc/mnc在表mvno_list.h命中,则说明该运营商不希望这种情况下显示漫游,客户方面可根据运营商需求进行客制化.
+参考FAQ: FAQ202172588
+### 问题: 如何打开夜景增强PRO
+解决方案: 请在相应工程MK打开如下:
+sprdroidr_trunk/device/sprd/sharkl3/s9863a1h10/module/camera/md.mk
+
++#suport DRE PRO
++TARGET_BOARD_CAMERA_DRE_PRO_CAPTURE := true
+
++#enable nightshot pro
++PRODUCT_PROPERTY_OVERRIDES += persist.vendor.cam.night.pro.enable=1
+
+-----#3dnr capture
++TARGET_BOARD_CAMERA_3DNR_CAPTURE := true
+参考FAQ: FAQ202172591
+### 问题: Android R 双卡配置为单卡
+解决方案: 参考:device/sprd/sharkl3/s9863a1c10/product/s9863a1c10_Natv/var.mk $(call md-mfeature-add, telephony/simcount=singlesim) 其他工程文件同理.
+参考FAQ: FAQ202172596
+### 问题: WiFi calling和volte解除强相关
+解决方案: 平台默认WiFi calling和volte强相关,即要打开WiFi calling,必须先打开volte开关. 若要取消强相关请按以下方法配置: AndroidR、Android10.0: 开关:KEY_SYNCHRONOUS_SETTING_FOR_WFC_VOLTE 在对应的packages/apps/CarrierConfig/assets/XXX.xml 添加配置 <boolean name="synchronous_setting_for_wfc_volte" value="false" /> Android 9.0: 开关:KEY_SEPARATE_SETTING_FOR_WFC_VOLTE 在对应的packages/apps/CarrierConfig/assets/XXX.xml 添加配置 <boolean name="separate_setting_for_wfc_volte" value="false" />
+参考FAQ: FAQ202172602
+### 问题: B38/41共通路设计的时候，回退功率可以给B41 B38分开降不同的功率值么？
+解决方案: 可以选择在配置通路时不共通路,实际配置NV时,B38/41配置一样的参数.配置成非co-band后,B38和B41将会分开校准,这样降SAR时Band_no6和Band_no15都可以写降SAR参数.
+参考FAQ: FAQ202172604
+### 问题: UIS8910平台初始化射频PA和其它MIPI RFFE器件
+解决方案: 
+参考FAQ: FAQ202172609,含图片
+### 问题: 7731E GSM信令测试frequency error 异常波动超标
+解决方案: 按照如下步骤确认: 1、AFC校准pass; 2、pandora信令连接测试pass,插入白卡信令测试FE会出现跳变情况; 3、软件修改pike2.dtsi文件的代码(删除两行): vaudio: vaudio { compatible = "sprd,vaudio"; #sound-dai-cells = <1>; clocks = <&aonapb_gate CLK_AUDIO_GATE>; clock-names = "tuned_26m"; }; 修改为 vaudio: vaudio { compatible = "sprd,vaudio"; #sound-dai-cells = <1>; }; 4、此修改软件已上库,AP可以直接升级版本到:MOCORDROIDR_Trunk_20A_W21.10.3或之后版本.
+参考FAQ: FAQ202172611
+### 问题: 如何判断插入的 SIM 卡是否为测试卡？
+解决方案: 如何判断插入的 SIM 卡是否为测试卡? T117 平台通过读取 SIM 卡中的 AD 文件及 IMSI 文件来判断当前的卡是否为测试卡,具体判断条件如下: 1. 当 SIM 卡中的 AD 文件中存储的值为 0x80 或 0x81 时,该卡为测试卡. 2. 当 SIM 卡中的 IMSI 文件存储的值为 00101 时,该卡为测试卡. 应用侧可通过调用接口 MNRSF_IsTestSIM 对当前SIM卡判断,如返回值为 TRUE ,则为测试卡,反之则为实体 SIM 卡.
+参考FAQ: FAQ202172612
+### 问题: 6531E蓝牙拨号器的音频调试
+解决方案: 首先明确一点,蓝牙拨号器无论是通话还是播放音乐,都和正常的通话和播音乐是同样的通道,所以调试的通道模式都是一样的方法.比如手持模式,正常和蓝牙拨号器都是调audio--handset模式.再比如播音乐外放,也都是调music--handsfree模式. 然后蓝牙拨号器不一样的调试地方: 由于蓝牙拨号器通话时,音频参数只在arm侧有效,所以调音量时需要在NXP_RX里设置,如下几张截图的方法:
+参考FAQ: FAQ202172630,含图片
+### 问题: WIFI测试接收灵敏度、吞吐量不稳定
+解决方案: 一、测试WIFI有以下现象 1.WIFI接收灵敏度测试,在屏蔽环境下,有时能测试好,有时差,参数不稳定 2.WIFI吞吐量测试,在屏蔽环境下,吞吐量有时高,有时低,不稳定,如下图 二、问题分析 1.在WLAN界面,安卓系统默认在wifi设置界面会进行周期扫描,就产生了收发包,而收发包会影响到WIFI接收灵敏度和吞吐量测试. 所以,测试WIFI接收灵敏度、吞吐量时,手机都切换到主界面测试,不在WLAN设置界面测试 三、补充说明 1.如果由WIFI设置界面换到主界面后,接收灵敏度、吞吐量不再波动,表示为上述设置引起 2.如果在主界面测试,还是出现波动问题,请和展锐沟通
+参考FAQ: FAQ202172636,含图片
+### 问题: T117 使用 Opera mini 发送 Gmail
+解决方案: T117 操作 Opernimi Gmail 步骤, 1. 打开 Internet 选择 Operamini 应用 2. 选择安装 Operamini 3. 向下选择 Gmail 4. 登入或新增 Gmail 帐号 5. 操作上下方向键选择收件人 , 内文 , 发送等功能键
+参考FAQ: FAQ202172639
+### 问题: CMW500测试EDGE开关谱FAIL
+解决方案: 
+参考FAQ: FAQ202172647,含图片
+### 问题: 南美TIGO脚本测试GSM Rxqual FAIL
+解决方案: 测试脚本问题,需要如下图修改时延.
+参考FAQ: FAQ202172649,含图片
+### 问题: 怎么增加闹钟数量
+解决方案: 平台默认只支持三个闹钟,有 一个宏定义MMI_ALARM_MINI_LOW_COST默认打开. 这个宏应该是在make/app_main/app_main.mk中定义的. 如果想支持更多数量的闹钟,则不要定义MMI_ALARM_MINI_LOW_COST,定义 ALARM_SUPPORT_LOW_MEMORY 可以支持5个闹钟,如果这两个宏定义都没有定义,最多可以支持10个闹钟. 具体可以参考mmiacc_event.h中的描述. 增加闹钟会增加NV和内存的开销,但相对比较小,应该在10K以内.
+参考FAQ: FAQ202172651
+### 问题: 如何通过ADB指令来排查是否DDR干扰接收灵敏度
+解决方案: 1 通过ADB 查看DDR支持的工作频点有哪些,初步判断其中某些频段是否跟灵敏度受干扰信道的接收频点相同或者存在倍频关系 cat /sys/class/devfreq/scene-frequency/sprd-governor/ddrinfo_freq_table; 2 进一步查看当前DDR的工作频点,对比确认是否跟灵敏度受干扰信道的接收频点相同或者存在倍频关系 cat /sys/class/devfreq/scene-frequency/sprd-governor/ddrinfo_cur_freq 3 将DDR频点固定在某一频点,要求跟受干扰信道接收频点不同或无倍频关系,xxx表示要固定的频点 echo xxx> /sys/class/devfreq/scene-frequency/sprd_governor/scaling_force_ddr_freq
+参考FAQ: FAQ202172652
+### 问题: 2G DPDT动态切换问题注意事项
+解决方案: 1、DPDT文档(SC9863A DPDT NV配置及验证方法_V1.1.pdf)是基于Android10开发的,若客户CP0版本使用的是AndroidR(如20A...)的话,NV中2G-DPDT初始化状态要按bit位配置,reserved8到19算法切换需要手动添加(参考下面截图); 2、或参考后续释放的DPDT文档(SC9863A DPDT NV配置及验证方法_V1.*.pdf)
+参考FAQ: FAQ202172654,含图片
+### 问题: 3G DPDT动态切换问题注意事项
+解决方案: 1、DPDT文档(SC9863A DPDT NV配置及验证方法_V1.1.pdf)是基于Android10开发的,若客户CP0版本使用的是AndroidR(如20A...)的话,NV中3G使能标志位需要在w_dpdt_config下配置(参考下面截图),原DPDT文档中的reserved3下不生效. 2、或参考后续释放的最新DPDT文档(SC9863A DPDT NV配置及验证方法_V1.*.pdf)
+参考FAQ: FAQ202172655,含图片

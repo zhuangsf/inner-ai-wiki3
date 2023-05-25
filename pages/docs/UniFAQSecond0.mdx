@@ -1,0 +1,346 @@
+### 问题: 低电量时背光为什么闪烁和解决办法
+解决方案: 1.原因 低电量时,如果背光数值调得很大,容易引起输出电压不稳造成闪屏. 2.解决方案 在检测到电池电压过低时,把背光自动调低,可以有效缓解这一问题.在实际操作中,还得考虑到以下情况: 系统休眠不能打开了背光,不然会有白屏 如果电池电量低自动关机的关机动画,电压阈值可能还得提高,以便在电压不稳定时提前一点点关机. 关机电压在改动在kernel/drivers/power/sprd_2731_fgu.h 中,#define SPRDFGU_BATTERY_SHUTDOWN_VOL 3400 以下的参考代码需要加上上面两种情景 diff --git a/libs/liblights/lights.c b/libs/liblights/lights.c
+index c86b706..0ff1657 100644
+--- a/libs/liblights/lights.c
++++ b/lib
+完整回答请参考FAQ: FAQ15327
+### 问题: 7730平台FOCALTECH_TS器件配置介绍
+解决方案: 7730平台FOCALTECH_TS器件配置介绍 1. defconfig 增加代码编译项 kernel/arch/arm/configs/sp7730ec-native_defconfig CONFIG_TOUCHSCREEN_FOCALTECH=y 2. board.c中向总线上注册设备 kernel/arch/arm/mach-sc/board-sp7730ec.c static struct i2c_board_info i2c0_boardinfo[] = { { I2C_BOARD_INFO(FOCALTECH_TS_NAME, FOCALTECH_TS_ADDR), .platform_data = &ft5x0x_ts_info, } } tp相关的定义 kernel/arch/arm/mach-sc/include/mach/__board-sp7730ec.h #def
+完整回答请参考FAQ: FAQ15442
+### 问题: [SC7715]关机来闹铃，闹铃界面menu等按钮点击无效
+解决方案: vendor/sprd/open-source/apps/alarm/alarm.c中对tp的解析只进行了EV_ABS时间.menu菜单是EV_KEY事件.没有处理. 940 void parse_alarm_event(struct input_event *ev) 941 { 942 static int x,y; 943 944 if(ev->type == EV_ABS) { 945 if(ev->code == ABS_MT_POSITION_X) 946 { 947 x = ev->value; 948 } 949 if(ev->code == ABS_MT_POSITION_Y) 950 { 951 y = ev->value; 952 //left button 953 if((x >= g_left_pos.x0)&&(x <= g_left_pos.x1) 954 &&
+完整回答请参考FAQ: FAQ15469
+### 问题: 如何确认Modem侧数据连接（PDP）是否成功激活
+解决方案: AP侧在打开数据连接的时候,需要通过AT+CGDATA做PDP激活的操作,激活成功与否可以通过分析Radio Log来确认, 具体的过程如下: (1)AP通过RIL下发数据连接建立的请求: D/RILJ [1038]> SETUP_DATA_CALL 11 0 cmwap 0 IP D/RILC [t] [1038]> SETUP_DATA_CALL (11,0,cmwap,,,0,IP) (2)AP向CP下发PDP激活的AT指令: D/AT : [t] Channel4: AT> AT+CGDATA="PPP",1 (3)Modem侧主动上报本次PDP激活的状态(CONN)以及获取的IP地址、DNS等内容(SPCON) D/AT : [t] Channel3: AT< ^CONN: 1,2 D/AT : [t] Channel3: AT< ^SPCON: 1,"10.169.194.81
+完整回答请参考FAQ: FAQ15484
+### 问题: 如何确认激活PDP时AP侧配置的apn等上下文参数的信息
+解决方案: 在AP打开数据连接,向Modem侧发送PDP上下文激活消息的时候使用AT+CGDCONT这个命令配置PDP上下文参数, 比如APN等信息,如何确认PDP上下文参数可以通过分析Radio log中CGDCONT的配置来确认: 设置命令: AT+CGDCONT=[<cid>[,<pdp_type>[,<APN>[,<pdp_addr>[,<d_comp>[,<h_comp>]]]]]] 比如: D/AT Channel4: AT> AT+CGDCONT=1,"IP","cmwap","",0,0 命令说明: <cid>: (PDP Context Identifier)整型(范围1－15),指定PDP上下文的ID; <pdp_type>:(Packet Data Protocol type),目前我们只支持IP(Internet Protocol) <APN>: (Access Point N
+完整回答请参考FAQ: FAQ15488
+### 问题: 如何通过log查看camera sensor输出帧率
+解决方案: 通过如下命令:adb logcat -v time | egrep 'got one frame' 从log信息中可以根据如下log信息来简单判断sensor输出帧率,每次打印TX got one frame表示user层收到一帧数据,所以通过计算1S时间内TX got one frame打印次数来计算sensor输出大致帧率: 01-03 04:20:26.985 I/ ( 121): L 734, cmr_v4l2_thread_proc: TX got one frame! buf_type 0x1, id 0x1002, evt_id 0x10000 01-03 04:20:27.015 I/ ( 121): L 734, cmr_v4l2_thread_proc: TX got one frame! buf_type 0x1, id 0x1003, evt_id 0x10000 
+完整回答请参考FAQ: FAQ15551
+### 问题: drm的action都有哪些？
+解决方案: drm的action分别为: /** * Constant field signifies that the default action */ static const int DEFAULT = 0x00; /** * Constant field signifies that the content can be played */ static const int PLAY = 0x01; /** * Constant field signifies that the content can be set as ring tone */ static const int RINGTONE = 0x02; /** * Constant field signifies that the content can be transfered */ static const int TRAN
+完整回答请参考FAQ: FAQ15819
+### 问题: 【安全能力配置】未默认打开
+解决方案: A. 功能说明. [安全能力配置]功能,代码中都有,有些版本的编译开关是打开的,有些工程的编译开关是关闭的. 代码编译进去后,该功能的使用开关默认是关的,需要启动该功能的时候,需要到主菜单中找到应用[安全能力配置],打开相应开关. B. 编译开关. 工程的make文件(例如 4.1版本中 device\sprd\sp8830ec\prod_sp8830eccmccspecAbase_UUI.mk文件)中打开编译开关: USE_PROJECT_SEC :=true. 注意,如果是android 4.1版本,例如8830,7710,8835等的4.1版本,还需要在 device\sprd\sp8830ec\BoardConfig.mk中增加如下开关: USE_PROJECT_SEC := true C. 功能开关 如果需要手机下载版本第一次开机,[安全能力配置]的功能默认就是开的,能起作用.需
+完整回答请参考FAQ: FAQ15845
+### 问题: 相机设置中“存储路径”是如何设置的？
+解决方案: 在每次进入相机时都进行以下的判断: 1.如果用户没有修改过存储路径,优先存储在SD卡上;如果SD卡不存在(未插入或已卸载),并自动切换到内部存储设备上.在这种情况下会短暂提示"使用相机前请先插入 SD 卡". 2.如果用户手动修改过存储路径,那么仅使用户选择的存储路径;如果存储设备不存在(SD卡未插入或已卸载),不会切换到内部存储上.在这种情况下会一直提示"使用相机前请先插入 SD 卡",无法使用拍照和录像功能. 已上规则实现在com.android.camera.StorageUtil.getStoragePath(Context ctx, int mode)方法中 public String getStoragePath(Context ctx, int mode) { String result = null; StoragePathPreference mPreference = 
+完整回答请参考FAQ: FAQ15852
+### 问题: Mocor 中文字符集标准说明
+解决方案: GB2312(1980年):16位字符集,收录有6763个简体汉字,682个符号,共7445个字符. 优点:适用于简体中文环境,属于中国国家标准,通行于大陆,新加坡等地也使用此编码; 缺点:不兼容繁体中文,其汉字集合过少. GBK(1995年):16位字符集,收录有21003个汉字,883个符号,共21886个字符. 优点:适用于简繁中文共存的环境,为简体Windows所使用(代码页cp936),向下完全兼容gb2312,向上支持 ISO-10646 国际标准 ;所有字符都可以一对一映射到unicode2.0上. 缺点:不属于官方标准,和big5之间需要转换;很多搜索引擎都不能很好地支持GBK汉字. GB18030(2000年):32位字符集;收录了27484个汉字,同时收录了藏文、蒙文、维吾尔文等主要的少数民族文字. 优点:可以收录所有你能想到的文字和符号,属于中国最新的国家标准; 缺点
+完整回答请参考FAQ: FAQ15951
+### 问题: android手机提示灯
+解决方案: 屏幕熄灭后,手机仍然在默默地工作,用户抛开手机一段时间,却不知道这过程中发送了些什么,需要点亮屏幕,查看手机才知道;为了使用户不需要点亮屏幕查看手机,就能让用户明白有哪些重要的信息需要关注,这就是通知提醒功能,而最常用的就是指示灯的提醒功能了. android原生系统也将这一个人性化的功能融入其中,包括通知,提醒,电池等相关类别的指示灯,例如:notificationmanagerservice中管理通知和提醒类别的指示灯,batteryservice中管理电池电量及充电相关的指示灯.指示灯的相关颜色及亮灭时间在frameworks\base\core\res\res\values\Config.xml文件中配置. 如下为android4.4中提示灯相关显示情况: 电量在15%～90%时,充电中红绿灯长亮,拔下充电器绿灯灭; 电量>90%时,充电中绿灯长亮,拔下充电器绿灯灭; 低电量<15
+完整回答请参考FAQ: FAQ15928
+### 问题: 如何DEBUG NATIVE空间内存泄漏？
+解决方案: 诊断方法是基于libc里封装好的leak detector,就是基于preload机制把libc的malloc/free用带有leak debug的库给重载了,从而监控所有对libc malloc/free的调用.使能这个debug,需要enable一个属性并重启android server(或者把libc.debug.malloc=1添加到/system/buid.prop后重启手机)
+
+$ adb root
+$ adb shell setprop libc.debug.malloc 1
+$ adb shell stop
+$ adb shell start
+
+例如:当怀疑mediaserver存在leak时,可以跑些media相关的应用,然后进行内存的检测.启动camera->preview->capture->record->exit,在camera退出后的场景里用命令d
+完整回答请参考FAQ: FAQ15947
+### 问题: 为什么连接USB线没有USB Log选项
+解决方案: 1、如果通过USB线连接电脑和手机,手机端无响应,则需要检查USB线是否正常?是否正常安装展讯usb相关驱动? 2、如果通过USB线连接电脑和手机,手机端能弹出USB功能选择列表,但没有USB Log选项,以下情况会导致此问题: a、主mk中RELEASE_INFO置为TRUE,说明编译的是release版本,release版本编译时会关闭arm log输出,因此无法输出log. b、主mk中RELEASE_INFO置为FALSE: 1)通过NVEditor工具打开nv工程,查看nv_type\NV_REF_PARAMETER\enable_arm_log的值,如果为0,则说明arm log是关闭的.因此如果需要支持log输出,enable_arm_log的值应该置为1 . 2)查看工程模式(展讯发布的版本默认暗码:#*8378#1#)中Para Set\Debug Param\Asser
+完整回答请参考FAQ: FAQ16023
+### 问题: 蓝牙问题CR提交注意事项
+解决方案: 由于Bluetooth问题较复杂,可能需要分析APP,Framwork,driver,CP2等多个模块,因而CR中提供有效信息对于分析非常重要,请提供以下信息 1.有效的Slog 打开相应的Slog开关,开启路径 *#*#83781#*#*-->APP Settings-->Log Setting-->Slog UI 请务必保证下面三项是打开的 Android Log开关(用于分析APP,framwork相关问题) WCN Modem Log开关(用于分析CP2问题) 蓝牙Log(非常重要,hcidump用于分析蓝牙命令交互) 没有这些log或log不全,无法分析问题 有效的log可以避免反复的测试抓取,减少不必要的沟通 2.出现问题时的手机时间点 这有助于从大量的log中快速定位问题 3.准确而详细的操作步骤 4.具体的问题现象 如文件传输失败,不要笼统的描述"传输失败",需要说明是发送
+完整回答请参考FAQ: FAQ16320
+### 问题: 从录音机中保存的文件为何不会在自定义铃声中显示出来
+解决方案: 应用程序在调用RINGTONE_PICKER这个系统activity时,如果在intent中设置了RingtoneManager.EXTRA_RINGTONE_TYPE是RingtoneManager.TYPE_RINGTONE时,在RingtoneManager中查询数据库时,会在查询条件中添加is_ringtone=0,由于录音机在保存录音文件到数据库时,is_ringtone字段默认为空,所以自定义铃声列表中就不会包含录音文件 Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER); // Allow user to pick 'Default' intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true); // Show only 
+完整回答请参考FAQ: FAQ16237
+### 问题: SC7715 如何使用telephony中的通用接口下发at命令？
+解决方案: 在工厂测试或工程模式等APP应用中,经常需要下发at命令,SC7715 平台可以调用telephony通用的接口. 接口服务:frameworks/opt/telephony/src/java/com/sprd/internal/telephony/IAtChannel.aidl 具体实现类:frameworks/opt/telephony/src/java/com/sprd/internal/telephony/AtChannel.java 接口函数: public String sendAt(String atCmd) { final SendAt sendAt = new SendAt(mCi); sendAt.start(); return sendAt.sendAt(atCmd); } 具体使用demo: (1)在应用类 TestAPP.java 中 import 相关的接口和类
+完整回答请参考FAQ: FAQ17595
+### 问题: 如何截图，截取framebuffer
+解决方案: 一般情况下用两种方法都可以: 1. sudo adb shell gsnap /data/fb.jpg /dev/graphics/fb0 截取当前显示的framebuffer(前台buffer),并且转换成fb.jpg保存起来.推荐使用这种方式. 2. sudo adb shell "cat /dev/graphics/fb0 > /data/fb0" 截取framebuffer(包括前台和后台buffer)保存到文件.需要看截图内容的话需要执行下面命令将文件写回/dev/graphics/fb0设备文件来查看截图效果.如下: sudo adb shell "cat /data/fb0 > /dev/graphics/fb0" 3. 可以使用第三方工具比如豌豆夹等. 需要注意的是,上面两种方法截图的内容不能保证完全正确,例如gsnap,有可能是截取的是后台buffer的内容,当然这种错误
+完整回答请参考FAQ: FAQ16378
+### 问题: 如何使用动态LOG打印？
+解决方案: 经常有这样一种需求:在调试阶段可以在不修改代码前提下根据需要动态调整LOG输出,避免太多LOG输出影响性能或是影响问题复现;在RELEASE阶段,又无上述副作用.使用pr_debug可以达到上述目的. 步骤一: 使用pr_debug作为LOG输出语句在DEBUG 文件中加入相应打印语句. 步骤二: 使能KERNEL 配置选项:CONFIG_DEBUG_FS和CONFIG_DYNAMIC_DEBUG. 步骤三: 启动后mount debug fs:mount -t debugfs debugfs /sys/kernel/debug. 使用一: 使能某文件中LOG, 例如:gpio_eic.c文件中debug log: echo -n 'file gpio_eic.c +p' > /debugfs/dynamic_debug/control. 使用二: 使能某文件中某一行LOG, 例如:gpi
+完整回答请参考FAQ: FAQ20134
+### 问题: 4.4 项目如何编译第三方apk到system.img?
+解决方案: 我们目前 4.4prime_3.10 pad 默认工程不会将第三方apk编译生成到/system/preloadapp中,如果需要预制第三方应用就需要自行添加编译脚本. 我们需要在编译系统中增加编译mk文件能够将第三方apk编译进/system/preloadapp/中去,具体修改有如下两点: 第一步: 1)\vendor\sprd\partner\prebuilt_apps\Android.mk中增加需要预制的apk,如下: include $(CLEAR_VARS) LOCAL_MODULE_TAGS := optional LOCAL_MODULE := ES_File_Explorer LOCAL_MODULE_STEM := ES_File_Explorer.apk LOCAL_MODULE_CLASS := APPS LOCAL_CERTIFICATE := PRESIGNED
+完整回答请参考FAQ: FAQ16518
+### 问题: 如何查看手机events日志监听的TAG
+解决方案: 手机监听events的TAG文件是定义在system/etc/event-log-tags中,手机USB连接电脑,进行如下步骤: 1. adb shell 2. su 3. cat system/etc/event-log-tags (注:以上操作必须有root权限或者有su权限,如手机是userdebug版本) 可以看到手机监听的所有events事件,每行格式基本如下: 2719 configuration_changed (config mask|1|5) 2722 battery_level (level|1|6),(voltage|1|1),(temperature|1|1) 2723 battery_status (status|1|5),(health|1|5),(present|1|5),(plugged|1|5),(technology|3) 格式是固定的,这样logcat
+完整回答请参考FAQ: FAQ28094
+### 问题: 2351 WIFI无法连接AP（无论远近都无法连接）
+解决方案: 无论远近都无法连接,一种可能是PA没工作,查看客户原理图: 从原理图看,需要拉高GPIO 217 使能PA供电 2. 修改方案 修改 u-boot/board/spreadtrum/<board>/openphone.c — //#define GPIO_CP2_RFCTL 217 + #define GPIO_CP2_RFCTL 217 — #if 0 + #if 1 static void cp2_rfctl_init(void) { sprd_gpio_request(NULL,GPIO_CP2_RFCTL); sprd_gpio_direction_output(NULL, GPIO_CP2_RFCTL, 1); sprd_gpio_set(NULL, GPIO_CP2_RFCTL, 1); } #endif int board_init() { ...... — //cp2_rf
+完整回答请参考FAQ: FAQ16703
+### 问题: Mocor Camera拍照后相片旋转如何调整？
+解决方案: Mocor Camera单张拍照(SnapShot)和连续拍照(BurstShot)时都有一个旋转角度变量,该变量影响到相片旋转,单张拍照旋转变量snapshot_param.rotation_mode(SnapShot@mmidc_flow.c), 连拍模式旋转变量burstshot_param.rotation_mode(BurstShot@mmidc_flow.c). 如果拍照后相片和Camera预览时比较有旋转,确认预览的旋转角度和拍照旋转变量一致,建议调试拍照对应的旋转变量即可. 这里以Sensor打样时旋转了90度为例, camera在预览时有旋转变量preview_param_ptr->rotation_mode,见函数(GetDCPreviewParam@mmidc_flow.c), 预览做了90度旋转(DCAMERA_ROTATION_90),拍照snapshot_par
+完整回答请参考FAQ: FAQ16769
+### 问题: MediaPlayerbackActivity如何控制音乐播放
+解决方案: MediaPlayerbackActivity通过AIDL调用 MediaPlaybackService来控制音乐播放, 在com.android.music下有个IMediaPlaybackService.aidl文件,里面定义了一系列控制音乐播放的方法. MediaPlaybackService里有个内部类ServiceStub,继承IMediaPlaybackService.Stub 这个内部类有实现了IMediaPlaybackService.aidl的方法,比如stop(),play()等等.这些方法实际实现是调用了MediaPlaybackService的对应方法. 在MediaPlaybackService的onBind方法中将ServiceStub作为返回值.MediaPlayerbackActivity的onServiceConnected里通过IMediaPlaybac
+完整回答请参考FAQ: FAQ16860
+### 问题: 如何在相机设置中去掉“测光”菜单
+解决方案: YUV摄像头不支持测光功能,需要在设置菜单中去掉"测光"设置项. 需要在\res\xml\camera_preferences.xml中去掉"测光"的配置项 <!-- <IconListPreference camera:key="pref_camera_metering_key" camera:defaultValue="@string/pref_camera_metering_entry_value_frame_average" camera:title="@string/pref_camera_metering_title" camera:singleIcon="@drawable/ic_exposure_holo_light" camera:entries="@array/pref_camera_metering_entries" camera:labelList="@array/
+完整回答请参考FAQ: FAQ17140
+### 问题: 相机录像的大小存在哪些限制
+解决方案: 总的来说,相机录像的大小存在两类限制: 1. 应用通过MediaRecorder的setMaxFileSize接口主动设置的大小限制.比如彩信的300k,存储空间的剩余空间大小等; 2. 文件系统寻址能力导致的大小限制.比如32位大小限制为4G. 但还有一些细节影响着录制文件的大小: 1. 录像时会发现,实际录制的文件大小一般会小于我们设置的大小; 这是因为MPEG4Writer会有一个保守的限制,当录制大小大于等于95%时,即认为已经MAX_FILESIZE_REACHED,并通知应用做停止操作,以避免没有足够的空间来填充视频信息,导致无法播放: bool MPEG4Writer::exceedsFileSizeLimit() { ...... return (nTotalBytesEstimate >= (95 * mMaxFileSizeLimitBytes) / 100); } 2
+完整回答请参考FAQ: FAQ16898
+### 问题: 修改kernel/arch.arm/configs目录下的defconfig文件不生效的原因与解决方法
+解决方案: kernel/arch.arm/configs目录下的文件是kernel的配置选项,这些配置项的选择是有一定的规则的,手工修改会由于工程师的一些疏忽导致违反规则而无法生效,常见的疏忽有 1 选择的配置项在Kconfig文件中没有正确的定义 2 选择的配置项对其他的配置项有依赖,而被依赖的配置项没有打开,导致选择的配置项也不能生效 3 关闭了某个配置项,但是有其他的配置项会关联的打开该配置项,导致没有正确的关闭 建议通过menuconfig来作kernel的配置,可以避免疏忽,这可以通过编译系统的简化命令来完成menuconfig 在编译窗口执行完 source build/envsetup.sh lunch 后可以执行 kdconfig 先加载原始的defconfig,再执行 kmconfig 可以进入kernel图形界面进行配置,完成并保存后,可以比较out/target/product
+完整回答请参考FAQ: FAQ16908
+### 问题: PWM背光寄存器写值写不进去
+解决方案: PWM有时会发生寄存器写不进去的情况.这时手机开机就会黑屏,按powerkey也点不亮屏. 原因:PWM的时钟源被关掉. 如何确认:读寄存器0x402e0000 , 第6bit 表示enable PWM2时钟,第7bit表示PWM3时钟.如果为0 ,需要手动写相应的位,时钟源就enable了. 代码分析: uboot u-boot/drivers/video/sprdfb/sprdfb_main.c set_backlight()会设置__raw_bit_or( 1<<6, 0x402e0000) .如果PWM3就是__raw_bit_or( 1<<7, 0x402e0000) . kernel kernel/drivers/video/backlight/sprd_backlight.c sprd_backlight_update_status()中的clk_enable()会打开时钟,
+完整回答请参考FAQ: FAQ17034
+### 问题: SC7715平台如何提高 FM APP 优先级？
+解决方案: 在一些内存要求苛刻的机器上,会有FM在后台播放时被LMK杀掉的情况,LMK 通过调整优先级策略可以解决这一问题. 但有时由于测试等原因需要单独提高FM的优先级来规避此问题. 我们可以通过修改 /packages/apps/FMPlayer/src/com/thunderst/radio/FMPlay.java 调用 ActivityManagerNative 的 setProcessAdj 函数来实现 1)首先,需要包含以下库 +import android.app.ActivityManagerNative; +import android.os.Process; +import android.os.RemoteException; 2)其次,新增一函数调用 ActivityManagerNative.getDefault().setProcessAdj + private void 
+完整回答请参考FAQ: FAQ46090
+### 问题: 关于EMMC方案恢复出厂设置慢的问题
+解决方案: 恢复出厂设置过程需要擦除userdata和cache分区,某些eMMC物料不适合kernel native的secure erase流程,可能会出现erase慢设置timeout的情况. 如果存在恢复出厂设置慢的问题,可以通过增加配置让针对特定的物料不走secure erase流程: kernel/drivers/mmc/card/block-sprd.c(sprdroid4.4版本)或kernel/drivers/mmc/card/block.c(sprdroid4.1版本)中修改 static const struct mmc_fixup blk_fixups[],仿照已有的操作MMC_QUIRK_SEC_ERASE_TRIM_BROKEN的MMC_FIXUP调用,增加一行配置: MMC_FIXUP(name, manfid, oemid, add_quirk_mmc,MMC_QUIR
+完整回答请参考FAQ: FAQ17234
+### 问题: Andorid4.4中几套Launcher代码的区别是什么？
+解决方案: Andorid4.4中有四套Launcher代码: 1,packages/apps/Launcher2 这是android4.4之前的Launcher版本.如果想使用之前的launcher样式可以选择这个. 2,packages/apps/Launcher3 这是Launcher的最新版本,升级为launcher3,如果想使用默认android4.4原生launcher,请选择这个. 3,vendor/sprd/UniverseUI/SprdLauncher1 这是展讯基于4.4原生launcher修改后的launcher,主要是包含主菜单的. 4,vendor/sprd/UniverseUI/SprdLauncher2 这也是展讯基于4.4原生launcher修改后的launcher,主要特点是主菜单跟IDLE一体 android4.4launcher有没有主菜单可以通过查看AppsCu
+完整回答请参考FAQ: FAQ19838
+### 问题: 横屏通话界面修改
+解决方案: 通话界面修改如下: 1.packages/apps/Dialer diff --git a/AndroidManifest.xml b/AndroidManifest.xml <activity android:name="com.android.incallui.InCallActivity" - android:screenOrientation="nosensor" + android:screenOrientation="portrait" 2.packages/services/Telephony diff --git a/AndroidManifest.xml b/AndroidManifest.xml <activity android:name="OutgoingCallBroadcaster" - android:screenOrientation="nosensor" 
+完整回答请参考FAQ: FAQ17377
+### 问题: (低概率)蓝牙在搜索设备时机器突然死机自动重启
+解决方案: cpu最后一次访问寄存器信息 >sprd_debug_last_regs_access sprd_debug_last_regs_access = $11 = (struct sprd_debug_regs_access *) 0xe084a000 >sprd_debug_regs_access 0xe084a000 -x struct sprd_debug_regs_access { vaddr = 0xf5362010, value = 0x2081, stack = 0xc07c7dc8, pc = 0xc027cd6c, time = 0xffffad77, status = 0x1 } //PC对应的代码 >dis 0xc027cd6c 0xc027cd6c <serial_sprd_console_write+568>: tst r9, #65280 ; 当时是死在了seria
+完整回答请参考FAQ: FAQ17416
+### 问题: android 4.4 monkey test 方法
+解决方案: ubuntu系统 环境:ubuntu系统、android 4.4 adb(需要android 4.4编译出来的adb,尽量使用与base版本目录下的adb文件)、monkey脚本(monkey4test_ForDolphin) 1、将android 4.4的adb复制到ubuntu系统中home/apuser/bin 目录中 2、修改adb的权限,如chmod 777 adb 注意:1、如果PC不更新adb,devices会显示为offline 2、当手机插上USB线后,测试机会出现授权的提示,请勾选上并选择确定. 3、将monkey4test_ForDolphin放置到ubuntu任意目录中,修改monkey和dumplog的执行权限,修改权限方法如:chmod 777 monkey;chmod 777 dumplog 4、然后运行./monkey -h ,查看需要运行monkey的测试
+完整回答请参考FAQ: FAQ18571
+### 问题: VGA分辨率前摄像头插值拍摄2M照片，出现数字变焦为6X和7X时拍照失败的原因和解决方法
+解决方案: 原因:dcam模块最大支持4倍的scale up,但前摄像头为640*480,在7x 变焦时,是从360*268插值到1600*1200,已经超过了4倍,导致异常. 解决:(以Shark平台Andorid4.1版本为例) 1.去掉6x和7x变焦 device/sprd/common/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h struct config_element sprd_front_camera_hardware_config[] struct config_element sprd_back_camera_hardware_config[] {"max-zoom", "7"},改成 {"max-zoom", "5"}, 2.或者去掉前摄像头的2M拍照 device/sprd/common/libs/libcamera/
+完整回答请参考FAQ: FAQ18595
+### 问题: 在Dolphin 7715平台如何合入扫描出来的DDR参数？
+解决方案: 根据MemoryAnalyzer工具分析结果相应修改: 1.在chipram\arch\arm\cpu\armv7\sc8830\dram_cfg.c中修改Bxx_SDLL_PHS_DLY,Bxx_DQS_STEP_DLY对应的参数: uint32 B0_SDLL_PHS_DLY = PUBL_SDLL_PHS_DEF; //byte0 sll dll phase delay uint32 B1_SDLL_PHS_DLY = PUBL_SDLL_PHS_DEF; //byte1 sll dll phase delay uint32 B2_SDLL_PHS_DLY = PUBL_SDLL_PHS_DEF; //byte2 sll dll phase delay uint32 B3_SDLL_PHS_DLY = PUBL_SDLL_PHS_DEF; //byte3 sll dll phase 
+完整回答请参考FAQ: FAQ18596
+### 问题: android4.4实现重启功能的接口
+解决方案: 在android4.4中实现重启功能有两个接口可以调用: (1) ShutdownThread.java中的reboot方法 ShutdownThread.java文件的位置为:frameworks/base/services/java/com/android/server/power/ShutdownThread.java reboot方法的定义如下: public static void reboot(final Context context, String reason, boolean confirm) {} 第二个参数指定进入哪种特定的重启模式,null时表示正常重启,如果为"recovery"就进入recovery模式 第三个参数为true时,表示关机前弹提示框等用户确认 (2) PowerManager.java中的reboot方法 PowerManager.java文件的
+完整回答请参考FAQ: FAQ17456
+### 问题: [SC7715]关机来闹铃，为什么闹铃界面下方三个按钮点击无效？
+解决方案: 确认按钮无效问题,需要从如下方面排查: 1. 确定tp驱动是否加载 这个一般在kernel.log有打印,如 ft5x0x的驱动probe完成. 725 01-01 09:09:31.175 <6>[ 2.927107] c2 [FST] ft5x0x_ts_probe: probe 726 01-01 09:09:31.175 <6>[ 2.927127] c2 [FST] ft5x0x_ts_hw_init [irq=82];[rst=81] 727 01-01 09:09:31.175 <6>[ 2.927276] c2 regu: @@@ldo_set_voltage: regu c05a9244 (vdd28) 2800000 2800000 (0) 728 01-01 09:09:31.175 <6>[ 2.930974] c1 battery calibrate value 
+完整回答请参考FAQ: FAQ18778
+### 问题: MOCOR平台BusMonitor使用方法
+解决方案: 1. BusMonitor原理及功能 原理:监视ARM AHB总线读写操作. 功能:检测到指定地址操作(读写)后,能够产生中断,进而可以及时知道何时何地对某地址进行了操作,方便定位内存等问题. 2. BusMonitor使用方式 PUBLIC void bm_monitor_set (
+    uint32 bm_start_addr,       // Start address
+    uint32 bm_end_addr,         // End address
+    uint32 bm_data,             // 0xffffffff is a invalid value
+    uint32 bm_mode,             // 0: read; 1: write
+    ON_BM_RAISE bm_callback
+) 参数说明: 
+完整回答请参考FAQ: FAQ17621
+### 问题: Mocor平台创建Thread方法
+解决方案: 1.静态线程在os_cfg.c中被创建,创建时使用SCI_CreateStaticThread, [参数说明] thread_id:静态线程ID,不超过SCI_MAX_STATIC_THREAD_ID; entry:线程的实体函数; argc:线程实体函数的第一个参数; argv:线程实体函数的第二个参数; stack_start:堆栈起始地址,该地址应以32bit对齐; stack_size:堆栈大小(单位:字节); priority:线程优先级,(0～31); preempt:该线程是否可以抢占; queue_name :消息队列名称; queue_start:消息队列起始地址; queue_num:消息队列大小(单位:消息个数); auto_start:创建后是否自动运行. [示例] #define MY_STACK_SIZE 2048 uint32 my_stack[MY_STAC
+完整回答请参考FAQ: FAQ17763
+### 问题: 如何提高通过暗码进入工厂测试的速度？
+解决方案: 开机进入拨号盘,按 *#*#83789#*#* 需要较长时间才能进入测试模式.因为系统刚启动时,在处理很多广播,而此方式进入MMI测试模式也是通过广播来启动ValidationTools,正是因为暗码广播在广播队列中排队时间比较长,从而导致ValidationTools 启动时间比较长. 可以将暗码广播设置成前台广播来加快ValidationTools启动速度,intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND) . 1.API 中 FLAG_RECEIVER_FOREGROUND 属性介绍: If set, when sending a broadcast the recipient is allowed to run at foreground priority, with a shorter timeout interval. During
+完整回答请参考FAQ: FAQ18800
+### 问题: 如何调试GPS外设？
+解决方案: • GPS导航系统是以全球24颗定位人造卫星为基础, 向全球各地全天候地提供三维位置、三维速度等信息的 一种无线电导航定位系统. • 它由三部分构成: 一是地面控制部分,由主控站、地面天线、监测站及通讯辅助系统组成. 二是空间部分,由24颗卫星组成,分布在6个轨道平面. 三是用户装置部分,由GPS接收机和卫星天线组成.民用的定位精度可达10米内. • GPS导航系统卫星部分的作用就是不断地发射导航电文.然而,由于用户接受机使用的时钟与卫星星载时钟不可能总是同步,所以除了用户的三维坐标x、y、z外,还要引进一个Δt即卫星与接收机之间的时间差作为未知数,然后用4个方程将这4个未知数解出来.所以如果想知道接收机所处的位置,至少要能接收到4个卫星的信号. • device/sprd/partner/qca1530 代码包目录,一般情况下,厂家会提供gps.default.so,或提供源代码生成. 
+完整回答请参考FAQ: FAQ23217
+### 问题: AppWidget的最小更新周期是多少？
+解决方案: 在定义AppWidget信息时,android:updatePeriodMillis属性用来指定AppWidget的更新周期. 该周期的最小值是30分钟. 就是如果设置的时间小于30分钟,系统会校正到30分钟. 这样做的目的是防止AppWidget频繁更新,导致手机功耗大. 如果需要AppWidget的更新频率更高,例如做类似时钟的AppWidget,则不能使用android提供的更新机制(AppWidgetService提供). 需要开发人员自己实现. android定义更新最小周期的代码在如下位置: 4.0及以前版本: AppWidgetService.java (frameworks\base\services\java\com\android\server): private static final int MIN_UPDATE_PERIOD = 30 * 60 * 1000; 
+完整回答请参考FAQ: FAQ17831
+### 问题: camera sensor调试常见问题及分析方法
+解决方案: 问题一:Sensor点不亮 一般从以下几个方面分析: 1、前期准备:明确sensor接口类型,并且配置文件都正确,包括编译选项、BoardConfig.mk中接口类型以及sensor 驱动中接口类型配置; 2、检查sensor上电时序.包括:AVDD/DVDD/IOVDD/PWN/RESET信号,如果有问题一般会造成sensor identify不成功.如果信号都正常,但还是不能读到ID,可以换个模组尝试(排除硬件问题); 3、如果identify成功,但是preview是黑屏. 如果是一直黑屏,说明sensor有数据过来,只是数据不对,我们只需再检查一下h_sync/v_sync极性, 调整下配置一般就会OK;如果黑屏一会后就出现相机异常退出,一般是sensor数据没有给过来,首先确认在yuv_info中sensor interface配置是否正确,再检查sensor 初始化settin
+完整回答请参考FAQ: FAQ18080
+### 问题: 如何修改提高slog中kernel log的时间精度
+解决方案: kernel log中printk本身就有时间戳(计算的系统启动后经过的时间,精确到us).如果知道系统启动时的UTC时间,那么就可以推算出每个printk的UTC时间.因此关键就是需要一个kernel 时间戳和UTC时间的参考关系,系统唤醒的log中就有这样的信息, 例如下面的log中,572582605091就是kernel时间戳(ns单位), 2012-01-03 19:13:20.385358235 UTC就是当前的utc时间. <6>[ 572.594694] c0 request_suspend_state: wakeup (3->0) at 572582605091 (2012-01-03 19:13:20.385358235 UTC) 然后的工作就是计算出系统启动时(kernel时间戳等于0)的utc偏移时间,然后对每个log的kernel时间戳都加上这个偏移时间,转换成u
+完整回答请参考FAQ: FAQ22043
+### 问题: 如何合理的配置分区表？
+解决方案: 对于每一个项目都需要合理的配置分区表,尽量将ROM空间充分利用,下边总结一下分区修改的注意事项. 第一、修改system分区 修改system分区大小涉及以下几点: 1)修改/device/sprd/"project"/Boardconfig.mk 文件: BOARD_SYSTEMIMAGE_PARTITION_SIZE := 7000000000 :这个对应这system.img镜像的撒小 BOARD_USERDATAIMAGE_PARTITION_SIZE := 1950000000 :这个对应userdata.img镜像 如果是增大system分区镜像那么就需要相应的减小userdata分区镜像,不然开机会报加密失败. 2)修改工具工程配置project.xml文件中对应的system分区的大小,如下: <Partition id="system" size="235"/> :235
+完整回答请参考FAQ: FAQ18249
+### 问题: 如何从sysdump文件中获得硬件寄存器的值
+解决方案: 在展讯shark和dolpin平台上,如果是kernel panic触发的sysdump,kernel会在panic时尝试保存主要的硬件寄存器的现场,而在sysdump时这些现场也会保存在对应的文件中 如果在sysdump的结果目录中看到十几个dump文件,说明现场保存成功了,如果dump文件只有两个,说明现场保存失败了. 如果现场成功保存,则硬件寄存器的现场信息在下面这些文件中 sysdump.core.07_0x20d00000-0x20d0ffff_dump.lst sysdump.core.08_0x71400000-0x71400fff_dump.lst sysdump.core.09_0x40050000-0x40050fff_dump.lst sysdump.core.10_0x40030000-0x40030fff_dump.lst sysdump.core.11_0x40
+完整回答请参考FAQ: FAQ18273
+### 问题: NAND方案OTA升级后system分区Free空间为什么会减少？
+解决方案: Android 4.4 NAND 方案目前采用的是UBIFS 的文件系统,该文件系统本身对于free space 空间的统计存在不精确性,以及使用的压缩算法导致这个情况的发生. 第一、ubifs支持那些压缩算法: ubifs 支持none、lzo、zlib 三种压缩算法,压缩详情如下: [Compression type][Read speed] [Read speed in percent] [Image size][ Image size in percent] [Write speed Size of full rootfs image][ Size of full rootfs image in percent ] No compression (-x none) 25.81MiB/s 100% 98.2MiB 100% 4.3MiB/s 301.8MiB 100% LZO (-x
+完整回答请参考FAQ: FAQ18278
+### 问题: 如何在slog系统中增加自定义的操作
+解决方案: slog系统是展讯的log和调试信息平台,通过slogUI可以打开/关闭多种log和调试信息,但是有时候也会有些特殊的信息是没有集成到原有的slog系统中的,如果这些信息是可以比较通过读取某些文件节点或者某些bash命令获得的,那么是可以通过在slog中增加自定义操作来添加到版本中的 可以进入到devices/sprd/common/tools/slog(Android4.4之前版本)或者vendor/sprd/open-source/tools/slog(Android4.4以及之后版本)下修改slog.conf文件(对应userdebug版本)或者slog.conf.user文件(对应user版本) 找到 #type name opt level inter action 这一行,该行之后的部分对应slog的snapshot功能,会在anr等异常后或者通过工具导出log时将对应操作的结
+完整回答请参考FAQ: FAQ18291
+### 问题: 如何去除camera成像噪声
+解决方案: 当将camera基本效果调好后,感觉噪声还是偏大是什么原因呢,又该如何处理? 首先简单介绍一下噪声产生原因 现在手机上所用camera感光芯片均为CMOS图像传感器, CMOS图像传感器是通过光电二极管感受现实世界模拟光信号量,利用光电效应原理将光信号转化成模拟电信号,再经过模拟电路放大处理后转换为数字信号输出.然后经ISP处理器对CMOS图像传感器输出信号处理后,形成我们所看到的图片.由于模拟电子元器件本身温漂电流、物体辐射光子的波动性、电路中的电磁干扰影响,最后不可避免的形成输出图像的成像噪声. 那么这些噪声如何优化或去除呢? 1.从理论分析,噪声均为高频信号.那么通过去除高频信号可以降低噪声.通过调高 ISP denoise 模块数值即可有效去除高频信号,达到去噪目的 . 操作:在IspTool中打开要调试sensor参数后,在Analyzing Mode下选择DENOISE,然后适
+完整回答请参考FAQ: FAQ18337
+### 问题: 为什么部分eMMC会出现erase超时
+解决方案: 由于各厂家eMMC内部firmware处理机制有区别,对于erase擦除大数据,部分eMMC可能需要执行较长时间,需要修改kernel/drivers/mmc/core/core.c中mmc_do_erase接口,最后send cmd38如果出错超时不goto out退出,继续按正常流程send cmd13直到等到正确的响应退出: cmd.opcode = MMC_ERASE; //cmd38 erase命令 cmd.arg = arg; cmd.flags = MMC_RSP_SPI_R1B | MMC_RSP_R1B | MMC_CMD_AC; cmd.cmd_timeout_ms = mmc_erase_timeout(card, arg, qty); err = mmc_wait_for_cmd(card->host, &cmd, 0); if (err) { pr_err("mm
+完整回答请参考FAQ: FAQ18380
+### 问题: 如何修改蓝牙通话的默认音量？
+解决方案: A  修改文件位置
+
+2.3.5 版本
+frameworks\base\media\java\android\media\AudioManager.java
+
+4.0/4.1/4.4 修改文件位置
+ frameworks\av\media\java\android\media\AudioManager.java 
+ 
+B. 修改设置项如下: 
+ 
+public static final int[] DEFAULT_STREAM_VOLUME = new int[] { 
+        4,  // STREAM_VOICE_CALL 
+        7,  // STREAM_SYSTEM 
+        5,  // STREAM_RING 
+        11, // STREAM_MUSIC 
+        6,  // STREAM_ALAR
+完整回答请参考FAQ: FAQ18460
+### 问题: dispc rgb/mipi video mode接口刷屏流程原理是什么
+解决方案: DISPC(DPI mode)显示原理: 根据平台设置的dpi clock,dispc芯片会按照一定帧率(一般为60)不断的dma搬运framebuffer进行显示.这个是硬件刷新帧率,即使android处于一个静态的画面时,dispc芯片也会按照60fps进行显示.下面图形就是描述的这种情况,每两帧间隔16.7ms,每帧显示的内容都是framebuffer 1的内容(因为并没有变化的显示请求) |------ 1 -------|------ 1 -------|------ 1 -------|------ 1 -------|------ 1 -------| 但是一般情况下,android会有不断的显示刷新请求.刷屏请求如下图,每帧刷新的内容可能在framebuffer 1或者2之间进行切换.1s钟之内(就是硬件刷新了60帧的情况下),framebuffer 1和2发生切换的次数就
+完整回答请参考FAQ: FAQ18530
+### 问题: 引起WATCHDOG有哪几类原因？
+解决方案: 引起WATCHDOG有哪几类原因? a. AHB MASTER挂起系统,如AHB master GPU,当GPU CLK或是PWR被异常关掉情况下,再去访问GPU相关的寄存器会被HANG住(导致另一个MASTER ARM无法执行)!!!导致WATCHDOG. 
+b. 在WATCHDOG TIMER所在CPU上的软中断(包括定时器/TASKLET等)处理函数中被挂死.比如某一注册的TIMER到时处理函数由于处理不正常被挂起. 
+c. 如果喂狗操作是在软中断中,那么可能是WATCHDOG TIMER所在CPU上中断被屏蔽,也可能是WATCHDOG TIMER所在CPU上软中断被屏蔽.
+d. 如果喂狗操作是在内核线程中,喂狗内核线程CPU被挂起(比如死锁).
+e. 内存覆盖.比如TIMER相关局部变量,全局变量被覆盖等. 
+f. 硬件问题.比如DDR不稳定或是VDDCORE电压不稳导致
+完整回答请参考FAQ: FAQ19028
+### 问题: 在7715平台如何修改DDR频率并验证其修改的有效性？
+解决方案: 在chipram\include\configs\sp7715xx.h中修改: 1. 若定义了宏 #define CONFIG_CLK_PARA,则修改: #define DDR_FREQ 333000000 //如修改为200000000 2.若没有定义宏 #define CONFIG_CLK_PARA,则修改: #define DDR_CLK 333 //如修改为200 修改完后使用下述命令编译出u-boot-spl-16k.bin替换下载即可: make chipram 3.查看修改是否生效: 方法一、查看DDR CLK寄存器: adb shell中输入: lookat -l 1 0x402E0018 得到: ADDRESS | VALUE --------------+------------------ 0x402e0018 | 0x01210053 取该寄存器值的0～10位,并
+完整回答请参考FAQ: FAQ18641
+### 问题: 如何调整linux驱动加载顺序
+解决方案: 在驱动加载时通常碰到需要明确两个驱动的顺序关系,比如A一定要在B之后加载 通常有两种方式:调整优先级别 和 级别不变调整编译顺序 1. 调整优先级别: Linux内核为驱动加载定义了加载级别,具体在include\linux\init.h文件中: #define core_initcall(fn) __define_initcall("1",fn,1) #define core_initcall_sync(fn) __define_initcall("1s",fn,1s) #define postcore_initcall(fn) __define_initcall("2",fn,2) #define postcore_initcall_sync(fn) __define_initcall("2s",fn,2s) #define arch_initcall(fn) __define_ini
+完整回答请参考FAQ: FAQ18819
+### 问题: 7715如何裁剪power键7秒重启的功能
+解决方案: 由于7715开机需时较长,因此客户有去掉7秒重启以规避出货时终端用户误操作的需求: 修改方法如下: 修改文件: u-boot/arch/arm/cpu/armv7/sc8830/misc.c 函数 void misc_init() { scx35_pmu_reconfig(); ap_slp_cp_dbg_cfg(); ap_cpll_rel_cfg(); #ifndef CONFIG_SPX15 ap_close_wpll_en(); ap_close_cpll_en(); ap_close_wifipll_en(); #endif bb_bg_auto_en(); bb_ldo_auto_en(); #if defined CONFIG_PBINT_7S_RESET_V1 pbint_7s_rst_cfg(1, 0); #elif defined CONFIG_PBINT_7S_RES
+完整回答请参考FAQ: FAQ18846
+### 问题: 如何快速验证patch中的bin文件和.so文件?
+解决方案: 一、当patch中有一些bin文件和*.so的文件时,可以按照下列步骤进行快速验证case: 1.1 bin文件的处理方法: 第一步:开启手机,adb 连接手机 第二步:获取超级用户权限和push文件的权限 > adb root > adb remount 第三步:将bin文件push到system/bin/目录下 > adb push "bin文件" system/bin/ 第四步:修改bin文件的权限 > adb shell # cd system/bin # chmod 777 "bin文件 "或 chmod +x "bin文件" 第五步: 重启手机,验证问题 1.2 *.so文件的处理方法 第一步:开启手机,adb 连接手机 第二步:获取超级用户权限和push文件的权限 > adb root > adb remount 第三步:将.so文件push到system/lib/文件目录下
+完整回答请参考FAQ: FAQ18941
+### 问题: 如何实时查看进程系统调用花费的时间
+解决方案: 经常会有这样的需求,进入某应用程序使用过程中出现卡顿,怀疑与KERNEL相关,例如:怀疑与IO性能问题相关,此时快速的确认方法是使用strace命令查看在哪个系统调用上耗时: strace -T -p 需要监控进程的PID. 注:strace option解释: 1. -T -- print time spent in each syscall, -V -- print version 2. -p pid -- trace process with process id PID, may be repeated 例如: open("/dev/ashmem", O_RDWR|O_LARGEFILE) = 17 <0.000457> ioctl(17, 0x41007701, 0xbe9cd1cc) = 0 <0.000373> ioctl(17, 0x40047703, 0x2a9000) 
+完整回答请参考FAQ: FAQ19025
+### 问题: Android下如何打印堆栈？
+解决方案: 1. JAVA空间及NATIVE空间堆栈DUMP 用途:可以同时打印进程JAVA空间堆栈及native空间堆栈,但需要注意输入此命令后会KILL掉此进程. 命令:kill -3 <pid> trace会保存在 /data/anr/traces.txt文件中. 2. NATIV空间堆栈dump 用途:可以在不中断进程执行的情况下打印当前进程的native堆栈.最有用的地方是:它可以非常简单的定位到进程native NATIVE空间中锁死或错误逻辑引起的死循环的代码位置. 命令:debuggerd -b <pid> log会保存在 /data/tombstone/路径下. 3. JAVA代码中打印堆栈 Java代码打印堆栈比较简单, 堆栈信息获取和输出,都可以通过Throwable类的方法实现.目前通用的做法是在java进程出现需要注意的异常时,打印堆栈,然后再决定退出或挽救.通常的方法是使用
+完整回答请参考FAQ: FAQ19027
+### 问题: 修改代码后为什么有时git diff看到的结果后面会跟着一个^M
+解决方案: '\r'是回车,'\n'是换行,前者使光标到行首,后者使光标下移一格.通常用的Enter是两个加起来. "回车"(carriage return)和"换行"(line feed)这两个概念的来历和区别. 在计算机还没有出现之前,有一种叫做电传打字机(Teletype Model 33)的玩意,每秒钟可以打10个字符.但是它有一个问题,就是打完一行换行的时候,要用去0.2秒,正好可以打两个字符.要是在这0.2秒里面,又有新的字符传过来,那么这个字符将丢失. 于是,研制人员想了个办法解决这个问题,就是在每行后面加两个表示结束的字符.一个叫做"回车",告诉打字机把打印头定位在左边界;另一个叫做"换行",告诉打字机把纸向下移一行. 这就是"换行"和"回车"的来历,从它们的英语名字上也可以看出一二. 后来,这两个概念也就被般到了计算机上.那时,存储器很贵,一些科学家认为在每行结尾加两个字符太浪费了,
+完整回答请参考FAQ: FAQ19049
+### 问题: 2351配置文件不同board时的管理问题
+解决方案: 现已scx15_sp7715ga 的board为例说明 1.在device/sprd/scx15_sp7715ga 文件夹下 scx15_sp7715gaplus.mk/scx15_sp7715gabase.mk $(call inherit-product, vendor/sprd/open-source/res/productinfo/connectivity_configure_7715.mk) 调用connectivity_configure_7715.mk文件 2.在vendor/sprd/open-source/res/productinfo文件下 在 connectivity_configure_7715.mk中给定拷贝规则.将文件拷到system/etc/目录 LOCAL_PATH:= vendor/sprd/open-source/res/productinfo PROD
+完整回答请参考FAQ: FAQ19347
+### 问题: linux 用户层进程调度的使用
+解决方案: linux下进程的调度主要分为实时(SCHED_OTHER,SHCED_IDLE)和非实时(SCHED_FIFO,SCHED_RR)两种. linux下调度器的调度依赖两个条件:sched_policy和sched_priority,对于非实时进程,它的调度策略主要就是SCHED_FIFO,SCHED_RR,而优先级就在1~99之间,优先级越高越先执行.而SCHED_FIFO和SCHED_RR的主要区别就是SCHED_RR总是分配一个较大的时间片,其它部分这两者基本一致. 对于非实时进程,所有进程的priority都是0,cpu尽可能的进行一个公平调度.对于同属非实时进程列表的进程,它们之间主要靠nice和setpriority来在当前进程列表中实时更改优先级.nice的范围是在-19~20 所以,从上面可以看出实时进程的priority总是大于非实时进程的优先级的,这样在实时进程和非实时
+完整回答请参考FAQ: FAQ19361
+### 问题: android/linux下新增虚拟分区
+解决方案: 在android上安装应用到sdcard上时,通常将一些安装文件放在/mnt/asec这个分区中,这里就是运用到分区的概念. 因为andriod运行在linux内核上,所以,对于linux的创建虚拟分区的方式在android上也可用,android上创建分区也大致如下: 1、创建一个文件镜像 #创建一个大小问1G的镜像 dd if = /dev/zero of=.test.img bs=1M count=1024 若是使用代码创建使用:truncate/ftruncate函数 2、设置镜像文件系统类型 mkfs.ext2,mkfs.ext4,mkfs.vfat 命令都可以设置文件类型. mkfs.ext2 .test.img 创建好后可以通过file .test.img查看是否设置成功 3、建立和虚拟设备之间链接,使得上面的文件系统可以被像块设备一样操作 sudo losetup /dev
+完整回答请参考FAQ: FAQ19377
+### 问题: 2351不同board项目配置管理各自ini配置文件的方法
+解决方案: 1.需要修改device/sprd/scx15_sp7715ea/新建项目名.mk文件: call inherit-product, vendor/sprd/open-source/res/productinfo/connectivity_configure_7715+新建项目名.mk. 注1:scx15_sp7715ea为举例,根据不同平台自行对号入座. 注2:(新建项目名)自定义,call inherit-product这条脚本语句指定了该项目所用的编译配置文件, 如果本项目(新建项目名.mk文件中)没有这句,可以在该目录下grep关键字确认相应的语法格式. 2.connectivity_configure_7715+新建项目名.mk文件是指定ini文件的copy规则的, 它和对应所需的ini文件都是实际放在vendor/sprd/open-source/res/productinfo
+完整回答请参考FAQ: FAQ19419
+### 问题: dolphin平台如何验证memory？
+解决方案: 测试前置条件 1. DDR扫描达到平台认定的pass标准,并将得到最优参数配置软件 2. NAND规格方面的配置正确,能正常开机(NAND时序在验证过程中可能会调整) 3. 做过ADC校准 4. 系统保证开机检查未做ADC校准时告警 5. 支持sysdump 测试对象 测试case DDR 1. 长时间播放MP4 测试环境:高温65度,低温-20度 测试机数量:高温5台,低温5台 测试步骤: (1)进入MP4播放器 (2)选择循环播放一个片源,分辨率要求720p,每个温度环境要求软解码2台机器测试,硬解码3台机器测试,测试24小时 期望的测试结果:连续播放24小时,结束时视频仍在正常播放,没有退出播放器界面,没有出现定屏 2. DFS 测试环境:高温65度,低温-20度 测试机数量:高温5台,低温5台 测试步骤:apk自动测试 测试结果判定:48小时内没有死机重启 NAND/EMMC 3.
+完整回答请参考FAQ: FAQ19446
+### 问题: Android 4.4 Nand方案如何正确选择文件下载？
+解决方案: Android 4.4 nand方案对使用Reachdownload工具下载指定img文件和编译生成的img文件有诸多困惑,本文将分三点解答一下遇到的困惑. 目前nand方案编译出来在out/target/product/project/目录下边会有如下文件: prodnv_b256k_p4k.img ;userdata_b256k_p4k.img;system_b256k_p4k.img;cache_b256k_p4k.img prodnv_b128k_p2k.img ;userdata_b128k_p2k.img;system_b128k_p2k.img;cache_b128k_p2k.img 为什么需要两份,各自代表什么意思,下载时如何正确选择,下边一一解答. 第一、为什么每个img有两份? 对于UBIFS 打包工具来说在编译阶段它就需要传递nand flash 的page 页大小、
+完整回答请参考FAQ: FAQ19401
+### 问题: 如何方便的在所有工程的Boardconfig.mk中插入同样的内容
+解决方案: 可以在代码根目录下建立一个shell脚本,脚本内容可以参考如下: #!/bin/bash DIR=./device/sprd PATTERN=BoardConfig INSERT_COTTENT="TARGET_USE_SCORPION_BIONIC_OPTIMIZATION := true\nTARGET_USE_SCORPION_PLD_SET := true\nTARGET_SCORPION_BIONIC_PLDOFFS := 6\nTARGET_SCORPION_BIONIC_PLDSIZE := 128 " FOUND_FILES=$(find ${DIR} -name "*.mk"|grep ${PATTERN}) for i in ${FOUND_FILES};do echo inserting $i echo -e ${INSERT_COTTENT} >> $i done 
+完整回答请参考FAQ: FAQ19511
+### 问题: 使手机拍摄的照片不带ISO信息的方法
+解决方案: 修改方法如下: 文件:vendor/sprd/open-source/libs/libcamera/sensor_drv_u/src/sensor_drv_u.c 函数:uint32_t Sensor_SetSensorExifInfo(SENSOR_EXIF_CTRL_E cmd, uint32_t param) 修改变量sensor_exif_info_ptr->valid.ISOSpeedRatings值为0. 示例代码如下: uint32_t Sensor_SetSensorExifInfo(SENSOR_EXIF_CTRL_E cmd, uint32_t param) { ... switch (cmd) { case SENSOR_EXIF_CTRL_EXPOSURETIME: ... case SENSOR_EXIF_CTRL_ISOSPEEDRATINGS: sensor_
+完整回答请参考FAQ: FAQ19534
+### 问题: 默认情况下，如何让主屏壁纸和锁屏壁纸设置独立生效
+解决方案: Android4.4 壁纸设置分为主屏壁纸设置和锁屏壁纸设置.但是在开机主屏和锁屏没有单独设置时,如果修改主屏壁纸,则锁屏壁纸同时会改变. 原因:刚烧完机launcher用的是默认壁纸,而锁屏获取的壁纸为空,是透传到launcher的壁纸上的. 修改方法:默认情况下,如何让主屏壁纸和锁屏壁纸设置独立生效,请参考以下修改: 文件:WallpaperManager.java 函数:public Bitmap peekWallpaperBitmap(Context context, boolean returnDefault, int target) 把 if (returnDefault) { if (mLockScreenWallpaper == null) { mDefaultWallpaper = getDefaultWallpaperLocked(context); return mD
+完整回答请参考FAQ: FAQ19849
+### 问题: 7715平台库仑计的原理说明
+解决方案: 7715充电电路设计上电池负级与地之间会有一个20mO的电阻,库仑计通过读取这个电阻两端的电压可以计算出单位时间内电池电压和电流的变化. 1、电压获得方式 Vnow 寄存器:REG_FGU_VOLT_VAL 0x40038820 函数:uint32_t sprdfgu_read_vbat_vol(void) Vnow可记录从开机到测量时电压变化的总值,此数值变化基本上应该是电池电压范围之内,因此可以通过读取此寄存器来准确读取电池电压,每4S检测一次; Vbat-adc: 通过读取ADC通道ADC_CHANNEL_VBAT获取当前VBAT值,此数值可随时获得,此数值与Vnow基本上是一致的,但是由于Vnow采样数据是经过去抖的,而ADC获取的数据可能有抖动,所以基本上都是通过Vnow去获取电池电压; VOCV: 电量计提供relex模式下计算电压功能,当电池处于低功耗模式下,手机认为内组对电
+完整回答请参考FAQ: FAQ31413
+### 问题: 如何创建一个非全屏的Activity
+解决方案: AndroidManifest.xml里,给Activity声明如下语句: android:theme="@android:style/Theme.Dialog" 设置Activity的theme可以让Activity像dialog一样非全屏显示. 例如关机提示界面. 文件所在位置: AndroidManifest.xml (frameworks\base\core\res): 代码如下: <activity android:name="com.android.server.ShutdownActivity" android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden|screenSize" android:windowSoftInputMode="stateHi
+完整回答请参考FAQ: FAQ19962
+### 问题: 需要注意的几种常见内存泄漏问题
+解决方案: 1、Cursor没有关闭 建议使用try和finally结构,避免出现异常导致的Cursor没有关闭的情况. 2、Bitmap没有调用recycle() Bitmap对象在不使用时,应该先调用recycle()释放内存,然后才它设置为null. 虽然recycle()从源码上看,调用它应该能立即释放Bitmap的主要内存,但是测试结果显示它并没能立即释放内存.但是我它应该还是能大大的加速Bitmap的主要内存的释放. 3、Parcel没有调用recycle() Parcel对象在不使用时,需要调用recycle()进行回收. 4、通过Context.obtainStyledAttributes()方法获取的TypedArray,用完需要调用TypedArray.recycle()进行回收. 5、构造adapter没有使用缓存contentview 衍生的listview优化问题:减少创建V
+完整回答请参考FAQ: FAQ19968
+### 问题: 怎样隐藏Spinner下拉框
+解决方案: Spinner下拉框的弹出是一个Dialog,显示出来之后,就没有再用adapter里的数据.Spinner没有公开的方法能操作下拉框,Spinner内部能让下拉框消失的方法只有onDetachedFromWindow(),所以要实现隐藏Spinner已经弹出的下拉框,可以: 1. 重写一个Spinner的子类,重写onDetachedFromWindow()方法,并将该方法声明为public,实现只是调用父类的该方法. 这样外部可以用这个子类来操作,隐藏已经弹出的下拉框. @Override public void onDetachedFromWindow() { super.onDetachedFromWindow(); } 2. 利用Java的反射机制来调用onDetachedFromWindow(). /** * Hides a spinner's drop down. */ pu
+完整回答请参考FAQ: FAQ19980
+### 问题: 如何通过已有LOG大致分析出现问题的原因？
+解决方案: 1. android watchdog重启 判据-kernel log: 能看到上层发起的重启过程对应的log 判据-logcat log: 能看到watchdog触发的log 判据-cmdline:androidboot.mode=special 判据-其他:trace.txt中system server间隔30s的两次stack dump 根本原因:需根据logcat log及trace.txt进一步分析 2.system server异常退出 判据-kernel log: 能看到上层发起的重启过程对应的log(例如:zygote(119) Restarting system with command 'special-systemserver-died'.) 判据-logcat log: 能看到system异常 判据-cmdline:androidboot.mode=special 
+完整回答请参考FAQ: FAQ20091
+### 问题: dispc mcu接口工作流程
+解决方案: DISPC(DBI mode)mcu显示原理: mcu接口lcd内部自带ram,lcd ic进入工作状态之后,会自动不断刷新ram里面的内容到屏上,无需bb的干预.类似DPI mode,lcd ic按照一定频率逐行将ram内容刷新到屏上,只不过这里是lcd ic自动完成的而不是dispc做的,当然刷新频率也是lcd ic自己决定的,可以在lcd的init code进行配置刷新频率.当BB需要进行刷新时,dispc会将要显示的内容写到lcd的ram实现刷新,由于lcd ram只有一屏的大小,如果dispc写入ram的位置和lcd ic读取ram进行显示的位置发生冲突的话就有可能造成te现象.因此,mcu屏每刷一帧都会发出一个te信号,告诉BB可以进行写入数据了,并且te位置一般在一帧的后半部分位置: TE | |------ 1 -------| 这个时候BB开始写入数据到lcd ram,这
+完整回答请参考FAQ: FAQ20175
+### 问题: 如何查看reserved的物理内存信息
+解决方案: 在adb shell登录系统后,通过如下命令可以查看reserved的物理内存信息. # cat /d/memblock/reserved 0: arm_mm_memblock_reserve:1196 0x80004000..0x80007fff size:16(kb) 1: arm_memblock_init:348 0x80009000..0x80ab31bf size:10920(kb) 2: arm_memblock_init:364 0x85500000..0x85567c1e size:415(kb) 3: __sipc_reserve_memblock:92 0x87800000..0x879fffff size:2048(kb) 4: __sipc_reserve_memblock:81 0x89800000..0x8b8fffff size:33792(kb) 5: _
+完整回答请参考FAQ: FAQ20190
+### 问题: 如何设置launcher壁纸的宽高
+解决方案: Andoird4.4中壁纸设置放在了: 文件:WallpaperCropActivity.java(launcher模块中) 函数:suggestWallpaperDimension() 设置函数: wallpaperManager.suggestDesiredDimensions(savedWidth, savedHeight); 默认值是通过getDefaultWallpaperSize()获取的: if (isScreenLarge(res)) { defaultWidth = (int) (maxDim * wallpaperTravelToScreenWidthRatio(maxDim, minDim)); defaultHeight = maxDim; } else { defaultWidth = Math.max((int) (minDim * WALLPAPER_SCRE
+完整回答请参考FAQ: FAQ20198
+### 问题: 点击界面无反应，如何确定是驱动问题，还是上层问题呢
+解决方案: 我们需要对整个input及事件分发流程有一定的了解: 1.首先机器启动并加载设备及驱动模块,初始化触摸设备,并注册相应的输入设备; 2.接着android会启动inputreader线程,打开所有输入设备,并等待设备的事件输入; 3.然后当触摸设备检测到工具点击,会产生中断,内核会调用相应的中断服务例程,从触摸设备中获取有用的触点数据,并一一送往输入设备的事件缓存区中; 4.然后inputreader线程被唤醒,并从输入设备的事件缓冲区中读取触点相关事件,组织成相应的motion事件,交由分发线程(inputdispatcher)分发给已注册输入通道的焦点窗口; 5.最后焦点窗口将分发相应的事件给其内部的子部件或由自己消费(即执行已重写的onTouchEvent等方法),来达到与用户间的交互. 针对点击界面无反应的情况: 1.先判断设备及驱动是否有正确加载及初始化; 2.驱动probe及初
+完整回答请参考FAQ: FAQ20184
+### 问题: eMMC方案内置SD分区默认可以支持多大空间？
+解决方案: 目前支持eMMC方案的平台对于sd分区都使用同一套格式化接口_format_sd_partition() 这个函数中的变量都是long型 也就是说我们的sd分区只能支持32位4GBROM空间. 我们来看看这个接口里边的的细节,是哪里出现了这样的限制! LOCAL int _format_sd_partition(void) { unsigned long part_size = 0; unsigned long sd_data_size = 0; unsigned long base_sector = 0; part_size=efi_GetPartSize (g_dl_eMMCStatus.curUserPartitionName); //通过分区name 获取分区大小 返回long型数据,也就是说sd分区在这里被限制在4GB范围内了. if(0 == part_size){ retur
+完整回答请参考FAQ: FAQ20251
+### 问题: 线程局部存储（Thread Local Storage，TLS）是什么
+解决方案: 概述:线程局部存储(Thread Local Storage,TLS)用来将数据与一个正在执行的指定线程关联起来. 由来:进程中的全局变量与函数内定义的静态(static)变量,是各个线程都可以访问的共享变量.在一个线程修改的内存内容,对所有线程都生效.这是一个优点也是一个缺点.说它是优点,线程的数据交换变得非常快捷.说它是缺点,一个线程死掉了,其它线程也性命不保; 多个线程访问共享数据,需要昂贵的同步开销,也容易造成同步相关的BUG. 提出:如果需要在一个线程内部的各个函数调用都能访问、但其它线程不能访问的变量(被称为static memory local to a thread 线程局部静态变量),就需要新的机制来实现.这就是TLS. 功能:它主要是为了避免多个线程同时访存同一全局变量或者静态变量时所导致的冲突,尤其是多个线程同时需要修改这一变量时.为了解决这个问题,我们可以通过TLS
+完整回答请参考FAQ: FAQ20271
+### 问题: 如何在ActionBar中显示title？
+解决方案: 在ActionBar中显示title,需要设置ActionBar中title显示属性,可以通过以下两种方式来实现: 1.在配置文件中设置 每一个activity都可以设置其主题,在其中设置ActionBar的属性,添加以下属性,showTitle属性添加,就可以在ActionBar中显示当前activity的title. <item name="android:displayOptions">showTitle</item> 2.在代码中添加相关属性. 在代码中通过ActionBar中的setDisplayOptions方法,设置ActionBar.DISPLAY_SHOW_TITLE,这样就可以在ActionBar中显示title. int options = showTitle ? ActionBar.DISPLAY_SHOW_TITLE : 0; actionBar.setDispl
+完整回答请参考FAQ: FAQ30281
+### 问题: 在校准模式下面如何使用cp等linux指令
+解决方案: 进入校准模式后,如何使用cp等linux常用命令? 在进入校准模式后,由于系统进入calibration模式后,是load recovery.img 所以系统没有加载完全文件系统,如果mkdir,cp, chmod等这些指令必须要加 busybox才可以使用. 如: system("busybox mkdir /data/misc"); usleep(30 * 1000); system("busybox mkdir /data/misc/wifi"); usleep(30 * 1000); system("busybox chmod 0777 /data/misc/wifi"); usleep(30 * 1000); system("busybox cp /system/etc/wifi/wpa_supplicant.conf /data/misc/wifi/"); usleep(50 
+完整回答请参考FAQ: FAQ29651
+### 问题: CTS测试对文件权限的规定是怎样的，如何满足这些规定
+解决方案: CTS测试会对所有文件或者文件夹(包括sysfs devfs procfs中的文件节点)的权限做扫描,要求是所有这些文件不能被所有者以外的用户修改或者执行 linux的文件权限是由通过一个3位的8进制数来表示的,这样一共是9个bit,每三个bit分别表示所有者用户(owner),所在组用户(group),其他用户(other)的读 写 执行权限,如下图 可以adb shell后通过ls -l来查看各个文件的权限.CTS测试的要求是other不能有写或者执行权限,也就是bit0和bit1不能为1.如果驱动中有产生字符设备或者sysfs的文件节点,也需要注意对权限进行设置. 文件的owner和group一般来说由创建者来决定,即owner为创建程序的用户,而group是创建程序所在的用户组,需要注意的是,所有驱动文件默认的owner和group为root,而很多使用驱动的framework模块
+完整回答请参考FAQ: FAQ20347
+### 问题: 如何在SPL阶段增加串口打印调试信息
+解决方案: 由于u-boot-spl-16k是运行在IRAM中,由于芯片IRAM空间有限,允许存放的调试log信息较少,如果需要在spl阶段增加串口打印,只能增加少量串口输出,各平台调试方法如下: 1. Dolphin、Shark芯片平台: #define UART1_TX_BUF_ADDR 0X70100000 #define UART1_TX_BUF_CNT ((REG32(0x70100000 + 0xc)>>8)&0xff) 通过以下直接操作串口寄存器的方式串口输出单个byte打印: while(UART1_TX_BUF_CNT != 0); REG32(UART1_TX_BUF_ADDR) = value; 或直接通过ddr_print接口输出字符串. 2. Tiger芯片平台: 操作串口寄存器输出方法: while ((((*(volatile uint32*)0x4400000c) >>
+完整回答请参考FAQ: FAQ20320
+### 问题: 如何调整某一信号强度对应的状态栏信号级别(KitKat)？
+解决方案: Android 4.4中获取状态栏信号级别是在SignalStrength.java的getLevel方法中实现的.摘录如下: public int getLevel() { int level; if (isGsm) { level = getLteLevel(); if (level == SIGNAL_STRENGTH_NONE_OR_UNKNOWN) { level = getGsmLevel(); } } else { int cdmaLevel = getCdmaLevel(); int evdoLevel = getEvdoLevel(); if (evdoLevel == SIGNAL_STRENGTH_NONE_OR_UNKNOWN) { /* We don't know evdo, use cdma */ level = cdmaLevel; } else if (cd
+完整回答请参考FAQ: FAQ31021
+### 问题: EMMC方案下载中如何输出串口log
+解决方案: 通过抓取故障机下载失败的串口log,先确认非DDR问题. (DDR问题在下载工具端报错信息一般是UART SEND ERROR;串口log一般有"DDR TRAINING ERROR"输出) 如果非DDR问题且串口输出log较少,可以修改以下两个地方: 1. u-boot/drivers/mmc/sdio_card_pal.c中有以下定义 #if defined CONFIG_SC8825 && defined CONFIG_UBOOT_DEBUG #define SDIO_CARD_PRINT(x) printf x #else #define SDIO_CARD_PRINT(x) SCI_TRACE_LOW x #endif 首先需要在工程头文件中增加定义CONFIG_UBOOT_DEBUG; 另外,如果是Shark或Dolphin平台,还要将#if defined CONFIG_SC
+完整回答请参考FAQ: FAQ20378
+### 问题: 如何使进程可以设置不属于它的组的property
+解决方案: 有两种情况: 1. 如果当前需要修改的process是init.rc中声明的守护进程,那么可以将其添加到需要修改的property的group中去. 以bootanimation想去设置gsm.xxx为例: bootanimation在init中的声明如下: service bootanim /system/bin/bootanimation class main user graphics group graphics disabled oneshot 而我们的gsm.xx按照property_service的声明,只有UID为Radio的才可以.那么可以这样修改: service bootanim /system/bin/bootanimation class main user graphics radio group graphics disabled oneshot 这样boot
+完整回答请参考FAQ: FAQ20373
+### 问题: 快速push一些文件到手机的方式
+解决方案: 在实际开发过程中,经常会用到模块编译并将文件push到手机的情况,这里为了提高准确性和减少操作,可以实现一个脚本来做这件事情. 脚本: #!/bin/bash #获取root权限 adb root adb remount file=${1} #获取文件的后缀名 basename=${file##*.} dir= if [ "x$basename" = "xjar" ];then dir=/system/framework echo "we should push into $dir" elif [ "x$basename" = "xso" ];then dir=/system/lib echo "we should push into $dir" elif [ "x$basename" = "xapk" ];then dir=/system/app echo "we should push
+完整回答请参考FAQ: FAQ20397
+### 问题: 进入相机后锁屏，解锁到相机，需要按2次返回键才能回到待机
+解决方案: 该现象是由于在AndroidManist.xml中配置了CameraLauncher为CameraActivity的alias,导致从HomeScreen和解锁界面启动的是不同的Activity <activity-alias android:name="com.android.camera.CameraLauncher" android:icon="@mipmap/ic_launcher_camera" android:label="@string/app_name" android:targetActivity="com.android.camera.CameraActivity"> <intent-filter> <action android:name="android.intent.action.MAIN" /> <category android:name="android.i
+完整回答请参考FAQ: FAQ20418
+### 问题: Shark平台支持哪些类型的DDR？
+解决方案: 在驱动/u-boot/arch/arm/cpu/armv7/sc8830/umctl.c中有函数接口 void umctl2_addrmap_init(DRAM_INFO* dram) 该函数接口中会根据ddr_type 进行DDR支持大小的地址空间映射. Shark平台目前支持的DDR类型如下: DRAM_LPDDR2_1CS_2G_X32: //1个片选 2Gb DRAM_LPDDR2_2CS_2G_X32 ://2个片选 2Gb DRAM_LPDDR2_2CS_4G_X32: //2个片选 4Gb DRAM_LPDDR2_2CS_3G_X32: //2个片选 3Gb DRAM_LPDDR2_1CS_4G_X32: //这个类型是市场主流的DDR 类型,1个片选 4Gb DRAM_LPDDR2_2CS_8G_X32: //这个是两个4Gb拼在一起的,//2个片选 8Gb DRAM_LP
+完整回答请参考FAQ: FAQ20319
+### 问题: 恢复出厂设置的默认时间如何修改
+解决方案: 该问题属于RTC方面的设置问题,调用的文件在/kernel/drivers/rtc/rtc-sprd.c中,有CONFIG_RTC_START_YEAR宏进行控制,而该宏的定义在如下文件中: kernel/arch/arm/configs/ 不同的工程对应的defconfig文件中. 以9620项目为例,rtc-sprd.c的调用函数如下: static int __init sprd_rtc_init(void) { int err; if ((err = platform_driver_register(&sprd_rtc_driver))) return err; if(CONFIG_RTC_START_YEAR > 1970) secs_start_year_to_1970 = mktime(CONFIG_RTC_START_YEAR, 1, 1, 0, 0, 0);//1,1就是
+完整回答请参考FAQ: FAQ20451
+### 问题: Android常用调试命令
+解决方案: 内存查看: 使用场景:跟踪进程内存使用情况,看是否存在内存回收不了的问题,如果程序存在内存泄露问题,通过内存动态占用情况可以看出一些端倪. 1、查看系统dalvik给每一个进程分配的可用内存情况: root@android:/ # getprop [dalvik.vm.heapgrowthlimit]: [192m] :进程最大可分配到192m 如果哪个进程超过这个值就会发生OOM问题 [dalvik.vm.heapmaxfree]: [8m] [dalvik.vm.heapminfree]: [2m] [dalvik.vm.heapsize]: [256m] :单个虚拟机可分配的最大内存=256m [dalvik.vm.heapstartsize]: [8m] 2、 查应用进程占用内存分布: root@android:/ # dumpsys meminfo 查指定进程占用内存情况,比如电
+完整回答请参考FAQ: FAQ20456
+### 问题: Dolphin项目使用2GB+2Gb规格eMCP应该如何配置？
+解决方案: 1. 新建一个board,这里推荐参照sp7715ea,推荐使用工具board_clone.sh(在vendor\sprd\open-source\tools\board_clone目录下)来新建board 2.在chipram\include\configs\boardname.h修改,定义内存规格 #define DDR_TYPE DRAM_LPDDR2_1CS_4G_X32 ---> #define DDR_TYPE DRAM_LPDDR2_1CS_2G_X32 3.在u-boot\include\configs\boardname.h修改,定义内存大小 1)#define CONFIG_RAM512M ---> #define CONFIG_RAM256M 2)#define CONFIG_BOOTARGS "mem=512M loglevel=1 ..." ---> #defin
+完整回答请参考FAQ: FAQ20584
+### 问题: 如何去掉ListView控件滑动时顶部或底部的模糊特效
+解决方案: 当ListView滑动到顶部或底部时,边缘处会有个模糊的效果. 如果要所有的ListView都去掉这个效果,可以按如下方式修改. 修改如下文件: frameworks/base/core/java/android/view/View.java文件中的View的一个构造方法, 将其中这一行setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS); 修改为:setOverScrollMode(OVER_SCROLL_NEVER); public View(Context context) { ...... setOverScrollMode(OVER_SCROLL_NEVER); ..... } 如果只是特定的ListView要去掉这个效果,在应用中,ListView对象单独调用setOverScrollMode函数. 例如: mListView = 
+完整回答请参考FAQ: FAQ20685
+### 问题: 为何编译完InCallUI.apk,push到手机后无效？
+解决方案: 需要去编译Dialer.apk,并把这个apk push进相应的目录 具体如下: 单独去编译InCallUI也是可以生成对应的APK的,但实际上push到手机中却没有效果,因为Dialer的Android.mk中已经将InCallUI的代码包含,也就是已经将InCallUI的代码打包到了Dialer.apk中: src_dirs := src $(contacts_common_dir)/src $(incallui_dir)/src res_dirs := res $(contacts_common_dir)/res $(incallui_dir)/res LOCAL_SRC_FILES := $(call all-java-files-under, $(src_dirs)) LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_
+完整回答请参考FAQ: FAQ20713
+### 问题: 如何在应用中弹出Dialog重启手机？
+解决方案: 在应用做了特殊修改需要重启手机,常用的做法就是弹出对话框,提示用户重启手机. 可以参考下面的Demo code来实现这一需求: SampleCode.java import android.app.AlertDialog; import android.os.PowerManager; private void showRebootDialog() { final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE); String message = this.getResources().getString(R.string.reboot_message); AlertDialog.Builder builder = new AlertDialog.Builder(this); builder.
+完整回答请参考FAQ: FAQ20949
+### 问题: 7715 浏览器ua设置方法
+解决方案: 浏览器native层设置ua可以使用如下接口,此描述在user_agent.h中 // Sets the user agent. Pass true for overriding if this is a custom // user agent instead of the default one (in order to turn off any browser // sniffing workarounds). This must be called before GetUserAgent() can // be called. WEBKIT_USER_AGENT_EXPORT void SetUserAgent(const std::string& user_agent, bool overriding); 同时不建议在native层重新设置ua,因为webview属于公共控件. 
+完整回答请参考FAQ: FAQ20764
+### 问题: 1GB RAM容量规格在软件上应该如何配置？
+解决方案: 部分客户在8830、7730上有中高端项目需要使用到1GB容量的RAM,需要配置: 1. DDR驱动 Android4.1平台修改u-boot/include/configs/projectname.h,Android4.4平台修改chipram/include/configs/projectname.h 根据所使用器件规格的做以下宏定义: //#define DDR_TYPE DRAM_LPDDR2_1CS_8G_X32 #define DDR_TYPE DRAM_LPDDR2_2CS_8G_X32 一般8Gb DDR器件的规格都是双片选的,如果是单片选则开上面的宏 2. u-boot/include/configs/projectname.h修改 (1)#define CONFIG_RAM512M ---> #define CONFIG_RAM1024M (2)#define CONF
+完整回答请参考FAQ: FAQ20798
+### 问题: Android应用如何判断手机是否含有闪光灯
+解决方案: 在Android手机中,常常使用到闪光灯,那么开发应用程序的时候怎么知道手机是否支持闪光灯呢? 可以通过如下的方法获取到手机是否支持: FeatureInfo[] feature = CapturePortraitActivity.this.getPackageManager().getSystemAvailableFeatures();
+boolean hasFlashLight = false;
+for (FeatureInfo featureInfo : feature) {
+    if
+(PackageManager.FEATURE_CAMERA_FLASH.equals(featureInfo.name)) {
+        hasFlashLight = true;
+        break;
+    }
+}
+    
+if(hasFlashLight
+完整回答请参考FAQ: FAQ32875
+### 问题: 如何通过 radio log 中的AT命令（"AT< ^DSCI"）来判断通话的类型、起始结束时间等关键信息？
+解决方案: 通话过程中的状态变化事件,都会以主动上报的at命令"AT<DSCI"告知AP,这些信息都会记录在radio log. 1. AT 命令的格式 ^DSCI: <id>,<dir>,<stat>,<type>,<mpty>,<number>,<num_type>,[<bs_type>][,cause] 2. 各参数说明: dir:呼叫的发起方 0 用户发起的呼叫 1 用户终结的呼叫 stat:呼叫的状态 0 活动中 1 保持中 2 拨号中(MO 呼叫) 3 振铃中(MO 呼叫) 4 来电建立中(MT 呼叫) 5 等待中 6 呼叫结束 type: 呼叫的类型 0 语音业务 1 数据业务 number:呼叫地址号码,其格式由<type>指定 cause: 呼叫挂断的原因值,参考 3GPP TS 24.008 第 10.5.4.11 节 3. 举例说明: MO 主叫拨打 10086,在radio l
+完整回答请参考FAQ: FAQ27750

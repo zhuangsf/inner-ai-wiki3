@@ -1,0 +1,304 @@
+### 问题: 如何开启mtp模式
+解决方案: 4.4平台中目前插入usb后会自动弹出usb设定,默认做u盘的模式仅会弹出usb存储的选项(即USB Mass Storage模式). 如需切换到mtp模式,请选择 系统设置->更多->存储->menu->USB计算机连接,勾选媒体设备(MTP)即可. 此时再插入usb线就会默认弹出mtp选项.
+参考FAQ: FAQ26646
+### 问题: Android 下start命令使用
+解决方案: android 下的start命令主要的功能是运行native的service. 1、在android启动的时候init进程会解析init.rc文件并进行将以Service关键字开始的部分解析并存储在链表中 2、当运行start命令时,实际上是通过property_set设置一个key为"ctl.start"的service 3、当init进程接收到这个socket时会在链表中查找对应的service并启动 使用方法: 1) adb shell 2) start bootanim 我们会看到一个名为bootanim的service启动运行
+参考FAQ: FAQ26653
+### 问题: xml文件中的px和dip有什么区别呢
+解决方案:    dip的全称是device independent pixels(设备独立像素),它和硬件设备有关系.由于使用这个单位的时候是把屏幕的高
+分成480等份,宽分成320等份,因此不论是使用多大像素的设备,占屏宽的比例都是一样的.为了支持WCGA、HVGA和QVGA推
+荐使用这个单位.
+   px(pixels),它在不同的设备显示效果相同,它在HVGA,QVGA,WQVGA,WVGA,FWVGA这些不同的分辨率下是不一样的.
+   二者之间有一个转换公式:dip = px/density.
+参考FAQ: FAQ26666
+### 问题: 如何修改MTP模式的盘符
+解决方案: 系统默认是读取ro.product.model中值显示,如要单独修改请直接修该doGetDeviceInfo中设置的字符串名称可在 frameworks\av\media\mtp\MtpServer.cpp中直接修改设置的字符串 MtpResponseCode MtpServer::doGetDeviceInfo() { ...... property_get("ro.product.model", prop_value, "MTP Device"); -- string.set(prop_value); ++ string.set("XXX");//换成想要修改的名称 mData.putString(string); // Model ...... }
+参考FAQ: FAQ26672
+### 问题: android中finish()与system.exit(0)的区别？
+解决方案: finish是Activity的类,仅仅针对Activity,当调用finish()时,只是将活动推向后台,并没有立即释放内存,活动的资源并没有被清理;当调用System.exit(0)时,杀死了整个进程,这时候活动所占的资源也会被释放. 在开发android应用时,常常通过按返回键(即keyCode == KeyEvent.KEYCODE_BACK)就能关闭程序,其实大多情况下该应用还在任务里运行着,其实这不是我们想要的结果.可以这样做,当用户点击自定义的退出按钮或返回键时(需要捕获动作),在onDestroy()里强制退出应用,或直接杀死进程. 注意:如果后台服务跟Activity在同一进程中时,如果直接调用System.exit(0)杀死了整个进程时,后台服务也将被杀死;在部分场景下,这是不符合设计初衷的.
+参考FAQ: FAQ26690
+### 问题: 去掉非法关机后再开机checking file system对话框
+解决方案: 非法关机重启后会显示checking file system的dialog,显示代码在PackageManagerService.java 里面performBootDexOpt函数,去掉以下内容即可: try { ActivityManagerNative.getDefault().showBootMessage( mContext.getResources().getString( com.android.internal.R.string.android_checking_file_system) , true); } catch (RemoteException e) { } 同时非法关机重启会在app_main.cpp 里面 doLastShutDownCheck()进行crc校验.如果校验不通过.会进行doDelCache().会延长开机启动时间.
+参考FAQ: FAQ26778
+### 问题: 如何导出rawdata分区数据
+解决方案: 例如mmcblk0p10对应的是wdcma nv,执行如下操作把nv bin文件导出: adb root adb remount adb shell cd dev/block dd if=./mmcblk0p10 of=/data/w_fixnv.bin adb pull /data/w_fixnv.bin .
+参考FAQ: FAQ26781
+### 问题: 用 adb push 文件时，出现“ Read-only file system ”提示怎么办
+解决方案: 前提:userdebug版本 解决步骤: #adb root #adb remount 然后再adb push相应文件
+参考FAQ: FAQ26794
+### 问题: 什么是SSL单向、双向认证
+解决方案: 单向认证: 客户端向服务器发送消息,服务器接到消息后,用服务器端的密钥库中的私钥对数据进行加密,然后把加密后的数据和服务器端的公钥一起发送到客户端,客户端用服务器发送来的公钥对数据解密,然后在用传到客户端的服务器公钥对数据加密传给服务器端,服务器用私钥对数据进行解密,这就完成了客户端和服务器之间通信的安全问题,但是单向认证没有验证客户端的合法性. 双向认证: (1)客户端向服务器发送消息,首先把消息用客户端证书加密然后连同时把客户端证书一起发送到服务器端 (2)服务器接到消息后用首先用客户端证书把消息解密,然后用服务器私钥把消息加密,把服务器证书和消息一起发送到客户端 (3)客户端用发来的服务器证书对消息进行解密,然后用服务器的证书对消息加密,然后在用客户端的证书对消息在进行一次加密,连同加密消息和客户端证书一起发送到服务器端, (4)到服务器端首先用客户端传来的证书对消息进行解密,确保消息是这个客户发来的,然后用服务器端的私钥对消息在进行解密这个便得到了明文数据.
+参考FAQ: FAQ26798
+### 问题: Dolphin平台最大能支持多少分辨率的屏
+解决方案: 最大能支持FWVGA(854x480)分辨率的屏
+参考FAQ: FAQ26853
+### 问题: android4.4中如何关掉cp2子系统的电?
+解决方案: 在很多调试中, 需要关闭整个cp2子系统的供电, 以来排查cp2的电流使用情况. 使用以下命令可以关掉cp2子系统供电: adb shell lookat -s 0x2080006 0x402b0060
+参考FAQ: FAQ26857
+### 问题: 7715 uboot中使用GPIO190控制背光IC
+解决方案: 1. 7715上GPIO190对应TRACEDAT2 pin脚的Function 4,要将其作为GPIO功能使用,则需在pinmap.c中配置pin属性. 2. 平台原始代码sprdfb_probe中有对GPIO190的操作,将GPIO190设置为高电平输出,这可能会与项目实际需要相冲突,需要注意. #ifdef CONFIG_SPX15 #if !defined (CONFIG_POCKET2) && !defined (CONFIG_CORSICA_VE) && !defined (CONFIG_VIVALTO) && !defined (CONFIG_YOUNG2) sprd_gpio_request(NULL, 190); sprd_gpio_direction_output(NULL, 190, 1); #endif #endif
+参考FAQ: FAQ26846
+### 问题: 7715不能通过Instagram应用传输视频文件
+解决方案: 问题现象: When you try to share the video to Instagram application ,Instagram应用不能上传视频文件.此问题只存在与MOCORDROID4.4_14A_7715_MP_W14.24.3以前的版本上. 问题原因: 当7715作为发送端时 Instagram使用的解码器不对应 解决方案: 修改media_profiles.xml文件中针对720×480分辨率的音频及视频使用的解码器,具体修改sample code见附件 sample code
+参考FAQ: FAQ27102
+### 问题: 下载包中uboot_loader.bin这个文件的作用
+解决方案: uboot_loader.bin:这是真正的bootloader,初始化部分设备,负责将虚拟机、ThreadX分区、Linux分区从NAND注入SDRAM.
+参考FAQ: FAQ26902
+### 问题: PAC包中modem.bin文件的作用
+解决方案: Modem.bin:ThreadX执行代码,Modem通信协议的实现.
+参考FAQ: FAQ26910
+### 问题: 桌面widget时钟的字号和位置区域调整
+解决方案: 字体大小调整: /packages/apps/DeskClock/res/values/dimens.xml中的widget_big_time_margin_right的大小. 区域大小调整: 在/packages/apps/DeskClock/res/xml/digital_appwidget.xml文件中定义了widget的数据和布局文件,其中的android:minwidth和android:height两个属性是定义widget大小的.其中还有个android:minresizewidth和android:minresizeheight这个两个属性是定义widget手动调整时的最小区域的.
+参考FAQ: FAQ26947
+### 问题: 请问如何配置VDDARM/VDDCORE/VDDMEM
+解决方案: 请在工程头文件如chipram\include\configs\sp7715ea.h中修改定义: #define DCDC_ARM 1200 #define DCDC_CORE 1100 #define DCDC_MEM 1200 注意不同平台基准电压不同,具体参考相应原理图.
+参考FAQ: FAQ26979
+### 问题: Dophine平台是否支持USB OTG功能
+解决方案: Dophine 平台支持USB 2.0 OTG,但是需要在参考设计上增加一个DC/DC 或 charge pump 提供5V的VUSB,另外需要一个GPIO做USB设备检测ID.
+参考FAQ: FAQ27026
+### 问题: Dophine平台是否支持双Bank类型的DDR MEMORY
+解决方案: DOPHINE平台支持单BANK 或 双BANK类型的DDR memory. 参考设计中: EMCKE0, EMCKE1 分别为BANK0 BANK1的使能信号. EMCSN0, EMCSN1 分别为BANK0 BANK1 的片选信号.
+参考FAQ: FAQ27031
+### 问题: 选择LNA的关键参数
+解决方案: 1.噪声系数 取决于系统要求,可以从1dB以下到几个dB,噪声系数与放大器的工作频率、静态工作点及工艺有关,是低噪声放大器最为关键的指标. 2. 增益 较大的增益有助于减小低噪声放大器后级电路噪声对接收机的影响,但 增益过大将会引起线性度的恶化.因此,一般在20dB以下. 3.输入输出匹配 输入输出匹配决定输入输出端的射频滤波器的频响 4. 反向隔离 反映输出端与输入端的隔离度,隔离度越大越好. 5. 线性度(IP3,P1dB) 线性度包括输入/输出三阶截点(IIP3/OIP3)和输入/输出1dB压缩点(IP1dB/OP1dB)等指标.
+参考FAQ: FAQ27048
+### 问题: 7715平台工程模式指令是什么？
+解决方案: 7715 工程模式进入指令是×#×#83781#*#*,其实展讯大部分智能机平台基本都是这个指令
+参考FAQ: FAQ27051
+### 问题: 7715平台有GPS的设计可以省BUFFER吗？
+解决方案: 7715平台很多客户原理设计时把BUFFER NC,贴0欧姆,这样目前是不行的,会极大的影响GPS的性能,现在不能省这颗BUFFER
+参考FAQ: FAQ27052
+### 问题: SHARK和DOPHINE平台有GPS设计的时候，关键器件BUFFER怎么选择？
+解决方案: 这颗BUFFER要求很高,不能随便选择,一定要选展讯认证的产品,才能保证GPS的各项性能,一个是TI的SN74AUC1G125DCKR,另外一颗是FAIRCHILD 的NC7SV125,目前就这两颗可以选择
+参考FAQ: FAQ27054
+### 问题: 下载的时候如何设置配置文件就可以抓取PC LOG？
+解决方案: 很多客户在下载出问题的时候,想抓取下载时的相关信息,这个其实有一个办法,就是修改BIN目录下的CHANNEL文件,把里面的这个信息: [Log] ; Text log level ; 0, No text log ; 1, Log errors,default value ; 2, Log warnings ; 3, Log runtime information ; 4, Log data only ; 5, Log everything Level = 0 其中Level = 0是没有任何LOG,可以根据需要把LEVEL设成1到5的任意值,获得相应的信息
+参考FAQ: FAQ27055
+### 问题: 7715支持MIPI接口的LCD模块吗？
+解决方案: 目前7715只支持RGB和MCU的接口,MIPI不支持
+参考FAQ: FAQ27058
+### 问题: [SC5735]关机充电的开机时间太长
+解决方案: 关机状态下,插入usb线时显示logo时间很短;但在插入充电器adapter线时开机时间长. 修改方案: 参照7715平台的方案把: #define CALIBRATE_ENUM_MS 15000 //这个是usb枚举成功时间; #define CALIBRATE_IO_MS 10000 //这个是usb成功open时间; 修改为: #define CALIBRATE_ENUM_MS 3000 #define CALIBRATE_IO_MS 2000 即可;
+参考FAQ: FAQ27086
+### 问题: mobiletester的选择卡中看不到bluetooth选型卡？
+解决方案: mobiletester的很多功能选择卡并不是默认都运行的,类似bluetooth选项卡没有,可以在mobiletester.ini配置文件中找到: Bluetooth=0; 然后修改为bluetooht=1,重新启动mobiletester后就可以看到bluetooth选项卡了.
+参考FAQ: FAQ27341
+### 问题: feature phone的编译需要使用什么软件？
+解决方案: 6531和7701和880XG等,应该安装RVDS来编译,用ADS1.2编译就会出错. 但是,编译7702时电脑必须安装ADS1.2,否则会编译错误,会提示"系统找不到指定的路径"的错误.
+参考FAQ: FAQ27109
+### 问题: SC7715/SC7730软件版本为MocorDroid4.4_3.10_14A蓝牙不支持接收calender事件，如何修改
+解决方案: 修改方法: packages\apps\Bluetooth\src\com\android\bluetooth\opp\Constants.java 将不支持接收文件类型vcalendar去掉即可,见如下具体code的修改: public static final String[] UNACCEPTABLE_SHARE_INBOUND_TYPES = new String[] { //"text/x-vcalendar", };
+参考FAQ: FAQ27941
+### 问题: SC7701的按键音的音量在什么地方调试？
+解决方案: SC7701的按键音是从receiver出来的,需要在audiotester的music模式的handset下进行调试,修改handset模式下的音量表就可以改变按键音的大小.
+参考FAQ: FAQ27157
+### 问题: PC偶然识别不到手机手机设备解决方法
+解决方案: 1.拔下手机usb线 2.打开DeviceManager.exe设备管理器 3.打开"通用串行总线控制器" 4.右击usb总线控制器即含有"Host Controller"项 -> 选择"停用"(每个usb控制器都停用) 5.把停用的控制器用同样的方法右击->选择启用 6.插上手机设备即可
+参考FAQ: FAQ27177
+### 问题: 为何时钟设置中的设置时钟样式无效
+解决方案: 时钟设置中的设置时钟样式是作用在屏保的状态: 1.选择指针样式,再进入设置选择夜间模式进入屏保状态就可以看到时钟是以指针的方式显示的 2.选择数字样式,再进入设置选择夜间模式进入屏保状态就可以看到时钟是以数字的方式显示的
+参考FAQ: FAQ27217
+### 问题: 怎样让系统对电话号码做全匹配？
+解决方案: 默认情况下,手机对号码的匹配原则是只匹配最后面的7位或者8位. 有些情况下,需要对号码做全匹配(长度和号码都完全匹配),例如CTA的一些测试用例等. 如果做全匹配,需要修改如下配置项 Config.xml (frameworks\base\core\res\res\values)文件 <bool name="config_use_strict_phone_number_comparation">false</bool> 修改成: <bool name="config_use_strict_phone_number_comparation">true</bool>
+参考FAQ: FAQ27219
+### 问题: 如何修改运营商名称
+解决方案: 1.在framework/base/core/res/values/numeric_operator.xml中添加: 比如:plmn = 46002(mcc=460 mnc=02) 首先去掉mnc前面的0(short mnc = 2) 表格中号码使用mcc+short mnc,即:4602 按照 "号码=英文名" 这种形式,如"4602=china mobile" 添加到XML文件中 注意,这个XML中有两个数组,numeric_to_operator和 operator_need_update,两个数组中都需要添加. 2.如果需要作运营商资源国际化的操作,需要framework/base/core/res/values_XX/operatori18n.xml中,按照给出的格式将对应的运营商信息添加进来.
+参考FAQ: FAQ27250
+### 问题: 恢复出厂设置后，WIFI的mac地址改变
+解决方案: 请在init.rc中增加以下命令.这样恢复出厂设置时就不会在更改mac地址了,如果想更改,把下面几句注释掉即可. mount ubifs /dev/ubi0_system /system rw remount mkdir /system/data 0777 system system copy /data/misc/wifi/wifimac.txt /system/data/wifimac.txt mount ubifs /dev/ubi0_system /system ro remount copy /system/data/wifimac.txt /data/misc/wifi/wifimac.txt chown system system /data/misc/wifi/wifimac.txt
+参考FAQ: FAQ27254
+### 问题: 7715/7730 WCDMA所支持的HSPA协议速率
+解决方案: 7.715/7730所支持的WCDMA协议Release7, 对于HSDPA是21Mbps(category14),对于HSUPA是5.76Mbps(category6)
+参考FAQ: FAQ27279
+### 问题: 衡量性能的指标有哪些？
+解决方案: 衡量性能的指标有如下内容: 1.时间(响应度) 2.帧率(流畅性,跟随度) 3.帧率之间的距离(流畅性,跟随度),帧率之间的距离包括2个概念:时间概念,空间概念
+参考FAQ: FAQ27321
+### 问题: 读写通话记录需要什么权限
+解决方案: 读取通话记录权限: <uses-permission android:name="android.permission.READ_CALL_LOG" /> 写入通话记录权限: <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+参考FAQ: FAQ27323
+### 问题: 性能与哪些因素有关？
+解决方案: 1.客观上性能与CPU,GPU,RAM,分辨率,EMMC/NAND,android版本有关 2.主观上如果是海外版本,与预置的GMS包的大小也有关系 3.主观上与预置条件也有关系(使用习惯:在手机中预置了哪些资源等)
+参考FAQ: FAQ27322
+### 问题: 7701平台可以不用GSM频段，只用W频段的BAND I(2100)吗？
+解决方案: 硬件上:7701公版原理图上如果只要wcdma,可以把GSM相关的部分删除.如果只用band 1,band5部分也可以删除,RF switch也可以拿掉.注意NV配置,关掉相应不用的频段及band
+参考FAQ: FAQ31617
+### 问题: 如何关闭SELinux功能？
+解决方案: EMMC 方案为了谷歌CTS测试开启了SELinux功能,但是该功能在ＲＡＭ较小的时候比较影响系统性能,为了测试系统可以尝试关闭SELinux功能. 具体修改方法如下: 第一步、source build/envsetup.sh 第二步、lunch;选择需要编译的工程. 第三步、kmconfig 进入kernel配置界面,按照下边的这些说明进行配置. Security options --->Default security module->UDAC(默认是SELinux) Security options----->Enable different security models ;关闭SELinux General setup ------> Auditing support ;关闭审查 File systems -------> Ext4 Security Labels ;关闭EXT4 Sec Label 保存退出,全编工程即可.
+参考FAQ: FAQ30215
+### 问题: 如何清除engmode测试项结果
+解决方案: 这个测试结果是保存在productinfo/engtest.db中,删除这个数据库即可
+参考FAQ: FAQ27362
+### 问题: 如何使用Intent的方式修改联系人数据
+解决方案: Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT); intent.putExtra(Intents.Insert.NAME, name); intent.putExtra(Intents.Insert.PHONE, phone); intent.putExtra(Intents.Insert.EMAIL, email); ... ... intent.setType(Contacts.CONTENT_ITEM_TYPE); startActivity(intent); 这种方式直接调用了Contacts应用的相关界面去处理请求,可以选择新建联系人,也可以现有的联系人上添加修改数据.省去第三方应用了构建界面的麻烦,并且不需要申请android.permission.WRITE_CONTACTS权限.
+参考FAQ: FAQ30102
+### 问题: 为什么在飞行模式下STK应用会消失？
+解决方案: 1. STK应用中有个BootCompletedReceiver(BroadcastReceiver)会监听广播消息Intent.ACTION_AIRPLANE_MODE_CHANGED 2. 正常情况下在飞行模式开启时会调用代码:StkAppInstaller.unInstall(context);//卸载STK应用
+参考FAQ: FAQ27385
+### 问题: 如何查看线程的CPU占用率
+解决方案: 单纯使用top命令可以查看每个进程的CPU占用率, 如果需要进一步查看每个线程的CPU占用率,则可以执行top -t.
+参考FAQ: FAQ27460
+### 问题: 如何使一键优化不停止后台应用
+解决方案: 将不需要清除的后台应用包名添加到白名单中: 在packages/apps/RamOptimizer/res/values/arrays.xml 中的"recent_keep_app"和"recent_keep_service"同时添加该包名.
+参考FAQ: FAQ27433
+### 问题: 通过getevent命令来识别event文件所对应的外设
+解决方案: 使用input子系统的外设驱动都会在/dev/input下面生成对应的event文件, 但是这些event文件名的后面都只加上了一个序号,无法知道这些event文件对应的是哪个外设. 通过getevent命令来识别event文件所对应的外设. 例子: $ getevent getevent add device 1: /dev/input/event4 name: "Goodix Capacitive TouchScreen" add device 2: /dev/input/event3 name: "alps_pxy" add device 3: /dev/input/event0 name: "sci-keypad" add device 4: /dev/input/event2 name: "accelerometer" add device 5: /dev/input/event1 name: "headset-keyboard"
+参考FAQ: FAQ27463
+### 问题: 如何知道当前驱动是运行在哪个进程的上下文里
+解决方案: 用户空间进程通过访问文件节点等方式可以调用到驱动里的函数, 但是在编写驱动函数的时候,往往不会区分该函数被哪个用户进程调用. 通过在驱动代码中打印以下字段可以知道当前的驱动是被哪个进程调用的. current->comm //command line (不包括路径)
+参考FAQ: FAQ27465
+### 问题: VPN使用L2TP无法连接问题
+解决方案: 1．检查网络是否可以正常访问,移动网络是否为直连类型,如:cmnet,3gnet等. 2．如果可以排除是网络及VPN服务器原因,则需要检查是否有如下log输出: 06-30 13:27:02.574 2828 2828 E racoon : libipsec failed pfkey open (Address family not supported by protocol) 如果打印出上述log,说明当前Kernel不支持L2TP所需相关协议,需要在Kernel配置中打开如下开关: CONFIG_XFRM_USER=y CONFIG_NET_KEY=y CONFIG_INET_AH=y CONFIG_INET_ESP=y CONFIG_INET_IPCOMP=y CONFIG_INET_XFRM_TUNNEL=y
+参考FAQ: FAQ27576
+### 问题: 为什么有些模块编译生成的apk在system\priv-app目录下
+解决方案: 因为该模块的Android.mk中有如下配置: LOCAL_PRIVILEGED_MODULE := true 如:packages\apps\Dialer的Android.mk中就有这个配置,编译后的apk路径为:/system/priv-app/Dialer.apk
+参考FAQ: FAQ27594
+### 问题: 如何修改默认显示语言？
+解决方案: 如果需要修改默认语言,可以通过修改MMISET_EDEFAULT_LANGUAGE@mmi_custom_define.h来实现. 软件上默认语言为英语 ,#define MMISET_EDEFAULT_LANGUAGE 0 //英文/Auto. 该宏对应的语言数值,可参考枚举MMISET_LANGUAGE_TYPE_E@mmiset_export.h.
+参考FAQ: FAQ32866
+### 问题: 后台正在播放音乐时在Browser中打开音频或者视频，两个声音同时响
+解决方案: google原生设计就是如此,从代码中可以看到: media/base/android/java/src/org/chromium/media/MediaPlayerListener.java MediaPlayer.OnPreparedListener, AudioManager.STREAM_MUSIC, // Request permanent focus. AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK); return listener; } AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK的意思是:要申请的AudioFocus是暂时性的,还指示当前正在使用AudioFocus的可以继续播放,只是要"duck"一下(降低音量).
+参考FAQ: FAQ27606
+### 问题: 剩余内存是不是越多越好
+解决方案: Android系统会根据当前系统的情况,启动LMK来关闭后台进程释放内存.即:如果setting显示内存较少,那实际上系统为用户缓存了很都后台进程,这样后台诸如:聊天/下载等进程可以继续运行.如果为了调整setting剩余内存的多少而调节LMK参数, 固然可以将剩余内存提高,但是如此操作,必定会将一些后台进程强行关闭.用户体验会大大降低. 综上所述,剩余内存满足以下条件的情况下应该算是比较好的状态:内存被充分利用且不影响前台程序(有些后台应用可能占大量的CPU/内存,导致前台应用卡顿).
+参考FAQ: FAQ27658
+### 问题: 如何设置Launcher2、Launcher3的壁纸同步
+解决方案: 由于SprdLauncher1和SprdLauncher2中支持分开设置主屏壁纸和锁屏壁纸, 所以锁屏在获取壁纸的时候,会获取对齐的锁屏壁纸类型. 目前原生Launcher2和原生Launcher3不支持分开设置, 所以要保证原生Launcher2和原生Launcher3设置壁纸的时候,锁屏跟主屏保持一致, 只需要锁屏在获取壁纸的时候,获取的壁纸类型也是主屏壁纸类型. 修改如下: 请定位到KeyguardViewManager.java中的maybeCreateKeyguardLocked方法: 把Drawable drawable = wm.getDrawable(WallpaperInfo.WALLPAPER_LOCKSCREEN_TYPE); 修改为Drawable drawable = wm.getDrawable(WallpaperInfo.WALLPAPER_MAINMENU_TYPE);
+参考FAQ: FAQ35695
+### 问题: 如何确认关闭wifi时，wifi是否驱动卸载完全
+解决方案: 有时候即使在用户界面关闭wifi功能,wifi的驱动也有可能没有被成功卸载, 这往往会造成CP2不断地唤醒AP,导致待机功耗严重偏高. 要确认wifi驱动是否被成功卸载,只需要执行lsmod命令, 查看是否存在ittiam.ko,如果存在说明关闭wifi时驱动卸载不完全.
+参考FAQ: FAQ27647
+### 问题: 如何在网络中搜索需要的多语ttf字库？
+解决方案: 在支持语言的过程中,如果文字不能显示首先需要确认的是字库是否存在,若不存在,此时需要在网络中搜索其字库. 百度中搜索到字库中的概率较少,请尽量选择选择google,关键字为" 语言的英文形式 ttf " 进行搜索
+参考FAQ: FAQ27708
+### 问题: 7715上默认字体中f与i合在一起后的显示时i上面的点不显示
+解决方案: 这是一种正常的显示方法,称为书法合字,许多合字都把字母f和其后的字符组合起来,最常用的就是ﬁ (或 fi,显示为两个独立字符). 很多字体的这两个字母并排在一起后,字母i上的点会抵挡到字母f的弧形勾,无法正确排印,所以干脆就制造一个合字铅字,把 i 的点融入 f 的勾来直接使用.
+参考FAQ: FAQ29566
+### 问题: SC7715是否支持OTG功能？
+解决方案: 支持,但需要加一个外部5VDCDC Burst,供电能力要到1A.
+参考FAQ: FAQ31193
+### 问题: FGU中的OCV的作用是什么？
+解决方案: FGU中的OCV记录relax模式下的电池电压,也就是低功耗的时候认为手机处于开环状态,此时认为内阻对电压值影响忽略不计.
+参考FAQ: FAQ27743
+### 问题: 如何禁止联系人主页面的滑动切换效果
+解决方案: 联系人主页面的滑动翻页效果是通过ViewPager来实现的,要修改这种行为,需要继承ViewPager,并重写事件处理方法来禁止滑动翻页, @Override public boolean onTouchEvent(MotionEvent e) { return false; } @Override public boolean onInterceptTouchEvent(MotionEvent e) { return false; } 然后把res/layout/people_activity.xml和res/layout/people_activity_overlay.xml中使用ViewPager的地方替换成自己扩展的子类.
+参考FAQ: FAQ27839
+### 问题: CTS Verifier 之Bluetooth Test测试方法
+解决方案: 根据提示进行测试 1. 第一项开关蓝牙测试,点击屏幕中间按钮Disable / Enable Bluetooth,若开关蓝牙成功,则可点击左下角的pass按钮,通过该项测试 之后的如下项测试的测试方法相同; 2. 用两台均安装了CtsVerifier.APK 的设备进行测试,一台选中测试项中的client,则另一台选中相应测试项中的server, 即可开始测试,进入测试后均会提示开启蓝牙,然后选中server的设备点击下方按钮Make Discoverable,选中client的设备点击下方按钮Scan for Devices,client的列表中会出现可连接的设备名,选中server设备的名称,若连接成功会有数据传输,即可点击左下角的pass按钮,通过该项测试(该server设备名称出现在Paired Devices列表中); 3. 备注 : 每次测试前需关闭蓝牙再进行测试.
+参考FAQ: FAQ27848
+### 问题: SC7715支持WCDMA几个频段？
+解决方案: SC7715支持WCDMA频段有:band1,band2,band5,band8.
+参考FAQ: FAQ27904
+### 问题: SC7715将Modem log默认关闭的方法
+解决方案: SC7715平台中modem版本 log默认是开启的,这样在user 版本中测试整机电流会发现数据会有点偏高, 可以修改nv里的 NV_TYPE->NV_REF_PARAMETER->enable_arm_log将这个值改为0把 modem log关闭即可.
+参考FAQ: FAQ27936
+### 问题: 如果LCM背光驱动使用外部串联背光IC,White LED部分的DRIVER_SET上对地电阻能否省掉？
+解决方案: 6.2K/1%精度的对地电阻不能省掉,这个电阻是AUXADC设置内部背光驱动,马达,按键背光驱动和FLASH LED驱动电流源电阻.
+参考FAQ: FAQ27968
+### 问题: SC7715平台哪个SIM接口支持WCDMA？
+解决方案: SC7715平台提供3个SIM接口,仅有SIM0支持WCDMA
+参考FAQ: FAQ27974
+### 问题: AUXMICBIAS,HEAD_MICBIAS提供电压分别是多大？
+解决方案: AUXMICBIAS电压为2.73V,HEAD_MICBIAS电压为3V
+参考FAQ: FAQ28000
+### 问题: MIC电路上串联1K电阻的作用是什么？
+解决方案: 串联1K电阻主要是用于提升ESD性能
+参考FAQ: FAQ27996
+### 问题: Dolphine平台是否支持MEMS_MIC设计？
+解决方案: Dolphine平台支持MEMS_MIC设计
+参考FAQ: FAQ28010
+### 问题: 如何在C环境中执行shell命令？
+解决方案: 以echo为例 #include "stdio.h" 在使用的地方: system("echo test >/xx/yy/zz"); 需要注意的有两点: 1. 该进程需要有这个bin的执行权限 2. 使用的bin如果不是系统默认的,需要给出绝对路径.
+参考FAQ: FAQ28012
+### 问题: Dolphin平台耳机输出使用CAPLESS方式有什么优点？
+解决方案: Dolphin平台耳机输出使用CAPLESS方式是通过内部GLASS G耳机功放实现,能够省去耳机的音频输出端大隔直电容,并且能够有效防止耳机插入拔出POPO音
+参考FAQ: FAQ28016
+### 问题: 如何实现编辑框达到最大输入字符时给出提示信息功能
+解决方案: 在编辑框控件的实现中,当实际录入字符个数小于传入字符个数时,控件所在窗口会收到MSG_NOTIFY_EDITBOX_MAXTEXT消息.因此只需要在该窗口中添加MSG_NOTIFY_EDITBOX_MAXTEXT消息响应,给出相应提示信息.
+参考FAQ: FAQ28023
+### 问题: 光感和距离传感器中应用中要注意什么？
+解决方案: 光感和距离传感器受结构装配影响大,要垫泡棉防止漏光.装机时要小心泡棉挡住光感和距离传感器
+参考FAQ: FAQ28024
+### 问题: G-SENSOR和MAG-SENSOR在应用中应注意什么？
+解决方案: G-SENSOR和MAG-SENSOR需放置在板边,周边不能摆放大功率,强干扰模块
+参考FAQ: FAQ28029
+### 问题: Dolphin平台VBAT_SENSE串联33欧姆电阻的作用？
+解决方案: VBAT_SENSE串联33欧姆电阻主要是增强抗浪涌电压能力,如果电阻超过33欧姆,会导致电池电压检测不准
+参考FAQ: FAQ28033
+### 问题: 在拨号界面进行查询，联系人较多时有些联系人查不到
+解决方案: 源码中对查询联系人结果显示进行限制(默认为20个),具体实现是在DialerDatabaseHelper.java的getLooseMatches()的方法中,MAX_ENTRIES是对查询结果显示进行限制的变量,此数目可以根据自己的具体要求进行修改.
+参考FAQ: FAQ28095
+### 问题: Android中定义的四种用户
+解决方案: 1)私有用户(FLAG_PRIMARY) 系统中只存在一个该类型的用户 2)管理员用户(FLAG_ADMIN) 该用户拥有管理员权限,可以添加和删除其他用户 3)访客用户(FLAG_GUEST) 临时的访客 4)受限用户(FLAG_RESTRICTED) 相对与正常的用户而言,该用户在某些权限上受到限制,比如,该用户可能无法安装应用程序或管理无线接入点
+参考FAQ: FAQ35385
+### 问题: SC7715 V28管脚（AMPG_VCOM）功能？
+解决方案: V28管脚(AMPG_VCOM)是内部glass G功放的地,该地PCB走线时建议直接拉到耳机地然后一起下主地,可以有效耳机啪啪音.
+参考FAQ: FAQ31185
+### 问题: 如何增加ListView的滑动距离和滑动速度
+解决方案: >> 增加滑动距离: frameworks\base\core\java\android\view\ViewConfiguration.java /** * The coefficient of friction applied to flings/scrolls. */ private static final float SCROLL_FRICTION = 0.005f; 修改为: private static final float SCROLL_FRICTION = 0.015f; >> 增加滑动速度: frameworks\base\core\java\android\widget\AbsListView.java private float mVelocityScale = 0.25f; 修改为 private float mVelocityScale = 1.0f; 增加滑动距离和滑动速度一般需要同步修改以达到合适的值.
+参考FAQ: FAQ28163
+### 问题: 如何修改使Launcher上左右滑动更快更灵敏
+解决方案: 修改PagedView.java文件中snapToPageWithVelocity函数内的参数: 1. 增加滑动速度 velocity = Math.abs(velocity); velocity = Math.max(mMinSnapVelocity, velocity); 修改为 velocity = Math.abs(velocity); velocity = 2 * Math.max(mMinSnapVelocity, velocity); 2. 降低拖尾时间 duration = 4 * Math.round(1000 * Math.abs(distance / velocity)); 修改为 duration = 2 * Math.round(1000 * Math.abs(distance / velocity)); 这两个值可以根据需要动态调整.
+参考FAQ: FAQ28192
+### 问题: 什么是P帧？
+解决方案: P帧:前向预测编码帧.P帧表示的是这一帧跟之前的一个关键帧(或P帧)的差别,解码时需要用之前缓存的画面叠加上本帧定义的差别,生成最终画面.(也就是差别帧,P帧没有完整画面数据,只有与前一帧的画面差别的数据) P帧的预测与重构:P帧是以I帧为参考帧,在I帧中找出P帧"某点"的预测值和运动矢量,取预测差值和运动矢量一起传送.在接收端根据运动矢量从I帧中找出P帧"某点"的预测值并与差值相加以得到P帧"某点"样值,从而可得到完整的P帧. P帧特点: 1.P帧是I帧后面相隔1~2帧的编码帧; 2.P帧采用运动补偿的方法传送它与前面的I或P帧的差值及运动矢量(预测误差); 3.解码时必须将I帧中的预测值与预测误差求和后才能重构完整的P帧图像; 4.P帧属于前向预测的帧间编码.它只参考前面最靠近它的I帧或P帧; 5.P帧可以是其后面P帧的参考帧,也可以是其前后的B帧的参考帧; 6.由于P帧是参考帧,它可能造成解码错误的扩散; 7.由于是差值传送,P帧的压缩比较高.
+参考FAQ: FAQ28247
+### 问题: 通过配置文件调节触摸提示音音量
+解决方案: 触摸提示音有两种接口,一种为指定音量;另一种为使用默认音量. 文件framework/base/core/res/res/values/config.xml中 config_soundEffectVolumeDb对默认触摸提示音音量有作用. 可修改为-6~0之间的值,0为最大音量.
+参考FAQ: FAQ28233
+### 问题: 如何调整原生Launcher3中桌面应用图标之间的间距
+解决方案: 由于不同客户手机的屏幕大小不一样,需要调整图标之间的间距. 例如,桌面google搜索框距离顶部的距离,2个上下应用图标之间的间距, hotseat图标距离底部的距离都可以通过修改下面的数值来修改/ 修改如下: 请定位到/packages/apps/Launcher3/res/values/dimens.xml: <dimen name="dynamic_grid_edge_margin">6dp</dimen> 适当调整此数值即可.
+参考FAQ: FAQ35704
+### 问题: 前摄像头和后摄像头部分参数的保存位置
+解决方案: 后摄像头时,设置中的部分参数是从com.android.camera2_preferences_0.xml读取和保存的, 前摄像头时,设置中的部分参数是从com.android.camera2_preferences_1.xml 读取和保存的. 有时切换摄像头后设置显示的参数和未切换之前显示的不一致就是该原因导致的.
+参考FAQ: FAQ28501
+### 问题: 如何实现textview的跑马灯效果
+解决方案: 所谓的跑马灯效果就是当文字超过控件所能容纳的空间时,在控件内实现滚动的效果.最简单的就是直接通过xml文件来实现这个效果,只需要在xml文件的textView中添加下面语句即可: android:ellipsize="marquee" 用来设置为跑马灯显示 android:focusable="true" 用来设置是否获得焦点 android:focusableInTouchMode="true" 设置焦点模式 android:marqueeRepeatLimit="marquee_forever" 设置走马灯滚动的次数 android:singleLine="true" 设置文字显示为单行 在将这些属性都按照以上设置好之后即可实现跑马灯效果.
+参考FAQ: FAQ28511
+### 问题: wcdma平台由于NV配置不当导致开机出现modem assert的问题。
+解决方案: 在7715,7730等wcdma平台经常会报开机modem assert问题,提示assert的位置一般是: ps/layer1/wlayer1/drv/rfic/sr3130/src/drv_rf_nv_sr3130_calibration_wcdma.c 引起这个问题的原因基本上都是由于nvitem中W_calibration_params中的wcdma的band配置与硬件不相符导致. 需要注意band的个数,没有用到的band需要在nv中删除. 另外User版本的pac一般在手机工程模式中APP SETTING将modem reset设置成了enable,故出现问题时可能看不出modem assert,而是用userdebug版本时开机就看到了骷髅头.因此在测试user版本的软件时,可以将modem reset这个选项设置为disable,以便modem assert时让modem 挂起,这样可以dump memory,便于分析问题.
+参考FAQ: FAQ42090
+### 问题: 4.4中搜索到的蓝牙设备信息存储以及本地蓝牙信息存储
+解决方案: 4.4中蓝牙搜索显示的设备信息存储区别与以往2.3.5和4.1. 目前本地蓝牙设备信息与搜索到的设备信息在同一个文件data/misc/bluedroid/bt_config.xml中. 其中有 <N1 Tag = "Local"> 随后信息为本地蓝牙设备信息. </N1> <N2 Tag ="Remote"> 随后信息为搜索到的蓝牙设备信息,每个设备以mac地址为tag进行标识.其中包括Timestamp,Name,DevClass,DevType,AddrType.
+参考FAQ: FAQ28548
+### 问题: GSEdito和CLC工具的用途？
+解决方案: GSEditor工具是用来制作金板的,CLC工具用GSEditor工具做出来的金板来校准各测试站位的线损.
+参考FAQ: FAQ28559
+### 问题: 展讯产线生产时的站位检测是通过什么来实现的？
+解决方案: 展讯产线工具支持phase check功能,通过phase check就能实现站位检查. 详细可以参照phase check说明文档.
+参考FAQ: FAQ28562
+### 问题: 为什么在线视频播放时从抓包上看可以看到ps_poll帧
+解决方案: 主要是基于功耗考虑,在数据要求不高等情况下,cp2会有相关power save 策略,所以看到ps_poll帧正常的
+参考FAQ: FAQ28584
+### 问题: WCDMA PA由DCDC供电的利弊
+解决方案: 一般给WCDMA PA常用的供电方式是由VBAT完成,另外一种则是DCDC来提供,它的利弊在于: 1:省电,经验证在15dBm到5dBm这一段,DCDC省电最为明显,而最大功率基本不省电; 2:同时DCDC会增加校准时间,成本以及ILPC性能的风险; 在SC7715中,如果不用DCDC供电可以省去2.2nH的电感与10uF的电容
+参考FAQ: FAQ28583
+### 问题: 如何关闭Wifi的“随时都可扫描”功能
+解决方案: Android4.4上Google为Wifi新加了一个功能叫"随时都可扫描",其意思是"关闭wifi时也可以扫描". 这个功能会导致界面上wifi关闭后,驱动还在运行不会被卸载,导致不断唤醒系统. 可以通过以下方式将该功能关闭,使Wifi真正被关闭. 设置 -> wlan设置 -> 高级设置 -> 去掉"随时都可扫描"选项
+参考FAQ: FAQ28599
+### 问题: 手机电量显示不正确
+解决方案: 问题分析: 平台使用电压表示电量,会有一定的误差,为避免跳变平台将电量做过优化,就是关机前会将电池电量保存以供下次开机的时候使用,这样更换电池就有可能不能识别新电池电量. 问题解决: 可以修改允许跳变区间可靠性宏SPRDBAT_VALID_CAP来修正; SPRDBAT_VALID_CAP建议修改成10~20.
+参考FAQ: FAQ28605
+### 问题: 安装Trace32分析sysdump提示couldn't open "libjpeg.so.62"
+解决方案: 解决方法:安装libjpeg62 Sudo apt-get install libjpeg62
+参考FAQ: FAQ28603
+### 问题: CTS测试需要使用user版本还是userdebug版本？
+解决方案: CTS推荐使用user版本,userdebug版本是用来调试的.由于CTS版本运行时一般会重启多次,因此建议出现问题时首先考虑抓取CTS Test Log,必现问题可直接用手机复现并抓取log来解决,偶现问题需要编写运行脚本,多次运行复现后再解决.
+参考FAQ: FAQ28611
+### 问题: SC7715的USB位置USB_VRES的电阻是否可以省去？
+解决方案: 在SC7715的USB模块的USB_VRES连接的电阻R0201一定不能省去,而且阻值只能为200欧姆 1%精度
+参考FAQ: FAQ28627
+### 问题: video stream是DIV3的视频文件播放时，只有声音无画面
+解决方案: 如果视频文件的video stream是DIV3的,是特殊视频格式,属于不支持的范围,因此视频流不能解码,当音频流可以正常解码时,那么播放时就会出现只有声音无画面的现象,该播放现象属于正常现象.
+参考FAQ: FAQ33376
+### 问题: 为什么文字转语音(TTS)无法使用
+解决方案: 6815等低内存手机通常会为了节省空间,去掉tts语音数据包和应用商城等. 此时进入设置->辅助功能->文字转语音(TTS)输出->Pico TTS设置,点击安装语音数据包,PicoTTS应用会接收该intent并启动新的intent来打开市场类应用下载对应语音包并自动安装,如果手机没有应用商城类可供下载就会导致出错. 但CTS的要求又必须要有PicoTTS 这个apk,如果项目不需要cts测试,可以在build/target/product/core.mk 将picotts注释掉 #PRODUCT_PACKAGES += PicoTts
+参考FAQ: FAQ28647
+### 问题: 如何查看zram真正使用的RAM空间
+解决方案: 通过cat /proc/meminfo看到的swap信息并非是真正的RAM使用量. zram的RAM使用量可以通过如下命令获得: # cat /sys/devices/virtual/block/zram0/mem_used_total 4509696 上述返回值的单位为byte.
+参考FAQ: FAQ28649
+### 问题: 如何查看系统中TASK_UNINTERRUPTIBLE状态进程
+解决方案: 分析问题时,有时需要确认当前系统中是否有TASK_UNINTERRUPTIBLE状态的进程. 因为进程长时间处于TASK_UNINTERRUPTIBLE状态通常是不合理的,会影响系统正常的运行. 此时可以通过如下方法,来确认是否存在TASK_UNINTERRUPTIBLE状态的进程: echo 'w' > /proc/sysrq-trigger 输入命令后,在kernel log中就可以获取相关的信息.
+参考FAQ: FAQ28659
+### 问题: 怎么通过AT+SNVM命令写数据
+解决方案: 1. 首先发起写AT命令AT+SNVM=1,409,1表示写,409表示对应ID号; 2. modem确认可写后,会返回一个'>',收到'>'后,会直接传裸数据串给modem; FFFFFFFFFFFF0000000000000000000000000000 3. 数据串必须以ctrl+z结尾,modem会按照这截断数据;modem写完后,会返回OK;
+参考FAQ: FAQ28657

@@ -1,0 +1,305 @@
+### 问题: gcf协议测试，26.6.23.2/26.6.23.3必须使用CRTUG系统测试
+解决方案: gcf协议测试,在泰尔和emc实验室时,一般会有Anite和CRTUG系统,case26.6.23.2/26.6.23.3发现,在Anite系统下测试会fail,需要要求实验室使用CRTUG系统测试.
+参考FAQ: FAQ71372
+### 问题: 什么是ERP-OFDM
+解决方案: EPR-OFDM模式是802.11g的主要模式.基本上,它是在ISM频带(2.4GHz)中执行802.11a,不过为了向下兼容,在规范上必须稍作改动.它所支持的速率如同802.11a:6、9、12、18、24、36、48与54Mbps.其中6、12与24Mbps为必要的(Mandatory)传输速率.
+参考FAQ: FAQ71427
+### 问题: 如何获取移动数据网络设备接口名?
+解决方案: ConnectivityManager提供的下面函数可以得到网络接口名称 public LinkProperties getLinkProperties(int networkType) LinkProperties .getInterfaceName() sample: ConnectivityManager cm = ConnectivityManager.getInstance(); LinkProperties lp = cm.getLinkProperties(ConnectivityManager.TYPE_MOBILE); lp..getInterfaceName()
+参考FAQ: FAQ71382
+### 问题: wifi断开连接reason code一般有哪些？
+解决方案: reason code一览: 0xC1 (193) Link Loss 设备规定时间内没有接收到热点发出的beacon 帧导致断开连接 0xC4 (196) Deauth 设备收到热点发出的deauth & disassoc帧导致断开连接 0xc6 (198) Link Loss PA 设备因为PA没有打开导致没有接收到热点beacon帧导致断开连接
+参考FAQ: FAQ71391
+### 问题: wifi 设备帧重发次数默认是多少？
+解决方案: 设备重发次数由modem侧得寄存器控制,此寄存器地址对ap侧不可见: rMAC_LONG_TRY_LIMIT 默认值4 rMAC_SHORT_TRY_LIMIT 默认值7 设备对于长度大于2347Byts帧默认最大重发四次,对于长度小于2347Bytes帧默认最大重发次数为7次
+参考FAQ: FAQ71410
+### 问题: wifi 无法连接wep 加密index为1以外的热点
+解决方案: 由于Android原生系统上层不支持设置wep index选项,导致底层wifi driver与firmware无法接收到配置信息,仍然以index 1的参数去做连接,导致连接失败; 由于wep是一种较老的不安全的加密方式,很多系统都已不再做详尽的支持,目前Android原生系统与ios系统均不支持index 为1以外的路由器设置; 如果需要设备支持wep index 1以外的设备,需要做二次开发,界面上提供设置wep index的入口.
+参考FAQ: FAQ71414
+### 问题: 什么是ERP-PBCC
+解决方案: ERP-PBCC是802.11b的PBCC标准可选增强功能(optional extension),提供22与33Mbps速率.虽然属于标准的一部分,不过市面上大多数芯片组并未支持这种模式,也未得到广泛应用;2351与Marlin芯片亦不支持ERP-PBCC.
+参考FAQ: FAQ71421
+### 问题: 2341A芯片如何修改wifi漫游阀值
+解决方案: 漫游策略的两个阀值均在驱动的makefile里. CUSTOM_ROAM_TRIGGER_SETTING 这个阀值是当前连接热点信号强度弱于此值时,才能触发漫游 CUSTOM_ROAM_DELTA_SETTING 这个阀值是漫游扫描时,扫描到的热点信号强度大于CUSTOM_ROAM_TRIGGER_SETTING+ CUSTOM_ROAM_DELTA_SETTING 之上时才能触发漫游 修改方法: /kernel/drivers/net/wireless/bcmdhd/ Makefile DHDCFLAGS += -DCUSTOM_ROAM_TRIGGER_SETTING=-85 DHDCFLAGS += -DCUSTOM_ROAM_DELTA_SETTING=15
+参考FAQ: FAQ71500
+### 问题: Android5.1系统WIFI RX 测试 RX OK（接收包） 为0
+解决方案: 原因为: 第一次开机或者之前打开过BT,直接进行wifi RX测试,RF切换到硬件共存状态,wifi无法接收到数据包 修改方案:换sel信号到wifi侧 具体升级CP2即可解决.
+参考FAQ: FAQ71510
+### 问题: 如何调整光感的反应速度
+解决方案: 为了消除自动调节背光时带来的抖动,上层算法做了处理,从暗变亮大约4s的时间,从亮变暗大约8s的时间. 若想调节时间,可以通过以下参数修改. frameworks/base/services/core/java/com/android/server/display/AutomaticBrightnessController.java private static final long BRIGHTENING_LIGHT_DEBOUNCE = 4000; private static final long DARKENING_LIGHT_DEBOUNCE = 8000;
+参考FAQ: FAQ71557
+### 问题: wifi FTP 下载文件速度慢
+解决方案: 由于这种测试设计多个环节,针对该类问题用户应当首先排除如下因素再怀疑wifi的速率: 1.排除ftp服务器环境影响.请保证是本地局域网搭建的基于干净wifi 的ftp服务器.可以用PC接网线到ap下载ftp测试. 2.排除手机mmc写速率影响.由于FTP apk都是边下边存的,所以手机MMC(SD/内存)速率很可能是瓶颈.可以通过usb线直接向mmc拷贝文件测试mmc写速率,例如usb考文件的速度是4MB/s而wifi ftp恰好就卡在4M左右则证明瓶颈在MMC,若高于wifi ftp速率则排除该项. 3.FTP apk差异.网上有很多手机ftp软件,有的软件会依据手机环境设置tcp window size影响下载速度,可以多用几款软件测试. 若排除以上3点则可怀疑wifi吞吐性能,可进一步做iperf打流测试.
+参考FAQ: FAQ71556
+### 问题: selinux导致的permission denied问题
+解决方案: 最近经常有类似进程读写文件 permission denied的问题.在4.4上通常是文件权限导致,5.0后由于全面开启了selinux,所以很可能是selinux策略导致. 客户可查看main log中是否有"avc: denied"字样.若有则是selinux问题,请客户首先检查是否自行修改过selinux配置及init.c文件.排除修改引入后再与展讯FAE沟通.
+参考FAQ: FAQ71561
+### 问题: 某些版本wifi eut g/n模式无信号
+解决方案: wifi eut工具历史遗留问题.在某些版本上11b能发射出信号,而g/n无信号.容易引起客户误解,往往以为是射频方面出问题,其实这是个软件问题,客户可直接联系软件FAE.
+参考FAQ: FAQ71566
+### 问题: 展讯手机做wifi热点时不支持WPS认证方式。
+解决方案: 做station可以WPS认证,但是自己做热点不具备WPS认证服务功能.
+参考FAQ: FAQ71580
+### 问题: 为什么手机开机后一直提示关机？
+解决方案: 有一种情况是手机开机后一直提示关机,此时电池电量为85%,且插入充电器,出现这中情况后,从log中可以看到是电池温度过高,temp:845 ,正常情况下我们平台的配置是高于60度后就会有过温保护,这个时候需要请查看下手机温度检测是否准确,或者关闭温度检测功能验证这个问题. 09:45:22.534 <4>[ 128.547790] c0 sprdchg_get_true_temp adc = 0, temp = 846 09:45:22.534 <6>[ 128.547790] c0 sprdbat: otp_high_restart:440 09:45:22.534 <6>[ 128.547821] c0 sprdbat: chg_log:time:128,health:2,state:3,stopflags0x:2,chg_s_time:0,temp:845
+参考FAQ: FAQ71664
+### 问题: Android 5.1 Slog 对空间要求有哪些？
+解决方案: Android 5.1 Slog与4.4 Slog相比有一定变化,Android 5.1 Slog 对空间要求如下: (1)有sdcard的情况下,当sdcard空间 100M=<size<500M且CPLog打开时,slog停止抓取cp log. 当sdcard空间size<100时,Slog功能关闭. (2)无sdcard的情况下,当data空间5=<Size<10, slog 会给预警;小于5M时,slog功能关闭.
+参考FAQ: FAQ71627
+### 问题: 如何通过ADB读取adc通道电压值
+解决方案: step1: 设置要读取的通道数用于打开ADC通道,如读取ADC_CHANNEL 30电压值如下设置 adb shell echo 30 > sys/class/misc/sprd-adc/adc_channel step2:读取ADC值 adb shell cat sys/class/misc/sprd-adc/adc_data_raw
+参考FAQ: FAQ71658
+### 问题: FM2351搜台流程是怎样的？
+解决方案: FM2351搜台流程如下图所示:
+参考FAQ: FAQ71667
+### 问题: 空间满后，出现应用报错这种情况后该怎么处理？
+解决方案: 出现这种情况后,需要在PackageManagerService.java中的RESERVED_DATA_ACCESS_LIST数组中增加您需要保护的应用的包名,但要注意以下两点: 1.短信一类的应用需要保护其ContentProvider的包(如com.android.providers.telephony); 2.预留空间后仍然不够应用就会挂掉,所以绝对不能增加可能大量占用空间的apk,白名单不能保护所有的应用都不能出错.
+参考FAQ: FAQ71684
+### 问题: WAPI协议中使用了哪些常用的缩略语？
+解决方案: WAPI 协议中经常使用到的一些缩略语的解释如下: WAPI(WLAN Authentication and Privacy Infrastructure) 无线局域网鉴别与保密基础结构 AE(Authenticator Entity) 鉴别器实体 ASUE(Authentication SUpplicant Entity) 鉴别请求者实体 ASE(Authentication Service Entity) 鉴别服务实体 ASU(Authentication Service Unit) 鉴别服务单元 WAI(WLAN Authentication Infrastructure) 无线局域网鉴别基础结构 WPI(WLAN Privacy Infrastructure) 无线局域网保密基础结构
+参考FAQ: FAQ71690
+### 问题: WAPI协议的information elements如何解析？
+解决方案: 下图是包含WAPI IE的空口包截图: 下图是WAPI IE的具体协议规定格式: 解析过程如下: IE id:68 , 说明:根据WAPI协议,这段数据正是WAPI IE. 长度:20 , 说明:整个数据的长度为20个字节 版本:0100,实际上为0001,版本为1 鉴别和密钥管理(AKM)套件计数:0100,实际为0001,值为1 鉴别和密钥管理(AKM)套件:4*m, m=1,则长度4个字节,即:00147201,oui为001472,套件 类别为01,意思是此wapi为证书加密 单播套件计数:0100,即:0001, 单播密码套件:00147201,单播WPI-SMS4 算法加解密 组播密码套件类似 WAPI能力信息:0000,bit0值为0,表示不支持预鉴别
+参考FAQ: FAQ71693
+### 问题: productinfo下btwifi_mac的写入流程
+解决方案: 手机/设备的prodductinfo下面保存有WIFI/BT的MAC地址,我们知道这个地址是通过IMEI工具写入的,这个写入的具体代码流程是怎样的呢? 当产线上使用imei工具生成bt/wifi mac时,实际是通过在diag模式下收到CMD_USER_BTWIFIIMEI时调用如下代码实现的: Eng_btwifiaddr.c :: eng_diag_btwifiimei() // 获取PC端imei程序产生的MAC地址; -> Eng_btwifiaddr.c :: eng_btwifimac_write() // 判断imei中产生的地址是否有效,如果无效则产生随机地址; -> Eng_btwifiaddr.c :: write_mac2file() // 在write_mac2file()这个函数中,imei产生的有效bt/wifi MAC地址或者eng_btwifimac_write()中生成的随机地址被写入到productinfo下面.
+参考FAQ: FAQ71716
+### 问题: 个人词典下的ZZ选项的含义
+解决方案: 经常有客户发现在语言切换到俄语,阿拉伯语这种非英语系的语言时, 在个人词典中会出现一个名为ZZ的分类,实际上,这并非是乱码,而是 代表qwerty键盘的意思. 在系统语言为LatinIME支持的语言且此语言键盘并不是普通的qwerty 键盘的情况下,个人词典下就会出现分类.比如俄语时,就会出现 俄语键盘和qwer键盘.ZZ因为不是任何语言的缩写,所以被用来代表 qwerty键盘,如果一定要不显示该选项,那么可以在UseDictionaryList.java 中的getUserDictionaryLocalesSet方法中进行屏蔽.但值得注意的是, 如果屏蔽掉ZZ那么只剩下一种俄语键盘,则在个人词典下不会再显示分类.
+参考FAQ: FAQ71720
+### 问题: fastboot端口的VID和PID是在哪个文件中定义的
+解决方案: fastboot device VID和PID定义在uboot 代码中的f_fastboot.c文件, #define FASTBOOT_VENDOR_NUM 0x18D1 /* Goolge VID */ #define FASTBOOT_PRODUCT_NUM 0x0FFF /* Fastboot Product ID */ 其中0x18D1为google 的VID,无特殊情况不要修改这两个值.
+参考FAQ: FAQ71762
+### 问题: SR3592 接收PRX在原理设计上要注意什么？
+解决方案: SR3592 PRX端口L1/L2/H1/H2(这四个是low noise端口)只能接GSM/TDSCDMA;L3/L4/H3/H4(high noise)可以接GSM/TDSCDMA/WCDMA/LTE(注意:TDSCDMA,不可以同时接low noise和high noise,如band39接low noise,band34 接high noise),其他接法没有要求,以方便LAYOUT为原则(不区分高低频)
+参考FAQ: FAQ71767
+### 问题: SR3592 TX port在原理设计要注意什么？
+解决方案: SR3592 TX_LB端口只能接699MHz～915MHz,TX_HB端口只能接1710MHz～2690MHz,接法没有要求,以方便LAYOUT为原则
+参考FAQ: FAQ71768
+### 问题: SR3592的POWER DETECT 检测在原理设计上要注意什么？
+解决方案: SR3592的POWER DETECT需要接一个PI型的5dB衰减网络,串联电阻为27ohm,两个并联电阻为150ohm,PA之间采用串联的原则,不贴PA时,要贴0ohm跳线电阻
+参考FAQ: FAQ71770
+### 问题: 如何在设置/打印界面添加一个按钮用来跳到浏览器或者playstore？
+解决方案: google原生就有此功能,只不过要连接到google服务器,目前国内的网络很难连接到google服务器. 成功连接上google服务器后打印界面就会有添加服务的按钮,点击此按钮就会跳转到google Play或浏览器选择界面.
+参考FAQ: FAQ79246
+### 问题: 如何解决Ctest运行升级版本时无法创建任务？
+解决方案: 1、需要确认Ctest Client端有smb工具,可执行smb远程连接 2、升级版本路径正确输入方式:smb://登入版本路径帐号域名;帐号:密码@版本路径 3、登入账号密码不能包含"@"符号 需要确保以上三个条件即可获取版本进行自动升级,创建任务执行测试
+参考FAQ: FAQ71796
+### 问题: 如何通过WriteIMEI 工具写入20位的SN号
+解决方案: 写SN号需要工具侧和AP侧都支持. 目前支持写SN号最长为24位,AP侧默认是支持的,无需修改 而工具侧只需要修改:WRITEIMEI_R4.0.0001/bin/WriteIMEI.ini 将 SN Length =14 改为: SN Length =20(注意此值不可超过24) 如果超过写的SN长度不超过24位 都可以通过这个修改来完成,如果超过24位则需要AP侧和工具端重新进行评估修改方案.
+参考FAQ: FAQ71801
+### 问题: 如何去掉编辑联系人页面中的互联网电话(SIP)输入框
+解决方案: 联系人编辑页面根据不同的账户信息显示不同的页面编辑属性,当前版本在编辑本机账户(FallbackAccountType)和Google账户(GoogleAccountType)联系人时中会显示添加互联网电话的输入框. 如果要去掉互联网电话编辑框,需要去掉FallbackAccountType.java和GoogleAccountType.java构造方法中的addDataKindSipAddress(context);
+参考FAQ: FAQ71816
+### 问题: 通讯录列表页面搜索框，输入号码的中间部分不能查出对应联系人
+解决方案: 号码能够从中间查询是平台增加的功能,这个功能在android5.1之前都是能够起作用的. 但是android5.1针对联系人搜索增加了部分CTS测试用例,号码中间查询功能会导致testSearchSnippets_MultipleMatchesCorrectSnippet这条测试用例通不过,所以在android5.1上输入号码的中间部分不能查出对应联系人
+参考FAQ: FAQ71817
+### 问题: 如何关闭UVHO功能
+解决方案: 修改文件kernel\drivers\power\sprd_2713_charge.c 在函数sprdchg_init中增加如下调用 //changed begin #if defined(CONFIG_ADIE_SC2723S) ||defined(CONFIG_ADIE_SC2723) #define BIT_UVHO_EN ( BIT(9) ) sci_adi_clr(ANA_REG_GLB_MIXED_CTRL0,BIT_UVHO_EN); #else #define BIT_UVHO_MY_EN ( BIT(0) ) sci_adi_clr(ANA_REG_GLB_ANA_MIXED_CTRL,BIT_UVHO_MY_EN); #endif //changed end
+参考FAQ: FAQ71860
+### 问题: OTA升级失败-失败提示是“footer is wrong”
+解决方案: 这是包本身在拷贝或者传输过程中或者SD卡坏块导致的数据损坏造成的. 在UE中用16进制打开客户的升级包update.zip,看看倒数第三个和倒数第四个字节的值是否都是0xFF,如果不是,那说明这个升级包完整性有问题. 一般做升级包的过程如果顺利结束,生成的升级包不会出现这种情况,最大可能是拷贝或者传输错城中出现了一些错误,导致升级包没有拷贝完成,或者SD卡有问题(坏块,连接不稳等)导致此问题,重新拷贝或者重新换一张SD卡重新操作,就可解决.
+参考FAQ: FAQ71880
+### 问题: SC7731平台，USB_PHY_TUNE寄存器中的SRQXTUNE位作用是什么
+解决方案: USB_PHY_TUNE寄存器中SRQXTUNE位,共占3个bit位,USB总线驱动能力设置位,可影响接收灵敏度.当发生产线环境较差,产线工具高概率连接失败问题时,可尝试修改该位,将该值由默认值3修改为6.
+参考FAQ: FAQ71912
+### 问题: SC7731平台代码中USB_PHY_TUNE寄存器修改在哪个位置
+解决方案: 该寄存器设置定义在dts文件中,找到项目对应的dts文件, 举例sprd-scx35_sp7731gea_hd.dts 找到usb设置项, usb: usb@20200000{ compatible = "sprd,usb"; interrupts = <0 55 0x0>; ngpios = <2>; gpios = <&a_eic_gpio 0 0>,<&d_gpio_gpio 72 0>; reg = <0x20200000 0x1000>; tune_value = <0x44073e33>; usb-supply = <&vddusb>; #address-cells = <1>; #size-cells = <0>; }; tune_value就是对USB_PHY_TUNE寄存器的设置值.
+参考FAQ: FAQ71913
+### 问题: 浏览器功能中强制缩放网页功能无作用，是否可以支持？
+解决方案: Android4.4原生浏览器没有强制启动缩放的接口, 实现这个功能需要添加强制启动缩放的接口. 但是由于Android4原生浏览器没有这样的接口,新增接口可能会由于版本兼容性问题, 导致某些Google测试找不到接口的问题,是否增加这个功能需要客户评估.
+参考FAQ: FAQ71964
+### 问题: 浏览器中点击两次进行缩放设置无效，这是什么原因？
+解决方案: 展讯这边双击网页实现的是"双击文本自适应重排"的功能,因为CMCC和CUCC入库有这样的要求, 用例要求双击测试网页中的文字部分,浏览器对该部分内容进行宽度适配,且保证适配后的字体在用户可接受的范围内. 这和双击缩放的功能只能实现一个. 另外Android5.1上,浏览器已经将双击缩放这个菜单去掉了.
+参考FAQ: FAQ71965
+### 问题: Chrome浏览器如何预置默认主页
+解决方案: Chrome浏览器不是平台预制浏览器,无法通过修改代码,修改预置主页. 谷歌允许合作伙伴客制化Chrome的一些配置,如Chrome浏览器预置默认主页及书签, 具体请参考网上博客的介绍: http://blog.csdn.net/jiulousanti/article/details/38869909 预置Chrome浏览器默认主页和书签.
+参考FAQ: FAQ71966
+### 问题: 要求不止是输入网址才能发送UAProfile，点击连接的时候也要能发送UAProfile
+解决方案: 可以修改 \external\chromium_org\third_party\WebKit\Source\core\loader\FrameLoader.cpp void FrameLoader::applyUserAgent(ResourceRequest& request) { request.setHTTPUserAgent(AtomicString(userAgent)); //添加如下代码 +++ request.setHTTPHeaderField("x-wap-profile", "客户需要的UAProfile"); }
+参考FAQ: FAQ71967
+### 问题: Exchange邮箱登录过程中，客户端证书有什么作用？
+解决方案: SSL/TLS 传输过程中, 服务器收到 ClientHello后,会回复ServerHello 以及服务器端证书等信息到客户端,客户端通接收到服务器端证书后,验证证书的合法性以及证书和服务器端域名是否相符.通常情况下,服务器端并不会验证客户端的合法性,因此不需要客户端证书. 在某些要求比较高的场景下,服务器需要对客户端发起验证,因此服务器在收到ClientHello后,会额外发送Certificate Request消息,请求验证客户端.此时客户端需要发送自己的证书到服务器,服务器通过该证书验证客户端的合法性,这个证书就是登录过程中选择的客户端证书.
+参考FAQ: FAQ72057
+### 问题: sta得到Ap信息的两种方式
+解决方案: 1、AP定时发送Beacon帧来声明某个网络.此帧携带网络的一些信息,STA可以被动收到此帧,得到AP信息. 2、Probe (request and response):STA除了监听Beacon帧以了解网络信息外,还可以发送Probe Request帧用于搜索周围的无线网络.
+参考FAQ: FAQ72064
+### 问题: SR2351芯片，wifi作为sta是否支持SCA（switch channel anouncement）
+解决方案: 不支持,当路由器通过SCA切换信道时,wifi作为sta已连接时是发生断开的.然后会再次扫描重连接.无法做到不断开就跟随路由器切换信道.
+参考FAQ: FAQ92175
+### 问题: SR2341A芯片，wifi作为sta是否支持SCA（switch channel anouncement）
+解决方案: 支持.SR2341A芯片, wifi作为sta连接路由器时,路由器发SCA action帧切换信道,sta是可以做到不断开连接,跟随切换到新的信道上.
+参考FAQ: FAQ92178
+### 问题: 展讯蓝牙芯片的蓝牙地址NAP与UAP的值
+解决方案: 展讯蓝牙芯片的蓝牙地址中NAP和UAP为4045DA
+参考FAQ: FAQ72423
+### 问题: sim卡热插拔功能
+解决方案: 若版本不支持SIM卡热插拔功能,走需求流程;若已经支持SIM卡热插拔功能,则按照以下配置(AP 侧修改的DTS文件): 1、双卡双ｇｐｉｏ方案:要把SIM1 配置为:使用的GPIO号, SIM2的gpio配置为:使用的GPIO号; 2、双卡单ｇｐｉｏ方案:要把SIM1 配置为:0xFFFF, SIM2的gpio配置为:使用的GPIO号; 　　3、单卡单ｇｐｉｏ方案:要把SIM1 配置为:使用的GPIO号, SIM2的gpio配置为0xFFFF; DTS相关code如下: dual_sim_plug-cpw { compatible = "sprd,dual_sim_plug"; sprd,name = "dual_sim_plug_w"; sprd,dst = <2>; sprd,channel = <21>; sprd,sim1_gpio = <19>; sprd,sim2_gpio = <18>; };
+参考FAQ: FAQ72131
+### 问题: 为何网络正常google play store无法登入
+解决方案: 常见网络正常无法登入最有可能的原因是手机时间设定错误,例如下面的log 08-31 09:07:11.270 561 875 E CheckinTask: SSL error, attempting time correction: javax.net.ssl.SSLHandshakeException: org.bouncycastle.jce.exception.ExtCertPathValidatorException: Could not validate certificate: current time: Sat Aug 31 09:07:11 Московское летнее время 2019, expiration time: Tue Aug 21 08:00:00 Московское летнее время 2018 只要将手机的时间设成对的时区时间就可以避免此错误
+参考FAQ: FAQ72135
+### 问题: 修改了SELinux安全策略，如何判断对CTS是否有影响？
+解决方案: 很多情况下,为了实现某些需求,新增加的SELinux安全策略容易和原生的策略冲突,一般是原生权限的扩大化, 而CTS会检查每条规则是否存在前后矛盾,以及违反一些原生安全规则的定义,改完之后,要执行以下CASE, 确保没有新规则修改引入: run cts -c android.cts.security.SELinuxHostTest // 1项 run cts -c android.cts.security.SELinuxNeverallowRulesTest // 114项 run cts -c android.security.cts.SELinuxDomainTest // 6项 run cts -c android.security.cts.KernelSettingsTest // 21项 run cts -c android.security.cts.SELinuxTest // 7项
+参考FAQ: FAQ72157
+### 问题: 有没有判定是否在执行CTS测试的方法？
+解决方案: 很多情况下,为了实现客户需求无法和原生代码兼容,可以在执行CTS测试用例时走另外一个分支,因此用到CTS模式判定, 总结下来,目前主要有两类方法判定,分别适用于不同场合: (1)可以在CTS测试初始化阶段设置属性值,然后整个运行阶段都可以使用, android.tests.devicesetup这个apk在CTS执行第一个CASE之前安装,通过persist.sys.cts属性值判定: (2)通过Context判定包名:
+参考FAQ: FAQ72158
+### 问题: SIM ICCID的含义
+解决方案: SIM卡背面有20 位数字组成的IC唯一标识号ICCID. 以中国移动为例:前面6位(898600)是中国的代号: 第7位为业务接入号,在135 、136、137、138、139中分别为5、6、7、8、9;第8位是SIM的功能位,一般为0,现在预付费SIM卡为1;第9、10位是各省的编码;第11、12位是年号;第十三位是供应商代码;第14-19则是用户标识码;第20位是校验位.
+参考FAQ: FAQ72163
+### 问题: 某些视频源全屏播放时，为什么没有满屏显示？
+解决方案: 视频全屏播放时的显示范围是根据视频源的宽度和高度及LCD的宽度和高度进行自适配显示的,这样观看的视频在LCD上显示就不会出现扭曲变形,一般以高度不变为原则,然后自适配调整显示的宽度,按比例进行显示,所以宽度的两侧可能会出现裁剪,因此两旁可能出现不会满屏显示的情况,这个裁剪与否和视频源的分辨率有关,即和视频源的宽度及高度有关,所以有些视频源全屏播放时会满屏显示,有些视频源全屏播放时不会满屏显示,该现象属于正常现象.
+参考FAQ: FAQ72186
+### 问题: 升级大版本之后，为什么视频播放出现黑屏，声音正常？
+解决方案: 在升级大版本之后,如果视频播放出现黑屏,而声音播放正常,很可能是手机系统视频解码库没有同时随大版本升级导致的.请把大版本升级时的proprietories-scx35.tar.gz 解压后,把proprietories-scx35\scx35\system\lib下面的so库文件全部拷贝到手机系统代码的\vendor\sprd\proprietories\xxx(不同芯片,这个目录可能不一样)\system\lib目录下面,即更新视频解码库so文件后再进行复测验证.
+参考FAQ: FAQ72190
+### 问题: 从视频播放器播放视频退出后，再次播放时为什么不会提示“是否继续播放还是重新播放”
+解决方案: 进入视频播放器播放视频时,是否继续播放还是重新播放,详情请参考/packages/apps/Gallery2/src/com/android/gallery3d/app/MoviePlayer.java中的getBookmark(Uri uri),即有如下三个条件: 1.如果上次退出播放器的播放时间点小于30s; 2.如果该视频的总时长小于2分钟; 3.如果总时长减去上次播放的时间点后的时间不超过30s即剩余时间小于30s; 以上三个条件满足任何一个则不会弹出"是否继续播放还是重新播放"的提示框,只有当以上三个条件都不满足时,则会弹出"是否继续播放还是重新播放"的提示框.
+参考FAQ: FAQ72187
+### 问题: 为什么手机在使用网络自动更新时间成功之后，当关闭网络连接，并手动更改了时间之后，时间还能够自动更新？
+解决方案: 这个现象是android的自动更新机制里存在的缓存机制导致,属于Android的原生设计. 手机在需要自动更新时间时(如开启了设置中的自动更新时间开关),会先判断是否存在时间缓存数据: 如无,即未成功同步过,这时才真正强制发起时间同步,通过连接ntp服务器去同步时间; 如有,则去从缓存中读取正确的时间设置到系统,此时即便没有网络环境也会更新. 当手机连接网络成功同步时间之后,手机的系统时钟就会同步过来,当前成功获取的时间会保存成一个时间缓存数据.关闭网络之后会根据cache数据来设定系统最新的时间.
+参考FAQ: FAQ90615
+### 问题: 离线网页默认存储位置
+解决方案: 默认存储路径为:SD卡根目录下的/Android/data/com.android.browser/snapshotpage/+时间戳+/
+参考FAQ: FAQ72212
+### 问题: drm功能默认是开启的吗
+解决方案: 一般情况下默认只有oversea的版本才会有此功能,即l编译时lunch选择oversea字眼的product才会有此功能,否则 下载drm文件的时候会提示"下载失败"; 如何在base或者common或者cmcc或者cucc版本要加上此功能: 选择相应product的mk文件,ex: device\sprd\scx35_sp7731gea_hd\sp7731geahdpluscmcc.mk PRODUCT_REVISION := base cmcc include $(APPLY_PRODUCT_REVISION) 修改为: PRODUCT_REVISION := base cmcc　oversea 即可.
+参考FAQ: FAQ72218
+### 问题: Browser默认UA
+解决方案: 如果是编译base或者common版本,默认UA为null; 如果是编译cmcc或者cucc版本,UA会根据编译信息生成UA字符串,具体代码可参考: \vendor\sprd\plugins\packages\apps\Browser\addons\UserAgentCmccAddon\src\addon\sprd\browser\useragent\SprdBrowserUserAgentAddon.java \vendor\sprd\plugins\packages\apps\Browser\addons\UserAgentCuccAddon\src\addon\sprd\browser\useragent\SprdBrowserUserAgentAddon.java 得到UA的方法为: getUserAgentString()
+参考FAQ: FAQ72220
+### 问题: chrome预置书签根目录可以为多个吗
+解决方案: chrome给拿到版权的vendor会提供内置书签和主页的接口,这个在其它FAQ有详细说明; chrome可以在预置书签中设置多个根目录吗,比如:想要在书签下有两个文件夹,分别是中国移动和中国联通,然后在这两个文件夹下再内置相应的书签,即中国移动和中国联通可以用google提供的接口同时内置吗,答案是不行; 原因是有多个根目录时,chrome会提示: E/PartnerBookmarksReader( 6172): ATTENTION: more than one top-level partner bookmarks, ignored 然后所有的书签都会被忽略.
+参考FAQ: FAQ72228
+### 问题: Browser硬件加速和其它app差异
+解决方案: 差异还是蛮大的,在Browser中设置硬件加速的话, 代码应该为: setLayerType(View.LAYER_TYPE_NONE, null); 其它app设置硬件加速的话,代码为: setLayerType(View.LAYER_TYPE_HARDWARE, null); 所有的模块中只有两个地方是在硬件加速打开的话,要设置layertype为LAYER_TYPE_NONE,一个是用到webview的地方, 另一个是GLSurfaceView.
+参考FAQ: FAQ72231
+### 问题: 浏览器默认导航界面如何改成3*N布局
+解决方案: 默认导航布局是2*N,即是2列,行数是N,N是根据预置导航数目变化而变化; 现在要改成3*N,即是3列,修改方法为: src/com/android/browser/DefaultHomeView.java @@ -116,7 +116,7 @@ public class DefaultHomeView extends FrameLayout implements AdapterView.OnItemCl mGridView.setColumnWidth(getDesiredThumbnailWidth(mContext)); mGridView.setOnItemClickListener(this); mGridView.setAdapter(mGAdapter); - mGridView.setNumColumns(GridView.AUTO_FIT); + mGridView.setNumColumns(3); 即由自动适配改为需要的列数.
+参考FAQ: FAQ72233
+### 问题: Browser中能限制受限的文件吗
+解决方案: 对一些隐藏的文件和禁止转发的文件可以进行限制吗,这个可以做到; 不过不是浏览器能进行控制的,是由其它应用进行控制的,比如: 一些FL的drm文件是禁止用邮件转发的,这个控制就是在在DownloadProvider和DocumentsUI来进行控制; 一些隐藏的文件,是用FileExplorer来控制的; 当然这些也是有前提的,那就是上传的时候是在系统内置的应用下打开的;否则很难控制.
+参考FAQ: FAQ72234
+### 问题: 如何调整视频通话窗口大小
+解决方案: \packages\apps\InCallUI\src\com\android\incallui\VideoCallFragment.java public void setPreviewSize(int width, int height){}方法中 params.width = width; params.height = height;通过调整width或height的值改变视频通话窗口的大小
+参考FAQ: FAQ72732
+### 问题: 蓝牙地址的组成
+解决方案: 蓝牙地址分为三部分:LAP(24位地址低端部分)、UAP(8位地址高端部分)和NAP(16位无意义地址部分).其中,NAP和UAP是生产厂商的唯一标识码,必须由蓝牙权威部门分配给不同的厂商.而LAP是由厂商内部自由分配.
+参考FAQ: FAQ72424
+### 问题: 默认资源的使用
+解决方案: 同一类(type)的资源,有很多目录,其中没有带各种后缀的是默认资源. 如果资源查找的时候,找不到和手机当时配置相匹配的资源时,就会使用默认资源. 例如字符串资源: 中文(中国):values-zh-rCN 英语(英国):values-en-rGB 默认字符串: values 使用的时候需要注意:添加资源的时候,默认资源目录(字符串的默认目录为values)下面一定要添加. 例如开发游戏,主要针对中国人,不能只在简体中文(values-zh-rCN)下面添加字符串,也要在values目录下添加. 如果不添加,有用户非要在英文、或者其他语言环境下玩这个游戏,那就会因为找不到资源,出现exception,导致游戏退出. 这种低级错误,给用户的体验会很差.
+参考FAQ: FAQ72434
+### 问题: SC2341B(MARLIN)支持的物理链路有哪些？
+解决方案: 1 Support of ACL link 2 Support of SCO link 3 Support of eSCO link 4 Support of Enhanced Data Rate ACL links 5 Support of Enhanced Data Rate eSCO links
+参考FAQ: FAQ72467
+### 问题: SC2341B(MARLIN)支持的ACL Packet 类型有哪些？
+解决方案: 1 Support of DH1 packet type 2 Support of DM3 packet type 3 Support of DH3 packet type 4 Support of DM5 packet type 5 Support of DH5 packet type 6 Support of AUX1 packet type
+参考FAQ: FAQ72468
+### 问题: SC2341B(MARLIN)支持的Enhanced Data Rate ACL Packet 类型有哪些？
+解决方案: 1 Support 2-DH1 packet type 2 Support 2-DH3 packet type 3 Support 2-DH5 packet type 4 Support 3-DH1 packet type 5 Support 3-DH3 packet type 6 Support 3-DH5 packet type
+参考FAQ: FAQ72469
+### 问题: SC2341B(MARLIN)支持的SCO and eSCO Packet Types 类型有哪些？
+解决方案: 1 Support of HV1 packet type 2 Support of HV2 packet type 3 Support of HV3 packet type 4 Support of DV packet type 5 Support of EV3 packet type 6 Support of EV4 packet type 7 Support of EV5 packet type
+参考FAQ: FAQ72470
+### 问题: SC2341B(MARLIN)支持的Enhanced Data Rate eSCO Packet Types 类型有哪些？
+解决方案: 1 Support 2-EV3 packet type 2 Support 2-EV5 packet type 3 Support 3-EV3 packet type 4 Support 3-EV5 packet type
+参考FAQ: FAQ72472
+### 问题: 欧洲部分国家wifi channel 13无法正常scan问题
+解决方案: 欧洲大部分国家使用的频率为2402 - 2482, 但是有少数国家的频率比较特别: 2400 - 2483,比如西班牙,这导致了芯片在scan channel 13时会有问题,此问题在2015.10以后的wifi固件版本上已经解决.
+参考FAQ: FAQ72504
+### 问题: 如何清除图库/视频播放器中的缩略图数据？
+解决方案: 点击主菜单的"设置"--"应用"--"图库"---"清除数据",此时则会把图库/视频播放器中的缩略图信息全部删除.清除缩略图的操作主要用于验证缩略图显示异常的问题,在清除原来的缩略图信息后,再次进入图库/视频播放器时,会重新生成缩略图,否则会一直使用原来缓存中的缩略图.
+参考FAQ: FAQ72536
+### 问题: 为什么WIFI热点名只能支持10个汉字？
+解决方案: 根据 WIFI 协议,SSID 最大长度为32个字节. 所以用字母和数字命名的热点名称最大长度为32个字符. Android 参考设计中 hotspot 的 network name 中,汉字使用的是 UTF-8 编码, UTF-8编码中一个汉字占用3个字节, 所以,用纯汉字命名的热点名称,最大长度10个汉字.
+参考FAQ: FAQ72604
+### 问题: wifi P2P规范中device discovery中两个阶段和状态的定义
+解决方案: P2P也是用probe request和probe response 帧来搜索周围的p2p设备. 但是其比基本BSS结构中要复杂些,其自己发送probe request帧,还要接收其它设备发来的probe request帧并回复probe response帧.此过程中定义的两个状态两个阶段如下图所示:
+参考FAQ: FAQ72630
+### 问题: SC7701平台是否支持PAP和CHAP 鉴权协议？
+解决方案: PAP和CHAP是目前的在PPP中普遍使用的认证协议. PAP是简单二次握手身份验证协议,用户名和密码明文传送,安全性低.PAP全称为:Password Authentication Protocol 
+ CHAP是一种挑战响应式协议,三次握手身份验证,口令信息通过MD5算法加密传送,安全性高. CHAP全称为:Challenge Handshake Authentication Protocol 
+SC7701平台是支持PAP和CHAP鉴权协议的.
+参考FAQ: FAQ72696
+### 问题: SC7701平台是否支持GPRS的GEA加密协议？
+解决方案: GEA是GSM GPRS Encryption Algorithm的缩写. GPRS网络为了保证数据传输上的安全性,对数据信息进行了加密,定义了一种特殊的加密算法GEA. SC7701平台目前支持GPRS的GEA1、GEA2和GEA3的加密协议.
+参考FAQ: FAQ72697
+### 问题: 怎样开关配置SC7701平台上对应的GPRS GEA加密协议？
+解决方案: SC7701平台目前支持GPRS GEA1\GEA2\GEA3加密协议,可以通过修改NV来开启关闭对应的协议项,如下: 修改td_nv_type.nvm 中这些项: 关闭GEA1 修改: ITEM_NAME = gea_encryption_algo1 ITEM_ID = 2106 ITEM_TYPE = 1 (CHAR) ITEM_LENGTH = 1 ITEM_CONTENT = 0X0 开启GEA2修改: ITEM_NAME = gea_algo2 ITEM_ID = 2106 ITEM_TYPE = 1 (CHAR) ITEM_LENGTH = 1 ITEM_CONTENT = 0X1 开启GEA3修改: ITEM_NAME = gea_algo3 ITEM_ID = 2106 ITEM_TYPE = 1 (CHAR) ITEM_LENGTH = 1 ITEM_CONTENT = 0x1
+参考FAQ: FAQ72698
+### 问题: 耳机接口OMTP和CTIA分别指的是什么标准？
+解决方案: OMTP是带MIC的耳机3.5mm接口标准,通常称为国家标准.插针接法是(从小头算起):左声道-右声道-麦克风-地线. 还有一种带MIC的耳机3.5mm接口是国际标准,称为CTIA,插针接法是:左声道-右声道-地线-麦克风. 如果手机是OMTP标准的插槽,插入CTIA标准的耳机,或者手机是CTIA标准的插槽,插入OMTP标准的耳机,耳机是兼容的,但是会有失真,和串音,麦克风不能用现象. 这两种标准受限于硬件和结构的设计,软件上无法调整.
+参考FAQ: FAQ72704
+### 问题: cts fail testHwSupportedLevel分析解决方法
+解决方案: [原因分析] expected 大小与actual不一致. expected 大小为 FRONT_SENSOR_ORIG_WIDTH,FRONT_SENSOR_ORIG_HEIGHT actual 大小为 kavailable_front_stream_configurations配置的最大大小 [解决方法] 将expected与actual修改为一致 #define FRONT_SENSOR_ORIG_WIDTH 640//1600 //select according to max jpg resolution #define FRONT_SENSOR_ORIG_HEIGHT 480 //1200
+参考FAQ: FAQ72784
+### 问题: 虚拟运营商和实体运营商的区分方式有哪几种
+解决方案: MVNO和对应MNO的MCC/MNC是相同的,那就需要MVNO定义额外的标识来和对应MNO做区分. 通常,根据SIM卡中的特殊数据信息,比如spn/pnn/gid/imsi等特殊字段自定义标识区分,但是具体的这些区分信息的字段需要手机厂商联系前端或者是当地虚拟运营商获取,目前在个别版本分支上才有这部分代码实现.
+参考FAQ: FAQ72807
+### 问题: 如何解决7731平台校准模式串口无输出的问题
+解决方案: 解决使用mobiletester工具进入校准模式后串口无Log输出步骤: 1.需要修改dts文件,使loglevel=7,在kernel/arch/arm/boot/dts目录下修改sprd-scx35_sp7731xxxx.dts chosen { bootargs = "loglevel=1 console=ttyS1,115200n8 init=/init root=/dev/ram0 rw"; linux,initrd-start = <0x85500000>; linux,initrd-end = <0x855a3212>; }; 此处loglevel=1 //改为7 2.校准模式启动的是recovery.image,所以修改完dts文件后重新编译recovery.image而非bootimage; 完成以上两步即可
+参考FAQ: FAQ72850
+### 问题: AVRCP命令介绍
+解决方案: AVRCP的命令主要分为四种类型,列表如下: 支持的部分PASS THROUGH命令包含: 1.play(播放) 2.stop(停止) 3.pause(暂停) 4.record(录音) 5.rewind(跳转至播放位置) 6.fast forward(快进) 7.eject(弹出盘) 8.forward(下一首) 9.backward(上一首)
+参考FAQ: FAQ72866
+### 问题: 联系人列表头像形状修改
+解决方案: 在android5.0之前,联系人列表头像是方形的,5.1时则改成了圆形,同时提供了接口能够改回方形. 对应的接口是ContactEntryListAdapter的setCircularPhotos,这样可以修改ContactEntryListAdapter对象的属性来修改界面的头像形状.比如想要修改联系人主列表界面的头像为方形,可以修改DefaultContactBrowseListFragment的createListAdapter方法,添加adapter.setCircularPhotos(false);
+参考FAQ: FAQ72879
+### 问题: p2p连接时，如何判定谁做GO（Group Owner）
+解决方案: wifi直连时,在GP协商时,会带有一个属性GO Intent,该属性代表发送设备扮演GO的渴望程度,其内部包含一个名为GO Intent的字段,该字段长一个字节,目前使用的仅是前八位. 第0位叫做 Tie Breaker(意思为决胜因),Tie Breaker随机取值为0或者1. 第1 -7位为Intent值,取值为0-15,值越高,代表越想成为GO,15表示该发送设备必须成为GO 规则如下图: 空口字段如下图:
+参考FAQ: FAQ72890
+### 问题: android 5.0/5.1暂不支持连拍闪光灯功能
+解决方案: 因为连拍时暂时只计算出一次pre-flash的effect值,移动场景时ae awb可能会有影响,所以连拍时无法支持闪光灯功能,现在默认连拍和闪光的功能互斥,建议不要打开.
+参考FAQ: FAQ72934
+### 问题: GPS链路输出的LNA和SAW滤波器是否可以交换位置来提高灵敏度
+解决方案: 不能.LNA放在最前端时会被GSM信号饱和,导致GPS完全不能工作.
+参考FAQ: FAQ72948
+### 问题: H.264解码器如何手动切换软解码及硬解码？
+解决方案: 1. 可以透过调用 openmax 的API来切换, 走google原生的架构, 可以参考google/android 相关的 media codec 官方文献. 2. 平台自行打通切换路径: 在SPRDAVCDecoder.cpp中创建SPRDAVCDecoder类别时, 会读写文件: FILE *fp = fopen("/data/data/com.sprd.test.videoplayer/app_decode/flag", "rb"); 可以透过此文件手动强制决定使用硬解码或软解码器. 具体实现过程则可由客户端自由实现.
+参考FAQ: FAQ72963
+### 问题: BT HID协议的应用场景有哪些？
+解决方案: The Human Interface Device (HID)定义了蓝牙在人机接口设备中的协议、特征和使用规程.典型的应用包括蓝牙鼠标、蓝牙键盘、蓝牙游戏手柄等.该协议改编自USB HID Protocol. Bluetooth HID devices支持三种Report:Input, Output, and Feature.
+参考FAQ: FAQ73104
+### 问题: 什么是DIP
+解决方案: DIP(Device ID Profile):增加一些设备特定的信息到EIR上,这样在SDP时可以被发现,从而让对方设备获取自己的一些特有信息,如厂商ID或其他有用信息
+参考FAQ: FAQ72975
+### 问题: BT AVRCP协议的应用场景有哪些？
+解决方案: AVRCP(Audio/Video Remote Control Profile)提供了如下主要功能: 1.通过蓝牙耳机(比如Sony WM600,SBH50)或车载控制台控制手机上音乐播放. 2.在蓝牙耳机或车载控制台上显示手机上音乐播放的状态,歌名,歌手等信息. 3.在蓝牙耳机或车载控制台上浏览手机上的音乐文件,显示播放列表. AVRCP 定义了如何控制流媒体的特征.包括暂停、停止、启动重放、音量控制及其它类型的远程控制操作. AVRCP 定义了两个角色,即控制器和目标设备.控制器通常为远程控制设备,而目标设备为特征可以更改的设备.在 AVRCP 中,控制器将检测到的用户操作翻译为 A/V 控制信号,然后再将其传输至远程 Bluetooth 设备.对于"随身听"类型的媒体播放器,控制设备可以是允许跳过音轨的耳机,而目标设备则是实际的播放器.常规红外遥控器的可用功能可以在此协议中实现.
+参考FAQ: FAQ73111
+### 问题: 蓝牙主动断开连接的BT LOG流程
+解决方案: 如下图所示是一次BT主动断开连接时HCI的BT log. 从上图可以看出,BT在主动断开连接时在HCI层共经历3个步骤: 1. 发送Disconnect命令; 2. 接收Disconnect事件,确认命令状态; 3. 接收Disconnect操作完成事件,主动断开连接过程结束.
+参考FAQ: FAQ72984
+### 问题: 蓝牙被动断开连接的BT LOG流程
+解决方案: 被动断开连接仅有一个步骤,即接收Disconnect操作完成事件,其事件名称为Disconnection Complete,接收该事件之后主机便开始进行断开连接操作.
+参考FAQ: FAQ72990
+### 问题: 5.1Tshark平台如何设置使蓝牙末码回拨的号码为最后一通拨出的号码
+解决方案: 修改AtPhonebook.java(packages/apps/src/com/android/bluetooth/hfp/)文件: String[] projection = {Calls.NUMBER}; //SPRD: modified to call the lastest call log Cursor cursor = mContentResolver.query(Calls.CONTENT_URI, projection, null, null, Calls.DEFAULT_SORT_ORDER +//注释掉该句代码 OUTGOING_CALL_WHERE, null, Calls.DEFAULT_SORT_ORDER +//添加该句代码 " LIMIT 1"); if (cursor == null) return null;
+参考FAQ: FAQ78045
+### 问题: 蓝牙物理信道的定义？
+解决方案: 物理信道由伪随机射频信道跳频序列、数据包(间隙)时序和访问代码界定.跳频序列由蓝牙设备地址和选定的跳频序列决定.跳频序列相位由蓝牙时钟决定.所有物理信道都可细分为长度不等的间隙,而这取决于物理信道.
+参考FAQ: FAQ73082
+### 问题: 如何通过Radio日志查看当前SIM卡注册的网络
+解决方案: 一般情况下,手机开机SIM卡会连接基站并注册网络,是通过AT>CREG命令与modem交互,并得到响应.读取当前注册网络的响应格式如下: AT+CREG?
++CREG: <mode>, <state> [, <lac>, <ci> [, <AcT>]]
+OK 其中: mode:表示网络是否注册上并且不定时上报状态,一般情况下此值为2 state: 表示当前网络的状态,如没有注册、注册成功、紧急注册、为未知等 lac:location id of cell,设备位置 ci:设备号 AcT:注册的网络类型,如GSM、HSPA、UTRAN等 所以通过Radio日志中的CREG可以简单快速查看当前SIM卡的注册的网络类型和状态,方便分析问题,非常有用,具体可以参考3gpp协议:3GPP 27007-730 (Section: 7.2)
+参考FAQ: FAQ73032
+### 问题: 如何获取设备的IMEISV号
+解决方案: 标准接口: TelephonyManager mTelephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+String imeiSv = mTelephonyManager.getDeviceSoftwareVersion();  注: 需要<uses-permission android:name="android.permission.READ_PHONE_STATE" />权限
+参考FAQ: FAQ73033
+### 问题: 如何修改android5.1项目中的simlock界面？
+解决方案: 在5.1的版本中simlock的界面在vendor中,具体在如下目录: /vendor/sprd/plugins/packages/services/Telephony/addons/SimLockSupport 对应的xml界面配置文件为sim_ndp_sprd.xml.可以按照对应要求修改即可.
+参考FAQ: FAQ73038
+### 问题: 第一次开机时加入resize2fs /data分区功能，用全了userdata容量，但恢复出厂设置后userdata分区容量却发生了细微变化
+解决方案: 这个是正常现象.原因如下: Resize是修改reserverd block group,不改变原来的文件系统元数据; 恢复出厂设置是重新格式化,文件系统本身结构有所变化,元数据按容量计算后占据的空间不一样了, 因此两者有所差异是正常现象,
+参考FAQ: FAQ73043
+### 问题: 拨打紧急号码（未通）为何不能开启飞行模式
+解决方案: 在飞行模式下拨打紧急呼叫时,EmergencyCallHelper 会监听飞行模式和 service state状态,同时设定180秒的超时时间,只要紧急电话未拨打出去,EmergencyCallHelper就会自动关闭飞行模式. 所以用户在拨打紧急电话之后又去开启了飞行模式,EmergencyCallHelper自动关闭了飞行模式,并继续等待in service的状态去拨打紧急呼叫,所以飞行模式自动关闭是正常的现象 在等待180s之后或者播通紧急号码之后可以正常打开飞行模式
+参考FAQ: FAQ73061
+### 问题: 目前蓝牙BNEP支持的协议版本
+解决方案: 蓝牙BNEP支持的协议版本是V1.0.
+参考FAQ: FAQ73091
+### 问题: 目前蓝牙HFP支持的协议版本
+解决方案: 目前蓝牙HFP在android 4.4支持的协议版本为1.5,在android5.1支持的协议版本为1.6.v1.6与v1.5之间的差异在于v1.6增加了WBS功能
+参考FAQ: FAQ73122

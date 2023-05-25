@@ -1,0 +1,308 @@
+### 问题: SecureToolBox工具和SecurityServer版本可以混用吗？
+解决方案: 不可以,SecurityServer的版本必须和SecureToolBox工具的版本相匹配.
+参考FAQ: FAQ108856
+### 问题: GNSS如何确认短稳是否符合要求
+解决方案: 可以通过PC端工具GNSS Tool来获取GPS系统的Clock Drifting,也可以通过手机端SGPS工具进行读取.或者抓取GNSS log进行计算分析. 对于Clock drifting的值,其会受到终端内部靠近TSX部分温度的影响,在蜂窝网开关或者WiFi开关等发热变化明显时会有较明显变化.同时有时如果存在其他时钟问题,也有可能反映在Clock Drifting参数上.通常按照如下判断,取整体中较大的值看. Clock drifting范围 GPS 性能 备注 0-5 好 基本上不存在热干扰; 5-10 一般 如果很少存在,GPS可以工作,若普遍存在会导致GPS性能较差或无法工作; 10-20 差 如果很少存在,会有概率性不定位的可能,若普遍存在GPS无法正常工作.需要排查TSX相关设计; >20 无法工作 无法正常工作,需要排查TSX相关设计;
+参考FAQ: FAQ108903
+### 问题: GNSS如何配置GPS+BeiDou模式
+解决方案: GE2 项目的默认配置是:GPS＋GLONASS,如果需要配置GPS＋BEIDOU,需要修改如下配置: 1. 项目的*.mk中增加gps beidou的配置: 例如在项目的product对应的*.mk (sp9860g_1h10/sp9860g_1h10_native.mk )添加下面配置 PRODUCT_PROPERTY_OVERRIDES += ro.ge2.mode=gps_beidou 2. /data/gnss/config/config.xml 中修改gps beidu的配置: (confin.xml文件在工程中的路径 vendor/sprd/./././…….) ROPERTY NAME="GPS-IMG-MODE" 配置成 gnssbdmodem
+参考FAQ: FAQ108904
+### 问题: SC9863A平台支持WIFI Display吗？
+解决方案: SC9863A平台是支持WIFI DISPLAY的 但是请注意只支持source,不支持sink,sink要上层应用支持的(底层是支持的) 另外所谓的Source/sink 是指miracast/display的概念: Source 是我们是作为片源方,将显示投送到对方屏幕去显示. 相反Sink就是接收对方的数据并在自己这边显示出来.
+参考FAQ: FAQ108926
+### 问题: SC9863A平台CA和非CA场景下 LVDS/SPI设计的差异？
+解决方案: CA场景: SPIA/B,LVDSRF0/1都不能删除; 非CA场景: SPIA/SPIB必须保留,不能删除,SPIB会走W相关控制信息; LVDSRF1 可以删除,设计上做悬空处理;
+参考FAQ: FAQ108927
+### 问题: SC9863A平台音频主副mic串接电容0.1uF，耳机左右声道串接1uF电容，为何有差异？
+解决方案: 耳机左右声道需要测试电学MOS,1UF可以增加输入低频点的截至频率范围,对电学MOS有好处.
+参考FAQ: FAQ108931
+### 问题: 如何修改马达电压
+解决方案: 马达电压修改如下: kernel/drivers/soc/sprd/sprd_vibrator.c #ifdef CONFIG_PMIC_SC2720 /*TODO: This macro definition is not the best method, should removed in next version*/ #define LDO_VIBR_V (0x2) 这个宏对应SC2720; 最小电压是2.8V,每个step是100mV,0x2对应是2.8V + 0x2×100mV = 3V. #else #define LDO_VIBR_V (0xB4) 这个宏对应SC2721及SC2731; 最小电压是1.2V,每个step是10mV,0xB4对应是1.2V + 0xB4×10mV = 3V. #endif
+参考FAQ: FAQ108941
+### 问题: SC6531E 不支持DTM功能
+解决方案: SC56531E不支持DTM功能,所以发送的GPRS attach 请求中不包含DTM GPRS Multi slot Class. GPRS attach 请求会包含GPRS MultiSlot Class.
+参考FAQ: FAQ110980
+### 问题: android8.1GMS版本，SearchLauncher待机界面是否支持home键返回默认页功能
+解决方案: android8.1GMS版本,SearchLauncher待机界面不支持home键返回默认页功能,此为android原生设计,相关代码如下: SearchLauncher\src\com\android\searchlauncher\SearchLauncherCallbacks.java ... ... @Override public boolean shouldMoveToDefaultScreenOnHomeIntent() { return false; }
+参考FAQ: FAQ108956
+### 问题: 打开录音机-设置-设置开始录音时间，设置时间后，再点击设置开始录音时间，显示的时间始终比系统时间多一个小时
+解决方案: 时间设置界面上定时开始录音时间默认选择的时间比当前系统时间往后一个小时是为了方便用户调节,用户亦可调节成任意开始时间. 如果定时录音开始时间默认当前系统时间,则一般都要在24小时后开始录音,一些用户可能没注意设置后就点击确认,24小时往往不是用户一个期待的数值,所以目前的数值是一个较为合理的设置,建议保持现状.
+参考FAQ: FAQ109017
+### 问题: 为什么录音机不支持横屏显示
+解决方案: 录音机录制音频,播放音频等一些窗口需要专门调整横屏布局,目前代码中没有调试过横屏布局,故目前录音机不支持横屏显示.
+参考FAQ: FAQ109020
+### 问题: 进入录音详情播放界面播放一个录音文件，“上一个标记”和“下一个标记”两个按钮是灰的
+解决方案: 播放的录音文件需要是带有标记的录音文件,"上一个标记"和"下一个标记"这两个按钮才会高亮. 带标记的录音文件需要在录制的时候点击标记才会生成带标记的录音文件.
+参考FAQ: FAQ109012
+### 问题: 后台播放音乐时，点击录音机无法录制后台播放的音乐
+解决方案: 由于录音的时候录音机申请到audiofocus的焦点,此时music失去audio焦点则背景音乐会暂停. 声音并发的情况其实很多,诸如电话和音乐混响,闹铃和音乐混响等,改动影响的是music的整体audiofocus逻辑,从用户使用角度上来看,也是不应该录音过程中让用户播放音乐
+参考FAQ: FAQ108973
+### 问题: 录音默认存储SD卡
+解决方案: 使用录音机录音的时候录音文件默认的存储位置是SD卡(在插入SD卡的情况下) 这一点有基于录音产生的音频文件大小以及手机性能等方面做考虑 MP3(高品质)格式录音,用户录音几十分钟产生的音频文件会达到几十M,如果保存路径为手机,录音文件均保存在手机的话,但手机ROM空间有限,会占用系统存储空间.
+参考FAQ: FAQ109008
+### 问题: 录音默认的文件格式为MP3格式
+解决方案: 录音默认的文件格式为MP3格式
+参考FAQ: FAQ109013
+### 问题: 如何打开南美运营商movistar认证要求的WCDMA R8 fast dormancy
+解决方案: 打开td_nv_type.nvm,搜索gcf_iot_oper_ctrl_for_mp,搜到对应项后将相关的ITEM_CONTENT依据不同出货国家设置为如下值: 墨西哥movistar:0x24 阿根廷movistar:0x7F 智利movistar:0x80 哥伦比亚movistar:0x81 厄瓜多尔movistar:0x82 秘鲁movistar: 0x83 乌拉圭movistar:0x99 修改完以后重新生成新的nv bin文件烧入手机重启生效
+参考FAQ: FAQ109009
+### 问题: How to check the vamos capability in armlog tool?
+解决方案: Get the vamos information by searching the trace log,the keyword is "vamose level".
+参考FAQ: FAQ108985
+### 问题: How to check the network and ue are using vamos in armlog tool?
+解决方案: Double click the "ASSIGNMENT_COMMAND" message,and then choose the MPH_CHAN_ASSIGN_REQ message,the vamos information is in MPH_CHAN_ASSIGN_REQ message structure,the details as below:
+参考FAQ: FAQ108987
+### 问题: 怎么查看2G下寻呼周期
+解决方案: 
+参考FAQ: FAQ109053
+### 问题: 怎么查看在做PS业务时是否支持接收Pagging
+解决方案: 
+参考FAQ: FAQ109059
+### 问题: 怎么查看2G驻网类型
+解决方案: 
+参考FAQ: FAQ109061
+### 问题: GNSS上报的位置信息是否支持WGS84坐标系统
+解决方案: 当前GNSS上报的位置信息只支持WGS84坐标系统. WGS-84坐标系(World Geodetic System一1984 Coordinate System):一种国际上采用的地心坐标系.坐标原点为地球质心,其地心空间直角坐标系的Z轴指向BIH (国际时间服务机构)1984.O定义的协议地球极(CTP)方向,X轴指向BIH 1984.0的零子午面和CTP赤道的交点,Y轴与Z轴、X轴垂直构成右手坐标系,称为1984年世界大地坐标系统.
+参考FAQ: FAQ114273
+### 问题: 手机为什么会做位置更新（LU），在LU过程中能收到paging吗？
+解决方案: 当手机由一个位置区移动到另一个位置区,必须在新的位置区进行登记,也就是说一旦移动台处于某种需要或发现其存储器中的LAI与当前小区的LAI号发生了变化,就必须通知网络来更改它所存储的手机的位置.这个过程就是位置更新(LU). LU和接收paging都属于是CS业务,因此,在LU期间是收不到paging的.
+参考FAQ: FAQ109068
+### 问题: 视频悬浮播放与视频正常播放互相切换时，为什么会滞后播放？
+解决方案: 视频播放过程中,当用户点击视频悬浮播放即画中画播放按钮进行播放时,会seekto定位到之前播放的那个时间点进行播放,而seekto操作是根据视频源关键帧来进行定位的,为了不错过视频播放画面,定位播放时会从离当前播放时间点最近的前一个关键帧进行播放,即seekTo(msec, SEEK_PREVIOUS_SYNC /* mode */);所以用户看到的播放画面会有出现滞后的现象,该现象属于正常现象.
+参考FAQ: FAQ109073
+### 问题: vts测试如何单独测试指纹hal模块
+解决方案: 首先保证电脑环境可以跑vts,按照如下步骤即可以测试指纹hal单个模块 1、进入android-vts/tools/目录 2、$ vts-tradefed 3、> run vts -m VtsHalBiometricsFingerprintV2_1Target
+参考FAQ: FAQ109092
+### 问题: 9832E上去掉电池在位检测
+解决方案: 路径:kernel/arch/arm/boot/dts/sp9832e-common.dtsi 修改:将下面语句注释掉. battery-det-gpios = <&pmic_eic 9 0>;
+参考FAQ: FAQ109105
+### 问题: 7731e平台去掉电池在位检测
+解决方案: 路径:kernel/arch/arm/boot/dts/sp7731e-common.dtsi 修改:将如下语句注释掉 battery-det-gpios = <&pmic_eic 8 0>;
+参考FAQ: FAQ109106
+### 问题: 使用Google Message应用 客制化在输入短信到达一定页数后自动转彩信发送
+解决方案: 需修改在vendor\sprd\platform\packages\apps\CarrierConfig\assets\carrier_config_xxxxxxx.xml, xxxxxxx为mccmnc, 看需要在哪些电信商也就是插入哪些SIM卡时有该功能, 就修改相对应的carrier_config_xxxxxxx.xml文件, 在文件内添加以下代码:
+
+.
+<carrier_config>
+<int name="smsToMmsTextThreshold" value="10" />
+</carrier_config>
+.
+
+其中value="10"的10这个值为页数, 可以自行修改看要达到几页就转换为MMS, 通常都是预设为10页
+参考FAQ: FAQ109126
+### 问题: NTC温度检测异常跳动怎么分析
+解决方案: 1. 检查硬件器件是否为NC,NC状态时ADC为悬空状态会导致异常跳动; --NC时需确认是否需要这个温度检测功能,如确定不需要,软件上关闭该功能. 2. 使用示波器测量对应ADC端口和上拉电平的状态,观察是否有跳动; --硬件上检查为什么会有跳动. 3. 外灌固定电平(注意ADC量程),观察是否有跳动问题; --软件检查通道是否配置正确.
+参考FAQ: FAQ109129
+### 问题: GMS测试fail项如何初步筛查选？
+解决方案: 1、在google原生的results中,detail提示Net Connection check的,需确定网络状况; 2、若不能确定网络状况,可以在之前跑测过的项目,在单跑一个网络相关的case,来确定网络情况; 3、网络符合要求的情况下,网络相关的case可以多测试几次,只要有一次测试pass即可; 注:CtsLibcoreTestCases libcore.java.net.InetAddressTest#test_getByName_invalid[1] 该条case若多次测试失败,可能需要更换路由器进行测试,如下图.
+参考FAQ: FAQ109170,含图片
+### 问题: 电量从99%到100%时间可控制
+解决方案: 电量从99%充到100%的时间是可以控制的,即电量从99%开始,经过多长时间,上层可以显示充到100%,在代码中可以修改,平台默认是25分钟. 修改路径:kernel/drivers/power/sprd_battery.c 在sprdbat_parse_dt函数中: if (of_property_read_u32(np, "trickle-timeout", &pdata->trickle_timeout)) pdata->trickle_timeout = 60 * 25; //这里60*25表示25分钟
+参考FAQ: FAQ109166
+### 问题: SC9863A平台硬件设计上，对VBATBK外接电容容值有无要求？
+解决方案: SC9863A VBATBK外接电容,至少1uF以上.
+参考FAQ: FAQ109173
+### 问题: SC9863A平台若耳机支持音量加减功能（通过电阻分压实现），HEADMIC_P/N差分转单端间电阻有无要求？
+解决方案: SC9863A平台耳机如果支持音量加减功能(通过电阻分压实现),HEADMIC_P/N差分转单端间的电阻精度1%.
+参考FAQ: FAQ109178
+### 问题: SC9863A平台硬件设计上对TF card端电源外接电容有无要求？
+解决方案: TF card端电源外接电容,至少2uF以上
+参考FAQ: FAQ109174
+### 问题: SC9863A平台USB_DM/DP之间是否要预留电容，作用是什么？
+解决方案: SC9863A平台USB_DM/DP之间建议预留跨接的2.2pF电容,以便调试眼图
+参考FAQ: FAQ109179
+### 问题: SC9863A平台PBINT是否要串联1K电阻？
+解决方案: SC9863A平台PBINT必须串联1K电阻保护,测点要靠近按键摆放
+参考FAQ: FAQ109180
+### 问题: Android8.1产线安全部署失败抓取串口log方法
+解决方案: 抓取步骤如下: 1 手机连接串口 2 开始部署操作 3 工具提示部署失败 4 在串口终端输入logcat,等待3分钟. 5 抓取log后,本地可以搜索"production"关键字,有即为有效log.
+参考FAQ: FAQ109226
+### 问题: 加密狗需要烧录Rom code该如何处理？
+解决方案: 如下图所示:
+参考FAQ: FAQ109114
+### 问题: SC9820E开机跳线电阻如何选择？
+解决方案: 如下面表格.管脚默认是"1"高电平.接外部4.7K电阻下拉到地即为"0". AUD_DAD1 NAND boot 010 AUD_DAD0 SD boot 011 ADI_SCLK eMMC boot 111
+参考FAQ: FAQ109231
+### 问题: 如何实现长按power关机
+解决方案: 目前默认方案是长按7s,手机自动重启,可以改成7s关机. 方案是在uboot中,当判断是7s reset类型重启,就让系统直接下电,不再走开机流程. 具体方案见附件: 参考code
+参考FAQ: FAQ109240
+### 问题: SC9820E开机启动跳线电阻如何选择？
+解决方案: 如下面表格.管脚默认是"1"高电平.接外部4.7K电阻下拉到地即为"0". AUD_DAD1 NAND boot 010 AUD_DAD0 SD boot 011 ADI_SCLK eMMC boot 111
+参考FAQ: FAQ109246
+### 问题: 如何在uboot中点亮led灯
+解决方案: 目前code中已经含有uboot led驱动: u-boot15/drivers/misc/sprd_led.c 应用方法,可以在 u-boot15/board/spreadtrum/sp9820e_1h10/sprd_bl.c 文件中的 void set_backlight(uint32_t brightness) 函数中增加以下code: sprd_led_init(); sprd_led_set_brightness(Red, 255); 要包含头文件 #include <sprd_led.h>
+参考FAQ: FAQ109245
+### 问题: 与BLE相关的Case failed一定是问题吗？
+解决方案: 如果在CtsBluetoothTestCases中,android.bluetooth.cts.BluetoothLeScanTest类相关的Case存在failed; 1、我们需要首先关注在测试过程中,是否放置了Bluetooth LE beacons. 2、Google要求,如果待测设备支持Bluetooth LE功能,那么在Bluetooth LE scan test进行测试的时候,需要在待测设备周边5米的范围内,至少放置3个Bluetooth LE beacons.
+参考FAQ: FAQ109254
+### 问题: 与Location相关的Case failed一定是问题吗？
+解决方案: 如果在CtsLocationTestCases中,android.location.cts.GnssPseudorangeVerificationTest#testPseudoPosition存在failed,我们需要首先关注在测试过程中,是否将待测设备放置到窗边. Google要求,如果待测设备支持Global Positioning System(GPS)和Global Navigation Satellite System(GNSS)功能,那么就需要为待测设备提供一个符合ICD-GPS-200C标准的信号等级合适的GPS/GNSS信号,用来接收和计算GPS位置.GPS/GNSS信号源可以是任何形式的,包括Satellite Simulator、GPS/GNSS室外信号转发器等,甚至可以将待测设备放置在足够靠近窗户的地方,待测设备可以直接获取足够的GPS/GNSS信号.
+参考FAQ: FAQ109255
+### 问题: 目前有哪些Case和IPV6网络有关？
+解决方案: CTS目前与IPV6相关的Case主要有以下测试项: CtsNetTestCases - android.net.cts.DnsTest#testDnsWorks CtsLibcoreTestCases - libcore.java.net.SocketTest#testSocketTestAllAddresses
+参考FAQ: FAQ109256
+### 问题: Google Message, 收到未接短信LED显示的是三色灯，如何显示蓝色灯
+解决方案: frameworks\base\core\res\res\values\config.xml文件需做如下修改 . <!-- Default color for notification LED. --> - <color name="config_defaultNotificationColor">#ffffffff</color> + <color name="config_defaultNotificationColor">#ff0000ff</color> . 系统默认值为#ffffffff(三色灯), #ff0000ff(蓝色灯)
+参考FAQ: FAQ109251
+### 问题: 在CtsCarrierApiTestCases中出现的Case failed是什么原因？
+解决方案: 如果在CtsCarrierApiTestCases中,存在Case failed; 我们需要首先关注在测试过程中,是否为待测设备插入支持carrier privilege规则的SIM卡. Google要求,为了运行CTS测试中的carrier API测试用例,待测设备需要一个支持carrier privilege规则的SIM卡. 在Android 9.0中,新增较多与Carrier Api相关的测试用例,包括CTS、GTS与CTS on GSI中均有涉及.
+参考FAQ: FAQ109258
+### 问题: 在GtsPlacementTestCases中出现的Case failed是什么原因？
+解决方案: 由于GTS 6.0_r1中,新增了GTS Authentication Procedure部分的配置; 如果PC端未配置相关的authentication key,则在GtsPlacementTestCases中会出现6项failed.
+参考FAQ: FAQ109261
+### 问题: 在GtsGmscoreHostTestCases中出现的Case failed是什么原因？
+解决方案: 如果在测试过程中,GtsGmscoreHostTestCases Module里面如下Case: com.google.android.gts.security.AttestationRootHostTest#testEcAttestationChain com.google.android.gts.security.AttestationRootHostTest#testRsaAttestationChain 出现failed,需要检查待测手机是否进行了keybox部署,在用正确的key进行部署后,这个Case可以通过.
+参考FAQ: FAQ109262
+### 问题: 请问SC7731E支持的WCDMA HSPA Category是什么？
+解决方案: WCDMA HSDPA Category 14; WCDMA HSUPA Category 7.
+参考FAQ: FAQ109286
+### 问题: 请问SC7731E是否支持USB3.0？
+解决方案: 不支持USB3.0.
+参考FAQ: FAQ109289
+### 问题: NV2.0注意事项
+解决方案: 1. 从SC9863A平台开始才引入NV2.0架构,其它老平台不升级; 2. NV2.0需要用最新的NV编辑工具NVTool,不能再使用NVEditor工具; 3. NVAide工具需要升级到NVAide V3.2.0版本,NV配置方式与以前版本保持一致.
+参考FAQ: FAQ109284
+### 问题: 请问SC9832E支持的eMMc Version是多少？
+解决方案: 支持eMMc Version 5.1.
+参考FAQ: FAQ109298
+### 问题: 请问SC7731E LCD MIPI Lane的速率是多少？
+解决方案: 1.5Gbps/Lane
+参考FAQ: FAQ109300
+### 问题: STM7285&STM7289兼容设计方案
+解决方案: STM7285和STM7289是完全pin2pin的两颗TXM,它们之间最大的区别是STM7285内置的是SP4T开关,而STM7289内置的则是SP6T开关.即对于STM7285来说,它的pin22和pin24是接地的,这两个pin是不能够作为TRX口使用的;但是对于STM7289而言,pin22和pin24则是两个可以正常使用的TRX口. 所以,对于需要做STM7285和STM7289兼容的PCB设计来说,应该只能使用除pin22和pin24之外的其它TRX端口. 此外,对于需要使用TRX端口超过4个的项目则只能使用STM7289,而不能使用STM7285.
+参考FAQ: FAQ109293
+### 问题: SC7731E平台MIC信号走线及设计有哪些注意事项？
+解决方案: SC7731E MIC信号走线注意事项如下: 1、MIC_BIAS 电容及MIC_P/N串接的1K电阻和0.1uf电容靠近PMU摆放; 2、MIC_P/N差分走线,线宽0.1mm,包地处理,至少参考一层GND,避免与相邻层其它信号线平行; 3、MIC_BIAS 线宽0.1mm,包地处理,至少参考一层GND,避免与相邻层其它信号线平行.
+参考FAQ: FAQ109316
+### 问题: SC7731E平台对AUXMIC设计及走线有哪些注意事项？
+解决方案: SC7731E 平台对AUXMIC设计及走线,注意事项如下: 1、AUXMIC_BIAS 电容及AUXMIC_P/N串接的1K电阻和0.1uf电容靠近PMU摆放; 2、AUXMIC_P/N差分走线,线宽0.1mm,包地处理,至少参考一层GND,避免与相邻层其它信号线平行; 3、AUXMIC_BIAS 线宽0.1mm,包地处理,至少参考一层GND,避免与相邻层其它信号线平行.
+参考FAQ: FAQ109317
+### 问题: SIMLOCK方案中使用的加密狗是指什么？
+解决方案: 加密狗(加密锁)是一种插在计算机上的软硬件结合的加密产品.软件开发者可以在软件中设置多处软件锁,利用加密狗作为钥匙来打开这些锁,从而实现软件保护的功能.
+参考FAQ: FAQ109338
+### 问题: channel配置好小区广播接收不到是什么原因？
+解决方案: 仪表信道配置: 1.Update Number取值范围:0～15 2.Message identifier匹配手机中的信道编号channel(具体信道和项目需求相关) 3、仪表上测试小区广播的时候,如果是同一个信道,要保证仪器上每次设置的update number 不一样; 因为如果是同一个channel,会判断新收到的小区广播的update number和message code和前一次收到的是否一样.如果是一样的,则认为是相同的小区广播,将之丢弃,不提示用户.这个机制是协议规定的,目的就是在某一地理范围内过滤掉重复的小区广播.
+参考FAQ: FAQ109383
+### 问题: SIMLOCK的功能是什么？
+解决方案: SIMLOCK功能是手机运营商通过配置信息来限制用户手机(或者其他可以使用USIM的终端设备)使用的指定的SIM/USIM卡的一种软件锁,该软件锁的实现遵循3GPP协议标准.当使用SIMLOCK锁卡功能后,手机在开机过程中会去检查SIM卡对应信息与设定值是否匹配(如MCC、MCN等),如果匹配则正常开机,如果被锁则通过密码解锁后才能使用手机所有功能,否则手机的与SIM卡相关的通信业务不可用.
+参考FAQ: FAQ109339
+### 问题: 加密狗是否支持重写公私钥？
+解决方案: 加密狗硬件由展锐完成升级操作后,释放给客户.再根据项目情况进行初始化(即 写公私钥), 初始化操作只能进行一次 .因此默认不支持重写公私钥, 如因特殊情况需要重写,请返回展锐操作.
+参考FAQ: FAQ109341
+### 问题: 加密狗硬件损坏如何补救？
+解决方案: 由于加密狗初始化的时候,即使使用同样 的 ProductName和 Password,每次生成的公私钥也是不同 的,因此并不能直接通过输入相同ProductName和 Password来初始化新加密狗的方式进行补救. 正确的方法是: 1、在旧加密狗没有损坏前先使用 Export功能将其公私钥文件导出备份,并记录其初始化时使用的 Product Name和 Password. 2、新加密狗初始化时填写记录的 Product Name和 Password并使用 Improt功能导入之前备份的公私钥文件.
+参考FAQ: FAQ109342
+### 问题: 写过simlock 的手机是否支持重写？
+解决方案: 支持重写Simlock,前提是必须使用相同的加密狗. 因为写simlock时,会将 publickey写入到芯片的 efuse中固化,重写 simlock时会先进行鉴权,如果加密狗中的私钥与efuse中的公钥不匹配,则会出现鉴权失败,无法进行重写操作.
+参考FAQ: FAQ109343
+### 问题: 写过simlock的手机更新版本是否需要备份NV ？
+解决方案: 需要.部分simlock.xml中的配置信息会写入到NV中,因此更新软件时必须要对NV进行备份.如果出现误操作导致NV破坏,需要使用原加密狗进行重写simlock操作.
+参考FAQ: FAQ109344
+### 问题: simlock方案若出现服务器连接失败可能是什么原因导致的？
+解决方案: 若出现服务器连接失败,请从以下几个方法查找原因: 1、请对比 Server—>SerVerCommMgr.ini—>SIMLockServerPort与 Client—>SecSIMLock.ini—>ServerPort中的端口设置是否一致.SecSIMLock.ini- ServerIP设置与Server的实际IP地址一致. 2、Client—>SecSIMLock.ini—> ProductName要求与加密狗初始化时使用的 ProductName保持一致. 3、运行启动SIMLockServer 应用后会驻留在任务栏右下角,需要右键选择Open Server才会启用.
+参考FAQ: FAQ109345
+### 问题: SC7731E SIM卡走线有什么需要注意的？
+解决方案: SIM卡走线注意以下几点: 1、SIM_CLK单独立体包地,其它信号线整组一起同层包地,保证一个相邻层为GND; 2、避免邻层信号平行; 3、VDDSIM电源走线宽度≥0.2mm.
+参考FAQ: FAQ109347
+### 问题: SC7731E平台为什么不推荐使用8960校准？
+解决方案: SC7731E不推荐使用8960校准原因有以下几个方面: 1、硬件原因: Agilent 8960属于老一代测试仪表,CPU主频以及内存和当前主流仪器对比差距明显,测量数据处理速度慢; 2、仪表测量方案原因: Agilent 8960校准和综测方案老旧,和当前最新的测试方案对比差距明显.展锐平台新的综测测量方案为LMT(SEQ MODE)模式. 3、SC7731E平台Transfer特性原因: 因Transfer特性,需要比其他平台多增加一些频点进行校准,所以测试时间较其他展锐平台测试时间略有增加 SC7731E 校准推荐的仪表为:CMW500、T6290、IQxStream
+参考FAQ: FAQ109348
+### 问题: SC7731E GNSS LNA供电网络上的0欧电阻封装有无要求？
+解决方案: 该电路推荐0402,以备必要情况下更换成磁珠. 如若采用0201,将会没有对应的磁珠可供选择.
+参考FAQ: FAQ109387
+### 问题: 默认USB连接模式MTP后会影响CTS认证吗？
+解决方案: 1. 默认模式改变为mtp的话,会导致下面的测试项failed; CTS 测试项:CtsDevicePolicyManagerTestCases--com.android.cts.devicepolicy.UserRestrictionsTest fail 注:CTS测试时手机选择USB Charge only模式
+参考FAQ: FAQ109369
+### 问题: SC7731E平台VBATBK外接电容有无要求？
+解决方案: SC7731E平台VBATBK外接电容,至少1u以上.
+参考FAQ: FAQ109382
+### 问题: SC7731E NTC及对应的56K,100K电阻要求的精度是多少？
+解决方案: SC7731E NTC及对应的56K,100K电阻要求均为1%的精度
+参考FAQ: FAQ109392
+### 问题: SC7731E 使用FM_ANT时，音频电路设计要注意哪些？
+解决方案: SC7731E 使用FM_ANT时,靠近耳机接口处的L/R/MIC需要串联BEAD,减小干扰
+参考FAQ: FAQ109394
+### 问题: NPI工具如何检查battery和充电电路上68mohm和20mohm 4pin电阻？
+解决方案: 展锐NPI工具可以使用CheckX工具进行4pin电阻的测试,检查电阻贴片情况(虚焊等),通过测试Charge Current和FGU Current两项来检查两个电阻,电流测试需要借助使用精密电源,普通电源不支持,具体信息如下: 工具版本:CheckX_R21.0.0001 文档:工具目录下Document->CheckX增加FGU电流测试说明_V1.0.docx 设置:工具设置电流界面,直接勾选FGU Current和Charge Current测试即可 具体电流spec可以参考工具默认配置,也可根据测试实际值进行适当调整, Charge Current:410～510mA Fgu Current:-100～100%(FGU Current Offset = (Phone FGU Current - DCS Current)/DCS Current*100)
+参考FAQ: FAQ109432
+### 问题: 【BBAT】如何测试OTG功能？
+解决方案: BBAT测试OTG是通过测试OTG_ID信号的状态来完成,通过GPIO方式来读取OTG_ID信号的状态,故BBAT的测试环境需要满足如下: 1. PCB主板需要预留OTG_ID测试点,方便BBAT夹具上下针连接; 2. BBAT夹具上需将OTG_ID信号连接至各平台规定的控制盒管脚处,参考BBAT各平台的夹具接线定义表; 3. 测试软件需要支持BBAT OTG,'OTG禁用','读取ID' 这两条命令需要要生效; 测试工具上只需要勾选OTG项目即可,无需进行单独配置,测试前可以使用调试工具Autotester进行调试,检查上面第3点所提到的两条命令是否生效.
+参考FAQ: FAQ109450
+### 问题: 智能手表接触式USB连接器设计ESD防护建议
+解决方案: 智能手表出于结构限制,有采用接触式USB,在板子上预留测试点,然后通过顶针接到外壳结构触点.在结构设计时候,需要注意安排PCB板上的测试点放在板边,添加TVS管保护.测试点周围尽量屏蔽罩保护.以免ESD通过顶针对周围离散器件放电,导致系统故障.
+参考FAQ: FAQ109449
+### 问题: 功耗测试环境搭建
+解决方案: PC一台、GPIB卡一个、Agilent66319D一台/PowerMonitor一台、准备假电池. 使用Agilent测试功耗:PC需安装GPIB驱动、Agilent功耗测试软件 使用Power Monitor测试功耗:PC需安装Power Monitor驱动、PowerMonitor软件.
+参考FAQ: FAQ109766
+### 问题: V2 modem手机无卡待机，且设置为LTE ONLY，会如何找网？
+解决方案: 目前在V2 modem 中,无卡手机是无法对网络制式进行设置的,无卡下终端正常的搜网顺序是先尝试3G, 后2G,不会开启LDSP; 而此问题中手机网络被设置为LTE ONLY,表明此手机之前有过插卡驻网并设置网络制式的行为; 在这个前提下无卡待机,LDSP会开启,且手机网络被设置为LTE ONLY,找网时没有找到网络,会上报无网,启动无网timer; 而无网timer的策略为: 第1次无网时,10s后开始重新找网; 第2次到第9次无网时,启动无网timer,20s后开始重新找网; 第10次到第18次无网时,启动无网timer,40s后开始重新找网; 第19次到后续无网时,启动无网timer,60s后开始重新找网; 因而LTE ONLY无卡待机电流会呈现以上周期性的唤醒现象.
+参考FAQ: FAQ109768
+### 问题: 展锐平台RF PA调试注意事项
+解决方案: 1. 我们强烈推荐客户使用展锐平台打包的PA物料,如RTM7910-31/RTM7916-31/RPM6743-12/RPM6424-21/RTM7292/RTM7289/RTM7285/RPM6569-12等,并全力支持以上打包物料的PA性能调试工作; 2. 理论上展锐平台只支持我们在QVL列表中release的PA物料,但是考虑到不同客户的差异化需求,我们也会支持其它PA物料的bring up工作(包括NV配置、校准综测),但不支持这些PA的调试工作,这些PA的调试需要由PA vendor或者客户自己完成; 3. 客户如果采用展锐打包的PA物料在申请调试时需要提交CQ,并提供SCH/PCB/BOM/NV.PRJ等资料,并提供详细的可支持频段信息; 4. 客户如果有企业标准的则需要提供企业标准作为调试目标;如果没有的话则默认以满足3GPP标准为准; 5. PA调试周期视支持的频段多少和PCB layout情况决定,正常情况下需3～5个工作日; 6. 以上信息解释权归紫光集团展锐科技所有.
+参考FAQ: FAQ109488
+### 问题: SC9863A EXT_XTL_EN1/2分别是干嘛用的？
+解决方案: 1、EXT_XTL_EN1是和CP(RF)相关,一旦RF不用,可以关掉某些RF相关的电源,起到一个省功耗的作用 2、EXT_XTL_EN2是和Sensorhub相关,一旦系统进入deep sleep,但需要用到Sensorhub时,这个pin拉高,会把VDDCORE拉高到0.9V(ND),不让VDDCORE进入UD状态(0.7V),Sensorhub采集完数据后,此pin拉低,继续进入deep sleep,VDDCORE进入UD状态(0.7V) 3、由于SC9832E没有Sensorhub功能,不需要接EXT_XTL_EN2,但如果考虑两个平台需要兼容就必须接上.
+参考FAQ: FAQ109493
+### 问题: SL8521E平台扩展键盘方法
+解决方案: SL8521E平台原生3x3按键矩阵,加上PBINT开机键和EXTRSTN按键, 一共11个按键. 扩展更多按键,请用GPIO+GND的方式,按键的一端接GPIO(串1K电阻防ESD),另一端接GND. 每个GPIO扩展1个按键,如SL8521E CS图纸. 如果需要扩展出按键太多,GPIO不够用,请使用第三方按键扩展芯片. 按键扩展芯片请客户自行设计.
+参考FAQ: FAQ109644
+### 问题: Camera电源设计注意事项
+解决方案: Camera电源设计注意事项,请客户参考文档《Camera Power Design Guide V1.1》
+参考FAQ: FAQ109504
+### 问题: 同一位置环境下终端无卡待机，实测功耗肯定基本一致吗？
+解决方案: A: 不一定,无卡下终端正常的搜网顺序是先尝试WCDMA, 后GSM;但如果无卡之前终端存储有驻留过的GSM信息,就会优先尝试GSM. 即终端在同一位置,但由于不同的先前信息而导致处于不同的网络模式,此时PAGING周期,宽度,高度都不尽相同,功耗自然也不一样;
+参考FAQ: FAQ109526
+### 问题: 飞行模式下功耗测试，为什么还会有18.9S周期性的小突起？
+解决方案: A: 这由于ASIC STC 设计的局限,GSM STC 最大只能睡4096帧,对应18.9S(0x0FFF * 4.615) 按照现在的sleep机制,GDSP STC 能够配置frame限制,每隔1024 GSM帧(18.9s)需要DSP重新配置下一个周期的sleep,电流图上会隔18.9s定时起来(任何场景都一样,包括飞行模式),对功耗影响较小<0.01mA.
+参考FAQ: FAQ109527
+### 问题: 客户项目不支持WCDMA或者TDSCDMA，但是用升级工具UpgradeDownload下载时却提示WCDMA或TDS未校准？
+解决方案: 由于默认平台的配置文件是把GSM,WCDMA或者TDS,LTE配置在一起的,但部分客户只做了GSM和LTE,而不包含WCDMA或者TDS制式,此时需要在做pac包的时候把WCDMA或者TDS去掉,具体方式如下: 1、用ResearchDownload工具加载完pac包; 2、找到如下路径(以工具R21.0.0001为例): ..\RESEARCHDOWNLOAD_R21.0.0001\Bin\ImageFiles\_DownloadFiles2090023\ 然后找到一个xml文件,并用记事本打开 3、按照如下去掉WCDMA字样,并保存xml文件,同时保存xml后要重新打pac包发送工厂即可.
+参考FAQ: FAQ109537
+### 问题: 在同一个站位写完keybox之后是否可以在不断电的情况下直接check是否写成功？
+解决方案: 在simba工具中有部分客户想写完keybox后,在不断电的情况下直接在工具中添加一个item来check keybox是否写成功,以此来判断是否写入keybox成功,但展锐方案是不支持这样操作的,如果想要check keybox是否写入成功,必须在写完之后断电再次进入校准模式来check才可以.
+参考FAQ: FAQ109538
+### 问题: 打开数据连接通信待机场景，电流图每30min会出现一个电流突起的原因？
+解决方案: Android 6.0后开始有此逻辑,在打开数据连接场景,若设置中"始终打开数据连接"开关被设置为关闭状态,则灭屏30min后会去激活数据连接,并且去激活后不去重试激活直到重新亮屏.由于网络断开,Framework会通知Kernel做一些删除网络、路由等操作,持锁1min时间,导致从电流图上观察会有1min的电流突起现象. 为避免该现象,设置中"始终打开数据连接"默认为打开状态,若遇此问题,可先检查设置中该开关状态.
+参考FAQ: FAQ109543
+### 问题: 通信待机场景，打开ylog对于待机电流会产生怎样的影响？
+解决方案: 工程模式中ylog打开默认为normal模式,此时将ap/android/kernel/dsp/arm/wcn等多模块的log均会抓取,但当打开默认log时,观察待机电流,会发现电流会出现许多异常突起,这是由于各模块输出log时会不停访问内存导致电流图异常. 请注意以下几点: 1)测试待机功耗时,请注意将工程模式中的ylog关闭; 2)Android log对待机电流影响较小,可以在custom模式中仅打开Android/kernel log,并同时抓取电流图,对应分析AP类问题; 3)若需抓取modem log,将ylog默认状态打开即可,此时电流不能作为功耗测试值.
+参考FAQ: FAQ109544
+### 问题: GSM待机，终端电流突起是否周期性的？
+解决方案: A:不是的,除了周期性收PAGING消息外,还需每隔30S进行系统消息更新,及邻区BSIC Verify. 如下图无卡GSM待机正常2.11S周期接收PAGING,且每隔30S也会有系统消息更新
+参考FAQ: FAQ109547
+### 问题: 如何在nv中关闭通信各模式sleep？
+解决方案: SharkL2之后各项目均在NV中合入Sleep开关,关闭sleep方式如下: 可使用NV tool工具打开对应版本NV工程,NV Tool工具与工程均包含在发布的Modem版本中,搜索sleep_common,其下包含gsm_sleep_flag,td_sleep_flag,wcdma_sleep_flag,lte_sleep_flag 四个开关,将其置为1则sleep开关打开,置为0则关闭sleep. 修改后生成新的NV bin,重新烧录进手机后则关闭各模式sleep了.
+参考FAQ: FAQ109548
+### 问题: 待机过程中，为什么会出现每隔24s左右 paging就会变宽的现象？
+解决方案: 这个属于sim卡心跳周期,需要周期性检测sim卡的在位状态; 展讯的实现是在待机状态下每隔23至26秒读取一下SIM卡; 如实网移动4G volte待机时,正常paging周期20～29ms,有sim卡检测时paging周期266ms. 读取sim卡的电流图为跟在paging后面的一段平直的平台状电流.
+参考FAQ: FAQ109556
+### 问题: 如何通过修改NV打开uart log的输出？
+解决方案: 利用NV Tool工具打开对应NV工程,修改如下参数: com_debug:0x0 dsp_log_set :0x1 enable_arm_log :0x1 com_debug_baud_rate:0x1E8480 (NV重构后工程搜索uart_0_baud_rate) 修改后生成新的nv bin,烧录至手机,接上对应项目uart小板连接电脑log工具,即可输出uart log.
+参考FAQ: FAQ109555
+### 问题: v2 modem中各模式(GSM/TD-SCDMA/WCDMA)的32k校准频次
+解决方案: [GSM] v2 modem中GSM分为Auto和Manual两个状态,状态由GL1通过命令控制切换. Auto状态时,校准间隔为20ms到2118ms. Manual状态时,校准由GL1使能,根据log,有2min的校准频次. [TD-SCDMA] idle态下10s一次; 当发生连接态到idle态转换的时候,前60s每个DRX周期都会去做32k校准,60s之后恢复成10s一次. [WCDMA] WCDMA有2min和4min两种频次.
+参考FAQ: FAQ109553
+### 问题: Google短信设置的Group messaging默认选中第一项
+解决方案: 需修改在vendor\sprd\platform\packages\apps\CarrierConfig\assets\carrier_config_xxxxxxx.xml, xxxxxxx为mccmnc, 看需要在哪些电信商也就是插入哪些SIM卡时有该功能, 就修改相对应的carrier_config_xxxxxxx.xml文件, 在文件内添加以下代码: . <carrier_config> <boolean name="enableGroupMms" value="false" /> </carrier_config> . 需注意enableGroupMms设为false代表默认群发为SMS,也就是Group messaging选项内的第一项,修改后该选项会从应用的菜单中消失,此为应用本身设计.
+参考FAQ: FAQ109560
+### 问题: 如何判断识别GSM系统中的邻频干扰情况
+解决方案: GSM系统是窄带系统,载波带宽为200KHz,相邻两载波最小间隔也为200KHz.由于运营商蜂窝基站布局较早且时间较久,在很多地区GSM网络都普遍存在同邻频干扰,一些地区的干扰甚至很严重,影响到通信质量. UE在进行网络信号接收时,射频前端接收到信号会先经过一个较宽的RF滤波器,一般会包含邻近频点(如±200K)范围内的信号能量,软件计算该信号能量,称之为前端宽带信号能量RSSI_WB.然后经AD转换变为数字信号后再经过一系列数字滤波处理,解调出当前频点的信号能量,此为后端窄带信号能量RSSI_NB. 如果实际接收到的信号中确实存在邻频干扰,RSSI_WB由于是包含邻频干扰信号能量的,一般会比RSSI_NB的信号大8~10dB,这在强邻频干扰存在的情况下一般是能判断出来的. 另外软硬件处理算法中也会对接收到的信号做FFT变换,在频域对接收频点的左右邻频信号能量进行统计,也会对邻频干扰进行判别.
+参考FAQ: FAQ109576
+### 问题: SC2721G 音频接口是否可以悬空
+解决方案: IOT项目中,在没有音频的情况下,音频信号(A11、A12、B10、B9、C9、D10)六根信号可以去除悬空不接. IOT用到其它项目PMU也可做相同处理:2723G C2 F1 D1 G1 G3 G5 2731G A8 A6 B8 A5 C4 D5
+参考FAQ: FAQ109587
+### 问题: AMPG_VCOM网络定义及作用
+解决方案: AMPG_VCOM是音频参考地. 如果模块上没有耳机电路时,请在BB侧单点下主地. 这个时候如果增加耳机电路,可能会存在耳机信下行信号干扰问题. 如果模块上需要使用耳机电路,则优先参考同源地. 该网络不可悬空,必须接地.
+参考FAQ: FAQ109595
+### 问题: SharkL3 pubcp访问wtlcp的通路不通问题原因
+解决方案: PUBCP 访问WTLCP,看PMU APB寄存器0x022800C4,PUBCP和WTLCP都已上电, 而看通路寄存器PUBCP AHB 0x20070044的bit6、7=1,但PUBCP 访问WTLCP的路 还是不通,在sharkL2,上诉配置ok,则通路必通,和ASIC讨论发现,是由于AON APB 上的WCDMA EB没置1 ,导致wdma clock没开,而在sharkL3,pubcp访问wtlcp的通路, 这块总线的clock和wcdma clock绑定,因此,需要在AON上,把wcdma clock打开才能用, 因此,在SharkL3上及以后V2芯片,要使用该通路时,一定记得把wcdma eb置1.
+参考FAQ: FAQ109609
+### 问题: 怎样排查2G下接入过程，建链过程的上行失败问题？
+解决方案: 2g接入过程需要手机给基站发送rach,基站收到后给手机指派专用信道用于后续的业务交互,这个过程失败有2方面原因,一是手机tx有问题,例如功率不正常,或者手机本地定时与基站有偏差等;另一方有可能由于网络存在其他信道干扰,基站本身没有检测到rach信号. 排查手段: 1.8960仪表上检查手机非信令下rach,normal tch的pvt指标,信令下timing error上行指标.如果指标不正常,则需要检查NV配置是否有异常,一般可以参考平台机NV进行检查. 2.使用对比排查是否是网络环境的原因.一般情况下需要抓对比log分析是否测试机与对比机小区驻留情况,只有驻留在相同小区,接入过程的对比才有意义,如果驻留情况不同,则需要分析原因,例如手机测量值有差异等;进一步对比的话,需要共天线排除由于天线差异带来的接收信号差异引起的选网差异.
+参考FAQ: FAQ109615
+### 问题: Unisoc目前可以支持哪些拉美运营商的预测试？
+解决方案: 
+参考FAQ: FAQ109629
+### 问题: LATAM RF Pretest申请表如何填写？
+解决方案: 
+参考FAQ: FAQ109630

@@ -1,0 +1,300 @@
+### 问题: 文件管理器中如何默认显示手机或存储卡页面
+解决方案: 文件管理器中,有三个页面QuickView/InternalStorage/ExternalStorage,每个页面是一个Fragment,这三个页面是由android.support.v4.view.ViewPager管理的,根据存储体是否存储依次加入到ViewPager对应的adapter里. 默认情况下,第一个是QuickView,设置的当前页面为0,所以第一次显示的页面是快速查看页面,要更改为其他页面,只需调用ViewPager.setCurrentItem(item: int)即可. 注意:调用ViewPager.setCurrentItem(item: int)在页面已经显示的地方才生效,比如在onCreate()/onStart()的地方就没用,在onResume()里调用就有效果.
+参考FAQ: FAQ24698
+### 问题: android4.4 Log中如何确认是否收到小区广播
+解决方案: 测试小区广播时,如果手机没有收到小区广播提示,可以通过Log检查的方式,定位问题. 打开Radio Log,搜索"AT< +CBM",如果收到此命令,说明是android上层问题.否则需要提供Modem Log分析.
+参考FAQ: FAQ24710
+### 问题: 用自带的视频播放器播放视频时，用耳机调节音量和扬声器调节音量的最大级别是不同的
+解决方案: android4.4对音频流的管理是区分设备的,所以不同设备之间切换音量等级会发生变化,因此耳机和扬声器切换时音量是不同步的,当用自带的视频播放器播放视频时,如使用耳机听视频,为了保护用户耳朵听力不受损,耳机最大音量级别是10级,扬声器音量最大级别是15级.
+参考FAQ: FAQ24736
+### 问题: cts简介
+解决方案: CTS(Compatibility Test Suit)是Google为Android发布的一套兼容性测试用例,对手机的硬件,软件,接口,性能进行测试.只有通过CTS测试的Android手机系统,Google才会颁发许可,以保证不同生产商之间的Android系统的兼容. 你的设备只有满足CDD的规定并且通过CTS,才有可能获得Android的商标和享受Android Market的权限,才能使用android market.
+参考FAQ: FAQ35472
+### 问题: 如何将安全能力开关和开启监控功能控默认打开
+解决方案: 在对应的在产品的ｍｋ文件里添加2项,如prod_sp8830eccmccspecAplus_UUI.mk persist.sys.secure.selected=1 \ service.project.sec=1
+参考FAQ: FAQ24755
+### 问题: CBR和VBR的基本概念
+解决方案: 首先需要介绍码率的概念,码率也叫比特率,表示经过压缩编码后的音视频数据每秒需要用多少个比特来表示,即把每秒显示的图像进行压缩后的数据量,一般采用的单位是kbps即千位每秒.常见的码率有CBR和VBR: CBR(Constant Bitrate):即固定码率,指文件从头到尾都是一种码率,这是以固定文件大小为前提的压缩方式.CBR相对简单,会在压缩输出时就把每一秒的画面都计算为固定的大小,这样运算量小,编码时间短而且解码算法也简单,但缺点是在画面剧烈运动的时编码内容的质量不稳定. VBR(Variable Bitrate):即动态码率,指没有固定的码率,压缩时根据画面的复杂程度即时确定使用什么码率,这是以质量为前提兼顾文件大小的压缩方式.
+参考FAQ: FAQ24762
+### 问题: 图片设置为壁纸的不同流程
+解决方案: 4.4平台将图片设置为壁纸的时候加入了google的一个新功能,根据图片的类型来决定走什么流程. 如果是jpg类型的图片则尝试调用系统framwork层的截图并设置为壁纸的功能,其他类型的则仍是调用图库自带的截图设置壁纸功能.
+参考FAQ: FAQ24793
+### 问题: PAC包里面的Nvitem.bin文件的作用。
+解决方案: nvitem.bin:Fixed NV数据、射频、网络等信息;(注意不同射频器件对应不同的DSP和Nvitem文件)
+参考FAQ: FAQ24874
+### 问题: Android中如何查看wakelock的申请和释放是否配对？
+解决方案: Android里面和Power相关最大的就是wakelock,有时候会碰到睡不下去,或者睡到最后弹起来的问题,就是wakelock引起的,或者说是wakelock的使用者引起的. 怎么调试呢,用一下如下两个命令: echo 15 > /sys/module/wakelock/parameters/debug_mask echo 15 > /sys/module/userwakelock/parameters/debug_mask 15是代表16进制的F,在wakelock里面就是把所有的debug信息打开. 这样你能看到kernel和frameworks层对于wakelock的操作,申请和释放.这样看申请和释放成对否就可以了.
+参考FAQ: FAQ24873
+### 问题: 写号工具WriteIMEI_R3.0.0001是否支持Dophine平台。
+解决方案: WriteIMEI_R3.0.0001这个写号工具与MEMORY类型无关,支持SC7715平台. 具体来说: 模式选择------常规写号方式 工程---------WG 其余选项默认设置.
+参考FAQ: FAQ24876
+### 问题: 印尼客户如何屏蔽WIFI channel中的14信道
+解决方案: 目前sprdroid4.4_tshark_37.6_mp分支已经支持,通过增加802.11d特性可以自适应不同国家对不同信道的需求
+参考FAQ: FAQ49960
+### 问题: DHCP 获取分哪几步
+解决方案: DHCP获取过程主要同过如下四次交互过程: 1.STA 给AP发送 DHCPDISCOVER 2.AP 给STA发送DHCPOFFER 3.STA给AP发送DHCPREQUEST 4.AP 给STA 发送DHCPACK,并附带分配的ip地址
+参考FAQ: FAQ24882
+### 问题: DHCP 有几种情况下会获取失败？
+解决方案: 主要有如下几点: 1.DHCP分配的IP地址池是否已满 2.DHCP是否启用了MAC地址保留 3.DHCP分配的IP地址租期是否到了 4.DHCP包收发过程中出问题 5.测试机的mac地址是否有冲突
+参考FAQ: FAQ24892
+### 问题: 什么样的mac地址合法
+解决方案: wifi mac地址第1个字节的低2bit必需为0,比如:00-12-22-33-44-78(这个是合法的),03-12-22-33-44-78(是不合法的).这两个位有特殊含义
+参考FAQ: FAQ24895
+### 问题: Android系统默认Home应用程序Launcher什么时候启动？
+解决方案: 开机的时侯首先启动SystemServer组件,然后SystemServer启动PackageManagerService,由PackageManagerService安装系统的应用程序. 在安装好应用程序之后,SystemServer组件接下来就通过ActivityManagerService来启动Home应用程序Launcher了. Launcher 在启动的时候便会通过PackageManagerService把系统中已经安装好的应用程序以快捷图标的形式展示在桌面上,这样用户就可以使用这些应用程序了.
+参考FAQ: FAQ24866
+### 问题: android4.4 如何打开和关闭视频通话
+解决方案: 打开和关闭视频通话,可以通过工程模式中视频通话的控制开关. *#*#83781#*#*进入工程模式, 在TELEPHONY标签下,VT Option开关控制 on和off,当改变开关状态后,手机会重启生效.
+参考FAQ: FAQ29549
+### 问题: Blueooth android 4.4 如何在第一次打开蓝牙，蓝牙设置成默认可见并且检测超时时间为“永不超时” ？
+解决方案: 在如下文件中: external/bluetooth/bluedroid/btif/src/btif_dm.c bt_status_t btif_dm_get_adapter_property(bt_property_t *prop){ ... case BT_PROPERTY_ADAPTER_DISCOVERY_TIMEOUT: { uint32_t *tmt = (uint32_t*)prop->val; *tmt = 120; //120修改成0 prop->len = sizeof(uint32_t); } break; ... }
+参考FAQ: FAQ24981
+### 问题: 1080P录像如何避免花屏问题
+解决方案: 平台要求录像时预览分辨率和录像的分辨率要一致,android的显示要求16字节对齐,那么就需要DV预览时对1080P进行字节对齐处理,否则会产生数据的花屏. 4.1和4.4上在HAL层都有一个统一的变量mIsDvPreview来判断是否需要字节对齐处理,而在应用上的接口有不同,具体表现是: 4.1上通过setPreviewEnv(CameraSettings.VAL_PREVIEW_ENVIROMENT_VIDEO)来标明此时是DV预览; 4.4上已经直接在SprdCameraHardwareConfig.h中配置预览大小为1920x1088来满足16字节对齐,不需要再配置;而如果部分分辨率不满足16字节对齐的情况,可以在应用中,通过setRecordingHint(true)来完成对齐标志设置.
+参考FAQ: FAQ25016
+### 问题: android中的文本省略方式(ellipsize)
+解决方案: 当TextView、EditText中内容过长,需要做文本省略显示的时候,TextView中有个内容过长加省略号的属性,即ellipsize,用来控制省略号的显示方式. 用法如下: 在xml中 android:ellipsize = "end"　　 省略号在结尾 android:ellipsize = "start" 　　省略号在开头 android:ellipsize = "middle" 省略号在中间 android:ellipsize = "marquee" 跑马灯 最好加一个约束android:singleline = "true" 代码控制的方式 tv.setEllipsize(TextUtils.TruncateAt.START); 最好再加一个约束tv.setSingleLine(true); EditText也有此属性,不过它不支持marquee
+参考FAQ: FAQ25032
+### 问题: MediaPlayer设置数据源的几种方式
+解决方案: MediaPlayer的setDataSource一共有四个方法: setDataSource (String path) 无返回值,设置多媒体数据来源根据 路径 setDataSource (FileDescriptor fd) 无返回值,设置多媒体数据来源根据 FileDescriptor setDataSource (Context context, Uri uri) 无返回值,设置多媒体数据来源根据 Uri setDataSource (FileDescriptor fd, long offset, long length) 无返回值,设置多媒体数据来源根据 FileDescriptor,指定装载fd所代表的文件中从offset开始、长度为length的文件内容
+参考FAQ: FAQ25571
+### 问题: log出现"stack corruption detected"如何定位
+解决方案: 这个log表示堆栈出错,应用会出错退出. 问题 原因是native应用中将堆栈搞坏了,Kernel检查到堆栈破坏后,主动调用出错函数. 调试方法:修改代码:bionic\lib\bionic\ssp.c 文件中 line 94 :去掉:(不同分支有所区别) -- sigaction(SIGABRT, &sa, NULL); ++// sigaction(SIGABRT, &sa, NULL); 复现,取tombtones文件,此堆栈就是堆被破坏的点附近.使用工具arm-eabi-addr2line 定位,找到附近的点. 检查代码,bug fix 或者将tombstones文件和对应symbols文件,提交cq.
+参考FAQ: FAQ25055
+### 问题: ubuntu下不输入密码登陆远程服务器
+解决方案: 1、若是当前机器上面没有公私钥,那么需要执行如下命令 ssh-keygen 之后会在~/.ssh目录下生成id_rsa和id_rsa.pub 2、使用ssh-copy-id命令将公钥拷贝到远端服务器 ssh-copy-id servername@server 如:ssh-copy-id loopserver@127.0.0.1 一般若是出现提示ssh: connect to host servername port 22: Connection refused,则表示远端服务器不是使用默认的端口22进行通信的,比如使用的是22000,则是ssh-copy-id "-p 22000 servername@server" 3、下次就可以直接使用命令 ssh servername@server进行登录了.
+参考FAQ: FAQ25050
+### 问题: 如何用命令行模拟出按键
+解决方案: adb shell input keyevent <keycode> 将keycode的值修改为想模拟的按键值即可 如 home: adb shell input keyevent 3 back: adb shell input keyevent 4
+参考FAQ: FAQ25071
+### 问题: 如何将输入字符时的选中箭头变小、持续时间变短？
+解决方案: 1.将光标改小: 将frameworks/base/core/res/res对应的drawable中的text_select_handle_middle.png换成您想要的图片.(文件夹为:drawable-mdpi、drawable-hdpi、drawable-ldpi、drawable-xhdpi、drawable-xxhdpi) 2.将光标显示时间缩短: 将frameworks/base/core/java/android/widget/TextView.java中的 private static final int DELAY_BEFORE_FADE_OUT = 4100;的值修改一下,该值是光标显示的延时,决定光标显示的时间.
+参考FAQ: FAQ25241
+### 问题: 什么叫录像帧率？
+解决方案: 一帧图像,其实就是指一张图像,帧率是指每秒显示的帧数,也可以理解为每秒显示了多少张图像.录像帧率就相当于录像时,以每秒多少张图像的速率在照相一般.例如,视频帧率是30FPS,即录制该视频时是以每秒钟30张图像的速率进行录制的.FPS即Frames per Second,中文文翻译为每秒显示帧数,俗称帧率.
+参考FAQ: FAQ25308
+### 问题: android4.4 UUI版本如何调整通话中DTMF拨号盘界面
+解决方案: android4.4 UUI版本,通话中DTMF拨号盘UI 主要是资源修改 对应修改如下目录资源图片: vendor\sprd\UniverseUI\ThemeRes\xxx\InCallUIRes 其中xxx = SimpleStyle等. UUI DTMF拨号盘的Layout文件如下: packages\apps\InCallUI\res\layout\ dialpad_view_stub_sprd.xml //定义ViewStub <--dtmf_twelve_key_dialer_view_sprd.xml //DTMF拨号盘的布局文件
+参考FAQ: FAQ25310
+### 问题: 帧率是如何影响视频播放的流畅度的？
+解决方案: 帧率:影响画面流畅度,与画面流畅度成正比:帧率越大,画面越流畅;帧率越小,画面越有跳动感;所以越高的帧率可以得到更流畅、更逼真的动画.每秒钟帧数(FPS)越多,所显示动作就会越流畅.捕捉动态视频内容时,此数字愈高愈好. 因为人眼的视觉暂留时间是1/24秒,所以当帧率大于24fps时,人眼看起来就是连续画面,一般来说30fps就可以接受的,但是将性能提升至60fps则可以明显提升交互感和逼真感,但是一般来说超过75fps一般就不容易察觉到有明显的流畅度提升了.如果帧率超过屏幕刷新率只会浪费图形处理的能力,因为监视器不能以这么快的速度更新,这样超过刷新率的帧率就浪费掉了.
+参考FAQ: FAQ25314
+### 问题: android4.4 非UUI版本如何调整通话中DTMF拨号盘界面
+解决方案: android4.4 非UUI版本,DTMF拨号盘的Layout文件如下: packages\apps\InCallUI\res\layout\ dtmf_twelve_key_dialer_view.xml //DTMF拨号盘的布局文件,并没有使用ViewStub 例:需要修改拨号盘的button 1: 在布局文件中找到使用的资源 <ImageButton android:id="@+id/one" style="@style/DialpadButtonStyle" android:src="@drawable/dial_num_1_no_vm_wht" android:contentDescription="@string/description_image_button_one" /> 对应修改使用的图片资源 dial_num_1_no_vm_wht.png
+参考FAQ: FAQ25317
+### 问题: user版本内置whatsapp后无法正常使用，提示下载最新版本
+解决方案: 此问题是由于user版本默认会将dex开关打开,whatsapp应用内部检测,如果当前应用做了资源分离,会提示用户重新下载.可以在Makefile文件中手动将该apk的dex开关关闭. LOCAL_DEX_PREOPT = false
+参考FAQ: FAQ25341
+### 问题: 预置GMS包后第一次开机安装APK，为何会界面显示一直在安装
+解决方案: 出现该问题主要是由于,在安装APK时选择了GMS验证该应用,PMS需要GMS返回验证结果,如果GMS一直没有返回结果就会造成界面一直显示正在安装
+参考FAQ: FAQ25343
+### 问题: 更新APK时，如何确定是否更新了其他APK
+解决方案: 可以现将手机/data/system/目录下的packages.xml导出,在其中查找updated-package标签,如果存在多个,即表示在更新该APK的同时,还更新了其他的APK文件
+参考FAQ: FAQ25351
+### 问题: 如何更新GMS包中的某个应用
+解决方案: 更新需要注意如下几点 1、该APK是否还更新了对应的lib库 2、更新该APK的同时,是否还需要更新GMS包中的其他应用 3、如果对应的lib库文件有新增的话,需要修改google/apps/Android.mk和google/libs/Android.mk文件,以便APK文件可以正常使用
+参考FAQ: FAQ25352
+### 问题: 什么叫视频的码率？
+解决方案: 码率:影响体积,与体积成正比:码率越大,体积越大;码率越小,体积越小.这里说的体积其实是指视频文件size. 码率就是数据传输时单位时间传送的数据位数,一般我们用的单位是kbps即千位每秒(比特率),也就是取样率(并不等同与采样率,采样率的单位是Hz,表示每秒采样的次数),单位时间内取样率越大,精度就越高,处理出来的文件就越接近原始文件,但是文件体积与取样率是成正比的,所以几乎所有的编码格式重视的都是如何用最低的码率达到最少的失真,围绕这个核心衍生出来cbr(固定码率:Constants Bit Rate)与vbr(可变码率:Variable Bit Rate), "码率"就是失真度,码率越高越清晰,反之则画面粗糙而多马赛克.
+参考FAQ: FAQ25372
+### 问题: 常说的视频分辨率是指什么？
+解决方案: 我们常说的视频多少乘多少,严格来说不是分辨率,而是视频的宽/高像素值.分辨率是用于度量图像内数据量多少的一个参数,通常表示成ppi(每英寸像素Pixel per inch),那个视频的320X180是指它在横向和纵向上的有效像素,窗口小时ppi值较高,看起来清晰;窗口放大时,由于没有那么多有效像素填充窗口,有效像素ppi值下降,就模糊了.(放大时有效像素间的距离拉大,而显卡会把这些空隙填满,也就是插值,插值所用的像素是根据上下左右的有效像素"猜"出来的"假像素",没有原视频信息),习惯上我们说的分辨率是指图像的宽/高像素值.
+参考FAQ: FAQ25386
+### 问题: 为什么背景播放FM时，使ATV播放之后，FM不恢复播放
+解决方案: 根据AudioFocus机制,FM和音乐播放器都是需要长时间占用AudioFocus的, 所以当打开FM后,音乐播放器退出,打音乐播放器后FM退出. 当ATV启动时,FM收到的消息是 AUDIOFOCUS_LOSS 而不是AUDIOFOCUS_LOSS_TRANSIENT 所以,后台播放FM,ATV播放,音乐播放器退出后,fm没有继续播放是正常的,这不是问题.
+参考FAQ: FAQ25424
+### 问题: 手机防盗功能生效却收不到追踪短信问题
+解决方案: 某些运营商网络会对预设的防盗追踪短信内容做过滤,比如短信中定位手机位置的mcc/mnc/小区信息等,网络中心不会对此短信做转发.解决方案,可以适当调整追踪短信字串信息,尽量不要包含"敏感"字符.相关代码在MMIMSD_SendMsdMsg @mmimsd.c 中.
+参考FAQ: FAQ25474
+### 问题: 什么是OpenMAX？
+解决方案: OpenMAX全称Open Media Acceleration,是一个无需授权,跨平台的多媒体软件接口规范标准,主要针对嵌入式和移动设备.自上而下分为三个层次,分别是OpenMax AL(应用层),OpenMax IL(集成层)和OpenMax DL(开发层).Android系统中主要使用到OpenMAX IL层的接口标准,并且进行了C++的封装,Android中使用OpenMAX主要目的是为了实现编解码功能.
+参考FAQ: FAQ25546
+### 问题: OpenMAX在不同android平台上的实现有哪些差异？
+解决方案: 在android2.x版本中,主要是使用多媒体引擎OpenCore中实现的一套OpenMAX;而从android4.0开始,抛弃了Opencore多媒体引擎,使用了更为简洁的stagefright多媒体框架,当然在stagefright中也使用了OpenMAX IL层的接口,对它进行了封装,OMXCodec类就是Stagefright中抽象出来的OMX编解码,用于给AwesomePlayer播放器调用.
+参考FAQ: FAQ25547
+### 问题: 相机底层去掉闪光灯的"auto"选项后，需要注意的事项
+解决方案: 在相机底层配置闪光灯的地方,将flash-mode-values中配置的"auto"选项去除后,上层闪光灯将不会支持自动模式,要注意,上层应该也要同步修改,默认上层应用相机闪光灯的默认模式是"自动",如果上层不进行相应的修改,那么,当在相机中恢复默认设置时,就会发生crash,原因就是默认配置了"自动",恢复默认时,会从底层返回的模式中去找"auto"这个属性值,找不到就会返回-1,后面在数组中找-1位置对应的值就会报出数组越界异常. 需要在strings.xml中,将 <string name="pref_camera_flashmode_default" translatable="false">auto</string> 这里的auto改为off,或底层配置中的值即可.
+参考FAQ: FAQ25595
+### 问题: 7715是否支持通话记录存储在sim卡上
+解决方案: 支持,SIM卡会记录最近10次的通话记录.但是查看时需要通过LND列表查看,通话记录列表里只显示存储在手机数据库中的通话记录. 查看SIM卡LND列表入口: 进入拨号->打开拨号盘->menu->LND列表
+参考FAQ: FAQ25627
+### 问题: 如何让通话录音文件不在音乐播放器列表中显示出来？
+解决方案: 此问题可根据需求修改如下代码: Recorder.java (packages\apps\incallui\src\com\sprd\incallui)文件的addToMediaDB()方法中的如下代码: cv.put(MediaStore.Audio.Media.IS_MUSIC, "1"); //"1"表示会将录音文件添加到音乐列表中,"0"表示不会添加.
+参考FAQ: FAQ25628
+### 问题: 如何避免出现MediaPlayer: Error (-38,0)
+解决方案: 在android开发中,经常会用到MediaPlayer. 在使用MediaPlayer时,有时候会遇到:MediaPlayer(362): error (-38, 0) 类似的错误. 这时,需要检查一下在设置MediaPlayer的数据源时,使用的是那种方式: 1.在初始化MediaPlayer时,通过create方法设置数据源.则不能写MediaPlayer.prepare()方法,这时,会报错. 2.如果是使用MediaPlayer构造函数初始化MediaPlayer,然后通过setDataSource方法设置数据源时,就需要在start()之前,使用MediaPlayer.prepare()方法,对数据源进行一次编译.能够避免出现(-38,0)这种错误.
+参考FAQ: FAQ25634
+### 问题: 如何批量将新翻译字串导入到工程中
+解决方案: 在对应语言的str_table.xls/str_table1.xls中的history tab页中填入新翻译的内容,编译的时候会将此tab页中翻译覆盖掉原来对应ID的翻译,达到更新翻译的效果 需要注意以下几点: 1、history第一页的表头必须完整(即第一行) 2、第一列:ID,必须和需要替换的字符串ID一致且唯一 3、仅在对应的更新语言列中填入翻译的字串,其他无须更新的语言列置空即可
+参考FAQ: FAQ29147
+### 问题: 无法在SIM卡中建立群组
+解决方案: 只有USIM卡才有群组功能,如果无法添加到SIM1,说明SIM1不是USIM;如果不能添加到SIM2,说明SIM2不是USIM
+参考FAQ: FAQ27372
+### 问题: 如何在listview的顶部和底部添加自定义布局
+解决方案: listview 提供两个接口个外部使用: public void addHeaderView(View v, Object data, boolean isSelectable) public void addFooterView(View v, Object data, boolean isSelectable) View v 就是开发者自定义的布局(如:下拉刷新 / 点击加载更多 等) data 和此视图关联的数据 isSelectable 设为true则表示footer view可以被选中 举例: inflater = LayoutInflater.from(context); headerView = (LinearLayout) inflater.inflate(R.layout.lv_header, null);//lv_header.xml就是自定义的布局 mlistView.addHeaderView(headView,null,false);
+参考FAQ: FAQ25645
+### 问题: 如何把actionbar上overflow button的菜单内容显示在底部
+解决方案: Actionbar 上 overflowbutton是为了显示更多的menu 菜单选项. 可以使用Split action bar,把actionbar多余的的action显示在底部 在屏幕很窄时(如在portra模式),使用Split action bar可以将所有的action显示在屏幕底部,这样可以将更有意义的元素如导航、标题等显示在activity的顶部 具体配置如下: 启用split action bar可在 AndroidManifest.xml中定义android:uiOptions="splitActionBarWhenNarrow"
+参考FAQ: FAQ25653
+### 问题: Android下stop命令的使用
+解决方案: android 下的stop命令主要的功能是停止native的service. 1、在android启动的时候init进程会解析init.rc文件并进行将以Service关键字开始的部分解析并存储在链表中 2、当运行stop命令时,实际上是通过property_set设置一个key为"ctl.stop"的service 3、当init进程接收到这个socket时会在链表中查找对应的service,若正在运行就停止这个service. 使用方法: 1) adb shell 2) stop bootanim 我们会看到一个若是bootanim service在运行,运行stop命令后会停止
+参考FAQ: FAQ26655
+### 问题: VSS、RSS、PSS、USS的区别
+解决方案: 在使用procrank查看系统内存情况时,在输出的界面可以看到各个进程的VSS、RSS、PSS、USS值. 且VSS >= RSS >= PSS >= USS. VSS - Virtual Set Size 虚拟耗用内存(包含共享库占用的内存) RSS - Resident Set Size 实际使用物理内存(包含共享库占用的内存) PSS - Proportional Set Size 实际使用的物理内存(比例分配共享库占用的内存) USS - Unique Set Size 进程独自占用的物理内存(不包含共享库占用的内存) 在分析问题时一般看PSS值就可以!
+参考FAQ: FAQ26658
+### 问题: 什么时候会触发音频路由切换
+解决方案: 会触发音频路由切换的场合如下: 1、有设备状态改变时(如耳机插入拔出等).setDeviceConnectionState 2、phone状态变化时(电话接通挂断等).setPhoneState 3、通话中或视频播放等强制切换音频设备时.setForceUse 4、开始播放声音时.startOutput 5、停止播放声音时.stopOutput
+参考FAQ: FAQ25773
+### 问题: 如何设置拍照音
+解决方案: 通过函数mCameraDevice.enableShutterSound(true/false)可以设置拍照有声音或没声音.
+参考FAQ: FAQ25785
+### 问题: 如何实现横屏或竖屏的两个方向自动旋转？
+解决方案: 在Android 2.3及以上平台下,可以通过设置 android:screenOrientation="sensorLandscape" 实现横屏的两方向自动旋转. 同样设置 android:screenOrientation="sensorPortrait" 可以实现竖屏的两个方向自动旋转
+参考FAQ: FAQ27403
+### 问题: 耳机硬件电路没有接芯片内部Class-G PA，程序应如何修改
+解决方案: 耳机硬件电路如果没有接芯片内部Class-G PA,程序应按照如下修改,否则插上耳机后操作音频时,pop音会比较明显. 配置kernel如下: CONFIG_SND_SOC_SPRD_AUDIO_USE_INTER_HP_PA=n CONFIG_SND_SOC_SPRD_CODEC_NO_HP_POP=n
+参考FAQ: FAQ25890
+### 问题: Slog如何在编译阶段配置
+解决方案: Slog是一个集成的抓取log工具,工具源码放在device/sprd/common/tools/slog/这个目录下边. 在这个目录下边有两个配置文件slog.conf, slog.conf.user分别适用于user 版本和debug版本 在编译前可以通过修改slog.conf, slog.conf.user这两个文件中的enable和disable选项来配置slog的开启和关闭. 编译前打开对应的device/sprd/common/tools/slog/slog.conf 或者device/sprd/common/tools/slog/slog.conf.user: 修改以下配置项为disable或enable即可关闭或打开slog 默认如下: slog.conf: # 控制log开关: enable/disable enable # 控制log开关: enable/disable slog.conf.user disable
+参考FAQ: FAQ28825
+### 问题: 5735平台希望默认关闭slog功能
+解决方案: 修改vendor\sprd\open-source\tools\slog目录中的slog.conf文件的: #control: enable/disable enable 修改为: #control: enable/disable disable
+参考FAQ: FAQ27085
+### 问题: 文件管理器中如何显示隐藏文件
+解决方案: 打开手机上的文件管理器,进入手机或者外部存储列表,此时默认情况下是不显示隐藏文件/文件夹的,那么要看到隐藏文件可以按照如下操作: 前提:存储设备中有隐藏文件/夹 1. 进入文件管理器 2. menu-->Settings-->隐藏文件显示 3. 勾选隐藏文件显示即可 点击back键后回到文件管理器存储列表,此时就可以看到隐藏的文件和文件夹了
+参考FAQ: FAQ28808
+### 问题: 开机电压是不是可以设置的，怎么设置?
+解决方案: 开机电压的设置在工程头文件\u-boot\include\configs\sp7715xx.h中定义: #define LOW_BAT_VOL 3500 /*phone battery voltage low than this value will not boot up*/ #define LOW_BAT_VOL_CHG 3200 //3.3V charger connect 包括电池电压和充电时电池电压. 这个电压不宜改得过低,否则可能电压偏低导致系统不稳定.
+参考FAQ: FAQ28805
+### 问题: 下载允许并发的线程有几个
+解决方案: 默认允许并发的线程是5个,设置如下: <!-- Max number of downloads allowed to proceed concurrently --> <integer name="config_MaxConcurrentDownloadsAllowed">5</integer> 这个值可以修改,不过修改时要考虑系统的承受能力,毕竟下载时还是很耗CPU和内存的.
+参考FAQ: FAQ27614
+### 问题: SC8830/SC7730/SC7715 平台使用 trout FM 芯片时， FM App 的音量是如何控制的？
+解决方案: 对于 sprdroid4.1_3.4 平台、 sprdroid4.4_3.10 平台、 MocorDroid2.3.5_3.10 平台 和 sprdroid4.4_14a_7715 平台 使用 trout FM 芯片时,FM driver是不控制音量大小的,音量是通过Audio控制的. FM App 的 音量是通过调用Audio的setParameter接口来控制的. /packages/apps/FMPlayer/src/com/thunderst/radio/FMplayService.java public boolean setVolume(int volume) { ... mAudioManager.setParameter("FM_Volume","" + volume); ... }
+参考FAQ: FAQ26107
+### 问题: 修改了productnv 分区大小后，为什么下载失败。
+解决方案: 调整product分区后,重新打包pac包并加载新的.下载的时候还是提示下载失败. 因为你修改了prodnv分区的大小为新的size 备份size 也修改成了新的size,但是手机中的prodnv分区只有还是老的size,当你备份,使用新的size的时候就会出错了. 请按照如下步骤进行操作: 使用工具加载pac包 ,将backup中的prodnv 前边的勾去掉后进行下载.这个每个手机只需要一次,后面就调整过来了,可正常下载.
+参考FAQ: FAQ26140
+### 问题: SC7715 休眠状态下保持WLAN连接 选项选择“从不”，多少时间后进入深度睡眠
+解决方案: WIFI休眠机制中设置15分钟后才会生效,设置的位置在WifiController.java中, private static final long DEFAULT_IDLE_MS = 15 * 60 * 1000; /* 15 minutes */ 再加上休眠完全睡下去需要几分钟左右,所以建议灭屏20分钟后再测试功耗相关功能
+参考FAQ: FAQ27004
+### 问题: ListView中android:choiceMode属性的作用
+解决方案: android:choiceMode规定此ListView所使用的选择模式. 缺省状态下,list没有选择模式. 属性值必须设置为下列常量之一: none,值为0,表示无选择模式; singleChoice,值为1,表示最多可以有一项被选中; multipleChoice,值为2,表示可以多项被选中. multipleChoiceModal,值为3,客户自定义的多选模式. 需要android4.0版本以后才支持. 这种模式,需要客户实现接口类android.widget.AbsListView.MultiChoiceModeListener, 调用android.widget.AbsListView.setMultiChoiceModeListener()方法设置. 程序使用的接口为: ListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL)
+参考FAQ: FAQ26165
+### 问题: 启动activity而不显示界面
+解决方案: 此时可以在项目的AndroidManifest.xml文件中相应的Activity标签中添加这样一行: android:theme="@android:style/Theme.NoDisplay" 这样一来,当这个Activity启动的时候,就不会显示出界面了.这样开发者可以把activity当作一个后台的运行进程,执行相关操作 而不引起界面上的改变
+参考FAQ: FAQ26243
+### 问题: Activity背景透明显示的两种情景
+解决方案: 1:如果希望透明显示的背景是wallpaper(包在动态壁纸的时候,动态的效果也可以作为activity运行的背景),可在项目 AndroidManifest.xml对应的activity下添加如下配置: android:theme="@android:style/Theme.Wallpaper" //使用wallpaper作为主题 这样显示的就是当前系统的wallpaper(包括动态wallpaper) 2:如果只希望该activity背景是透明显示的,而对界面透明之后的背景没有要求,可如下配置: AndroidManifest.xml对应的activity下添加如下配置: android:theme="@android:style/Theme.Translucent" //使用Translucent作为主题 这样该activity的背景就是透明的,透明之后的背景是上一个activity界面显示的内容.
+参考FAQ: FAQ26249
+### 问题: 如何设置屏幕不能被截取
+解决方案: 为了保证一些保密的界面不被应用恶意截屏,保护用户的隐私性,可以在创建SurfaceControl的时候,添加一个ISurfaceComposerClient::eSecure: sp<SurfaceControl> control; control = session()->createSurface(String8("secureSurface"), dinfo.h, dinfo.w, PIXEL_FORMAT_RGB_565, ISurfaceComposerClient::eFXSurfaceNoDisp | ISurfaceComposerClient::eSecure); 当SurfaceControl对象对应的Surface对象的内容可见时,应用程序调用截屏的接口会失败.
+参考FAQ: FAQ26268
+### 问题: screencap截屏命令使用
+解决方案: 在android4.4系统除了提供了截屏的接口之外,本身也有个截屏的命令供用户直接使用,命令的路径:/system/bin/screencap.其使用的格式: screencap [-hp] [-d display-id] [FILENAME] 其中,-h是为帮助选项,-p是把截屏保存为png格式文件,-d是在多屏的情况下,选择哪个屏进行截取.
+参考FAQ: FAQ26269
+### 问题: Java层截屏接口
+解决方案: Java层提供了截屏的接口,screenshot接口在SurfaceControl类中,并且screenshot接口由于返回值和参数不一样,衍生出多个不同的接口,且这些接口都是static类型,所以可以直接调用SurfaceControl::screenshot即可.详细介绍WindowManagerService使用一个常用的接口: public static Bitmap screenshot(int width, int height, int minLayer, int maxLayer) 其中,width和height是期望Bitmap对象的宽和高,如果屏幕本身大于这些值,则会进行压缩,如果赋值为0,则返回屏幕原始内容.minLayer和maxLayer则限制截取的屏幕的Surface Layer在Z轴上的最小值和最大值.
+参考FAQ: FAQ26271
+### 问题: 如何使用screencap命令读取帧缓冲区硬件设备中的内容
+解决方案: 有时为了调试或者去除overlay中的内容,直接读取帧缓冲区硬件设备的内容,如/dev/graphics/fb0设备的内容,则可以通过screencap命令来实现: screencap [-hp] [-d display-id] [FILENAME] 这里只需要设置display-id的取值大于3即可.
+参考FAQ: FAQ26272
+### 问题: 功能机自动更新时间功能如何使用？
+解决方案: 平台软件支持以下两种更新时间方式: 1. UPDATE_TIME_SUPPORT = TRUE,通过基站信息更新时间是自动更新时间,通过基站上报的时间信息更新系统时间,但目前联通并不支持(联通不带相关时间信息). 2. SNTP_SUPPORT = TRUE,通过网络更新时间是手动更新时间,走的是SNTP协议.点击时间日期设置中的手动更新菜单项,才会向服务器发送UDP数据报请求网络时间信息,并非联网时自动更新.
+参考FAQ: FAQ26305
+### 问题: 如何去除主菜单背景的设置
+解决方案: 修改Launcher.java 文件中 showAppsCustomizeHelper 方法中 updateWallpaperVisibility(true); 改为 updateWallpaperVisibility(false);
+参考FAQ: FAQ26337
+### 问题: RGB屏如何设置为de模式
+解决方案: RGB屏支持de模式,sync模式通常只需要参照屏的spec来对硬件上屏某个脚跳线即可,另外 还需要注意屏驱动中同步信号的极性是否正确.
+参考FAQ: FAQ26346
+### 问题: 为什么运行monkey test后很多应用不能正常使用
+解决方案: 运行monkey test后,正确的做法应该是重启动机器,以确保monkey 服务完全退出,否则一些应用可能应该有monke的运用而导致不正常.具体可在代码中搜索isMonkeyRunning 可以看到 判断monkey还在运行时 直接return掉.
+参考FAQ: FAQ26349
+### 问题: bootchart如何使用
+解决方案: 打开方法: 1.在system/core/init/目录执行: mm INIT_BOOTCHART=true -B 2.make ramdisk && make bootimage 使用方法: 1. 将刚刚生成的boot.img下载到手机,并开机. 2. adb shell 'echo 120 > /data/bootchart-start' 其中120是表示bootchart纪录的时间,以秒为单位,可以自定义. 3. 重启手机. 4. 等待设置的纪录时间结束后,adb pull /data/bootchart,并打包pull出的文件: tar -czf bootchart.tgz header proc_stat.log proc_ps.log proc_diskstats.log kernel_pacct 5. bootchart bootchart.tgz 即可得到图
+参考FAQ: FAQ26348
+### 问题: 从KEYIN5扩充按键，KEYIN5上本身也有放按键，会导致串键
+解决方案: 1.三个GPIO从KEYIN5上扩充按键,按GPIO上的按键会低概率导致KEYIN5上键触发. kpd_ptr->debounce_cnt = 0x20;//默认是0x10 kpd_ptr->clk_divide_cnt = 0x2 & KPDCLK0_CLK_DIV0 ;//默认CFG_CLK_DIV为1 降低key 采样时间 默认是 32/2=16k 改为 8k 2. 请将 KPD_EXPAND_KEY_CHECK_TIME 60 改为 KPD_EXPAND_KEY_CHECK_TIME 200 key task 任务优先级比较低,会被其他的task 打断.
+参考FAQ: FAQ26363
+### 问题: 如何设置"网络类型"默认值？客户要求改为WCDMA
+解决方案: setting --connection settings-network type 系统默认是"WCDMA preferred" 客户想改为只支持 WCDM 请修改nv 在 td_tianji2 下面 NV_PARAM_TYPE_MS_PREFERRD_RAT 其中 0 gsm 1 wcdm 2 dual mode 3 unknow nv 中默认是 2 是双模双 并且 wcdm 优先 客户是泰国的营运商 只支持 wcdm 需要改为1 需要修改为 1 wcdm only
+参考FAQ: FAQ26367
+### 问题: 什么是eMCP
+解决方案: eMCP其实是emmc(Embedded MultiMediaCard)+MCP(多芯片封装)的组合,它是结合eMMC和MCP封装而成智慧型手机记忆体标准,与传统的MCP相较之下,eMCP因为有内建的NAND Flash控制晶片,可以减少主晶片运算的负担,并且管理更大容量的快闪记忆体,以外型设计来看,不论是eMCP或是eMMC内嵌式记忆体设计概念,都是为了让智慧型手机的外型厚度更薄,机壳密闭度更完整. 现在展讯的主流芯片都可以完美支持eMCP.
+参考FAQ: FAQ26386
+### 问题: 如何用MM单独编译FM多国语言的版本?
+解决方案: FM 修改之后可以在 FMPlayer 目录下,使用 MM 进行单独编译. $ mm 但是如果需要编译多国语言的版本,需要在MM前增加 MULTILANGUAGE_SUPPORT=true 进行单独编译. $ MULTILANGUAGE_SUPPORT=true mm -B
+参考FAQ: FAQ26392
+### 问题: 终端如何区别RTSP流媒体的直播和点播？
+解决方案: 中国移动规范要求终端通过SDP文件中npt参数来区分流媒体的直播与点播方式,点播源存在开始和结束时间,而直播源没有结束时间. 示例: 点播方式:a=range: npt=0-59.3478; 直播方式:a= range: npt=0-
+参考FAQ: FAQ26411
+### 问题: MCU接口与RGB接口LCD的区别
+解决方案: MCU接口,俗称80接口,MCU接口通过并行接口传输控制命令和数据,并通过LCM模组自带的GRAM更新数据刷新屏幕. RGB接口,俗称DPI接口,采用普通的同步时钟信号线来传输特定的数据,采用SPI等控制线来完成控制命令.
+参考FAQ: FAQ26914
+### 问题: Dolphin支持500W像素的摄像头吗？
+解决方案: 支持,摄像头模组必须输出JPEG格式数据
+参考FAQ: FAQ26466
+### 问题: YUV格式数据摄像头模组，SC7715平台能支持多少万像素？
+解决方案: YUV格式数据,SC7715能支持2M像素
+参考FAQ: FAQ26473
+### 问题: 为什么世界时钟中的默认时区无法设置
+解决方案: 遇到这个问题不要怀疑是代码问题,首先应该查看一下是否开启了"自动更新时间功能"(date&time->Update time settings->Auto update time), 自动更新时间是从网络获取时间来直接更新手机时间的,它不受默认时区的限制,因此,开启自动更新时间功能时,默认时区设置功能无效. 案例分享:国内测试,通过代码修改世界时钟里面的默认时区,发现新建短信的时间仍然是北京时间而不是设置的时区的时间. 分析:这个问题最终确认就是因为开启了自动更新时间导致的,此时手机时间是直接从网络获取的,跟默认时区没任何关系,由于在国内测试,网络时间为北京时间,查看一下手机时间,就是北京时间,这是正常现象.
+参考FAQ: FAQ26480
+### 问题: Dolphin平台支持EMMC4.5吗？
+解决方案: 支持
+参考FAQ: FAQ26481
+### 问题: 什么是I帧？
+解决方案: I帧:帧内编码帧 ,I帧表示关键帧,你可以理解为这一帧画面的完整保留;解码时只需要本帧数据就可以完成(因为包含完整画面) I帧特点: 1.它是一个全帧压缩编码帧.它将全帧图像信息进行JPEG压缩编码及传输; 2.解码时仅用I帧的数据就可重构完整图像; 3.I帧描述了图像背景和运动主体的详情; 4.I帧不需要参考其他画面而生成; 5.I帧是P帧和B帧的参考帧(其质量直接影响到同组中以后各帧的质量); 6.I帧是帧组GOP的基础帧(第一帧),在一组中只有一个I帧; 7.I帧不需要考虑运动矢量; 8.I帧所占数据的信息量比较大.
+参考FAQ: FAQ26545
+### 问题: 运营商要求终端不能支持A5/3协议算法，怎样关闭？
+解决方案: NVEditor编辑修改nv: nv_classmark\FIXED_NVITEM_T\a53_supported =0X0 TD_TIANJI2_NV_TYPE\NV_PRAM_TYPE_PREV_UMTS_MS_RA_CAP\a5_3 = 0x0 对应的nv项置0 表示终端不能支持A5/3(A5/3算法关闭),同理A5\2算法、A5\1算法也可以找到对应项关闭.
+参考FAQ: FAQ26543
+### 问题: [SC7701]EDGE只支持下行不支持上行软件上如何配置？
+解决方案: 修改nv:TD_TIANJI2_NV_TYPE\NV_PRAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs = 0x2 0x2表示不支持上行edge. 0:no supp edge, 1:supp ul 8psk, 2:no supp ul 8psk
+参考FAQ: FAQ26549
+### 问题: dolphin如何动态修改寄存器
+解决方案: 有两种方法: 1、开机之后连接ADB,进入root模式,用lookat命令修改 adb root adb shell 或adb shell之后输入su,取得root权限才可以用lookat命令 lookat reg_addr //看reg_addr 寄存器的值 lookat -l n reg_addr //列出reg_addr 地址连续n个地址的寄存器值 lookat -s reg_val reg_addr // 把reg_val值写入 reg_addr寄存器地址 用lookat可以直接看adie地址,而不需要通过adi接口的地址 2、用trace32连接上之后看. 连上trace32之后需要关掉MMU,才能看到所有地址. trace32看ADIE地址需要通过adi接口看,比如看0x40038928的值,就必须将0x8928写入0x40030024,然后从0x40030028低16位看到0x40038928
+参考FAQ: FAQ30140
+### 问题: 编辑彩信添加视频时，为什么录像自动停止后只录制了90k?
+解决方案: 录像内容偏小有以下两方面原因: 1.camera的帧率过低,正常的帧率大约25帧左右,可通过在mainlog中查看帧率,通过驱动修改帧率来解决此问题. 2.比特率过高,可通过减小比特率延长录像时间. long seconds = bytesAvailable / (camcorder.audioBitRate + camcorder.videoBitRate);
+参考FAQ: FAQ26554
+### 问题: 5735平台如何去掉Camera的Preview头几帧数据
+解决方案: 预览的跳帧和效果设置的跳帧请参考如下的ov5648的设置进行, vendor/sprd/open-source/libs/libcamera/sensor/sensor_ov5648_mipi_raw.c(这个文件,展讯随IDH包发布的) SENSOR_INFO_T g_ov5648_mipi_raw_info = { ... 3, // skip frame num before preview 3, // skip frame num before capture 0, // deci frame num during preview 0, // deci frame num during video preview ... 3, // skip frame num while change setting }
+参考FAQ: FAQ35394
+### 问题: 打开开发者选项后，语言选择里多出"[Developer]Accented English"语言选项
+解决方案: android原生版本就有这个现象, 如果要去掉这个选项,可以用如下方法: frameworks/base/core/java/com/android/internal/app/LocalePicker.java 去掉如下这段代码即可 if (isInDeveloperMode) { if (!localeList.contains("zz_ZZ")) { localeList.add("zz_ZZ"); } /** - TODO: Enable when zz_ZY Pseudolocale is complete * if (!localeList.contains("zz_ZY")) { * localeList.add("zz_ZY"); * } */ }
+参考FAQ: FAQ26568
+### 问题: 工厂测试中的铃声马达测试，为什么铃声声音很小
+解决方案: 目前工厂测试中的铃声马达测试,铃声是使用receiver来进行播放的,因此给人的感觉是铃声比较小. 如果要修改为使用spreaker播放铃声,可以进行如下修改即可, packages/apps/ValidationTools/src/com/sprd/validationtools/itemstest/MelodyTest.java] 注释掉如下代码: AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE); audioManager.setMode(AudioManager.MODE_IN_CALL);
+参考FAQ: FAQ26576
+### 问题: 如何修改设置列表中图标的大小
+解决方案: 可以把设置界面listview里绘制图标的区域放大一点, 比如preference_header_item.xml里, <LinearLayout android:layout_width="@dimen/header_icon_width" android:layout_marginStart="6dip" android:layout_marginEnd="6dip" android:layout_height="wrap_content"> <ImageView android:id="@+id/icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" /> </LinearLayout> header_icon_width目前是28dp,可以修改为更大的值.
+参考FAQ: FAQ26583
+### 问题: 工程lunch后没有user版本选项如何编译user版本
+解决方案: 使用choosecombo 1 PRODUCT 1 比如7715gaplus 工程 USER版本 choosecombo 1 scx15_sp7715gaplus 1 USERDEBUG版本 choosecombo 1 scx15_sp7715gaplus 2 不需要使用lunch 选择工程 或者使用choosevariant 单独选择编译的版本
+参考FAQ: FAQ27815
+### 问题: 图库如何同时显示视频和图片
+解决方案: 此平台中只需要在GalleryActivity.java文件中将DataManager.INCLUDE_IMAGE替换成DataManager.INCLUDE_ALL即可,DataManager.INCLUDE_ALL的定义如下: public static final int INCLUDE_ALL = INCLUDE_IMAGE | INCLUDE_VIDEO;
+参考FAQ: FAQ26556
+### 问题: 如何扩大工厂测试中TP单点测试的测试区域大小
+解决方案: 有些小屏的项目,TP单点测试的测试区域比较小,导致测试时比较难点中并通过测试. 可以通过如下方法改大测试区域, packages/apps/ValidationTools/src/com/sprd/validationtools/itemstest/SingleTouchPointTest.java private static final int RADIUS = 20; 修改该变量的值即可调整TP测试的区域.
+参考FAQ: FAQ26584
+### 问题: 如何生成图片的缩略图
+解决方案: Android中一般获取取缩略图的方法是使用BitmapFactory的 decodeFile方法. 通过传递进去 BitmapFactory.option类型的参数进行获取缩略图.在BitmapFactory.Option中,属性值inSampleSize表示缩略图大小为原始图片大小的几分之一,即如果这个值为2,则取出的缩略图的宽和高都是原始图片的1/2,图片大小就为原始大小的1/4. 用法如下: BitmapFactory.Options options = new BitmapFactory.Options(); options.inSampleSize = 2; BitmapFactory.decodeFile(imagePath, options);
+参考FAQ: FAQ26585
+### 问题: 区分Nand和eMMC版本方案
+解决方案: 第一,软件版本区分 ec/ea/../都是eMMC 方案的. ga/gb/../等都是nand方案的. 第二、命令行查看. #cat /proc/mtd dev: size erasesize name mtd0: 00040000 00040000 "spl" mtd1: 000c0000 00040000 "2ndbl" mtd2: 00080000 00040000 "kpanic" 有mtd字样的设备即为nand 方案 # cd dev/block/ brw------- root root 179, 0 2012-01-01 00:00 mmcblk0 brw------- root root 179, 32 2012-01-01 00:00 mmcblk0boot0 ...... brw-rw---- system system 179, 9 2012-01-01 00:00 mmcblk0p9 有mmcblk 这样的设备,说明样机就是eMMC 方案的.
+参考FAQ: FAQ26618
+### 问题: Android4.4 打开蓝牙如何不去自动连接蓝牙耳机
+解决方案: 在BluetoothManagerService.java文件修改 public boolean enable() { ... sendEnableMsg(false);//将false改为true ... } 并且Google提供了不去自动连接的enable函数:enableNoAutoConnect
+参考FAQ: FAQ26622
+### 问题: 怎么判断注册到哪个网络上
+解决方案: 可通过以下命令查询网络基本信息 at+cops? 返回:+COSP: <mode>,<format>,<oper>,<AcT> 其中: <AcT>: access technology of the registered network 0 GSM 1 GSM Compact 2 UTRAN 3 GSM w/EGPRS (see NOTE 1) 4 UTRAN w/HSDPA (see NOTE 2) 5 UTRAN w/HSUPA (see NOTE 2) 6 UTRAN w/HSDPA and HSUPA (see NOTE 2) 15 HSPA+ 查看最后creg命令的ACT参数,可以得出手机注册到哪个网络上面. 例如: >at+cops? +COPS: 0,2,"46000",0 OK 1、mode=0 2、format=2 3、oper=46000 46000表示移动网络,46001表示联通网络. 4、AcT=0 表示GSM网络. 另外也可以通过手机屏幕显示判断:
+参考FAQ: FAQ26634
+### 问题: 为何kernel栈有8K的大小限制？
+解决方案: 8K已经需要order=1的内存分配了,再大的话在碎片化比较严重的情况下将难以分配. 8K是目前arm上的默认大小. sp指向kernel栈顶部(高地址),向下增长. thread_info在stack的底部. 栈分配时没有物理检查,如果栈溢出了,会破坏thread_info,引起不确定的表现. 栈结构示意: top +----------------+ | return vals | | & local vars | | ... | | | | | | 0's | | thread_info | bottom +----------------+
+参考FAQ: FAQ30595
+### 问题: 如何使默认的来电防火墙CallFireWall编译至版本中
+解决方案: 在编译7715 cucc版本时无法在launch中找到CallFireWall(来电防火墙),请在相应的mk文件中添加相应的应用名称, 具体如下: 仅仅添加蓝色粗体部分 打开文件: \idh.code\vendor\sprd\operator\cucc\specA.mk PRODUCT_PACKAGES += \ SohuNewsClient_CUCC \ ... CallFireWall \ ... 注:请确保目前使用的的specA.mk,上述修改后重新编译即可
+参考FAQ: FAQ26637

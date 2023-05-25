@@ -1,0 +1,306 @@
+### 问题: VAMOS NV开关设置
+解决方案: VAMOS有两个NV开关,一个主开关:vamos_level,一个运营商辅助开关:vamos set for plmn. 若不需要支持VAMOS,只需要将NV主开关vamos_level设置为0; 若需要支持VAMOS-1,只需要将NV主开关vamos_level设置为1; 若需要支持VAMOS-2,只需要将NV主开关vamos_level设置为2; 若需要根据运营商定制化VAMOS的支持情况,则还需要设置运营商辅助开关NV:vamos set for plmn,比如如下三个运营商需要支持VAMOS-1: vamos_level设置为5,vamos set for plmn设置运营商:
+参考FAQ: FAQ109633
+### 问题: 【BBAT】BBAT模式下红外灯测试方案
+解决方案: 1. 测试原理:BBAT模式下通过检测红外光敏电阻电压的变化来判断红外灯是否能正常点亮. 2. 手机红外控制方式: (1)一根或两根GPIO来控制红外的开关的方案,BBAT模式下则通过将对应的GPIO拉高打开红外灯. (2)GPIO+I2C+控制芯片的方案,此方案的红外包含发射和接收功能,无法通过单纯的GPIO拉高来打开红外灯,此时需要底层添加红外打开节点,BBAT模式下发送diag命令,调用底层节点来控制红外的开关,Autotester工具的单项命令调试界面中有个"NBD红外开"/"NBD红外关"的按钮可以用来调试,大工具则需要使用R21.18.3202及之后的版本.
+参考FAQ: FAQ109651
+### 问题: Ylog工具使用中的常规注意事项
+解决方案: 1.同步网络时间,确保问题发生时间点的准确记录,及问题点Log确认. 2.确保插入16G以上SD卡(10速),且SD卡空间无占用或少量占用. 3.User版本Ylog默认为关闭状态,测试前务必手动开启(默认常规模式即可),且确保Log正常生成. 4.LogSetting中有"Log循环覆盖"的功能设计,且默认开启状态,切勿关闭. 5.及时清除历史Log 6.Log获取请在get all log 和PC导出工具之间二选其一,特别是ANR/Crash相关问题
+参考FAQ: FAQ109671
+### 问题: Monkey测试的Log捕获
+解决方案: 测试前确认: 1.确保插入16G以上SD卡(10速),且SD卡空间无占用或少量占用. 2.测试前确保开启AP Log,关闭ModemLog 3.User版本确保Ylog-Settings-SysdumpEnable开启,来抓取SysdumpLog 4.确保Ylog-SettingsLogSetting-ModemLogSetting/ConnectivityLogSetting中Modem/CP2 Reset关闭 5.确认Ylog-SettingsLogSetting-ModemLogSetting/ConnectivityLogSetting中单个Log大小、总Log容量最大值为合适数值,且Log循环覆盖开启. 运行中提醒: 长时间运行测试(如7x24h),建议每天导出一次Log,并及时清理历史Log 测试Log获取: 1.点击手机get all log开关 2.连接usb拷贝Ylog 3.连同MonkeyLog一并上传给研发
+参考FAQ: FAQ109675
+### 问题: WCN Assert的Log捕获
+解决方案: 1.同步网络时间 2.确保确保插入16G以上SD卡(10速) 3.确保Ylog工具为开启状态,且能够抓取到ConnectivityLog 4.确保CP2 Reset关闭 (Ylog—SettingsLogSetting—ConnectivityLogSetting—CP2 Reset关闭) 5.发生ASSERT后界面提示"system info dumping",等待结束 6.将问题时间点的AP Log+ConnectivityLog提供给研发,ConnectivityLog中务必包含"wcn_memory_时间戳.dump"文件
+参考FAQ: FAQ109676
+### 问题: GSM下两种常见的掉话场景
+解决方案: MDL_ERR_IND,一般是SDCCH或者FACCH链路出现问题,DL链路无法恢复. MPH_ERROR_IND ,连续收到若干包SACCH解码失败,bad SA counter减为0.
+参考FAQ: FAQ109678
+### 问题: 平台外接模拟功放方案
+解决方案: 搭配PMU SC2721/SC2720/SC2731及6531E/F/M平台接外部模拟音频功放推荐采用耳机的HP_R与AMPG_VCOM的假差分方案,这种做法相对于用SPK_P/N接外部功放的优势是在免提通话时,对抗TDD noise的干扰能力更强,见下图.具体设计方案详见附件.外接模拟音频功放方案
+参考FAQ: FAQ109688,含图片
+### 问题: GCF测试GSM RF case 14.18.6 DCS1800/PCS1900在R&S 8950/8980仪表上面测试fail处理方法
+解决方案: 查看仪器log,如果只有step 9和step 10 Jitter On这2个step fail,其余8个Jitter Off step都pass的话,此条case可以判定为pass,此为仪表问题,各家方案都过不了.
+参考FAQ: FAQ109709
+### 问题: LTE手机GCF测试WCDMA USAT case 27.22.4.7.3/1注意事项
+解决方案: TS 31.124_case 27.22.4.7.3/1: REFRESH, Steering of roaming, UTRAN,LTE手机不能设置为W/G Auto模式测试. 原因:在step26步,仪器有一个delay 15s的时间再响应tau的建链,而如果手机设置为W/G Auto模式时注册发起可能会很快,refresh之后5s左右就会发起注册,这样会导致失败,所以测试这个case,为了确保不会在Step26步出错,需要设置为L/W/G Auto模式测试.
+参考FAQ: FAQ109719
+### 问题: 为什么录音过程中来闹钟或者电话，录音停止而不是暂停？
+解决方案: 录音过程中来闹钟或者电话,录音会停止并且保存该录音,而不是暂停,这个是正常现象.因为声音并发的情况很多,录音输入设备都是mic,不可能一个mic支持多个录音,在录音过程中来闹钟或者电话,如果录音暂停,会影响其他录音通道,比如FM录音,电话录音,camera录像,微信语音等等.
+参考FAQ: FAQ109734
+### 问题: 播放通话录音时，为什么音频条不会跳动？
+解决方案: 通话录音并非本地录音,而是通话那边做的,没有波形文件,所以在本地录音机里面播放时,不会有波形显示,即音频条不会跳动,这个是正常现象.
+参考FAQ: FAQ109737
+### 问题: 是否可以支持中国电信Volte
+解决方案: 客户你好,可以支持中国电信的Volte,需要打开Volte白名单中的中国电信开关.
+参考FAQ: FAQ109740
+### 问题: GSM中BA表的作用
+解决方案: BA(BCCH Allocation)表是存放邻区频点的表,共有2张表. BA1:存放空闲模式下邻区频点,系统消息2中下发. BA2:存放激活模式下邻区频点,系统消息5中下发. MS在空闲和激活模式只会按照BA表定义的频点测量服务小区和邻小区BCCH载波的信号强度. 测量的结果在空闲模式下用于选择锁定最好的小区,即小区重选;在激活模式下,根据测量结果进行LOCATING算法,结果就是小区切换. 空闲模式时由BCCH信道传送BA列表,激活模式下由SACCH传送BA列表. 总结:BA表的功能就是通知手机在空闲状态或者通话状态下应该监测哪些邻小区的BCCH频点,为后面的重选或者切换做准备.
+参考FAQ: FAQ110155
+### 问题: 清除录音机应用的存储空间后，为什么播放录音没有波形？
+解决方案: 本地录音机录音后的波形数据是保存在应用里的,清除存储空间后,波形数据也被清除了,所以播放时没有波形,这个是正常的,设计如此,如果在清除存储空间后,重新录音,则播放新录音文件才会有波形显示.
+参考FAQ: FAQ109741
+### 问题: 终端待机底电流过大，该如何定位？
+解决方案: 通常有如下几步 1.首先确认底电流有没有超过10mA,如果没有,交给HW分解,可能是由于外设或其它模块漏电流偏大导致. 2.超过10mA的话,首先采用adb、power trace、aplog等手段检查Power Domain 寄存器,若全部子系统均正常下电,交给HW分解;若有子系统未sleep,交由相应子系统软件分析log,属于软件流程问题.
+参考FAQ: FAQ109764
+### 问题: 平台是否支持 FAST DORMANCY？
+解决方案: 客户你好,展讯平台支持FAST DORMANCY功能.
+参考FAQ: FAQ109748
+### 问题: GMS测试所需手机版本
+解决方案: 1. USER版本(包括Google system.img),用于CTS/GTS/VTS/GSI 2. USER+ROOT, 用于ANDROID GO Performance(非go不需提供) 3. USER DEBUG,用于STS测试
+参考FAQ: FAQ109758
+### 问题: CTS-verifier单条测试结果总是提示0pass，0fail
+解决方案: 1、确认测试手法是否按照文档说明上操作; 2、单条测试完成后,是否根据测试结果点击左下角的pass 或者 fail 按钮; 3、是否返回一级目录,点击保存或者export; 4、进入手机提示的路径下,解压查看,进一步确认,测试结果有成功生成测试报告; 注:若进入手机提示的路径下,手机上可以看到报告,而在电脑端无法看到,可将该报告,手动复制到其它路径下,这样就可以看到报告了.
+参考FAQ: FAQ109759
+### 问题: 功耗测试机如何挑选
+解决方案: 1.需要提供3台以上的测试机进行挑选 2.将领回的测试机下载到需要测试的版本,下载前注意备份每台测试机的NV 3.下载版本结束后,拨号盘输入*#*#83781#*#*进工程模式,查看ADC参数是否已校准 4.分别测量三台机器无卡待机的底电流、待机电流、屏亮最暗的待机电流,选择最低者,如果出现有高有低的情况,选底电流低优先.
+参考FAQ: FAQ109770
+### 问题: GMS版本功耗测试，步骤哪些
+解决方案: 1、登录Google账号, 2、进入Google Play,进行应用更新, 3、更新完毕后,在Google Play设置关闭自动更新, 4、进入手机设置>>账号>>进行同步,同步完成之后,关闭自动同步, 5、灭屏待机30分钟,之后进行测试.
+参考FAQ: FAQ109772
+### 问题: 运营商的网络LTE已经升级到Release 13，展讯平台LTE Release 10或者Release 12的版本是否可以正常接入？
+解决方案: 客户你好,3GPP 协议版本是向下兼容的,所以理论更低版本包括R10或者R12的终端是可以正常接入更高版本的网络的.但是为避免兼容性问题,我们建议最好发货前进行当地网络的测试.
+参考FAQ: FAQ109778
+### 问题: JTAG端口无法通讯
+解决方案: 串接了2.2kohm之后,TMS和TCK在通讯的时候高电平会降低到1.5V,低于JTAG协议高电平的最小值,所以无法识别高电平,导致JTAG通讯失败. 按照我们平台的参考设计,JTAG通路不能串接电阻,如果客户需要增加JTAG端口的ESD防护能力,还请使用低容值的TVS器件.
+参考FAQ: FAQ109817
+### 问题: 98系列产品插入电信卡驻留FDD LTE，可以发送彩信，为什么不能接收彩信？
+解决方案: 1 首先明确彩信业务用的数据业务(PS业务) 2 电信目前volte尚未正式商用,也就是volte(PS only)电话和短信网络侧暂时都不支持 3 彩信接收流程是需要先通过短信的方式(CS域)收到彩信通知,然后再通过PS域接收彩信 98系列产品支持LTE, 故插入电信卡如果成功驻留FDD LTE网络且注册ok,是可以做PS数据业务的,也就是可以上网和发送彩信. 但是由于我司目前的98系列产品暂时不支持CDMA,所以接收彩信的第一步的彩信通知是收不到的,故无法接收彩信.
+参考FAQ: FAQ109824
+### 问题: 展锐平台在reboot过程中AP会发送几次EMMC硬件复位？
+解决方案: reboot过程中正常会有2次EMMC硬件复位,第1次是在ROMCode运行期间,第2次是在kernel运行期间,并且这两次EMMC HW Reset流程是符合EMMC 5.0/5.1协议要求的,AP会发送CMD0,CMD1,CMD2,CMD3,然后EMMC会进入数据传输模式. 如果EMMC对ROMCode期间的EMMC HW Reset不响应,即不响应CMD1,那么AP发送多次CMD1之后启动下一次EMMC HW Reset,并且会把时钟频率从400KHZ降低到300KHZ,如果EMMC还不响应CMD1,那么AP会重复上述流程,直到CLK降低到100KHZ,如果EMMC还不响应CMD1,AP会停止发送指令,系统死机.
+参考FAQ: FAQ111287
+### 问题: LTE待机唤醒电流波形分析
+解决方案: LTE待机唤醒任务包括接收寻呼,邻区测量/同步,唤醒工作时长与任务个数有关,从唤醒电流波形中我们能看到每个任务的处理时长,如下为一次LTE待机唤醒: 该次唤醒PHY处理任务和时长如下: 1、接收寻呼和同频测量 2、5个异频邻区同步 3. 2个异频邻区测量 4. 寻呼与第一个异频邻区测量间隔为13ms 5. 相邻两个异频邻区测量/同步时间间隔为10ms 6. 异频邻区同步时长5.33ms 7. 异频邻区测量可能安排在6帧的前两帧(如异频测量2)或末两帧(如异频测量1) 商用网下LTE待机唤醒工作时长可根据上面信息进行分析.
+参考FAQ: FAQ109850,含图片
+### 问题: 98系列产品插入电信卡，可以正常使用吗？
+解决方案: 中国电信的卡大致分下面两类
+
+1. 符合3GPP2协议的UIM卡
+
+2. 符合3GPP协议的USIM卡
+
+如果是第2种卡的话,我司98系列芯片是能够正常识别和使用的.第一种卡我司芯片暂时不支持,所以无法正常识别和使用.
+参考FAQ: FAQ109851
+### 问题: 哪些用户可以使用在线仿真平台？
+解决方案: 具有isupport (https://isupport.unisoc.com)账号的客户都可以登录到在线仿真平台; 目前在线仿真平台只支持pads layout文件,其他layout软件暂不支持.另外,PCB文件中电容模型定义需规范,具体要求可以查看在线仿真平台首页 "帮助文档"
+参考FAQ: FAQ110724
+### 问题: 是否可以定制PIN码解锁次数？
+解决方案: 不可以,SIM卡解锁次数是卡决定的,modem无法修改
+参考FAQ: FAQ109854
+### 问题: 进入谷歌商店升级应用，商店进度条与系统通知栏进度条不匹配
+解决方案: 通知栏下载进度和谷歌商店的进度计算方法不同.通知栏是单纯的统计下载的时间,google商店的进度似乎并不仅仅统计下载的时间,还有后续处理的时间.所以会导致两者的进度不同. 原生对比机也有此问题. 评估结果是,此问题不需修改.
+参考FAQ: FAQ109878
+### 问题: chrome下载过程中关闭wifi开启数据流量，下载任务无法恢复
+解决方案: 谷歌原生对比机的表现相同.chrome浏览器设计如此,没有使用平台的downloadmanager,是否恢复下载由chrome浏览器内部处理. 此问题是chrome自身问题,平台无法也不需处理,问题已经报送google.
+参考FAQ: FAQ109879
+### 问题: 为什么终端插双卡，将两张卡模式均设置为WCDMA，前5min每个paging会被拉长20ms？
+解决方案: 因为展讯平台WCDMA双卡设计在前5分钟会每个paging都会做32k校准,使得每个paging被拉长20ms.
+参考FAQ: FAQ110066
+### 问题: 32k clock频偏过大对终端待机功耗会有怎样的影响？
+解决方案: 在待机时由于32k clock频偏过大,会造成MIB/SIB解不对、重选、掉网、网络模式频繁切换等现象,使得待机电流偏高.
+参考FAQ: FAQ110068
+### 问题: 同一终端连接网络，在不同时间相同地点进行相同操作时功耗一定一致吗？
+解决方案: 不一定.即使是同一终端在相同地点进行相同操作,在不同时间里可能驻留的不是同一个小区,而小区网络是否配置CDRX对终端功耗有很大影响. 例如:同一手机,同样进行阅读文档操作,在不同时间测试会出现功耗相差30mA的情况.其中功耗低的情况中LTE大部分处于IDLE态,在进入连接态时网络配置了CDRX,DDR最高频占比偏低;而功耗高的场景下大部分时间LTE处于连接态,且网络未配置CDRX,DDR 50%以上时间处于最高频点.因而同一终端进行相同操作会出现较大的功耗差异.
+参考FAQ: FAQ110065
+### 问题: 找网的流程及联通频点范围说明
+解决方案: 找网的流程大致可以分为四个步骤:首先是扫频,接着根据扫频上报的结果选择一定数目的频点进行bsic decode和bcch decode,最后进行camp. 联通2G频点范围:Arfcn在(5F , 7c]之间的频点属于联通2G频点.
+参考FAQ: FAQ109950
+### 问题: 移动外场自动化测试Log的设置
+解决方案: 现在移动外场使用APK自动执行测试用例.为了提高系统判断测试结论的准确性,需要对Log有准确的设置.如下是设置方法: 1:输入*#*#83781#*#*进入工程模式,打开Android Log,确保关闭Modem Log,保存该设置后退出工模; 2:进入APK初始界面,选择"普通模式"后,选择"定制设定"后进入如下界面,按如下图示进行Log设置; APK LOG设置需要将自动生成日志置位,且SPRD LOG、ARM置位,DSP默认情况下不做置位设置.设置完成后,退出APK,再次进入后就可以执行CASE测试了.一次配置,一直生效.
+参考FAQ: FAQ109940
+### 问题: SC6531E平台，FDN开启后，发送短信时是否要检查SMSC号码在FDN列表中？
+解决方案: SC6531E平台,FDN开启后,现在默认不检查SMSC号码是否在FDN列表中. 如果客户需要检查SMSC,可以用NVEDIT工具修改编译好的如下NV项的值为0x2: nv_type\NV_SIM_CONFIG\reserved[3]=0x2 也可以修改如下文件\MS_Code\common\nv_parameters\nv_type\nv_type_4band_sc6531efm.nvm NV_SIM_CONFIG后再编译: BEGIN_ITEM ITEM_NAME = reserved[3] ITEM_ID = 487 ITEM_TYPE = 4 (LONG) ITEM_LENGTH = 4 ITEM_CONTENT = 0x2 ITEM_INDEX = 70 ITEM_PARENT = 64 ITEM_DESC = reserved word END_ITEM
+参考FAQ: FAQ110078
+### 问题: SC6531E GCF case26.6.11.2 Classmark interrogation 注意事项
+解决方案: 测试此case 时,如果仪器如下报错: Table 26.6.11b Item 8. SMS Value (Switch Measure Switch) Table 26.6.11b Item 9. SM Value (Switch Measure) 需修改手机的nv项sms_value_flag的值为1后重新测试. 具体如下: nv_classmark\FIXED_NVITEM_T\sms_value_flag=0x1
+参考FAQ: FAQ110081
+### 问题: 如何从armlog中查看双卡/单卡的制式
+解决方案: 
+参考FAQ: FAQ110103
+### 问题: 硬件上去掉EDGE后软件方面的修改
+解决方案: 设置NV中的项support_egprs=0,然后校准即可,手机就只支持GPRS,不支持EDGE了.
+参考FAQ: FAQ110083
+### 问题: 手机待机情况下功耗过大，如何推测可能由32K 频偏造成？
+解决方案: 首先看电流图,是否有出现paging功耗过大的现象; 若是,再确认手机当时所处的环境信号质量是否在合理范围内(通常看RSCP, SNR,RSSI,C/I等); 若是,再通过PHY LOG确认TIMING OFFSET是否连续多个寻呼周期里在正常范围内(通常不应该超过-2到+2的范围)否则就需怀疑32k频偏较大,可交给HW进行32k频偏测量以进一步确认.
+参考FAQ: FAQ110095
+### 问题: 拨打VOLTE电话需要建立哪些承载？
+解决方案: 拨打VOLTE电话需要建立4个承载: 第一个承载:VOLTE终端注册上4G网络后建立的默认承载,此承载用于上网等数据业务(QCI=9); 第二个承载:为传输IMS信令建立的默认承载(QCI=5) 第三个承载:为传输语音数据建立的专有承载(QCI=1) 第四个承载:为传输视频数据建立的专有承载(QCI=2) 说明: (1)开机后第一个承载和第二个承载即会建立; (2)拨打VOLTE语音电话时建立第三个承载,拨打VOLTE视频电话时同时建立第三个承载和第四个承载. (3)第一个承载和第二个承载在开机期间一直存在,第三个承载和第四个承载在拨打电话开始时建立,结束时释放,再次拨打电话时重新建立.
+参考FAQ: FAQ110108
+### 问题: 基于网络的呼叫等待和基于终端的呼叫等待的区别？
+解决方案: 呼叫等待是指终端在通话过程中如果有来电,终端通知给用户有新的来电处于等待状态,用户可以选择接听或拒绝新的来电. 使用呼叫等待业务,首先需要向网络签约开通呼叫等待业务,否则如果终端处于通话过程中时网络不会将新的来电发送到正在通话的终端.这就是基于网络的呼叫等待. 在网络的等待业务开启的情况下,通话过程中如果有新的来电,网络将新的来电发送到正在通话的终端,终端根据本地设置将新的来电通知在界面显示给用户或自动拒绝.这就是基于终端的呼叫等待. 基于终端的呼叫等待产生作用的前提是基于网络的呼叫等待处于开启状态,否则网络不会将新的来电通知给终端,终端无法将新的来电在界面显示给用户或自动拒绝.
+参考FAQ: FAQ110109
+### 问题: 【AndroidP】chrome下载图片提示无法访问存储位置
+解决方案: androidP, google原生问题,权限问题导致storage remount失败.需添加selinux权限.问题已经报送google. /common/sepolicy/vold.te b/common/sepolicy/vold.te +allow vold nsfs:file { open read };
+参考FAQ: FAQ110115
+### 问题: 播放CD和SD类型DRM音频，权限次数不减少
+解决方案: 播放DRM文件时应用没有下发消耗权限的flag,导致剩余权限次数一直不更新. 这个问题,并非documentsUI的问题,是播放DRM文件的应用的问题.例如,音频播放器播放CD和SD类型的音频,需要在播放时更新权限次数. src/com/android/music/MediaPlaybackService.java + if (getAudioIsDRM()) { + player.consumeDrmRights(); + }
+参考FAQ: FAQ110119
+### 问题: 去除sd卡默认写权限后如何写sd卡
+解决方案: 问题仅限androidP.应google的要求,androidP将底层的写权限取消.上层应用无法再通过File接口直接写sd卡的文件. 应用如果想要在副卡上进行读写,目前有两种方式: 1.通过存储访问架构SAF,以URI形式间接访问存储. 2.操作应用自己的专有目录:如storage/00C4-1511/Android/[data/media]/packageName 这里涉及到如何申请URI权限,获取URI等.可向FAE索取相关指导文档.
+参考FAQ: FAQ110122
+### 问题: 录音播放过程中，锁屏，录音继续在后台播放是否正常？
+解决方案: 录音播放过程中,锁屏,录音继续在后台播放,该现象属于正常现象,设计如此.
+参考FAQ: FAQ110148
+### 问题: SC9832E 支持SD3.0卡时，电源VDDSD和VDDSDIO怎么工作的？
+解决方案: VDDSD 提供给SD卡电源,工作时一直维持3V. SD3.0 SD卡内部有LDO会把SD卡侧的IO电压根据SD协议在切换电压/clock频率的命令后切换转换到1.8V. 给SC9832E的VSD0供电的VDDSDIO初始输出3V,所以AP和SD卡初始化通信一开始是3V,根据SD协议发出切换的命令后,软件控制VDDSDIO切换到1.8V,修改AP侧电压. AP侧和SD卡侧的IO电压同步变化.
+参考FAQ: FAQ110180
+### 问题: wcn ini存放路径
+解决方案: connectivity_calibration.ini与connectivity_configure.ini在手机中的存放路径和分区如下: device Ini 存放路径 bak.ini 存放路径 ini 存放分区 android version<=7.0 /system/etc/ /productinfo system.img android version >= 8.0 /vendor/etc/ /productinfo vendor.img sharkle 9832e /vendor/etc/wcn/ /productinfo/wcn/ vendor.img pike2 /vendor/etc/wcn/ /productinfo/wcn/ vendor.img sharkle 9820e (kaios&mocor5) /system/etc/wcn/ /productinfo/wcn/ system.img
+参考FAQ: FAQ110186
+### 问题: user版本wcn ini确认方法
+解决方案: 方法一: user版本的ini是可以pull出来确认合入是否生效的,把开发者选项--调试模式打开 adb pull /system/etc/connectivity_calibration.ini D:\ (本地路径) adb pull /system/etc/connectivity_configure.ini D:\(本地路径) 方法二: user版本也可以adb shell 进去 cat 下看ini的值是否生效 adb shell cat /system/etc/connectivity_configure.ini (具体根据不同项目ini实际路径)
+参考FAQ: FAQ110187
+### 问题: 9820E/9832E cp2 log导致的功耗问题注意
+解决方案: 目前有碰到因为cp log未完全关闭问题导致的功耗问题; Android 4.4和5.1的slog系统(如9820w、9820e平台),分为PC Log和SlogUI两个设置界面.(见下图) PC Log里面的log开关是输出开关;(如果勾选,则log就会有输出) SlogUI 界面的勾选是抓取开关;(如果不勾选,只是不抓取,pclog界面勾选的话,log还是正常输出) 综上:测wcn功耗一定要关闭PC log里面的cp2 log;
+参考FAQ: FAQ110188
+### 问题: user版本如何dump CP2的 mem
+解决方案: User版本assert后有reset机制,reset后不会有mem dump,如需要dump mem,需要关闭reset功能: 方法一:工程模式 ->Paraset ->CP2 Assert ->关闭CP2 Reset 方法二:Ylog 2.1(8.1版本) 工程模式 ->Ylog ->LogSetting ->Connetivity Log Setting ->关闭CP2 Reset 关闭reset后,手机发生cp2 Assert后, cp2 log中可以看到有mem dump文件 如下图
+参考FAQ: FAQ110191
+### 问题: 展锐NPI工具推荐仪表的波形文件从哪里获取？
+解决方案: 正常途径应该是由客户向仪表供应商获取.但考虑到部分客户仪表为租赁或非直接途径向仪表商购买,存在获取仪表供应商支持困难的情况,故我们将推荐仪表版本的波形文件整理并归档到如下地址,供大家取用. 获取过程如存在困难或疑问的,可提交CQ到我司NPI同事获取协助.
+参考FAQ: FAQ110193
+### 问题: 手机搜不到网，是否会一直再尝试？
+解决方案: 首先,搜网间隔策略没有协议规定;目前我们的芯片做法是每隔一段时间就会启动新的搜网过程,并且间隔是递增的;最初是10秒,最终是1分钟;也就说搜不到网以后间隔1分钟会再发起新的一轮搜索
+参考FAQ: FAQ110263
+### 问题: Whether device support UE_AMBR(Aggregate Maximum Bit Rate).
+解决方案: 暂不支持
+参考FAQ: FAQ110225
+### 问题: 贵司是否有关于伪基站检测预防的措施，是否有文档介绍？请提供，多谢
+解决方案: 目前我们是有些伪基站相关的逻辑,主要特性就是定时器3247特性,24.301, 24.008上面搜索3247能看到相关的协议需求.
+参考FAQ: FAQ110231
+### 问题: 在特定条件下，如果连续5次TAU fail又会如何处理？
+解决方案: tau/attach 连续失败5次,会启动T3402,等T3402超时,如果驻留小区成功会立即发起tau,否则等重新驻留成功会在发起TAU,
+参考FAQ: FAQ110232
+### 问题: GAS在什么情况下会主动发起找网
+解决方案: GAS在两种情况下会主动发起找网: (1)当UE处于紧急驻留状态下,会启动一个定时器,当定时器超时会发起自动找网. (2)当服务小区和邻小区的C1值都小于0时,会发起自动找网,计算C1值的参数是从系统消息3和系统消息4中获取的.
+参考FAQ: FAQ110770
+### 问题: HIGH SPEED CELL FACH(EFACH)如何打开和关闭
+解决方案: 通过修改NV项TD_TIANJI12_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY下面的hsdsch_cell_fach_Supported这一项来打开和关闭该功能,  其中 1 表示支持HS FACH (Enhanced Cell FACH for Downlink),0 表示关闭该功能
+参考FAQ: FAQ110264
+### 问题: 如何查看WCDMA HSDSCH下行能力
+解决方案: 在logel for TD打开的modem arm log中,找到RRCCONNECTIONSETUPCOMPLETE信令消息,可以看到其中的hsdsch-physical-layer-category,hsdsch-physical-layer-category-ext,hsdsch-physical-layer-category-ext2三个信元,三个信元如果都有,值会依次递增,取最高值即为该版本最高能力;hsdsch-physical-layer-category-ext2没有时取hsdsch-physical-layer-category-ext值
+参考FAQ: FAQ110270
+### 问题: 如何查看WCDMA EDCH上行能力
+解决方案: 在logel for TD打开的modem arm log中,找到RRCCONNECTIONSETUPCOMPLETE信令消息,可以看到其中的edch-physicallayerCategory,edch-physicallayerCategory-ext两个信元,两个信元如果都有,值会依次递增,取最高值即为该版本上行最高能力;edch-physicallayerCategory-ext没有时取edch-physicallayerCategory值为上行能力值
+参考FAQ: FAQ110276
+### 问题: 如何判断手机是由于电池温度过高导致的关机？
+解决方案: 在Android8.1及以上版本中,增加对电池温度的检测,如果温度过高,则会触发关机流程. 此时手机会弹出关机界面,显示"Phone is overheating,Shutting down... " 电池的上限温度默认是68度,该配置项代码如下: http:///frameworks/base/core/res/res/values/config.xml <integer name="config_shutdownBatteryTemperature">680</integer>
+参考FAQ: FAQ110311
+### 问题: vdex文件的结构是什么样子的
+解决方案: vdex文件包括了从dex文件中提取出的文件,然后将文件map到内存,并提供访问每一部分的方法.文件布局如下: ---------------- | Header | //header部分,记录了整个文件的信息 | DEX[0] | //dex文件的提取 | DEX[1] | | …… | | DEX[D] | | verifier | //verifer信息 | quickening | //quickening 信息
+参考FAQ: FAQ110319
+### 问题: 如何抓取Systrace？
+解决方案: Systrace允许你监视和跟踪Android系统的行为.它会告诉你系统都在哪些工作上花费时间、CPU周期都用在哪里,甚至你可以看到每个线程、进程在指定时间内都在干嘛.它同时还会突出观测到的问题,从垃圾回收到渲染内容都可能是问题对象,甚至提供给你建议的解决方案. 抓取systrace,需要用到systrace脚本,该脚本在sdk目录下:\sdk\platform-tools\systrace 抓取方法:python systrace.py -t 5 -o trace2.html am wm view app res ss gfx view hal bionic pm sched irq freq idle disk mmc load sync workq binder_driver binder_lock pagecache memreclaim dalvik input 对应参数解释如下:
+参考FAQ: FAQ110321
+### 问题: MMI测试录音模式有2到3s延时，请问能否缩短，如何修改
+解决方案: handset loopb模式里面的下行DELAY值过大会造成延时长,降低下行的DELAY值即可,最多减小到0
+参考FAQ: FAQ110315
+### 问题: 9850K平台项目音频调试用工具读取参数后发现 nxp 这块是暗的，不可调试，对于回声和双讲这块还有其他地方可以调试吗？
+解决方案: 由于9850平台是用的CVS算法,所以NXP是不可用
+参考FAQ: FAQ110345
+### 问题: 想咨询下以下场景下的录音的音频调试路径，具体到哪一个音频调试目录
+解决方案: -----本地时录音 -----主mic录音: HANDSFREE模式下music模式的RECORDING下拉框 -----耳机录音:Headset模式下music模式的RECORDING下拉框 -----摄像录音 -----主mic录音:HANDSFREE模式下music模式的RECORDING下拉框 -----耳机录音:Headset模式下music模式的RECORDING下拉框
+参考FAQ: FAQ110348
+### 问题: 请问内置d类功放和ab类功放如何配置
+解决方案: 另外在HANDSFREE模式下在SPK INNER PA里将CLASS D改为CLASS AB就可以了.
+参考FAQ: FAQ110350
+### 问题: 耳机听MP3音量调到第八格后音质变得很差，再继续往上调到第九格音质要好些，为什么？
+解决方案: 软件配置问题导致, audio_arm\audio_arm\Headset\AudioStructure\reserve\reserve[9]=0x4fe 改为0X40
+参考FAQ: FAQ110351
+### 问题: 插耳机外放来电铃声在哪里调试？
+解决方案: 插耳机的来电铃声是HEADFREE模式,在这个模式下修改增益,OK
+参考FAQ: FAQ110352
+### 问题: 视频播放器右上角菜单中的参数设置有什么作用？
+解决方案: 由于移动入库对流媒体参数有要求,因此这些参数主要是针对流媒体播放的: 1.网络设置中的APN:可以设置是否使用cmwap进行流媒体播放; 2.代理设置:是否使用代理播放流媒体; 3.RTP/RTCP端口设置:当播放RTSP流媒体时,是否使用所设置的RTP和RTCP端口号进行数据的接收; 正常情况下,使用时一般不需要对以上参数进行设置.
+参考FAQ: FAQ110379
+### 问题: 输入法中emoji表情无法显示？
+解决方案: Emoji表情符号字库名称为NotoColorEmoji.ttf(external/noto-fonts/) 随着Android的更新,对emoji表情支持的数量有所增加. 若发现有表情缺失可通过使用更新版本Android此字库替换验证查看
+参考FAQ: FAQ110382
+### 问题: 如何打开 art monitor log
+解决方案: art本身有对monitor log的开关在art\runtime\parsed_options.cc的MaybeOverrideVerbosity()方法中,只要将对应的debug注释打开就可以. static void MaybeOverrideVerbosity() { // gLogVerbosity.gc = true; // TODO: don't check this in! - // gLogVerbosity.monitor = true; // TODO: don't check this in! +gLogVerbosity.monitor = true; }
+参考FAQ: FAQ110384
+### 问题: 添加菲律宾语后，切到菲律宾语提示 “某些应用可能无法以该语言显示” 并且所有界面语言都没切换翻译？
+解决方案: 菲律宾语又称塔加洛语(他加洛语/塔加洛语/他加禄语)． 在项目中支持此门语言需按照如下方式配置, 资源编译配置:项目.mk中PRODUCT_LOCALES配置tl_PH setting语言列表配置:locale_config.xml中加入是<item>fil_PH</item>
+参考FAQ: FAQ110385
+### 问题: NS-IOT 测试中为何需要关闭数据开关
+解决方案: NS-IOT是使用仪表对网络环境进行模拟的测试.在测试中仪表侧有固定的检查项,当UE发送不匹配的信息给仪表时仪表会不响应或者直接判用例fail. 当手机形态的UE(智能终端)进行测试时如果不关闭数据开关,往往会因为上层操作系统(Android)中的某些应用自发的访问网络而造成UE给仪表发送不期望的信令或者数据包,从而导致用例fail.因此在NS-IOT测试中需要关闭数据开关.
+参考FAQ: FAQ110402
+### 问题: PMU可以支持耳机听筒同时输出吗
+解决方案: 不支持,因为听筒的输出与耳机左声道的输出是二选一的关系.
+参考FAQ: FAQ110457
+### 问题: 为什么要32K校准？
+解决方案: 为什么要32k校准 系统工作时的主晶振一般是26M晶振,26M晶振输出的26M时钟经过PLL会产生26M及其他更高频率的时钟. 这些PLL输出的时钟,在输出前经过调整,是比较准确的.他们是通过参考射频 AFC的输出来进行调整的,射频AFC是用来跟踪空口载波的,只要保持载波同步,那么他就是精度较高的,能够保证调整后的各系统时钟输出准确. 32k晶振输出的32k时钟或者32k-less方案中输出的虚拟32k时钟,都没有经过AFC的参考调节,他的输出随着环境温度变化很大,需要以经过AFC调节过的高频精准时钟作为参考,对其进行校准
+参考FAQ: FAQ110463
+### 问题: 9863A+SC2703的项目,怎么在休眠时关掉lcd的偏置电压（+/-5V），从而保证lcd的功耗？
+解决方案: 9863A凡是使用SC2703的PMIC芯片,一定要在对应board dts中关联上lcd所使用的regulator,否则屏幕的+/-5V电压在kernel中将无法操作.新增加的lcd一定要在如下位置增加对应节点(这里是我司默认lcd范例): kernel/arch/arm64/boot/dts/sprd/sp9863a-3h10-native.dts &lcd_nt35596_mipi_fhd { power-supply = <&lcd_vdd>; };
+参考FAQ: FAQ110436
+### 问题: DDR状态概述
+解决方案: DDR总体分两部分,PUB(DDR Controller & DDR PHY)和ddr 颗粒,状态分为: PUB状态: 工作(active),IDLE(no clock gate),Light(clock gate),掉电; DDR颗粒状态:工作(active),IDLE,self-refresh,掉电; DDR总体的工作状态: 1) Active状态:DDR被访问,进行读写,这时,PUB和DDR 颗粒都工作 2) Light sleep状态:pub进入light sleep,整个pub时钟被gate,ddr颗粒进入self-refresh; 3) Idle/No Access状态:pub不运行,为IDLE态,但时钟不被gate掉,ddr 颗粒是idle 4) Deep sleep状态:pub掉电,ddr颗粒不掉电,进入self-refresh状态
+参考FAQ: FAQ110468
+### 问题: 请问SL8521E平台支持哪种LCD接口？
+解决方案: Support SPI and DSI MIPI LCD.
+参考FAQ: FAQ110481
+### 问题: 请问SC7701平台是否支持SAWLESS方案？
+解决方案: 7701平台不支持SAWLESS方案.
+参考FAQ: FAQ110482
+### 问题: SC9863A平台4G PA为什么要使用单独屏蔽盖？
+解决方案: 为了改善EVM,推荐4G PA及其外围器件使用一个单独屏蔽罩,和RF的屏蔽罩分离.
+参考FAQ: FAQ113828
+### 问题: 请问SC7701平台的EXTRSTN和PBINT管脚是否需要在芯片外部上拉？
+解决方案: SC7701的PBINT上拉到电池的,EXTRSTN为2.8V.芯片内部有上拉20K电阻,外部不需要上拉电阻.
+参考FAQ: FAQ110483
+### 问题: 请问BB NAND FLASH 忙/就绪信号，内部是否已经上拉？外接FLASH该管脚是否可以省略掉上拉电阻？
+解决方案: BB端的NF_RBN内部有上拉电阻,可以选择4.7K或20K,外部可以不加上拉电阻,但是建议预留位置.
+参考FAQ: FAQ110485
+### 问题: 请问SC7731E平台eMCP DDR2和DDR3做兼容设计时，硬件设计上需要做哪些处理？
+解决方案: 为满足软件 LPDDR2/3 的自适应需求,将7731E PINMUX 中LPDDR2/LPDDR3 的CA和DQ[1:0]保持一致,具体请参考: LPDDR2 SPM:SPM_SC7731E_V0.1.2_EMCP+LPDDR2_0201_TOP_Double_4L1 CS SCH:SC7731_A_CS_E_SCH_V0.1.2_SC2720_eMMC_LPDDR3 需W18.19.2版本以后软件版本配合;
+参考FAQ: FAQ110487
+### 问题: 请问SC9820E平台的RGB_IB0,RGB_IB1,RGB_IB2做呼吸灯时的电流范围是多少？
+解决方案: RGB_IB0/1/2电流每路输出能力为1.68mA~27.7mA,step=0.84mA.
+参考FAQ: FAQ110490
+### 问题: 请问SC7731E是否支持USB_HUB？
+解决方案: 不支持,controller不能同时工作,且不能做到自动识别address.
+参考FAQ: FAQ110491
+### 问题: 请问SL8521E是否支持TD-SCDMA？
+解决方案: 不支持.
+参考FAQ: FAQ110492
+### 问题: 常见材料对GNSS信号衰减情况
+解决方案: 1．GPS 模块接收的是 1575.42 MHz 微波信号,1575.42MHz 的微波信号波长是 19 厘米,所以理论上可以透过孔径(直径)大于 19 厘米的金属网,或普通金属绗架结构,比如输电铁塔. 2．GPS 模块放入任何金属实体中,信号会被完全遮闭掉. 　 3．GPS 模块在厚度为 1 厘米以上的水体下使用时,信号会完全衰减至不可用. 　 4．GPS 模块放入玻璃或者塑料腔体中,对信号接收有轻度衰减. 5．GPS 模块放在厚重的非金属物体(比如几厘米的木头)中,信号也会被完全遮挡. 常见情形: 1．天气:GPS信号的波长足以让它穿越空气中的各种障碍物,换句话说,恶劣的天气完全不会对GPS信号产生足以影响其正常工作的影响. 2．树冠:树冠对GPS信号的衰减主要是来自于:树叶中含有的水分、树叶上面的水分(露水或下雨)以及树的枝干密集程度. 3．挡风玻璃:汽车挡风玻璃对GPS信号只有轻微衰减,但是我们需要注意来自车膜的的衰减,车膜的影响要比玻璃大得多.
+参考FAQ: FAQ110511
+### 问题: 如何让GNSS切换到后台运行和调到前台运行
+解决方案: 可以使用工程模式SGPS(*#*#2266#*#*)发起定位后,点击手机上的[home]键,则SGPS并不会退出定位,会切换到后台运行中.通过手机上[Menu]键,选择SGPS应用后,则可以把SGPS从后台运行调到前台运行.
+参考FAQ: FAQ110512
+### 问题: 没有电池，无充电功能，BAT_DET/SENSE_P/SENSE_N是否可以直接接地
+解决方案: 可以直接接地. 库仑计的SENSE_P/N管脚,悬空和接地都可以. BAT_DET直接接地,考虑到软件兼容,不建议悬空.
+参考FAQ: FAQ110529
+### 问题: 双卡L+L产品形态的主卡（基准卡）和副卡的区别
+解决方案: 1. 对于终端用户或者公司客户而言,L+L形态的产品没有主卡副卡之分,只有数据卡之分. 主副卡是针对研发实现方而言的. 2. LTE PHY只有一个基准timing,目前的实现是以主卡作为基准timing,副卡的timing是依赖于主卡的. 主卡和LTE RRC保持一致,即LTE RRC会指定哪张卡是主卡.两张卡都处于idle态时,没有主卡副卡之分,如果一旦有卡处于连接态, 则处于连接态的卡是主卡.
+参考FAQ: FAQ111270
+### 问题: 刷Google system.img文件无法进入Android系统(卡在Android logo界面)问题
+解决方案: Android 8.1 Go-editon版本是arm32位架构, 选择Google System img文件为:system-aosp_arm_a-2018-XX-XX.img Android 8.1 正常版本选择对应arm64位架构, 选择Google System img文件为:system-aosp_arm64_a-2018-XX-XX.img 非Androidgo的版本刷system-aosp_arm_a-2018-09-05.img会无法进入Android系统 怎么判断:当前设备是否是Android go的,最直接判断是手机RAM 1G(包含1G)以内,Google预置应用为go版本
+参考FAQ: FAQ112071
+### 问题: 802.11  b/g/n 调制方式和速率关系
+解决方案: 11b: DSSS 1Mbps , DSSS 2Mbps, CCK 5.5Mbps ,CCK 11Mbps 11g: BPSK (6Mbps) ,BPSK(9Mbps) ,QPSK(12Mbps) ,QPSK(18Mbps) , 16-QAM(24Mbps) ,16-QAM(36Mbps) 64-QAM(48Mbps) 64-QAM(54Mbps) 11n: BPSK(MCS0) ,QPSK( MCS1, MCS2), 16-QAM(MCS3, MCS 4) , 64-QAM( MCS5, MCS6, MCS7 ),
+参考FAQ: FAQ111256
+### 问题: 哪些平台支持双卡热插拔？
+解决方案: SharkLS芯片支持双卡热插拔,是reset modem方案,一张卡插拔另一张卡协议栈也需要被AP reset; 从SharkL2开始,后续的芯片支持双卡热插拔,使用update work mode方案,一张卡插拔另一张卡协议栈不需要reset.
+参考FAQ: FAQ111407
+### 问题: SC7731E对BT/WiFi SAW的带内插损和二次谐波抑制度的选型建议
+解决方案: 建议带内插损小于1.8dB,二次谐波抑制度达到35dB以上
+参考FAQ: FAQ111309
+### 问题: FM传导调试的常规指标
+解决方案: 灵敏度(Sensitivity),信噪比(SNR),谐波失真(Distortion),音频输出电压(Output Voltage)
+参考FAQ: FAQ111312
+### 问题: 展锐平台有蓝牙智能音箱的方案么
+解决方案: 目前平台能够支持2MIC的智能音箱参考方案,推荐的平台目前有SC9820E和SL8521E.
+参考FAQ: FAQ110539
+### 问题: 展锐SL8521E平台有蓝牙智能音箱的方案最多可以支持几个MIC？
+解决方案: 目前方案默认支持2MIC方案,如果需要支持4MIC或者6MIC方案,还需要再增加独立FPGA或者芯片.
+参考FAQ: FAQ110540
+### 问题: 展锐SL8521E平台蓝牙智能音箱方案的架构是？
+解决方案: 目前SL8521E平台承担4G通信,内置WIFI和BT可以提供数据连接. 如果想获得8521E处于真待机状态,就需要外置的芯片承担语音关键词唤醒功能.
+参考FAQ: FAQ110541
+### 问题: SC9820E平台线性充电的PNP管的参数要求？
+解决方案: 集电极发射极最大允许电压Vceo要大于-30V 集电极基级最大允许电压Vcbo要大于-30V 发射极基级最大允许电压Vebo要大于-6V 集电极电流Ic要大于2A(1*1inch pad) 耗散功率Pd要大于3W(1*1inch pad) E端Vbus EOS(无TVS)要大于80V
+参考FAQ: FAQ110549

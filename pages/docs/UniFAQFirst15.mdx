@@ -1,0 +1,306 @@
+### 问题: ipsec安全特性
+解决方案: 主要有如下特性: 1.不可否认性; "不可否认性"可以证实消息发送方是唯一可能的发送者,发送者不能否认发送过消息. 2.反重播性 　　"反重播"确保每个IP包的唯一性,保证信息万一被截取复制后,不能再被重新利用、重新传输回目的地址. 3.数据完整性 　　防止传输过程中数据被篡改,确保发出数据和接收数据的一致性.IPSec利用Hash函数为每个数据包产生一个加密检查和,接收方在打开包前先计算检查和,若包遭篡改导致检查和不相符,数据包即被丢弃. 4.数据可靠性(加密) 　　在传输前,对数据进行加密,可以保证在传输过程中,即使数据包遭截取,信息也无法被读.该特性在IPSec中为可选项,与IPSec策略的具体设置相关. 5.认证 　　数据源发送信任状,由接收方验证信任状的合法性,只有通过认证的系统才可以建立通信连接.
+参考FAQ: FAQ39914
+### 问题: ipsec设计意图
+解决方案: IPsec被设计用来提供: 1.入口对入口通信安全,在此机制下,分组通信的安全性由单个节点提供给多台机器(甚至可以是整个局域网); 2.端到端分组通信安全,由作为端点的计算机完成安全操作.上述的任意一种模式都可以用来构建虚拟专用网 (VPN), 而这也是IPsec最主要的用途之一.应该注意的是,上述两种操作模式在安全的实现方面有着很大差别. 因特网范围内端到端通信安全的发展比预料的要缓慢,其中部分原因,是因为其不够普遍或者说不被普遍信任. 公钥基础设施能够得以形成(DNSSEC最初就是为此产生的),一部分是因为许多用户不能充分地认清他们的需求 及可用的选项,导致其作为内含物强加到卖主的产品中(这也必将得到广泛采用);另一部分可能归因于网络响应 的退化(或说预期退化),就像兜售信息的充斥而带来的带宽损失一样.
+参考FAQ: FAQ39918
+### 问题: ipsec是一个协议吗？
+解决方案: ipsec不是一个协议,而是一个协议组;它的全称为Internet Protocol Security; 是透过对IP协议(互联网协议)的分组进行加密和认证来保护IP协议的网络传输协议族(一些相互关联的协议的集合). IPsec由两大部分组成:1.建立安全分组流的密钥交换协议;2.保护分组流的协议.前者为互联网金钥交换(IKE)协议. 后者包括加密分组流的封装安全载荷协议(ESP协议)或认证头协议(AH协议)协议, 用于保证数据的机密性、来源可靠性(认证)、无连接的完整性并提供抗重播服务.
+参考FAQ: FAQ39919
+### 问题: ipsec与其它安全协议对比
+解决方案: IPsec协议工作在OSI 模型的第三层,使其在单独使用时适于保护基于TCP或UDP的协议(如 安全套接子层(SSL) 就不能保护UDP层的通信流).这就意味着,与传输层或更高层的协议相比,IPsec协议必须处理可靠性和分片的问题, 这同时也增加了它的复杂性和处理开销.相对而言,SSL/TLS依靠更高层的TCP(OSI的第四层)来管理可靠性和分片.
+参考FAQ: FAQ39920
+### 问题: ipsec相关RFC文档
+解决方案: 相关文档分别是: RFC 2401:IP协议的安全架构; RFC 2402:认证头; RFC 2406:封装安全载荷; RFC 2407:ISAKMP的IPsec解释域(IPsec DoI); RFC 2408:网络安全关联与金钥管理协定(ISAKMP); RFC 2409:因特网密钥交换(IKE); 这些全是协议组中的协议的具体介绍,全是英文文档,有想进一步了解的话,可以查找下相应的文档.
+参考FAQ: FAQ39921
+### 问题: 目前ipsec的实现有哪些
+解决方案: FreeS/WAN项目已经开发了一个开源的GNU/Linux环境下的IPsec实现. 且一个基于KAME项目的IPsec实现已经包含在NetBSD、FreeBSD以及2.6 Linux内核中. 从某种程度上说,也是因为这个原因,Free S/WAN项目的开发在2004年3月时被中止. Openswan和strongSwan是Free S/WAN延续. 至今已有许多IPsec协议和ISAKMP／IKE协议的实现.它们包括: 1.NRL IPsec:属于原型的一种; 2.OpenBSD:代码源于NRL IPsec; 3.Mac OS X:包含了Kame IPsec的代码; 4.Cisco IOS; 5.Microsoft Windows Win2K and WinXP; 6.SSH Sentinel(现作为 SafeNet的一部分)提供了工具包; 7.Solaris;
+参考FAQ: FAQ39923
+### 问题: 怎么修改蓝牙名称
+解决方案: 1.修改btif_default_local_name为想要的默认name即可 2.代码位置: Btif_dm.c (external\bluetooth\bluedroid\btif\src): static char btif_default_local_name[DEFAULT_LOCAL_NAME_MAX+1] = {'\0'};
+参考FAQ: FAQ39928
+### 问题: FM打开失败分析
+解决方案: FM的驱动比较简单,初始化流程也不复杂,很少出现打开失败的情况,目前出现打开失败的原因之一是FM重复打开. FM模块同一时刻只能被一个应用程序打开,不能在两个应用程序中同时对硬件进行操作,之前出现过打开app的FM后进入工厂模式测试FM导致Fm异常的问题,目前FM的驱动中都已经添加了防止重复打开的机制. 要想排除重复打开问题也比较简单,在log中打开和关闭是一一对应的且都打印出了相应的log,只要发现两个连续的open操作就可判定打开失败的原因了.
+参考FAQ: FAQ40534
+### 问题: FM RDS的TA功能介绍
+解决方案: TA功能是RDS收音系统的一强大的功能.RDS可以将电台名称、节目类型、节目内容发射到收音机上来显示. 比如新闻、体育、娱乐等等.如果你喜欢收听音乐节目,TA功能会自动去搜寻同类型节目的电台. RDS收音系统还独有"交流信息"功能(TA功能,也称交通公告),若有紧急事件,电台就会发送特殊信号,令收音机强行播放,另外,还有时间基准发射,自动调准收音机时间等功能,RDS在汽车,手机等移动设备上使用很方便.
+参考FAQ: FAQ40546
+### 问题: 如何根据图片名称获取图片的资源id？
+解决方案: 在获得图片的名称后,通过Resources.java中的getIdentifier方法来获取图片的资源id. 具体如下: int resID = resources.getIdentifier("picName", "drawable", "com.android.gallery3d"); "picName" : 需要查询的图片的名称. "drawable":资源的类型,及图片. "com.android.gallery3d":为包名.
+参考FAQ: FAQ40027
+### 问题: 手机电池显示电量值不准的另外一种原因
+解决方案: 某客户反馈:电池实际电压 与 手机显示电量百分比 相差较大的问题.初步看貌似 是 ADC 没有校准 或者是 ADC 校准不良 引起 电池检测不准的问题. 经过分析: SC7715 跟 SC7710一样也有换电池的电量百分比记忆功能.这个功能就是为了防止拆换电池后,电池电量反弹而造成手机显示电量百分比 数值变化太大、突兀 所做的一种平滑处理. 本案例中,关机之前需要写入一个非易失区域 的 关机电量百分比,没有成功写入;造成 换电池(或者插拔同一块电池)再次开机后,都是实时显示出当前开机的电池 电量百分比,所以造成电量显示百分比 出现 跳变. 所以问题转化成为一个软件问题. 结论:该客户做 CTS (谷歌 软件兼容测试),把写入电池关机电量的这个进程的写权限给cancel 掉了.后面把此进程的写权限 再次打开,就不会再出现开机 电量显示百分比 出现 跳变问题.
+参考FAQ: FAQ40037
+### 问题: CTS中healthd是root进程，能否去掉root权限？
+解决方案: healthd是android 4.4的原生服务进程,用于系统功耗和温控监控,因此不能去掉root权限.
+参考FAQ: FAQ39978
+### 问题: 安全能力配置不起作用怎么办
+解决方案: 如果发现安全能力配置不起作用,可以检查下vendor/sprd/open-source/security_support.mk,里面两个参数 USE_PROJECT_SEC :=true persist.support.securetest=1 是否如上面一样,如果不一样,修改为一样即可.
+参考FAQ: FAQ40052
+### 问题: audio用到的一些属性值及意义
+解决方案: ro.digital.fm.support-----------是否使用数字fm persist.modem.t.enable----------是否支持td modem persist.modem.w.enable----------是否支持w modem ro.product.hardware-------------硬件信息 media.dump.path-----------------dump数据的路径 media.dump.switch---------------dump数据的开关 media.mmi.audio.loop------------loopback开关
+参考FAQ: FAQ40093
+### 问题: [SC5735]关于SIMCLK1,SIMDA1,SIMRST1的 GPIO 的配置
+解决方案: 看了下spec,SIM1所属的几个总线都属于VDDSIM1域,因此如果用作GPIO使用时,也需要打开相应的LDO; 1):首先是要regulator_get()函数获取vsim1; 2):可以调用函数regulator_enable()打开该LDO; 3):调用函数regulator_put()释放资源; 这个可以参考我们代码中的usb_ldo_switch()函数的使用方法;
+参考FAQ: FAQ40103
+### 问题: [SC5735]蓝牙是否支持SPP协议
+解决方案: SPP是基础应用框架,是HFP/OPP等协议实现的基础,Android系统google已经实现了;
+参考FAQ: FAQ40107
+### 问题: SC6815平台怎样进入安全模式？
+解决方案: 安全模式为谷歌在4.0平台以后引入的,在安全模式下,手机仅仅启动最基本的系统程序,这样当你正常启动会出现的一些软件冲突就会消失,一些病毒软件也无法运行,用户可以清楚的知道哪些是冲突软件或者病毒软件. SC6815进入安全模式有两种方式: 1、在开机模式下,长按power弹出关机请求框,然后长按"关机"按钮,会重启进入到"安全模式"; 2、在关机状态下,按power键开机后,当进入到开机动画的同时,按上键或menu键及其他自定义键.
+参考FAQ: FAQ40106
+### 问题: 哪些场景下需要使用UART口抓取log(即串口log)?
+解决方案: 为了抓取手机启动之前的log(USB log和Slog都未ready),比如:u-boot启动的log就需要通过UART口抓取,目前总结如下场景: 1.OTA升级时,通过UART口抓取log 2.关机闹钟的全过程log,通过UART口抓取log 3.由于modem部分引起的功耗测试,通过UART口抓取log 4.Fast boot,通过UART口抓取全过程log 5.工厂模式开机,通过UART口抓取全过程log 6.校准模式开机,通过UART口抓取全过程log 7.当AP与CP之间的协议无法互通时,通过UART口抓取log 8.开机全过程log,通过UART口抓取log 以上场景包括但不限于,研发有特定需求,需要通过UART口抓取log时,也可使用
+参考FAQ: FAQ40102
+### 问题: SC6815平台为什么拍照后点击左下角的预览图标，发现出现的预览图片非常不清晰，进入图库预览却是清晰的？
+解决方案: 这个为Android 4.4平台设计如此,从相机中直接点击左下角的预览图标,预览图片确实不清晰,但如果点击放大,发现图片又会变的清晰. 这样做的原因是,因为是从相机中进入的,相机会占用一部分内存,如果把图片全部加载会太耗内存,从而会影响左右滑动时的性能.从图库中操作不会出现这样的问题.
+参考FAQ: FAQ40122
+### 问题: [SC5735]SIM卡接口是否支持BIP协议和USB-IC协议
+解决方案: BIP:Bearer Independent Protocol 承载独立协议,这个支持; 但USB-IC 机卡接口协议当前不支持;
+参考FAQ: FAQ40127
+### 问题: AudioManager中接口registerMediaButtonEventReceiver的作用
+解决方案: Music中注册了耳机按键消息广播MediaButtonIntentReceiver可以接收耳机按键消息,其他应用可能也需要接收耳机按键消息此广播,要是要求不同的App运行时耳机按键有不同的功能该怎么办呢? 在AudioManager.java中有这么两个接口: public void registerMediaButtonEventReceiver(ComponentName eventReceiver) { } public void unregisterMediaButtonEventReceiver(ComponentName eventReceiver) { } 当App跑起来的时候就registerMediaButtonEventReceiver,这样虽然其它应用也注册了MediaButton事件的receiver,但是只有当前运行的应用能接受到这些按键的广播.
+参考FAQ: FAQ40160
+### 问题: SC7731最大RGB Driver电流值是多少?
+解决方案: up to 28mA
+参考FAQ: FAQ40228
+### 问题: 7730平台联通入库SPECA与SPECB的区别在哪里
+解决方案: 1.SPECB需要在SPECA的基础上,预装D档要求的词典和天气预报类终端自主开发及第三方应用软件. 2.相应的配置可以查看scx35_sp7730eccuccspecBplus_UUI.mk与scx35_sp7730eccuccspecAplus_UUI.mk.
+参考FAQ: FAQ40227
+### 问题: 7715 预留给modem的内存有多大
+解决方案: 7715分配给modem用的内存是22m;可以在uboot code中查看确认: vim ./property/normal_mode.c #define MODEM_MEMORY_SIZE (22 * 1024 * 1024)
+参考FAQ: FAQ40234
+### 问题: drawable-hdpi,drawable-ldpi,drawable-mdpi有什么区别？
+解决方案: 主要是为了支持多分辨率: hdpi里面主要放高分辨率的图片,如WVGA (480x800),FWVGA (480x854) mdpi 里面主要放中等分辨率的图片,如HVGA (320x480) ldpi里面主要放低分辨率的图片,如QVGA (240x320) 系统会根据机器配置的分辨率去这几个文件夹里面找对应的图片资源.
+参考FAQ: FAQ40255
+### 问题: 为什么修改CameraService.h后编译出的libcameraservice.so push到手机后无法开机
+解决方案: 因为\frameworks\av\media\mediaserver\main_mediaserver.cpp也会引用CameraService.h,所以还需要编译生成mediaserver这个bin文件. 建议全部编译system.img.如果单编译mediaserver,push到手机后,要将mediaserver的权限改为777才可以开机.
+参考FAQ: FAQ40304
+### 问题: 为什么channelserver在配置的时候选择的是Diag port和Log port？
+解决方案: 在抓取arm log,DSP Log时,通过channelserver抓取时,需要配置channerserver的端口,通常配置的是Diag port和Log port,原因是展讯的样机抓log时是通过Diag口发命令,然后通过Log口抓取log,因此配置这两项. 如图
+参考FAQ: FAQ40308
+### 问题: LogAndroid2PC.bat v2.2.7抓到的slog只有文件夹，内容为空，为什么
+解决方案: 原因是该脚本工具位于包含有空格的的路径名里面,如:D:\Work\s test\v2.2.7. 导致脚本解析出错,而没有取到 解决办法: 脚本工具放在无空格的路径中使用,如D:\Work\test\v2.2.7;
+参考FAQ: FAQ40305
+### 问题: 为什么只安装一个摄像头，预览界面会看到前后摄像头切换按钮
+解决方案: 这个问题经常发生在前期调试阶段. 应用层对于这个前后摄切换图标是否显示是基于getCameraInfo().length来判断的,而CameraInfo的定义在SprdCameraHardwareInterface.cpp中: const CameraInfo SprdCameraHardware::kCameraInfo[] = { { CAMERA_FACING_BACK, 90,/*orientation*/ }, #ifndef CONFIG_DCAM_SENSOR_NO_FRONT_SUPPORT { CAMERA_FACING_FRONT, 270,/*orientation*/ }, #endif }; 如果相机只支持一个摄像头,需要再这里先配置成一个.
+参考FAQ: FAQ40309
+### 问题: 7715 双卡是否同时支持WCDMA？
+解决方案: 7715 双卡只能支持单卡WCDMA,即当一张卡驻留WCDMA时,另外一张卡只能驻留GSM
+参考FAQ: FAQ40311
+### 问题: Softkey是否支持图片显示？
+解决方案: 平台默认Softkey均以文本形式显示,但提供接口将特定界面设为图片显示: 1、对于一般界面,在窗口处理函数MSG_OPEN_WINDOW消息响应中调用GUIWIN_SeSoftkeytButtonIconId分别设置各软键图片ID即可; 2、对于待机界面,Softkey是单独处理的.DisplayIdleWinSoftkey -> MMIIDLE_DisplayIdleText -> GUISTR_DrawTextToLCDInRect最终将字串显示到屏上.改成图片的话需要修改DisplayIdleWinSoftkey函数,增加图片显示接口替换MMIIDLE_DisplayIdleText.
+参考FAQ: FAQ40331
+### 问题: 如何调整宫格主菜单每页显示的行/列数？
+解决方案: 宫格主菜单(GUIMENU_STYLE_ICON)每页显示的行/列数是通过MMITHEME_MENUMAIN_ICON_PAGE_LINE_NUM、MMITHEME_MENUMAIN_ICON_PAGE_ROW_NUM(@mmitheme_menu.h)宏定义的,修改对应分辨率下的宏定义值可实现菜单布局的改变.
+参考FAQ: FAQ40332
+### 问题: Idle界面如何将特定Widget固定，不能手动删除和移动？
+解决方案: 由于Widget的删除和移动均是通过响应TP长按消息实现的,因此可通过禁止特定Widget的TP长按消息响应实现该功能. 具体修改如下: HandleGridTpLongDown(@mmigrid_idle.c)中判断条件if(MMIWIDGET_INVALID_ID != click_widget_id)修改为if(MMIWIDGET_INVALID_ID != click_widget_id && 需要禁止的widget id != click_widget_id).
+参考FAQ: FAQ40333
+### 问题: 什么是FM的RDS?
+解决方案: 所谓RDS是英国BBC广播公司开发的一种特殊无线电广播.即"无线数据广播系统"(Radio Data System). 它是在调频广播发射信号中利用副载波把电台名称,节目类型,节目内容及其它信息以数字形式发送出去. 通过具有RDS功能的调谐器就可以识别这些数字信号,并做响应处理,RDS广播精髓在于其AF和TA功能,AF既自动频率调整,当信号低于某个水平时,AF功能会自动搜索当前电台的其他发射频率串. RDS收音系统还独有"交流信息"功能(TA功能,也称交通公告),若有紧急事件,电台就会发送特殊信号,令收音机强行播放,另外,还有时间基准发射,自动调准收音机时间等功能,RDS在汽车,手机等移动设备上使用很方便. 目前SC7715平台不支持RDS功能.
+参考FAQ: FAQ40348
+### 问题: 如何去掉拨号盘的*和#号下面的p和w字母？
+解决方案: 修改vendor\sprd\UniverseUI\ThemeRes目录下的所有以dail_num_bg_sprd.png命名的图片
+参考FAQ: FAQ40393
+### 问题: 蓝牙信令测试与非信令测试的区别
+解决方案: 1.蓝牙信令测试(signaling mode),就是用CMU200或8960模拟基站,和手机建立起链接,仪表发出各种信令,手机此时相当于联上了网络. 1)手机此时既要发射信号,又要接收来自仪表的各种信令,这种方式一般用于Final TEST. 2)信令模式某种程度上可以说完全模拟了手机和基站注册、寻呼、以及MOC、MOT的呼叫过程以及通话过程. 3)当然,这种和仪器建立的通信还是和真正的通信是有区别的,为了测试的需要,比如测试BER,有时需要手机环回(loop back)基站发出的数据,这在实际通信中是没有的. 2.蓝牙非信令测试(Non Signaling test mode),仪表此时并不发出信令去控制手机,或者仪表只是发射,手机接收;或者仪表只是接收,手机发射.当然为了支持这个模式,手机需要进入一种特殊的模式,能够支持只发,或只收,即强发或强收. 非信令模式主要用来手机校准(Calibration)或手机研发中故障定位等.比如排除接收的故障,单独看发射是不是好的.
+参考FAQ: FAQ40428
+### 问题: 如何关闭刷机后开机设置向导？
+解决方案: 有build/core/main.mk中 修改 ro.setupwizard.mode=OPTIONAL 为 ro.setupwizard.mode=DISABLED 刷机后设置向导,ENABLED为显示,DISABLED为禁用,OPTIONAL为可选
+参考FAQ: FAQ40448
+### 问题: SC7701模拟器为什么SIM联系人无法保存和读取？
+解决方案: SC7701模拟器本身不支持模拟SIM卡联系人的保存和读取功能,但是这并不影响ARM下SIM联系人的功能使用.
+参考FAQ: FAQ40458
+### 问题: FM RDS的AF功能介绍
+解决方案: 所谓RDS是英国BBC广播公司开发的一种特殊无线电广播.即"无线数据广播系统"(Radio Data System). 它是在调频广播发射信号中利用副载波把电台名称,节目类型,节目内容及其它信息以数字形式发送出去.RDS广播精髓在于其AF和TA功能,AF既自动频率调整,当信号低于某个水平时,AF功能会自动搜索当前电台的其他发射频率串. 通常一个广播电台想扩大它的覆盖率,可能会进行多个频率点的发射,比如某个电台有87.8和95.8MHZ两个频点,当你开着车听着87.8,去到某个地方时,信号变差了,这时候,开了AF功能,AF功能会自动搜索当前电台的其他频道,找到一个信号比原来的好、稳定的频率时,比如95.8MHz,收音机就会自动跳转到这个频道. 换一种情况,你一直听着深圳电台,可是车子已经开到了东莞,87.8已经没有信号了,这时,RDS的AF功能会搜索深圳电台在东莞的另一个发射频率点,让你收听的节目没有间断.
+参考FAQ: FAQ40545
+### 问题: FM信号强度的获取方法
+解决方案: 目前FM驱动中已经能够获取信号强度的值,但是还没有为上层提供获取信号强度值的接口,但添加起来也比较简单. 在shark方案中,可以通过读取寄存器INPWR_STS(0x402700c0)的低9位来获取.但需要注意的是,直接读出来的值是实际值的补码.比如从寄存器读出来的值为0x180,那么实际信号强度为-128.
+参考FAQ: FAQ40547
+### 问题: slog如何抓取cp2log？
+解决方案: 使用slog抓取cp2log时,一定要在工程模式*#*#83781#*#* ——> DEBUG&LOG——>Log setting——>PC log菜单中打开CP2Log选项 如果这一项不打开,导出的slog中CP2log文件会显示为0K
+参考FAQ: FAQ40567
+### 问题: 为什么关闭了slog总开关，PClog中的EngPC Service选项仍打不开？
+解决方案: 关闭了slog总开关,PClog中的EngPC Service选项仍打不开,是因为目前slog中的mondem log相关选项与PClog中的EngPC Service选项做了互斥,即只要勾选了slog中的mondem log相关选项,不管slog总开关是否打开,PClog中的EngPC Service选项都不能勾选.需要先把slog中的mondem log相关选项都关闭才可以
+参考FAQ: FAQ40570
+### 问题: 记事本标题最大可输入文字个数是多少？如何修改？
+解决方案: 记事本标题最大可输入文字个数是15,可修改packages\apps\Note\src\com\sprd\noteNoteEditor.java文件中的如下定义即可. public static final int TITLE_MAX_LEN = 15;
+参考FAQ: FAQ40574
+### 问题: 记事本内容最大可输入文字个数是多少？如何修改？
+解决方案: 记事本内容最大可输入文字个数是1000,可以修改packages\apps\Note\src\com\sprd\note\NoteEditor.java文件中的如下代码即可. private static final int MAX_CONTENT_LEN = 1000;
+参考FAQ: FAQ40575
+### 问题: 为什么在中文下切换使用预备字体，字体没有变化
+解决方案: 进入设置-显示-字体,更改预备字体为 DroidSans和 DroidSerif-Regular , 为什么在中文环境下,切换后界面上字体没有变化. 原因是DroidSans和 DroidSerif-Regular这两种字体里没有带中文字库,因此切换为这两种字体后,中文变化不大. 手机切换为英文环境,才能看出字体的变化.
+参考FAQ: FAQ40869
+### 问题: Android怎么通过adb查看ip信息
+解决方案: 1、进入adb目录,直接输入:adb shell netcfg 2、进入adb shell,输入netcfg 执行命令adb时,也许会提示你权限不够,这个时候,别忘记了su ,提升为root.
+参考FAQ: FAQ40602
+### 问题: 如何查看一台andropid手机是否开启了View Server
+解决方案: adb shell service call window 3 若返回值是:Result: Parcel(00000000 00000000 '……..')" 说明View Server处于关闭状态 若返回值是:Result: Parcel(00000000 00000001 '……..')" 说明View Server处于开启状态
+参考FAQ: FAQ40582
+### 问题: 如何用命令打开/关闭View Server
+解决方案: 打开View Server命令为: adb shell service call window 1 i32 4939 关闭View Server命令为: adb shell service call window 2 i32 4939
+参考FAQ: FAQ40583
+### 问题: 为什么nand方案手机文件浏览中可以看到手机内部存储，而PC端无U盘盘符
+解决方案: nand方案相对手机存储空间较小,因此手机内部存储实际上是共享data区空间,因此不能对最终用户开放u盘功能,以免造成系统损坏.
+参考FAQ: FAQ40586
+### 问题: 资源文件解析exception该怎么处理？
+解决方案: 查看main文件,关键字InflateException,会看到类似的错误: System.err:android.view.InflateException: Binary XML file line #49: Error inflating class <unknown> 对于这种case,可以根据前面的调用栈找到解析是哪个xml文件,然后找到错误信息中描述的行数,例如上面的是49行,然后看是解析哪个资源时出错了. 根据经验,对于这种unkown类型的错误,一般是没有找到资源文件.在常见的错误中,找不到图片经常发生,特别是给客户提供demo时,图片往往放入hdpi目录下,但是客户项目可能是放在其他规格的目录下.
+参考FAQ: FAQ40483
+### 问题: 如何修改launcher引导页面的透明度
+解决方案: Launcher 引导页透明度设置是: 在文件Cling.java,init函数中会对mBackgroundColor进行初始化: mBackgroundColor = 0xdd000000; 前两位dd是alpha位,调整其大小可以调整透明度! 注:00是全透明,ff是不透明.
+参考FAQ: FAQ40588
+### 问题: 如何保证高时钟频率的DDR稳定性
+解决方案: 1、在展讯发布对应展讯各个平台的second source替代列表里选型,在项目立项时选型,并将选型料号告诉展讯的CPM.这样保证用的memory是展讯在该指定平台上验证过的.须小心不能混用其他平台second source替代列表来选型. 2、在PCB设计初期将BB+Memory的最小核心板部分做PI/SI仿真(PI仿真是电源完整性仿真,SI仿真是信号完整仿真).如果仿真通过就可以给工厂生产PCB板了.如果套用展讯给的SPM (Spreadtrum PCB Module,就是BB+Memory的最小核心板布局布线的一个PCB设计模块),就可以不做PI/SI仿真. 3、在板子回来之后,用展讯给的DDR扫描工具做DDR高低温(高温60度,低温零下20度)扫描,扫描分析PASS才可以,否则需要查找问题.须注意DDR扫描工具必须使用对应平台的对应扫描bin,不能混用. 4、在有可开机的软件版本之后,须多找些手机做高低温MP4播放各24小时,测试PASS才能保证DDR在该频率下是比较稳定的.
+参考FAQ: FAQ41056
+### 问题: 7715 modem端memory裁剪后modem无法进入calibration模式
+解决方案: 7715裁剪 modem的memory,更改了modem端对应项目的mem_cfg.c 和 SC7702_sc7715_sp7715_vm.scf中的memory分配空间位置后还需要修改parse_cmdline.h中关于CALIBRATION_ADDRESS 的值,这个地址是cp开机时读取开机模式是否进入cali mode的地址.该地址应与mem_cfg.c中的MEM_PHY_SIZE相对应. modem修改后,AP侧相应的也要对应修改u-boot中关于modem配置的空间,更新u-boot.bin,boot.img文件.另外还要修改recovery中的空间配置,因为这个模块涉及到Calibration mode.
+参考FAQ: FAQ40644
+### 问题: 两个ListView嵌套，点击子ListView如何实现滑动
+解决方案: 问题:两个ListView嵌套,点击子ListView,多条messageItem上下滑动无任何效果,失效 原因:子类的ListView的touchEvent被父类所消费掉(TouchEvent消息传递原理可在网上搜索,此不做阐述)需要在子类相应控件响应事件中添加父类不能处理子类事件,代码如下 public boolean dispatchTouchEvent(MotionEvent ev) { // TODO Auto-generated method stub getParent().requestDisallowInterceptTouchEvent(true); return super.dispatchTouchEvent(ev); }
+参考FAQ: FAQ40674
+### 问题: 如何支持R8编码
+解决方案: 问题:针对葡萄牙语,输入特殊字符时(字符上下有符号),在短信字符计数中立即减半 解决:查看相应两个配置表是否配置成功(SingleShiftTable和LockShiftTable),配置的路径为:core/res/res/values/config.xml 是否13种主表和副表,android原生代码已添加进去,并在路径telephony/java/com/android/internal/telephony/GsmAlphabet.java中动态添加处理代码,具体参加bug262050
+参考FAQ: FAQ40679
+### 问题: [SC5735]SC5735C最大能支持的屏幕分辨率是多少？800X1280是否可以支持？
+解决方案: 在device spec上有:Supported panel resolution up to WxGA(1280 X 800),所以800×1280是支持的; 当前的软件版本也已经支持物理横屏,修改方法是system.prop中的 ro.sf.hwrotation 这个属性,可以修改成客户需要的90,180或者270度;
+参考FAQ: FAQ40683
+### 问题: [SC5735]目前SC5735平台是否支持wide vine DRM（即谷歌的DRM）？
+解决方案: 在5735平台V1最新版本 MocorDroid4.4prime_3.10_14A_pad_W14.26.4上,还是不支持的;如下: DRM1.0 DRM1.0 不支持 注:DRM (digital rights management)数字版权管理.DRM服务的技术使用加密技术连续地管理并保护数字内容的知识产权.更具体地,DRM服务从内容提供商(CP)向用户安全地传递各种内容,并且防止那些用户非法散布该内容.遍及创建、分发、使用和丢弃数字内容的整个过程,此DRM服务可以保护信息,还可以保护联机和脱机用户的权利和特许操作.
+参考FAQ: FAQ40685
+### 问题: 如何显示屏幕字体缩放
+解决方案: 实现灵活缩放需要以下步骤: 1、需要在显示类中复写dispatchTouchEvent; 2、在 MotionEvent.ACTION_POINTER_DOWN事件中记录两点的坐标,在 MotionEvent.ACTION_MOVE记录滑动距离是否超过一定距离,实现放大缩小 3、采用绝对值比值形式并非比较前后绝对值,实现灵活放大缩小 4、按照放大缩小比例,动态设置字体大小
+参考FAQ: FAQ40693
+### 问题: 如何开机启动相关服务
+解决方案: 与其他服务有所不同,在开机时就会启动广播消息,如果需要开机接收,需要操作以下操作: 需要在manifest中添加以下代码: <action android:name="android.intent.action.BOOT_COMPLETED"/> BootCompleteReceiver注册了"android.intent.action.BOOT_COMPLETED"这个开机广播地址,从安全角度考虑,系统要求必须声明接收开机启动广播的权限,于是我们再声明使用下面的权限: <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> 相应的广播类就能收到开机启动信息
+参考FAQ: FAQ40712
+### 问题: 前后摄像头均为CCIR并口，因CCIR并口驱动能力不足导致预览和拍照出现绿条纹的解决方法
+解决方案: 解决: 1.首先确认后摄像头CCIR并口是否进入高阻态,其中比较常见的一类原因可参考: [FAQ35330] :不能通过PowerDown脚设置进入CCIR并口高阻态的一类摄像头前后摄兼容的解决方法 2.若确认后摄像头已进入CCIR并口的高阻态,则适当提高CCIR并口各信号脚的驱动能力,以GC0309为例: P0页的寄存器:0x1f,可设定CCIR各信号脚的驱动能力 [7:6] NA [5:4]sync_drv 00: 4mA, 01: 8mA, 10: 12mA, 11: 16mA [3:2]data_drv 00: 4mA, 01: 6mA, 10: 10mA, 11: 12mA [1:0] pclk_drv 00: 2mA, 01: 4mA, 10: 8mA, 11: 10mA
+参考FAQ: FAQ40736
+### 问题: WebCore的frame和网页中的frame标签是什么关系？
+解决方案: WebCore中,Page中的Frame只是一个软件上的概念,并不针对具体的网页标签,是webview 创建第一个Frame实例之后,Page的mainFrame存储的是此Frame的引用.它与网页中有没有Frame标签没有关系. 比如网页中这么写: <html> <head> <title>hello world!</title> </head> <body> </body> </html> WebCore这么创建Frame并把它设置为Page的mainFrame: webkitwebframe.cpp: webkit_web_frame_new(){ Frame::create(viewPriv->corePage, 0, client); }
+参考FAQ: FAQ40744
+### 问题: Webcore 中的Frame对象简介
+解决方案: Frame应该是整个webcore里面最核心的对象之一,从Page的角度来看,其实一个Page就是由一个或者多个Frame构成,而这些Frame是以树状的关系组织,我们来看一段HTML代码 <html> <body> hello, everyone! <iframe src="..."/> <iframe src ="..."/> </body> </html> 在以上的html代码中,一个Page里面就会有三个Frame,首先任何一个Page都会至少对应一个Frame,也就是rootFrame,这个Frame不对应iframe节点(Frame中的m_ownerElement对象为空),也是frame树的根节点,还有两个iframe标签对应两个Frame,如果在iframe的属性src里面指定的页面中还含有iframe标签的话,那么也会对应一个frame(一个iframe标签对应一个frame),这样frame之间就形成了父子关系.
+参考FAQ: FAQ40746
+### 问题: Webcore 中的Page对象简介
+解决方案: Page对象是webkit的核心对象之一,Page数据结构就是描述览器上我们打开的一个页面,这样一个页面包括很多部分,比如菜单控制,拖拽控制,页面显示,以及一些参数设置等.所以一个Page包含一至多个Frame.
+参考FAQ: FAQ40749
+### 问题: 如何去除安全能力配置功能
+解决方案: 在工程mk文件中,如:scx15_sp7715gacuccspecAplus_UUI.mk 注释掉相关mk文件的调用即可: #security support config #$(call inherit-product-if-exists, vendor/sprd/open-source/security_support.mk)
+参考FAQ: FAQ40757
+### 问题: SC7730平台工程模式下拨打紧急电话，横屏状态下不能挂断电话的原因分析和解决方法？
+解决方案: 原因:由于旋转屏幕configchange.导致界面重新创建,在onCreate里会重新启动phone去拨打112. 解决:在xml文件中的PhoneCallTestActivity下加入android:configChanges="keyboardHidden|orientation|screenSize",使不会进入onCreate重新创建界面.
+参考FAQ: FAQ40771
+### 问题: 7715如何判断当前卡槽中sim卡是否存在
+解决方案: 通过TelephonyManager API获取当前卡槽中sim卡是否存在 phoneId = 0为卡1,phoneId =1为卡2; TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE + phoneId); boolean hasIcc = tm.hasIccCard();
+参考FAQ: FAQ40795
+### 问题: 添加谷歌帐户在联系人列表不显示Google Contacts
+解决方案: 联系人中选择帐号未出现登录的google帐号,请检查是否安装GoogleContactsSyncAdapter.apk.查看路径为system/app(android4.4之前版本)或者/system/priv-app(android之后版本).
+参考FAQ: FAQ40798
+### 问题: 设置-个人-安全-验证应用选项为什么一直是灰化的不能点击
+解决方案: 该菜单需要手机安装google play后才能有效. 如果手机中没有安装google play,则该菜单是灰化的不能点击.
+参考FAQ: FAQ40873
+### 问题: 如何在用户界面上关闭CB Message
+解决方案: 在短信界面中,点属性按钮,在弹出的框中可以选择关闭小区广播消息.
+参考FAQ: FAQ40991
+### 问题: cpu_do_idle()具体实现了什么操作
+解决方案: 在cpu进入idle时,最终会执行cpu_do_idle()这个函数. 这个函数是用汇编代码实现的,定义在kernel/arch/arm/mm/proc-v7.S. 其本质就是一个wfi命令,等待中断到来吧Arm核唤醒.
+参考FAQ: FAQ40987
+### 问题: Skia库中编码成png格式和jpg格式图片时quality参数的差异？
+解决方案: 函数原型:bool SkImageEncoder::EncodeFile(const char file[], const SkBitmap& bm, Type t, int quality); 调用libskia.so库中SkImageEncoder.cpp文件里EncodeFile函数时:第三个参数Type为编码类型,当其取值为SkImageEncoder::kPNG_Type表示要编码成png图片,当取值为SkImageEncoder::kJPEG_Type则表示要编码成jpg格式图片;EncodeFile函数的最后一个参数为编码质量quality,一般这个值越大生成的图片就越大,图片也越清晰,但对于png编码格式来说,此参数传入后是无效的,而对于jpg图片来说,此参数可以控制图片大小.需要注意png图片是无损压缩格式的图片,而jpg图片是有损压缩格式.
+参考FAQ: FAQ40824
+### 问题: 何为TP跳屏问题，如何解决？
+解决方案: 1 何为TP跳屏问题? TP跳屏问题,指的是某款型号的TP在手机运行过程中或者压力测试环境下,在测试界面出现莫名其妙的乱报点现象, 该现象主要原因是由于TP的物理特性导致. 2 如何解决TP跳屏问题 可以通过修改TP的固件程序中扫描频率,报点率,报点反应时间等参数来修正该问题. 3 建议客户 由于现在市场上TP型号非常多,部分小供应商生产的TP由于其自身的物理特性有缺陷,从而很容易出现该现象, 建议我们的客户在手机开发过程中,尽量选择大型的TP的供应商供货.
+参考FAQ: FAQ40855
+### 问题: 如何搜索出日程？
+解决方案: 日程搜索和其他搜索实现不同,按照以下操作步骤可以搜索出日程: 1、主菜单中打开"搜索" 2、菜单选择搜索设置,设置可搜索项目,勾选"日历" 3、返回搜索应用,选择日历选项,输入日历中一个活动的主题名称,点击搜索 4、显示搜索到的日程.
+参考FAQ: FAQ40859
+### 问题: 工厂测试电话测试，如何将默认拨打112修改为拨打10086
+解决方案: 做如下修改即可: packages/apps/ValidationTools/src/com/sprd/validationtools/itemstest/PhoneCallTestActivity.java中, Intent intent = new Intent("android.intent.action.CALL_PRIVILEGED", Uri.parse("tel:112")); 改为 Intent intent = new Intent("android.intent.action.CALL_PRIVILEGED", Uri.parse("tel:10086"));
+参考FAQ: FAQ40870
+### 问题: 如何在时区里增加“新德里”
+解决方案: 新德里的时区是Asia/Calcutta, 因此只需要将timezones.xml中Asia/Calcutta对应的翻译改为新德里就可以了, 比如 <timezone id="Asia/Calcutta">加尔各答</timezone> 修改为 <timezone id="Asia/Calcutta">新德里</timezone>
+参考FAQ: FAQ40871
+### 问题: 什么是镜像图片?
+解决方案: 所谓镜像,是指图片中原来在左面的被翻转到右边,或者原来在上面的被翻转到下面,就如同照镜子产生的效果一样,这就是镜像图片.
+参考FAQ: FAQ40874
+### 问题: 为什么设置-辅助功能里没有“说出密码”菜单
+解决方案: 目前该菜单是隐藏的, 具体打开方法如下, packages/apps/Settings/src/com/android/settings/accessibility/AccessibilitySettings.java中, private boolean mIsSupportSpreakPWD = false; 改为 private boolean mIsSupportSpreakPWD = true; 注意,该功能需要配合google的talkback应用才可以使用的.
+参考FAQ: FAQ40875
+### 问题: 为什么“始终开启的VPN”列表中没有添加好的VPN
+解决方案: 设置-VPN,按MENU键后选择"始终开启的VPN", 在弹出的对话框中为什么没有已经添加好的VPN? 必须要添加非PPTP类型的VPN,才能在"始终开启的VPN "的列表中出现. 比如添加一个L2TP类型的VPN即可.
+参考FAQ: FAQ40876
+### 问题: 为什么安装了GMS后，在设置-备份与重置中，备份帐号中无法选择google帐号
+解决方案: 首先需要确保手机中有将googlebackuptransport.apk内置到system/priv-app目录下. 然后需要做如下修改,默认使用google的备份服务. \frameworks\base\packages\settingsprovider\res\values\Defaults.xml 文件中. <string name="def_backup_transport" translatable="false">android/com.android.internal.backup.LocalTransport</string> 改为 <string name="def_backup_transport" translatable="false">com.google.android.backup/.BackupTransportService</string>
+参考FAQ: FAQ40877
+### 问题: 如何在情景模式里打开双卡的铃声设置功能
+解决方案: 需要在device/sprd目录下,相应工程的目录中,system.prop文件里加上如下一行, ro.config.support_multiringtone=true 将ro.config.support_multiringtone属性默认置为true. 注意,只有在MocorDroid4.4_3.10_14A_W14.19.1_P14.32.5之后的版本才可以. 如果是之前的版本,请咨询展讯,我们会提供功能samplecode.
+参考FAQ: FAQ40881
+### 问题: audio session的创建规则
+解决方案: 关于audio session的创建规则,源码注释里有明确说明: // all tracks in same audio session must share the same routing strategy otherwise // conflicts will happen when tracks are moved from one output to another by audio policy // manager 同一个会话里的音轨必须属于同一种音频策略. 即系统提示音和音乐播放不会处于同一个会话里.
+参考FAQ: FAQ40901
+### 问题: mediaserver进程重启会引起系统重启么？
+解决方案: mediaserver进程是AudioFlinger、MediaPlayerService、CameraService、AudioPolicyService这几个服务运行的实体, 这个进程重启理论上是不会导致系统重启的.但如此重要的一个进程势必会与其他进程有诸多联系. 比如system_server等会导致系统重启的进程要播放声音,由于mediaserver进程重启可能会导致前后信息的不一致;这种情况一般会有异常抛出,但假如调用者没有很好的处理这种异常就会导致系统重启. 所以mediaserver进程重启不会直接导致系统重启,但可能会间接导致系统重启. FAQ40901就是一个抛出异常的例子.
+参考FAQ: FAQ40903
+### 问题: CUCC测试，流媒体case7.8，流媒体业务平台门户站点无歌词音频文件可供测试
+解决方案: 流媒体联通入库测试case7.8 属于O项测试,联通入库时可以不实现,所以该项测试可以忽略.
+参考FAQ: FAQ40907
+### 问题: 双卡中如何获取两张sim卡的信号强度dbm和asu
+解决方案: PhoneStateIntentReceiver.java提供对应两个接口: public int getSignalStrengthDbm() public int getSignalStrengthLevelAsu() 对于双卡而言,PhoneStateIntentReceiver类中有一个构造函数是可以添加phoneid的 public PhoneStateIntentReceiver(Context context, Handler target, int phoneId) phoneid中卡1是0,卡2是1,以此来区分卡1和卡2.
+参考FAQ: FAQ40900
+### 问题: 设置视频壁纸时，播放默认视频，无法快进
+解决方案: 视频壁纸能否快进快退和视频源的关键帧有关,默认视频壁纸的位置是frameworks/base/data/videos/下面的Cloud.mp4,Rain.mp4和Sunny.mp4,都是只有开头处一个关键帧,所以快进时会退到起点处进行播放,如果设置咱们自己录制的视频为视频壁纸,是可以进行快进的,因为咱们自己录制的视频的关键帧都比较均匀,快进快退看起来就是正常的,所以播放默认视频壁纸不能快进,这个测试现象是正常表现.
+参考FAQ: FAQ40911
+### 问题: 非UUI版本通话记录详情中如何显示通话时长
+解决方案: 非UUI版本,平台默认通话记录详情中不显示通话时长.如果要求显示,在device\sprd\scx35_sp7731gea(项目名称)\system.prop中定义ro.device.support.showduration=true即可.
+参考FAQ: FAQ40918
+### 问题: 如何删掉系统默认的某个应用使其不在system.img里
+解决方案: 比如删除android原生态的Calculator 修改如下: build\target\product\generic_no_telephony.mk PRODUCT_PACKAGES := \ DeskClock \ Bluetooth \ - Calculator \ //去掉此行即可 Calendar \
+参考FAQ: FAQ40942
+### 问题: 批量传输文件，当包含文件大小为0的文档时，为什么会出现大量失败？
+解决方案: 这是因为当传输到文件大小为0的文档时,会导致传输session被中断,之后的文件都不再发送.所以会出现很多失败. android系统不支持文件大小为0的文档的传输.
+参考FAQ: FAQ40940
+### 问题: SC7731使用dts工程如何修改打印串口kernel的方法？
+解决方案: 修改loglevel 打开类似kernel\arch\arm\boot\dts\sprd-scx35_sp7731gea.dts的文件 在这个文件中搜索loglevel 找到之后将loglevel=1修改成loglevel=7或者更大,保存编译bootimge. 之前非dts配置工程修改如下文件: \u-boot\include\configs\sp7731gea.h的文件中的loglevel.
+参考FAQ: FAQ40965
+### 问题: 调整PA增益等级
+解决方案: 在NV工程中修改以下字段: WCDMA_DownloadParam->W_download_params->w_cal_config->pa_config->pa_switch_1stband
+参考FAQ: FAQ40979
+### 问题: 点翻转和列翻转会对屏幕功耗带来多少影响
+解决方案: 一般来讲采用列翻转方式时屏幕功耗为25mA左右,采用列翻转是功耗为50mA左右.
+参考FAQ: FAQ40982
+### 问题: 常见的贴片电阻的封装类型有哪些
+解决方案: 805电阻体积大、额定功率大,往往整块板子只在Charger等部分贴一到两个. 402电阻体积中等,贴片成本低,大量使用. 201电阻体积小,适合板子体积小时采用,但贴片成本高、额定功率小. 因为I^2=额定功率,而每种类型的额定功率是固定的,所以在Charger等需要通过大电流时就需要贴较大的电阻.
+参考FAQ: FAQ40984
+### 问题: 通话时发射功率是由什么期间决定的？
+解决方案: 实际发射功率 = Transceiver输出功率 x PA增益
+参考FAQ: FAQ40993
+### 问题: GSM的Band是什么意思？
+解决方案: GSM四频段Band2/3/5/8(1900,1800,850,900) 中国用的是GSM900、GSM1800; 另外2频段在国外用. GSM LowBand指850和900,对应的最大发射功率为32.5dBm; HighBand指1800和1900,对应的最大发射功率为29.5dBm.
+参考FAQ: FAQ40997
+### 问题: WCDMA的PA与GSM的PA有什么区别？
+解决方案: GSM(GMSK)和WCDMA(QPSK)的调制方式不一样 所以对PA的指标要求也就不一样. 因为GSM用的是横幅调制,所以可以使用非线性PA(polar PA),因为利用预失真可以补偿.PA工作在饱和区 但是WCDMA的调制振幅不是恒定的,如果用非线性PA,会产生不可恢复性的失真,所以要使用线性PA(linear PA).PA工作在线性区.
+参考FAQ: FAQ40998
+### 问题: /Android/data/目录作用？
+解决方案: /Android/data/应用包名/files/目录,存放程序运行数据.
+ /Android/data/应用包名/cache/目录,存放临时缓存数据.如:图片、图库的缩略图、书签等. 
+ 应用卸载时,删除/Android/data/应用包名目录下,所有文件. 
+ 上面两个目录对应,设置->应用->应用详情里,"清除数据"与"清除缓存"选项. 
+   
+/Android/data/目录下有隐藏文件".nomedia",表示无多媒体文件,不存放多媒体文件
+  
+参考FAQ: FAQ40986
+### 问题: 如何避免context相关的内存泄露
+解决方案: 避免context相关的内存泄露,记住以下几点: 1. 不要让生命周期长的对象引用activity context,即保证引用activity的对象要与activity本身生命周期是一样的 2. 对于生命周期长的对象,可以使用application context 3. 避免非静态的内部类,尽量使用静态类,避免生命周期问题,注意内部类对外部对象引用导致的生命周期变化
+参考FAQ: FAQ41007
+### 问题: ImageView的scaletype属性介绍
+解决方案: 使用: android:scaleType="fitXY" 下面讲解几种属性值的作用: 1.center:按图片的原来size居中显示,当图片长/宽超过View的长/宽,则截 取图片的居中部分显示 2.centerCrop:按比例扩大图片的size居中显示,使得图片长 (宽)等于或大于View的长(宽) 3.centerInside:将图片的内容完整居中显示,通过按比例缩小或原来的size使得图片长/宽等于或小于 View的长/宽 4.fitCenter:把图片按比例扩大/缩小到View的宽度,居中显示 5.fitEnd:把图片按比例扩大/缩小到View的宽度,显示在View的下部分位置 6.fitStart:把图片按比例扩大/缩小到View的宽度,显示在View的上部分位置 7.fitXY:把图片 不按比例 扩大/缩小到View的大小显示 8.matrix:用矩阵来绘制
+参考FAQ: FAQ41011
+### 问题: 如何修改本机联系人号码可输入最大长度
+解决方案: 平台默认本机联系人号码可输入40个字符, 可以根据需要修改BaseAccountType.java (\packages\apps\contactscommon\src\com\android\contacts\common\model\account) initTextFieldsLength()方法中, mTextFieldsMaxLength.put(Phone.CONTENT_ITEM_TYPE, 40);中的数字,调整本机联系人号码可输入的最大长度.
+参考FAQ: FAQ41075
+### 问题: 为什么通话中频繁按键，对方听到的按键DTMF音并不连续
+解决方案: CCITT规定每秒最多按10个键,即每个键时隙最短为100MS,其中音频实际持续时间至少为45MS,不大于55MS,时隙的其他时间内保持静默,因此按键产生双音频信号时,相继的两个信号间隔一段时间;解码器利用这个时间识别出双音频信号,并转换成对应的数字信息. 实际应用中移动网络两个DTMF音之间的持续时间大概为400ms, 因此无论按键频率有多快,对方听到的DTMF音之间的间隔都差不多400ms,就导致了按键音存在时延.
+参考FAQ: FAQ41077

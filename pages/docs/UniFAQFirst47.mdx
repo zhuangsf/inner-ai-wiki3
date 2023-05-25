@@ -1,0 +1,325 @@
+### 问题: 如何使锁屏界面的日期默认显示年份？
+解决方案: 只需修改如下xml文件即可: /frameworks/base/packages/Keyguard/res/values/donottranslate.xml -    <string name="abbrev_wday_month_day_no_year">EEEEMMMMd</string> 
+-    <string name="abbrev_wday_month_day_no_year_alarm">EEEMMMd</string> 
+
++    <string name="abbrev_wday_month_day_no_year">EEEEMMMMdyyyy</string> //对应无闹钟时锁屏界面的日期格式
++    <string name="abbrev_wday_month_day_no_year_alarm">EEEMMMdyyyy</string> //对应有闹钟时锁屏界面的日期格式
+参考FAQ: FAQ88335
+### 问题: android6.0 FM录音怎么修改默认存储设置？
+解决方案: 修改默认存储位置,需要修改如下文件: \packages\apps\FMRadio\src\com\android\fmradio\FmUtils.java 把 public static int FM_RECORD_STORAGE_PATH = 0; 修改为 public static int FM_RECORD_STORAGE_PATH = 1; 0:存储到手机 1:存储到SD卡
+参考FAQ: FAQ88468
+### 问题: 为什么在勿扰模式下，FM仍然有声音？
+解决方案: 首先解释下Android的勿扰模式: 打开勿扰模式后,用户将不会被任何提示打扰,甚至连闹钟都不会响.另外还可以设置勿扰模式的持续时间, 从无限期到几个小时均可. 勿扰模式主要屏蔽的是提醒、活动、消息、来电、闹钟等提示声音,而对于其他的音乐播放,FM播放,视频 播放是不会有影响的.
+参考FAQ: FAQ88496
+### 问题: 设备管理器中USB端口硬件ID属性中的REV值从何而来？
+解决方案: 设备管理器中,选中某个USB端口,右键属性->详细信息栏下选择硬件ID,会列出USB\VID_&PID&REV值,如下图所示: 其中,VID对应手机USB设备描述符中的idVendor项,PID为设备描述符中的idProduct项;REV则对应设备描述符中的bcdDevice项;这三项值在kernel/drivers/usb/gadget/android.c中的如下结构体中被定义、初始化: static struct usb_device_descriptor device_desc = { ...... .idVendor = __constant_cpu_to_le16(VENDOR_ID), //VID .idProduct = __constant_cpu_to_le16(PRODUCT_ID), //PID .bcdDevice = __constant_cpu_to_le16(0xffff), //REV ...... };
+参考FAQ: FAQ88501
+### 问题: 如何修改连接豌豆荚后的USB设备名称？
+解决方案: 1、进入项目.mk文件如device/sprd/xxx/xxx.mk文件,修改PRODUCT_MODEL宏,重新编译system image下载验证; 2、若名称未更改,将豌豆荚重新卸载安装下即可.
+参考FAQ: FAQ88507
+### 问题: 如何修改MTP模式下PC右下角显示的“弹出MTP”中这个MTP名称呢？
+解决方案: 所需要修改的MTP设备名称如下图示: 修改方法:进入kernel/drivers/usb/gadget/f_mtp.c,在如下地方修改: static struct usb_string mtp_string_defs[] = { /* Naming interface "MTP" so libmtp will recognize us */ [INTERFACE_STRING_INDEX].s = "MTP", /*修改这里*/ { }, /* end of list */ };
+参考FAQ: FAQ88511
+### 问题: 如何实现同一台PC的不同USB口，com口与PC USB口绑定？
+解决方案: 使用修改注册表IgnoreHWSerNum属性的方法,具体如下: 1、例如,如果要忽略VID=1782,PID=4d01的序列号上报组合,则将以下内容保存为.reg文件运行即可: Windows Registry Editor Version 5.00 [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\UsbFlags] "IgnoreHWSerNum17824d01"=hex:01 2、再例如,如果还需要继续忽略VID=1234,PID=5678的序列号上报组合,那么可以在如上文件后面继续添加一行后运行.reg即可: "IgnoreHWSerNum12345678"=hex:01 3、以此类推,即可任意添加自己想要忽略的VID/PID组合.
+参考FAQ: FAQ88520
+### 问题: 如何搭建IPV6网络环境？
+解决方案: 1.购买一台支持IPV6网络的路由器(型号:华硕RT-AC68U) 2.将本地网络翻墙,获取翻墙网络的IPV4地址 3.根据IPV4地址,在http://www.tunnelbroker.net网址上申请IPV6免费代理(具体申请步骤可参考http://www.deepvps.com/application-he-net-ipv6-vpn.html) 4.成功申请后会出现具体信息,并填写到路由器配置管理界面上的IPV6,并重启路由器,即配置成功
+参考FAQ: FAQ88528
+### 问题: Android6.0平台，怎么修改FM的默认频道频率的范围？
+解决方案: Android6.0平台,怎么修改FM的默认频道频率的范围? 对应文件目录:\packages\apps\FMRadio\src\com\android\fmradio\FmUtils.java 代码中默认频率范围为 // maximum station frequency private static final int HIGHEST_STATION = support50ksearch ? 10800 : 1080; // minimum station frequency private static final int LOWEST_STATION = support50ksearch ? 8750 : 875; 针对要修改的频道频率范围,修改上面的两个值. 如果要改为87.9到107.9频道频率的范围,需要把上面对应的默认值为改为10790:1079和 8790:879 .
+参考FAQ: FAQ88582
+### 问题: android 6.0的版本中沒有FMPlayer，能否使用android5.1的FMPlayer？
+解决方案: android6.0的版本不能使用android5.1的FMPlayer应用,原因如下: android5.1及之前FM采用展讯自有APP,所以版本中有FMPlayer. android 6.0版本采用android原生FM app为FMRadio应用. android6.0的版本不能替换android5.1版本中的应用,因为android6.0版本中适配的是FMRadio应用.
+参考FAQ: FAQ88588
+### 问题: 如何修改拉丁输入法的phone键盘显示
+解决方案: 拉丁输入法phone键盘应用于新建联系人时的号码输入,与拨号键盘看起来差不多,但是没有呼出的图标.这个键盘 同样包含一些字母,对于出货不同地区的客户,可能会有修改的需求.可以通过修改packages/inputmethods/LatinIME/java/res/xml/key_styles_number.xml 中的keySpec和keyHintLabel实现.
+参考FAQ: FAQ88611
+### 问题: 随系统字体放大，某个View内容显示不全问题怎么修改？
+解决方案: 由于字体的增大,原来原本可以显示的内容,现在显示不下,或者分行显示.这种情况可以使用dp作为字体单位,dp不会随系统字体缩放而改变. 方式如下: TextView one = (TextView) findViewById(R.id.textView1); one.setTextSize(TypedValue.COMPLEX_UNIT_DIP,15);
+参考FAQ: FAQ88614
+### 问题: 怎么默认编辑框只能输入数字及使用数字键盘?
+解决方案: 在布局文件中对Edittext增加android:digits="1234567890."属性,限制只能输入这11个字符, 再在代码中用Edittext进行数字键盘限制即可:myEdit.setInputType(InputType.TYPE_CLASS_NUMBER);
+参考FAQ: FAQ88615
+### 问题: OTG 功能不支持，如何去除CTS Verifier中Audio Frequency Microphone Test 和AudioFrequency Speaker Test
+解决方案: 去掉android.hardware.usb.host这个feature,这两个测试项不会出现在测试菜单中: Audio Frequency Microphone Test Audio Frequency Speaker Test 修改:frameworks\native\data\etc\android.hardware.usb.host.xml,注掉android.hardware.usb.host: <permissions> <!--<feature name="android.hardware.usb.host" />--> </permissions>
+参考FAQ: FAQ88634
+### 问题: CTS-Verifier 测试项Device Owner Tests测试项怎么测试的？
+解决方案: (1)SSID指的是WIFI热点; (2)点击WiFi configuration lockdown,输入SSID,并选择一个连接方式,点击CRATE WIFI CONFIGURATION; 这里点击CRATE WIFI CONFIGURATION之后,等2分钟,WIFI处于断开状态则继续测试,否则更换连接方式(None、WPA、WEP),重新执行CRATE WIFI CONFIGURATION;
+参考FAQ: FAQ88640
+### 问题: 手动搜网，显示ERROR，或不更新PLMN列表
+解决方案: 分析:LOG搜索AT+COPS=?找到手动搜网的点,从TRACE中可以看到,每次搜网过程.MM都会上报当前状态.只有在MM空闲态时12&19,才会做搜网动作,如在次行为过程中有任何RRC连接,(比如有电话进来.比如有短信进来).该搜网动作会被立即停掉.MM状态会变为3&6.MM状态可以查看24008MM_IDLE协议.这时就会出现手动搜网时显示ERROR.
+参考FAQ: FAQ88666
+### 问题: 蓝牙传输时，主动申请匹配的手机为什么不会询问是否接收蓝牙文件?
+解决方案: 主动申请连接的手机, 在配对成功之后会询问"是否允许此设备自动连接", 若是选择是, 则会调用BT_SetDeviceAuthorisation(&g_current_bt.addr,TRUE);设置装置授权, 对端设备传送档案时, 会在CheckAuthorizeAndOpenIncomingWin()中调用BT_GetDeviceAuthorisation确认授权状态, 若是返回值为TRUE, 就不会弹出文件是否接收的提示框. 也可以参考在Paired device中选择配对过的装置, 打开Option menu, 选择Authorisation settings, 若是选择Auto connect就不会弹出文件接收提示框, 反之若选择Ask every time就会弹出提示框. 若是想要每次都弹出提示框, 可以改为调用BT_SetDeviceAuthorisation(&g_current_bt.addr, FALSE); 不设置装置授权即可.
+参考FAQ: FAQ88678
+### 问题: 如何去掉设置 - 显示 - 自动调节亮度 这一项？
+解决方案: 请定位至:frameworks/base/core/res/res/values/config.xml 将 <bool name="config_automatic_brightness_available">true</bool> 修改为 <bool name="config_automatic_brightness_available">false</bool>.
+参考FAQ: FAQ88687
+### 问题: 如何将系统中设置日期时弹出的日历模式控件修改为滑动模式控件？
+解决方案: 请定位至:frameworks/base/core/res/res/values/styles_material.xml中, 按如下修改: <style name="Widget.Material.DatePicker"> - <item name="datePickerMode">calendar</item> + <item name="datePickerMode">spinner</item> <item name="legacyLayout">@layout/date_picker_legacy_holo</item> <item name="calendarViewShown">true</item> <!-- Attributes for new-style DatePicker. -->
+参考FAQ: FAQ88693
+### 问题: Android 6.0如何在设置-日期和时间-选择时区弹出的时区列表上添加一个时区？
+解决方案: Android 6.0上设置时区列表文件在/frameworks/base/packages/SettingsLib中. 请定位至:/frameworks/base/packages/SettingsLib/res/xml/timezones.xml中, 参照该文件中已有的时区格式添加,假如添加的时区id为"Africa/Bujumbura",如下: <timezone id="Pacific/Fiji"></timezone> <timezone id="Pacific/Tongatapu"></timezone> + <timezone id="Africa/Bujumbura"></timezone> </timezones> 请注意添加的时区id必须是tzdata中已有的时区;如果没有则无法添加,请知悉.
+参考FAQ: FAQ88694
+### 问题: 如何使锁屏界面的日期显示为只有首字母大写？
+解决方案: frameworks/base/packages/Keyguard/res/layout/keyguard_status_area.xml     <TextClock android:id="@+id/date_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/clock_white"
+        style="@style/widget_label"
+-        android:textAllCaps="true"
+        android:letterSpacing="0.15"
+        android:gravity="center"
+        />
+参考FAQ: FAQ88697
+### 问题: hasFocus(),isFocused()和isFocusable()三者的区别
+解决方案: 三者都是View中public方法,任何android子控件都可以使用这三个方法,如下看看具体区别 hasFoucs():如果当前view是有焦点,或者子控件有焦点的, 这个属性值就是true.这个可以通过hierarchyviewer查看到 isFocused():当前view是否处于焦点状态 isFocusable():当前view是否可以获取焦点. 三者在有焦点相关开发(比如带有方向键的手机)中使用比较多,在现在触屏手机的软件开发中用的很少
+参考FAQ: FAQ88710
+### 问题: 如何判断开机向导已经完成
+解决方案: 开机向导在完成setup之后会将Settings.db中的"user_setup_complete"设置为1.因此我们可以通过获取Settings.Secure.USER_SETUP_COMPLETE的值来判断开机向导是否完成. 具体代码实现: boolean isSetupDone = (Settings.Global.getInt(mContext.getContentResolver(), Settings.Secure.USER_SETUP_COMPLETE, 0) != 0);
+ 
+	
+ 
+//获取到的isSetupDone为true表示开机向导已经设置完成,反之则未完成. 如果碰到任何问题也欢迎随时联系展讯FAE获取更多支持和帮助.
+参考FAQ: FAQ88814
+### 问题: android 6.0打开secureboo功能只正确，签名正确，开机却停留在logo界面
+解决方案: 从串口log中可以查询到modem校验不过,从签名结果看,lmodem的签名结果,在VLR字段后,多了一些不该有的数据. 由于android6.0版本的Modem_WLTE更改为.dat文件(之前是.bin文件) 所以打开secureboot功能后,由于加了解析库的modem大小增大后,超出了uboot写死的modem大小,导致加载的modem校验不过. 可通过修改LTE_MODEM_SIZE解决以上问题. u-boot64/include/configs/sprd_sharkl_modem_volte.h 将此句#define LTE_MODEM_SIZE 0x00E00000 修改为#define LTE_MODEM_SIZE 0x01200000
+参考FAQ: FAQ88817
+### 问题: 音量-  音量+  打印相反，如何调整
+解决方案: 音量- 音量+ 打印相反,该如何调整? 1.首先确定使用的按键为哪种模式,在对应工程的dts文件中调换上下114,115 115,114为对应的音量上下键 linux,code 2.对应具体使用的按键模式及工程下添加以下code device/sprd/scx35l/sp9832a_2h11_volte/rootdir/system/usr/keylayout/sprd-eic-keys.kl(eic模式) device/sprd/scx35l/sp9832a_2h11_volte/rootdir/system/usr/keylayout/sprd-gpio-keys.kl(gpio模式) device/sprd/scx35l/common/rootdir/system/usr/keylayout/sci-keypad.kl(矩阵模式) ++key 115 VOLUME_UP WAKE ++key 114 VOLUME_DOWN WAKE
+参考FAQ: FAQ88821
+### 问题: 如何调整开机震动时间和强度
+解决方案: 1.震动强度修改: u-boot64/arch/arm/cpu/armv7/sc8830/vibrator_sc2713.c #define VIBRATOR_STABLE_LEVEL (4)//稳定电流,最大为15,可达170mA #define VIBRATOR_INIT_LEVEL (11)//起振电流,最大为15,可达170mA init level must larger than stable level 每增加1级,电流增加10ma,反之递减10ma level current 0 20mA 1 30mA 2 40mA 3 50mA 4 60mA .... max 170mA 2.震动时间修改: void set_vibrator(int on) { ...... mdelay(150); ...... } 根据具体需要修改150可修改震动时间.
+参考FAQ: FAQ88826
+### 问题: 3种获取context对象的方法的区别
+解决方案: 1.this :返回的是当前所在类对象,如果是内部类中使用,则返回的是内部类本身,如果在activity中使用,则获得的是一个activity的 context,需注意的是activity的context与activity的生命周期绑定,当activity销毁时,此context对象不存在 2.getBaseContext() :返回由构造函数指定或setBaseContext()设置的上下文,例如说创建一个AlertDialog对象,传入的context是 activity的context,如果在dialog中使用getBaseContext()方法,获取到的是构造AlertDialog对象时传入的context对象,即activity的 context 3.getApplicationContext():返回的是application context对象,只要应用进程一直存在,则该对象不会被回收
+参考FAQ: FAQ88909
+### 问题: 展讯功能机无法与 iphone 蓝牙连接
+解决方案: iphone 在搜寻装置时 , 会根据对端回传的service type 来判断是否要将设备显示在列表上 , 目前手机设备都会被滤掉 会被iphone 找到的 , 应该只有判断成蓝芽耳机的设备才给显示 而展讯手机虽然可以找到iphone , 但由于iphone 并不支持文件传输功能 , 因此就算能连接上iphone , 也不能进行 音乐播放或传输文件 , 所以若是手机项目的话 , 基本上无法与iphone 在蓝牙上进行任何交互
+参考FAQ: FAQ88910
+### 问题: 展讯功能机是否支持WIFI 热点功能
+解决方案: 针对WIFI 热点功能 , 目前展讯平台并不支持 若客户需要在功能机上实现 , 需要请WIFI 厂商协助处理 展讯目前只提供下列函式接口 : 1. softap 注册网络等接口; 2. dhcp server 提供分配IP 地址接口. 其馀皆要由客户自行实现
+参考FAQ: FAQ88912
+### 问题: permission protectionLevel的分类和含义
+解决方案: protectionLevel主要分为以下几类: normal:普通级别,任何应用都可使用,仅需在AndroidManifest文件中申请 dangerous:危险级别,运行时需检查权限是否被授予 signature:签名级别,与定义权限的应用的签名一致的应用才能使用 signatureOrSystem:系统级别,系统应用或者是同签名应用可使用 privileged:核心应用级别,仅system/priv-app目录下应用可使用 appop:该权限与一个app op操作对应,由op来控制是否允许被使用 pre23:该权限限制只能被sdk低于android M的应用使用 installer:该权限可以被安装的应用使用 verifier: 该权限可以被verifier的应用使用 setup:该权限可以被开机向导类应用使用
+参考FAQ: FAQ88917
+### 问题: 如何获取系统中所有的permission group？
+解决方案: 在6.0之后android系统添加了权限管理的功能,那么第三方管家等应用怎么获取系统中所有的permission group呢? 参考如下方法即可获取,该方法会返回系统中所有的Permission group ,包括第三方应用自定义的group: PackageManager packageManager = getContext().getPackageManager(); List<PermissionGroupInfo> groupInfos = packageManager.getAllPermissionGroups(0);
+参考FAQ: FAQ88918
+### 问题: TextView设置android:ellipsize="marquee"属性后，没有跑马灯效果
+解决方案: 原因: 若要让TextView里的文本滚动(跑马灯效果),必须满足以下几个因素: 1:TextView里文本宽度超过TextView的宽度 2:android:ellipsize="marquee" 3:只有在TextView获取到焦点时,才会滚动.所以加上android:focusableInTouchMode="true" android:focusable="true" 第三点也是我们经常最容易忽视的. 如果应用开发过程中发现设置属性之后没有跑马灯效果,可对应上述3点要求检查是否满足
+参考FAQ: FAQ88954
+### 问题: 为什么有的卡可以关闭数据流量更新时间，有的需要开启数据流量才能更新时间
+解决方案: 更新时间涉及到两个协议:NITZ和NTP NITZ(network identity and time zone) NITZ是一种GSM/WCDMA基地台方式,必须插入SIM卡,且需要运营商支持; 可以提供时间和时区信息. NTP(network time protocol) 单纯通过网络(GPRS/EDGE/3G/HSPA/WiFi)获取时间,只提供时间信息,没有时区信息. NTP在无SIM卡或运营商不支持NITZ时使用. 当插入SIM卡,如果基站下发NITZ就更新时间.不同运营商基站也不同,基站如果当前没有NITZ的下发,那就没有数据信息,所以需要看基站的NITZ的下发情况,终端是被动接受.当无法通过NITZ获取时间时,可以通过网络获取,即使用NTP的方式更新时间. 关于更新时间,如果碰到任何问题也欢迎随时联系展讯FAE获取更多支持和帮助.
+参考FAQ: FAQ89031
+### 问题: ECT是什么功能
+解决方案: ECT(Explicit Call Transfer,呼叫转接)是一种较为特殊的补充业务.签约ECT业务的用户A先呼叫用户B,在与用户B建立通话后,用户A通过终端发起保持用户B呼叫的请求,此时用户B会听到一段背景音乐,并且与用户A的通话暂时断开.用户A紧接着呼叫另一个用户C,在与用户C建立通话后,由用户A发起呼叫转接业务请求,此时用户B听到的音乐背景将会取消,B、C两方相互通话,而用户A则退出呼叫.
+参考FAQ: FAQ91261
+### 问题: 为什么STK做BIP操作更新APN的时候会将默认的APN覆盖掉而不是新插入一条
+解决方案: 因为我们carriers表的数据库在被创建的时候,就设置了一系列的UNIQUE字段,包括numeric, mcc, mnc, apn, proxy, port, mmsproxy, mmsport, mmsc,carrier_enabled, bearer, mvno_type, mvno_match_data, profile_id. 而STK做BIP操作的时候需要将open channel的APN存入数据库中,但是google这里使用的SQL语句是insert or replace ....就是插入或者替换数据.而之前说过我们有一些被设置为唯一性的字段,那么当添加的数据和当前数据库中的这些字段的数据有重复的时候,则不会插入而是替换数据.因此会出现STK做BIP操作时替换默认APN的现象. 关于STK做BIP操作,如果碰到任何问题也欢迎随时联系展讯FAE获取更多支持和帮助.
+参考FAQ: FAQ89038
+### 问题: 如何调整滑动解锁时的解锁动画的时长？
+解决方案: frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/KeyguardClockPositionAlgorithm.java     private float getClockScale(int notificationPadding, int clockY, int startPadding) {
+-        float scaleMultiplier = getNotificationAmountT() == 0 ? 6.0f : 5.0f;
++       float scaleMultiplier = getNotificationAmountT() == 0 ? 3.0f : 2.0f;  // 可以适当调整该值,该值越小,解锁动画越快;反之,该值越大,解锁动画越慢.
+         ......
+参考FAQ: FAQ89107
+### 问题: 在外部应用中如何判断设备当前是否处于锁屏状态?
+解决方案: 应用中需要判断当前设备的锁屏状态时,只需添加如下代码即可: import android.app.KeyguardManager; 
+
+KeyguardManager mKeyguardManager = null; 
+
+mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
+boolean isKeyguardLocked = mKeyguardManager.isKeyguardLocked(); 这里isKeyguardLocked为true表示设备处于锁屏状态;反之,则处于非锁屏状态.
+参考FAQ: FAQ89109
+### 问题: 为何开启smart lock，trusted device和Trusted voice无法使用
+解决方案: 1. trusted devices需要能连线的bt装置在附近才能使用,例如蓝芽耳机 2. trusted voice在low ram的装置功能有限制,非low ram才能正常使用
+参考FAQ: FAQ89166
+### 问题: 为何google语音搜索不会显示"from any screen"页面
+解决方案: low ram的装置google语音搜索功能有所限制,不会显示"from any screen"页面,非low ram装置可以正常使用
+参考FAQ: FAQ89167
+### 问题: 为什么某些语言（例如俄罗斯语、阿拉伯语和波斯语）下无法设置密码锁屏？
+解决方案: google原生设计密码锁屏只支持英文字符设置为密码,中文等多语字符是不支持的.非英语环境下只需把输入法切换为英文输入法,然后设置密码即可设置成功.
+参考FAQ: FAQ89241
+### 问题: 为什么手机提示已关闭数据连接时下拉状态栏快捷方式中数据开关仍为开启状态？
+解决方案: 这个是原生设计,不属于bug. 达到流量上限后数据连接关闭这个表示底层的数据链路已断开.但跟上层的开关状态没有关系. 就好比手机正在上网时,突然欠费了.此时底层链路断开不能上网了,但上层的开关状态还是原来的状态是一个道理. 所有android对比机均设计如此,请知悉.
+参考FAQ: FAQ89242
+### 问题: 为什么切换为英文语言后，锁屏界面通知‘SIM 卡已更改’ 仍显示中文？
+解决方案: 锁屏界面收到的通知时,该通知的语言及布局就已经是确定好的了,是由发送通知的应用确定的,和当前的语言无关,也和锁屏没有关系. 如果需要收到英文版的通知,则需要其他应用在发通知时将通知的内容设置成英文. 该'SIM 卡已更改' 通知,在发送过来时就是中文,无法改成英文.
+参考FAQ: FAQ89243
+### 问题: 在用户忘记密码时，是否可以添加使用gmail账户的方式来解锁屏幕 ？
+解决方案: Android4.4以及之前的设计会在用户忘记密码时提示用户使用gmail账户解锁. 但Google在Android 5.0版本之后,已经移除了直接在手机中输入gmail账号解锁的功能. 其中,Android4.4与5.1差异比较大,google对很多功能进行了重构,目前5.1上也已经不支持输入错误密码后,直接在手机上选择忘记密码的功能了. 对于这个问题,目前google推荐更好的方案如下: 在任意联网的设备上,访问下面网址(设备管理器): https://www.google.com/android/devicemanager 然后登陆google账号后,找到你的手机对应的设备,点击"锁定",此时你就可以输入新的密码代替手机中当前的密码(无论手机设置的是图形、PIN、还是密码锁). 这样就可以在忘记手机设置的密码时,通过google 账号设置新密码了. 综上所述,建议保持google原生设计.
+参考FAQ: FAQ89244
+### 问题: 为什么设置锁屏时完全不显示通知后，来QQ通知仍显示于锁屏界面？
+解决方案: 这个不是bug,解释说明如下: 1.设置中锁屏界面不显示通知,这里的通知是指的系统通知,也就是你在下拉栏中看到的通知.这个才是Android平台的通知. 2.所谓的QQ在锁屏界面的弹出框和短信在锁屏界面的弹出框,不属于通知(notification),这些都是应用自己弹出的一个特殊界面,所以这些不受系统通知的控制. 3.以上解释适用于所有Android平台,非展讯平台特有. 4.印象中QQ的设置中有个菜单可以选择关闭锁屏界面弹出框. 综上:QQ和短信在锁屏界面弹出的对话框不属于通知,是应用自己的一个特殊界面,所以不受系统通知控制.所以此问题不是bug.
+参考FAQ: FAQ89245
+### 问题: 为什么锁屏下进入紧急拨号界面按返回键返回的时会先显示背景壁纸，再显示锁屏界面中其它内容？
+解决方案: 该现象与手机性能有关,不是bug. 对比了一下google nexus6 android5.1.1实际上也是有该问题的. 这是因为当锁屏界面从拨号界面切换回来时KeyguardVisibility发生了改变,所以此时会重新刷新锁屏界面上的时钟等view,所以会先显示锁屏壁纸,然后才显示锁屏上的view. 手机性能越好,锁屏界面的View刷新越快,该现象越不明显;反之,该现象会相对而言会比较明显.
+参考FAQ: FAQ89253
+### 问题: 为什么锁屏界面左下角的按钮有时是通话图标，有时是语音图标？
+解决方案: google原生设计,代码中会优先判断系统是否支持语音助手(比如google语音),支持则在锁屏显示语音图标,否则显示通话图标. 通常情况下带GMS的版本均会显示语音图标,不带GMS的版本会显示通话图标. 是否支持语音助手,是通过辅助功能管理器来管理的,代码中通过下边这接口判断: AssistUtils.activeServiceSupportsLaunchFromKeyguard().
+参考FAQ: FAQ89254
+### 问题: Camera缓存文件有哪些？
+解决方案: Camera应用的缓存在/data/data/com.android.camera2/shared_prefs目录下; sensor的列表存在/data/misc/media/sensor.file文件中
+参考FAQ: FAQ89295
+### 问题: 如何在贴片，组装等各个工序中进行防呆措施
+解决方案: 可以通过PhaseCheck功能实现.其中Download、CFT、WriteIMEI、WCN、BBAT等站位均可以通过PhaseCheck功能实现栈位检查从而达到防呆的目的. 需要注意的有以下三点: 1、PhaseCheck区域在FactoryDownload站进行初始化,因此必须在FactoryDownload站的PhaseCheck.ini中就配置好 站位顺序和名称 2、所有工具的PhaseCheck.ini文件必须保持一致 3、中途不允许修改站位顺序及名称 而MMI测试站相对独立,该站的防呆可以在CFT站实现.具体实现方法如下: MMI防呆设置:打开CFT_R16.0.0001\Bin\CFTConfig -> CFTGui.ini -> CheckMMI=1,Check MMI Flag的值根据需求设置
+参考FAQ: FAQ89347
+### 问题: EMD接口到DDR的数据DQ0~15口是否需要一一对应？
+解决方案: D0~7组内数据信号可以任意互换,D8~15组内数据信号可以任意互换,但D0-7的不能和D8-15进行互换. 因为DDR的数据都是从CPU写入读出的,DDR的数据位只是相当于存放位置,不存在顺序.
+参考FAQ: FAQ89442
+### 问题: 如何修改CDROM图标，如何设置双击CDROM运行的程序？
+解决方案: 修改光盘镜像文件,在CDROM根目录下增加autorun.inf文件. 修改文件如下, [AutoRun] Open=example.exe icon=myicon.ico 其中example.exe文件,为双击CDROM运行的程序. myicon.ico为CDROM的图标. 这个例子中的example.exe和myicon.ico都放在光盘根目录下,可以根据实际存放的位置调整.
+参考FAQ: FAQ89402
+### 问题: bus hound 抓取USB数据注意事项
+解决方案: 在分析usb问题时,有时会用到bus hound工具来抓取手机与PC间传输的数据,来进一步定位问题. 下面是抓取数据过程中的一些注意事项. 1.连接手机时,选择了USB功能,在bushound device界面可以找到识别到的设备.这里面选择要抓取数据的接口. 当拔掉usb线重新接入时,前面选择的端口会默认选择. 2.在setting界面选择要抓取的数据类型,根据需要选择,CTL,IN,OUT一般是必需选的.在columns to Display 栏里建议都选.在Capture Capacity栏设定了保存的log大小,如抓取log数据量大,修改该值. 3.在capture界面,点击run后开始抓取log.抓到后按save保存.如想重新抓取,可直接点stop后,再点run重新抓取. 4.bus hound 抓取log的时间与PC时间对应,所以要调节手机的时间,与PC时间一致,这样在分析log时,就能按照时间点 的对应关系来分析.
+参考FAQ: FAQ89410
+### 问题: 为什么手机里的应用不能移动到SD卡中？
+解决方案: 步骤: Settings—>Apps—>点击某一个apk,无法移动到SD卡中 原因分析: 具体能否移动,请看packages/apps/Settings/src/com/android/settings/applications/InstalledAppDetails.java 中的private void initMoveButton() {}这个函数,里面有判断当应用在下面三个目录中时是不可移动的. 1、/system/preloadapp/ 2、/system/vital-app/ 3、/oem/apks/ 且当应用在自己的AndroidManifest.xml中配置为只能存在手机中时也是不可以移动的.请知悉,谢谢!
+参考FAQ: FAQ89417
+### 问题: 如何查看当前UI界面属于哪个应用（类名包名）？
+解决方案: 想要查看当前界面的包名类名,只需要连接上adb调试: 执行: $ adb shell dumpsys activity | grep "mFocusedActivity" 会得到类似: mFocusedActivity: ActivityRecord{2319754b u0 com.sprd.fileexplorer/.activities.FileExploreActivity t27} 的信息,就可以看到属于哪个应用,它的包名类名分别是什么.
+参考FAQ: FAQ89424
+### 问题: 下载软件是否可以不用连接电池
+解决方案: 是的.在RESEARCHDOWNLOAD中,打开options-->nand flash(keep charge),这样就不需要接电池了
+参考FAQ: FAQ89433
+### 问题: pandora拉好GSM的PVT后如何导出参数？
+解决方案: 一、用pandora非信令连接调试好Vramp的手机,找到端口后关掉pandora以释放端口; 二、用NVeditor打开对应的NV工程; 三、用NVeditor导出手机NV; 1、设置端口参数file\port settings 2、从手机中读出NV, Load From Phone(Normal Mode) 四、检查导出的Vramp参数是否正确; 五、保存NV工程和bin文件.软件人员合入bin文件即可.
+参考FAQ: FAQ89435
+### 问题: 用8960测试PVT时应选择哪个burst?
+解决方案: 应该选择Receiver Control\Expected Burst\TSC0.选择错误会导致PVT整个曲线偏移,且无法调整.
+参考FAQ: FAQ89438
+### 问题: 如何减小3合1喇叭设计外放时的震动感
+解决方案: 可以在将linein的输入电容值增加至10nF.但此方法要考虑震动和音频效果之间的一个平衡.
+参考FAQ: FAQ89440
+### 问题: AndroidM平台是否支持OEM分区定制的功能
+解决方案: 目前展讯的AndroidM软件版本分支默认是不支持oem分区定制的功能. OEM分区的功能主要在展讯平台的AndroidL系列版本分支上开发实现,主要为了满足全球运营商定制以及虚拟运营商支持等主要功能. 在google发布的Android M 版本上,默认引入了CarrierConfig机制,可以完美解决运营商参数全球配置以及虚拟运营商的框架支持等重要功能,因此,展讯平台的设计策略是没有在AndroidM 上继续开发oem分区的方案. 如果关于全球定制或者虚拟运营商配置中有任何问题,可以随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ89450
+### 问题: 不插入sim card，怎么与仪器进行信令综测连接
+解决方案: 有两种方式: 1 通过Mobiletester 进入Cal post mode 进行信令连接; 2 通过修改 NV 项:TD_TIANJI2_NV_TYPE/NV_PARAM_TYPE_MN_CFG/feature_swith (default 0X0)改为0X80,既可以实现无卡连接.
+参考FAQ: FAQ89475
+### 问题: 手机中怎么打开自动接听功能？
+解决方案: 有两种方式: 1 通过*#*#83781#*#*进入工程模式,在TELEPHONY界面,Auto Answer 栏中打开; 2 在NV项中,nv_type/ATC_CONFIG_NV/spauto_flag (default 0X0)改为0X1.
+参考FAQ: FAQ89476
+### 问题: 能否用两台 SC6531 的机器，实现蓝牙拨号的主从功能？
+解决方案: Q: 蓝牙拨号器能否主从设备都是 SC6531,一个 6531 设备作为类似手机的主设备,另外一个 6531 设备作为蓝牙拨号器,通过该设备蓝牙控制主体设备实现短信,通话的功能? A: 平台主从设备都是蓝牙拨号器版本只能使用通话功能以及播放音乐功能 无法实现发送短信功能,因为平台不知持短信及联络人服务器端 目前非蓝牙拨号器版本支持以下 OPP (档案传输) SPP HFG (语音通话) A2DP (音乐) 蓝牙拨号器版本新增 A2DP_SINK (蓝牙喇叭) AV_SNK AV_CT (控制音乐) HFU/HSP (耳机通话) PBAP (获取联络人) MAP (获取短信功能)
+参考FAQ: FAQ89507
+### 问题: 如何在Android中的某个方法里面添加log打印堆栈调用信息
+解决方案: 在需要知道某个方法被调用时,在方法体内添加如下log即可: android.util.Log.d("TAG","methodName",new Exception("print stack"));
+参考FAQ: FAQ89542
+### 问题: Android6.0 如何修改默认时间格式为12小时制/24小时制？
+解决方案: 1. 修改frameworks\base\packages\SettingsProvider\res\values\defaults.xml文件,增加: <!-- 为 "time_12_24" 赋值为 12 或24--> + <string name="time_12_24" translatable="false">24</string> 2. 修改文件frameworks\base\packages\SettingsProvider\src\com\android\providers\settings\DatabaseHelper.java,找到函数loadSystemSettings (),在函数中增加: + loadStringSetting(stmt, Settings.System.TIME_12_24, R.string.time_12_24);
+参考FAQ: FAQ89556
+### 问题: 关于SIMLOCK功能与恢复出厂设置功能之间关系的解释
+解决方案: 为了便于产线上测试,测试者通常希望SIMLOCK跟恢复出厂设置可以产生依赖,恢复出厂设置,也可以恢复版本定制的SIMLOCK的功能,但是这两个面向不同使用对象的功能,本身之间不能耦合,SIMLOCK是针对运营商设计的,恢复出厂设置是针对具体的用户的操作,两者之间功能设计的逻辑是独立的.终端用户使用恢复出厂设置,运营商执行SIMLOCK解锁,如果恢复出厂设置也可以恢复SIMLOCK功能,会造成终端用户诸多的不便.因此不能因为产线测试的问题,耦合SIMLOCK跟恢复出厂设置的功能. 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ89610
+### 问题: 关于手机终端向SIM卡导入联系人的解释
+解决方案: 用户经常会把手机终端的联系人导入到具体的SIM卡,会遇到导入失败的问题,通常为如下原因: 通常手机终端联系人的姓名字段是没有限制的,可以任意输入.但是SIM卡联系人的姓名字段根据协议规定是有长度限制的,sim卡联系人若为汉字,最多6个,若为英文字母,最多14个,其余均不能导入成功,在终端添加SIM联系人也不能添加成功. 关于SIM的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ89569
+### 问题: AndroidM平台默认选择主卡的策略分析
+解决方案: AndroidM平台设置主卡的策略,是根据SIM对应的优先级设置的,通常SIM的优先级是比USIM的优先级低,所以当插入一张SIM一张USIM时,默认会设置USIM卡为主卡,所以插入双卡是弹出手动主卡选择对话框的必要条件,但不是充分条件.因为通常SIM卡是不支持多模(但有特殊SIM卡支持多模),也就没有必要设置为多模卡. 关于SIM的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ89604
+### 问题: WCN2351芯片GPS为何搜索不到193号卫星
+解决方案: 193号卫星属于日本QZSS系统,WCN 2351 上GPS使用GE方案不支持QZSS
+参考FAQ: FAQ89637
+### 问题: WCN 2351位置信息打开时候为何没有给GE芯片上电
+解决方案: 由于GE方案的功耗比较大,为了优化功耗GE方案默认在位置信息打开时没有让GPS芯片上电,而是在第一次位置请求命令下发时才给GPS芯片真正上电
+参考FAQ: FAQ89641
+### 问题: 什么是伪距
+解决方案: 由于卫星时钟,接收机时钟的误差以及无线电信号经过电离层和对流层中的延迟,实际测出的距离A与卫星到接收机的绝对几何距离B有一定的差值,一般称这个计算测量出来的距离为伪距
+参考FAQ: FAQ89642
+### 问题: 双击home键响应优化
+解决方案: 可以在frameworks/base/core/res/res/values/config.xml中修改config_doubleTapOnHomeBehavior的值来配置双击home键的功能,比如设为1表示进入最近任务 或者直接在PhoneWindowManager.java中的handleDoubleTapOnHome方法中加入自己的处理 有时候会出现双击home键不灵敏的情况,这个和机器的性能有关,可以通过调整 frameworks/base/core/java/android/view/ViewConfiguration.java中的DOUBLE_TAP_TIMEOUT值来优化 DOUBLE_TAP_TIMEOUT默认是300 home键的单机和双击是复用的,比如:单击是回到桌面,双击是调出最近任务 调大该值可以提高双击的响应灵敏度,调小则是提高单击的响应速度,直到得到预期的效果
+参考FAQ: FAQ89648
+### 问题: WCN2351 GE上如何确定底层GPS位置信息是否上报
+解决方案: 搜索main.log中如下location_callback called关键字,正常情况下1秒打印一次即1秒上报一次,如: 02-26 15:27:10.662 511 1022 D LIBGPS : location_callback called, speed after is 6.47 02-26 15:27:11.671 511 1022 D LIBGPS : location_callback called, speed after is 6.47 02-26 15:27:13.125 511 1022 D LIBGPS : location_callback called, speed after is 6.47 02-26 15:27:13.913 511 1022 D LIBGPS : location_callback called, speed after is 6.47 看到对应时间点有打印即说明有上报
+参考FAQ: FAQ89672
+### 问题: BQB测试MAP协议需要注意事项
+解决方案: BQB测试需要装入SIM卡,并且有相关短消息.原因是MAP协议是蓝牙设备间消息同步的协议,在测试过程中会获取相应的消息和电话信息.
+参考FAQ: FAQ89680
+### 问题: 如何判断蓝牙耳机支持的数据类型
+解决方案: 在蓝牙耳机建立连接过程中,read_remote_supported_feature会显示蓝牙耳机支持的数据类型.其中enhanceddata rate exco 2 Mbps mode对应2-ev3格式,enhanced data rate esco 3 Mbps mode对应3-ev3格式
+参考FAQ: FAQ89681
+### 问题: 音频参数合入方法
+解决方案: music 模式的音频参数合入方法: 用audioTester工具调好music 模式的音频参数并写入flash后,把/data/local/media/audio_para文件pull出来,差分合入文件:device/sprd/XXXXXXXX/audio_params/audio_para audio模式的音频参数合入方法: 用audioTester工具调好audio模式的音频参数并写入flash后,导出的audio模式的音频参数保存为.nv文件,然后再把该.nv文件通过NVEditor工具导入NV工程里.
+参考FAQ: FAQ89968
+### 问题: 开启省电模式，锁屏状态下，点击屏幕，屏会闪，这是为什么？
+解决方案: 该现象不是问题,该现象产生的原因是开启省电模式时将播放动画程序的时长设置为0了,此时动画代码执行时是没有过渡时长的.所以会产生该现象. 可以关闭"省电模式",并将"设置-开发者选项-动画程序时长缩放"设置为"关闭动画",此时进行测试的现象和当前的描述一致. 该现象是google原生设计,在5.1和6.0的手机上都有该现象.
+参考FAQ: FAQ89711
+### 问题: 为什么设置-安全中的“电源按钮即时锁定”选项有时有，有时没有？
+解决方案: google原生设计,设置-安全界面的布局在安全锁(PIN锁、密码锁、图案锁)和滑动锁情况下是不同的,只有在设置锁屏方式为安全锁(PIN锁、密码锁、图案锁)后,设置-安全界面才会出现"电源按钮即时锁定"选项. 1. 滑动锁情况下,默认按电源键会即时锁定设备. 2. 安全锁(PIN锁、密码锁、图案锁)下, 若"电源按钮即时锁定"为打开状态,则按电源键会即时锁定设备; 若"电源按钮即时锁定"为关闭状态,则按电源键灭屏后多长时间锁定设备取决于设置-安全界面中"自动锁定"选项里设置的时长.
+参考FAQ: FAQ89712
+### 问题: android.security.cts.CertificateTest#testNoAddedCertificates FAIL
+解决方案: 错误log为: junit.framwork.AssertionFailedError:Unknown CA certificates expected:<[]> but was <[E3:E5:6F:47:51:0A:33:96:40:37:78:A7:4A: C5:D7:13:8C:FC:19:70]> at android.security.cts Certificate Test testNoAdded Certificates(Certificate Test.java 102) 这个CASE检查版本中预置的证书和原生的是否一致,如果增加一个新的证书就会报告此问题.
+参考FAQ: FAQ89731
+### 问题: CTS-Verifier -> Device Owner Tests -> Disallow USB file transfer测试不过
+解决方案: 正确的操作步骤是: 点击Disallow USB file transfer,点击SET RESTRICTION,使用USB线连接PC和手机,下拉状态栏,发现MTP和PTP模式被移除,则测试Pass; 测试步骤只要求去掉MTP和PTP模式,而对于Charge only, MIDI, USB virtual drive三项则无要求.
+参考FAQ: FAQ89747
+### 问题: 在Android 6.0版本上，高概率无法进校准模式问题该如何处理。
+解决方案: 在Android6.0 版本上,当遇到高概率无法进校准模式的问题时,可检查是否是uboot代码中等待U2S口时间过短的原因引起的. 在u-boot64/include/configs目录,找到对应的项目文件,这里以7731C平台举例,打开sp7731ceb.h. 找到#define CALIBRATE_ENUM_MS 3000 #define CALIBRATE_IO_MS 2000 CALIBRATE_ENUM_MS是等待PC下发set configuration的时间.CALIBRATE_IO_MS 是手机等待与PC tools交互的时间.单位都为ms,可根据情况适当增加这两个数值.
+参考FAQ: FAQ90030
+### 问题: sc7731或sc9832中，如何将四核配置成单核?
+解决方案: 1.kernel配置文件中,取消定义CONFIG_NR_CPUS,即 #CONFIG_NR_CPUS=4 is not set 2.删除dts中cpu@f01,cpu@f02,cpu@f03的节点
+参考FAQ: FAQ90069
+### 问题: Android 5.1 如何修改默认休眠时间（屏幕待机时间）？
+解决方案: 解决方案: 请修改frameworks/base/packages/SettingsProvider/res/values/defaults.xml中的 <integer name="def_screen_off_timeout">30000</integer> 此数值是以ms(毫秒)为单位,请确保此数值与设置中可以看到的时间一致.否则会出现设置-显示-休眠没有默认选中项. PS:如果项目中带GMS包,下载完或恢复出厂设置第一次开机过程中有可能会把默认休眠时间改为121000,导致设置中没有选中.
+参考FAQ: FAQ90317
+### 问题: 如何在设置--更多--网络共享与便携式热点中添加USB共享网络？
+解决方案: 解答:由于在USB计算机连接界面中已有USB共享网络,故在网络共享与便携式热点中将其隐藏,如要显示出来,可做如下修改: packages/apps/Settings/src/com/android/settings/TetherSettings.java /* SPRD: Move usb tether function to SprdUsbSettings @{ */ if (mUsbTether != null && !orignal_support) { getPreferenceScreen().removePreference(mUsbTether); } /* @} */ 将以上语句注释掉即可.
+参考FAQ: FAQ90277
+### 问题: 如何修改自动更新时区与时间的默认设置
+解决方案: 默认开启自动更新时区与时间 将frameworks/base/packages/SettingsProvider/res/values/defaults.xml修改为 <bool name="def_auto_time">true</bool> <!-- 自动更新时间 --> <bool name="def_auto_time_zone">true</bool> <!-- 自动更新时区 --> 默认关闭自动更新时区与时间 将frameworks/base/packages/SettingsProvider/res/values/defaults.xml修改为 <bool name="def_auto_time">false</bool> <!-- 关闭自动更新时间 --> <bool name="def_auto_time_zone">false</bool> <!-- 关闭自动更新时区 -->
+参考FAQ: FAQ90118
+### 问题: 如何去掉Launcher3的开机引导页面？
+解决方案: 修改方案如下: 请定位到src/com/android/launcher3/LauncherClings.java文件: class LauncherClings implements OnClickListener { ...... private static final String TAG_CROP_TOP_AND_SIDES = "crop_bg_top_and_sides - private static final boolean DISABLE_CLINGS = false; + private static final boolean DISABLE_CLINGS = true;
+参考FAQ: FAQ90137
+### 问题: wifi eut提示加载不成功常见原因
+解决方案: 1、在packages\apps\engineermode\src\com\sprd\engineermode\connectivity\wifi目录下的相关 Insmod sprdwl.ko与Rmmod sprdwl.ko的路径不对引起. 2、eut没有设置为root权限. 上述两种情况都会在进入eut界面时候弹出窗体提示加载驱动失败.
+参考FAQ: FAQ90152
+### 问题: 为什么不能修改Email中的Device ID？
+解决方案: Email的Device ID是从TELEPHONY_SERVICE获取的,每台设备的ID是不同的, 有些Email服务器会根据Device ID限制设备的同时登录次数,所以不能修改为固定的字符串.
+参考FAQ: FAQ90173
+### 问题: 如何修改手机的设置 - 显示 下默认的屏幕旋转方式？
+解决方案: 手机默认是屏幕旋转方式为自动旋转,即旋转屏幕方向内容,控制的属性值在: frameworks/base/packages/SettingsProvider/res/values/defaults.xml中: <bool name="def_accelerometer_rotation">true</bool> 如需将默认旋转方式修改为保持纵向,需要将上述属性值修改为false,即: <bool name="def_accelerometer_rotation">false</bool>
+参考FAQ: FAQ90189
+### 问题: 功能机增加语言所需内存大小说明
+解决方案: 在功能机上每增加一个语言所需大小是根据每个语言的"字库大小"以及"翻译资源"来决定的, 例如中文字库很大, 那打开中文支持就会需要较大的空间, 理论上每增加一个语言, 翻译资源少的就会多50~60k的空间, 多的需要70~90k, 放不放的下也会与客户项目中需要支持的功能有关, 建议可以自己编版本确认, 若是放不下时再考虑裁减功能.
+参考FAQ: FAQ90208
+### 问题: CMU200测试GPRS时，连接不上，手机端如何设定
+解决方案: 通过工程模式*#*#83781#*#*,在telephony菜单下找到GPRS项,点击进去,选Always Attach后进行测试.
+参考FAQ: FAQ90238
+### 问题: SC6533G RF RX是否支持sawless
+解决方案: 支持
+参考FAQ: FAQ90243
+### 问题: SC6533支持GPRS
+解决方案: 支持GPRS class10
+参考FAQ: FAQ90254
+### 问题: SC6533的最高主频
+解决方案: 250MHZ
+参考FAQ: FAQ90255
+### 问题: SC6533的支持GSM的sawless方案
+解决方案: 支持GSM4频的SAWless方案
+参考FAQ: FAQ90261
+### 问题: 如何使设置中的未知来源默认开启
+解决方案: 请修改frameworks/base/packages/SettingsProvider/res/values/defaults.xml - <bool name="def_install_non_market_apps">false</bool> + <bool name="def_install_non_market_apps">true</bool> false:默认关闭 true:默认开启
+参考FAQ: FAQ90288
+### 问题: 6.0平台中512M以下内存为什么没有多用户选项？
+解决方案: 原因分析: 512M以下内存由于是低内存设备,所以访客模式默认关闭.否则设备性能会下降,用户体验会变差. Google对此有一定限制,且如果低内存打开多用户会导致CTS过不了. 解决方案: 建议不要开启多用户模式,
+参考FAQ: FAQ90316
+### 问题: 如何获取BQB认证相关规范
+解决方案: 在网站https://www.bluetooth.com/specifications/qualification-test-requirements中会显示各协议不同版本对应的规范.查看前需要申请一个帐号,展讯作为SIG注册会员,可以申请帐号.一定明确协议对应的版本,不同的版本规范也不一致.
+参考FAQ: FAQ90337
+### 问题: 如何测试CTS Verifier 6.0_r7中Audio Frequency Line Test？
+解决方案: 测试步骤: 1. 进入Audio Frequency Line Test测试 2. 如果待测手机存在耳机插孔,单击Yes按钮,Loopback Plug Ready按钮将从灰显变为可单击状态(如果待测手机不存 在耳机插孔,则单击No按钮,该测试项自动Pass,以下步骤跳过) 3. 步骤1为Yes的前提下,在耳机插孔中插入Loopback Plug 4. 单击Loopback Plug Ready按钮,Test按钮将从灰显变为可单击状态 5. 单击Test按钮 该测试项Pass的实例,如下图所示:
+参考FAQ: FAQ90382
+### 问题: 如何测试CTS Verifier 6.0_r7中Audio Frequency Speaker Test？
+解决方案: 这项测试需要一个USB Reference Microphone.(USB Reference Microphone推荐使用miniDSP USB Measurement calibrated microphone 或者 Dayton Audio UMM-6 USB Measurement Microphone) 测试步骤: 1. 进入Audio Frequency Speaker Test测试 2. 插入一个USB Reference Microphone,单击USB Reference Microphone Ready按钮 3. 将待测手机放置在一个安静的屋子里面,同时将USB Microphone垂直放置在距离待测手机屏幕中心20cm的地方,如 下图所示: 4. 单击Test按钮,等待若干秒钟,完成测试,Pass的实例如下图所示:
+参考FAQ: FAQ90384
+### 问题: 如何测试CTS Verifier 6.0_r7中Audio Input Devices Notifications Test？
+解决方案: 测试步骤: 1. 进入Audio Input Devices Notifications Test测试 2. 如果待测手机存在耳机插孔,单击Yes按钮(如果待测手机不存在耳机插孔,则单击No按钮,该测试项自动Pass,以下步骤跳过) 3. 单击Clear Messages按钮 4. 将有线耳机或者Microphone插入耳机插孔,验证在按钮下方是否出现适当的提示信息 5. 将有线耳机或者Microphone拔出,验证在按钮下方是否出现适当的提示信息 当插入有线耳机或者Microphone后,出现的提示信息如下图所示: 当拔出有线耳机或者Microphone后,出现的提示信息如下图所示: 如果符合以上测试结果,则该测试项Pass.
+参考FAQ: FAQ90385
+### 问题: 如何测试CTS Verifier 6.0_r7中Audio Input Routing Notifications Test？
+解决方案: 测试步骤: 1. 进入Audio Input Routing Notifications Test测试 2. 如果待测手机存在耳机插孔,单击Yes按钮,Record按钮及Stop按钮将从灰显变为可单击状态(如果待测手机不存在 耳机插孔,则单击No按钮,该测试项自动Pass,以下步骤跳过) 3. 单击Record按钮,开始进行录制,如下图所示: 4. 插入有线耳机或者Microphone,在AudioRecord rerouting的Notifications部分,会出现一个信息来确认rerouting事件, 如下图所示: 5. 拔出有线耳机或者Microphone,观察AudioRecord rerouting的Notifications部分,会出现一个新的rerouting信息,如下 图所示: 6. 单击Stop按钮,停止录制 如果符合以上测试结果,则该测试项pass
+参考FAQ: FAQ90387

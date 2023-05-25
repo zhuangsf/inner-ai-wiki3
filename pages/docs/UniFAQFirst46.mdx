@@ -1,0 +1,300 @@
+### 问题: 手机没信号
+解决方案: 分析:从客户提供的ARM LOG中,能看到口空消息中,网络侧下发了NAS消息LU_REJECT以及ATTACH_REJECT,查看该条消息的内容中发现有"IMSI unknown in HLR",代表客户使用的SIM卡在本注册网络没有登记信息.所以注册时被拒.属于SIM卡问题.
+参考FAQ: FAQ86768
+### 问题: 如何确保有效的抓取到SIM卡上电部分的log
+解决方案: 为了确保能抓取到有效的SIM卡上电部分的log,需要按如下执行如下操作步骤: 1．手机开机连接ARM log工具,并确认连接好 2.如果测试卡插在卡槽1,用ARM log工具下发如下AT命令: AT+SPACTCARD=0;+SFUN=2 如果测试卡插在卡槽2,用ARM log工具下发如下AT命令: AT+SPACTCARD=1;+SFUN=2 注意:整行的AT命令一次发完,中间的分号不能省略. 3.等待返回OK后保存log
+参考FAQ: FAQ86771
+### 问题: 为什么批量操作如（删除、导出、分享等）联系人，最多只能选择3500条联系人？
+解决方案: 联系人批量操作,对选择联系人个数有一定限制,这主要是跨进程通信时,Intent保存要传递的数据大小有一定限制,binder传递数据有大小限制为(1M-8K)(传递的大小限制在ProcessState.cpp中定义#define BINDER_VM_SIZE ((1*1024*1024) - (4096 *2)),大约1M,如果修改这个值得大小会引起其他系统级问题,所以不建议修改.为保障能够顺利传输,故限制最多选择3500条联系人. 其代码中设置如下: packages/apps/ContactsCommon/src/com/android/contacts/common/list/ContactEntryListFragment.java public static final int CHECKED_ITEMS_MAX = 3500;
+参考FAQ: FAQ86764
+### 问题: 如何开启USIM Driver Log
+解决方案: SIM卡问题需抓 USIM Driver Log,SIM Driver Log 默认关闭,因Log 量大打开影响手机性能,只在出现 SIM 特定问题时才要求抓 USIMDriver Log.通过Armlog 窗口发送 AT+SPUSIMDRVLS=1 即可开启 USIM Driver Log,SIM Driver Log 开关有 NV 保存,设置后重开机有效.
+参考FAQ: FAQ86809
+### 问题: 如何抓取开机log
+解决方案: 开机 Log 包含初始化过程,NV 等信息开机初始化,一些问题需要开机信息方能确认原因,如无法抓到完整开机Log,可 用 "进入飞行模式 ->退出飞行模式" 过程 Log 替代,因为退出飞行模式过程与开机过程类似.
+参考FAQ: FAQ86814
+### 问题: GSM掉话分析
+解决方案: 从ARM LOG中,可以看到三通掉话,message: MPH_ERROR_IND.该条消息中的 PH_ERROR值为RADIO_LINK_FAIL代表为掉话点.看到此时的RXLEV:43没有问题,但信号质量很差rxqual:7.导致掉话(在测试中RXQUAL的值反映了话音质量的好坏,信号质量实际是指信号误码率, RXQUAL=3(误码率:0.8%至1.6%),RXQUAL=4(误码率:1.6%至3.2%),当网络采用跳频技术时,由于跳频增益的原因,RXQUAL=3时,通话质量尚可,当RXQUAL≥6时,基本无法通话.)
+参考FAQ: FAQ86817
+### 问题: 怎么确认电池NTC的阻值表是否准确？
+解决方案: 推荐验证方法如下: 1.准备一个滑动变阻器,电阻范围覆盖NTC电阻的电阻范围. 2.用滑动变阻器取代电路上NTC电阻. 3.设置滑动变阻器的阻值,读取电池的温度T0.(注:电池温度通过adb读取 adb shell cat /sys/class/power_supply/battery/temp) 4.通过NTC的芯片手册查找相应阻值对应的温度值T1. 5.计算|T1-T0|的差值的绝对值T2. 6.重复3-5的操作,如果满足T2<2,则认为目前NTC配置准确.
+参考FAQ: FAQ86864
+### 问题: 2342芯片FM支持的Feature？
+解决方案: 1.Supporting frequency range of 65MHz ~ 108MHz 2.Support RDS/RBDS 3.Digital stereo modulator/demodulator 4.Digital audio interface (I2S) 5.Stereo Mono blending and auto selectivity.
+参考FAQ: FAQ86870
+### 问题: 如何在代码中获取默认输入法和enabled输入法包名？
+解决方案: 可以参考下面的代码进行添加 ------------------------------------------------------------------------- String defIme=Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD); String enabledIme=Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_INPUT_METHODS);
+参考FAQ: FAQ86915
+### 问题: "ro.build.date=`date`"编译后显示中文，怎么修改成英文？
+解决方案: 我们发现这条属性 编译后的格式是:ro.build.date=2016年 06月 01日 星期三 17:44:54 CST 而通常我们所用的格式都是 ro.build.date=Tue Jun 14 11:34:53 CST 2016 造成两种格式的差异的原因是ubuntu编译代码的服务器环境,需要将服务器切换到英文,否则可能会影响CTS测试.
+参考FAQ: FAQ86916
+### 问题: 为什么安装语音数据包（Install voice data）功能被置灰？
+解决方案: 该功能位于设置-》语言和输入法-》文字转语音(TTS)输出-》设置按钮下.目前Pico引擎只支持六种语言(德文,法文,意大利文,西班牙文,美式英语,英式英语),如果当前系统已默认安装全部的六种语言,那么手动添加语言包的功能会被禁用掉,这是一个正常的现象.
+参考FAQ: FAQ86917
+### 问题: 可否让下载安装的应用在主菜单中的依次排在最后？
+解决方案: 主菜单中的应用由于没有相应的数据库,launcher每次加载时都会在代码中动态排序(如按title排序等),由于下载的应用并不知道会是哪些应用,无法调整其显示位置,且重启后launcher不会去区分是下载的应用还是预置的应用,因此无法做到下载安装的应用依次排在最后. PS:根据以上分析可以发现,预置的已知的应用是可以指定显示位置的,只需在代码中排序时做特殊处理即可. 如有需要,请参考 FAQ81867:如何指定launcher3主菜单中的应用排列顺序?
+参考FAQ: FAQ86934
+### 问题: 如何使用FONTTOOL解决乱码问题及调整字库字体大小
+解决方案: 以孟加拉语字库需增加"|"字符(0x0964), 以及加入较大字体为例: 1. 修改..\tools\DEBUG_TOOL\FONTTOOL\Bin\Bengali.ini 在其中加入想增加的UnicodeSector, 注意这边新增字符一定要按unicode排列. 2. 打开FONTTOOL, 选择Load OTF, 选择合适字体的.ttf, 若是矢量字库需打勾vector flag, 若是需要大号字体, 可以在PointSize的地方加入想要的字号 3. 按下OK之后, 确认缺漏的字符是否出现, 接著存档, 将档案覆盖至MS_MMI\source\resource\Common\FONT中对应的.lib即可.
+参考FAQ: FAQ87100
+### 问题: 如何在fastboot模式添加一条自定义命令
+解决方案: 需要在uboot中注册新的fastboot命令 在common/loader/fastboot.c中的do_fastboot中,通过调用fastboot_register来注册新的命令 fastboot_register接收两个参数,第一个为命令字符串,第二个为命令对应的处理函数的指针 比如添加 fastboot_register("test",fb_cmd_test); 之后,手机进入fastboot模式后就能支持 fastboot test 并执行fb_cmd_test函数
+参考FAQ: FAQ87197
+### 问题: 如何编译修改icu4c资源的文件？
+解决方案: 1.修改icu资源后进入到 external/icu/icu4c/source目录执行makeData.sh脚本 [即在external/icu/icu4c/source下执行 sh makeData.sh 命令(此命令会修改external/icu/icu4c/source/stubdata/icudt55l.dat文件) 2.执行完命令后 快速验证的方法为把external/icu/icu4c/source/stubdata/下icudt55l.dat的文件push到手机的system/usr/icu目录下重启手机即可验证) [命令:adb push icudt55l.dat system/usr/icu adb reboot] 3.然后再进行其他编译(如全编)操作即可
+参考FAQ: FAQ87031
+### 问题: 当手机连接计算机后，在哪里控制 手机端不自动弹 usb计算机连接界面？
+解决方案: 在packages/apps/Settings/src/com/sprd/settings/SprdUsbReceiver.java 中 当接收到 UsbManager.ACTION_USB_STATE 广播后并且usb已连接上会执行recoverFunction()方法,而recoverFunction()方法中就是弹出usb计算机连接界面 的相关代码. 如不需要 自动弹出usb计算机连接界面,注释掉该文件中recoverFunction()方法即可.
+参考FAQ: FAQ87042
+### 问题: 开启手机上的虚拟按键(导航栏)的一种简便方法
+解决方案: 1. 首先root手机 adb root adb remount 2. 把/system/build.prop文件导出 adb pull /system/build.prop 3. 修改build.prop文件,增加一行,输入qemu.hw.mainkeys=0 4. 把修改后的build.prop push回手机的system目录下 adb push C:\build.prop /system/ 5. 重启手机,导航栏就出现了.
+参考FAQ: FAQ87039
+### 问题: vbat电压与电池ocv区别
+解决方案: 电池OCV电压,即为电池的开路电压,可以简单理解为电池闲置搁置时候的电压.Vbat点电压,即为电池的闭路电压,可以理解为电池的工作电压.他们之间的关系如下: Vbat=Vocv+Icurrent*Rint 其中: Vocv:电池的OCV电压 Icurrent:电池当前的充放电电流(负值放电,正值充电) Rint:电池的内阻 当电池正常工作的过程中,由于电池内阻的存在,放电的时候,会使得电池正极的电势比实际的OCV偏低,充电的过程正好相反,电池的正极电势会随着电流方向的改变而比实际的电池OCV高.
+参考FAQ: FAQ87199
+### 问题: 为何有虚拟按键的手机，点击应用进入的时候，底部有壁纸残影？
+解决方案: 虚拟按键在Launcher界面默认是透明的,原因是Launcher中会对虚拟按钮设置透明的属性! 进入其他应用,虚拟按键界面由透明变为不透明效果,就会有场景切换的现象,即底部有壁纸残影! 可以进入开发者模式,把动画关闭后,就会发现残影效果明显减少!
+参考FAQ: FAQ87029
+### 问题: cold start/warm start/hot start performance 的差别
+解决方案: hot start 主要体现在TTFF,在正常开阔环境下,一般为1~2秒; warm start/cold start实际性能相当,在TTFF/精度方面差别都不大,开阔环境下,TTFF一般为32秒左右; hot start 首次定位的精度要稍劣于warm start/cold start cold start 定位时 Previous Position 、Time、Almanac、Ephemeris信息不存在,已经擦除 warm start 定位时 Previous Position 、Time、Almanac信息继续使用,Ephemeris信息不存在,已经擦除 hot start 定位时 Previous Position 、Time、Almanac、Ephemeris这些信息都会使用.
+参考FAQ: FAQ87059
+### 问题: GNSS系统的PRN编号
+解决方案: GPS PRN 1～32 SBAS PRN 33 ～ 51 QZSS PRN 193 ～ 197 GLONASS PRN 65 ～92 BDS PRN 151 ～ 187
+参考FAQ: FAQ87064
+### 问题: 如何配置GPS+Beidou
+解决方案: GE2 项目默认配置GPS＋GLONASS,如需要配置GPS＋BEIDOU 例如在新建的product对应的*.mk (sp9860g_1h10/sp9860g_1h10_native.mk )添加下面配置 PRODUCT_PROPERTY_OVERRIDES += ro.ge2.mode=gps_beidou
+参考FAQ: FAQ87065
+### 问题: G-sonser反应不灵敏，有时在一些界面转成横屏后不能转回正屏。
+解决方案: Gsensor实现转屏一般的情景是,手机需要在垂直面往后倾斜一定角度会转屏,但是往前倾斜不会转屏. 对于三轴的Gsensor,除了通过x轴和y轴的数据来判断往哪个方向转屏之外,还需要通过Z轴判断当前是往前倾斜还是往后倾斜. 因此,遇到这种情况应该检查一下Z轴的数据是否正常,特别需要检查一下是否由于Z轴数据方向相反引起.
+参考FAQ: FAQ87067
+### 问题: 使用GPSTest无法室内定位的问题
+解决方案: 在室内GPS信号非常弱,且卫星颗数少,完全靠GPS是无法完成定位,可以通过上集成GMS包,在网络可用的情况下,通过NLP(networkprovider)来完成室内定位.由于GPSTest 测试工具只是测试纯GPS定位,所以用GPSTest在室内无法完成定位
+参考FAQ: FAQ87069
+### 问题: wifi 空口包中ACK帧的理解
+解决方案: 抓取的数据帧如果是广播帧则不需要确认(ACK),如果是单播帧,则一般需要确认(ACK).例如,Probe帧是广播帧,所以它无对应的ACK确认帧,对Probe的回复则叫做Probe Response;注意ACK帧本身用于确认,是单播的,但是它本身却不需要再被确认了.从包中的目的MAC地址中,可以看出这个包是广播／多播帧还是单播帧.MAC第一个字节的第一个位是1,表示组播,前两位是1表示广播,第一个字节第一个位是0表示单播.
+参考FAQ: FAQ87119
+### 问题: SC7731G平台如何修改NV以提高WCMDA传导模式下的throughput
+解决方案: 具体修改如下: WCDMA_Download_params\W_download_params\trx_path_config=0x4000
+参考FAQ: FAQ87158
+### 问题: 在展讯平台，电流分解对于整机功耗优化的意义？
+解决方案: 电流分解主要是为了得到每路power domain 的耗电,依此来分析每路的耗电是否合理并进行优化,从而达到对整机功耗优化的目的.
+参考FAQ: FAQ87176
+### 问题: Android 6.0如何打开电量百分比显示
+解决方案: 为了调试电量显示经常需要将电量百分比显示在状态栏中.android6.0设置电池选项已经没有显示百分比这栏了,如果需要显示百分比需要如下操作: 第一步:下拉状态栏菜单 第二步:长按右上角设置图标3S以上松开后会弹出对话框"恭喜,已经打开系统界面调谐器" 第三步:打开设置、选择系统界面调谐器 第四步:选择嵌入式显示电池电量百分比 以上操作完成后: 放电界面即显示百分比数字 充电状态下在锁屏界面可以显示百分比数字
+参考FAQ: FAQ87224
+### 问题: SC7701平台的LCM分辨率支持到多少？
+解决方案: SC7701平台的LCM最大支持HVGA的屏,HVGA的分辨率是480×320,并且向下兼容支持QVGA等.
+参考FAQ: FAQ87225
+### 问题: 通过USSD查询话费返回值
+解决方案: 通过USSD业务查询话费,Ril log中会看到 AT< +CUSD: X 消息打印,具体示例如下: 06-04 12:49:06.327 197 886 D use-Rlog/RLOG-AT: [0] Channel1: AT> AT+CUSD=1,"2a31323423",15 06-04 12:49:20.320 197 267 D use-Rlog/RLOG-AT: [0] Channel0: AT< +CUSD: 2 AT< +CUSD返回值结果X代表含义: 0: no further user action required 1: further user action required 2: USSD terminated by network 4: Operation not supported
+参考FAQ: FAQ87244
+### 问题: android5.1上GMS开机向导中wifi界面弹框提示如何控制？
+解决方案: GMS开机向导中wifi界面弹框是调用的package\Settings\src\com\android\settings\wifi\WifiSetupActivity.java中的方法 onNavigateNext来控制界面弹框.弹框界面如下图:
+参考FAQ: FAQ87296
+### 问题: wifi休眠策略的功能是什么？如何验证？
+解决方案: wifi休眠策略的功能是指:当wifi连接状态下,灭屏进入休眠时,可以选择不同的休眠策略. 1. 始终 --- 一直保持wifi连接状态 2. 仅限充电时 --- 当没有插入usb线时,如果灭屏之前处于连接状态,那么大概在15+2 min之后,会断开和AP连接的连接 3. 永不 --- 如果灭屏之前处于连接状态,15+2 min之后,会断开和AP之间的连接.(15min:灭屏15min后,发起stop driver,DEFAULT_IDLE_MS; 2min:wifi状态机收到stop driver消息后,延时2min处理config_wifi_driver_stop_delay) 验证方法最好使用ping ip的方式,这样测试结果会比较确切.
+参考FAQ: FAQ87298
+### 问题: settings.db 在androd 6.0上的变化？
+解决方案: Android L (5.1)及以前的版本 Settings参数保存在 /data/data/com.android.providers.settings/databases/settings.db里,里面有三个表global, system, secure. Android M (6.0)开始出现变化 不同用户放不同的路径下,如果没有创建新用户,则在/data/system/users/0下 settings_global.xml, settings_system.xml, settings_secure.xml
+参考FAQ: FAQ87299
+### 问题: cer后缀证书在wifi证书安装菜单中安装后，会在什么地方用到？
+解决方案: wifi中使用到的cer后缀证书,一般都是由wapi cer加密方式使用.用户可以在连接wapi cer加密方式热点时,从弹出框中找到选择证书的选项,如下图示:
+参考FAQ: FAQ87300
+### 问题: 如何缩减相机拍照的档案大小
+解决方案: 照片大小与拍摄的尺寸以及景色都是有关系的, 画面越复杂或是尺寸越大的照片就会越大, 若是将画面越复杂的照片硬是压缩是需要牺牲压缩品质, 会影响画面呈现的. 可以先将拍照的Quality调低看能不能符合需求. 除了在Camera->Settings->Quality有三种级别可以选之外, 在代码中 SnapShot@mmidc_flow.c 可以设置snapshot_param.enc_quality_level, 这里我们提供了DC_PHOTO_QUALITY_0~DCPHOTO_QUALITY_9可以设置, 后面数字越高表示Quality越大, 反之亦同. 目前预设值为: Low: DC_PHOTO_QUALITY_4 Normal: DC_PHOTO_QUALITY_6 High: DC_PHOTO_QUALITY_8
+参考FAQ: FAQ87302
+### 问题: 拔电池对log是否有影响
+解决方案: 拔电池操作会导致系统突然掉电,slog不能及时刷新log buffer,导致掉电前的一段log丢失.所以一般情况下不能通过拔电池的方式来抓取log,即便系统发生定屏无响应的情况下也可以长按power key或组合键让手机进入sysdump来获取log,而不是拔电池后将T卡上的slog拷出
+参考FAQ: FAQ87308
+### 问题: 可以用不同的NVEDITOR版本来修改NV吗？
+解决方案: 不可以,必须使用modem版本对应的NVEDITOR版本修改NV.
+参考FAQ: FAQ87315
+### 问题: 设置中关闭“自动旋转”选项，为什么状态栏的自动旋转图标消失？
+解决方案: 这个是google原生设计,在辅助功能的自动旋转选项打开的情况下,下拉状态栏中显示自动旋转快捷开关;关闭自动旋转选项,下拉状态栏的自动旋转快捷开关消失. 另外当辅助功能的自动旋转选项打开时,下拉状态栏中显示自动旋转快捷开关.此时点击下拉状态栏中的自动旋转按钮,按钮变灰,同时,设置->辅助功能中的自动旋转选项开关关闭. AndroidL和AndroidM上均是如此设计的.
+参考FAQ: FAQ87413
+### 问题: 如何确认版本是否开启了默认加密功能
+解决方案: 可以查看设备根目录下的fstab.*** 文件(也可以在编译后的out目录中的system/root目录下找到) 以7731手机为例 cat fstab.sc7731c 文件内容中 /dev/block/platform/sdio_emmc/by-name/userdata /data ext4 noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc,discard wait,encryptable=footer,check encryptable=footer 这项,如果这个是forceencrypt则表示默认加密.如果是encryptable则不是默认加密.
+参考FAQ: FAQ87321
+### 问题: slog时间戳刚开机时发生跳变是什么原因，是否表示出现了log丢失
+解决方案: 时间跳变通常是开机过程中联网后更新了系统时间导致的,并不是log丢失,可以看kernel.log 里的自然时间, 如下例子中[]中,10.141784表示开机10.141784s的时间点,这个时候,联网时间更新, 前面的时间戳改变,由01-01 08:00:55.952变成了06-08 11:14:59.204, 但kenrel记录的开机时间没有改变,从10.141784到10.143066,所以log仍然是连续的. 例子 ============ 16-06-08 11:14:59 ============== 01-01 08:00:55.952 <6>[ 10.141784] c0 !! we gonna unplug cpu1 !! 06-08 11:14:59.204 <5>[ 10.143066] c0 CPU1: shutdown
+参考FAQ: FAQ87322
+### 问题: 如何修改设置-关于手机-内核版本中只显示内核版本号，其他信息均隐藏掉？
+解决方案: 请定位至packages/apps/Settings/src/com/android/settings/DeviceInfoSettings.java: 按如下修改: public static String formatKernelVersion(String rawKernelVersion) { ......; + /* return m.group(1) + "\n" + // 3.0.31-g6fb96c9 m.group(2) + " " + m.group(3) + "\n" + // x@y.com #1 m.group(4); // Thu Jun 28 11:02:39 PDT 2012 + */ + return m.group(1); }
+参考FAQ: FAQ87336
+### 问题: Play movies 应用使用过程中消失
+解决方案: 原因: 这个是google的设计. google play movies没有在中国开通,所以会自动停用. 消失后可以在设置->应用->已停用 的列表中找到. 虽然连接了翻墙网络,但还插入了国内的sim卡.gms会通过sim卡识别出来是中国的. 所以这个不是bug. 如果想不让他消失,就不要插SIM卡,不要开定位、直接连接到翻墙网络,就可以存在了.
+参考FAQ: FAQ87376
+### 问题: 如何用adb命令读取手机系统属性的相关信息
+解决方案: 手机设备连接PC之后,运行adb shell getprop 即可打印手机系统属性的相关信息. 也可单项读取.比如读取手机serial number: adb shell getprop ro.serialno 运行后,显示手机序列号.
+参考FAQ: FAQ87379
+### 问题: AndroidM关于短信设置项的解释
+解决方案: androidM平台跟androidL相比,差异点如下: 在设置SimManager里面关于SMS的设置缺少每次都询问的选择项,这个主要是原生的AndroidM修改了此项内容的流程,在发送时,长按发送键,就可以进行选卡的操作,而不是之前的只有选定每次都询问,才可以进行选卡的操作,在功能上更加强大.在设定具体某一张卡的情况下,也可以进行选卡操作. 关于SIM功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ87385
+### 问题: 7701 GPIO/Camera的默认工作电压?
+解决方案: 7701平台Camera和GPIO的默认工作电压是2.8V,在设计相关电路时需注意.
+参考FAQ: FAQ87396
+### 问题: 输入错误的PUK码后，剩余输入次数没有减少，这是为什么？
+解决方案: PUK码的最短长度是8,google原生设计如果输入的长度小于8,则不会消耗puk的剩余次数,因此剩余次数不发生变化. 另外,当输入长度不满足最低要求的时候,也是会有提示的.
+参考FAQ: FAQ87391
+### 问题: 天线检测的原理及天线检测的目的？
+解决方案: 天线检测的原理: 天线检测网络连到GPIO上,如果没有接天线,GPIO检查到的是高电平;如果接了天线,由于天线接地,GPIO检测到的电平为0. 天线检测的目的: 手机AP端检测到主天线后进行功率回退,降低手机的SAR值.
+参考FAQ: FAQ87404
+### 问题: headmic_in的作用及不同状态下的电压值？
+解决方案: headmic_in 中断响应输入,比较器判断三个状态,识别耳机插入和一个按键. 无耳机:0~0.36V(VIO=2.82V) or 0~0.14V(VIO=1.81V) 耳机插入:0.37~2.44V(VIO=2.82V) or 0.15~1.6V(VIO=1.81V) 按键按下:2.45~3.3V(VIO=2.82V) or 1.61~2.2V(VIO=1.81V)
+参考FAQ: FAQ87427
+### 问题: 7701 LCD是否可以用SPI的接口模式？
+解决方案: 1. 展讯并没有成熟的SPI LCD支持软硬件方案,如果使用需要仔细评估; 2.有客户调试过黑白屏的SPI LCD. 3. 7701平台一般使用MCU接口的LCD.
+参考FAQ: FAQ87428
+### 问题: 如何修改wifi连接失败后自动重连次数？
+解决方案: 当 WiFi 连接热点鉴权失败后,wifi会进行几次自动重连. 这个自动重连的次数,是可以自己定制的,其默认值是4 默认情况下,连接失败后,又重试4次,共连接失败5次之后,连接其他热点. config_wifi_framework_max_auth_errors_to_blacklist 用来控制重连次数 frameworks/base/core/res/res/values/config.xml 文件中: <integer translatable="false" name="config_wifi_framework_max_auth_errors_to_blacklist">4</integer> 如 config_wifi_framework_max_auth_errors_to_blacklist 的值由4改为1 , 则连接失败后,再重试1次,共连接失败2次之后,再连接其他热点.
+参考FAQ: FAQ87483
+### 问题: wifi中如何设置特定语言文字大小?
+解决方案: wifi中如何设置特定语言文字大小 一些字符串的多语翻译中,有些特定国家的语言下,会有个别字符串过长,导致按钮不能显示完全的情况 如果字符相差不多,可以采用调小按钮字体大小的方法,使字符串显示完整. 举例: 如,当语言为 ru 时,设置 buttonRename 按钮文字尺寸为7. String curLanguage = getResources().getConfiguration().locale.getLanguage(); if(curLanguage.equals("ru") ){ // 判断语言为 ru buttonRename.setTextSize(7); // 设置 buttonRename 按钮文字的尺寸为7 } 这里7只是举例,实际工作中可以跟据显示情况调整其大小.
+参考FAQ: FAQ87487
+### 问题: user版本如何dump CP2的 mem
+解决方案: user版本设计机制如下,当出现CP2 assert时,会自动将CP2 reset了. 从而不dump mem 如果分析问题需要,可以进入工程模式: *#*#83781#*#* -》para set -》 CP2 Assert -》CP2 Reset 此项user版本默认打开的,将其关闭即可. 关闭后出现assert时,只要开了的CP2 log,就会自动dump mem了.
+参考FAQ: FAQ87489
+### 问题: 如何使用adb命令获取2351的CP2版本信息
+解决方案: 使用2351芯片时,用adb发送CP2info命令到AT命令接口/dev/spipe_wcn5,芯片就能返回其版本信息,然后使用cat命令查看. 具体操作如下: adb root adb remount adb shell echo "at+spatgetcp2info\r" > /dev/spipe_wcn5 cat /dev/spipe_wcn5 返回的版本信息示例: Platform Version: MOCORTM_TShark_MPII_W15.51_Debug Project Version: CP2_WCN_14D_W15.51.3_Release HW Version: sc8830g_modem 12-16-2015 14:46:46
+参考FAQ: FAQ87535
+### 问题: marlin芯片的如何手动让CP2 assert
+解决方案: 1.*#*#83781#*#* -》TelePHony -》 Para set -》CP2 assert -》 manual CP2 assert 点击即可将CP2 assert 2. adb命令方式,需要userdebug版本 echo "at+spatassert=1\r" > /proc/mdbg/assert
+参考FAQ: FAQ87497
+### 问题: CFT校准时TX出现无功率输出怎么办？
+解决方案: 请做如下确认: 1, 确认RF TX通路是否有漏贴或误贴器件 2, 确认RF连接器的方向及焊接是否正确 3, NV中确认RF 射频逻辑是否正确
+参考FAQ: FAQ87541
+### 问题: android 6.0蓝牙开启命令发送控制
+解决方案: 在system/bt/device/src/controller.c文件start_up函数中处理蓝牙开启时与cp的交互命令,如果需要增加交互命令可以在此进行修改
+参考FAQ: FAQ87540
+### 问题: marlin wifi eut测试发射功率输入值与输出值对应关系
+解决方案: 在marlin目前平台的方案中,设置wifi的非信令发射功率是通过如下命令实现: iwnpi wlan0 set_tx_power value 11b模式下,value >=17 ,设置的tx power为最大;设置value = 16,tx power实际输出=最大功率-1 11gn模式下,value>=15, 设置的tx power为最大;设置value = 14,tx power实际输出=最大功率-1 所以11b模式下,设置成17以上的任何值,都是手机的最大功率.如果想降低2db,就设置成15即可 同理,g和n模式,设置成15及以上值时,输出的功率都是最大值.如果想降低2db,就设置成13即可
+参考FAQ: FAQ87568
+### 问题: 展讯平台wifi的MCC支持情况
+解决方案: 首先MCC是multi-channel concurrency, 即多信道并发.在wifi MCC即wifi的sta工作在A信道上,而P2P工作在B信道上.这也就是支持MCC了. 展讯平台目前2351和marlin芯片均不支持MCC. marlin2 芯片是支持MCC的.
+参考FAQ: FAQ87583
+### 问题: SC2342B芯片支持WIFI P2P mode吗？
+解决方案: 支持.
+参考FAQ: FAQ101356
+### 问题: AndroidM如何配置暗码控制SIMLOCK解锁界面？
+解决方案: 首先需要打开位于当前product文件下的device.mk里面的宏开关,重新编译版本即可,具体如下所示: ro.simlock.unlock.autoshow=0 ro.simlock.unlock.bynv=0 ro.simlock.onekey.lock=0 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ87389
+### 问题: AndroidM如何开启在不插卡的条件下，暗码控制SIMLOCK解锁界面的功能？
+解决方案: 首先需要打开位于当前product文件下的device.mk里面的宏开关,重新编译版本即可,具体如下所示: ro.simlock.unlock.autoshow=0 ro.simlock.unlock.bynv=1 ro.simlock.onekey.lock=0 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ87599
+### 问题: AndroidM如何配置实现SIMLOCK一键加解锁功能？
+解决方案: 首先需要打开位于当前product文件下的device.mk里面的宏开关,重新编译版本即可,具体如下所示: ro.simlock.unlock.autoshow=0 ro.simlock.unlock.bynv=0 ro.simlock.onekey.lock=1 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ87600
+### 问题: Android6.0平台通过蓝牙分享多张图片时会弹出显示"蓝牙"提示语的提示框是否正常
+解决方案: 1).此问题属于正常现象; 2)."提示框"窗体显示的原因: (1) 在OPP进行传输文件前,会先打开所要传输的文件获取文件信息,这个小窗体相当于一个过渡界面.当需要传输/打开的文件较多时,加载的时间较长,所以会显示的更明显; (2) 这个机制是Android原生的机制,使用原生的Android样机同样出现, 所以这并不是一个问题.
+参考FAQ: FAQ87661
+### 问题: Google keyboard与原生android keyboard(AOSP)输入法的区别？
+解决方案: 
+参考FAQ: FAQ87680,含图片
+### 问题: android 6.0 ini文件修改路径
+解决方案: 6.0的ini文件路径为: vendor/sprd/open-source/res/connectivity/marlin/工程目录/ 如果没有工程目录使用默认的default
+参考FAQ: FAQ87682
+### 问题: android 6.0蓝牙传输速率较低如何改善
+解决方案: system/bt/include/bt_target.h中PORT_RX_BUF_HIGH_WM宏定义是设置接收队列最大等待数,这个值越大一次可以接收的数据包越多,但过大会削弱流控的作用,目前展讯默认值为34.
+参考FAQ: FAQ87685
+### 问题: 连接蓝牙键盘后出现Physical keyboard选项，如何修改各语言物理键盘layout？
+解决方案: 物理键盘布局.kcm文件保存在framework/base/packages/InputDevice/res/raw目录下,如下图所示(以Android6.0中内容为例) 在每个布局文件内按键都是与物理键盘按键一一对应定义的,按需求修改即可. 例如,keyboard_layout_arabic.kcm中数字1定义如下所示. key 1 { label: '1' base: '\u0661' shift: '!' capslock: '1' } PS:如果只是想切换其他语言键盘则可直接通过Physical keyboard 下出现的Logitech Tablet Keyboard GEN(连接键盘品牌不同名称也会不同)àSET UP KEYBOARD LAYOUTS选择需要的语言键盘即可.
+参考FAQ: FAQ87705
+### 问题: 如何将蓝牙播放的音乐保存到文件中
+解决方案: system/bt/audio_a2dp_hw/audio_a2dp_hw.c文件中 out_write函数中将参数buffer数据写入创建的文件即可.
+参考FAQ: FAQ87712
+### 问题: 连接蓝牙键盘后settings->langauge&input->current keybaord中出现Hardware Show input method 作用？
+解决方案: 控制点击输入框后当前默认输入法apk软键盘是否显示,默认状态为显示.
+参考FAQ: FAQ87737
+### 问题: cp2 assert必须提供哪些log
+解决方案: 首先要保证android log和协议栈log,然后还要保证提供cp2 的mem dump log,log名称为0-cp_wcn-时间.log,以便cp2同事通过工具进行分析.
+参考FAQ: FAQ87740
+### 问题: 如何删除下拉状态栏上的4G图标
+解决方案: 下拉状态栏之后可以看到中间界面显示有4G图标,要想删除这个图标按照如下方法修改: 修改文件:Config.xml (frameworks\base\packages\systemui\res\values) 找到quick_settings_tiles_default字符串: <!-- The default tiles to display in QuickSettings --> <string name="quick_settings_tiles_default" translatable="false"> wifi,bt,data,inversion,airplane,lte,rotation,flashlight,location,cast,hotspot,audioprofile </string> 如字符串删除lte即可
+参考FAQ: FAQ87769
+### 问题: 蓝牙BLE中Notifications的含义？
+解决方案: 蓝牙BLE通过Notifications将Server端数据发送给Client端,BT协议的4.10.1对Notifications功能进行了详细的说明:
+参考FAQ: FAQ87786
+### 问题: 蓝牙BLE中MD的含义？
+解决方案: 蓝牙BLE中可以通过PDU中MD bit来表示MD功能,表示会发送更多数据.该功能在协议中设定为可选项. 具体内容如下:
+参考FAQ: FAQ87788
+### 问题: SC2342(Marlin)是否支持蓝牙BLE MD（MoreData）功能？
+解决方案: SC2342(Marlin)不支持蓝牙BLE MD(MoreData)功能
+参考FAQ: FAQ87789
+### 问题: 蓝牙兼容性问题调试方法
+解决方案: 蓝牙兼容性问题,一般是特定场景下在特殊的设备上发现的问题. 调试方法最主要有两点: 1.对比 可以使用不同设备或者不同手机,验证在相同场景下的问题情况,找到可行的那款设备/手机. 再通过可行与失败的Log进行对比,最终找到Rootcause. 2.猜测 兼容性问题报出的问题,一般是符合协议标准的,但特殊性还是各种各样, 那这些特殊的原因可能在于特殊的参数、状态或者事件. 推荐的解决方法是大胆猜测,小心求证. 猜测一切可疑性,通过做一些实验或改动来验证.最终找到Rootcause.
+参考FAQ: FAQ87797
+### 问题: Wi-Fi Direct中的GO 和GC分别指什么？
+解决方案: Wi-Fi Direct是一种点对点连接技术,它可以在两台station之间直接建立tcp/ip链接,并不需要AP(Access Point的缩写即无线访问接入点)的参与;其中一台station会起到传统意义上的AP的作用,称为Group Owner(GO),另外一台station则称为Group Client(GC),像连接AP一样连接到GO.GO和GC不仅可以是一对一,也可以是一对多;比如,一台GO可以同时连接着多台GC.
+参考FAQ: FAQ87801
+### 问题: 为什么在打开数据库时，有时会报“QLiteConnectionPool: The connection pool for database 'xxx.db' has been unable to grant a connection to thread 890 (Binder_1) with flags 0x2 for 30.000002 seconds”错误
+解决方案: 这是因为当前需要打开的数据库xxx.db,已经达到了同时允许打开的上限了.所以sqlite会将当前的打开请求挂起等待30秒,等待正在使用该数据库的其他链接关闭.如果30秒后,没有其他链接释放,那么就会报这个错误. 修改这类问题,一方面需要检查什么应用请求在同时打开使用这个数据库,并且是否一定需要长时间不关闭.另一方面,也可以考虑提高允许同时打开的上限.这个值定义在frameworks/base/core/res/res/values/config.xml中的db_connection_pool_size 但一般不建议扩大这个值.
+参考FAQ: FAQ87826
+### 问题: 如何将.class jar包转换成 .dex jar包？
+解决方案: 执行如下dx命令: sprdroid5.1_tshark_phase2_15b$ dx --dex --output=ScanerAPISDK.jar(生成文件) ~/ScanerAPISDK.jar(源文件)
+参考FAQ: FAQ87856
+### 问题: 第三方浏览器应用是否能配置使用平台默认浏览器的UserAgent？
+解决方案: 第三方浏览器有两种实现方式. 一、浏览器使用自己的内核与平台的浏览器内核无关,这样的第三方浏览器平台是无法修改UserAgent的. 二、第三方浏览器使用了平台提供的浏览器内核,由于不能改动第三方代码因此就需要在浏览器内核中修改. 比如Opera Mini浏览器用的不是平台的Webkit内核,所以无法修改UserAgent.
+参考FAQ: FAQ87895
+### 问题: 如何新增矢量大字号字体？
+解决方案: 由于目前展讯代码只支持到最大64号字体,更大字号需要自行新增 1. 在Cafdc.h 当中新增所需的大字号字体,如新增一个96号字体 CAF_FONT_64, ++ CAF_FONT_96 = 96, CAF_MAX_FONT_NUM } CAF_FONT_TYPE_E; 2. 矢量字体显示至少需要16k 的缓冲区,目前展讯最大能显示64号字体 如果需要显示96号或128号字体,需要按比例条大缓冲区 96号推荐 24k , 128号推荐32k , 工具端也需要做相应的修改 在mmi_resource.c 当中修改显示缓冲 -- #define VECTOR_BUFFER_SIZE 16800 ++ #define VECTOR_BUFFER_SIZE 33600 3. 添加以上部分代码后,即可在mmi_font.h 当中增加字号定义 如: ++ #define SONF_FONT_96 CAF_FONT_96 至此,添加大字号字体完成,可针对需求使用此新增的字号
+参考FAQ: FAQ87894
+### 问题: 为什么4.4之后的android版本push apk到安装目录后需要重启才会安装？
+解决方案: 4.4之后的android版本上,pms去掉了对安装目录的文件监控,导致push apk之后pms不会有任何安装apk的动作.而之前的android版本pms对各个安装目录都有用FileObserver监控,当有文件增加时会重新扫描变动的apk文件.
+参考FAQ: FAQ87897
+### 问题: 调试native进程时，如何使用debuggerd获取进程调用栈信息？
+解决方案: debuggerd是一个可执行文件,位于/system/bin/下; 通过adb shell 进入命令行,输入下面命令: $./system/bin/debuggerd -b pid 可以打印进程的native调用栈 $./system/bin/debuggerd pid 可以输出进程的tombstone 用上面方法可以查看想要调试的native进程
+参考FAQ: FAQ87922
+### 问题: 展讯PI/SI仿真中PI和SI是什么含义并且仿真的重要性是什么？
+解决方案: SI(信号完整性)信号经过通道传输后在接收端可以完整地复现; 我们听过许多信号完整性的噪声问题,比如:反射,串扰,开关噪声等. PI(电源完整性)当大量芯片内的电路输出级同时动作时,会产生较大的瞬间电流,这时由于供电线路上电阻电感的影响,电源线上和地线上电压就会波动和变化,良好的电源分配网络设计是电源完整性的保证. 事实上,PI和SI是紧密联系在一起的,从广义上说,PI是属于SI研究范畴之内的,信号完整性必须建立在可靠的电源完整性基础之上.
+参考FAQ: FAQ87949
+### 问题: 展讯平台PI/SI的在哪三方面会有风险并且解决方案是什么？
+解决方案: 在时序,噪声和电磁干扰三方面有风险; 时序(setup time,hold time) 风险:DDR scan,压力测试,眼宽宽度不够,串扰太大可能出现bit反转等; 解决方案:改版,软件调试等. 噪声 风险:电源纹波大,开机问题等; 解决方案:升压,改版等. 电磁干扰(EMI) 风险:参考地的破坏,会导致相邻层之间的干扰; 解决方案:屏蔽;改版等.
+参考FAQ: FAQ87955
+### 问题: 如何理解int和java中 Integer的区别
+解决方案: 
+参考FAQ: FAQ87957
+### 问题: ISP2.0调试lnc时如何选择正确的grid
+解决方案: 从调试效果和硬件要求两方面考虑,sensor输出尺寸应按照如下对应关系设置lnc的grid size: sensor size size detail grid size vga 640*480 16*16 720p 1280*720 16*16 1.3M 1280*960 32*32 1080p 1920*1080 32*32 2M 1600*1200 32*32 3M 2048*1536 32*32 5M 2596*1944 64*64 8M 3264*2448 64*64 or 96*96 13M及以上(slice) 4224*3168 64*64 or 96*96
+参考FAQ: FAQ87983
+### 问题: 如何将Activity的标题隐藏
+解决方案: 在该Activity的onCreate()中调用requestWindowFeature()方法,同时传递Window.FEATURE_NO_TITLE常量. 示例: @Override public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); // ---hides the title bar--- requestWindowFeature(Window.FEATURE_NO_TITLE); setContentView(R.layout.main); }
+参考FAQ: FAQ88009
+### 问题: 按键灯，闪光灯，背光灯，信号灯等驱动代码在哪里？
+解决方案: 按键灯:kernel/drivers/leds/leds-sprd-kpled-2723.c 闪光灯(和手电筒共用此code):kernel/drivers/media/sprd_dcam/flash/flash_parallel_connect_bg.c 背光灯:kernel/drivers/video/backlight/sprd_pwm_bl.c 信号灯:kernel/drivers/leds/leds-sprd-bltc-rgb.c
+参考FAQ: FAQ89314
+### 问题: 为什么移动SIM卡的本机号码无法读取
+解决方案: 本机号码是从SIM卡的EF_MSISDN文件读取的,是否显示本机号码取决于运营商是否有在SIM卡里写本机号码,该文件为可选项. 另外,如果号码没有读取出来,我们通过SIM卡管理来保存号码,实际上并没有写入EF_MSISDN文件中,而是保存在SharePreference里面,因此再恢复出厂也还是无法读取. 必须要确保SIM卡的EF_MSISDN文件中有信息,才能保证本机号码的正常读取. 关于本机号码,如果碰到任何问题也欢迎随时联系展讯FAE获取更多支持和帮助.
+参考FAQ: FAQ89328
+### 问题: 浏览器是否有javascript脚本过滤功能
+解决方案: 浏览器设置中,"高级"〉"启用javascript" 是关闭/打开javascript功能的选项. 默认设置javascript功能是打开的.
+参考FAQ: FAQ88066
+### 问题: 视频悬浮播放与正常全屏播放切换时为什么会跳帧？
+解决方案: 悬浮播放和全屏播放之间的切换其实是seek操作,seek到之前播放的那个时间点进行播放,seek操作是按照视频源的关键帧进行定位播放的,即跳转到离之前播放时间点最近的那个关键帧位置去播放,如果关键帧不均匀,则seek操作时就不会跳到之前的准确时间点进行播放,就可能出现跳帧现象,该显示属于正常现象.
+参考FAQ: FAQ88079
+### 问题: 自带视频播放器的trim视频（视频剪辑）功能是否可以正常使用？
+解决方案: 自带视频播放器的视频裁剪功能是android 原生功能,具有不完善之处,其修改涉及底层裁剪库,不建议客户使用,请知悉.
+参考FAQ: FAQ88080
+### 问题: 从文件管理中使用自带视频播放器播放视频，返回后再次播放时为什么不会提示“继续播放还是重新播放”？
+解决方案: 从文件管理器中使用自带的视频播放器播放视频文件,按返回后再次播放该视频时,不会提示"重新播放"还是"继续播放"属于正常现象,只有从视频播放器进入播放视频,按照以上操作步骤时才提示"重新播放"还是"继续播放",因为弹出以上提示信息是根据mBookMarkPath来提示的,而mBookMarkPath是和播放列表mPlayList.size()有关,只有从视频播放器进入时才有播放列表mPlayList.size(),平台设计如此,请知悉.
+参考FAQ: FAQ88082
+### 问题: 搜索应用中，搜索“视频”应用进行播放视频，按HOME键退出后，再从launch界面打开视频播放器，为什么不会播放之前的视频？
+解决方案: 从搜索中启动视频播放器和从launch界面启动视频播放器是属于不同的task,因为视频播放器有很多地方调用,所以播放视频是多实例的.在搜索界面进入视频播放器播放视频时,用户按HOME键退出,此时movieactivity并没有销毁,当用户点击launch界面的视频播放器时,和搜索应用相比,此时属于不同的进入方式,launch界面进入的是视频列表界面,此时的视频播放器并不知道搜索应用之前播放过视频,只有当用户按返回键退出视频播放列表后,之前的movieactivity才会显示出来,即按返回键后才会播放之前搜索里面播放的视频,按同样的测试步骤测试Google 相册,现象也是如此,所以此测试现象属于正常现象.
+参考FAQ: FAQ88104
+### 问题: 登录测试网站/脚本语言测试用例 - JavaScript/DOM-TC19，点击链接不能打开百度，这是什么原因？
+解决方案: [测试步骤] 1、打开测试网址:http://218.206.177.209:8080/waptest/browser15 2、进入JavaScript/DOM-TC19-百度超长链接 [测试结果] 提示找不到网页 [原因分析] 在PC上访问这个测试网页,也会失败,同时也ping不到www.hugeurl.com.通过分析cap包可以发现手机已正常发起访问超长链接,但是由于网页无效,因此提示找不到网页是正常现象. 通过进一步了解,CMCC入库中的宽带互联网和彩信测试网址,由于CMCC内部原因,有部分无法登陆是正常的,因此自测试时如果出现访问失败可以暂时忽略.
+参考FAQ: FAQ88124
+### 问题: 工程测试命令下使用外置IC充电无法读取充电电流
+解决方案: 充电电流读取是通过ISENSE和VBATSENSE两组ADC的压差与充电检测电阻的比值计算出来的,由于参考设计使用外置IC不再需要ISENSE,因此这个点不再与VBATSENSE共同使用,因此没有办法通过两点压差计算充电电流.
+参考FAQ: FAQ88453
+### 问题: VCHG电压值为什么和充电器输出电压值不同
+解决方案: VCHG点电压值一般来说会比充电器输出电压值略低,原因如下: 1、充电过程中由于线上阻抗和充电电流的共同作用导致充电器输出点到手机端有压降 2、VCHG与VBUS连接一个100欧姆电阻,并且有2ma左右的电流导致VCHG读取点和VBUS有200mv左右的压差
+参考FAQ: FAQ88454
+### 问题: 过压保护电压值的误差范围
+解决方案: 我们通常会在DTS中配置过压保护的电压值:ovp-stop = <6500>; 这个设置值存在误差,芯片自身检测充电器过压保护的误差在5%以内,也就是如果设置6500mv过压保护,会有上下偏移最多325mv,当然这是极限情况,一般如果发现测试过压保护中断没有触发可以尝试提高输出电压值测试.
+参考FAQ: FAQ88455
+### 问题: 为什么美式和英式英语下新建联系人姓名仅为Dr与Mr等特殊专用名词保存后，名字显示为号码?
+解决方案: Dr与Mr等特殊专用名词在美式和英式英语中一般用做姓名前缀表示医生、先生等特殊含义,这些特殊专用名词不作为名字处理,为google原生设计,符合西方的使用习惯故一般建议不作修改,其特殊专用名词配置文件在frameworks\base\core\res\res\values-en-rUS\donottranslate-names.xml中.
+参考FAQ: FAQ88709
+### 问题: 如何利用Mlog抓Camera RAW图
+解决方案: 1. 安装Android对应版本的Mlog APK,手机显示的图标如下. 2. 打开Mlog APK,进入 MM Log Settings 界面,点击第二项 [persist.sys.camera.raw.mode],弹出 set 窗口,选择[RAW].然后退出APK. 3. 进入Camera APP,拍照时会同时保存一张RAW图和一张JPG图片.使用adb命令,进入手机目录:/data/misc/media,以mipi_raw扩展名结尾的文件就是刚刚抓到的Raw图.
+参考FAQ: FAQ88332

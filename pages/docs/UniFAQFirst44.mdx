@@ -1,0 +1,348 @@
+### 问题: Android6.0 FM应用无频道设置、编辑功能的问题
+解决方案: Android6.0版本预制的是Google Android 原生的FM应用, 与SPRD Android5.1有所不同.6.0 版本的频道列表界面可进行搜台操作,并对频道进行收藏.而频道收藏后,可在 FM 应用的主界面下方的收藏区域对频道进行编辑操作,主要是对频道名称的修改.因此这个属于Android 原生设计.
+参考FAQ: FAQ83457
+### 问题: Android6.0 中为何第一次进FM应用没有自动弹出搜索提示框的问题?
+解决方案: 目前Android6.0版本预制的是Google Android 原生的FM应用. 首次打开FM的时候,由FM应用设置的默认频道 DEFAULT_STATION(1000)进行向下搜索,如果搜索到有效台后切换到此台并进行播放, 此为Android 原生设计. 具体请参见: packages\apps\FMRadio\src\com\android\fmradio\FmService.java => private void handlePowerUp() 接口处理.
+参考FAQ: FAQ83456
+### 问题: 如何判断视频不支持原因并修改相关提示
+解决方案: 在播放本地文件/网路文件时会利用CheckSupportedTypeFromMediaInfo()@mmivp_fsm.c取得该视频支持状况, 此函式会返回VP_SUPPORTED_STATUS_TYPE_E, 这边定义了视频播放器对视频文件支持的程度类型. typedef enum { VP_SUPPORTED_AUDIO_ONLY, //仅支持音频解码播放 VP_SUPPORTED_VIDEO_ONLY, //仅支持图像解码播放 VP_SUPPORTED_BOTH, //可正常播放,图像解码和音频解码均支持 VP_SUPPORTED_NEITHER, //无法播放,图像解码和音频解码均不支持 VP_SUPPORTED_OVER_SCALED, //片源规格(最大分辨率)超出平台的支持范围 VP_SUPPORTED_STATUS_TYPE_MAX //系统保留,不可使用 } VP_SUPPORTED_STATUS_TYPE_E; 接著根据返回的status做出不同的提示即可
+参考FAQ: FAQ83438
+### 问题: 如何从机器中读取射频校准参数，然后把这个参数写入另外一台机器？
+解决方案: 用NVEditor加载相应的工程,然后读出校准过的手机参数,另存为新的nvitem.bin即可用来下载. 注意: 此方法仅适用于产线FactoryDownload刚下载完并校准后用来获取校准参数然后再通过FactoryDownload或者ResearchDownload选择不备份NV的方式下载到其它机器(因为ResearchDownload或UpgradeDownload工具默认会备份NV). 如果在写入IMEI等操作后则不适合如此操作,否则所有机器的IMEI等信息都会相同.
+参考FAQ: FAQ83477
+### 问题: 配置APN是否可以编辑
+解决方案: 如果某个APN的IsPreload属性配置成了1,则表示不可以编辑,如果没有配置或者配置为0,则可编辑. 因此,只需要修改APN的配置文件即可,需求是可编辑的,请配置IsPreload为0或者不要配置该项.需求是不可编辑的,配置IsPreload为1即可.
+参考FAQ: FAQ83510
+### 问题: 如何配置任意卡槽为解锁卡槽的锁卡逻辑？
+解决方案: 双卡平台,双卡槽之间的锁卡逻辑具有依赖关系,即若任意卡槽插入合法卡,另一卡槽具有被解锁的特性. 具体锁卡行为: 如任意卡槽插入白名单卡,另一卡槽也同时得到解锁,而上报正常状态.此锁卡逻辑理解为任意卡槽为解锁卡槽的锁卡逻辑. 首先需要确认modem是否支持此功能.如是在配置simlock基本内容基础上,只需配置 SIM_LOCK_CUSTOMIZE_DATA------>dummy2=1. 只要任意一张卡符合锁配置的网络锁百名单,两张卡都可以用. 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助
+参考FAQ: FAQ83513
+### 问题: 使用SGPS/GPS test 通过RESTART冷启动性能测试时，TTFF 时间一样
+解决方案: 这是由于后台有应用发起定位请求在持续定位,当用测试工具在进行冷启动性能测试时,底层GPS在持续定位不能接收冷启动指令,导致TTFF时间一样测试失败,所以建议在进行GPS性能测试,需要关闭后台应用的定位请求.
+参考FAQ: FAQ83563
+### 问题: 如何支持蓝牙音箱
+解决方案: 要有蓝牙音箱功能 , 必须要支持A2DP Sink 的功能 , 这样才能接收对端连线的音频 , 达到音箱的效果 此功能在蓝牙拨号器的软件版本才有支持 目前最新的软件版本号为 : 6531 - MOCOR_12C.W13.04.23.BTdialer.20 7701 - MOCOR_13A_BT_Dialer_W15.28.11 里头的编译工程命名为 project_xxxxx_BT_Dialer.mk 的就可以支持蓝牙音箱功能 并且这些宏客户是不能自行开关的 , 若有客制化需求 , 一定要找展讯重新发布蓝牙库版本才行
+参考FAQ: FAQ83604
+### 问题: 为什么打开手动曝光和不打开手动曝光，效果上没什么变化？
+解决方案: 在相机菜单里打开手动曝光,只是把曝光模式设置为手动模式,曝光水平只是默认值.具体的曝光水平需要在预览界面上手动设置.在预览界面上点击设置区域(目前在预览区域右下角),会打开设置弹出栏,弹出栏其中一项(目前是在左侧的加减图标)是用来设置曝光水平的.点击曝光水平图标,可以实时改变曝光水平,可以实时观察到预览界面的明暗变化.
+参考FAQ: FAQ83609
+### 问题: 新建board后，为什么出现无法抓取modem log的情况？
+解决方案: slogmodem 抓取modem log依赖slogmodem.conf文件里的配置项,新建的board里如果没有定义文件拷贝的动作,就会导致无法根据slogmodem.conf文件解析出相应的配置项,进而无法抓取modem log 解决方案:请仿照sp9830aed_5m_h100_dt.mk里的修改,添加如下修改 +TARGET_BOARD := chinapalms_4m_oversea +BOARDDIR := device/sprd/$(TARGET_BOARD) + PRODUCT_COPY_FILES=\ +$(BOARDDIR)/slog_modem_$(TARGET_BUILD_VARIANT).conf:system/etc/slog_modem.conf \
+参考FAQ: FAQ83610
+### 问题: slogmodem.conf文件默认在什么地方？
+解决方案: slogmodem.conf文件初始在system/etc/下面,会在makefile里面完成向/data/local/tmp/slogmodem/目录的拷贝,后面通过slogui设置的modem log项都是修改/data/local/tmp/slogmodem/目录下的slogmodem.conf文件来完成不同测试场景下的modem log抓取的.
+参考FAQ: FAQ83623
+### 问题: slog中的getprop.log是怎么获取来的？
+解决方案: 根据slog.conf中的配置,getprop命令的level值是7,这样会在重启后执行getprop命令,然后将系统返回的结果保存到getprop.log文件中,而slog本身是不影响系统property的.
+参考FAQ: FAQ83624
+### 问题: wifi有没有漫游成功判断方法
+解决方案: wifi漫游的前提条件是:两个AP具有相同的加密方式,相同的SSID,相同的密码. 打开手机wifi设置内的"自动漫游"选项后,先连接上AP1,再打开AP2. 关闭AP1,此时手机wifi 无断开够连接上AP2. 上述是手机上能够看到的,要是具体判断是否成功,则要看main log. 在此过程中没有disconnect动作,从Ap1到Ap2间切换,便是漫游成功. 也可看空口包,在切换的过程没有deauth帧,也是漫游成功.
+参考FAQ: FAQ83647
+### 问题: android service中如何获取context
+解决方案: service中可以通过getApplicationContext()来获取context. 如: Context applicationContext = getApplicationContext();
+参考FAQ: FAQ83649
+### 问题: 通过getApplicationContext()方法或者activity中的this得到的context有什么不同
+解决方案: 在android中常常会遇到与context有关的内容,如在一个activity中通过this传递一个context AlertDialog.Builder builder = new AlertDialog.Builder(this); 中, 或者通过getApplicationContext()方法来获取context. 其中 getApplicationContext() 返回应用的上下文,生命周期是整个应用,应用摧毁它才摧毁. Activity.this 返回当前activity的上下文,生命周期只是它所在的Activity,activity 摧毁他就摧毁
+参考FAQ: FAQ83653
+### 问题: 展讯2351芯片NTRA认证的相关QDID信息？
+解决方案: BT module number:SR2351 Corresponding Controller Subsystem QDID :56164 Host Subsystem QDID :64721
+参考FAQ: FAQ83670
+### 问题: 如何修改日程提醒默认铃声？
+解决方案: 将"日历---设置---常规设置--查看默认提示音"中的默认铃声修改为其他铃声(如Notice.ogg)的方法如下: 1、frameworks/base/data/sounds/AllAudio.mk文件中增加: $(LOCAL_PATH)/notifications/Notice.ogg:system/media/audio/notifications/Notice.ogg \ 2、添加Notice.ogg文件放到如下目录:frameworks/base/data/sounds/notifications/Notice.ogg 3、build/target/product/core_base.mk 文件中修改 ro.config.notification_sound=Notice.ogg 4、build/target/product/full_base.mk 文件中修改 ro.config.notification_sound=Notice.ogg
+参考FAQ: FAQ83894
+### 问题: 下载NV文件方法错误，引起的MODERM ASSERT问题。
+解决方案: 优先确认NV下载方式,下载时一定不要勾选"backup"备份选项,下载完成后,请重新校准手机再测试.
+参考FAQ: FAQ83677
+### 问题: Marlin2 是否支持802.11w
+解决方案: Marlin2 支持管理帧保护的802.11w协议;
+参考FAQ: FAQ83678
+### 问题: 什么是IEEE 802.11p
+解决方案: IEEE 802.11p主要是应用于车载通讯(Telematics),并根据WAVE技术所提出的通讯协议,在面对多重路径衰减的无线通讯上,能抵抗因车用环境(距离、速度)所造成的讯号衰减,其目的在提供车用通讯上安全性与商业性的应用.安全性的应用将可以改善行车驾驶的安全,减少意外事故的发生;商业性的应用主要是用来提供乘客最佳的乘车服务.
+参考FAQ: FAQ83689
+### 问题: 手机开机没输入PIN码或PUK码前能收到CB是否正常
+解决方案: 这与手机开机后,协议栈的处理顺序有关,顺序如下: 开启协议栈>开启接受小区广播>输入pin码.在pin码开机,解pin码前,我们就会开启协议栈,手机就可以紧急驻留在小区上面,此时是可以接收CB的.
+参考FAQ: FAQ83699
+### 问题: CBS手机显示问题
+解决方案: 手机底层都会受,但CB内容里面解出来的域msg_code和update_num如果是一致就不会上报了.所以相同channel_id不同CB内容是可以显示的,主要比对msg_code和update_num的值
+参考FAQ: FAQ83703
+### 问题: 修改完apn配置文件后，如何不进行项目全编译，单独验证apn配置修改是否生效。
+解决方案: 1、将本地修改后的apn配置文件名修改为apns-conf.xml. 2、将第一步中的修改好的配置文件push到手机中的system/etc目录. 3、将data/data/com.android.providers.telephony/databases中的db文件全部删除. 4、重启手机后验证.
+参考FAQ: FAQ83724
+### 问题: 5.1 phase2 15b版本中，voice clear code弹出的Toast是哪里，并如何显示出来的？
+解决方案: (1)Voice Clear Code弹出Toast显示所在的文件路径: TelephonyConnection.java (packages\services\telephony\src\com\android\services\telephony) (2)在接口:updateState中,当匹配到newState为:DISCONNECTED时,弹出Toast,如下: Toast.makeText(TelephonyGlobals.getApplicationContext(),networkValueText, Toast.LENGTH_LONG).show();
+参考FAQ: FAQ83765
+### 问题: 在Secure boot版本中，什么是key.db？它的重要性及保护措施是怎样的？
+解决方案: 现在很多客户会通过secure boot防刷机来的方式来保护手机. key.db文件是签名的过程中生成的类似密码+随机数的一个合成文件,该文件在运行的签名脚本的时候才会生成,被删除后重新生成,如果存在则不再生成. 保护好key.db文件的重要意义及措施: 1.防止出现由于key.db文件重新生成、误删除、被覆盖导致的重大事故(key.db文件不一样的版本,不能相互升级,烧写过efuse的硬件,不能下载) 2.key.db文件是生成文件,需要上库保存,防止误删除和覆盖.注意,不要将签名工具上库之后,在生成key.db文件,要生成完在上库,防止出现,db文件虽然在服务器上,但是却没有被跟踪,当执行make clean的时候就被误删除了.
+参考FAQ: FAQ83776
+### 问题: secure boot之脚本配置
+解决方案: 很多客户开始要求版本支持secure boot的配置,编译secure boot功能的版本时会遇到一些服务器脚本的配置: 通常的做法是cd 到签名脚本所在目录,并运行签名脚本来签名out目录下的image文件 如下格式: cd vendor/sprd/open-source/tools/sprd_secure_boot_tool && ./sig_script.sh $(ANDROID_BUILD_TOP)/$(PRODUCT_OUT) 其中ANDROID_BUILD_TOP为相对路径,&&后面后tab键,表示是个可运行命令
+参考FAQ: FAQ83777
+### 问题: 如何确认image文件经过签名
+解决方案: 使用UE工具打开,从pac包中解析出来的image文件,然后检查首字节是否是BE,如果是,则代表经过签名
+参考FAQ: FAQ83779
+### 问题: 如何确认pac包是否下载完全
+解决方案: 产线上我们经常遇到一些不能开机的情况,然后重新下载版本就能恢复: 可以通过如下方法来确认: 拷贝不完全: 使用Ue工具打开pac包,然后检查最末端的两个字节是否是0x00 00,如果是则代表该pac包拷贝是完成的 下载不全: 使用产线的memory工具逆向读取二进制文件出来,观察最末端的两个字节是否是0x00 00,如果是可以说明pac包是完成的下载
+参考FAQ: FAQ83780
+### 问题: secure boot功能版本和非secure boot版本的关系和注意
+解决方案: 1.编译打开secure boot功能的版本,需要配合烧写efuse,不烧写efuse不会影响使用reserchdownload工具进行下载升级,但是如果不烧写efuse,会影响到OTA的升级失败 2.编译非Secure boot的版本,即不要烧写efuse也不要打开secure boot的功能,需要保证chipram、u-boot64、device/sprd部分都修改为关闭的状态.不然会影响到OTA升级失败. 总结来说: 烧写efuse的手机一定要配合secure boot功能的版本,没有烧写efuse的手机,要保证secure boot完全关闭.不可以混合来使用.
+参考FAQ: FAQ83781
+### 问题: 软件确认没有问题了，为什么还是找不到在线的升级包？
+解决方案: 很多客户,对于在研项目,会自己配置一个服务器来模拟在线升级的过程,这个时候会存在找不到在线升级包的情况: 在确认软件无问题的情况下,需要检查下被测试设备的IMEI号是否被写入到服务器的支持列表里,该设备的IMEI需要配置到服务器上去.
+参考FAQ: FAQ83782
+### 问题: Marlin2 是否支持802.11v
+解决方案: Marlin2 支持IEEE 802.11v协议,支持新的节电特性、负载平衡与简化管理等功能;
+参考FAQ: FAQ83785
+### 问题: wifi 中 wpa_supplicant 的状态机代码中SM_STEP_RUN 和 SM_STEP 是什么意思？怎么调用？
+解决方案: 这些宏定义在 State_machine.h 文件中 #define SM_STEP_RUN(machine) sm_ ## machine ## _Step(sm) 所以,SM_STEP_RUN(SUPP_PAE) ==> sm_SUPP_PAE_Step(sm); #define STATE_MACHINE_DATA struct ieee802_1x_cp_sm #define SM_STEP(machine) static void sm_ ## machine ## _Step(STATE_MACHINE_DATA *sm) 所以,SM_STEP(SUPP_PAE) ==> static void sm_SUPP_PAE_Step(struct ieee802_1x_cp_sm *sm) 因此, SM_STEP_RUN(SUPP_PAE) ==> SM_STEP(SUPP_PAE)
+参考FAQ: FAQ83792
+### 问题: 如何修改 设置-应用-全部-某应用(如联系人存储)界面中将“停用”按钮置灰不可点击？
+解决方案: 请做如下修改:
+packages/apps/Settings/res/values/arrays.xml
+<string-array name="cannot_kill_app" translatable="false">
+        <item>com.android.providers.downloads.ui</item>
+        <item>com.android.providers.downloads</item>
+        <item>com.google.android.inputmethod.latin</item>
+        <item>com.android.inputmethod.latin</item>
+    +    <item>某应用(如联系人储存)包名</item>
+    </string-array>
+即可.
+参考FAQ: FAQ83831
+### 问题: 当设置墨西哥时区为默认时区后，为什么会出现墨西哥时区有时是Mexico City GMT-5:00而有时是Mexico City GMT-6:00？
+解决方案: 原因分析: 因为 Mexico City(墨西哥时区) 有夏令时, 即 从每年的 4月4号 到 10月30号是夏令时间(Mexico City GMT-5:00) 而从11月到3月 是标准时间(Mexico City GMT-6:00) 具体时间表可查询: http://www.timeanddate.com/time/zone/mexico/mexico-city
+参考FAQ: FAQ83832
+### 问题: 如何设置数据流量为默认关闭状态？
+解决方案: 请做如下修改:
+在build/tools/buildinfo.sh文件中
+加入:echo "ro.com.android.mobiledata='false'"
+参考FAQ: FAQ83834
+### 问题: 手机中俄罗斯时区为东四区，而现行规则下莫斯科时区应为东三区，应如何修改？
+解决方案: 解答: 需要把系统时间调整到2014.10.26号之后才会变成GMT+3,在这之前标准时区是GMT+4. 具体时间可查阅 http://www.timeanddate.com/time/zone/russia/moscow
+参考FAQ: FAQ83837
+### 问题: 为什么 在设置/无障碍中开启高对比度文字后，此时点击无障碍快捷方式点击无反应？
+解决方案: 解答: 由于正常颜色下这个按钮是被置灰的,本来就是无法点击的.当高对比度下,把字体的颜色改了,看上去是可用的状态,但其实还是不可用的. 要使用这个功能,需要安装google talk back应用,可以去google play上下载.
+参考FAQ: FAQ83840
+### 问题: 在设置-无障碍-字幕-字幕开启，设置语言、文字大小 、字样样式设置后，返回待机界面为什么应用名称字样没有改变？
+解决方案: 解答: 无障碍-字幕的作用不是对待机界面应用名称查看字样起作用,是对有字幕的视频起作用, 但此功能是针对google play movies做设定,一般常见的流媒体播放器无法支持.
+参考FAQ: FAQ83841
+### 问题: 如何使EditTextPreference光标定位在字符最后端？
+解决方案: 如果要使EditTextPreference文本编辑时光标在字符后面
+请做以下修改:
+frameworks/base/core/java/android/preference/EditTextPreference.java中
+protected void onBindDialogView(View view) {
+    super.onBindDialogView(view);
+
+    EditText editText = mEditText;
+    editText.setText(getText());
+  +  editText.setSelection(getText().toString().length());
+注:此修改会对手机中所有使用了EditTextPreference的地方起作用.
+参考FAQ: FAQ83852
+### 问题: 如何将修改机主信息的光标设在文字后面方便？
+解决方案: 按照如下修改即可: packages/apps/Settings/src/com/android/settings/OwnerInfoSettings.java  private void initView() {
+       ......
+        mOwnerInfo.setFilters(new InputFilter[]{new InputFilter.LengthFilter(TEXT_MAX_LENGTH)});
+       if (!TextUtils.isEmpty(info)) {
+           mOwnerInfo.setText(info);
++          mOwnerInfo.setSelection(info.length());
+       }
+       ......
+参考FAQ: FAQ83888
+### 问题: 什么是802.11z
+解决方案: IEEE 802.11z协议于2010年9月由IEEE正式批准推出,它是专门为了加强无线区域网路安全的规范标准,在IEEE 802.11的MAC层与PHY层增加一种直接连线装置(Direct-Link Setup,DLS)的应用功能,借以提高点对点连结的能力,并且加入节电功能.另外,IEEE 802.11z规格主要定义用户端之间不须通过AP相互通讯的协议,就可以进行数据封包的传送.乍看之下类似Wi-Fi Direct,但其实不然,IEEE 802.11z是属于802.11底层的规格,与现有的点对点(peer to peer)连线不相容之外,与Wi-Fi联盟所推广的装置到装置间的通讯也不一样.换言之,IEEE 802.11z和Wi-Fi Direct,一个是规范标准、一个是认证专案,虽然两者都和直接点对点连结有关,但实际上是相互独立的.
+参考FAQ: FAQ83809
+### 问题: 联系人数据库Calls表如何区分是哪张卡的通话记录
+解决方案: 联系人数据库Calls表中的subscription_id区分是哪张卡的通话记录, subscription_id需要通过public static int[] getSubId(int slotId) {}这个方法获取, 比如卡1的subscription_id为 int[] subIds = SubscriptionManager.getSubId(0); int subId = subIds[0]; //卡1的subscription_id 卡2的subscription_id为 int[] subIds = SubscriptionManager.getSubId(1); int subId = subIds[0]; //卡2的subscription_id
+参考FAQ: FAQ83914
+### 问题: NR调试参数范围异常问题
+解决方案: 首先报错图片如下: 该问题主要原因是: 软件中参数版本设置错误导致,不同版本的调试参数中NR范围是存在差异,比如说0x0003xxxx系列NR相关参数的取值范围就要小于0x0004xxxx系列. 主要修改方式: 首先查看ISP下面version_id是否为所需的,如下: 然后判断是否跟当前平台相匹配,对应匹配关系如下: version_id 芯片 0x0001xxxx 7731系列 0x0002xxxx 9830系列 0x0003xxxx 8730,7731c,7730SW,9830i和9838系列的芯片 0x0004xxxx 9832系列 假如存在差异,则在sensor_s5k4h8yx_raw_param_main.c中 static struct sensor_version_info s_s5k4h8yx_version_info= { 0x00040004, //修改为正确的版本 sizeof(struct sensor_version_info), 0x00 }; 修正后结果如下:
+参考FAQ: FAQ83927
+### 问题: 系统根证书预置在哪个目录下？
+解决方案: 系统根证书预置路径: /libcore/luni/src/main/files/cacerts/
+参考FAQ: FAQ83934
+### 问题: 字符串过长时，如何限制宽度，并用省略号代替？
+解决方案: 使用如下方法对字符串进行处理,返回的结果就是限制了宽度并用省略号代替的字符串. TextUtils.ellipsize(CharSequence text, TextPaint p, float avail, TextUtils.TruncateAt where).toString() text:待处理的字符串 p:对应的文字画笔 avail:限制的宽度 where:省略号显示的位置,可以是开头、中间或结尾等.
+参考FAQ: FAQ83953
+### 问题: 系统证书过期可以从哪儿获取最新证书？
+解决方案: 系统证书获取网址: https://android.googlesource.com/platform/system/ca-certificates 使用命令: git clone https://android.googlesource.com/platform/system/ca-certificates 即可获取,无需登录google帐号.
+参考FAQ: FAQ83949
+### 问题: 为什么设置，显示，壁纸界面会显示多个壁纸选项？
+解决方案: 在设置,显示,壁纸界面有时候会显示多个壁纸选项: 原因是该界面显示系统中含有"android.intent.action.SET_WALLPAPER" 此Action的应用. 目前原生应用动态壁纸、图库、文件管理器、Launcher默认都是含有此action的! 如果预置多个Laucnher,如Launcher2和Launcher3,会显示两个壁纸!
+参考FAQ: FAQ83951
+### 问题: 双卡时禁用主卡,为什么拨打紧急号码时会自动激活主卡并通过主卡拨号
+解决方案: 平台设计如此: 1.插入一张sim卡时,用插入的sim卡拨出; 2.插入两张sim卡时,用主卡拨出,紧急号码以成功拨打为第一要素
+参考FAQ: FAQ84010
+### 问题: monkey 测试出现data分区满的排查方法及常见原因
+解决方案: 一 排查data分区满的方法: 保留现场,找到问题机器,将问题机器的data分区pull出来.看到底是谁占用了较多空间. 二 常见原因: 1第三方应用打开大量文件缓存导致. 例如wps应用.在monkey测试中打开了slog中的多份main.log, 导致缓存超过2G.出现data分区满 2 媒体文件占用导致data分区满 通常是由于monkey测试中将camera录像的存储位置切换为了内部存储,camra多次录像.最终导致data分区占满. 三 解决方案: 通常如果是第三方应用导致建议加入黑名单.如果是内置应用可以在相关应用代码中加monkey测试保护.
+参考FAQ: FAQ84059
+### 问题: monkey压力测试液晶出现条纹的原因
+解决方案: 在setting应用中-[开发者选项]-[GPU呈现模式分析]-选择[在屏幕上显示为条形图]就会出现.点击关闭就可以了. 是一个调试的辅助功能.建议在monkey测试中将setting加入黑名单或者在开发者选项中添加monkey测试保护.
+参考FAQ: FAQ84061
+### 问题: 带oem方案和非oem方案的spn-conf.xml区别
+解决方案: 在带oem方案的版本上和没有带oem方案的版本上,spn-conf.xml的用法: 首先需要知道这个版本是不是带oem方案的. 1,vendor\sprd\oem,里面包含mvno运营商的配置数据;而且oem img分区需要挂载上去配合使用. 带oem方案的是用vendor\sprd\oem\config\GlobalConfig\spn中spn-conf.xml的文件,整套实现流程是通过生成的db数据库中,通过读数据库的形式,所以关注此即可. 2,不带oem方案的逻辑,之前是把vendor\sprd\open-source\res\spn中spn-conf.xml下的编译是拷贝到system下去使用,此是无oem方案时的的实现.
+参考FAQ: FAQ84068
+### 问题: Android中visibility属性VISIBLE、INVISIBLE、GONE的区别
+解决方案: View.VISIBLE ---> 可见 XML文件:android:visibility="visible" Java代码:view.setVisibility(View.VISIBLE); View.INVISIBLE ---> 不可见,但这个View仍然会占用在xml文件中所分配的布局空间,不重新layout XML文件:android:visibility="invisible" Java代码:view.setVisibility(View.INVISIBLE); View.GONE ---> 不可见,但这个View在ViewGroup中不保留位置,会重新layout,不再占用空间,那后面的view就会取代他的位置 XML文件:android:visibility="gone" Java代码:view.setVisibility(View.GONE);
+参考FAQ: FAQ84147
+### 问题: 当警告值和上限值均为0则移动数据流量已关闭，但状态栏的PDP连接仍然显示
+解决方案: 弹出警告框后已经无法上网.但是,此时状态栏显示的数据图表有两个灰色的上下箭头. 这个现象属于正常,此时虽然无法上网,但这只是因为流量受限,网络连接仍然是正常的.因为在断网之前是有过数据变化的,所以此时数据停止变化,就显示了灰色的箭头.这个属于system ui的设计,不是问题.
+参考FAQ: FAQ84162
+### 问题: 在AndroidManifest.xml里出现的android.permission.BLUETOOTH_STACK 或者android.permission.BLUETOOTH 权限具体属于哪个组？
+解决方案: 可以在文件frameworks/base/data/etc/platform.xml查看 具体code如下: <permission name="android.permission.BLUETOOTH_ADMIN" > <group gid="net_bt_admin" /> </permission> <permission name="android.permission.BLUETOOTH" > <group gid="net_bt" /> </permission> <permission name="android.permission.BLUETOOTH_STACK" > <group gid="net_bt_stack" /> </permission>
+参考FAQ: FAQ84193
+### 问题: Socket 设置接收超时参数说明
+解决方案: sci_sock_setsockopt(*sock, SO_RCVTIMEO, 10);//设置socket 接收超时为1S,第二个参数为cticks 数目,1秒是10个cticks 具体超时设置主要看上层能容忍的最大时间.
+参考FAQ: FAQ84366
+### 问题: 为什么没有连接WLAN，设置-电池-电池使用详情中仍有WLAN耗电？
+解决方案: 问题原因: WLAN虽然没有连接到可用网络上,但是仍会扫描周围可用网络,所以仍会消耗电量.
+参考FAQ: FAQ84212
+### 问题: 为什么没插SIM卡，或者插了一张废卡，设置-电池-电池使用详情中仍有移动网络信号耗电？
+解决方案: 问题分析及解答: 没有插SIM卡,或者插入一张废卡时,虽然没有驻网到SIM卡指定的运营商网络,但是移动无线装置仍会扫描周围的运营商网络. 所以,即使没有插入SIM卡,或者插入的是废卡,手机一样是有信号的,也是会耗电的.
+参考FAQ: FAQ84214
+### 问题: 插入SD卡后，设置-存储-卸载SD卡后，仍可以格式化SD卡。
+解决方案: 问题原因: Google原始设计如此,点击卸载SD卡后,会将SD卡状态置为unmount状态,此时点击格式化SD卡,会重新挂载SD卡之后执行格式化操作,格式化完成之后SD卡默认mount到手机上.
+参考FAQ: FAQ84219
+### 问题: sys.kill.frontapp属性控制什么功能
+解决方案: 在低内存版本上,来电容易出现通话界面显示慢的问题,sys.kill.frontapp功能是为了修复该问题,在来电情况下,杀死前台进程来释放内存确保通话界面的正常显示,512M版本上建议打开此功能,设置sys.kill.frontapp为true
+参考FAQ: FAQ84148
+### 问题: Android文件中的XML文件转义字符介绍
+解决方案: 以下为XML标志符的数字和字符串转义符 " (&#34; 或 &quot;) ' (&#39; 或 &apos;) & (&#38; 或 &amp;) lt(<) (&#60; 或 &lt;) gt(>) (&#62; 或 &gt;) 1. 空格 &#160; 2. 换行 \n 3. 如果报Description Resource Path Location Type error: Apostrophe not preceded by \ (in Search' Titles) strings.xml错误,说明需要加转义,如(')需要改成(\')
+参考FAQ: FAQ84220
+### 问题: 如何修改拨号键盘触摸音默认打开还是关闭？
+解决方案: 解答: 请修改frameworks\base\packages\SettingsProvider\res\values\defaults.xml文件中的 <bool name="def_dtmf_tones_enabled">true</bool> true为默认开打, false为默认关闭.
+参考FAQ: FAQ84241
+### 问题: 如何判断monkey测试时停止是正常停止还是由于异常原因？
+解决方案: monkey停止的log信息会记录在monkey.log中. 如果monkey是正常停止会显示如下log: // Monkey finished // Monkey End Time : 106034658; Monkey End Calendar Time : 2016-01-02 13:27:13.422 如果monkey停止是由于异常停止的,会显示如下log: Monkey aborted due to error
+参考FAQ: FAQ84299
+### 问题: Android M 多语版本配置方法
+解决方案: 请在对应项目的makefile文件加入(eg:device/sprd/scx20/sp7731c_1h10/ sp7731c_1h10_oversea.mk) + PRODUCT_LOCALES:= + PRODUCT_REVISION:=oversea multi-language + include $(APPLY_PRODUCT_REVISION) 若项目makefile中已存在PRODUCT_REVISION则直接在其中加入oversea multi-language即可. PS:PRODUCT_REVISION中配置参数的具体配置信息存放在vendor/sprd/open-source/features/ oversea : oversea/config.mk multi-language : multi-language/config.mk(可在此文件中配置需支持语言)
+参考FAQ: FAQ84307
+### 问题: 系统中的property属性保存在哪些地方？
+解决方案: 有如下三个地方: 1.build/core/main.mk中 例如:ADDITIONAL_DEFAULT_PROPERTIES += ro.debuggable=1 2.build/tools/buildinfo.sh中 例如:echo "ro.board.platform=$TARGET_BOARD_PLATFORM" 3.device/sprd/sp9830aea_5m_h100/system.prop 例如:ro.sf.lcd_density=240 如果需要自行添加property属性,建议统一添加到system.prop中.
+参考FAQ: FAQ84327
+### 问题: 什么原因会引起蓝牙自拍杆兼容性问题？
+解决方案: 当点击蓝牙自拍杆上拍照按键时,由于各个厂家设计不同,会有不同的处理: 第一种:下发KEYCODE_VOLUME_UP和KEYCODE_ENTER两个按键 第二种:只下发KEYCODE_ENTER按键. 为什么是这两个按键? 1.当打开相机时,界面焦点会聚焦到拍照Button上,当获取到KEYCODE_ENTER按键时即可触发此Button进行拍照. 2.点击手机上音量上按键时,也会拍照.音量上键即为KEYCODE_VOLUME_UP,自拍杆就是要模拟这种行为进行拍照. 目前的问题是大多出现在自拍杆只下发KEYCODE_ENTER这种情况,因为当用户点击过其他UI组件或者切换到其他界面,导致焦点不在拍照BUTTON上. 解决方法:在相机应用中出现问题的界面对KEYCODE_ENTER按键进行处理.
+参考FAQ: FAQ84329
+### 问题: 蓝牙AVRCP协议层级关系图介绍
+解决方案: AV/C是AVRCP的简称,AVCTP是AVRCP的中间层协议,主要用于控制命令的收发处理.SDP(服务发现协议)、LMP(链路管理协议)、L2CAP(逻辑链路控制与适配协议)和BaseBand(基带)是功能的基础内容.
+参考FAQ: FAQ84330
+### 问题: 蓝牙AVRCP协议Passthrough命令流程介绍
+解决方案: AV/C指令中PassThrough是最常用的指令.PassThrough用于向Target端传输特殊操作.该指令常用,而且用途广泛,多达几十种操作.例如我们这次用到的Play、Pause、Forward和Backward. 值得注意的是,PassThrough指令中state_flag属性用来表明按键Press和Release操作.当按键持续按下300m后,会触发Hold状态,也就长按状态.某些按键长按和短按用途是不同的.例如,Forward操作长按后会改变为Fast Forward.
+参考FAQ: FAQ84334
+### 问题: 蓝牙AVRCP协议RegisterNotification介绍
+解决方案: Event Notification主要用于监听音频信息变化.例如,歌曲变化(TRACK_CHANGED),音量变化(VOLUME_ CHANGED)等.当Controller端发送NOTIFY命令时,Target端携带相关信息回复INTERIM命令,该命令需要在200ms内完成.当Event事件触发时,Target端会发送CHANGED来告知Controller端.这里值得注意的是,在同一个AVRCP Channel下,最大只能有16个 Event存在.
+参考FAQ: FAQ84337
+### 问题: 修改自动更新时区与时间的默认设置
+解决方案: 默认开启自动更新时区与时间 将frameworks/base/packages/SettingsProvider/res/values/defaults.xml修改为 <bool name="def_auto_time">true</bool> <!-- 自动更新时间 --> <bool name="def_auto_time_zone">true</bool> <!-- 自动更新时区 --> 默认关闭自动更新时区与时间 将frameworks/base/packages/SettingsProvider/res/values/defaults.xml修改为 <bool name="def_auto_time">false</bool> <!-- 关闭自动更新时间 --> <bool name="def_auto_time_zone">false</bool> <!-- 关闭自动更新时区 -->
+参考FAQ: FAQ84326
+### 问题: SGPS TTFF测试时注意参考位置的输入
+解决方案: 在进入SGPS 后最右边一栏tap 点击进入后 将参考位置的经度值和纬度值不要输反. 有些测试工程师经常将纬度值输入成经度值,经度值输入成纬度值,这一点要注意下 Latitude:(option) 纬度值 取值范围(+90度 —90度) Longitude:(option)经度值 取值范围(+180度 -180度) 如果输入相反会影响自动化测试结果中定位精度的准确性: 例如 Average distance(m) 1.2900526E7 定位精度的平均值,每次取定位成功后第一位置点的精度,单位:m 平均精度值为12900526米,误差太大(就是由于参考位置度输入问题导致)
+参考FAQ: FAQ84350
+### 问题: Tcp log 分析说明简介
+解决方案: 一、搜索关键字tcpip可列出相关的交互数据包; 二、TCPIP LOG分类: 1)SOCKET可根据socketid 和端口号过滤相关数据包; 如: tcpip: t_connect() - so 3f78730 is connecting, 1026 ->80 粗体处为id和发送与接收端口 2)IP包 如: [ TCPIP ] MtSend, pkt(3c85):1a1f00c, netif(13d082c), IPID(2cd), S:c5a837, A:b5ea154e, W:63866, l:0, 1060 -> 587, TCP_ACK(52) 根据IPID(2cd )与Log中的Cap包文件的数据包相对应. 各字段说明: IPID:IP报文标识; S:TCP Sequence; A:TCP Acknowledge; W:TCP接收窗口; l:TCP报文携带的数据长度; 1060:本地端口; 587:远端端口; TCP_ACK:数据包类型 52:报文总长度.
+参考FAQ: FAQ84344
+### 问题: 如何配置AGPS 辅助定位服务器
+解决方案: GE项目的配置文件路径如下 vendor/sprd/gps/CellGuide_2351/supl.xml GE2项目的配置文件路径如下 vendor/sprd/gps/gnss/supl.xml 配置前 <PROPERTY NAME="SERVER-ADDRESS" VALUE=""/> <PROPERTY NAME="SERVER-PORT" VALUE=""/> 配置后 如下举例配置成nokia的supl server ,由于supl server涉及到license的问题需由客户自己指定supl server. <PROPERTY NAME="SERVER-ADDRESS" VALUE="supl.nokia.com"/> <PROPERTY NAME="SERVER-PORT" VALUE="7275"/> 还可以通过SGPS工具在AGPS这一界面通过编辑SUPL server 地址和端口号的方式配置AGPS服务器,通过sgps配置的AGPS服务器需要重启手机一次 才能生效.
+参考FAQ: FAQ84352
+### 问题: 如何正确提供客户对应项目的库文件？
+解决方案: 要根据客户具体项目mak文件中的PRODUCT_BASELIB_DIR 选项,编译时要注意选择对应我们的base项目,提供客户相应的库文件. 如: PRODUCT_BASELIB_DIR = sc6531_32X32_320X240BAR_QW_ATV_formal ### Dir name for base lib in MS_Code\lib\ 即: 对应我们 base 项目为sc6531_32X32_320X240BAR_QW. 同时需要确认我们base 项目mak文件以下二个编译开关是否关闭或者打开: 1. MEMORY_DEBUG_SUPPORT = FALSE 2. TRACE_INFO_SUPPORT = FALSE 都关闭为编译的release版本,都打开则为trace版本. 例如: 编译daps 模块命令: make p=sc6531_32X32_320X240BAR_QW m=daps update -j8
+参考FAQ: FAQ84371
+### 问题: Apk的源码编译报错SystemProperties、ServiceManager等hide api引用报错
+解决方案: 像SystemProperties、ServiceManager这些类都是hide,这个到对应的代码下都可以看到.而客户的App下的Android.mk中使用了LOCAL_SDK_VERSION =: current, 该变量标识在编译apk时候,使用当前的SDK,但是LOCAL_SDK_VERSION 会使应用程序不能访问hide的api. 所以解决该问题只需要在应用的Android.mk中将LOCAL_SDK_VERSION =: current去掉即可.
+参考FAQ: FAQ84381
+### 问题: 如何快速填充手机data分区空间？
+解决方案: 测试情景:性能测试(低内存),验证阈值等 将data分区的剩余空间填充到指定值,填充方法如下: 1.adb shell进入shell 2.dd if=/dev/zero of=/data/local/tmp/test.dat bs=1024*1024 count=500 (填充500M的空间,可修改test.dat文件名填充多次,不会覆盖) 3.可在"设置"-"存储"中观察当手机data内存的剩余空间 4.恢复方法:恢复出厂设置
+参考FAQ: FAQ84376
+### 问题: MMI test测试后，某些应用为什么会报缺少权限？
+解决方案: MMI test 测试时系统只会安装指定的部分apk,如果一个apk申请了另一定义在另一个apk的权限,而定义权限的apk在MMI test时没有被安装,则申请权限的apk将无法得到权限,并把权限信息记录到packages.xml文件中,正常开机时,再次扫描该apk授予权限时发现上一次并没有给予该apk权限,此次也不会给予其申请的权限,导致缺少权限报错.
+参考FAQ: FAQ84403
+### 问题: 如何解决阿拉伯语言下部分控件未右对齐的问题
+解决方案: 如果在布局中有以下属性: android:layout_alignParentLeft android:layout_alignParentRight android:layout_marginLeft android:layout_marginRight 将其修改为: android:layout_alignParentStart android:layout_alignParentEnd android:layout_marginStart android:layout_marginEnd
+参考FAQ: FAQ84417
+### 问题: 展讯wifi display只支持投射不支持被投射
+解决方案: 展讯手机只能将屏幕投射到其他支持wifi display接入的设备上比如小米盒子.而不支持其它设备投射进来. 除展讯平台外的某些平台的手机有此功能,但这是第三方自己开发的,android原生并不具备.客户可自行寻找一些第三方apk实现.
+参考FAQ: FAQ84428
+### 问题: 如何删除设置/更多/手机套餐选项
+解决方案: 配置如下路径参数: \packages\apps\settings\res\values\Bools.xml // true表示显示该选项,false表示删除 <bool name="config_show_mobile_plan">false</bool>
+参考FAQ: FAQ84422
+### 问题: 当同一AP的无线局域网中，存在两台mac地址冲突手机时的表现
+解决方案: wifi网络有mac地址冲突时,两台冲突手机都能连上AP.这一点与有线网络不同.但虽然都能连接上AP,却只有一台手机能与AP进行数据帧的通信(管理帧不受影响).因为AP侧只能保存后接入的手机的密钥,进行数据帧加密解密.先接入的那台手机解不开加密的数据帧,自然就无法通信了.
+参考FAQ: FAQ84435
+### 问题: wifi漫游与802.11r协议的关系
+解决方案: 目前市面上多数手机的wifi漫游功能其实与802.11r协议并不相关,其只是简单的在相同ssid,不同bssid(AP mac)的两个WLAN之间,断开信号弱的,连接信号强的.而802.11r才是真正的透明漫游(硬件不会上报断开事件,而是平滑漫游).但是,802.11r需要手机和AP都支持 FT-PSK这种较少见的加密认证协议,所以多数手机都不支持.
+参考FAQ: FAQ84437
+### 问题: 5.1平台关于语音信箱设置中的铃声和震动功能为什么有时候不起作用
+解决方案: 如果有语音留言信息,手机端会有两种方式提醒用户. 1. 通过短信的形式,目前国内中国移动、中国联通均采用该方式. 2. 通过状态栏图标显示以及notification提醒的方式,国外某些运营商支持该方式. 这两种方式是互斥的,有且只能采用一种,而决定采用哪一种方式,是由运营商决定的. 语音信箱设置铃声和震动均是针对第2种方式才起作用,所以国内即使设置了这两项也不会起作用. 如有疑问,可咨询展讯工程师.
+参考FAQ: FAQ84439
+### 问题: 为什么在无卡的时候可以拨打000、08、110、999、118等号码
+解决方案: 这是有3GPP协议规定的,各大厂商需要遵循该协议,所以在无卡的时候能够拨打这些号码. 拨打这些号码接通连接到紧急服务中心.
+参考FAQ: FAQ84441
+### 问题: 做手机wifi流量吞吐性能测试的几个预置条件
+解决方案: 为保证单一测试变量,请在用iperf等工具做wifi流量测试时预置如下条件: 1. 使用user版本,不能用userdebug版本. 2. 保证测试机的射频性能没有问题,应该先确认其能过OTA性能测试. 3. 请测试全程保持手机亮屏,可以在setting-display中设置亮屏持续时间.否则锁频后手机进入省电模式,整个平台性能会下降,进而影响wifi. 4. 请在屏蔽箱中测试,否则开放环境下无线信号的干扰会导致无法做出对并数据,若要测试弱信号或方向性吞吐,可在屏蔽箱中使用信号衰减器和转台. 5. AP也要放到屏蔽箱中.
+参考FAQ: FAQ84440
+### 问题: 展讯9830+marlin的WCN 射频ini配置文件区分ba和aa两个版本
+解决方案: 代码中, aa 的ini文件位于vendor/sprd/open-source/res/productinfo/ ba 的ini文件位于vendor/sprd/open-source/res/productinfo/marlinba/ 手机中在system/etc下也做的类似的区分. 至于如何确认更新的ini文件是那个版本,这个一般向客户推送时都在文件命名上以aa、ba字眼加以区分,如果没做区分请向展讯FAE询问.
+参考FAQ: FAQ84442
+### 问题: wifi 2.4G信道是有相互覆盖的，所以并不是当前信道下AP数少就一定干扰小
+解决方案: 2.4G下,真正独立的信道只有1,6,11.若当前环境下所有AP都在这三个信道下,则个不同信道的AP是没有相互干涉的.但是若在这三个之外的信道也同时存在AP,则至少与这三个信道中某一个信道的Ap有干扰. 例如,虽然当前1信道上只有一台AP,但是2信道上有4台AP,则这4台AP都会影响到1信道上AP与手机的通信质量.因为1、2两个信道频段有15 MHZ的覆盖,而一个信道其实也才20 MHZ频宽.
+参考FAQ: FAQ84445
+### 问题: ServiceState有几种服务状态
+解决方案: 1. ServiceState.STATE_POWER_OFF // 值为3:表示协议栈关闭或飞行模式 2. ServiceState.STATE_OUT_OF_SERVICE // 值为1:表示无服务 3. ServiceState.STATE_EMERGENCY_ONLY // 值为2:表示紧急呼叫,废弃 实际使用:8 (cp上报) is sprd emergency state.ServiceState对象通过 setEmergencyOnly(boolean)方法保存服务状态; ServiceState对象获取紧急状态呼叫的方法:public boolean isEmergencyOnly(); 4. ServiceState.STATE_IN_SERVICE // 值为0:表示有服务
+参考FAQ: FAQ84443
+### 问题: 为什么修改主页设置后变成空白页about:blank
+解决方案: 比如说在/res/values/strings.xml 中改为如下 <string name="homepage_base" translatable="false"> www.clarosva.com/gt</string> 后打开主页变成空白页;因为www.clarosva.com/gt无http://前缀为非法的url,所以直接打开空白页about:blank . 应该修改为:http://www.clarosva.com/gt.
+参考FAQ: FAQ84582
+### 问题: 浏览器设置搜索引擎为139时，无法正常搜索到输入的内容
+解决方案: 139搜索的域名是写死在配置文件里的(all_search_engines.xml),但是139域名经常改动 例如,139.chinaso.com这个域名已经不存在了, 目前的139搜索地址是:http://www.139.so/,但此地址还是Beta版的. 如果发布的版本不是cmcc的,建议将139搜索去掉.
+参考FAQ: FAQ84587
+### 问题: 特定分辩率下打开网页内容详情页，右边边距预留过大
+解决方案: Android浏览器原生设定文本显示宽度是400,需要加大,具体合适的数值取决于屏幕大小. 请修改 external\chromium_org\third_party\WebKit\Source\platform\Widget.h - static const int kAndroidTextLayoutWidth = 400; + static const int kAndroidTextLayoutWidth = 0;
+参考FAQ: FAQ84589
+### 问题: 摄像头的取景模式的问题
+解决方案: 几种取景模式的区别在于AE的不同,分别对应不同的场景,如果同一场景下会比较难发现差异点
+ 
+
+ 
+ 
+	如:
+ 
+
+ 
+	运动模式,帧率优先考虑,一般设定在30帧,所以这种模式一般适用户外光线充足
+ 
+
+ 
+	夜景模式,则是希望能够尽可能的看到场景,所以对于曝光要求优先考虑,一般ISO会设置成最高
+ 
+
+ 
+	人像模式,则是希望关注在人脸,这种模式下就取决于曝光方式,一般是用中心曝光
+ 
+
+ 
+	风景模式,该模式注重整体,希望整体兼顾,所以一般选择帧平均曝光
+参考FAQ: FAQ85109
+### 问题: 如何获取SIM主卡PhoneId和设置主卡PhoneId？
+解决方案: 通常双卡版本,默认有多模主卡的概念,即对应的卡槽为多模卡槽,支持多模.另一卡槽仅支持2G. 若三方应用需获取到终端多模主SIM卡的PhoneId或SlotId的信息 ,可通过Tele framework的标准接口进行设置和读取.即采用以AIDL机制实现的TelephonyManagerSprd的通用标准接口. getPrimaryCard以及setPrimaryCard,获取到具体的主卡PhoneId以及设置主卡.读取相应的主卡PhoneId或者保存主卡PhoneId到setting数据库.
+参考FAQ: FAQ84608
+### 问题: 其他应用如何设置telephony的默认拨打电话的phone account的subId
+解决方案: 通常双卡版本由两个phone account,拨打电话或者发送短信等都需要选定特定的phone account.因此当需要设置相应的phone account时需要实现跨进程的通信. 三方应用可通过Tele framework的标准接口进行设置和读取.即采用以AIDL机制实现的TelephonyManagerSprd的通用标准接口. setMultiSimActiveDefaultVoiceSubId接口去设置具体的subId. 同时也可以采用getMultiSimActiveDefaultVoiceSubId去获取已设置的subId.
+参考FAQ: FAQ84615
+### 问题: 改变字体大小，有的字体没有随之改变
+解决方案: 该问题分两个: 1:改变手机字体大小设置之后,有的字体显示没有随之改变 原因:有的textview显示的字体大小被强制限制了字体的大小,比如在xml文件中有 android:textSize="**dip/dp"的设置 这样即使是系统大小改变,这些textview的字符大小显示也不会变 2:但是有的字符显示,在重启之后会随之改变.(但是在重启之前是没有改变的) 原因:这些字体所在的布局文件没有刷新. 譬如:notificationpanel中关于运营商上的显示的布局CarriersTextLayout就没有刷新.而重启之后所有的布局都是重新计算绘制的,所以字体大小会变回了 那针对这种字体大小在重启前后不一致的修改建议: 使用dip/dp单位限制死字体大小,保持不随系统字体变化.
+参考FAQ: FAQ84620
+### 问题: 6.0浏览器的菜单设置-辅助功能，删除了点按两次进行缩放选项。
+解决方案: 6.0最新webview.apk上,文字缩放的功能是实现了的,但是＂点按两次进行缩放＂不支持. 所以去掉了菜单＂点按两次进行缩放＂
+参考FAQ: FAQ84788
+### 问题: 测试GPS问题时抓几种log便于研发定位问题?
+解决方案: GPS问题的定位需要两类log: 1.基础Slog 测试纯GPS功能需要包含android log和gnss log,通过暗码*#*#83781#*#*打开,进入Modem Log Settings设置.如果测试AGPS功能还需把modem log中的cp2 log和cap log勾选上 2.Nmea log SGPS为展讯平台自带的GPS测试工具,通过暗码"*#*#2266#*#*"打开,进入SGPS界面 ,选择NMEA
+参考FAQ: FAQ84803
+### 问题: AndroidM如何获取当前IMS注册状态
+解决方案: 当前手机IMS注册状态可以通过TelephonyManager公共接口获取: public boolean isImsRegistered()
+参考FAQ: FAQ84806
+### 问题: 锁卡版本如何配置默认不开启SIMLOCK功能
+解决方案: 锁卡版本,通常配置时需要配置锁卡类型字段sim_lock_status,需根据客户锁卡需求逻辑配置当前字段的具体类型参数,如果产线上测试,默认无需开启SIMLOCK,则可以不配置当前字段,测试完成可以使用暗码加锁功能实现加锁. 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ84826
+### 问题: 锁卡版本，如何获取黑名单卡的IMSI
+解决方案: 平台正常设计流程是在SIM上报ready之后,会去读取IMSI,但是锁卡版本,如是黑名单卡,是不会上报ready,此时想要获取SIM对应的IMSI是获取不到的,需要修改原始流程. 方法如下: 1.在SIMRecords构造函数中添加如下代码: if(mTelephonyManager.checkSimLocked()){ mCi.getIMSIForApp(mParentApp.getAid(), obtainMessage(EVENT_GET_IMSI_DONE)); } 关于SIMLOCK的配置和功能设计中,碰到任何问题欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ84827
+### 问题: SIM卡与USIM卡读取SIM联系人的差异
+解决方案: SIM卡按照3GPP协议,SIM卡联系人只有ADN需要读取,通常只需要读取跟解析ADN内容,相对简单. USIM卡按照3GPP协议,USIM卡联系人是需要读取EFId为4F30对应的PBR文件块,内容包含ADN,EMAIL、GRP...USIM卡特有的联系人相关参数内容.通常USIM卡会实例化UsimPhoneBookManager对象,对读取到的PBR内容按照特定的Type TAG进行解析. 具体处理可参见UsimPhoneBookManager. 关于SIM/USIM 联系人相关的任何问题,欢迎随时联系展讯的FAE获取更多支持和帮助.
+参考FAQ: FAQ84828

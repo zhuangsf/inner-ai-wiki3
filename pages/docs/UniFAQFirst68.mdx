@@ -1,0 +1,356 @@
+### 问题: SC9820E平台， Headphone的底噪是多少？
+解决方案: Headphone的输出底噪在15uV左右.
+参考FAQ: FAQ120380
+### 问题: RF-ISO是仿真的什么内容？
+解决方案: RF-ISO是仿真的RF和LVDS的隔离度,新项目必须仿真
+参考FAQ: FAQ120394
+### 问题: Board Temp 热敏电阻摆放位置
+解决方案: Board_Temp 热敏电阻是用来采集主板的温度,配合Thermal策略,优化系统性能.建议摆放在BB和PMIC中间位置的的PCB背面,可以偏移一点,对距离要求不是很严格,但需要到两个器件等距.
+参考FAQ: FAQ120398
+### 问题: SC9820E是否支持5M +2M camera
+解决方案: 不支持5M+2M camera,SC9820E只支持2M(前)+2M(后)camera
+参考FAQ: FAQ120410
+### 问题: SL8521E是否支持5M+2M camera
+解决方案: 可以支持5M(后)+2M(前) camera
+参考FAQ: FAQ120397
+### 问题: GSM支持哪些语音编码方式？不支持哪些语音编码方式？
+解决方案: GSM支持的语音编码方式有:FR\HR\EFR\AMR_FR\AMR_HR\VAMOS1 GSM不支持的语音编码方式有:VAMOS2
+参考FAQ: FAQ120471
+### 问题: SC6531E电池NTC功能设计。
+解决方案: 展锐平台的电池温度检测电路有三种方案,1:上拉接47K,下拉接10K的NTC电阻.2:上拉接47K,下拉接100K电阻并联47K的NTC电阻.3:上拉接15K电阻,下拉接39K电阻并联10K的NTC电阻.检测脚接到平台的BAT_DET.对于3pin脚电池需要保留电池在位检测和电池温度检测功能的推荐第一种方案.
+参考FAQ: FAQ120473
+### 问题: SC9820E是否能接双LCD?
+解决方案: SC9820E平台共有三路SPI:SPI0、SPI1、SPI2.其中SPI1的速率为48MHz,支持4线1 data line传输.而SPI0、2的速率为24MHz,支持3线2 data line传输.SC9820E的SPI LCD可以支持到QVGA.SC9820E做双LCD的方案有两种,第一种方案使用其中两路SPI分别接两个屏.第二种方案为两个屏共用一组SPI信号,额外使用一个GPIO模拟片选信号接另外一个屏,注意所选SPI支持的最高分辨率,此方案不能同时显示两个画面.
+参考FAQ: FAQ120533
+### 问题: GCF case 14.10.1 AMR 的C/I 值如何填写
+解决方案: 14.10.1 的C/I 值如下: AFS 900/850 (AMR C/I normalization factor = 0) 14 14 14 14 12 10.5 10.5 10.5 1 0 0 0 AFS 1800/1900 (AMR C/I normalization factor = 0) 14 14 14 14 11 9 9 8.5 1 0 0 0 AHS 900/850 (AMR C/I normalization factor = 0) 14 14 14 12 10.5 9.5 1 0 0 0 AHS 1800/1900 (AMR C/I normalization factor = 0) 14 14 14 11 8.5 8 1 0 0 0
+参考FAQ: FAQ120550
+### 问题: SC9820E采用喇叭/听筒/振动三合一方案，振动频率如何修改？
+解决方案: 在AudioTester工具的Handsfree模式下Vibrate Generator中可以设置:Freq调整喇叭振动频点,Gain调整振动幅度,Hold time使用默认值(6s),可不做调整.
+参考FAQ: FAQ120867,含图片
+### 问题: 请问SL8521蓝牙支持A2DP/AVRCP等这些蓝牙流媒体和通话协议吗?
+解决方案: A2DP/AVRCP/HFP等,这些协议SL8521E都是支持的.
+参考FAQ: FAQ120666
+### 问题: 请问SL8521E平台是否支持500W像素camera？
+解决方案: 支持,但注意DDR需要使用512MB以上的容量.
+参考FAQ: FAQ120667
+### 问题: 请问SC9832E平台的GPS频偏的标准如何界定？
+解决方案: 频漂标准: 1. Idle mode:CEP_95% Spec≤5ppb, CEP_100% Spec≤10ppb ; 2. Flight mode:CEP_95% Spec≤5ppb, CEP_100% Spec≤10ppb .
+参考FAQ: FAQ120669
+### 问题: 请问SC7701平台是否有电压功率补偿，以补偿GSM在最大发射功率时，低电压造成的发射功率偏低，高电压造成的发射功率偏高？
+解决方案: SC7701无电压功率补偿.
+参考FAQ: FAQ120678
+### 问题: 请问SC9863A是否支持UFS存储接口？
+解决方案: SC9863A不支持UFS存储接口.
+参考FAQ: FAQ120680
+### 问题: ResearchDownload下载工具中的Debug Mode信息存储分区
+解决方案: 1. 工具端选择路径,下载工具->Settings->Options->Debug Mode; 2. Debug Mode勾选或者去掉之后的配置信息存在miscdata分区; 3. 改变之后,下载不需要勾选EraseMisc这个选项进行下载,勾选信息才能生效;
+参考FAQ: FAQ125181
+### 问题: WCDMA系统中的CPC是什么
+解决方案: 连续分组连接(CPC)技术.CPC技术使用户保持永远在线,避免频繁的无线链路连接、断开、重新建立及系统固有的开销和时延
+参考FAQ: FAQ120699
+### 问题: 如何查看频点的重选优先级
+解决方案: 1.服务频点重选优先级: 在系统消息SIB3下面的cellReselectionServingFreqInfo->CellReselectionPriority 2.邻区频点的重选优先级:在系统消息SIB5的interFreqCarrierFreqList->CellReselectionPriority
+参考FAQ: FAQ122180
+### 问题: GTS测试报告中有很多Assumption Failure,这是否有影响？
+解决方案: 详细可参考google GTS user guide说明,Ignored and Assumption Failure都是被视为pass的. 
+ 原文如下:
+Note: Ignored means that the test did not run at all and was completely skipped. Assumption Failure means that some precondition of the test isn't met and the test was aborted. Both Ignored and Assumption Failure are treated as Pass.
+参考FAQ: FAQ120709
+### 问题: VSIM项目，请问远程卡模式支持情况
+解决方案: VSIM 项目双卡制式支持情况如下:
+双L 版本:
+云卡(远程卡)支持的模式:单模:L (3),W (18);多模:L/W (24)
+实体卡(种子卡)支持的模式:单模:L (3),W (11),G(10);多模:L/W (24),W/G (14),L/G (21),L/W/G (6)
+
+云卡(远程卡)在之前的项目中也没有支持过 GSM,主要是之前评估由于 GSM 网络下 PS 业务速率较低.
+参考FAQ: FAQ120729
+### 问题: 模式设置为GSM和LTE_TDD两模
+解决方案: 将testmodem 设置为 21,并且需要将NV中的如下搜网频段关闭:
+eutraFDDBandlist:下面清成0
+numofEUTRAFDDBand:FDD频段总数改成0
+参考FAQ: FAQ120730
+### 问题: 如何将通话场景和录音里的主麦克通路全部切换成副麦克通路？
+解决方案: 1. 通话部分: 在Audio tester中打开NV参数,在通话界面的" codec" 中,打开 "Device set",更改Bit 11&Bit 10的值,见下图, bit 10 代表主麦克, bit 11代表副麦克; 注意,修改时需要覆盖手持和免提的NB/WB,涵盖2/3/4 G 模式, SWB模式(如果支持),VOIP以及工程模式等; 2.录音部分: 需要修改软件代码,详询我司软件FAE.
+参考FAQ: FAQ120728
+### 问题: 蓝牙播放音乐音量增益如何配置
+解决方案: 蓝牙音乐播放手机侧的音量等级,调用的music的参数的audio_arm\audio_arm\Headset\AudioStructure\reserve\reserve[49]...[57]的bit[6:0]的位置. reserve[49]对应着音量等级1的增益,reserv[50]对应着音量等级2的增益,后面依次类推. 值越大,增益越大.
+参考FAQ: FAQ120753
+### 问题: IMPI和IMPU的作用？
+解决方案: VoLTE及VoWiFi注册时需要使用SIM卡相关的IMPI、IMPU及Domain三项参数构建REGISTER消息. IMPI:用户的私有用户身份 IMPU:用于注册的公共用户身份 Domain:用户的SIP注册服务器的地址 如SIM卡类型是ISIM(卡EF文件内有IMPI、IMPU及Domain参数),则终端直接使用卡里配置的参数进行注册; 如SIM卡类型是USIM(卡内无IMPI、IMPU及Domain参数),则终端按照协议规则使用IMSI、MNC、MCC去生成IMPI、IMPU及Domain参数用于注册. IMPI、IMPU及Domain参数的详细使用规则请参考协议3GPP TS 24.229 5.1.1
+参考FAQ: FAQ120761
+### 问题: 请问SC9863A可以支持双摄12M+12M吗？
+解决方案: SC9863不支持12M+12M.
+参考FAQ: FAQ120839
+### 问题: SC2721G  RECEIVER OUTPUTS PSRR的值为多少？
+解决方案: 在20Hz~2kHz频率范围内, SC2721G RECEIVER PSRR 为80dB.
+参考FAQ: FAQ120854
+### 问题: SC9820E若采用喇叭/听筒/振动三合一方案，音频调试有哪些注意事项？
+解决方案: SC9820E三合一方案喇叭/听筒/振动信号都从SPK通路输出,因此在相关调试中需要注意规避振动频点对正常语音播放的影响: 1、通话模式中,手持模式(Handset)、免提模式(Handsfree)均需通过EQ等相关参数对振动频点做抑制.可以使用NS对200Hz做高通截至; 2、音乐模式中,除了免提模式,手持模式在微信、skype等手持语音中也会用到,手持模式的振动频点也需要做相应的抑制.调试中,可以使用EQ模块来进行抑制.由于振动喇叭对于振动频点宽泛特性,如对使用中震感有较高的要求,对于振动频点+/-10Hz点,可以再使用两个EQ频点来做抑制,这样可以更好的抑制振动感受; 3、振动模式,由于振动增益GAIN是数字增益,最终振动输出会受免提模式模拟增益PA_G、DAC_S的影响,即音乐模式模拟增益做了调整,振动增益也需要做相应的补偿.
+参考FAQ: FAQ120868
+### 问题: NemoG  GCF Case14.10.1 Case 仪表 C/I 值如何配置
+解决方案: 需要配置如下:
+ 
+
+ 
+	ARM C/I Parameters:
+Improved Receiver Performance  No Supported
+DARP Phase 1 No Supported
+DARP Phase 2 No Supported
+AMR FS   Supported
+AMR HS   Supported
+AMR WFS  No Supported
+
+C/I Normalization Factors:
+    gsm850  900 1800 1900
+AFS   0      0    0    0
+AHS   0      0    0    0
+WFS   0      0    0    0
+参考FAQ: FAQ120874
+### 问题: SC6531E/F/H是否支持EDGE?
+解决方案: SC6531E/F/H 不支持EDGE,包括下行EDGE 也不支持.
+参考FAQ: FAQ120948
+### 问题: SL8521E如何关闭WCN LOG？
+解决方案: 通过ADB命令关闭wcn log: adb root adb remount adb shell cplogctl disable wcn adb shell echo "at+armlog=0\r" > /proc/mdbg/at_cmd 关闭 wcn log adb shell cplogctl state wcn 查询wcn log状态:off or on
+参考FAQ: FAQ120977
+### 问题: 双MIC设计需要注意哪些
+解决方案: 1. 是否支持双驻极体 MIC ,如果支持,降噪处理会否有难点? 支持驻极体MIC,我们会有双麦克降噪算法,主要确保麦克的结构密封性OK,还有双麦克的摆放位置 2. 是否支持双 MIC 放置于机身正面(分别处于上下端,距离大约90-100mm) 建议副麦克不要放在正面的上方,这样可能会被脸部挡住.主麦克放在正面时需要注意不要被手掌或脸部挡住. 主副麦克摆放位置越远越好,不要摆放在对角线上. 补充一下几点双麦设计要点: 1)主副麦克用同一颗料,并且确保灵敏度差异在+/-1.5DB, 2) 主副麦克信噪比越接近越好,建议控制在+/-3DB 3)主副麦克不要放在对角线位置,另外副麦克不要放在容易被用户挡住的位置,例如正面可能会被耳朵贴住 4)主副麦克的结构气密性需做到最佳
+参考FAQ: FAQ121026
+### 问题: SC6531E simlock网络子锁(Network subset lock)的锁定项是否支持IMSI的第8位？
+解决方案: 网络子锁的锁定项不支持IMSI的第8位. 协议规定Network subset lock锁定项为MCC,MNC,network subset. network subset为IMSI的第6和7位. 不能锁定第8位.
+参考FAQ: FAQ121059
+### 问题: SC6531E如何在手机短消息已满的时候仍能收到短消息
+解决方案: 根据协议规定在手机存储满的情况下,class 0的短信是能接收的. 此种情况下,用户需要控制发送的是class 0的短信就可以.
+参考FAQ: FAQ121060
+### 问题: 如何在下拉状态栏打开wifi和蓝牙的详细列表
+解决方案: 8.1中下拉状态栏,点击wifi开关的label可以打开wifi详细列表界面,而不需要进入到设置中进行选择,蓝牙也是同样的情况. 9.0默认关闭了此功能,如果需要打开,在/frameworks/base/packages/SystemUI/src/com/android/systemui/qs/tileimpl/QSTileView.java中将下面的属性改为true即可 private static final boolean DUAL_TARGET_ALLOWED = false;
+参考FAQ: FAQ121140
+### 问题: GSM常用band的Channel Index
+解决方案: GSM850: CH_Arfcn: 128 ~ 251; GSM900: CH_Arfcn: 0~124, EGSM:975~1023; DCS1800: CH_Arfcn: 512~885 ; PCS1900: CH_Arfcn: 512~ 810;
+参考FAQ: FAQ121153
+### 问题: 【BBAT】G3工具GPIO测试列表配置说明
+解决方案: 1.参数说明: GPIO测试设置界面如下图所示,目前开放出来可配置的参数有控制盒端口(AFCB Port),手机GPIO编号(Phone GPIO),备注(Note)和偏移地址(Address),其中控制盒端口和手机GPIO编号为必填项,备注可选填,偏移地址只对Android 7.0项目有效. 2. 如何配置: 控制盒端口:对应控制盒的GPIO及FUNCTION IO口,共40个口,分别为:A0~A7,B0~B7,C0~C7,D0~D7,IO0~IO7. 手机GPIO编号:需要根据硬件原理图,找到需要测试信号的GPIO编号. 偏移地址:G3 userguide中已经列出android7.0对应的几个项目的GPIO编号及偏移地址,注意偏移地址只需要偏移地址前面的0及0x不需要写,比如:0x0286只需要填入286即可. 控制盒端口与手机GPIO编号需要根据夹具接线表一一对应配置.
+参考FAQ: FAQ121327
+### 问题: GTS7.0_r2测试：GtsPlayStoreHostTestCases模块fail
+解决方案: 此项测试fail一般出现在连接网络后,后台自动更新了Chrome,Assistant Go和Maps Go等应用后导致,建议恢复出厂设置后retry或者将以上应用卸载至初始版本后retry是否pass,如依旧fail,可提供完整的测试log及ylog到我司协助分析.
+参考FAQ: FAQ121171
+### 问题: 展锐ussd支持到那个阶段？
+解决方案: ussd 分为如下三个阶段, 目前展锐支持到phase 2.      phase1 :支持移动台发起的 USSD 操作.
+     phase2 :这是目前 USSD 所支持阶段.移动台和网络侧均能发起 USSD 操作,并且在一次 USSD 会话过程中,支持多个连续的 USSD 操作.网络侧既可以发起 USSD 操作,也可以发出 Notify 消息.
+    phase2+ :增强型 USSD ( Enhanced USSD ),考虑支持移动台和网络之间同时的多个会话,并考虑支持用 DCS ( Data Coding Scheme )来区分 MMI 模式和承载模式.目前还没有形成协议规范最终稿.
+参考FAQ: FAQ121175
+### 问题: 第三方录屏、录音软件后台录音，fm播放无声
+解决方案: sc2721 audio codec硬件限制,录音和fm播放音频通路是互斥的, codec 内部有个select 要么选择fm iis,要么选择录音adc iis, 所以只能在软件策略上做互斥,开fm时SoundRecorder需stop. root@sp9820e_12c20:/ # tinymix -D 0 102 tinymix -D 0 102 AD IISMUX: AUDIIS0 >DIGFM EXTDIGFM EXTIIS6 AUDIIS1 | | 录音adc iis | | fm iis
+参考FAQ: FAQ121185
+### 问题: 怎样获知WCDMA系统业务状态下的发送功率
+解决方案: 在WCDMA的log trace中搜索关键字"real slot",即能能获得当前发送的功率,单位dbm.
+参考FAQ: FAQ121194
+### 问题: AT指令读取PA id支持情况
+解决方案: PA ID应该是DSP读取的参数,目前没有AT指令可以获取PA ID信息
+参考FAQ: FAQ121200
+### 问题: SMS over IMS下终端行为所依据的3GPP标准
+解决方案: 1、发送SMS over IMS 短信,收到403后,UE 不会发起initial register. 3GPP协议也没有相关描述.
+2、SMS over IMS失败后,会切到SGs重发.对于EPS only设备,这个动作没有相应该3GPP协议描述.
+参考FAQ: FAQ121201
+### 问题: SC9863A支持MIPI接口的天线Tuner吗？
+解决方案: GPIO 和MIPI 接口的天线Tuner 都支持,具体NV 配置可以参考《 Antenna Tuner RF NV Configuration Guide V1.0》.
+参考FAQ: FAQ121232
+### 问题: 对于DQS,DQ信号，在长度控制上，有什么要求？
+解决方案: | DQS - DQ | ≤ 7mm ,即对应的DQS 和 DQ 的线长差值要小于等于7mm.同时参考展锐提供的SPM DDR部分布线以SI仿真结果判断.
+参考FAQ: FAQ121243
+### 问题: 在DDR走线中，CLK和CA 信号，在走线长度上有什么要求？
+解决方案: |CLK – CA|≤ 7mm,即CLK 和 CA走线长度的差值要小于等于7mm.同时参考展锐提供的SPM DDR部分布线以SI仿真结果判断.
+参考FAQ: FAQ121244
+### 问题: 三合一卡槽，如何连接热插拔检测管脚？
+解决方案: 不能将三合一卡托det信号单独接一个SIM0_DET,SIM1_DET或者TF_DET信号,应该将卡槽的detect信号分成三路,然后通过0ohm隔开, 分别接BB侧3路detect输入检测.具体请参考各平台《SIM Card Hot-plug Application Note》.
+参考FAQ: FAQ121574
+### 问题: 如何关闭EVS-SWB语音编码？
+解决方案: EVS(Enhance Voice Service)编码根据带宽可以分为4种: EVS-NB(窄带), EVS-WB(宽带), EVS-SWB(超宽带),EVS-FB(全频带) 如何关闭EVS-SWB编码? 将NV参数evs_prim_max_bw设置为1即可: evs_prim_max_bw = 1
+参考FAQ: FAQ121288
+### 问题: 如何动态开启audio hal log等级
+解决方案: 调试audio软件问题经常需要看到更多的audio hal log, 由于考虑到性能问题, audio hal log level默认是3, 所以就需要将log level加大. volatile int log_level = 3; 如下方式可以动态修改log level: 
+	adb root
+adb shell
+ 
+
+ 
+	 
+
+ 
+
+ 
+	//android 7.0 8.0
+echo  loglevel=5 > /data/local/media/mmi.audio.ctrl
+ 
+
+ 
+	 
+
+ 
+
+ 
+	//andoird 9.0
+ 
+
+ 
+	echo  loglevel=5 > /data/vendor/local/media/mmi.audio.ctrl
+参考FAQ: FAQ121344
+### 问题: 使用USB OTG，但是芯片没有USB_ID pin，请问如何处理
+解决方案: USB_ID请接到有EXTINT功能的管脚,该类管脚有硬件去抖
+参考FAQ: FAQ121381
+### 问题: SC2721G马达上并的2.2uF电容有什么作用？是否可以缺省或容值改小？
+解决方案: 马达电容主要作用是减少EMI和给有刷马达做交流滤波,不建议缺省或容值减小.
+参考FAQ: FAQ121413
+### 问题: marlin3的时钟设计
+解决方案: marlin3的时钟设计支持XO mode和buffer mode,当选择XO mode时,XTAL_IN/OUT可接26M或38.4M的晶体,内部会分频出32K时钟.当选择buffer mode时,XTAL_IN接26M或38.4M TCXO.CLK_32K引脚接外部32K时钟源.XO mode或buffer mode通过DCXO_BONDING_OPT引脚选择,拉高为XO mode,拉低为buffer mode,默认XO mode.引脚REF_FREQ_SEL控制输入的时钟,拉高为26M,拉低为38.4M,默认26M.
+参考FAQ: FAQ121400
+### 问题: 使用芯片内部efuse是否要做硬件电路修改？
+解决方案: 无需额外电路,按照参考设计即可支持efuse.
+参考FAQ: FAQ121412
+### 问题: SC2721G 靠近VCHG引脚的1uF/25V电容是否可以降规格？
+解决方案: 有外置EOS器件和使用外置充电IC条件下,靠近VCHG的电容,有EOS防护作用和平滑VCHG输入波形作用,可适当降低耐压值,但不建议改小容值. 如果使用内置线性充电电路或无外置EOS器件,此电容规格无法降低.
+参考FAQ: FAQ121417
+### 问题: marlin3系列的各类产品有什么区别，例如UWE5621和UWP5661?
+解决方案: marlin3系列有UMW2650、UWE5621、UWP5661产品.UMW2650:WIFI/BT/FM/GNSS四合一的芯片.UWE5621:WIFI/BT二合一的芯片,常用作智能家居的wifi收发芯片,UWP5661:带有MCU的芯片,可做主控.
+参考FAQ: FAQ121421
+### 问题: UWE5621 OTT产品的电源介绍
+解决方案: UWE5621 OTT产品的电源介绍 UWE5621 OTT产品需要外部提供三路电源:1.8V、1.2V和3.3V.其中1.8V给RTC电路,DCXO起振电路和作为IO口的电源,1.2V给WIFI/BT的RF电路和所有的PLL供电,3.3V给WIFI的2.4G和5G PA及调制解调器供电,UWE5621内部存在一个CORE_LDO,可通过1.2V转出0.9V给CORE供电.sleep mode下此LDO的输出电压值为0.7V.
+参考FAQ: FAQ121424
+### 问题: USB2.0接口DP/DM为什么要经过PMU？
+解决方案: PMU内包含BC1.2检测模块,BC1.2是通过DP/DM检测充电器类型,所以DP/DM需要先接到PMU,再从PMU输出到AP.
+参考FAQ: FAQ121438
+### 问题: 7731E支持SPI屏？
+解决方案: 7731E有两个SPI接口支持LCD屏,分辨率最高支持到到QVGA(240*320)@30fps. SPI0属于Normal SPI,时钟速率最大24M, 支持4 wire 8bits/ 3 wire 9bits / 3 wire 9bits 2-data-line . SPI1属于High Speed SPI,时钟速率最大48M, 支持4 wire 8bits/ 3 wire 9bits .
+参考FAQ: FAQ121434
+### 问题: WCDMA UPA速率与RSCP的关系
+解决方案: UPA数据发送是在主天线上的,如果支持DPDT的话,当满足条件时,数据发送会切换到辅天线; 相同的环境下,随着RSCP的降低,上行DPCCH的发送功率会随之抬升,当抬升到一定程度,就会出现UPA发送功率不足,此时会出现功率受限(UPH减小)的现象,速率也会跟着降低; 在弱场情况下,加上主辅天线可能RSCP不相同,此时如果速率较低的话,可以看看现在主天线的RSCP值,如果很低的话,如-93或以下,会对速率影响很大,我们做过实验,在弱场情况下,RSCP降低1dbm,UPA速率可能会下降1Mbps;
+参考FAQ: FAQ121448
+### 问题: SC9863A平台GNSS是否支持三模定位？
+解决方案: SC9863A平台内置的WCN芯片只支持GPS+GLONASS或GPS+BEIDOU双系统定位. SC9863A平台+UMW2651的方案可以支持GPS/GLONASS/Galileo/BEIDOU_B1I/BEIDOU_B1C 五模中选三模进行三系统定位.(1. 不支持B1I和B1C同时运行;2.三模必选GPS)
+参考FAQ: FAQ121485
+### 问题: 展锐平台在产线什么站位写simlock？
+解决方案: 展锐平台写SimLock 与IMEI 需要设置在同一站位,写完SimLock 后IMEI1 不能随意更改.如果 需要修改 IMEI1 必须 重新 使用 相同的 RSA Key 重 写 SimLock .
+参考FAQ: FAQ121486
+### 问题: 展锐平台支持哪些生成simlock密钥的方案？
+解决方案: 展锐平台支持加密狗生成密钥和使用RSAKeyGen工具生成密钥.推荐使用加密狗方案.
+参考FAQ: FAQ121488
+### 问题: [SIMBA] 如何单独设置LTE综测各个频段的最大功率门限?
+解决方案: 从Simba_R6.0.0007(含)以后的版本开始支持可单独设置LTE各频段的最大功率门限,具体设置方法如下: Step1: 用记事本软件(推荐Notepad++)打开.SEQ文件,比如SC9863A+SR3595D.seq Step2: 找到Node Name="LTE LMT"节点,在该Node的<Param>节点下需要修改的频段节点下增加门限设定: <MaxPower>20,26</MaxPower> <MaxPowerReduce>19,26</MaxPowerReduce> <MaxPowerReduce_16QAM>18,26</MaxPowerReduce_16QAM> 以 MaxPower 举例,20代表下限,26代表上限. [说明] 如果各个频段中没有最大功率的门限设定,那么会默认使用<Param><Specification>中的门限设定. Step3: 保存SEQ文件后,重新测试,效果如下图:
+参考FAQ: FAQ121480
+### 问题: Android P，如何修改待机界面多页切换时的动画时长
+解决方案: Android P,如需修改待机界面多页切换时的动画时长,调整以下代码中的PAGE_SNAP_ANIMATION_DURATION即可: packages/apps/Launcher3/src/com/android/launcher3/PagedView.java ... ... protected static final int INVALID_PAGE = -2; protected static final ComputePageScrollsLogic SIMPLE_SCROLL_LOGIC = (v) -> v.getVisibility() != GONE; public static final int PAGE_SNAP_ANIMATION_DURATION = 750;
+参考FAQ: FAQ121639
+### 问题: 终端信号强度的上报
+解决方案: 终端信号强度的获取包含: 1. AP 端主动查询信号状态 2. CP 端主动上报信号状态 CP 端主动上报信号状态 RIL会注册监听SIGNAL_STRENGTH事件,接收CP上报的信号消息; Telephony注册EVENT_SIGNAL_STRENGTH_UPDATE事件,接收CP上报的信号强度消息 为节省手机续航功耗,我司采用的信号强度上报策略有: 1)灭屏时,可定制关闭信号强度的上报; 2)亮屏时,通过下发AT+CEREG=2的AT命令通知CP主动上报CEREG和CGREG的详细信息.
+参考FAQ: FAQ121635
+### 问题: 智能终端双天线的开启条件
+解决方案: 1. GSM GSM 是动态开关副天线的,在主天线能量过低或者信号较差的情况下才会打开副天线. 2. WCDMA 待机场景:PCH态也会开启双天线,条件是RSCP< -105dBm,同时ECNO HSDPA/HSUPA场景:开启DPA后,必然开启双天线 不开启DPA的数据业务场景:DPCH态不开启DPA, RSCP<-105dBm,同时ECNO < -15 会开启双天线 3. LTE 主副天线常开
+参考FAQ: FAQ121656
+### 问题: Android8.1如何设置1080P视频播放时运行最少需要的cpu核数
+解决方案: sharkl2对1080P视频播放,缺省配置是最少需要保留3个小核在运行,具体核数配置如下 vendor/sprd/modules/power/config_files/sharkl2/power_scene_config.xml <scene name="video_1080p" > <set path="/sys/devices/system/cpu/cpuhotplug" file="cluster0_core_min_limit" value="3" /> </scene>1080P
+参考FAQ: FAQ121667
+### 问题: Android P，如何给设置壁纸界面底部选中的缩略图的“对号”添加边框
+解决方案: Android P,设置壁纸界面底部选中的缩略图的"对号"是一矢量图,如需给此矢量图添加边框,可以参照以下修改(添加Width为2的红色边框): packages/apps/WallpaperPicker/res/drawable-v21/ic_tick.xml <group> <path + android:strokeColor="#FFFF0000" + android:strokeWidth="2" android:name="tick" android:fillColor="#FFFFFFFF" android:pathData="M18 32.34l-8.34-8.34-2.83 2.83 11.17 11.17 24-24-2.83-2.83z" /> </group>
+参考FAQ: FAQ121668
+### 问题: SC2631H切换RTM7276 注意事项?
+解决方案: 1.PA封装需要改动,具体要修改绿油(Solder mask)和钢网(Paste mask)尺寸. 主要修改中间GND焊盘,由于是异型,具体参考PA datasheet,不清楚部分部分请联系我司FAE. 2.RF匹配/性能需要重新调试/测试.
+参考FAQ: FAQ121702
+### 问题: SC9863A RF LVDS信号和SPI信号是否可以删除一部分？
+解决方案: 对于SC9863A平台: 1.如果是做Cat4 or GSM+WCDMA only,LVDSRFB(SCC)六根线可删除,对应Pin悬空即可,软件内部处理(LVDSRFB需要PD处理,需要使用Cat4 对应NV); 2.做Cat6(DL CA)和Cat7(DL & UL CA),均不允许删除LVDSRFB(SCC)任何一根线; 3.SPI A和SPI B的6根线都不能删除,因为WCDMA模式下的SW仍用到SPI B.
+参考FAQ: FAQ121703
+### 问题: SC9850K RF LVDS信号和SPI信号是否可以删除一部分？
+解决方案: 对于SC9850K,如果做Cat4/6 ,与Cat7 LVDS/SPI接线方式完全保持一致.知悉,感谢
+参考FAQ: FAQ121704
+### 问题: SC7701B平台WTHLED_IB0~3单路最大可以提供多少mA电流，设计时有哪些注意项？
+解决方案: SC7701B共有4路背光输出电路,每路LCM背光灯有32档,0.5mA步进.最大输出24.75mA,4路可以并连在一起为背光灯提供电流,其中WTHLED_IB0必须要接LED,设计时需要将背光灯的阳极与VBAT相连,各LED阴极与BB芯片的各背光电流源pin相连,WTHLED_RSET脚应端接一个6.2KΩ的电阻到地.
+参考FAQ: FAQ121723
+### 问题: SC9832E是否支持双VOLTE ?
+解决方案: SC9832E L+L项目(18A分支)是支持双L项目,支持双VoLTE功能;谢谢
+参考FAQ: FAQ121729
+### 问题: LTE平台26M与32K时钟方案？
+解决方案: LTE平台一般会有TSX+32Kless 或者 TCXO+32K两种方案,二者是固定搭配,请注意! 如果客户项目无GPS且想省32k,可以使用DCXO+32kless.
+参考FAQ: FAQ121746
+### 问题: 怎么检查机器中配置的32k时钟方案是32k还是32kless？
+解决方案: 硬件和软件均需要检查. 1.硬件,直接拆机检查主板贴片物料情况. 2.软件检查如下:以SC9832A为例,检查code中配置.
+参考FAQ: FAQ121747,含图片
+### 问题: Android P，是否支持在待机界面预置DeepShortcut
+解决方案: 由于DeepShortcut是由framework侧的ShortcutManager统一管理.所以即使在Launcher应用中预置DeepShortcut,framework侧也不会存在相应的DeepShortcut,导致预置DeepShortcut不会生效.
+参考FAQ: FAQ121889
+### 问题: LTE RRM/RF实验室认证测试注意事项
+解决方案: 1.关闭屏蔽室门 2.正确连接主路辅路天线 3.关闭数据连接开关 4.关闭volte 5.工程模式中CFU设置为永不查询,再务必重启机器测试 6.务必仪表自动化环境测试,中途不要手动飞行
+参考FAQ: FAQ121795
+### 问题: ims 紧急呼叫的pdn apn 的来源
+解决方案: 根据3GPP协议要求,紧急呼叫UE是不允许携带APN信息的,至于网络分配什么APN信息是由网络侧决定.
+
+如果某些运营商有特殊要求紧急呼叫一定要携带APN给网络,那么需要运营商提供APN的信息并配置在AP侧.
+参考FAQ: FAQ121805
+### 问题: 如何判断或获取SIM卡欠费
+解决方案: 从3GPP协议角度,没有任何的注册拒绝原因值可以明确表示当前SIM卡为欠费卡.
+参考FAQ: FAQ121817
+### 问题: 当前最多能够支持同时激活几路pdp
+解决方案: 最多支持11路PDN/PDP同时在线,包含default/dedicated、primary/secondary.
+参考FAQ: FAQ122171
+### 问题: 同一版本分地区如何实现simlock和非simlock版本
+解决方案: 同一版本可以通过烧录不同的simlock_xml文件来分地区实现simlock和非simlock版本.
+参考FAQ: FAQ122192
+### 问题: 使用VoLTE短消息业务为什么必须配置正确的短信中心号码？
+解决方案: VoLTE短消息发送过程包括:终端UE发出短信后,经过P-CSCF/S-CSCF到达IP短消息网关IP-SM-GW,短消息网关IP-SM-GW将短信内容提取后,经过CS域短信网关SMS-GMSC转发给短信中心SC.短信中心SC再经过和发送短信相反的过程,将短信内容转发给接收UE. 终端收发短信都需要经过短信中心,短信中心负责提交、存储和转发短信,因此需要配置正确的短信中心号码. 短信中心号码一般会在SIM卡中预先配置.修改或删除短信中心号码,均会导致短消息发送失败,请勿随意修改.
+参考FAQ: FAQ121811
+### 问题: 7701卡2是否支持3G
+解决方案: 不支持,只能固定卡槽,卡1支持2G,3G,卡2只支持2G
+参考FAQ: FAQ121829
+### 问题: 用LCD背光替代前摄像头闪光灯，硬件上是否有特殊设计？
+解决方案: 这个方案不需要添加新的外设,只是通过LCD的背光进行补光. 在需要补光的时候,将LCD背光电流调到最大,然后根据背光+环境光亮度调整曝光. 硬件选型上不需要特别选型,背光亮度越高,补光效果比较好.
+参考FAQ: FAQ121830
+### 问题: call waitiing 基于本地的配置
+解决方案: 这里有2个概念:   1. 本地,2, 网络 对于CS域设置,没有本地设置,CS域只能走网络设置. 对于PS域,根据运营商的不同,虽然都是走PS域,但有走本地,和网络一说. 对于PS域走本地,这就有可能存在和网络不同步的问题.所以现在展锐的设计是先走PS本地,再同步到CS域走网络. 这就出现,有些网络不需要这样做(因为很多网络PS和CS是同步的,默认CW是打开 的,UE无法关闭,这样才能保证CW由UE自行控制) . 为了解决这个问题我们设置了一个NV  CW_strategy 用来控制只走PS域本地,不同步到CS域.或是走PS域,同步到CS域. 设置成只走本地,那将cw_strategy 设置成1,就会只走PS本地,如果设置成0,就会同步CS域,最后结果由CS域确认
+ 默认值也是CS和PS同步.也就是0.
+参考FAQ: FAQ121837
+### 问题: 听筒结构设计需要注意哪些？
+解决方案: 听筒结构设计注意点,仅供参考: 1.听筒后腔设计时需要注意单体泄气孔的位置,确保后音腔畅通; 2.听筒挡墙与听筒之间需要留有间隙,建议在靠近整机内侧挡墙处预留泄气通道; 3.注意前音腔密封,前后音腔隔离,避免声短路; 4.建议听筒有效出音面积≥3mm²(适用于1206,1506),听筒设计高度满足工作高度要求(本体工高+结构件);
+参考FAQ: FAQ121857
+### 问题: 如何将状态栏的4G信号图标显示修改为LTE
+解决方案: 状态栏的图标信号4G修改为LTE,将下面的值修改为false即可,注意overlay的情况 /frameworks/base/packages/SystemUI/res/values/config.xml <!-- Should "4G" be shown instead of "LTE" when the network is NETWORK_TYPE_LTE? --> <bool name="config_show4GForLTE">false</bool>
+参考FAQ: FAQ121905
+### 问题: SC6531E如何用windows自带的拨号工具进行拨号上网？
+解决方案: 如果用windows自带的拨号工具测试,测试版本如要满足如下条件: ATC_SUPPORT=FULL IPVERSION_SUPPORT = V4 之后进行如下操作: 1. 打开windows设备管理器: 2. 手机开机,用USB连接手机,手机界面选择usb log, 设备管理器出现新的端口: 3. 打开电脑上的控制面板\所有控制面板项\网络和共享中心: 4. 点击设置新的连接或网络,选择设置拨号连接: 5. 选择调制解调器: 6. 设置拨号参数,并进行拨号
+参考FAQ: FAQ121935
+### 问题: 为什么手动搜网被被叫打断后，没有立即结束搜网
+解决方案: 手动搜网,收到被叫的CS业务(如短消息/电话等)后,为了提高搜网的成功率,不会立即上报手动搜网失败,而是会起1个5秒的timer,当5秒的timer超时后,如果CS业务未结束,会上报搜网失败.如果CS业务结束了,则会继续进行手动搜网.
+参考FAQ: FAQ121943
+### 问题: 为什么卡一有网，卡二电信移动到弱信号地点，再移动到好点下需要用时1分钟左右才恢复网络
+解决方案: 实际弱信号地点只是电信LTE网络的信号不好,而移动和联通4/3/2G的网络信号还是好的,所以卡1还是正常驻留并可以提供正常业务.而卡2在电信4G下丢网后,去了联通2G受限驻留. 卡2在联通网络受限后,如果频繁找网,会对卡1的PS业务等产生影响,所以设计成双卡情况下,受限驻留后起1分钟的timer.等1分钟timer超时后再进行找网.
+参考FAQ: FAQ121974
+### 问题: 如何做到插入USB后自动虚拟出调试口（DIAG端口）？
+解决方案: 在 MMIAPIUdisk_HandleUsbCablePlugIn @ mmiudisk.c 中调用 MMIUDISK_StartUsbLog 即可实现在插入USB时启动usb log服务,进而在电脑端虚拟出diag端口. 原始代码 MMIAPIUdisk_HandleUsbCablePlugIn 中是通过一些条件判断来决定是否调用 MMIUDISK_StartUsbLog,实际项目中可根据需要做客制化修改.
+参考FAQ: FAQ121980
+### 问题: sensorhub 抬手亮屏亮度值的修改
+解决方案: 抬手亮度值的默认值是最低亮度1,客户可以通过修改config.xml中的config_screenBrightnessDoze变量来客制化,如: frameworks/base/core/res/res/values/config.xml <integer name="config_screenBrightnessDoze">1</integer> 参数1为brightness,范围为1~255.
+参考FAQ: FAQ122045
+### 问题: 7701平台的三合一喇叭项目，为什么改过手持下行音量参数后听筒无声？
+解决方案: 对于三合一喇叭方案的项目,需要注意需要使用Audio tester 6.0之后的工具修改参数,如最新发布的Audio tester 8.0工具. 因为三合一喇叭方案在Audio tester 6.0之后发布,所以6.0版本并没有对三合一喇叭方案做适配,所以会出现此问题.
+参考FAQ: FAQ122078
+### 问题: SP9863平台LPDDR4是否支持DBI功能
+解决方案: DBI解释及背景: 1. DBI(Data Bus Inversion)数据总线倒置,这是DDR4及以后的LPDDR4/LPDDR4X引入一个特殊功能.即在传输的一个Byte的数据中如果有超过4bit为"1",那么在就会进行数据翻转后再传输.例如:传输一个字节数据为0X1F,就会翻转为0XE0进行传输,接收端根据DMI信号线的电频来进行判断是否需要翻转回来. 2. 在LPDDR4中引入了DMI管脚,当MR3寄存器的Bit6为1时Enable DBI read;当MR3寄存器的Bit7为1时Enable DBI write,反之为0就Disable DBI功能; 3. 引入该功能的目的是为了省电,根据DDR的原理设计,当DQ(DATA LINE)输出为高时就会有静态电流,当DQ输出为低时,静态电流为0,以此来达到省电降低功耗的目的. SP9863是支持DBI功能的,默认的软件配置是打开了DBI write功能,DBI read默认是关闭的.
+参考FAQ: FAQ122086
+### 问题: 如何判断手机有没有写过simlock.bin文件，尽管写没有锁网信息的bin文件
+解决方案: AT+SNVM=0,2020 读取总开关 例如: >at+snvm=0,2020 +SNVM: 43,0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000000 通过这个查看+SNVM:返回值第二个参数的前两位来判断simlock的总开关是否有打开.
+参考FAQ: FAQ122193
+### 问题: SC2721G LDO VDDRF1V25 线宽要求是什么？
+解决方案: LDO VDDRF1V25 PCB 线宽至少0.4MM.
+参考FAQ: FAQ122212
+### 问题: PCC_RFSEN/PCC_RFSCK/PCC_RFSDA组SPI 走线规则是什么？
+解决方案: 走线尽量上下左右包地处理,左右GND trace尽量隔离其它信号并多加vias, 上下层至少有一层为GND平面,邻层避开强干扰源平行走线, 也要避免SPI_A和SPI_B邻层平行走线.
+参考FAQ: FAQ122207
+### 问题: Transceiver SR3595D,相关电源去耦电容Layout有哪些要求？
+解决方案: 1)所有电源的去耦电容必须靠近对应PIN脚摆放,请严格按照电路图,特别是VDDRF_1V8和VDDRF_1V25, 每一组电容(一大一小容值)对应一个power Pin; 2)电容到Power Pin脚走线尽可能短,保证其走线相邻层地完整性, trace必须先经过电容再到Power Pin脚.
+参考FAQ: FAQ122208
+### 问题: wcdma 系统中 dtx 是什么意思
+解决方案: wcdma 系统中 dtx 为非连续发射(Discontinuous Transmission)的缩写 是一种优化无线语音通信系统效率的方法,这种传输方式允许手机在用户没有语音输入时,周期关闭发射器,可以有效延长电池使用时间.
+参考FAQ: FAQ122219
+### 问题: SC2721G LDO VDDRF18线宽要求是多少？
+解决方案: LDO VDDRF18线宽至少是0.4MM.
+参考FAQ: FAQ122213
+### 问题: T310 平台支持的时钟方案有哪几种？
+解决方案: 1)26M TSX for PMU, reserved TCXO for WCN. 2)26M TSX for PMU +TCXO clock for WCN.
+参考FAQ: FAQ122220

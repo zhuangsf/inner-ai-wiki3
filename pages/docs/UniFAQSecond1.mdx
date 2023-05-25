@@ -1,0 +1,317 @@
+### 问题: 如何对比sysdump和vmlinux中.text段
+解决方案: 为了判断是否有内存破坏,有时会需要比对dump中和vmlinux中的代码段 例如dump文件为dump.elf,symbol文件为vmlinux 1. 获取vmlinux中的.text段 arm-eabi-objcopy -O binary -j .text vmlinux vm_text 2. 获取sysdump中的.text段 2.1 获得.text段大小 arm-eabi-readelf -S vmlinux 显示 [Nr] Name Type Addr Off Size ES Flg Lk Inf Al [ 2] .text PROGBITS c0009000 009000 657d8c 00 AX 0 0 4096 得到.text段Size为0x657d8c,Off为0x9000,加上dump头部的4K,偏移为40k 2.2 转为10进制 echo $((0x657d8c)) 得
+完整回答请参考FAQ: FAQ21301
+### 问题: 如何屏蔽Email中设置铃声时的"默认通知提示音"选项
+解决方案: android4.4的Email设置铃声时的选择铃声界面,有一个"默认通知提示音"选项,指向"Pixie Dust"音频文件 同时有一个"Pixie Dust"选项,也指向"Pixie Dust"音频文件,所以有时会有需求要求删除"默认通知提示音"选项. 那么如何进行删除?只需要在调用铃声选择界面的intent中添加如下一段: intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, false); p.s 这两个选项虽然使用的是同一个音频文件,但是"默认通知提示音"选项对应的数据指向Settings.System数据库, "Pixie Dust"选项对应的数据指向media数据库,所以当删除"默认通知提示音"选项后,默认铃声进入铃声选择界面后, 将没有对应的选项可以被选中.此时需要将默认铃声的指向进行转换,让其指向"Pixi
+完整回答请参考FAQ: FAQ21078
+### 问题: motion action分类
+解决方案: motion action类型有如下: 1.AMOTION_EVENT_ACTION_DOWN;2.AMOTION_EVENT_ACTION_UP;3.AMOTION_EVENT_ACTION_MOVE;4.AMOTION_EVENT_ACTION_CANCEL;5.AMOTION_EVENT_ACTION_OUTSIDE;6.AMOTION_EVENT_ACTION_POINTER_DOWN;7.AMOTION_EVENT_ACTION_POINTER_UP;8.AMOTION_EVENT_ACTION_HOVER_MOVE;9.AMOTION_EVENT_ACTION_SCROLL;10.AMOTION_EVENT_ACTION_HOVER_ENTER;11.AMOTION_EVENT_ACTION_HOVER_EXIT; 其中android2.3.5仅包含类型1～7. action类
+完整回答请参考FAQ: FAQ21060
+### 问题: Android 如何让app自行处理power key?
+解决方案: Power key 通常都是由 framework 自行处理的, app无法拿到这个 key 值;所以要达到让应用可以处理的目的,通常开发者可以通过修改input dispatch代码来达到. 1、修改 phoneWindowManager.java 的 interceptKeyBeforeQueueing 方法,在 reference line 后加入下面这段代码: case KeyEvent.KEYCODE_POWER: { //reference line result &= ~ACTION_PASS_TO_USER; //原有代码 // add begin ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE); try{ if(activityMa
+完整回答请参考FAQ: FAQ21085
+### 问题: 使用ViewPager搭建的应用界面，有时候出现滑动不流畅
+解决方案: 上层应用使用viewpager容器,把多个Fragment添加到viewpager中,这样可以实现在一个activity中搭建多个界面显示. 所以在左右滑动不同的Fragment显示的时候,这几个页面的滑动的操作是在Viewpager.java中实现. 而当出现滑动不流畅: 是因为在frameworks\support\v4\java\android\support\v4\view\ViewPager.java中的onInterceptTouchEvent()方法中 对传上来的xDiff yDiff在做判断的时候,阀值条件不满足 直接被阻断了,导致滑动停止,没法滑动到目标页面 这里需要调整相关的参数: - if (xDiff > mTouchSlop && xDiff * 0.5f > yDiff) { + if (xDiff > mTouchSlop && xDiff > yDiff) 
+完整回答请参考FAQ: FAQ21108
+### 问题: 如何去掉后摄像头
+解决方案: 1.一般客户的需求为去掉前摄像头,修改方法如下: 以工程样机sp7715ea为例, device/sprd/scx15_sp7715ea/BoardConfig.mk TARGET_BOARD_NO_FRONT_SENSOR := false 改成 TARGET_BOARD_NO_FRONT_SENSOR := true 2.若去掉的是后摄像头,可仿照上述的TARGET_BOARD_NO_FRONT_SENSOR, 实现等效的TARGET_BOARD_NO_BACK_SENSOR,应用层也需做对应的改动, 但可用如下的变通方法,比较容易实现: kernel/arch/arm/mach-sc/include/mach/__board-sp7715ea.h #define GPIO_MAIN_SENSOR_PWN 163 改成 164 #define GPIO_SUB_SENSOR_PWN 1
+完整回答请参考FAQ: FAQ29631
+### 问题: 如何解决"too many open files"报错？
+解决方案: 如果碰到用户空间提示"too many open files"报错,DEBUG步骤如下: step1:查看系统资源限制: adb shell ulimit -a后显示: time(cpu-seconds) unlimited file(blocks) unlimited coredump(blocks) unlimited data(KiB) unlimited stack(KiB) 8192 lockedmem(KiB) 65536 nofiles(descriptors) 1024 processes 1642 flocks unlimited sigpending 1642 msgqueue(bytes) 819200 maxnice 40 maxrtprio 0 resident-set(KiB) unlimited address-space(KiB) unlimited 上述限
+完整回答请参考FAQ: FAQ21232
+### 问题: 常用的procfs信息有哪些？
+解决方案: -----# head -n 5 /proc/meminfo                       // simple memory usage
+-----# cat /proc/cpuinfo				// cpu information
+-----# cat /proc/interrupts				// irq number
+-----# cat /proc/stat | grep ctxt			// context switch times from bootup
+-----# cat /proc/stat | grep processes		// fork times from bootup
+-----# cat /proc/uptime				// bootup seconds
+-----# cat /proc/kmsg				// kernel log
+---
+完整回答请参考FAQ: FAQ21270
+### 问题: 展讯平台2G Byte的ddr如何配置？
+解决方案: 展讯平台2G Byte DDR配置需要以下几步: 第一步、配置ddr类型: 在 chipram/include/configs/project.h中配置如下宏定义 #define DDR_TYPE DRAM_LPDDR2_2CS_16G_X32 第二步、配置地址空间映射表: 在u-boot/arch/arm/cpu/armv7/sc8830/umctl.c中配置如下映射表: case DRAM_LPDDR2_2CS_16G_X32: { UMCTL2_REG_SET(UMCTL_ADDRMAP0, 0x00001F15); UMCTL2_REG_SET(UMCTL_ADDRMAP1, 0x00080808); UMCTL2_REG_SET(UMCTL_ADDRMAP2, 0x00000000); UMCTL2_REG_SET(UMCTL_ADDRMAP3, 0x00000000); UMC
+完整回答请参考FAQ: FAQ21220
+### 问题: 如何识别NAND方案跟eMMC方案？
+解决方案: 展讯平台目前release的项目支持NAND方案跟eMMC方案两种,可以通过以下几种方法来识别当前手机使用的是那种方案: 第一种,软件版本区分 通过查看手机设置中的软件版本信息来识别: 如果版本信息中有ec/ea/等以e开头的版本信息可以确认为eMMC 方案. 如果版本信息中有gb/ga/等以g开头的版本信息可以确认为NAND方案. 第二种、通过命令行查看设备信息 $adb root $adb shell #cd /dev/block #ls -l brw------- root root 179, 0 2012-01-01 00:00 mmcblk0 brw------- root root 179, 32 2012-01-01 00:00 mmcblk0boot0 看到这样的信息说明机器是eMMC方案 brw------- root root 179, 0 2012-01-01 00:
+完整回答请参考FAQ: FAQ21433
+### 问题: Audio Hal层动态dump数据如何使用?
+解决方案: Audio Hal层使用property方式来动态使能dump数据 dump的具体方法如下: dump 文件的产生路径在property media.dump.path中定义,使用如下cmd获取到 getprop media.dump.path dump数据的使能状态在property media.dump.switch中定义并修改,使用如下cmd 设置 setprop media.dump.switch value value:指dump数据的位置,现在支持如下几种 DUMP_MUSIC_HWL_BEFOORE_VBC = 0 , DUMP_MUSIC_HWL_BEFORE_EXPRESS, DUMP_MUSIC_POINTER2, DUMP_MUSIC_POINTER3, DUMP_MUSIC_POINTER4, DUMP_MUSIC_POINTER5, DUMP_MUSIC_POIN
+完整回答请参考FAQ: FAQ21303
+### 问题: 蓝牙设备有哪些类型
+解决方案: 蓝牙设备类型通过服务类别(class of device)来区分,cod是一个24bit的数据,包含了该设备属于什么类型和能提供哪些服务信息,其中设备类型分为主要设备类型和次要设备类型,每种主要设备包含多种次要设备类型,以下列出了主要设备类型.次要设备类型略过 12 11 10 9 8 主要设备类 0 0 0 0 0 其他 [Ref #2] 0 0 0 0 1 计算机(台式机、笔记本、PDA、organizer ....) 0 0 0 1 0 电话(手机、无绳、支付电话、调制解调器 ...) 0 0 0 1 1 LAN／网络接入点 0 0 1 0 0 音频／视频(耳机、扬声器、立体声、视频显示、VCR..... 0 0 1 0 1 配件(鼠标、游戏杆、键盘 .....) 0 0 1 1 0 成像(打印、扫描仪、相机、显示 ...) 0 0 1 1 1 可穿戴 0 1 0 0 0 玩具 0 
+完整回答请参考FAQ: FAQ21344
+### 问题: SR2351 ini文件含义
+解决方案: SR2351相关校准参数,功率档位,天线开关等均被配置于ini文件中,ini文件可以理解为是"传统NV结构"的一种实现方式. ini文件中,配置参数分类为6个section,如下所示 Section1---------TX Power Control(WiFi) Section2---------Inital Registers Configuration Section3---------Extreme Parameters Section4---------Equipment Calibration Parameters Section5---------Bluetooth Pskey Section6---------WiFi&BT Public Section1中主要包含了WiFi发射功率控制字的设置.2351发射功率控制字范围为0～127,step=0.25dB,对应2351内部
+完整回答请参考FAQ: FAQ21349
+### 问题: 拍照超时导致拍照失败类问题的解决方法
+解决方案: 1.首先确认拍照超时的关键logel:"camera_v4l2_handle: Error type 0x10004",错误码:0x10004即对应CMR_V4L2_TIME_OUT 典型的logel段如下: cmr_v4l2_thread_proc: TX got one frame! buf_type 0x0, id 0x0, evt_id 0x10004 cmr_msg_post: queue_handle 0xb8f7cf00, msg type 0x10004 num 0 cnt 50 cmr_msg_get: queue_handle 0xb8f7cf00, msg type 0x10004 num 0 cnt 50 camera_main_routine: message.msg_type 0x10004, sub-type 0x0 camera_v4l2_handle: E
+完整回答请参考FAQ: FAQ21477
+### 问题: 新增加的apk/so等文件为什么在完整编译后没有出现在system.img中
+解决方案: 在程序中新增加了module,通过mm命令能正常编译出相应的apk文件或者so文件, 但是执行整个Android的完整编译后,在system.img中却不见新增加的apk/so文件的踪影, 这种情况是并不是因为module本身编译有问题,而是由于新增加的module没有添加到Android编译系统里指定的变量CUSTOM_MODULES或者PRODUCT_PACKAGES中. 正确添加后新增加的module在完整编译后即可正常install到system.img中. 例如: 1)CUSTOM_MODULES的使用 device/sprd/common/tools/slog/Android.mk include $(CLEAR_VARS) LOCAL_MODULE := slog.conf.user LOCAL_MODULE_TAGS := optional LOCAL_MODULE_CLA
+完整回答请参考FAQ: FAQ21402
+### 问题: 如何在Android编译时将详细的command信息显示出来
+解决方案: Android默认编译时只显示编译过程中的概要信息, 如果要check具体的gcc的参数,拷贝的路径等,需要更为详细的信息 Android编译系统在makefile级提供了一个叫做showcommands的伪目标,在编译时带上这个目标时,能够显示更为详细的信息. 以模块编译lookat工具为例: 在没有使用showcommands的命令mmm device/sprd/common/tools/lookat/进行模块编译,会显示 ============================================ PLATFORM_VERSION_CODENAME=REL PLATFORM_VERSION=4.0.3 TARGET_PRODUCT=sp8825eaplus TARGET_BUILD_VARIANT=userdebug TARGET_BUILD_TYPE=release T
+完整回答请参考FAQ: FAQ21426
+### 问题: 如何根据LCD的QVGA版本来调整TP的分辨率?
+解决方案: LCD修改为QVGA版本,TP参数进行如下调整,来适用LCD的分辨率 kernel/arch/arm/mach-sc$ vim board-sp7715ea.c static struct ft5x0x_ts_platform_data ft5x0x_ts_info = { .irq_gpio_number = GPIO_TOUCH_IRQ, .reset_gpio_number = GPIO_TOUCH_RESET, .vdd_name = "vdd28", .virtualkeys = { 89,907,72,55, // 虚拟键配置方法 这个四个值,第一个为宽的坐标,第二个为长的坐标,后面为虚拟键区域长与宽,比如第一个值 配置 为 89/540 × lcd的宽 ,第二个值 配置为 907/960 × lcd的长, 后面二个长与宽,可以按照设备具体大小按照比例配置即可 249,907,
+完整回答请参考FAQ: FAQ22574
+### 问题: 用软件方法实现摄像头安装角度的判定
+解决方案: 在FAQ09672中描述了从摄像头的机械结构图上来识别摄像头安装角度的方法,若客户暂不能提供, 则可用如下的软件方法,实现摄像头安装角度的判定: 1.配置手机不支持预览旋转 即在相应的BoardConfig.mk文件中配置成 TARGET_BOARD_BACK_CAMERA_ROTATION := false TARGET_BOARD_FRONT_CAMERA_ROTATION := false 2.配置手机不支持拍照旋转,版本默认不支持 即在相应的BoardConfig.mk文件中配置成 TARGET_BOARD_CAMERA_ROTATION_CAPTURE := false 3.用竖屏方式拍照 4.用Window自带的"画图"软件打开步骤3中拍摄的照片,观察图像特征 此时看到的是4:3的图像, A:图像中景物是"正立"的---得出结论摄像头是旋转90度安装的,对应前后摄像头相应设置T
+完整回答请参考FAQ: FAQ30197
+### 问题: 如何dump出framebuffer中的数据?
+解决方案: 在调屏的过程中,有时需要先确认framebuffer中的内容是否是正确的,以便排除因bootlogo的问题引起显示异常的现象. android运行阶段: adb shell gsnap /data/fb.jpg /dev/graphics/fb0 来得到framebuffer内容. uboot阶段的bootlogo: 这个阶段手段十分缺乏,几乎没有办法能够dump出整块内存,只能想其它办法. 众所周知,kernel起来后,会把uboot中放置bootlogo图片内容的内存,直接复制到kernel分配好的framebuffer内存,然后再调用dispc显示出来.也就是说当前内存内容就是uboot阶段的framebuffer内容,但随后surfaceflinger会显示开机动画,进而冲掉这段数据.如果此时,停掉surfaceflinger不让他刷屏,uboot内容不就被保存下来了吗? 步骤1:
+完整回答请参考FAQ: FAQ21662
+### 问题: Dolphin平台锁定某应用到GPU固定频点
+解决方案: 有时为了性能或者功耗需要,需要把某个应用锁定到GPU所支持的固定频点. 目前Dolphin4.4平台支持312M 256M 128M 和64M四个频点. 可以按下面方式去做: 1、vendor/sprd/open-source/libs/mali/tools目录下修改文件main.c,把应用加到需要的频点list里 //312M char* data_list_level10[] = { "com.re3.benchmark", "com.android.sprdlauncher2", //把应用的进程名字加到list,可以用ps查看当前应用名 "com.qb" }; size_t app_num_level10 = sizeof(data_list_level10)/sizeof(data_list_level10[0]); //256M char* data_list_level9[]
+完整回答请参考FAQ: FAQ26519
+### 问题: grep命令介绍
+解决方案: ◎功能说明 查找文件里符合条件的字符串. ◎语法 grep [options] PATTERN [FILE...] grep用以在file内文中比对相对应的部分,或是当没有指定档案时, 由标准输入中去比对. 在预设的情况下,grep会将符合样式的那一行列出. ◎参数 1.-A NUM,--after-context=NUM 除了列出符合行之外,并且列出後NUM行. ex: $ grep -A 1 panda file (从file中搜寻有panda样式的行,并显示该行的後1行) 2.-a或—text grep原本是搜寻文字档,若拿二进位的档案作为搜寻的目标, 则会显示如下的讯息: Binary file 二进位档名 matches 然後结束. 若加上-a参数则可将二进位档案视为文字档案搜寻, 相当於--binary-files=text这个参数. ex: (从二进位档案mv中去搜寻pand
+完整回答请参考FAQ: FAQ21789
+### 问题: Android4.4文件管理器添加Fragment的方法
+解决方案: Android4.4文件管理器中显示的每一页都是一个DetailedListFragment,通过android-support-v4包中的ViewPager管理和显示,以下简单介绍下添加Fragment的方法: 1. 创建一个Array数组对象mStorageStatus,该对象存储StorageStatus对象 eg:SparseArray<StorageStatus> mStorageStatus = new SparseArray<StorageStatus>(); 2. 创建一个StorageStatus对象并初始化StorageStatus对象的值 eg: StorageStatus ss = new StorageStatus(); ss.path = StorageUtil.getPath(); //定义Fragment需要显示的路径 ss.avaiable = Stora
+完整回答请参考FAQ: FAQ21874
+### 问题: Shark/Dophin Nand 方案软件下载升级注意事项
+解决方案: 为了解决shark/dophin nand 项目上因系统重新分区导致文件丢失问题,SPRD平台的SMT下载(FacotoryDownLoad_R2.9.9008,以下简称FDL_R2.9.9008)和售后升级(UpgradeDownLoad_R2.9.9008,以下简称UDL_R2.9.9008)对这个问题进行了Fix,请使用NPI_TOOLS_W14.01 工具包里的工具,否则有可能会出现升级失败情况. 原因是目前shark/dophin Nand 项目系统分区采用逻辑地址分区方式,而不同于其他平台的物理地址分区,为兼容这两种分区,FDL_R2.9.9008工具在下载时生成一个DLUID在手机里,在升级时工具先读出DLUID,然后把要保留的文件跟DLUID绑定,这个绑定的文件保存在内存里,同时PC机本地也会存档,等升级分区完成后,再把这些要备份的文件下载到手机里,如果分区时断电了,升级工
+完整回答请参考FAQ: FAQ21879
+### 问题: 配置 android:configChanges 引起的常见问题
+解决方案: 默认情况,Activity在转屏、更换语言等配置信息改变后,会relaunch Activity.有些Activity处理不好,导致一些问题. 为了快速解决问题,一般习惯性的在 AndroidManifest.xml 文件中,给activity 增加类似如下设置: android:configChanges="orientation|screenSize|keyboardHidden|locale" 因为android的设计思想是配置改变后,重启Activity,这样可以大大降低程序复杂度,对不重启的情况兼容不太好.如果不重启Activity,容易造成如下问题: A. 语言、字符串等切换不过来. 不同的配置下,使用的资源不同,例如语言、配置相关的字符串、图片等. 因为有些控件、activity的实现,在创建的时候就把资源加载到内存里了,不是记录的资源ID. 更换语言后,Activity不重
+完整回答请参考FAQ: FAQ21927
+### 问题: 什么是RTL布局
+解决方案: RTL:Right To Left RTL语言:书写习惯为从右往左的语言,例如阿拉伯语,波斯语等. 从android4.2开始,为了更加完美的支持RTL语言的书写/阅读习惯,系统提供了一套API来适配RTL的布局和控件.我们只需要在AndroidManifest文件的application标签里添加:android:supportsRtl="true"即可打开RTL布局功能,如果当前系统语言是RTL语言,那么绘制该application的所有界面时,系统会调用这些RTL API,RTL形式的布局将"自动"呈现出来. RTL形式的layout不宜定义控件的绝对位置,要定义成相对位置才行.即使这样,某些控件在应用RTL时还是存在一些瑕疵,如gridiew,TableRow,为此,我们可以用如下两种方式进一步优化显示: 1. 将左/右方向的布局属性转变为开始/结束方向的布局属性.如: andro
+完整回答请参考FAQ: FAQ21930
+### 问题: 如何理解IMSI的含义和数据的组成
+解决方案: IMSI(international mobile subscriber identity)国际移动用户识别码(固化在手机SIM卡中), 是区别移动用户的标志,可用于区别移动用户的有效信息.其总长度不超过15位,使用0～9的数字组成. IMSI共有15位,其结构如下: MCC+MNC+MSIN MCC:Mobile Country Code,移动国家码,MCC的资源由国际电联(ITU)统一分配和管理,唯一识别移动用户所属的国家,共3位,中国为460; MNC:Mobile Network Code,移动网络码,2~3位,中国移动系统使用00、02、07,中国联通GSM系统使用01、06,中国电信CDMA系统使用03、05; MSIN:Mobile Subscriber Identification Number, 移动用户识别号码,共有10位,其结构如下: EF+M0M1M2M3+ABCD
+完整回答请参考FAQ: FAQ22031
+### 问题: 用户输入事件无响应的另类情况
+解决方案: 在解释这类情况的原因时,需要描述一下与之相关的用户输入事件处理流程: 1.InputReader线程打开常用的几类输入设备,并监控和获取相关的设备输入事件; 2.InputReader线程从输入设备事件缓冲区中读取输入事件的数据,解析并注入InputDispatcher线程的Inbound消息队列中; 3.InputDispatcher线程再从Inbound消息队列中顺序取出输入事件,依次分发给焦点窗口. InputReader线程在将输入事件注入到InputDispatcher线程的Inbound消息队列之前,以及InputDispatcher线程将输入事件分发给焦点窗口前,都会让Phonewindowmanager截获相关的输入事件,所以当InputDispatcher线程被堵塞,而InputReader线程仍正常工作时,就会出现仅响应音量键,电源键,拨号键和挂机键等类似情况,此类情况
+完整回答请参考FAQ: FAQ22062
+### 问题: 安卓4.4蓝牙如何修改进入sniff时间
+解决方案: bluedroid在bta_dm_cfg.c文件中的bta_dm_pm_spec变量里根据连接不同profile和当前连接的状态来设置进入sniff的时间 /* AG */ { (BTA_DM_PM_SNIFF | BTA_DM_PM_PARK), /* allow park & sniff */ #if (BTM_SSR_INCLUDED == TRUE) (BTA_DM_PM_SSR2), /* the SSR entry */ #endif { {{BTA_DM_PM_SNIFF, 5000}, {BTA_DM_PM_NO_ACTION, 0}}, /* conn open sniff */ {{BTA_DM_PM_NO_PREF, 0}, {BTA_DM_PM_NO_ACTION, 0}}, /* conn close */ {{BTA_DM_PM_NO_ACTION, 0}, {
+完整回答请参考FAQ: FAQ22145
+### 问题: 如何简单确认系统IO卡顿问题
+解决方案: 我们可以使用下面的命令来确认: 1.使用adb shell命令进入手机的shell模式 2.vmstat 3.显示结果: ------------------------------------------------------------------- procs memory system cpu r b free mapped anon slab in cs flt us ni sy id wa ir 0 0 6396 32552 237620 18880 448 202 0 0 0 0 99 0 0 1 0 6396 32552 237620 18880 409 134 0 0 0 2 99 3 0 1 0 6396 32552 237620 18880 439 200 0 0 0 1 99 0 0 ----------------------------------------
+完整回答请参考FAQ: FAQ22167
+### 问题: 文件管理器是如何启动音频文件播放的
+解决方案: 文件管理器中,对一个音频文件打开,并不是指定用什么软件打开的,是通过检索其文件类型,判断出是音频文件,向系统发相应的Intent请求,由系统选择用什么软件打开的. 具体做法: 文件管理器中内建了其所支持的Audio格式文件的扩展名,通过要打开文件的扩展名判断出是audio类型,得到其MIME为"audio/*",然后构造Intent: Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setDataAndType(Uri.fromFile(file), "audio/*");
+context.startActivity(intent); 之后,是由系统选择响应action "android.intent.action.VIEW"的程序来打开该音频文件的. 所以,如果手机中安装了多个响应该action的程序存在,系统会提示用户选
+完整回答请参考FAQ: FAQ22267
+### 问题: 文件管理器是如何启动视频文件播放的
+解决方案: 文件管理器中,对一个视频文件打开,并不是指定用什么软件打开的,是通过检索其文件类型,判断出是视频文件,向系统发相应的Intent请求,由系统选择用什么软件打开的. 具体做法: 文件管理器中内建了其所支持的Video格式文件的扩展名,通过要打开文件的扩展名判断出是Video类型,得到其MIME为"video/*",然后构造Intent: Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setDataAndType(Uri.fromFile(file), "video/*");
+context.startActivity(intent); 之后,是由系统选择响应action "android.intent.action.VIEW"的程序来打开该视频文件的. 所以,如果手机中安装了多个响应该action的程序存在,系统会提示用户选
+完整回答请参考FAQ: FAQ22279
+### 问题: 文件管理器是如何打开图片文件的
+解决方案: 文件管理器中,对一个图片文件打开,并不是指定用什么软件打开的,是通过检索其文件类型,判断出是图片文件,向系统发相应的Intent请求,由系统选择用什么软件打开的. 具体做法: 文件管理器中内建了其所支持的Image格式文件的扩展名,通过要打开文件的扩展名判断出是image类型,得到其MIME为"image/*",然后构造Intent: Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setDataAndType(Uri.fromFile(file), "image/*");
+context.startActivity(intent); 之后,是由系统选择响应action "android.intent.action.VIEW"的程序来打开该图片文件的. 所以,如果手机中安装了多个响应该action的程序存在,系统会提示用户选
+完整回答请参考FAQ: FAQ22282
+### 问题: 为何某些版本的"地铁跑酷"、"神庙逃亡"等游戏不能正常运行？
+解决方案: 在测试某些版本的"地铁跑酷"、"神庙逃亡"等游戏时,有时会遇到刚打开启动后不久总是会出现FC现象,查看对应的LOG现象一般会有如下情况: 05-13 17:00:56.720 2667 2732 E AndroidRuntime: FATAL EXCEPTION: Thread-221 05-13 17:00:56.720 2667 2732 E AndroidRuntime: Process: com.kiloo.subwaysurf, PID: 2667 05-13 17:00:56.720 2667 2732 E AndroidRuntime: java.lang.Error: FATAL EXCEPTION [Thread-221] 05-13 17:00:56.720 2667 2732 E AndroidRuntime: Unity version : 4.2.2f1 05-1
+完整回答请参考FAQ: FAQ22290
+### 问题: 4G模式下在灭屏时如何通过减少CP上报非必须注网信息来降低功耗
+解决方案: 可在RILC的亮屏、灭屏处理中做如下处理: vendor\sprd\proprietories-source\ril\sprd_ril\sprd_ril.c static void requestScreeState(int channelID, int status, RIL_Token t) { int err; int stat; pthread_mutex_lock(&s_screen_mutex); if (!status) { /* Suspend */ at_send_command(ATch_type[channelID], "AT+CCED=2,8", NULL); //LTE模式下,灭屏时通过下发AT+CEREG=1的AT命令通知CP主动上报的CEREG信息只需携带stat参数,其余的lac,ci,AcT信息不需上报.功耗降低. if(!strcmp(s_modem, 
+完整回答请参考FAQ: FAQ22302
+### 问题: 如何确定自己的版本在4G模式下灭屏时是否做过减少CP上报非必须注网信息来降低功耗的处理
+解决方案: RILC修改不到的情况下,可通过如下方式确定自己的版本有否做过相应的降低功耗的处理: 手机开机后按power键进行灭屏、亮屏操作,查看log中在灭屏、亮屏期间是否有相应的AT命令,如有,则有做过优化功耗的处理: //灭屏时下发AT+CEREG=1的AT命令 05-21 15:23:07.617 D/use-Rlog/RLOG-RILC( 1181): [l] [0255]> SCREEN_STATE (0) 05-21 15:23:07.617 D/use-Rlog/RLOG-RIL( 1181): [l] onRequest: SCREEN_STATE sState=4 05-21 15:23:07.617 D/use-Rlog/RLOG-AT( 1181): [l] Channel1: AT> AT+CCED=2,8 05-21 15:23:07.627 D/use-Rlog/RLOG
+完整回答请参考FAQ: FAQ22303
+### 问题: 如何修改android系统字体大小？
+解决方案: 需要修改Settings的arrays资源文件、AccessibilitySettings中设置对应最大字体、和在Configuration.java里面设置初始默认的值. 一、我们可以查看下arrays的代码 初始 <string-array name="entryvalues_font_size" translatable="false"> <item>0.85</item> <item>1.0</item> <item>1.15</item> <item>1.30</item> </string-array> 假如字体整体改大的话 <string-array name="entryvalues_font_size" translatable="false"> <item>1.15</item> <item>1.30</item> <item>1.45</item> <item>1.6
+完整回答请参考FAQ: FAQ22408
+### 问题: 无自动对焦的相机，拍照时闪光时间太短
+解决方案: 闪光灯亮灭时间如下: (1)自动对焦前亮,自动对焦后灭. (2)拍照前亮,拍照后灭 对与无自动对焦功能的camera,就会感觉闪光时间太短.增长闪光时间的方法如下: 需要注意的是,关闭闪光灯的动作,不仅仅通过上层调用camera_set_flashdevice来关闭.底层驱动也会主动关闭.单张拍照时驱动中sprd_v4l2_tx_done时(得到帧数据),会主动调用sprd_v4l2_start_flash来关闭闪光灯(这样就会在上层调用camera_set_flashdevice来关闭之前就已经关闭了闪光灯). 修改如下: (1) diff --git a/drivers/media/sprd_dcam/common/dcam_v4l2.c b/drivers/media/sprd_dcam/common/dcam_v4l2.c index 3109fc8..e86af45 100644
+完整回答请参考FAQ: FAQ22552
+### 问题: 如何隐藏ActionBar 上最右侧的overflowButton，即可以触发菜单显示的三个点
+解决方案: 从Actionbar的布局来看,一般在最右边的会有一个三个点显示的Button(称之为overflowButton),是用来点击触发更多菜单选项. 这个overflowButton显示与否和设备是否有虚拟的menu按键有关,这个配置是在ActionMenuPresenter.java的initForMenu()方法中,会关联到AcitonBarPolicy.java中showsOverflowMenuButton()方法,具体会根据ViewConfiguration.java中的sHasPermanentMenuKey的参数配置来判断当前系统是否有物理的menu按键.如果有物理menu key,则多余的menu会归结到overflowButton显示. 如果在有物理menu key的情况下,应用想隐藏overflowbutton,且让多余的menu菜单项从屏幕底部触发显示,可在应用中配置:
+完整回答请参考FAQ: FAQ22631
+### 问题: FFOS充电电流小的排查方法
+解决方案: 如果在使用6821 FFOS时, 发现充电电流偏小, 在350mA左右, 遇到类似问题首先是排查kernel 的log, 排查当前是使用的ac还是usb, 排查log发现系统中识别为ac了. 06-14 17:43:55.088 <4>0[ 54.045942] ********** before taos_als_get_data ********* lux_val = 43 06-14 17:43:56.162 <6>0[ 55.116365] usb detect plug in,vbus pull up 06-14 17:43:56.162 <6>0[ 55.116435] udc_enable 06-14 17:43:56.382 <6>0[ 55.339035] udc_disable 06-14 17:43:56.382 <6>0[ 55.339111] charger pl
+完整回答请参考FAQ: FAQ22637
+### 问题: 如何得到手机低存储时的报警阀值
+解决方案: 使用adb连接手机,在pc上运行命令: adb shell dumpsys >> dump.sys.txt (user build/debug build均可) 然后打开 dump.sys.txt文件,搜索关键字:devicestoragemonitor 找到行: mMemLowThreshold=12.73 MB mMemFullThreshold=5.00 MB 前面是低内存提醒,后面是极低值.前面是计算出来的,后面的是默认值. 如需要修改,参考文件frameworks/base/services/java/com/android/server/DeviceStorageMonitorService.java 参考变量:mMemLowThreshold =========== 整个服务dump出来的信息 ====================== DUMP OF SERVICE de
+完整回答请参考FAQ: FAQ22662
+### 问题: 文件管理器快速查看中是如何检索特定格式的文件的
+解决方案: 文件管理器快速查看中,可以查看特定类型(音乐/图片/视频/文档/APK安装文件)文件.查看特定类型的文件是通过检索MediaStore数据库来获得某一类型的文件的.对应的数据库分别为: Audio.Media.EXTERNAL_CONTENT_URI;    // 对音乐
+Images.Media.EXTERNAL_CONTENT_URI;    // 对图片
+Video.Media.EXTERNAL_CONTENT_URI;    // 对视频
+MediaStore.Files.getContentUri("external");    // 对文档
+MediaStore.Files.getContentUri("external");    // 对 APK 文档和APK安装文件在MediaStore/MediaScanner里原生是没有支持的,保存在数据库里然后通过selec
+完整回答请参考FAQ: FAQ22730
+### 问题: 什么是“白平衡”？
+解决方案: 什么是"白平衡"呢?这必须先说明什么是白色,物体反射出的光彩颜色视光源的色彩而定,人类的眼睛之所以把一些物体看成白色的是因为人的大脑可以侦测并且更正像这样的色彩改变,因此不论在阳光、阴霾的天气、室内或荧光下,人们所看到的白色物体颜色依旧.人眼可以进行自我适应,但是数码摄像机就不具有这么智能的功能了,这是由于CCD感光元件本身没有这种适应功能,为了贴近人的视觉标准,数码摄像机就必须模仿人类大脑并根据光线来调整色彩,也就是需要自动或手动调整白平衡来达到令人满意的色彩,数码摄像机的白平衡感测器一般位于镜头的下面,可以自动的感知周围环境,从而调整色彩的平衡,这一对数码摄像机输出的信号进行一定修正的过程就叫做白平衡的调整. 掌握白平衡的调节,就可以拍摄出真实的色彩画面.目前市场上出售的所有数码摄像机都具有了自动调整白平衡功能,使用起来比较方便.某些型号的数码摄像机同时还具有手动白平衡调整,手动调整的
+完整回答请参考FAQ: FAQ22749
+### 问题: 为什么有时候合成全景图片时未合成完成就直接回预览
+解决方案: 全景拍照在合成图片时,有一个算法来检查是继续合成图片,还是放弃合成直接回到预览. 如果: 1. 合成图片宽或高有一个小于每帧画面对应的宽或高; 2. 当速度快或者上下运动幅度大时,会导致合成图片宽高的乘积大于每帧画面宽高乘积的10倍; 3. 短边大于每帧画面高度的2.5倍. 都会返回一个错误值,不再进行图片的合成.具体算法如下: int Blend::MosaicSizeCheck(float sizeMultiplier, float heightMultiplier) { if (Mwidth < width || Mheight < height) { return BLEND_RET_ERROR; } if ((Mwidth * Mheight) > (width * height * sizeMultiplier)) { return BLEND_RET_ERROR; } // 
+完整回答请参考FAQ: FAQ22790
+### 问题: android4.4版本上如何关闭DFS（DDR变频）功能
+解决方案: 现在一共有三种方法可以关闭DFS,一种是修改kernel代码,另一种是adb shell操作,还有一种是进工程模式进行设置. 三种方法各有优缺点,推荐用第三种方法,进工程模式关闭DFS. 1、 修改kernel代码关闭DDR变频: 在kernel里的kernel\arch\arm\configs\*_defconfig文件中把 # # DEVFREQ Governors # # CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND is not set # CONFIG_DEVFREQ_GOV_PERFORMANCE is not set # CONFIG_DEVFREQ_GOV_POWERSAVE is not set # CONFIG_DEVFREQ_GOV_USERSPACE is not set CONFIG_DEVFREQ_GOV_ONDEMAND=y 改成 # 
+完整回答请参考FAQ: FAQ22805
+### 问题: 通话场景下, 靠近接近传感器也不灭屏的情况？
+解决方案: 1、通话过程中,把手机屏幕靠近脸部,遮挡住P-sensor,屏幕会变黑了,不遮挡住P-sensor, 屏幕就点亮了;但部分场景下,則不会灭屏. 通话中靠近P-sensor,不灭屏的正常的现象有: (1)插入耳机 (2)打开扬声器 (3)打开蓝牙耳机 (4)链接蓝牙键盘 2、对应的代码描述: 文件: packages\apps\incallui\src\com\android\incallui\ProximitySensor.java private void updateProximitySensorMode() { ............ synchronized (mProximityWakeLock) { final int audioMode = mAudioModeProvider.getAudioMode(); // turn proximity sensor off and
+完整回答请参考FAQ: FAQ22811
+### 问题: 如何使用slub_debug redzone查找内存覆盖
+解决方案: redzone能够检查出4个字节以内的内存覆盖问题,使用步骤: 1. 在启动cmdline中加入slub_debug=Z使能redzone 2. 若发生内存覆盖,kernel会打印出 INFO: 0xc90f6d28-0xc90f6d2b. First byte 0x00 instead of 0xcc INFO: Slab 0xc528c530 flags=0x400000c3 inuse=61 fp=0xc90f6d58 INFO: Object 0xc90f6d20 @offset=3360 fp=0xc90f6d58 INFO: Allocated in get_modalias+0x61/0xf5 age=53 cpu=1 pid=554 Bytes b4 0xc90f6d10: 00 00 00 00 00 00 00 00 5a 5a 5a 5a 5a 5a 5a 5a ..
+完整回答请参考FAQ: FAQ22833
+### 问题: 怎么添加一个platform设备的文件节点
+解决方案: 一般而言通过如下办法是可以添加一个platform驱动: 1.defconfig文件配置 CONFIG_RUNYEE_XXX=m 2.在kernel\drivers目录下新建相应的XXX目录,里面包含KCONFIG,MAKEFILE,源文件等等, 3.device\sprd\scx35\ueventd.sc8830.rc末尾增加下面一行 /dev/xxx 0777 system system 4.device\sprd\scx35_xxx\init.board.rc中增加下面信息 on init chmod 0777 /dev/XXX 通过上述操作可以成功的添加一个驱动, 但是需要注意一点: 由于kernel机制中,注册一个平台驱动并创建对应的文件节点是通过platform_driver_probe或platform_driver_register实现; 而调用驱动自己实现的probe函数
+完整回答请参考FAQ: FAQ26449
+### 问题: 如何给apk签名
+解决方案: 手动给apk签名一共要用到3个工具,分别是:keytool、jarsigner和zipalign 1.keytool:生成数字证书,即密钥,是扩展名为.keystore的文件. 2.jarsigner:使用数字证书给apk文件签名; 3.zipalign:对签名后的apk进行优化,提高与Android系统交互的效率. 3个工具默认所在的路径: 1.keytool:该工具位于jdk安装路径的bin目录下; 2.jarsigner:该工具位于jdk安装路径的bin目录下; 3.zipalign:该工具位于Android-sdk-windows/tools/目录下 签名步骤: 1.使用keytool工具生成数字证书 keytool -genkey -v -keystore XXXXX.keystore -alias XXXX.keystore -keyalg RSA -validity 2000
+完整回答请参考FAQ: FAQ23004
+### 问题: 如何建立客户化board
+解决方案: 一、u-boot 1、增加配置头文件 在u-boot\include\configs目录中增加文件sc6815ga_freecom.h 注意与工程对应的宏 很多工程(或者产品),在u-boot都会定义与此工程一一对应的宏,定义在头文件中,例如u-boot\include\configs\sc6815ga_freecom.h: #define CONFIG_SC6815GA_FREECOM 2、增加BOARD文件 在u-boot\board\spreadtrum路径中增加目录: 参考sc6815ga,增加目录sc6815ga_freecom. 里面所有的文件名都相同,需要关注里面与GPIO相关的文件,是否有调整的可能 sprd_kp.c pinmap.c key_map.h 3、Makefile修改 需要修改的项,在里面增加 文件在u-boot\目录中的Makefile文件,增加配置项 sc
+完整回答请参考FAQ: FAQ26830
+### 问题: 为何刚开机时进入工程模式很慢？
+解决方案: 系统刚启动时,系统在处理很多广播,而此方式进入MMI测试模式也是通过广播来启动ValidationTools,正是因为暗码广播在广播队列中排队时间比较长,从而导致ValidationTools启动时间比较长. 可将暗码广播设置成前台广播来加快ValidationTools启动速度 packages/apps/Dialer/src/com/android/dialer/SpecialCharSequenceMgr.java diff --git a/src/com/android/dialer/SpecialCharSequenceMgr.java b/src/com/android/dialer/SpecialCharSequenceMgr.java index fdef263..6b1efcc 100644 --- a/src/com/android/dialer/SpecialChar
+完整回答请参考FAQ: FAQ23799
+### 问题: 怎样设置背景灰度
+解决方案: A.设置灰度值 在theme、style中增加如下属性,可以控制dialog、menu、popup等窗口的灰度. <item name="backgroundDimAmount">0.6</item> 当设置为1时,界面除了我们的dialog内容是高亮显示的,dialog以外的区域是黑色的,完全看不到其他内容. 如果是0,背景内容按原来亮度显示. 系统的中几个常见theme(例如Theme.Holo.Light),默认值是0.6. 该值可以根据自己的需要调整 B. 灰度设置的开关 theme、style中,如下属性用来控制灰度设置是否有效. <item name="android:backgroundDimEnabled">false</item> 如果该属性设置为false,表示灰度设置无效. 该属性,默认是不用设置的. 如果没有设置,当窗口是floating类型,程序打开该属性,设置为
+完整回答请参考FAQ: FAQ23221
+### 问题: Android中如何获取设备的宽高
+解决方案: 在Android 4.0 之前可以通过下面的方式获取屏幕的宽高: DisplayMetrics dm = new DisplayMetrics(); getWindowManager().getDefaultDisplay().getMetrics(dm); int mScreenW = dm.widthPixels; //宽度 int mScreenH = dm.heightPixels; //高度 通过上面的方法在4.0之前,获得的是屏幕的总宽和总高,包括状态栏的高度和导航栏的高度. 在4.0以后,上面的方法获取的高度就是除去导航栏高度外余下的高度值. 在4.0以后,获取屏幕的总高度的话,需要采用下面的方法: Display display = getWindowManager().getDefaultDisplay(); Point point = new Point(); disp
+完整回答请参考FAQ: FAQ23224
+### 问题: Android2.3.5/4.1/4.4/文件管理器支持多媒体存储广播类型
+解决方案: Android2.3.5/4.1/4.4/文件管理器中有定义多媒体存储的action,这些action触发后会调用到文件管理器中的StorageReceiver类的onReceive()方法,那么如下几个action有被定义: <action android:name="android.intent.action.MEDIA_EJECT" /> //USER主动移除外部存储设备 <action android:name="android.intent.action.MEDIA_MOUNTED" /> //外部存储设备被挂载上 <action android:name="android.intent.action.MEDIA_BAD_REMOVAL" /> //外部存储设备被强制拔出,挂载点未unmount <action android:name="android.intent.actio
+完整回答请参考FAQ: FAQ23565
+### 问题: 什么是对比度
+解决方案: 对比度指的是一幅图像中明暗区域最亮的白和最暗的黑之间不同亮度层级的测量,差异范围越大代表对比越大,差异范围越小代表对比越小,好的对比率120:1就可容易地显示生动、丰富的色彩,当对比率高达300:1时,便可支持各阶的颜色.但对比率遭受和亮度相同的困境,现今尚无一套有效又公正的标准来衡量对比率,所以最好的辨识方式还是依靠使用者眼睛. 对比度对视觉效果的影响非常关键,一般来说对比度越大,图像越清晰醒目,色彩也越鲜明艳丽;而对比度小,则会让整个画面都灰蒙蒙的.高对比度对于图像的清晰度、细节表现、灰度层次表现都有很大帮助,不过对比度并不是越强烈越好越,要掌握合适的度.一般来说,风景照片的对比度稍大一点比较好看,人像照片对比度宜小一点比较柔和. 有两种提高对比度的方法: 1.提高白色画面的亮度 2.让黑色更黑,降低最低亮度 Android4.4中在CamraSettings.java中用KEY_CA
+完整回答请参考FAQ: FAQ23357
+### 问题: Slog使用注意事项
+解决方案: 1. Slog用手机存储log方式,使用slog需要保证SD卡有足够空间,建议8G或8G以上. 2. 测试完成使用windows脚本导出log前请确认手机已经启动完成,SD卡已经成功挂载. 3. Monkey, MTBF等自动化测试时间较长, log量大,可能会存满SD卡,建议测试一段时间做一次清理,清除log方法可以在UI上清除,也可以在手机命令行执行"slogctl clear". 4. 测试过程中更换SD卡,请使用slog 清除log方式作清除. 5. Slog与PC工具(Logel, DSP)等不要同时使用, 最新版本的logel 启动后会禁掉slog. 6. 死机定屏等导致adb 无法连接的情况, 重新插拔无效, 需要使用Crash Key使手机重启,再次连接USB导出log,例如Shark Crash Key是"同时按音量上键和下键不放,再双击电源键". 7. "始终显示slo
+完整回答请参考FAQ: FAQ23371
+### 问题: 如何关闭DDR变频
+解决方案: 一共有三种方法可以关闭DFS,一种是修改kernel代码,另一种是adb shell操作,还有一种是进工程模式进行设置. 这里只介绍adb shell操作和进工程模式进行设置的方法,它们各有优缺点. 1、 adb shell关闭DDR变频: echo 0 > /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_enable 注意确认关闭DFS时此时的DDR频率,如需设置DDR最高频率为333或466请用命令: echo 333000 > /sys/devices/platform/scxx30-dmcfreq.0/devfreq/scxx30-dmcfreq.0/ondemand/set_freq 或 echo 466000 > /sys/devices/platform/scxx30-d
+完整回答请参考FAQ: FAQ23479
+### 问题: 如何让某个view悬浮在其他界面之上？
+解决方案: 同过WindowManager提供的addView方法来实现,其添加的view在window的最前面,到达悬浮在其他Activity之上的目的. 1.获得WindowManager服务 WindowManager mWm = (WindowManager) mContext.getApplicationContext().getSystemService( Context.WINDOW_SERVICE); 2.设置LayoutParames参数 WindowManager.LayoutParams mWmParams = new WindowManager.LayoutParams(); 3.添加view mFloatLayout mWm.addView(mFloatLayout, mWmParams); 4.此view移动位置,改变大小只需要修改mWmParams参数,然后updateV
+完整回答请参考FAQ: FAQ23450
+### 问题: 如何检查一个binary/library是否被strip过
+解决方案: Android编译出来的binary/library一般都是ELF格式, 为了节省空间,在安装到system.img时,一般都会将binary/library strip掉调试符号等信息,从而减小文件size 但在coredump分析,gdb调试时,我们需要没有经过strip过的binary/library,以便更好的定位 一般情况下,我们可以在out/target/product/SOMEPROJ/obj下找到没有经过strip的binary/library 我们可以通过linux的file命令简单判断一个binary/library是否被strip过 例如: 1) someone$ file out/target/product/sp8825ea/obj/EXECUTABLES/lookat_intermediates/LINKED/lookat out/target/product/
+完整回答请参考FAQ: FAQ23432
+### 问题: 悬浮的view在横竖屏切换时如何改变大小？
+解决方案: 1.通过注册G-sensor获得旋转数据. 但是G-sensor传上来的数据会快于Activity和view改变的时间. 2.Activity和view都能获得横竖屏切换的消息,在onConfigurationChanged方法中处理. 一般悬浮的view跟Activity无法关联,所以可以通过View的onConfigurationChanged方法来获知横竖屏转换. 实现方法:1.自定义view,并且重写onConfigurationChanged方法. 2.在View中实现监听,在onConfigurationChanged中返回给监听者处理. 3.在调用类中,向View注册监听,当方向竖屏切换时,调用mWm.updateViewLayout方法改变view的大小. public class FloatFrameLayout extends FrameLayout { private
+完整回答请参考FAQ: FAQ23458
+### 问题: Android 4.4如何实现播放开机铃声
+解决方案: 1) 在文件framework/base/cmds/bootanimation/BootAnimation.cpp中的 soundplay()函数中执行了开机音乐的播放,在movie函数中调用 mp = new MediaPlayer(); mp->setDataSource(mfd, 0, 0x7ffffffffffffffLL); mp->setAudioStreamType(/*AUDIO_STREAM_MUSIC*/AUDIO_STREAM_SYSTEM); mp->prepare(); mp->start(); 2) 然后需要添加bootsound.mp3文件(格式可以是mp3,ogg.编译后在system/media下生成),放在vendor/sprd/open-source/res/boot/下面. choosesource.mk文件,做如下修改: PRODUCT_COPY_
+完整回答请参考FAQ: FAQ23474
+### 问题: 文件管理器中如何以文件名作为关键字来搜索
+解决方案: 文件管理器的搜索的实现是,检索MediaStore里数据库的内容,检索的域是DATA,也就是文件存放的完整的路径,已经包含了路径+文件名(文件名和扩展名).只是作为一项需求,目前不以路径作为搜索特征的,所以在检索出来的结果中又进行了过滤,只有文件名包含搜索关键字的项才会被列举出来. FileSearchResultActivity中: if (file.getName().contains(mSearchKey)) { fileList.add(file); } 上面的判断是为了保证只有文件名包含关键字才会列举,而要能让文件夹作为搜索特征,去掉判断即可: //if (file.getName().contains(mSearchKey)) { fileList.add(file); //} 注意:如果把路径也作为搜索关键字,用户会感觉搜索出的结果文件跟搜索关键字没什么关联,所以修改确实是项
+完整回答请参考FAQ: FAQ23464
+### 问题: MocorDroid4.4_3.10编译出来的img下载选择问题
+解决方案: MocorDroid4.4_3.10_W14.06.7及以后版本(Nand flash工程)对应编译出来的文件比以前版本多了很多,EMMC工程不存在这个问题; W14.06.7以前版本编译出来的img如下: cache.img prodnv.img system.img userdata.img W14.06.7及以后版本上述选择项对应的img都扩展成了两个,如下: cache_b128k_p2k.img cache_b256k_p4k.img prodnv_b128k_p2k.img prodnv_b256k_p4k.img system_b128k_p2k.img system_b256k_p4k.img userdata_b128k_p2k.img userdata_b256k_p4k.img 原因说明:w14.06.7以前版本nand默认只支持4k page,如果要支持2k pag
+完整回答请参考FAQ: FAQ27920
+### 问题: 什么是微距摄影？
+解决方案: 微距摄影是数码相机的特长之一,用微距拍摄可以把很普通的场景拍成戏剧性的场面,微距特别擅长表现花鸟鱼虫等细小的东西,对细节可以充分展示,而且也可以随心所欲地表现自己在选题、构图、用光方面的创意,不像拍摄风光、人物、民俗文化等题材,要受很多条件的制约.微距上手比较快,虽然多为小品,但其中也往往包含很多作者的良苦用心,也能称得上是精品. 日常经常听到镜头能拍到1:1、 1:2的微距效果,这些比例便是指镜头的放大率.左边的数值代表菲林平面上影像的大小,而右边的数值则代表实际主体的大小,当镜头能做到1:1的放大率时,即镜头可将实物的真实大小完全投射在菲林平面上.试举一个简单的例子:135菲林的面积为24mmx36mm,若我们使用的镜头能把一个面积同样为24mmx36mm的主体完整地记录在135菲林上,这支镜头便有1:1的放大率,大家应记住左边的数字越大,放大的倍数便越高,2:1的放大率便比1:1高.
+完整回答请参考FAQ: FAQ23532
+### 问题: 录像时如何不录制声音
+解决方案: MediaRecorder.java中有个方法: /** * Sets the audio source to be used for recording. If this method is not * called, the output file will not contain an audio track. The source needs * to be specified before setting recording-parameters or encoders. Call * this only before setOutputFormat(). * * @param audio_source the audio source to use * @throws IllegalStateException if it is called after setOutputFo
+完整回答请参考FAQ: FAQ24174
+### 问题: dolphin平台EMMC方案如何增加分区
+解决方案: 修改下载工具"ResearchDownload.exe"所在目录的**.xml,比如SC77xx.xml,按添加分区的属性,找一个已存在的属性相似的分区为例来模仿添加.比如需要添加一个可读写的文件系统分区,类似于cache和userdata分区,可以在SC77xx.xml中搜索cache,仿照cache已有的字段进行添加.如下红字加粗所示: <Partitions> <!-- size unit is MBytes --> <!-- <Partition id="splloader" size="0"/> <Partition id="ubootloader" size="0"/> --> <Partition id="prodnv" size="5"/> <Partition id="miscdata" size="1"/> <Partition id="wmodem" size="10
+完整回答请参考FAQ: FAQ23543
+### 问题: android 4.4 launcher3为什么不显示默认的AppWidget
+解决方案: android 4.4 launcher3为什么不显示默认的AppWidget 问题现象: Launcher3启动后,packages\apps\Launcher3\res\xml\default_workspace.xml文件中配置的默认AppWidget不在idle界面显示. 问题原因: android 4.4默认版本中,限制了Launcher3的权限(android.permission.BIND_APPWIDGET),编译生成后放在了/system/app目录. 4.4版本中,/system/app目录的权限已经降低. 新增的/system/priv-app目录,权限高,主要放系统相关的apk. 问题解决: 提高Launcher3的权限,编译生成后,放在/system/priv-app目录. 具体修改: 需要在packages\apps\Launcher3\Android.mk文件
+完整回答请参考FAQ: FAQ23716
+### 问题: 7730平台如何在驱动上支持双T卡
+解决方案: 1、首先是硬件设计 从协议上讲,SDIO总线可以外接多个设备,但是考虑到T卡性能及驱动代码的复杂程度,建议一个SDIO控制器外接一个SD卡.目前7730平台SDIO0用于T卡1,SDIO1用于wifi,剩余的SDIO2可以外接T卡2. 2、U-boot中pinmap的配置 需要将SDIO2对应的pin脚设置为SDIO相关功能,这一点可以参考SDIO0的配置. 3、kernel中设备的加载 需要将对应的SDIO2设备加载到系统中: static struct platform_device *devices[] __initdata = { ... &sprd_sdio0_device, &sprd_sdio1_device, /* &sprd_sdio2_device, */ ... }; 修改为 static struct platform_device *devices[] __ini
+完整回答请参考FAQ: FAQ23724
+### 问题: Android Low memory killer和oom killer的差别
+解决方案: Android 的Low memory killer是基于linux的OOM(out of memory)规则改进而来的.OOM通过一些比较复杂的评分机制,对进程进行打分,然后将分数高的进程判定为bad进程,杀死并释放内存. OOM只有当系统内存不足的时候才会启动检查,而Low memory killer 则是定时进行检查. Low memory killer 主要是通过进程的oom_adj 来判定进程的重要程度.oom_adj的大小和进程的类型以及进程被调度的次序有关.当系统剩余内存位于内存临界值中的一个范围内时,如果一个进程的oom_adj值大于或等于这个临界值对应的oom_adj值就会被杀掉. 对于 Android4.0 以前,Low memory killer 的具体实现可参看: kernel/drivers/misc/lowmemorykiller.c 对于 Android4.0
+完整回答请参考FAQ: FAQ23767
+### 问题: [SC7715]怎样调整按键背光灯亮度
+解决方案: 项目中按键背光亮度在hal层已经作了限制,只提供了0、255选择,如下: vendor/sprd/open-source/libs/liblights/lights.c char const *const LIGHT_BUTTONS = "/sys/class/leds/keyboard-backlight/brightness" 128 pthread_mutex_lock(&g_lock); 129 err = write_int(LIGHT_BUTTONS, on?255:0); 130 pthread_mutex_unlock(&g_lock); 这将导致按键灯的亮度值是固定的.所以要自由调节按键灯亮度,需要放开此处控制. 在driver层提供了更改kpled的电流的方法. kernel/drivers/leds/leds-sprd-kb.c 105 static void spr
+完整回答请参考FAQ: FAQ23924
+### 问题: 如何定位缺失的JNI实现在哪个.so库文件中
+解决方案: JNI实现一般在.so库里与Java里的标号一致,除了JNI里前面加了用下划线代替点号的包名或者其他稍许的变化.如, com.google.bionics.scanner.univeil.util.ImageUtils.downloadsampleImageNative()方法,在JNI里的native实现就是Java_com_google_bionics_scanner_univeil_util_ImageUtils_downloadsampleImageNative().[注:这个具体的实现是后来通过下面的方法知道的] 所以,一旦发现有downloadsampleImageNative 的Native方法找不到的异常,就要看哪个.so库里实现了它.通过objdump可以反编得到.so中的函数列表,从而确定.比如这里,执行: #objdump -tT libdocscanner_imag
+完整回答请参考FAQ: FAQ24031
+### 问题: dalvik heap大小是如何初始化​设置的？
+解决方案: Android 应用在底层都会对应一个独立的 Dalvik 虚拟机实例,默认最大内存值为16M; 在启动虚拟机初始化时,有两个地方决定了一个堆的最大内存: 1)dalvik/vm/Init.cpp 中的 gDvm.heapMaximumSize = 16 * 1024 * 1024; // Spec says 75% physical mem 2) frameworks/base/core/jni/AndroidRuntime.cpp 中的 property_get("dalvik.vm.heapsize", heapsizeOptsBuf+4,"16m"); 3) 在启动应用程序时,如果应用程序中设置了内存的大小,那么在dalvik/vm/Init.cpp 文件的processOptions函数中会解析相应的参数,替换初始化的内存最大值. static int processOption
+完整回答请参考FAQ: FAQ24036
+### 问题: 7701 平台如何添加扩展按键
+解决方案: 硬件需要注意的地方. 1. 扩展gpio 需要设施为内部上拉,外部不需要上拉.需要在keyin 5上做扩展. 2.用于键盘扩展的gpio 要旋转vddio 电压域的gpio. 3.建议二极管选用正通电压比较低的肖特基二极管.如果选用普通二极管有0.7v 的压降,keyin5的中断会有误判. 软件如何调试: 可以参考宏KEYPAD_TYPE_QWERTY_KEYPAD 1.pinmap 需要将扩展的pin set 为对应的gpio 功能 {83, 0, PM_INPUT, PM_NO_INT }, // keyin6 {84, 0, PM_INPUT, PM_NO_INT }, // keyin7 {86, 0, PM_INPUT, PM_NO_INT }, // keyin8 2,将gpio 的功能设置为对应哪个keyin {GPIO_PROD_EXPAND_KEY0_ID, GPIO_P
+完整回答请参考FAQ: FAQ24126
+### 问题: 7701 扩展按键但一开机会自动报上的所有按键
+解决方案: 1.7701 与7702 按键不同 7701 支持6×6 7702 支持8×8 客户在7701上扩展按键keyin5 上做扩展. sc7702_module_config.h #define KPD_ROW_NUM 8 #define KPD_COL_NUM 8 在keyinit 会根据 KPD_ROW_NUM KPD_COL_NUM 个数来配置 KPD_CTRL 寄存器 KPD_ROW7_EN [23] R/W 1'b0 Enable bit for row 7 KPD_ ROW6_EN [22] R/W 1'b0 Enable bit for row 6 KPD_ ROW5_EN [21] R/W 1'b0 Enable bit for row 5 KPD_ ROW4_EN [20] R/W 1'b0 Enable bit for row 4 KPD_ ROW3_EN [19] R/W
+完整回答请参考FAQ: FAQ24146
+### 问题: 7701 rda  bt 待机电流大
+解决方案: 1.需要将bb端 pinmap 修改为如下参数 {PIN_IISDI_REG, ( PIN_DS_1 | PIN_FPX_EN | PIN_FUNC_DEF | PIN_SPD_EN | PIN_I_EN ) }, // 0x156 (DTDO)BT PCM_OUT {PIN_IISDO_REG, ( PIN_DS_1 | PIN_FPX_EN | PIN_FUNC_DEF | PIN_SPD_EN | PIN_I_EN ) }, // 0x11A (DTDI)BT PCM_IN {PIN_IISCLK_REG, ( PIN_DS_1 | PIN_FPX_EN | PIN_FUNC_DEF | PIN_SPD_EN | PIN_I_EN ) }, // 0x15A (DTCK)BT PCM_CLK {PIN_IISLRCK_REG, ( PIN_DS_1 | PIN_FPX_EN | PI
+完整回答请参考FAQ: FAQ24154
+### 问题: 开启和关闭硬件加速有什么区别
+解决方案: 开启和关闭硬件加速的绘制方式(model)不同 基于软件的绘制模型(未开启硬件加速) 绘制流程: Invalidate the hierarchy > Draw the hierarchy 当app需要更新部分UI时,会在内容改变了的view中调用invalidate(),各个view hierarchy则会计算需要重绘的区域(即dirty region),android系统再绘制与dirty region相交的区域.但这个模型会有两个问题: 1. 该模型每次绘制时会执行很多代码.例如如果app为button控件调用invalidate()而这个button在其他view的上面,则系统连带这个view也一同绘制(即使这个view内容无变化) 2. 该模型会隐藏app中的bug.由于android系统会重绘与dirty region相交的view,所以即使这个view未调用invalidat
+完整回答请参考FAQ: FAQ32817
+### 问题: 如何修改手机设置-存储中的首选安装位置
+解决方案: 如果要修改存储中的首选安装位置为SD卡,需要修改如下三个文件 1、packages/apps/Settings/src/com/android/settings/ApplicationSettings.java private String getAppInstallLocation() { int selectedLocation = Settings.Global.getInt(getContentResolver(), - Settings.Global.DEFAULT_INSTALL_LOCATION, APP_INSTALL_AUTO); + Settings.Global.DEFAULT_INSTALL_LOCATION, APP_INSTALL_SDCARD); 2、frameworks/base/packages/SettingsProvider/src/com/andro
+完整回答请参考FAQ: FAQ24180
+### 问题: 手机开机显示紧急呼叫的几种原因
+解决方案: 导致紧急呼叫可能有以下几个方面原因:1.插入SIM卡注册到非原属网络;2.SIM卡和固定手机捆绑;3.手机IMEI网络侧认为不合法,限制正常服务;4.手机BAND和网络所支持BAND不匹配;5.所处位置没有SIM卡的原属网络或原属网络信号非常微弱而其他网络信号强劲. 问题排查及策略: 1.手机所处位置区域无SIM卡的原属网络(HPLMN)信号或很微弱而其他网络信号强劲.为了满足紧急通信要求,注册到其他网络上而出现紧急呼叫现象,请尝试将手机放置到SIM卡原属网络信号正常区域尝试. 2.SIM卡和某一固定手机捆绑销售,单一将SIM卡插入其他机器中可能只允许进行紧急通信业务.请使用非绑定卡尝试. 3.网络侧要求申报检查手机IMEI号码,若网络侧检测到手机IMEI号不符合其要求,则会限制正常通信服务而仅限于紧急呼叫情况,那么请将能正常注册到网络的参考机IMEI号写入测试机中再次尝试.(注意,写入成
+完整回答请参考FAQ: FAQ24184
+### 问题: 如何让 activity 不显示界面
+解决方案: 一般情况下,activity都会有显示界面. 有特定的情况下,activity不需要显示任何界面. 如果activity不需要显示任何界面,可以是使用主题Theme.NoDisplay 该主题定义如下: 文件位置:Themes.xml (frameworks\base\core\res\res\values) <style name="Theme.NoDisplay"> <item name="android:windowBackground">@null</item> <item name="android:windowContentOverlay">@null</item> <item name="android:windowIsTranslucent">true</item> <item name="android:windowAnimationStyle">@null</item>
+完整回答请参考FAQ: FAQ24208
+### 问题: 4.4上安装第3方应用出现异常：no static or non-static method  怎么办？
+解决方案: 问题现象:4.4上安装软件:GO_board_1.9.3.apk和viber_3.0.0.1686.apk 出现不停的报错现象. 出错log如下:(有省略,关键出错信息如下) 06-07 11:22:28.840 5540 5540 E AndroidRuntime: java.lang.NoSuchMethodError: no static or non-static method "Lcom/facilems/FtInput/MFtInput;.SwitchLang(Ljava/io/FileDescriptor;I;I;I;Ljava/io/FileDescriptor;I;I;I;)I" 06-07 11:22:28.840 5540 5540 E AndroidRuntime: at java.lang.Runtime.nativeLoad(Native Method) 06-
+完整回答请参考FAQ: FAQ24213
+### 问题: bindService时参数BIND_AUTO_CREATE的作用
+解决方案: unbind一个Service过程中,何时需要destroy这个Service,首先还是需要看bind该Service时设置的flag,如果设置了flag BIND_AUTO_CREATE,那么在unbind之后会去检查是否应该destroy这个Service unbind过程中,remove掉当前这个ConnectionRecord之后,发现目前Service中尚有其他的ConnectionRecord仍旧设置了BIND_AUTO_CREATE,那么这个Service将不会被destroy; 只有当Service中不再有任何的ConnectionRecord设置BIND_AUTO_CREATE之后,才去destroy这个Service.因此,可以看出BIND_AUTO_CREATE对Service的销毁过程起到了决定性的作用. unbind的ConnectionRecord如果设置了BI
+完整回答请参考FAQ: FAQ24268
+### 问题: 什么是MTP?
+解决方案: Media Transfer Protocol,媒体传输协议,是基于PTP(Picture Transfer Protocol)协议的扩展,主要用于传输媒体文件. 如果Android手机的sdcard以MTP模式挂载到PC机上,sdcard的控制权其实还是属于手机.只不过智能手机通过MTP协议向PC机构建了一个虚拟文件系统.PC机操作其中的文件时,都会通过标准MTP协议向智能手机发起请求.另外,Android把MTP功能集成在MediaProvider中,其好处是PC机操作(例如拷贝或删除等)媒体文件时,媒体数据都会及时更新到媒体数据库中. Pyshical Layer(物理层):物理层在MTP协议中用来传输数据.目前有三种物理层可供MTP使用.它们分别是USB:其主要特点是传输文件,同步媒体文件时速度快,而且可以边工作边充电,这是目前用的最多的一种方式;IP:基于IP的MTP(简称MTP
+完整回答请参考FAQ: FAQ24314
+### 问题: 相机录像时都需要哪些步骤？
+解决方案: 使用Android框架采集视频需要认真的管理Camera对象,以及跟MediaRecorder类的协调. 当使用Camera对象记录视频时,除了Camera.open()和Camera.release()方法的调用以外,还必须管理Camera.lock()和Camera.unlock()方法的调用,从而允许MediaRecorder对象访问Camera硬件. 注意:从Android4.0(API Level 14)开始,Camera.lock()和Camera.unlock()方法调用系统会为你自动管理. 跟拍照不一样,采集视频需要非常特殊的调用顺序,必须按照一个特定执行顺序来准备和采集视频,详细如下: 1. 打开Camera:使用Camera.open()方法来获得一个Camera对象的实例. 2. 连接预览:使用Camera.setPreviewDisplay()方法把SurfaceV
+完整回答请参考FAQ: FAQ25029
+### 问题: 应用端如何去除listview列表的over scroll模式
+解决方案: 系统层的listview的弹性滑动模式在ViewConfiguration.java中 /** * Max distance in dips to overscroll for edge effects */ private static final int OVERSCROLL_DISTANCE = 0;//一般可调整参数到300,这样弹性滑动的距离最大是300,以此实现弹性滑动 如果framework层开启弹性滑动, 应用层应该在获得对应的listview id之后 private ListView mlistview; ........ mlistview = (ListView) this.findViewById(R.id.listview); mlistview.setOverScrollMode (View.OVER_SCROLL_NEVER);//通过这个设置,就屏蔽了该应
+完整回答请参考FAQ: FAQ24315
+### 问题: 如何计算camera拍照尺寸能否支持
+解决方案: 借助8830/7730的scale功能,可以使用分辨率较小的camera sensor拍出较大分辨率的照片,提供了更丰富的feature选择. 但在软件实现中,需要注意所设置的拍照尺寸是否在平台处理能力之内,计算及检查的方法归纳如下: 所需的参数: 1) sensor输出的分辨率,如640*480. 2) 实际拍照尺寸,如1600*1200. 3) zoom factor,定义了最大zoom比例,由软件定义,定义在文件 /vendor/sprd/open-source/libs/libcamera/sc8830/inc/cmr_common.h 中,宏定义CMR_ZOOM_FACTOR.通常为2. 4) 最大zoom级别,由软件定义,定义在文件 /vendor/sprd/open-source/libs/libcamera/sc8830/inc/cmr_common.h 中,宏定义CAME
+完整回答请参考FAQ: FAQ24320
+### 问题: 拍摄HDR照片无区别的解决思路和方法
+解决方案: 简介:高动态范围成像(High Dynamic Range Imaging,简称HDRI或HDR)是用来实现比普通数字图像技术更大曝光动态范围(即更大的明暗差别)的一组技术.高动态范围成像的目的就是要正确地表示真实世界中从太阳光直射到最暗的阴影这样大的范围亮度. 展讯平台的实现:通过连续快速拍摄三张分别为"欠曝光","正常曝光"和"过曝光"的照片,通过算法合成一张照片来实现. 据此原理分析过程如下: 1.以OV5640为例,可得典型的获取当前拍照时间点的曝光行数和增益,并设置对应"欠曝光","正常曝光"和"过曝光"的照片EV的设置logel: 获取当前拍照时间点的曝光行数和增益: camera_savaload_expose_val: save exposure value Sensor_Ioctl: SENSOR: Sensor_Ioctl -> cmd = 36, arg = -126
+完整回答请参考FAQ: FAQ30196
+### 问题: 如何看Systrace？
+解决方案: 窗口的上半部分是时间轴面图(Timeline Panel)界面上方的尺子代表了 MethodTracing 的时间段(从Debug.startMethodTracing()到 Debug.stopMethodTracing()的时间). 点击竖着排列的第一个图标就可以任意拖动整个图,点击第三个图标,这时候在图中空白处双击就可以固定一条竖线,然后再固定一条竖线就可以看到两条竖线之间的时间长度,点击第二个图标可以任意看横着的时间长度. 每个线程的函数执行时间图处于和线程名同一行的右侧. 1:线宽度代表执行该函数本身操作所用的时间. 2:函数所调用的子函数时间线夹杂在该函数本身操作所用的时间线之间. 3:函数本身是嵌套的. 4:每行下面粗的线段标注了 Profile Panel 中被选中函数调用所消耗的时间段.每个线段对应一次函数的运行. 窗口的下半界面是对各个函数调用的汇总图 Profile 
+完整回答请参考FAQ: FAQ24341
+### 问题: 4.4上对InCallUI的修改无效怎么办？
+解决方案: adnroid4.4中,实我们单独去编译InCallUI也是可以生成对应的APK的,但实际上push到手机中却没有效果,因为Dialer的Android.mk中已经将InCallUI的代码包含,也就是已经将InCallUI的代码打包到了Dialer.apk中.如下: src_dirs := src $(contacts_common_dir)/src $(incallui_dir)/src res_dirs := res $(contacts_common_dir)/res $(incallui_dir)/res LOCAL_SRC_FILES := $(call all-java-files-under, $(src_dirs)) LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dirs)) LOCAL_AAPT_FLAGS
+完整回答请参考FAQ: FAQ24365
+### 问题: Android watchdog 的类型以及如何定位问题？
+解决方案: 1、watchdog 的类型: (1)android.server.ServerThread 被 block,LOG 如下: 02:06:22.571 W/Watchdog( 307): *** WATCHDOG KILLING THE SYSTEM: null (2)诸如 windowManagerService ,activityManagerService 等死锁,LOG 如下: 02:06:22.571 W/Watchdog( 307): *** WATCHDOG KILLING THE SYSTEM:activityManagerService 2、如何 DEBUG watchdog? 第一种类型的 watchdog,我们要首先看 trace.txt 中 serverThread 的调用栈. 为什么呢? 因为 system server 启动服务后,会启动 native serv
+完整回答请参考FAQ: FAQ24369
+### 问题: android4.4 vsync功能
+解决方案: 随着时间的推移,Android OS系统一直在不断进化、壮大,日趋完善.但直到Android 4.0问世,有关UI显示不流畅的问题也一直未得到根本解决.在整个进化过程中,Android在Display(显示)系统这块也下了不少功夫,例如,使用硬件加速等技术,但本质原因似乎和硬件关系并不大,因为iPhone的硬件配置并不比那些价格相近的Android机器的硬件配置强,而iPhone UI的流畅性强却是有目共睹的. 从Android 4.1(版本代号为Jelly Bean)开始,Android OS开发团队便力图在每个版本中解决一个重要问题(这是不是也意味着Android OS在经过几轮大规模改善后,开始进入手术刀式的精加工阶段呢?).作为严重影响Android口碑问题之一的UI流畅性差的问题,首先在Android 4.1版本中得到了有效处理.其解决方法就是本文要介绍的Project Butt
+完整回答请参考FAQ: FAQ24455
+### 问题: 手机使用过程中，未提示低电警告就自动关机
+解决方案: 问题原因是,电池放电使用时,电量百分比显示下降的速度慢于实际电池放电的速度,实际电池电量已经耗尽电压已降到3.1v以下,但电量显示还有很多,就出现掉电关机情况; 代码修改为低电量时,加快电量更新速度,让其更接近实际值 int sprdbat_one_percent_time = SPRDBAT_ONE_PERCENT_TIME; case POWER_SUPPLY_STATUS_DISCHARGING: if (fgu_capacity >= sprdbat_data->bat_info.capacity) { fgu_capacity = sprdbat_data->bat_info.capacity; } else { if(fgu_capacity > 50) { sprdbat_one_percent_time = SPRDBAT_ONE_PERCENT_TIME; if(peri
+完整回答请参考FAQ: FAQ24462
+### 问题: SC6531 SC7701如何支持imei otp功能
+解决方案: 1. 在对应的功能主mk文件修改 IMEI_OTP_SUPPORT = EFUSE ### IMEI Write protect support # Option1:NONE # Option2:EFUSE 打开一定要慎重!! 写一次IMEI就不能再写! 2.修改*#06#imei显示方式 /*****************************************************************************/ LOCAL void AppendIMEIDetail(MMI_CTRL_ID_T ctrl_id) { ..... uint32 i = MN_DUAL_SYS_1; #ifdef IMEI_OTP_SUPPORT_EFUSE //add uint16 ItemID; #endif item_data.img_type = GUIRICHTEX
+完整回答请参考FAQ: FAQ24499
+### 问题: SC7715 4.4如何修改DDR容量配置
+解决方案: 例如:2Gb DDR 需要修改的地方 1.在/chipram/include/configs/sc7715xx.h中 #define DDR_TYPE DRAM_LPDDR2_1CS_2G_X32 2.在/u-boot/include/configs/sc7715xx.h中 #define DDR_TYPE DRAM_LPDDR2_1CS_2G_X32 #define CONFIG_RAM256M #define CONFIG_BOOTARGS "mem=256M loglevel=1 console=ttyS1,115200n8 init=/init " MTDPARTS_DEFAULT #define SPRD_SYSDUMP_MAGIC ((PHYS_OFFSET_ADDR & (~(SZ_256M - 1))) + SZ_256M - SZ_1M) 3.u-boot/propert
+完整回答请参考FAQ: FAQ24579
+### 问题: FM 模块中,如何打开50K搜台的支持
+解决方案: 本文以 sp8830eccmccspecAplus_UUI 为例介绍 FM 如何打开50K搜台的支持. 1. 首先检查 系统配置文件 device/sprd/scx35_sp8830ec/scx35_sp8830eccmccspecAplus_UUI.mk --- a/scx35_sp8830ec/scx35_sp8830eccmccspecAplus_UUI.mk +++ b/scx35_sp8830ec/scx35_sp8830eccmccspecAplus_UUI.mk @@ -8,7 +8,8 @@ include $(LOCAL_ORIGINAL_PRODUCT_MAKEFILE) PRODUCT_NAME := scx35_sp8830eccmccspecAplus_UUI PRODUCT_PROPERTY_OVERRIDES += \ ro.homekey.physical=
+完整回答请参考FAQ: FAQ24588
+### 问题: 9620如何在对方挂断通话时进行振动提示
+解决方案: 修改 packages/services/Telephony/src/com/android/phone/CallNotifier.java中的onPhoneStateChanged方法,对方挂断时call state由ACTIVE转变为IDLE,该种情况也调用callVibrate方法: Call.State fgState = fgPhone.getForegroundCall().getState(); - if ((fgState == Call.State.ACTIVE) - && (mPreviousCallState != null && mPreviousCallState.isDialing())) { + if (((fgState == Call.State.ACTIVE) + && (mPreviousCallState != null && mPreviousCa
+完整回答请参考FAQ: FAQ24614
+### 问题: 开机后为何无法自动安装T卡
+解决方案: vold针对多分区磁盘设备的管理,先获知磁盘包含多少个分区,建立一个bitmap,当所有partion都收齐了才开始mount整个设备的分区,但是依次mount各个分区时,若找到文件系统类型为FAT格式的分区,便不再mount其他分区了.vold收到的add partitions的block uevent中的PARTN的最大值大于收到的add partitions的block uevent的个数,那么vold就不会主动mount存储设备. 然而android2.3.5在mountservice中,有注册监听ACTION_BOOT_COMPLETED广播的receiver;当系统完成boot,会主动去mount所有存储设备,所以并不会出现android4.4中的现象. 如何解决android4.4中这类问题,首先可以采用2.3.5中的方式,监听ACTION_BOOT_COMPLETED广播,
+完整回答请参考FAQ: FAQ24609
+### 问题: 如何选择配置编译默认的launcher
+解决方案: 目前Android4.4工程中有四个launcher,具体差异详见FAQ:FAQ19838 默认工程中会使用SprdLauncher1或者SprdLauncher2 这个配置在:device/sprd/XXX/工程mk下. 例如:device/sprd/scx15_sp7715ga/scx15_sp7715gacuccspecAplus_UUI.mk # SprdLauncher2 PRODUCT_PACKAGES += \ SprdLauncher2 在这里可以切换SprdLauncher1和SprdLauncher2 如果把上述配置去掉,则会使用默认原声的launcher3. 因为:如果有上述配置,则会在对应的launcher的android.mk中会override Launcher3: LOCAL_OVERRIDES_PACKAGES := Launcher3 如果想使用Launc
+完整回答请参考FAQ: FAQ24704
+### 问题: 怎样的Log称为Mms有效的Log？
+解决方案: 抓取Log时,需要重点注意事项: (1)确保文件有效正确; (2)每次测试时候,需要把老的LOG删除; (3)提交CR时务必写下发生问题时间,便于快速查找定位问题; (4)对于数据完整性方面的事情不能采用图片对比方式; (5)ANDROID LOG包含: main.log 、system.log、 radio.log . 1. 短彩信异常所需Log 1.1 彩信异常,如无下载,附件显示问题,彩信收发条数异常等现象 必须提供需要提供:Android Log(需含mmssms.db)、TCP/IP CAP、ARM、DSP 数据库文件导出方法: (1)userdebug版本在获取root权限后可通过adb命令获取数据库文件以及彩信附件: 1)数据库文件位置:/data/data/com.android.providers.telephony/databases/mmssms.db 彩信附件位置:
+完整回答请参考FAQ: FAQ24724
+### 问题: Activity、Dialog点击空白处自动关闭的问题
+解决方案: 将Activity设置成窗口的样式实现Dialog或者Popupwindow效果在开发中是很常用的一种方式,在AndroidMenifest.xml中将需要设置的Activity增加android:theme="@android:style/Theme.Dialog"属性即可.但是窗口化的Activity有个问题就是:点击Activity以外的空白处Activity会finish. Activity中弹出的普通的dialog也是同样处理的,如果点击dialog区域以外的地方,dialog会自动关闭. 如何避免这个问题呢,办法如下: 一、如果API Level>=11有两种方式: 1、theme,style中,把windowCloseOnTouchOutside设置为false(普通dialog是设置成true的).例如: res\values\styles.xml <resources> 
+完整回答请参考FAQ: FAQ24741
+### 问题: 出现"error:device not found"解决方法？
+解决方案: win7/xp环境: a.查看驱动有没有装好,打开DeviceManager.exe设备管理器,手机连上pc,发现驱动都已经装好(没有发现带黄色问号);否则重现安装驱动; b.看adb环境变量是否设置好即能在dos环境下执行adb指令或者进入adb目录下运行adb c.查看用户(如用户名为guojian.qi)目录C:\Documents and Settings\guojian.qi\.android\是否有文件adb_usb.ini d.如果不存在创建一个创建一个adb_usb.ini并在里面添加一新行写入0x1782保存; e.如果文件存在里面要确保有0x1782; 最后运行: adb kill-server adb shell 即可! 如果adb_usb.ini设置完,还不能正确连接连接怎么办: 1.进入DOS 2.执行cd C:\Documents and Settings\gu
+完整回答请参考FAQ: FAQ27122
+### 问题: 2351 前端设计方案由3in1 HW 改为2in1 HW 如何修改pinmap
+解决方案: 修改如下: u-boot/board/spreadtrum/sp7715ga/pinmap.c中 修改前: {REG_PIN_CP2_RFCTL0, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_OE, PIN_NULL, SLP_CP2}, {REG_PIN_CP2_RFCTL1, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_OE, PIN_NULL, SLP_CP2}, {REG_PIN_CP2_RFCTL2, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_OE, PIN_NULL, SLP_CP2}, 这样的配置当wifi进入睡眠时,sw芯片内部的lna在工作耗电 修改后: {REG_PIN_CP2_RFCTL0, PIN_NULL,
+完整回答请参考FAQ: FAQ24875

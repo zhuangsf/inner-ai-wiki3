@@ -1,0 +1,308 @@
+### 问题: DreamCamera2 APP，如何替换展锐全景算法库？
+解决方案: 答案:可通过adb push 命令对算法库进行替换,全景算法库在设备中的目录为:system_ext/lib64. 操作: 1. adb push xxx system_ext/lib64 2. 清除DreamCamera2相机应用存储空间
+参考FAQ: FAQ202173398,含图片
+### 问题: 蓝牙A2DP设备的连接与断开流程
+解决方案: A2DP设备连接时: 1.BT_Task发送MMI_BT_HFAG_SLC_CONNECTED消息,代表已连接蓝牙设备的HFP功能(蓝牙电话). 2.BT_Task发送MMI_BT_CALL_TYPE_WB_NB_EVENT消息,代表该设备是否支持宽带/窄带语音. 3.BT_Task发送MMI_BT_A2DP_CONNECTED消息,代表已连接蓝牙设备的A2DP功能(蓝牙音乐). A2DP设备断开时: 1.BT_Task发送MMI_BT_A2DP_DISCONNECTED消息,代表已断开蓝牙设备的A2DP功能. 2.BT_Task发送MMI_BT_HFAG_SLC_DISCONNECTED消息,代表已断开蓝牙设备的HFP功能.
+参考FAQ: FAQ202173399
+### 问题: DreamCamera2 APP,1080p 和 720p 录像尺寸可否改成4：3？
+解决方案: 修改后,cts和gts测试会无法通过,不建议1080p 和 720p 录像尺寸改为4:3比例.
+参考FAQ: FAQ202173408
+### 问题: 视频恢复播放流程
+解决方案: 视频由暂停状态到恢复播放流程: FsmPaused (case VP_RESUME_REQ) :暂停状态中,收到恢复播放请求消息VP_RESUME_REQ后,执行恢复操作. FsmStateTrans :状态机进入resuming状态. FsmDispatch :状态机分发消息给FsmResuming函数进行处理. FsmResuming (case VP_STRM_RESUME_CNF , case STRM_RESULT_SUCCESS) :恢复中,等待恢复成功确认消息 STRM_RESULT_SUCCESS. SendPlayCnfToUI :状态机给UI层发送恢复确认消息VP_PLAY_CNF. HandleFsmMsg(case VP_PLAY_CNF):处理状态机给UI发送的消息VP_PLAY_CNF,开始播放视频. 获取当前视频播放时间: MMIAPIVP_FSMGetTimeOffset接口调用DPLAYER_GetTime函数.
+参考FAQ: FAQ202173411
+### 问题: 不需要主射频的项目，能否去掉主射频电路？
+解决方案: 通常来说,不需要主射频(GSM/WCDMA/LTE),只需要WCN功能时,可以按照下述操作.原理图设计好后一定要发起评审,再次double check下. 1,26M主时钟挂在transceiver上的平台,都不能删除transceiver,因为audio DSP需要CP modem初始化,而CP modemC初始化包含对transceiver的初始化;此时除transceiver外的RF器件可以全部删除;TR的电源(含电容)、GND、SPI、CLK都要保留,LVDS和RF端口全部删除.时钟方案用TCXO+32K,无需校准. 2,26M主时钟挂在PMU 上的项目,audio模块与CP modem无关联,可以去掉transceiver;时钟方案默认TCXO(WCN芯片)+TSX(PMU芯片,不校准)+32K晶体预留;也可以用TSX only(用WIFI校准).
+参考FAQ: FAQ202173412
+### 问题: 原理图封装库上类似U1TXDG0与U1TXDG1是什么含义
+解决方案: 我司多个芯片都存在一个功能出现在多个PAD上的情况,表现形式如XX(G0)和XX(G1);XX_0和XX_1;XXG0和XXG1;XX_0_XX和XX_1_XX等,适用规则如下: 1,同一时间只允许一个ball使用该功能,不允许两个ball都配置为该功能,pinmap配置时请注意. 2,group0以及group1要成组使用,不允许混用.比如U0TXD_0和U0RXD_1不允许搭配成一组UART用.
+参考FAQ: FAQ202173413
+### 问题: 双电池串联使用，硬件设计上有什么需要特别关注的吗？
+解决方案: 高电压输入方案请注意(如双电池串联):由于Vbat_sense输入电压限制,因此通常外部用两个100K电阻分压后输入给PMU的Vbat_sense,当没有charger的时候电压检测基本是准确的,因此此时Vbat_sense在PMU内部呈现高阻态.不过其实Vbat_sense管脚在PMU内部连接了多个模块:AUXADC、FGU、OVP、BC1.2、CHARGER等,当VCHG有效(>3.3V)后会开启charger等模块导致VBAT_SENSE输入阻抗明显降低,charger模块(SC2720=SC2721=175K、UMP510G=91K),如果用2个100K电阻分压给Vbat_sense,电压会检测不准,需要用电阻分压后再加电压跟随器隔离Vbat_sense,解决Vbat_sense阻抗影响分压比例的问题.示例电路见附件. ﻿
+参考FAQ: FAQ202173415,含图片
+### 问题: 为什么有些WCN芯片的VDDEFU受到干扰后会导致WCN芯片死机？
+解决方案: 对于WMW2651和UMW2652系列芯片,VDDEFU除了给芯片内部的EFUSE模块使用,还在给VDDCORE内置LDO用,受到VDDIO干扰后会导致VDDCORE无法正常输出电压.要求两个PIN先分别连接到自己的滤波电容后再合并到相同网络,严格的星型走线.UWE5621DS和UWE5623DU系列的芯片内部架构不同,没有这个问题. ﻿
+参考FAQ: FAQ202173417,含图片
+### 问题: W317与W307抓取UART log方式的区别
+解决方案: W317平台不带有sensor hub功能,一般只有一个UART串口即UART1,连接UART1即可抓取UART Log,软件不需要作其他配置,串口的波特率需设置为115200. W307平台是带有sensor hub的,一般硬件上是支持UART0串口抓取UART Log,UART1串口与sensor hub相连,抓取UART Log的详细步骤可参考FAQ202173335,需要具体的软件配置和代码调整.
+参考FAQ: FAQ202173425
+### 问题: 拨号盘dialpad点击显示圆圈修改
+解决方案: java/com/android/dialer/dialpadview/res/drawable/btn_dialpad_key.xml
+
+
+ <ripple xmlns:android="http://schemas.android.com/apk/res/android"
+-  android:color="?android:attr/colorControlHighlight"/>
++    android:color="?android:attr/colorControlHighlight"
++    android:radius="60dp"//调整该值大小 />
+参考FAQ: FAQ202173426
+### 问题: 开机后默认显示双层launcher
+解决方案: Launcher3/ext/res/values/config.xml
++    <string name="default_home_screen_style" translatable="false">dual</string>
+-    <string name="default_home_screen_style" translatable="false">single</string>
+参考FAQ: FAQ202173427
+### 问题: mocor项目紧急广播的告警声音及震动测试失败
+解决方案: 警告震动及声音是通过函数MMIAPISET_HandleSOSVibrateTimer中的状态机方式实现的,其中的时间定时器由于存在误差,可能会导致实际的时间值不能符合测试要求,因此碰到测试失败时可以微调其中的时间宏定义来解决. 例如,如果声音间隔异常,可以调节MMI_500MSECONDS的值.
+参考FAQ: FAQ202173434
+### 问题: 针对不同的拍照或录像尺寸，DreamCamera2 app 如何选择预览尺寸？
+解决方案: 针对不同的照片或录像尺寸,DreamCamera2 app 选择预览尺寸的策略如下: 以4:3照片尺寸为例 ①根据用户选择的 4:3 拍照比例,从 camera hal 挑选一系列支持的4:3 的预览尺寸; camera hal预览尺寸所在的数组为:cam_stream_info_t_stream_info 参考路径:sprdroid/vendor/sprd/modules/libcamera/hal2_3v6/SprdCamera3Setting.cpp ②遍历 ① 选择的预览尺寸,以屏幕短边为基准,选择一组与屏幕尺寸相近的作为预览尺寸. 如屏幕尺寸为1280,720,用户选择的4:3照片时,匹配的预览尺寸为960,720. 注:录像的预览尺寸选择策略与拍照一致.
+参考FAQ: FAQ202173438
+### 问题: 关于文字转语音（TTS）
+解决方案: 1.Android8之前默认带的是PicoTts(代码位于external/svox/pico),PicoTts只支持,英、法、德、意大利、西班牙语. 2.如果使用的是Google tts,Google tts支持的语言较多,使用时需要下载对应的语言包,这个在国内的网络一般无法访问,需要翻墙网络.Google TTS 是有接口可以先内置离线语言包的,但是需要先下载官方离线语言包,将官方语言包解压缩放置在 /system/tts/google 下 3.关于中文播报引擎,基本都是三方收费的,这个可以联系比如科大讯飞等获取.
+参考FAQ: FAQ202173440
+### 问题: 6533G项目缩略图异常
+解决方案: 有客户反映6533G项目图片查看应用中jpg格式的缩略图尺寸异常,缩略图框尺寸为正方形,但是jpg的图片显示为长方形.经查,此现象是因为jpg格式的图片内部处理时保持了图片的原始宽高比,而其他格式的图片没有这个限制.
+参考FAQ: FAQ202173457
+### 问题: HM模块hm_basic_target是如何计算的
+解决方案: HM主要是通过分析直方图信息调试,实现对图像亮度的控制.其中hm_basic_target是HM模块基础亮度,其计算公式可方便调试. 具体计算公式如下: hm_basic_target = hm_thrd/hm_basic_y × 常量 其中,hm_thrd是根据Bv的权重,hm_thrd0和hm_thrd1插值得到 hm_basic_y是当前Basic模块计算出的y值 常量: 如果硬件模块支持,可查找EXIF->hm->cur_lum, 即常量为cur_lum; 如果硬件模块不支持,该cur_lum的值等价于EXIF->AE3.0->cur_lum_w 的值,即常量为cur_lum_weight; 举例:如下图hm_basic_target =179/210×65=55
+参考FAQ: FAQ202173496,含图片
+### 问题: LTE ONLY版本固件下载提示GSM 没有校准，无法备份文件
+解决方案: 该问题一般是软件编译中未修改XML导致,需要检查PAC包中的XML文件 <File backup="1" CheckCali="GSM,WCDMA,LTE"> 删除掉GSM和后面的逗号后重试即可. 如果不包含WCDMA,还需要将WCDMA和后面的逗号一并删除.
+参考FAQ: FAQ202173498
+### 问题: AWB模块up/dn ct/tint dst ratio值是具体的值还是百分比
+解决方案: 答: up/dn ct dst ratio是百分比, up/dn tint dst ratio是映射后的色调值. 可以根据其计算方式以及映射关系图来理解: CT与Tint映射关系图 计算方式为 :偏移后的落点色温= 原始落点色温 -- (Up Ct Dst Ratio / Dn Ct Dst Ratio数值表示的偏移色温); 比如此时问题图片偏黄(ct4000),说明色温判高了,若需要将up/dn ct dst ratio值由-10改成-5,此时套在计算方式里偏移后的色温=4000-(5*常量64)=4000-320,注意常量为算法里设置的值,不一定为64;up/dn tint dst ratio的值就是偏移后的色调值,不用进行计算,比如 up tint dst ratio由0改为5,映射后tint值就是5.
+参考FAQ: FAQ202173504,含图片
+### 问题: ums9230 CLASS G的电源相关问题
+解决方案: VDD_CP是CLASS G的供电正压, VNEG_CP是CLASS G的供电负压 ,VNEG_DRV是 CHARGE PUMP的输出负压. VDD_CP电压范围为-0.3到2.06V VNEG_CP电压范围为-2.06V到0.3V VDD1V85是CHARGE PUMP的供电1.85V, VDDGEN1是CHARGE PUMP的供电1.3V
+参考FAQ: FAQ202173511
+### 问题: typec耳机通话模式调用的AUDIOTOOL哪个场景？
+解决方案: typec耳机通话模式调用的AUDIOTOOL哪个场景? typec耳机通话模式有一个单独模式,TypeC_Digital这个模式
+参考FAQ: FAQ202173512
+### 问题: LTE AGC校准 ±10门限如何修改
+解决方案: 产线问题有时需要将AGC Max\Min gain的门限收严,可在NV中进行设置相应的门限,具体位置如下(以LTE B5为例): LTE_optimize\LTE_download_rf_compensation_cc0_optimize\Reserved_band_info\Band_no9\Reserved_info\reserved[8] Reserved[8]的高8bit的值来决定是否采用新的AGC cal Gain tolerance,如果为0,采用默认tolerance 10db,如果为1,则根据reserved[8]中的低8bit的值作为AGC校准判别门限,精度为1db. 将Band 5对应的reserved[8]修改为0x105,如下图所示,单独设置B5的RX的门限,将AGC Max gain的tolerance由±10修改为±5 该修改需要使用Simba版本R8.21.2604及之后版本生效.
+参考FAQ: FAQ202173514,含图片
+### 问题: 如何调整通话亮灭屏功能距感的采样率？
+解决方案: 1)Psensor为单一频率,无法修改底层数据生成频率,因此可通过修改上层通话应用下发的采样周期 SENSOR_DELAY 来实现修改 filepath:frameworks/base/services/core/java/com/android/server/display/DisplayPowerController.java setProximitySensorEnabled() -> mSensorManager.registerlistener()中设置周期默认为SensorManager.SENSOR_DELAY_FASTEST,可修改为SensorManager.SENSOR_DELAY_NORMAL或其它 2)各周期常量对应值(μs) SENSOR_DELAY_FASTEST 0 SENSOR_DELAY_GAME 20000 SENSOR_DELAY_UI 66667 SENSOR_DELAY_NORMAL 200000
+参考FAQ: FAQ202173516
+### 问题: 内存由EMCP更换为UMCP 是否会影响待机功耗
+解决方案: 注意UDS710 平台上UFS_RST三极管不可以删除. EMMC和UFS本身不会影响待机功耗. 问题中umcp 8GB DDR更大, 待机时,由于DDR需要上电做自刷.这部分待机电流与DDR物料有关. 通常情况下,ddr待机功耗会存在差异. 具体待机电流需要参考所用DDR规格书中说明.
+参考FAQ: FAQ202173519
+### 问题: 请提供一下贵司UMS512 emmc速率测试标准
+解决方案: UMS512 支持HS400,接口速率是400MB/S emmc速率是受物料影响,不同物料速率不同, 具体速率参考emmc spc中performance指标介绍. 注意flash厂商提供速率是在uboot里测试结果,不受OS影响. 通常OS系统端apk测试结果,由于系统运行,会存在一定的速率折损. 我们认为应用端测试速率达到flash spc 70%以上即满足标准. ——以上标准为建议值,具体结果与flash厂商实际测试方法及标称速率有关.
+参考FAQ: FAQ202173521
+### 问题: UMS9117平台电源纹波大小要求是什么
+解决方案: ums9117 平台DCDC我们建议纹波标准: 上限:+4%;------(Vmax-Vnormal value)/ Vnormal value =<4% 下限:-4%;------(Vmin-Vnormal value)/ Vnormal value >=-4% 备注:纹波是相对于标称值Vnormal value,也就是PMIC输出典型值,不是相对于实测值 LDO我们建议:不超过100mV 具体电源参考对应pmu spc
+参考FAQ: FAQ202173522
+### 问题: UMS9230  UFS的ufs_refclk的driver能力是否可调？如何调节？
+解决方案: UMS9230 UFS的ufs_refclk的驱动能力不可调. 下图我司UMS9230平台测量结果. 我们驱动能力是可以满足jedec spc标准. 测量上注意: 1 测量时,请使用小电容(<1pf)负载的差分探头来测试. 2 tIRISE tIFALL的范围是VILmax VIHmin的20%～80%. 3 测试时使用interposer可能会影响测量结果.
+参考FAQ: FAQ202173523,含图片
+### 问题: UMS512（T）可以支持UFS吗？
+解决方案: UMS512(T)平台只支持emmc接口. ufs建议可以参考我司ums9230(T)平台,目前可以支持ufs2.1
+参考FAQ: FAQ202173524
+### 问题: beep系统音在哪里产生的，怎样去查询
+解决方案: BEEP系统音有两处可以产生,一处是DSP产生,另一处可以是AP产生 可以通过抓取通话的DSP LOG,如果2点就有系统音,则是DSP产生,如果2点没有系统音,9点有,则是AP产生
+参考FAQ: FAQ202173525
+### 问题: UMS312平台最大支持的RAM和ROM是多少？
+解决方案: UMS312支持LPDDR4(x)和LPDDR3 LPDDR4(x)最大支持8GB 1333MHz LPDDR3物料限制,最大可以使用4GB 933MHz ROM支持EMMC HS400,不支持UFS EMMC理论上不限制容量,EMMC实际物料最大为128GB
+参考FAQ: FAQ202173526
+### 问题: 对于通话下行出现杂音该如何分析？
+解决方案: 首先我们需要确认电信号部分是否有杂音存在. 通过抓取通话的DSP LOG,分析网络下来的2点是否有杂音,如果2点就有杂音则需要网络层进一步分析是否存在丢包等现象. 如果下行的3点或7点出现杂音,则是CVS以及DSP里面参数增益设置不合理造成的,需要优化音频参数. 如果下行3点的信号是干净的且无任何杂音.则此杂音问题是由于听筒,喇叭音腔等原因引起,对于接外置功放的方案则可能与外部PA有关,可逐一排查.
+参考FAQ: FAQ202173527,含图片
+### 问题: UMS512（T）平台最大支持的RAM和ROM是多少？
+解决方案: UMS512(T)支持LPDDR4(x)和LPDDR3 LPDDR4(x)最大支持8GB UMS512 1600MHz UMS512T 1866MHz LPDDR3物料限制,最大可以使用4GB 933MHz ROM支持EMMC HS400,不支持UFS EMMC理论上不限制容量,EMMC实际物料最大为128GB
+参考FAQ: FAQ202173529
+### 问题: UMS9230平台最大支持的RAM和ROM是多少？
+解决方案: UMS9230支持LPDDR4x LPDDR4X最大支持14GB 9230(H)1600MHz UMS9230T 1866MHz ROM支持EMMC HS400,和UFS2.1 2lane EMMC/UFS理论上不限制容量,EMMC实际物料最大为128GB, UFS通常容量128GB 256GB 512GB 1TB
+参考FAQ: FAQ202173530
+### 问题: 展锐平台的射频器件选型可以任意选择吗
+解决方案: 展锐平台项目射频器件选择遵循以下原则: 1、2G3G平台如果没有特殊约定,在确保性能OK的情况下可以随便选择,但建议优先使用我司QVL里的器件. 2、4G平台需要注意,展锐4G平台的NV都是用NVAide工具配置的,尽量选择工具里有的器件,如果工具里没有,需要咨询是否可以添加,否则只能手动配置NV,那样工作量大且容易出错. 3、4G平台项目如果用到mipi器件超过4个,需要将原理图和所用RF器件给展锐评审,因为展锐平台对mipi的控制字个数有限制,超出个数会导致软件assert,需要寻找规避方案,且规避方案影响电流甚至存在未知风险.主要涉及射频开关和tunner是选mipi还是GPIO类型. 4、5G平台由于用到mipi器件比较多,更需要提前评估原理图和射频器件选型,以防mipi控制字超标.
+参考FAQ: FAQ202173532
+### 问题: SC7731E平台WCDMA的最小功率目标值
+解决方案: WCDMA的最小功率是可以通过校准来调节的,在NV里有个最小功率校准target,但是SC7731E平台的EVM在最小功率过低时候恶化很快,会造成校准和综测异常,因此该平台的最小功率余量不要超过3dB,以2dB为宜.
+参考FAQ: FAQ202173535
+### 问题: 退出相机时马达撞击声
+解决方案: Camera退出时,使VCM的驱动电流逐步降低,马达分步回到code为0的位置(在退出 camera 时,马达分两个步骤回到 code 为 0 的位置,先以 Quit_max_step 大步跳到 anti_noise_pos 的位置,然后以Quit_step 小步跳到 lens_mc_min 的位置,最后回到 code 为 0 的位置). 1,对模组进行线性度测试 2,修改 softlanding参数 anti_noise_pos:(lens_mc_min *7 + lens_mc_max )>>3 Quit_max_step:(otp_macro otp_inf ) >>1 Quit_step:25 Quit_sleep:12 3,修改lens_mc_min参数,降低lens_mc_min参数值
+参考FAQ: FAQ202173537
+### 问题: 对于回声问题，DSP LOG如何去分析排查
+解决方案: 首先我们确保抓取的LOG没有丢帧.如何确保抓取LOG不丢帧呢?尽量确保在有效短的时间内抓到需要的问题数据.如遇到丢帧则重新抓取. 然后对比下4点主麦克数据与经过CVS回声算法处理后8点的语音数据. 确认下8点是否有回声残留.如果8点回声很大(类似复读机一样的回音),需先确认9点信号是否是正常(9点是我们回声参考信号,用来消除回声的一个差量).如果9点出现噪声或者异常声音,需要和软件层去确认问题点,可能是软件修改导致9点异常. 另外也可能是外部声学结构泄露导致的,4点会收到更多其它声学路径(例如机壳内部)泄露过来的回声.这样回声算法也不能完全压制住,需要加强结构的密封处理. 对于残留的微弱回声,我们则可以通过加强CVS的回声处理去解决.
+参考FAQ: FAQ202173540,含图片
+### 问题: audio_structure.xml 里采样率sample rate的val值与采样率的关系?
+解决方案: sample rate的VAL值对应的采样率关系如下: 数值0x08对应采样率为8000HZ, 数值0x10对应采样率为16000HZ, 数值0x20对应采样率为32000HZ 数值0x30对应采样率为48000HZ
+参考FAQ: FAQ202173549
+### 问题: 彩信Network acount默认参数异常
+解决方案: 在APN预置表中,APN信息加载是按照列表中的顺序来加载的,且针对一种account type,只能加载一个APN信息,因此只加载第一个,后面的不再加载.根据MCC、MNC,看想要加载的MMS预置信息之前是否有其他的MMS预置信息,这会导致加载的结果是之前的第一个MMS预置信息,而不是想要加载的.如果有,说明其他的MMS预置信息配置有问题,对其进行检查,并处理如下: (1)如果该MMS预置信息是需要的且account type配置错误,纠正account type; (2)如果该MMS预置信息是多余的,将其删除
+参考FAQ: FAQ202173555
+### 问题: 海外730卡自动更新时间和实际时间不对
+解决方案: 730卡自动更新时间相差两小时是因为zone index 错误导致的, 需做以下修改: 在mmiwclk_main.c 文件 s_zone_city_info 数组中, 将 {TXT_ACC_WORLD_GMT_4_N_SANTIAGO,TXT_ACC_WORLD_GMT_3_N,730, MMI_ACC_3_N_SANTIAGO},//Chile 58 修改为 {TXT_ACC_WORLD_GMT_4_N_SANTIAGO,TXT_ACC_WORLD_GMT_4_N,730, MMI_ACC_3_N_SANTIAGO},//Chile 58 因此当遇到自动更新时间与实际时间相差整数小时问题时,可以先检查s_zone_city_info中的zone index是否正确.
+参考FAQ: FAQ202173557
+### 问题: 手机信号强度显示
+解决方案: (1)目前手机中信号强度显示为RSRP,在log中有打印信息(可查找 rxlev) 函数HandleScellRssiInd处理底下上报信号强度消息,g_service_status[dual_sys].rssiLevel 保存了信号强度rsrp值. (2)rxlev与信号强度转换规则可参考如下信息: 1). GSM,将信号强度记为level (负数,单位为dbm) rxlev = level+110, 并且范围控制在[0,63] 2). WCDMA,rsrp(负数,单位为dbm) 如果,Rscp < -115 ,rxlev = 0 否则,rxlev = (( 8*116 + rscp)+ 4)/8,并且控制范围在[0,91] rxlev = 116.5 + rscp 3). LTE, rsrp(负值,单位为dbm)//55,45,35,25,0 //5600 rxlev = (rsrp*100+14000)/100+1,并且控制范围在[0~97]的范围 rsrp = (rxlev - 141)
+参考FAQ: FAQ202173558
+### 问题: 开启热点后，是否能进行USB共享？
+解决方案: 由于开启热点也需要激活PDP,而USB共享也要激活PDP,且使用的一路PDP进行数据传输,因此两个不能同时打开. 开启热点后,再进行USB共享时,目前平台是提示"please try again",若要修改为提示请关闭热点", 请在MMIUSBSHARE_EnterConnect 函数中添加 MMIHOTSPOT_GetIsHotspotOn()判断, 并弹出相关提示(请先关闭热点...等).
+参考FAQ: FAQ202173562
+### 问题: LTE B66 pandora非信令下get RSSI fail
+解决方案: LTE B66在pandora非信令环境下验证get RSSI,若 B66 get RSSI报SP_lteAgc failed时,需要先确认B66校准、综测pass,APC强发也正常的情况下.可尝试升级Pandora版本到Pandora_R22.21.4301.
+参考FAQ: FAQ202173563
+### 问题: 6531E AFC校准结果NV中存放的位置？
+解决方案: 在NV中,6531F AFC 校准结果存放如下三个位置: CalibrationParam\calibration_param_T\rf_param_dsp_use\rf_common_param_dsp_use\aero2_RF_AFC_STRUCT\slope_length=0x1308 CalibrationParam\calibration_param_T\rf_param_dsp_use\rf_common_param_dsp_use\aero2_RF_AFC_STRUCT\CDAC=0x4 CalibrationParam\calibration_param_T\rf_param_dsp_use\rf_common_param_dsp_use\aero2_RF_AFC_STRUCT\CAFC=0x7EC4
+参考FAQ: FAQ202173567
+### 问题: 6531EF，使用CFT工具时，未能写入FT标志位时，改如何设置？
+解决方案: CFT工具 calibration 默认是save test flag,而 Final test flag默认是不进行写入的,设置路径如下: System->step->more->GSM Final test Flag.
+参考FAQ: FAQ202173568
+### 问题: 6531E GSM: 2/3/5/8校准、FT pass,校准标志位值是多少？
+解决方案: 6531E GSM: 2/3/5/8校准、FT pass,校准标志位值是3DFF.
+参考FAQ: FAQ202173569
+### 问题: 6531E GSM900、DCS 校准、FT pass,校准标志位值是多少？
+解决方案: 193C.
+参考FAQ: FAQ202173570
+### 问题: 使用Simba调试SC6531EF 21.1 Signal strength fail 的方法？
+解决方案: SC6531系列是展锐一款2G平台芯片,校准工具多为CFT.但是,有少数客户使用校准版本的simba 进行校准.在出现Signal strength(RX LEVEL) failed时,可以通过simba校准工具微调RX gain来改善RX level测试结果. GSM900为例,RX gain调试位置如图: CalCellpower 对应 received signal level ,CalCellpower -80,-80,-80,-69,-42分别对应 received signal level -100,-90,-80,-69,-42. CalGainlndex为Gain Table索引.
+参考FAQ: FAQ202173571,含图片
+### 问题: 请问6531E 校准时，Simba tool CDAC中没有显示limit ，请问limit是多少？
+解决方案: 在6531E.seq 中可以查询到编程语句: <CDACSweep Property="InVisible">0-15</CDACSweep> ,可以CDAC 范围为0~15.
+参考FAQ: FAQ202173572
+### 问题: AFC 校准结果中，CDAC与CAFC分别的含义是什么？
+解决方案: TSX和DCXO晶振,我们通常用两个参数来控制频率,CDAC和CAFC. CDAC控制频偏调整的范围很大,我们称之为"粗调",通常一个CDAC可以调整2-3KHz的频偏. CAFC控制频偏调整的范围相对小的多,通常一个CAFC只能调试10Hz左右的频偏,我们称之为"细调". CDAC: 存放FE=0 的CDAC0 CAFC: 存放FE=0 的CAFC0 slope_length: 存放CAFC斜率K2, slope_length = 32768 / K2
+参考FAQ: FAQ202173573,含图片
+### 问题: 通话窄带部分的EQ出现异常到了8K，是哪里造成的？
+解决方案: 当我们用AUDIO TOOL读取音频参数时,发现通话NB模式下的EQ居然达到了8K 通话窄带部分的EQ正常下只能到4K,如果是到了8K,则出现异常. 可以直接在NV文件里搜audio_structure\Audio\Handset\NB1\SampleRate 将值0x10 改为0x08即可. 同步需要在XML文件里修改,根据出现问题的模式,例如耳机模式有问题,可以在audio_structure.xml里搜索SampleRate将headset4p部分val的值从0x10改为0x08.
+参考FAQ: FAQ202173584,含图片
+### 问题: SC9863A Voice 调试时音频流先后经过模块的顺序
+解决方案: 1.通话上行CVS在DSP的DSP (TX)PROCRSS参数处理之前,通话下行CVS在DSP (RX)PROCRSS的参数之后,如下图 2. CVS内的ALC和CVS外的ALC,CVS内的EQ和CVS外面的EQ,存在何种关系,是分别独立的模块吗? 他们是互相独立的 3音频数据先后进入的模块顺序的图如下
+参考FAQ: FAQ202173586,含图片
+### 问题: 模拟器如何开启双屏显示
+解决方案: 开启模拟器副屏需要修改mk文件宏"SUBLCD_SIZE"的参数,默认的参数是NONE. 根据需要设置宏的参数为"94X64","96X96","128X160".这个参数表示屏的大小.
+参考FAQ: FAQ202173587
+### 问题: 6531C平台做双喇叭立体声，设计上要注意什么
+解决方案: 6531C平台做双喇叭立体声,设计上要注意什么? 我们设计上需要注意如下两点: 1)可以采用耳机的左右声道推外置功放的方案.建议功放选同一个型号,喇叭灵敏度接近,建议同一型号的喇叭. 2)两个喇叭的正负极需要一致,这一点很重要.如果两个喇叭的正负极供电刚好接反,声音相位会反向,则声音会相互抵消. 补充说明:针对双喇叭方案中顶部喇叭做喇叭听筒二合一的方案,可以选用可以BYPASS功能的功放,也就是上面喇叭做听筒功能时,功放可以BYPASS,这样可以让喇叭做听筒时底噪小.如果选用普通功放,可能听筒模式有一些功放的底噪.
+参考FAQ: FAQ202173589
+### 问题: Mocor平台副屏功能的相关实现
+解决方案: Mocor平台的副屏实现,请在代码中搜索"SUBLCD_SIZE_NONE"这个宏,将能查看副屏的相关实现. 实现大体分为两部分:一部分是接口的调用,在闹钟、电话等模块处使用;另一部是功能实现,在文件mmi_subwintab.c.
+参考FAQ: FAQ202173591
+### 问题: UMS9230平台支持IO口及耳机防潮检测吗？
+解决方案: UMS9230支持耳机防潮检测,另外TYPE C的USB口也是支持防潮检测的.只需要默认保持参考设计即可,需要软件开启防潮检测功能. 不需要额外接其他器件,我们芯片内部有一个检测模块集成在芯片里面了.其实检测原理就是检测HPL(耳机左声道)上阻抗,来区分耳机或水滴的.
+参考FAQ: FAQ202173592
+### 问题: UMP510 mic ACC&DCC模式是否都支持? MIC通路是否可以去掉隔直电容？
+解决方案: 我们不会像M公司那样分ACC&DCC.M公司ACC mode麦克P通路和麦克N通路分别都需要串隔直电容. DCC mode则不需要串联隔直电容. 对于Mic通路的硬件设计 ,我们PMIC只支持外部加隔直电容,capless我们不支持.
+参考FAQ: FAQ202173594
+### 问题: 送HAC认证，要测试及调试哪些？展锐有环境帮忙调试测试下吗？
+解决方案: 送HAC认证需要在第三方实验室做HAC认证,展锐没有环境,对于过HAC认证T3,T4主要会关注到信噪比,还有频响 准备样机DEBUG版本,确保HAC通路音频参数接受频响全通,下行接受数字增益加大确保信噪比OK. 可参考ISUPPORT上的文档《UNISOC HAC设计应用指导》,搜关键字HAC即可.
+参考FAQ: FAQ202173599
+### 问题: 9832E 常闭式耳机座电路上左声道对地的100K阻抗是否可以省掉
+解决方案: 由于我们芯片内部左右声道没有对地阻抗,对于常闭式耳机座未插入耳机时,耳机检测脚HP_DET与左声道脚是短接在一起的,如果左声道没有对地电阻,则未插入耳机状态时耳机检测脚HP_DET仍然是拉高悬空的. 当插入耳机时,耳机检测脚HP_DET与左声道脚断开,此时HP_DET脚仍然是悬空高电平.所以无法判断插入和拔出. 常闭耳机座一定是需要加100K对地电阻.
+参考FAQ: FAQ202173601,含图片
+### 问题: WCN ini配置文件中WIFI功率配置细节
+解决方案: WCN模块WIFI在ini文件Section5、Section6中补偿功率,优先在Section5进补偿,该处是分不同信道补偿,补偿区间大;最后在Section6进行补偿,该处是区分不同制式和速率进行补偿,补偿区间小,若是补偿过大容易造成失效和产品一致性差等问题.切记不可只在Section6进行补偿.
+参考FAQ: FAQ202173613
+### 问题: SC6533G 如何启动自动测试
+解决方案: 首先,SC6533G 实现了多种自动测试场景.主要使用暗码来启动和操作: 录制测试脚本: 1. 开始:在 IDLE下,输入*#11# ,这时手机会提示"start record auto test",用户开始进行按键操作,即可开始录制测试脚本 2. 结束:录制完成后,长按*键即可退出录制. 3. 验证:录制完成后会在T卡根目录下自动生成autotest.txt 文件 回放录制的测试脚本: 在IDLE下,输入*#12# : 此模式按照录制的按键消息进行循环回放
+参考FAQ: FAQ202173615
+### 问题: LCD YUV/RGB 使用中的刷新模式
+解决方案: 首先,我们117 Mocor平台,LCD的刷新,是有两种模式的,分别是: PERMIT_GUI_INVALIDATE NO_PERMIT_GUI_INVALIDATE 这两个刷新模式,分别对应的是,普通应用的MMI刷新,和相机、录像、视频播放等,有视频存在的应用. 简单理解,普通应用,是MMI主动刷新到LCD的, 而视频类应用,MMI不会主动上屏,都是视频层主动刷新,而顺便把mmi的图层刷到LCD上面的. 所以,这类问题,可以考虑定位一下这个参数是否正确. 具体的API接口是 : LCD_SetInvalidateLimit
+参考FAQ: FAQ202173616
+### 问题: PMIC是否带路径管理以及和充电协议的对应关系
+解决方案: 公司平台的PMIC芯片SC2721GT、SC2721G、UMP510G、UMP510G5均不带路径管理功能;UMP510G/UMP510G5支持BC1.2、SFCP、USB PD协议;SC2721G/SC2721G5支持SFCP、BC1.2协议,不支持USB PD协议.
+参考FAQ: FAQ202173617
+### 问题: DreamCamera2 app全景模式，纯色背景无法拍照或拍照卡顿问题
+解决方案: 展锐平台全景算法,在纯色背景无法合成照片原因如下: a)由于现在算法仅通过帧与帧之间的特征点来判断合成,纯色背景下无法识别出足够的特征点,因此算法无法合成图片,生成偏移; b)当前全景算法没有结合gyro信息来判断用户的移动情况,并且一般手机也没有配置gyro sensor,因此无法在纯色背景下判断用户的移动情况并生成有效偏移.
+参考FAQ: FAQ202173621
+### 问题: 8910 如何加载存储在SIM卡中的短信
+解决方案: 8910手机上的定义,短信是不存SIM,只存本地Flash中的,因此也没有支持设置存储位置的功能; 若是需要支持,需要更换MOCOR_20B_W21.36.3之后大版本的l4.a库.
+参考FAQ: FAQ202173663
+### 问题: list控件特殊效果
+解决方案: 目前117平台默认的list控件只支持带图标文字的list 或check list,不支持智能机风格的左右按键操作. 如果想实现这种风格显示,建议修改文件ctrllistbox.c, 在ListCtrlHandleMsg中处理消息MSG_APP_RIGHT和消息MSG_APP_LEFT,例如设置一下list item的属性,然后在MSG_CTL_PAINT消息中重新绘制item,list的绘制主要在函数ListDrawItem和ListDrawHighlightItem中
+参考FAQ: FAQ202173664
+### 问题: 展讯mocor平台是否支持喜马拉雅？如何支持？
+解决方案: 展讯功能手机mocor 平台 UIS8910、UMS9117 在2021年新开发和支持了喜马拉雅应用的支持. 这个应用的支持是以第三方应用的形式由喜马拉雅公司来发布的. 所以,您如果需要了解和使用,请提供您的平台版本,询问CPM,或者提交到CQ系统中查询是否已经支持,如果已经支持,CQ系统可以给到喜马拉雅的联系方式,由喜马拉雅公司发布app包.即可使用.
+参考FAQ: FAQ202173674
+### 问题: flash标定注意事项
+解决方案: flash标定注意事项: 1)首先确定打闪配置是单色温还是双色温,各档位电流值,最大电流值填写需参考 FlashIC Spec以及flash drive来填写; 2)如果标定完出现图片过爆的情况,可加大标定距离; 3)标定完成后,检查下flash_led_brightness.bin的主闪预闪统计点是否单调递增、成线性,如有问题需要检查标定数据重新标定; 注:遇到flash问题首先要确定是否正确标定
+参考FAQ: FAQ202173676
+### 问题: 手机项目开启触屏功能，如何加速主菜单滑动
+解决方案: 请参考修改代码如下 @ mmk_app.h -- #define FLING_MAX_VELOCITY (1000.f) ++ #define FLING_MAX_VELOCITY (5000.f) 如有开启 PDA_UI_SUPPORT_MANIMENU_GO = TRUE 可同时修改代码如下 @ mmi_mainmenu_u_se.h -- #define GO_REAL_DISPLAY_FRAME_NUM 20 ++ #define GO_REAL_DISPLAY_FRAME_NUM 4
+参考FAQ: FAQ202173678
+### 问题: user NV与Running NV 之间的关系
+解决方案: 在客户交流中经常说到User NV,running NV,它们之间的关系是这样的呢?其实user nv也是属于running nv,是为了便于管理,从整个running nv划分出来一个区域,专门用来存放MMI相关的一些设置,包括短信记录、墙纸、电话记录等.
+参考FAQ: FAQ202173685
+### 问题: 9863A平台dump MFNR YUV的命令
+解决方案: dump MFNR YUV的命令: adb shell setprop persist.vendor.cam.mfnr.save.func func_new adb shellsetprop persist.vendor.cam.mfnr.save.capimage yes adb shell setprop persist.vendor.cam.mfnr.save.capweight yes adb shell setprop persist.vendor.cam.mfnr.save.capimage.path /data/vendor/cameraserver/ adb shell setenforce 0 输出以上命令后,暗处拍照,YUV图会保存在/data/vendor/cameraserver/
+参考FAQ: FAQ202173687
+### 问题: UMS512平台是否支持B31
+解决方案: 答:B31频率过低,芯片不支持该Band
+参考FAQ: FAQ202173692
+### 问题: 在 3G 驻网时，设备未发起 PDP 激活请求的原因是什么？
+解决方案: 当前只有在驻 4G 网络时,需要触发 Initial Attach 操作,激活 default 一路的 PDP 用于驻网,否则会导致无法注册到 4G 网络;而驻 3G 网络并不需要发起 Initial Attach,因此不需要激活 PDP . 智能机在3G驻网的流程中, 并不会主动发起PDP承载.之所以驻网时会有是因为智能机平台3G下有一路PDP是后台长期处于激活状态, 供数据业务使用. T117 平台即功能机平台则是按需激活PDP, 上层有数据业务需要激活时, 才会发起PDP承载(如主动发起更新时间、上网、查询附加业务等操作发生),并在数据业务完成后发起去激活操作.因此功能机在3G驻网过程中并不会主动发起PDP承载.
+参考FAQ: FAQ202273703
+### 问题: Unisoc每个平台版本安全补丁谁护终止日为何?
+解决方案: Unisoc 每个平台版本安全补丁谁护终止日,原则上会维护2年半,但依google发布谁护终止日为准, 现google安全补丁谁护终止日说明如下: Oreo 8.1 (API Level 27) 安全补丁谁护终止日为October 31, 2021 -现Oreo 8.1 Unisoc巳不再维护及发布新的安全补丁. Pie 9 (API Level 28) 安全补丁谁护终止日为January 31, 2022 10 10 (API Level 29) 安全补丁谁护终止日为February 28, 2023 11 11 (API Level 30) 安全补丁谁护终止日为February 29, 2024 12 12 (API Level 31) 安全补丁谁护终止日为March 31, 2025
+参考FAQ: FAQ202273719,含图片
+### 问题: Google 每个版本GMS批准失效日期为何?
+解决方案: 除非Google 提供書面批准,否則准許分發軟件build 的批准會有失效日期.失效日期規定如下: 1.如果設備按照CDD 中的定義被歸類為手持設備,並且RAM 超過1GB,每個軟件build 的批准失效日期就是該軟件build 所基於的Android 操作系統版本公開發布兩年後的日曆年末. 2.如果設備按照CDD 中的定義被歸類為手持設備,並且RAM 不超過1GB,每個軟件build 的批准失效日期就是該軟件build 所基於的Android 操作系統版本公開發布三年後的日曆年末. 3.如果設備按照CDD 中的定義被歸類為平板電腦,每個軟件build 的批准失效日期就是該軟件build 所基於的Android 操作系統版本公開發布三年後的日曆年末. 现每个版本GMS批准失效日期如下,如果google官网有异动,请依google公告为准.
+参考FAQ: FAQ202273720,含图片
+### 问题: Android 12，打开DreamCamera2 APP 出现录像图标和绿点问题解释
+解决方案: 答:如下图,Android12 版本,展锐DreamCamera2 以及其他 camera app 打开时,会有绿色录像图标出现,打开后消失,变为一个绿点. 该现象是正常现象,是 Android12 的新特性,作用是隐私保护,提示用户camera正在被使用. 该Android 12 新特性的信息详情: 谷歌开发者网站 -> Android 12 功能和变更列表 -> 安全和隐私设置 -> 麦克风和摄像头指示灯 网站链接:https://developer.android.google.cn/about/versions/12/summary?hl=zh_cn
+参考FAQ: FAQ202273725,含图片
+### 问题: UMS9620/UMS9620T搭配的三个PMIC UMP752X功能是怎么区分的？
+解决方案: UMS9620/UMS9620T平台需要搭配3个PMIC功能描述如下: 一 .UMP7520是主芯片,集成如下功能: 1.11路buck电源; 2.34路LDO和1路power switch; 3.集成audio功能; 4.BC1.2检测、Type C检测、PD等模块; 5.RTC(32K晶体和32K-less) 二.UMP7521为辅助电源芯片,集成如下功能: 1.1路buck-boost电源 2.5路buck电源; 三.UMP7522 为时钟芯片,集成TSX方案: 1.4路clock refout输出; 2.1路32K时钟输出; 3.Tsense电路(检测TSX的NTC电阻温度)
+参考FAQ: FAQ202273741
+### 问题: 用Agilent8960测EDGE时测不出功率值
+解决方案: 问题现象:用Agilent8960测EDGE时测不出功率值. 问题解决: 1、进入功率测试界面"Transmit Power"; 2、进入功率测试设置" Transmit Power Setup"; 3、将"Burst capture Range"项目默认"single"修改为"All",即可测出功率值;
+参考FAQ: FAQ202273742,含图片
+### 问题: Agilent8960测GSM时，DCS180和PCS1900之间切换就出现掉线，如何才能正常切换？
+解决方案: 问题解决: 1、点击左侧"Cell Info"; 2、左侧点击进入"Cell Parameters"设置界面; 3、设置"Band Indicator"相应的Value值: ①Value为"DCS"时,可以进行GSM900和DCS1800之间切换,GSM900和PCS1900之间不能进行切换; ②Value为"PCS"时,可以进行GSM900和PCS1900之间切换,GSM900和DCS1800之间不能进行切换; 4、DCS1800和PCS1900两个Band之间不能直接进行切换,均需要通过上述方式切回到GSM900再进行DCS1800和PCS1900两个band之间的间接切换.
+参考FAQ: FAQ202273744,含图片
+### 问题: CMW500测GSM时，DCS1800和PCS1900两个band之间如何进行切换 ？
+解决方案: 问题解决: 1、在GSM信令测试界面点击右下方"Configuration"; 2、在如图路径下设置"Band Indicator"相应的Value值: ①Value为"DCS"时,可以进行GSM900和DCS1800之间切换,GSM900和PCS1900之间不能进行切换; ②Value为"PCS"时,可以进行GSM900和PCS1900之间切换,GSM900和DCS1800之间不能进行切换; 3、DCS1800和PCS1900两个Band之间不能直接进行切换,均需要通过上述方式切回到GSM900再进行DCS1800和PCS1900之间的间接切换.
+参考FAQ: FAQ202273746,含图片
+### 问题: 如何确认3595D芯片是否在位
+解决方案: 可以通过Pandora进行读取,具体操作方法如下: 1.Pandora先进入模式即Enter mode success 2.点击进入WCDMA界面,首先点击Active,然后在在Debug框内依次输入0x2;0x1;0x7f,如下图所示,点击Debug 当芯片正常在位时读出来的结果是0X7F0747时表示芯片正常在位
+参考FAQ: FAQ202273747,含图片
+### 问题: 防误触
+解决方案: poket mode是由加速计,光感和距感数据融合而成,触发条件是: 设备不在水平位置,距感处于接近状态,光感值<3(该状态维持5s),触发后表现为TP不能操作,按Power键会弹出移除遮挡提示. 请按以下操作进行校验: 1)进MMI test检查ACC、光感、距感功能,确保能正常使用; 2)通常不触发的原因是口袋环境下光感值过大;可用附件apk检查光感在黑暗环境下是否接近0,再进行校准; 3)光感校准:关机情况下,按音量键+,再按power键-->建议抽测项(在400lux光源下进行校准); 凡是由算法来合成的虚拟传感器,其灵敏度都不好调的,只能是覆盖一些常规的场景,并且也不能保证百分百触发.
+参考FAQ: FAQ202273758
+### 问题: SPI信号回沟现象是否影响接收端读写功能
+解决方案: 源端CLK与MOSI波形上升沿均有回沟 MODEM与MCU间SPI的实测波形图如下: 通过仿真查看,实际这种回沟也是存在的,如下图 结论:仿真结果为源端信号存在回沟,但接收端无回沟,这是正常的现象,对于芯片管脚容性负载,会导致源端电压的局部塌陷,我们常称为"回沟". 源端回沟是正常现象,对信号读写不产生影响
+参考FAQ: FAQ202273760,含图片
+### 问题: 产线校准LTE校准信道存在实网干扰如何处理?
+解决方案: 产线优先处理屏蔽,如实在无法改善.可以更新LTE CAL测试项为Calibration update(功能:校准前扫描干扰,将无干扰或干扰最小的点作为RX校准信道). 操作步骤如下: 1)删除原有LTE下的LTE CAL测试项 2)点击右键,选择"新增测试项(F3)" 3)选择lteCal.dll—SR3595A— Calibration update—"添加",确保测试项还是添加在sequence原位置 4)点击"保存" 注: "Calibration update"适用如下平台: SC9832E,SC9820E,SC9863A,UMS312及后续平台
+参考FAQ: FAQ202273762,含图片
+### 问题: AE震荡分析思路
+解决方案: AE振荡可以从以下方面排查: 1、做DVT测试,看sensor输出的shutter和gain是否线性; 2、检查sensor生效机制是否填写正确; 3、检查参数中target zone是否设置过小; 4、检查参数中的AEM的值是否填入正确; 5、检查sensor驱动,确认shutter、again的寄存器地址和值是否正确,计算shutter和gain是否正确. 6、检查AE算法库是否输出正确.
+参考FAQ: FAQ202273767
+### 问题: AE基础调试流程
+解决方案: AE基础调试流程: 1.ctrl_setting配置 2.AE_ADAPT_AETTING配置(4in1 sensor需配置) 3.AE标定 a)标定lv_cali b)标定AE_SYNC 4.AE Table a)NORMAL AE配置 b)SCENE AE配置 5.Target lum调试 a)TOUCH AE b)FACE AE c)Mulaes d)HM e)NIGHT
+参考FAQ: FAQ202273768
+### 问题: camera调试中各亮度模块作用域
+解决方案: camera调试中各亮度模块作用域与其平台的pipline相关,不同平台之间有些差异,例如: Sharkl5pro/SharkL6: AE: RAW域 RGB_GAMMA / ATM: RGB域 GTM & LTM: gtm在RAW域,ltm在RGB域. DREPRO:YUV域 SharkL6pro: AE: RAW域 RGB_GAMMA / ATM: RGB域 GTM & LTM: RGB域 DREPRO:YUV域
+参考FAQ: FAQ202273773
+### 问题: flicker问题分析思路
+解决方案: flicker问题可以按如下排查: 1、检查shutter是否小于0.01s(50HZ)或 0.0083s(60HZ),若是,则是正常现象,无法消除flicker. 2、检查确认 Linetime是否正确. 3、检查50HZ / 60HZ曝光表是否正确配置. 4、检查平台flicker自动检测是否判断有误: 分别手动切换到50HZ和60HZ,在log中确认flicker检测是否正确,再切到auto状态,确认flicker检测是否正确. 5、 检查驱动相关曝光函数是否正确
+参考FAQ: FAQ202273774
+### 问题: AE测光模式的确认方法
+解决方案: 提高ae log等级,抓ylog确认: adb shell setprop persist.vendor.cam.isp.ae.logv 5 adb shell setprop persist.vendor.isp.aec.log 5 搜索关键字AE_SET_WEIGHT ispctl_ae_measure_lum: ISP_AE: AE_SET_WEIGHT=0, ret=0; AE_SET_WEIGHT=0 帧平均测光 AE_SET_WEIGHT=1 center测光 AE_SET_WEIGHT=2 点测光
+参考FAQ: FAQ202273778
+### 问题: AE3.X中scene_mode确认方法
+解决方案: AE3.X中scene_mode确认方法: 在log中搜索关键字:AE_SET_SCENE,确认当前调用的scene mode, 在vensor/sprd/modules/libcamera/ispalg/ae/sprd/ae3.x/ae/inc/ae_data_types.h中,查看mode对应关系, 确认好mode后,调整相对应的曝光表.
+参考FAQ: FAQ202273779,含图片
+### 问题: AE调试中AEM的确认
+解决方案: 平台硬件支持情况: SHARKL3/SHARKL5/SHARKL5PRO/SHARKL6/SHARKN6PRO这几个平台 blk_num_hor/blk_num_ver支持[32,128]范围内; Pike2/ SHARKLE这两个平台 blk_num_hor/blk_num_ver最大支持到32; 效果参数中AEM的填写规则如下: Pike2/ SHARKLE:32 SHARKL3/SHARKL5/SHARKL5PRO/SHARKL6/SHARKN6PRO:根据sensor size来设置的,8m以下32*32,8m以上建议64*64.
+参考FAQ: FAQ202273780
+### 问题: dump AEM的方法
+解决方案: 确认ae输入图是否有问题,可以dump AEM来确认,方法如下: 1、输入adb shell setprop debug.vendor.isp.ae.stat.dump 1 2、进入相机,进行预览 3、在data/vendor/cameraserver中生成.bmp图 4、导出.bmp图片进行查看是否异常.
+参考FAQ: FAQ202273781
+### 问题: 逆光发蒙调试策略
+解决方案: 逆光发蒙是多方面造成的,常见的有: 1、亮度过高 2、对比度低 3、清晰度低 4、饱和度低 调试策略: 1、先将AE,CMC,清晰度与对比机对齐; 2、再调整动态范围. 动态范围调试可使用abl gamma,gtm&ltm(drepro),ATM4GAMMA; 其中abl gamma,ATM4GAMMA预览和拍照均能生效,gtm&ltm(drepro)只在拍照生效.
+参考FAQ: FAQ202273783
+### 问题: 如何判断PDAF OTP中DCC和SPC数据是否正确
+解决方案: SPC left_gain/right_gain:size为9*7,数值在1附近,数据画出的曲面图平滑.同时,left_gain和right_gain的变化趋势相反,例如,对比同一行数据,left_gain:左侧的值>右侧的值;right_gain: 右侧的值>左侧的值.(绘图时纵坐标起始设为0) DCC:size为8*8,数值在[0.02-0.1]区间,一般为正值,数据画出的曲面图平滑
+参考FAQ: FAQ202273787,含图片
+### 问题: 对焦速度慢如何优化
+解决方案: 一般正常对焦所用帧数在20帧左右,可以通过AF_TOOL解析txt文件,查看caf total frame得到 对焦速度慢的可能原因及解决方法: 1.帧率低——调整曝光表 2.没有找到peak反复扫描 1)模组没有做下旋,远焦时对焦曲线没有峰值,会反复扫描——建议模组做下旋 2)扫描范围没有包含当前场景的peak——调整POS_L1/L2/L3/L4,至扫描范围包含问题场景peak 3)没有满足peak条件反复扫描,如果|当前帧FV-PEAK帧FV|<min_diff 会认为没有peak——人脸场景可以调整对min_diff的缩放,非人脸场景调整当前场景的min_diff 3. 调整判断peak、turnback条件、步长等,一般对焦速度越快越容易失焦,建议修改参数之后要充分测试
+参考FAQ: FAQ202273789,含图片
+### 问题: AWB调试流程
+解决方案: 基本调试流程: 1,填写OTP数据信息(平台otp),非平台otp,全部写0. 2,Gray/24 Color checker Chart定标和结果验证. 3,Boundary基本设置,Gray Method/Color Method调试.(主要调试模块) 4,混合场景(色温,亮度)的Weight CT,Weight LUM调试. 5,整体偏色喜好Color Preference调试. 6,MWB和Setting Other调试.(刷机后第一次进入camera时的awb初始值设置) 7,Advanced AWB(Face AWB,AIScene,AutoScene,Flash,SyncPREF)调试.
+参考FAQ: FAQ202273791
+### 问题: AWB Raw Database的使用方法
+解决方案: 1,Raw database的作用: 尽可能收集更多的主观场景图片,根据图片落点,可以确认AWB Boundary的合理性.也可以设置较合适的Boundary大小和范围. 2,Raw database的使用方法: 拍摄RAW图收集(最好带一张小灰卡,作为AWB参考点),便于仿真使用.但raw图不能在debug中直接查看落点,需要仿真出jpg图片来确认. 同步也可以用于boundary调试和验证. 3,说明: 如没有仿真工具,建议使用拍jpg图片来确认boundary的合理性和设置.
+参考FAQ: FAQ202273792
+### 问题: UIS8910DM 关于精简dump分析
+解决方案: UIS8910DM 关于精简dump分析 一,精简dump文件8KB,保存的信息比较有限,做为辅助定位手段主要包括如下: 1,软件版本 2,异常信息 3,堆栈分配信息 4,SVC 栈信息; 5,任务栈信息; 6,profile信息; 7,芯片寄存器信息; 8,ap.cmm 9,cp.cmm 二,使用dtools工具解析,步骤如下: 1, 进GDB看任务栈 dtools gdbserver --bscore bscore.bin --mode 8910AP --launch setting/gdb/arm-gdb/bin/arm-none-eabi-gdb ap.elf 2,把bscore中信息全部导出来 .\dtools.exe bscinfo bscore.bin
+参考FAQ: FAQ202273795
+### 问题: 同时按住电源键和音量下键不能进recovery模式
+解决方案: 该问题与平台有关系,目前已知UMS312,UMS512,UMS9230等平台使用同一型号的PMIC.故这些平台无法在同时按住电源键和音量下键的情况下进recovery模式. 但是可以先按电源键后按音量下键来进recovery模式. 注:这不是PMIC的缺陷,设计发生了变化.
+参考FAQ: FAQ202273805
+### 问题: PDAF导通前检查事项
+解决方案: 导通检查前应检查: ①确认PD 左右点定义 需确认sensor spec中对左右点的定义与展锐定义一致,否则线性度会为负值.展锐定义参考P29页. ②确定确认PD 类型 driver 配置和模组使用的Type一致 driver 设置Type从log确认、模组使用的Type 从模组规格书确认 ③确认的mirror/flip 设置 需要模组规格书,driver 设置、模组厂烧录OTP中的mirror/flip设置一致 ④驱动文件.h中的相关寄存器配置检查 与PDAF相关的setting需要与sensor厂确认好 ⑤确认模组PDAF otp信息 生成对应的OTP bin文件,在isp tool 中OTP tool 解析,先确认OTP数据地址是否做了偏移, 再看烧录的数据是否正常
+参考FAQ: FAQ202273808
+### 问题: PDAF导通流程
+解决方案: PDAF导通流程如下图所示
+参考FAQ: FAQ202273810,含图片

@@ -1,0 +1,300 @@
+### 问题: ffos 7715 如何默认关闭GPS？
+解决方案: 1,打开gaia/build/configs/common_settings.json文件 搜索geolocation.enabled 将其值设置为false 2,由于ftu中有geolocation设置项,其与真正的geolocation状态并没有对应,而是默认选中状态,所以也需要修改 gaia/apps/communications/ftu/index.html中将 <input type="checkbox" id="geolocation-switch" name="geolocation.enabled" checked> 修改为 <input type="checkbox" id="geolocation-switch" name="geolocation.enabled">
+参考FAQ: FAQ54705
+### 问题: 应用程序如何禁用多点触摸
+解决方案: 在androidmanifest.xml中的application标签中的theme上加android:splitMotionEvents即可,如: <style name="AppTheme" parent="AppBaseTheme"> <item name="android:splitMotionEvents">false</item> </style> application中引用这个AppTheme <application android:allowBackup="true" android:icon="@drawable/ic_launcher" android:label="@string/app_name" android:theme="@style/AppTheme" >
+参考FAQ: FAQ54754
+### 问题: 如何解决通话中特定操作通话界面底部会闪待机界面底的图标的问题
+解决方案: [产生原因] incallactivity退出时转换其window为solid的时机偏早. [解决方案] (1) 将incallactivity.java的onstop()里,InCallActivity.this.convertToTranslucent(null);这一句放到最后执行; (2) 方法1如果无效,可以尝试延时做InCallActivity.this.convertToTranslucent(null)这个操作,比如延时200~300ms.
+参考FAQ: FAQ54777
+### 问题: SC7731G平台控制屏背光的PWM的CLK频率计算方法
+解决方案: PWM输出频率为:(假如PWM的输入是26MHz) 26M/((1+PWM_PRESCALE)*(1+PWM_MOD)) PWM输出占空比: PWM_DUTY/(1+PWM_MOD) PWM_DIV的配置忽略,PWM_PAT_LOW/HIGH=0xffff.
+参考FAQ: FAQ55632
+### 问题: 如何查看应用的签名
+解决方案: 可以使用如下命令来查看apk使用的key jarsigner -verify -verbose -certs ${your_apk}>log.txt log.txt里面Email address、CN、 OU、 O对应的信息就是apk签名相关的信息.
+参考FAQ: FAQ58691
+### 问题: Q：手机板上的噪声对辐射灵敏度受干扰的类型有几种？
+解决方案: A: 一般分为两种, 1:固定频率造成的干扰:由于一些稳定的时钟造成的高次谐波造成的干扰,如:系统26MHz,PLL的高次谐波等; 2:整体底噪的抬高:由于其他一些外围器件和手机操作系统的某个任务或者进程的运行造成的干扰,如:摄像头或者开启log,会使PCB板的整体底噪抬高,对灵敏度的影响表现为全频段的灵敏度恶化.
+参考FAQ: FAQ54891
+### 问题: Q: 测试GSM灵敏度时，造成全频段灵敏度受干扰的原因一般有哪些？
+解决方案: A: 造成干扰的原因一般可以分为: 1:PCB走线 2:开启log 3:LCD数据线发送数据(仅限于屏亮时测试) 4:LCD背光影响(仅限于屏亮时测试)
+参考FAQ: FAQ54892
+### 问题: Q: 测试GSM灵敏度中指标Rx Level 和Cell Power之间的关系是什么？
+解决方案: A:在进行辐射灵敏度测试时,BER值在不同情况下会有一个Cell Power的下限值.同时还要考虑PCB上有干扰噪声,所以Rx Level 和Cell Power之间的关系可以表示为: Rx Level=110 + Cell Power + Noise of PCB; 其中Cell Power值与天线方向性和天线本身性能有关
+参考FAQ: FAQ54893
+### 问题: 解锁界面触摸震动的强度设置
+解决方案: uui版本:frameworks\base\packages\keyguard\res\layout\Keyguard_glow_pad_view_uui.xml native版本:frameworks\base\packages\keyguard\res\layout\Keyguard_glow_pad_view_uui.xml 修改如下震动时长即可,0是不震动,数值越大震动感越强 - prvandroid:vibrationDuration="20" + prvandroid:vibrationDuration="40"
+参考FAQ: FAQ54896
+### 问题: 使用APT功能时DCDC的输出电压是多少？
+解决方案: APT的DCDC输出范围在0.4V～3.6V之间,PA功率越低,DCDC供电越低,提高PA在低功率状态下的效率.
+参考FAQ: FAQ54960
+### 问题: Exchange编译生成新的APK
+解决方案: 在android4.4版本后,电子邮件开始分离,分离出了Email.apk和Exchange2.apk,所以在编译的时候要单独的对Exchange进行编译,在Exchange中的修改需要进行编译,再push到手机中.Exchange在手机中以服务的形式存在.
+参考FAQ: FAQ54962
+### 问题: Exchange类型帐号有时候同步联系人不成功
+解决方案: 这个同步过程服务器对网络的要求比较高,容易出现错误,可以尝试多次同步就可以成功.
+参考FAQ: FAQ54963
+### 问题: Exchange无法同步联系人里的所有联系人
+解决方案: 联系人里可以添加多个账户,联系人信息可以添加到账户下或者是SIM卡上,每一个账户所包含的联系人可以相同也可以不同,但是Exchange账户同步的时候只会同步属于这个账户下的联系人,其他的联系人是不会被同步的,所以在同步的时候要注意将需要同步的联系人信息添加到相应的Exchange账户下再同步.
+参考FAQ: FAQ54965
+### 问题: 如何解决在可视电话回落界面有另一来电，会闪现视频来电界面
+解决方案: [产生原因] 视频通话回落界面来语音电话,视频通话界面被刷新. [解决方案] 回落界面来语音电话,不更新视频通话界面 注释:回落界面是指把视频通话转为可视电话或语音通话的对话框,一般在通话界面如果由于网络问题或机器问题不支持视频通话的情况下会弹出该对话框
+参考FAQ: FAQ55058
+### 问题: Tshark的LCD MIPI接口，2个data lane是否能支持FWVGA？
+解决方案: Tshark的LCD MIPI接口,2个data lane可以支持FWVGA
+参考FAQ: FAQ55217
+### 问题: Tshark平台SIM卡的时钟频率最大是多少？
+解决方案: Tshark平台SIM卡的时钟频率最大是3.25MHz.
+参考FAQ: FAQ55218
+### 问题: Tshark的SDIO速率最高能到多少？
+解决方案: Tshark的SDIO速率最高能到48MHz.
+参考FAQ: FAQ55219
+### 问题: Tshark的Class G PA上CPF_PCPF_N的电容选取有何注意点？
+解决方案: 使用0402的2.2uF或0603的1uF.
+参考FAQ: FAQ55220
+### 问题: Tshark的内部马达电流源最大能输出多大电流？
+解决方案: Tshark的内部马达电流源最大输出多大电流为170mA.
+参考FAQ: FAQ55221
+### 问题: Tshark的硬件充电过压保护是几伏？
+解决方案: 9.2V.
+参考FAQ: FAQ55222
+### 问题: android 开放源代码许可如何自定义
+解决方案: 1.开放源代码许可google默认读取的是/system/etc/NOTICE.html.gz; 2../packages/apps/Settings/src/com/android/settings/SettingsLicenseActivity.java中实现了开放源代码许可的详细读取流程; 3.如果需要自定义使用自己的Apache License,可通过配置ro.config.license_path属性为NOTICE.html在手机中的具体路径如:system/ect/NOTICE.html,然后在编译的时候通过平台的内置方案将NOTICE.html内置到system/ect下即可
+参考FAQ: FAQ55314
+### 问题: 如何进行推送消息的测试？
+解决方案: 解决相关问题时,需要测试机能收到推送消息以便验证功能是否OK. wap push测试方法: 发送8000到10658080 能收到wappush消息 —— 移动卡 发送8到10658068 能收到wappush消息 —— 移动卡
+参考FAQ: FAQ55364
+### 问题: 如何为一个ContentProvider注册多个Authority
+解决方案: 在AndroidManefest.xml中,将多个authorities之间用分号隔开,如下: <provider android:name="IccProvider" android:authorities="icc;icc0;icc1" //多个authorities之间用分号隔开android:multiprocess="true" android:readPermission="android.permission.READ_CONTACTS" android:writePermission="android.permission.WRITE_CONTACTS" /> 通过authorities寻找ContentProvider的时候icc,icc0,icc1都会找到IccProvider,在IccProvider内部可以通过区分authorities来返回不同的值.
+参考FAQ: FAQ55386
+### 问题: xml文件中图片资源实现的AnimationDrawable动画使用过后，如何释放内存
+解决方案: xml文件中图片资源实现的AnimationDrawable不再使用后需要手动释放Bitmap占用的内存,否则多次播放后将会OutOfMemory,程序中没有对这些Bitmap的直接引用,那么如何释放这些Bitmap呢? 根据AnimationDrawable的实现代码可知,释放方式如下: for(int i = 0 ; i < mAnimationDrawable.getNumberOfFrames();i++) { ((BitmapDrawable)mAnimationDrawable.getFrame(i)).getBitmap().recycle(); (取出AnimationDrawable中的每一个Bitmap并释放内存) }
+参考FAQ: FAQ55391
+### 问题: 7702 如何通过AT指令写IMEI号
+解决方案: 例如 AT+SPIMEI="352273017386341" // IMEI号 请加引号 ""
+参考FAQ: FAQ59680
+### 问题: Android平台,MotionEvent中getX()和getRawX()的区别是什么
+解决方案: getX()是表示Widget相对于自身左上角的x坐标,而getRawX()是表示相对于屏幕左上角的x坐标值(注意:这个屏幕左上角是手机屏幕左上角,不管activity是否有titleBar或是否全屏幕); getY(),getRawY()一样的道理. Android平台,MotionEvent中getX()和getRawX()的区别是什么?
+参考FAQ: FAQ82134
+### 问题: SC7731能否支持后cam8.0M + 前cam2.0M
+解决方案: SC7731支持前后MIPI 摄像头, 前2M 后8M ,基本功能都可以实现,最高支持像素13M.
+参考FAQ: FAQ55433
+### 问题: 怎样设置WIFI具体的channel值
+解决方案: 在SoftapController.cpp文件中, 在int SoftapController::setSoftap(int argc, char *argv[])函数中, 将以下代码 if (argc >= 5) { channel = atoi(argv[5]); if (channel <= 0) channel = AP_CHANNEL_DEFAULT; } 改成 channel =XXX; XXX是想要的channel,目前代码默认值为6. 验证方法:进adb shell 在data/misc/wifi/hostapd.conf 文件中找到 channel 值,是否为自己设置的值.
+参考FAQ: FAQ55437
+### 问题: 目前展讯WIFI2351的带宽支持多少M
+解决方案: 802.11b/g/n/a是无线方面的传输速度,即你的终端PC到无线AP之间的无线连接速度,只是局域网,有以下几种速度: 11Mbps(802.11b),22Mbps(802.11 Super b),54Mbps(802.11g/802.11a),108Mbps(802.11 Super G),125Mbps(802.11 High Speed-G),300Mbps(802.11n). 而接入广域网是指你向运营商购买的带宽,比如2M,4M,8M,20M,40M等. 目前展讯WIFI 2351的带宽只支持20MHZ.
+参考FAQ: FAQ55441
+### 问题: 照片有位置信息，为何进入图库，查看详细信息时，无法看到具体地址信息？
+解决方案: 图库获取位置信息,需要获得com.google.process.location服务,通过调用LoacalManager中的接口,根据经纬度获得具体位置信息. 而该服务,需要安装谷歌GMS包才能获得,所以,需要确保手机安装谷歌GMS包. 另外,通过调用该接口,还需要通过网络查询才会获取到数据,因为国内网络对谷歌服务器做了限定,需要翻墙的网络才能查寻到位置信息. 总结一下,图库中查看位置信息,需要安装GMS包,另外,需要能够翻墙的网络.
+参考FAQ: FAQ55439
+### 问题: Key layout文件(.kl files)所使用的按键名称在哪里定义？
+解决方案: 这些按键的名称定义在frameworks/native/include/input/KeycodeLabels.h的 KEYCODES[]数组中,Android的input模块会根据这个数组中定义的按键名称去解析.kl文件中字串. 如果你修改了这里面的内容,记得同步修改frameworks/base/core/java/android/view/KeyEvent.java中定义的按键键值常量.
+参考FAQ: FAQ55505
+### 问题: 为什么添加外部PA代码后机器无法开机？
+解决方案: 1 驱动probe出错,在\kernel\arch\arm\boot\dts\sprd-scx35_sp7731gea.dts中相关的设置;确认DTS文件解析无异常;否则 会导致probe失败无法开机; 2 在开启外部PA时的电流比较大,如果外部电源接地不好,电流突然降为0;无法开机,此时的log是无法分析的;这时可以用精密稳压电源或电池开机;
+参考FAQ: FAQ55570
+### 问题: android 如何判断当前设备是否是高端图形设备
+解决方案: 通过isHighEndGfx函数来可以判断当前的设备是否是高端图形设备, 判断的依据是内存是否大于512M,像素是否大于1024x600, 只有满足任意一个条件就认为是高端图形设备.
+参考FAQ: FAQ55550
+### 问题: 如何将APK 预置到system/priv-app里？
+解决方案: 加入priv-app方法:在Android.mk中增加 LOCAL_PRIVILEGED_MODULE := true
+参考FAQ: FAQ55552
+### 问题: 如何修改USB设备的Product的名称？
+解决方案: 在device/sprd/scx35/init.sc8830.usb.rc中, on boot write /sys/class/android_usb/android0/iManufacturer Spreadtrum write /sys/class/android_usb/android0/iProduct Spreadtrum Phone 修改为 on boot write /sys/class/android_usb/android0/iManufacturer Spreadtrum write /sys/class/android_usb/android0/iProduct *********
+参考FAQ: FAQ55566
+### 问题: 如何预置无源码APK使得用户可以卸载
+解决方案: 1. 将apk拷贝到vendor/sprd/partner/prebuilt_apps/下 2. 在vendor/sprd/partner/prebuilt_apps/目录下添加mk文件,在mk文件中添加apk的定义,apk按照下面的例子添加(此处以Test.apk为例) include $(CLEAR_VARS) LOCAL_MODULE_TAGS := optional LOCAL_MODULE := Test LOCAL_MODULE_CLASS := APPS LOCAL_CERTIFICATE := PRESIGNED LOCAL_MODULE_PATH := $(TARGET_OUT_DATA_APPS)(最终apk所放的目录) LOCAL_SRC_FILES := Test.apk include $(BUILD_PREBUILT)
+参考FAQ: FAQ55583
+### 问题: 如何裁剪full_base.mk中添加的某些app无法成功
+解决方案: 比如裁剪部分动态墙纸HoloSpiralWallpaper 1./build/target/product/full_base.mk ifneq ($(TARGET_XXXX_SUPPORT),true) PRODUCT_PACKAGES += \ HoloSpiralWallpaper endif 2.在对应device/sprd/XXXX/XXXX.mk TARGET_XXXX_SUPPORT := true
+参考FAQ: FAQ55587
+### 问题: MAC地址第一字节为何要求为偶数 ？
+解决方案: 在TCP/IP的架构中,MAC地址扮演着非常重要的角色.在通信中,由MAC地址标识的主机网卡,作为主机身份的硬件地址.每块网卡被生产出来后,都会有一个全球唯一的编号来标识自己,不会重复,这个编号就是MAC地址,也就是网卡的物理地址.MAC地址是由48位的二进制数组成,即6个字节.在通信中是用16进制表示的.前24位是由生产厂家向IEEE标准组织申请的厂家代码,是固定的,但是它的第八位一定是0,因为网卡的物理地址,一定是单播地址,在IPv4的环境中,区分单播和组播地址就是校检第八位的二进制数字,0代表单播地址,1代表组播地址.那么表现在16进制中第一字节第二个数字一定是个偶数(十进制概念,不知道恰不恰当).也就是说第二个数字一定是0、2、4、6、8、A、C、E其中的一个,那么区分单播或者组播地址就简单多了. 举例:6C-62-6D-26-1E-29 它的二进制: 01101100-01100010-01101101-00100110-00011110-00101001 单播:第八位为0
+参考FAQ: FAQ55610
+### 问题: 如何只对秘鲁的sim 卡上锁
+解决方案: 通过NV配置即可,修改方案如下, NV工程中BaseParam修改如下两个值: 1.SIM_LOCK_CUSTOMIZE_DATA --> sim_lock_status = 0x01 2.SIM_LOCK_CUSTOMIZE_DATA -->network_locks->locks[0]: mcc:0x2CC (mcc 716 秘鲁) mnc:0x00 (根据实际卡的内容填充) mnc_digit_num=2 (根据卡的实际情况设置,一般是2位)
+参考FAQ: FAQ55633
+### 问题: [日历]日历设置中为何没有震动设置选项？
+解决方案: 目前来日历提醒正常情况下是震动加声音,和系统的震动设置保持一致.目前这样设计的原因是:因为系统设置中有震动选项,如果应用中也有,功能会产生冲突,会有设置了振动不生效的情况,情景模式的相关测试case无法满足,所以去掉了应用中的震动设置,以免功能上冲突.平台从android4.0开始就是这样的设计了.
+参考FAQ: FAQ55687
+### 问题: 生成的hprof文件MAT工具打不开怎么办？
+解决方案: 1. 当应用程序发生java.lang.OutOfMemoryError异常时,在debug版本或monkey测试时上会生成hprof文件,但该文件MAT不可以直接识别,需要用hprof-conv工具转换成MAT识别的文件 2. hprof-conv工具在sdk/tools目录下,其命令如下 hprof-conv input.hprof output.hprof 例如将生成的com.android.phone_945_2014_11_28_05_14_25.hprof文件转换成phone.hprof,在MAT工具中直接打开phone.hprof即可.转换命令如下: hprof-conv com.android.phone_945_2014_11_28_05_14_25.hprof phone.hprof
+参考FAQ: FAQ55790
+### 问题: 为什么ffos 1.3/1.4蓝牙耳机无法控制mozilla原生video应用的播放/暂停/音量？
+解决方案: 因为ffos 1.3/1.4mozilla原生video应用不支持蓝牙耳机.
+参考FAQ: FAQ55805
+### 问题: FFOS中将音乐设置为来电铃声而音乐随后被删除，为什么音乐铃声还一直还存在？
+解决方案: 在ffos中铃声与设置铃声的音乐之间并没有依赖关系,当将一个music设置为铃声时,会将该music拷贝一份存到settings 的数据库中,所以当设置铃声后就算删除原music文件,也不会影响当前的铃声.这样的好处是保证了music与铃声之间的独立性.
+参考FAQ: FAQ55813
+### 问题: 打印串口log时为什么要将配置文件中的loglevel赋值成7或更大的数？
+解决方案: 1. 在打印串口log是要将配置文件中的loglevel赋值成7或更大的数,这样kenel log才能在串口中输出. 2.原因是在输出串口log是会判断消息的level值,当level值大于loglevel时,就不会输出.代码实现(kernel\kernel\printk.c)call_console_drivers中 if (level >= console_loglevel && !ignore_loglevel) return; 这里的level就是要输出消息的level值,console_loglevel会被赋值成配置文件中的loglevel值. 3.由于kernel log的最大level是7,因此这里赋值成7或更大数会将所有的kernel log输出出来.
+参考FAQ: FAQ55799
+### 问题: FFOS中使用adb shell进入手机命令行删除music/video文件，为什么在music/video应用中被删除的音乐/视频还存在？
+解决方案: 因为使用adb shell进入的命令行属于linux,而ffos是在linux之上的.linux是没有文件被删除事件callback到用户空间的,所以在命令行下删除文件上层是不会知道的,因此music/video应用还会认为该音乐/视频还存在. 在ffos的gecko层中提供了文件发生改变的事件,要想触发此事件的的前提是在gaia层使用正确的文件操作webapi.
+参考FAQ: FAQ55819
+### 问题: 为何拨打SIM/USIM卡中的联系人号码，未显示在拨号盘的常用联系人中？
+解决方案: 进入Native UI的拨号盘,在"所有联系人"按钮上方会显示常用联系人和收藏联系人信息.拨打本机保存的联系人号码,会将该联系人信息显示在常用联系人中,但拨打SIM/USIM卡上联系人号码则不会显示在常用联系人中. 这是由于SIM/USIM卡上的联系人会在每次开机重新导入到手机中.为保持前后一致,避免可能给用户带来误解或困惑,常用联系人不包含SIM/USIM帐户的联系人.
+参考FAQ: FAQ55836
+### 问题: 如何使用firebug调试js
+解决方案: 使用firebug调试js可按下列步骤进行: 1. 准备html文件,内部可包含html标签和js代码.注意该文件的后缀为.html. 2.选择打开方式为firefox. 3. 点击firefox浏览器右上侧的菜单按钮,如下图: 4.此时会弹出菜单,选择"开发者". 5.此时又会弹出子菜单,选择"打开Firebug". 6.此时会在浏览器的底部出现firebug的调试窗口.如下图 7. 有两栏,左边的一栏是所要调试的代码,右边一栏可以查看当前代码所处流程的对象、堆栈以及js全局对象 8. 在左侧栏代码某行的左边单击可将该行设置为断点,如下图: 在第10行设置了断点.代码运行的此处就会停. 9. 按F5就开始重新加载文件,运行代码. 10. 按 运行到下一个断点 11. 按 单步运行. 12. 运行期间可以查看右侧栏的堆栈和变量.如下:
+参考FAQ: FAQ55831
+### 问题: 如何使用app-manager真机调试FFOS gaia应用
+解决方案: app-manager可以非常方便的进行真机调试gaia的app.方法如下: 1. 本地电脑USB连接到手机. 2. 打开在系统"运行"中输入 cmd 打开命令行窗口,输入adb root 3. 打开firefox浏览器. 4. 在浏览器的地址栏中输入about:app-manager ,然后按Enter 出现app-manager 窗口,如下图: 5. 此时在点击窗口最底部的"连接到"右边的设备序列号. 6.片刻后连接到手机,会在窗口中出现手机中的各个应用如下图: 7.如果要调试的应用没有打开的话,点击该应用右侧的"开始"出现下 8. 点击"调试" 9. 左侧栏是js文件,右侧栏是该文件的代码 10.通过单击右侧栏代码的行号可以将此行设为断点. 11. 窗口左上侧的 表示运行到下一个断点 12.如果想要单步运行可以单击如下按钮.
+参考FAQ: FAQ55841
+### 问题: [android 4.4]如何修改流媒体rtsp和http相关的User Agent(UA)？
+解决方案: Streaming UA: UA的修改在frameworks/av/media/libstagefright/Utils.cpp这个文件里的MakeUserAgent()这个方法, 格式如下: ua.append("stagefright/1.2 (Linux;Android "); property_get("ro.build.version.release", value, "Unknown"); RTSP和HTTP都是从这里获取的.
+参考FAQ: FAQ55866
+### 问题: SPRD SC7715 平台，FM代码目录分布是怎样的？
+解决方案: SPRD SC7715 平台 代码目录分布如下: 1.FM应用 /packages/apps/FMPlayer/ 2.FM framework /frameworks/base/core/java/android/hardware/fm/ /frameworks/base/core/jni/fm/ 3.FM HAL /vendor/sprd/partner/trout/libfm/ 头文件 /hardware/libhardware/include/hardware/fm.h 5.FM Kernel /kernel/drivers/misc/trout_fm/ 6.FM 工程模式 /packages/apps/ValidationTools/src/com/sprd/validationtools/itemstest/FMTest.java
+参考FAQ: FAQ55969
+### 问题: FM 客户化定制：如何使FM应用程序主界面频点显示为两位小数?
+解决方案: 有时有些产品需要将FM应用程序主界面频点显示为两位小数,可按如下方法修改: 1.修改 /packages/apps/FMPlayer/src/com/thunderst/radio/FMPlay.java 下的setFreqForUi()函数 将: mFreqView.setDigitalText("" + freq); 改为: DecimalFormat freqFormat = new DecimalFormat("####.00"); mFreqView.setDigitalText("" + freqFormat.format(freq)); 2. 然后可根据实际情况确定是否需要修改led_enabled.png图片, 如果频点与 背景图显示的 "MHZ" 有重叠则需要修改背景图,将"MHZ" 调整至合适位置即可. 如无重叠则无需修改背景图.
+参考FAQ: FAQ55975
+### 问题: 对于SIM卡联系人，raw_contacts表中sync2字段有什么作用
+解决方案: 对于SIM卡上联系人,在raw_contacts表中sync2字段存储了 和这个联系人对应的用于操作卡文件的uri,通过这个uri,可以对该联系人SIM卡上的内容做增删改操作,如: 若该联系人存储在SIM卡2,则sync2 字段的内容为: content://icc/1/adn 若该联系人存储在SIM卡1,则sync2 字段的内容为: content://icc/0/adn
+参考FAQ: FAQ55994
+### 问题: 对于SIM卡联系人，raw_contacts表中sync1字段有什么作用
+解决方案: 对于SIM卡上联系人,在raw_contacts表中sync1字段存储了 此联系人位于SIM卡AND文件记录中的位置: 若sync1 = 15,则改SIM联系人在卡上存储在ADN文件的第15条记录中
+参考FAQ: FAQ56001
+### 问题: 如何通过AT命令查看IMSI？
+解决方案: 如何通过AT命令查看IMSI? 1.将SIM卡插入手机->开机 2.打开arm log和channelserver工具->连接上手机->log能正常打印 3.点击AT Command窗口->Cmd Mark不选内容->Cmd Name输入AT+CIMI命令->点击Send->会返回一个值 例如: AT+CIMI 460007944128096 OK 如图
+参考FAQ: FAQ56032
+### 问题: 平台Camera是否支持脸部识别和微笑抓取功能？如果支持如何开启？
+解决方案: SC7713在MocorDroid4.4_TShark28_MP_W14.47.2及以后版本支持该功能,只是默认是关闭的, 请按以下方法开启: 在对应工程的Boardconfig.mk 中修改如下宏: #face detect TARGET_BOARD_CAMERA_FACE_DETECT := true //设置为true
+参考FAQ: FAQ56077
+### 问题: ffos 7715是否支持视频通话？
+解决方案: ffos 7715不支持视频通话
+参考FAQ: FAQ56091
+### 问题: Q ：Hot Start TTFF的含义?
+解决方案: A : 接收机有较为准确的时间信息,位置误差在125km内,卫星的历书、星历都已知条件下的启动模式
+参考FAQ: FAQ58210
+### 问题: ffos 7715是否支持HSPA+?
+解决方案: ffos 7715支持HSPA+ 21M
+参考FAQ: FAQ56092
+### 问题: 4.4平台ro.config.low_ram属性有什么作用？
+解决方案: 1. ro.config.low_ram属性是Google在Android 4.4上针对低内存设备而进行的适配,定义在device/sprd/scx35_sp7731gea/system.prop中,如果手机内存低于512MB ,屏幕分辨率小于800x480,这种设备会被Google认为是低内存设备. 2. 如果是低内存设备会将该属性值赋值为true,如果是512MB以上,例如1GB,该值就可以设置为false. 3. 利用该值应用程序可以知道是不是低内存设备,如果是低内存就可以将耗费内存的功能关闭:状态栏的透明显示、锁屏界面的小部件功能、voice search功能等
+参考FAQ: FAQ56107
+### 问题: Facebook测试注意事项有哪些？
+解决方案: 1.首先,预先创建多个Facebook账号(多个账号之间互相添加好友,便于测试) 2.有翻墙的wifi环境或者有VPN账号 3.如果使用翻墙wifi或vpn登陆时出现异常,请使用对比机或国外的实网验证,进一步确认是否是网络问题 4.不要多次输错账号或密码,否则账号会被锁住 5.测试Messenger功能,需先安装此应用,安装成功后,用facebook账户登录即可 6.facebook属于第三方应用,不建议做全测试,建议做跟平台相关的功能的测试,如: 1)输入文字,调用键盘 2)拍照或摄像,调用camera(如果项目支持前后camera,需要考虑前后camera测试) 3)选择图片,调用本地图库 4)签到,调用GPS功能 5)同步联系人,调用电话本
+参考FAQ: FAQ56122
+### 问题: 内存溢出和内存泄漏的联系是什么？
+解决方案: 内存溢出 out of memory,是指程序在申请内存时,没有足够的内存空间供其使用,出现out of memory. 内存泄露 memory leak,是指你向系统申请分配内存进行使用(new),可是使用完了以后却不归还(delete),结果你申请到的那块内存你自己也不能再访问(也许你把它的地址给弄丢了),而系统也不能再次将它分配给需要的程序. memory leak会最终会导致out of memory.
+参考FAQ: FAQ56328
+### 问题: android的颜色和透明度的十六进制表示
+解决方案: 颜色和透明度 (alpha) 值以十六进制表示法表示 对于透明度alpha的值用0-255表示也就是十六进制的00-ff.00表示完全透明,ff表示完全不透明,具体的效果可以自行调用setAlpha(xxx)调整. 对于颜色都是采用三基色(红绿蓝)的组合,每一种颜色的取值范围都是0-255也就是00-ff.表达顺序是bbggrr(blue green red),例如FFFFFF. 我们也可以将透明度和颜色放在一起,顺序是aabbggrr,其中aa表示alpha.假设要设置一个半透明的红色#7F0000FF.
+参考FAQ: FAQ56341
+### 问题: GMS4.4上乌尔都语的按键需要注意什么?
+解决方案: 1.乌尔都语虽然是印度/巴基斯坦使用的语言,但是其却是一种典型的右排序语言 2.google针对于右排序语言的显示在最新版本上有了优化,即按键布局与左排序语言是对调的 3.Android官网对此有比较详细的描述: http://developer.android.com/about/versions/android-4.2.html#RTL
+参考FAQ: FAQ56348
+### 问题: 如何配置7731关机充电电流的值?
+解决方案: 修改对应的dtsi文件中的配置即可: 在如下代码中修改:/kernel/arch/arm/boot/dts/sprd-battery.dtsi adp-cdp-cur = <700>; //大功率USB充电限流 adp-dcp-cur = <700>; //标准充电器限流 adp-sdp-cur = <500>; //USB及非标充电器充电限流
+参考FAQ: FAQ56350
+### 问题: WCDMA调试时用MobileTester强制发射 最大power Power有输出但是偏小的可能原因？
+解决方案: 下面几点可能性较大,请一一排查: 1.MobileTester中设置要正确:如 Gain设最大=0;使用Highgainmode;如果W PA使用DC-DC供电一定注意要勾选Enable DCDC. 2.查看电流如果正常,如600mA以上,说明PA工作基本正常,重点PA输出,DPX,天线开关等走线及匹配.另,仪器及RF cable连接线等外设环境检查. 3.查看电流过小,如300mA左右或者更小,说明PA工作异常.重点检查PA 供电电源及电源走线宽度是否足够?
+参考FAQ: FAQ56189
+### 问题: WCDMA调试时用MobileTester强制发射没有输出的可能原因？
+解决方案: 下面几点可能性较大,请一一排查: 1.MobileTester中设置要正确:如 Active按钮一定要先点; TX Gain设置;如果W PA使用DC-DC供电一定注意要勾选Enable DCDC.;TX ON最后点. 2.仪器设置正确,FDD TEST mode,信道与工具最好一致. 3. NV 天线开关/PA/IQ/TRX PORT配置检查,频段设置检查. 4. 查看电流如果正常,如600mA以上,说明PA工作基本正常,重点PA输出,DPX,天线开关等走线,器件本身及SMT问题.另,仪器本身及RF cable连接线等外设环境检查. 5. 查看电流过小,如300mA左右或者更小,说明PA工作异常,重点检查PA输入信号. 6. 频谱仪宽频扫描,看是否有锁频问题.
+参考FAQ: FAQ56190
+### 问题: 产线报GSM FDT快速校准AGC fail，更换为Common校准 pass是什么原因？
+解决方案: 目前发现问题多为USB驱动问题,请查看USB驱动版本,升级至2.0.0.130(SPRD_NPI_USB_Driver_1.1.rar).
+参考FAQ: FAQ56191
+### 问题: SC5736S+SC9620+SR3532校准ADC为什么强调校准LTE 侧ADC？
+解决方案: 正确做法是只需要在LTE侧校准ADC即可.说明如下:TG侧ADC校准的是AP ADC,LTE校准的是AP和CP的ADC. 所以校准LTE ADC后,没有必要再校准TG ADC,但只校准TG侧ADC不校准LTE 侧ADC是不行的. 两种模式校准ADC结果对于AP ADC没有差别.
+参考FAQ: FAQ56192
+### 问题: SC5736S+SC9620+SR3532校准ADC注意事项？
+解决方案: a.校准时电源负极需要直接连接在主地上,不要连接电池负极. b.只校准LTE侧ADC即可,TG侧不需要校准.
+参考FAQ: FAQ56193
+### 问题: SVLTE 方案中2G PAM选用Sky77597原因？
+解决方案: Sky77597是Skyworks基于 Sky77592 的基础上新一代的PAM,集成了GSM/EDGE PA +SP8T RF Switch.与SKy77592相比,最大的特点是增加了1个SP2T可以将GSM HB OUT 通路切换到PAM外侧,故可在此通路上增加B39 notch filter+LPF, 这对于解决SVLTE中 GSM DCS与LTE共同工作时的互干扰问题非常重要.因此建议使用SKy77597.
+参考FAQ: FAQ56195
+### 问题: LTE平台中如何提升WIFI与LTE互干扰？
+解决方案: 一般来说,此问题需要硬件软件各个方面配合解决. 硬件:尽量增加WIFI电路/天线与LTE电路/天线间的隔离度:a.二者距离尽量远离.b.WIFI和LTE都使用抑制度更高的SAW等. 软件:降低wifi发射功率;LTE发射时 软件通知 WIFI停止工作,软件通知wifi使用远离LTE工作频率的信道等.
+参考FAQ: FAQ56196
+### 问题: SPRD LTE平台PA与transceiver（SR3592） 摆放距离要求？
+解决方案: 一般要求5mm以上,如果距离太近 建议PA单独用屏蔽盖.
+参考FAQ: FAQ56197
+### 问题: LTE校准线损要求？
+解决方案: 各个频段请验证校准线损.尤其Band38,由于频率较高,产线使用时间长或质量差的RF cable有可能线损较大,请选用OK cable且严格校准线损,否则易造成校准或综测偏差.
+参考FAQ: FAQ56198
+### 问题: VC7590 TD FDT快速校准后综测TPControl（手动测试CLPC）fail？
+解决方案: 需要修改NV中tdPA_gain_mode_control 为0. NV中默认为1,针对参考设计Sky PA.
+参考FAQ: FAQ56199
+### 问题: SVLTE如果客户节省成本，省掉DCS narrow band电路/SAW，NV修改？
+解决方案: NV中对于narrow band开关置为0. 路径: 3500NV : \Common_dsp_RFGPIO_config\Anterna_switch_RFGPIO_config\ GSM_Antenna_switch_truth_table\rf_param[1] 0x0
+参考FAQ: FAQ56200
+### 问题: LTE Category定义？
+解决方案: 用来规定UE的传输速率上限级别. LTE定义的ue-Category:从1~5.分别表示的含义如下 Category 1 10296 Category 2 51024 Category 3 102048 Category 4 150752 Category 5 299552 具体可以参见3GPP 36.306表格4-1,里面描述的比较详细,速率,TB块,层之间的关系.另外,R10版本里面,还支持更多的速率.另外定义了6~8. Category 6 301504 Category 7 301504 Category 8 2998560
+参考FAQ: FAQ56201
+### 问题: SR3592到SC9620/SC9830的IQ（TX IQ/RX IQ/DRX IQ）走线要求？
+解决方案: 每一组IQ走线长度要小于25mm;每一组IQ走线走差分线,等长等宽;每一组单独上下左右包地保护;IQ上RC匹配靠近SR3592摆放.
+参考FAQ: FAQ56202
+### 问题: 如何保证GPIO口的输出状态维持到深睡眠
+解决方案: 在pinmap.c里面设置GPIO口在sleep时的状态为SLP_OE即可解决: {REG_PIN_TRACEDAT3, PIN_NULL, FUNC3, PIN_NULL, SLP_WPD, DS_L1, PIN_OE, PIN_NULL, SLP_AP},
+参考FAQ: FAQ56281
+### 问题: Android平台的USB驱动与传统linux USB驱动的概念区别在哪里?
+解决方案: 一般而言,在linux kernel中的usb驱动分为两种模式:host controller模式与slave模式. 对于host controller模式而言,此时linux作为主控方,外部的usb设备如,usb鼠标,u盘等挂载上,上报usb包,kernel作为host进行处理. 而对于slave模式而言,此时,需要把自己作为一个usb设备. Android平台的USB驱动就是这种典型的驱动.为了与主机端驱动设备的USB Device Driver概念进行区别,将在外围器件中运行的驱动程序称为USB Gadget Driver. 其中,Host端驱动设备的驱动程序是master或者client driver,设备端gadget driver是slave或者function driver.
+参考FAQ: FAQ56352
+### 问题: usb驱动中的endpoint是什么概念?
+解决方案: endpoint即为端点,是USB通信的最小单元; 端点位于USB 外设内部,所有通信数据的来源或目的都基于这些端点,是一个可寻址的FIFO. 每个USB 外设有一个唯一的地址,但可能包含最多十六个端点. 主机通过发出器件地址和每次数据传输的端点号,向一个具体端点(FIFO)发送数据. 每个端点的地址为0 到15,一个端点地址对应一个方向. 所以,端点2-IN 与端点2-OUT 完全不同. 此外请注意每个USB设备有一个默认的双向控制端点0, 所以不存在0-IN与0-OUT.
+参考FAQ: FAQ56355
+### 问题: USB的传输模式有哪些?
+解决方案: USB共有四种传输模式,分别为:控制传输, 批量传输, 中断传输, 同步传输.
+参考FAQ: FAQ56356
+### 问题: SC7715平台对应的SIM卡PIN码输入是怎样控制处理的？
+解决方案: 在SC7715平台上,如果插入的SIM卡设置了PIN码,每次开机时都会首先弹出PIN码输入解锁界面.如果跳过开机的SIM卡PIN码输入,则此SIM卡的simstate一直处于PIN_REQUIRED,无法使用该SIM卡的相关业务.但每次灭屏亮屏后,会继续弹出SIM卡PIN码输入解锁界面,其流程情况如下: 1、在KeyguardHostView.java中的 onScreenTurnedOn() 或 onScreenTurnedOff() 中都会调用到 showPrimarySecurityScreen()->showSecurityScreen()->showSecurityScreen(SimPin). 2、showSecurityScreen(SimPin)会调用到KeyguardSimPinView.java 中的KeyguardSimPinView对应的pin码解锁界面,然后通过class CheckSimPin来确认PIN码是否输入正确.
+参考FAQ: FAQ56365
+### 问题: 播放视频时参数设置菜单中各参数的含义？
+解决方案: (1)网络设置中的APN:可以设置是否使用cmwap进行流媒体播放 (2)代理设置:是否使用代理播放流媒体 (3)RTP/RTCP端口设置:当播放RTSP流媒体时,是否使用所设置的RTP和RTCP端口号进行数据的接收 使用时一般不需要对这些参数进行设置
+参考FAQ: FAQ56384
+### 问题: 进入图片编辑界面，添加预设效果之后，为何会出现小圆点？
+解决方案: 在图库中的图片编辑界面,当用户点击预设,天际自定义的效果之后,在该选项和原生效果之间会出现一个圆点. 该圆点是系统为类区别原生效果和预设效果而使用,方便用户进行选择.
+参考FAQ: FAQ56406
+### 问题: HLS流媒体播放时码流切换流程
+解决方案: 1.HLS服务器最开始提供一个支持的ts码率的列表 2.stagefright选择第一个做为初始播放地址,获取ts地址 3.根据地址下载到ts码流后进行解码和播放 4.检查网络带宽,如果一定时间内下载的ts流多则认为网速好,切到一个较高的带宽中下载ts流;反之,切到较低带宽中下载及播放. 5.检查网络带宽及是否切换的触发点为周期性检测带宽的调用:scheduleCheckBandwidthEvent
+参考FAQ: FAQ56387
+### 问题: H.264解码器如何进行软解码及硬解码的切换？
+解决方案: 使用平台的解码器时,初始会打开硬解码库,且送给解码器的第一帧数据是codec specific data,当解码完这一帧后会在handlePortSettingChangeEvent函数中判断宽高,如果宽高小于一定范围(例如320×240)且profile满足条件则切换到软解码
+参考FAQ: FAQ56393
+### 问题: 如何调整锁屏提示音的音量
+解决方案: framework/base/core/res/res/values/config.xml 中可设置锁屏默认音量 <integer name="config_lockSoundVolumeDb">-6</integer> 可修改为-6～0之间,默认值为-6,0为最大音量,通过修改此值可以达到调节锁屏音量目的. 不过要注意Keyguard中是否用了此值,如果没有用此值的话,就需要修改音源文件的音量.
+参考FAQ: FAQ56413
+### 问题: 时钟应用中，设置数字样式和指针样式切换对什么界面生效？
+解决方案: 设置中的数字样式和指针样式是针对屏保状态的时间显示生效,并非时钟界面的样式,可以通过设置中的"夜间模式"验证.
+参考FAQ: FAQ56443
+### 问题: 使用Pandora写IMEI/SN等号时如何选择chip/mode/port?
+解决方案: 若是支持LTE网络模式选择如下: 若是只支持W+G网络模式选择如下: 写号时需要手机进行关机.
+参考FAQ: FAQ91975
+### 问题: 如何解决WIFI空口包已设置解密但数据仍处于加密状态？
+解决方案: 1.当手机抓取的空口包数据显示为Encrypted Data则为加密状态 2.手机侧需要重新输入WiFi密码,解密的空口包信息显示如下 备注:在设置OmniPeek时需要进行解密配置.
+参考FAQ: FAQ91976
+### 问题: 如何制作虚拟光驱ISO镜像文件？
+解决方案: 在SC7715或SC5735 PAD平台中存在'USB 虚拟光驱'功能,可将配套的程序或数据以ISO镜像的方式预置至手机系统,再通过光驱形式挂载至PC端来访问,实际制作ISO镜像(.iso格式)文件可以通过Windows操作系统下的UltraISO工具(可视化操作界面),或是使用Linux系统下的'mkisofs'命令来制作(具体参数可以参考此命令官方手册).
+参考FAQ: FAQ56717
+### 问题: SIM卡spn显示条件
+解决方案: 根据TS 51.011 10.3.11中介绍 此值bit1为plmn指示位:0表示不显示,1表示显示;bit2为spn指示位:0表示显示,1表示不显示. 具体代码参考 \frameworks\opt\telephony\src\java\com\android\internal\telephony\uicc\ SIMRecords.java public int getDisplayRule(String plmn)
+参考FAQ: FAQ56737
+### 问题: 蓝牙基带逻辑信道简介
+解决方案: 蓝牙定义了以下5种逻辑信道: 1.链路控制信道(Link Control),SCO或ACL链路,携带ARQ、流量控制和有效载荷特征等低层LC信息; 2.链路管理信道(Link Manage),SCO或ACL链路,携带主从设备间交换的LM信息; 3.用户异步数据信道(User Asynchronization),仅用于DV分组链路,携带L2CAP透明的异步数据; 4.用户等时数据信道(User Isochronous),仅用于DV分组链路,携带L2CAP透明的异步数据,具有较高的优先级时可以中断US信道传输; 5.用户同步数据信道(User Synchronization),SCO链路,透明的同步用户数据,携带SCO分组有效载荷.
+参考FAQ: FAQ56759
+### 问题: 模拟器如何模拟短信发送失败
+解决方案: 在模拟器的控制面板(Control Panel)中选择"System Info"TAB项,把"Service Status"设置成"No cell"或"Limited",这样在模拟器上发送SMS就会失败,信息保存到"Outbox"中.
+参考FAQ: FAQ56767
+### 问题: 文件夹复制到同样路径下，生成的文件名后面括号内数字为随机数，如何改成按数字排序？
+解决方案: 修改方法如下: MMIAPICOM_GetNoExistFileName @ mmi_common.c PUBLIC void MMIAPICOM_GetNoExistFileName(...) { ...... do { if(is_folder) { ...... } else { ...... } random = rand(); //约1548行,把这句改成 random++; ...... } }
+参考FAQ: FAQ56772
+### 问题: 蓝牙基带链路监控原理介绍
+解决方案: 蓝牙设备间的链路发生中断,可能是多种原因,比如设备移出覆盖范围或功率条件比较差,这些突发性的链路性能变化需要对链路两端进行监控,从而避免AM_ADDR重新分配给其他设备时造成冲突. 为了监视链路的质量,主从设备双方都使用了链路监控定时器T supervision,每当收到一个通过了HEC校验并且AM_ADDR正确的分组时,定时器复位.如果在连接状态某个时间定时器到达超时值 SupervisionTo,就要断开链路,重新建立连接.SCO和 ACL链路使用相同的超时值.SupervisionTo在链路管理层协商,其取值比保持和呼吸模式的周期都要长.从设备休眠模式的链路监控由解除休眠(Unparking)和重新休眠(Re-parking)过程来完成.
+参考FAQ: FAQ56766
+### 问题: FM 在主界面如何强制显示两位小数？
+解决方案: FM 在主界面频点显示是根据实际的频点的小数位数来显示的, 举例 如果频点为 90.15 则显示为90.15 如果频点是 90.10 则显示为90.1 如果希望该频点强制显示为两位小数 如 如果频点是 90.10 则显示为90.10 可按照如下方法修改: 修改/packages/apps/FMPlayer/src/com/thunderst/radio/FMPlay.java 中的setFreqForUi()函数 按如下修改: mFreqView.setDigitalText("" + freq); //删除此行 DecimalFormat freqFormat = new DecimalFormat("####.00"); //新增此行 mFreqView.setDigitalText("" + freqFormat.format(freq)); //新增此行
+参考FAQ: FAQ56791
+### 问题: 什么是SPDI？
+解决方案: SPDI:Service Provider Display Information 是记录在sim卡上的mcc和mnc列表信息,如所登录的网络在此列表当中,则默认显示SPN信息.
+参考FAQ: FAQ56794
+### 问题: 为何短信发送后汉字无法正常显示
+解决方案: 此与短信编码方式的选择有关 出现汉字无法正常显示的情况,检查信息中设置的编码方式是否为7bit,由于7bit编码只支持ASCII码,中文汉字不属于ASCII码范围,因而不显示. 由于中文汉字属于Unicode编码,需要选择16bit编码或者auto编码(7bit\16bit自动转换)方能支持.
+参考FAQ: FAQ56830
+### 问题: 合并转发已勾选的信息，横屏后为何变为未勾选状态？
+解决方案: 屏幕改变后应对应转之前的状态 添加屏幕改变监听,修改AndroidMenifest.xml: <activity android:name=".ui.SmsMergeForwardActivity" android:label="@string/app_label" -- android:configChanges="orientation|keyboardHidden"> ++ android:configChanges="orientation|screenSize|keyboardHidden"> </activity>
+参考FAQ: FAQ56833

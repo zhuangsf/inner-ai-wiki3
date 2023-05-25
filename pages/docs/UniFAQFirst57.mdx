@@ -1,0 +1,302 @@
+### 问题: SC9863A平台是否支持DVFS功能？
+解决方案: SC9863A平台支持DVFS功能.
+参考FAQ: FAQ107964
+### 问题: SC9863A调试接口说明
+解决方案: JTAG: (适用2-wire JTAG) MTMS/MTCK配合VDD1V85/GND -- 建议预留 UART1: AP log -- 建议预留 以上测试点建议放置在容易焊接的位置,方便整机状态操作.
+参考FAQ: FAQ107967
+### 问题: SC7731E平台的四路UART口，UART0预留测试点用于debug，其他三路UART接口还需要预留测试点吗？
+解决方案: UART0和UART1必须留测试点,UART2的测试点可以删除.UART3没留测试点.
+参考FAQ: FAQ107968
+### 问题: SC7731E平台蓝牙支持哪几种制式？
+解决方案: 支持下面三种: Support V2.1+EDR Support Bluetooth V4.2 low energy Bluetooth V2.1 and BLE concurrent
+参考FAQ: FAQ107969
+### 问题: 展锐SC773E平台相关技术文档通过什么渠道发布？
+解决方案: 展锐SC7731E平台相关技术文档正式发布都是通过Isupport系统发布到客户账户,请及时到上面下载,非常感谢!
+参考FAQ: FAQ107971
+### 问题: 紫光展锐SC9832E/SC9820E平台硬件技术文档是通过什么渠道发布？
+解决方案: 紫光展锐SC9832E/SC9820E平台硬件技术文档都通过Isupport系统正式发布到客户账户,请及时下载,非常感谢!
+参考FAQ: FAQ107974
+### 问题: SC7731E参考设计中指纹使用的SPI number是多少？
+解决方案: 平台参考设计中指纹使用的是SPI_HS_xx,对应为SPI1,因此在配置SPI接口时,SPI number需要配置为1.
+参考FAQ: FAQ107983
+### 问题: 请问SC7731E是否支持TDSCDMA网络？
+解决方案: 不支持.
+参考FAQ: FAQ109285
+### 问题: 请问SC9832E支持哪些导航规格？
+解决方案: 1、Support GPS L1/BDS B1/GLONASS G1/SBAS 2、Support GPS only , BDS only ,GPS+BDS,GPS+GLONASS
+参考FAQ: FAQ109282
+### 问题: GPIO中断和EIC中断的区别是什么？
+解决方案: 普通GPIO不支持沿触发,它通过电平触发才能唤醒AP.而EIC中断可通过沿触发来唤醒AP.
+参考FAQ: FAQ108039
+### 问题: PBINT2的具体用途
+解决方案: 接地后,vbat上电自动开机
+参考FAQ: FAQ108071
+### 问题: 耳机电路，AVSS_FM的作用？
+解决方案: 内部FM信号GND,需要单点接地
+参考FAQ: FAQ108066
+### 问题: Uart0/Uart1区别？
+解决方案: Uart0 :默认 Uart1:TXD1是作为strap pin用与USB download,和抓取log用,不能用作其他用途; 其他接口都是软件可配,设计上uart0和uart1都需要有,软件可能需要同时出log
+参考FAQ: FAQ108063
+### 问题: SC2721G未使用的电源引脚怎么处理？
+解决方案: 给外设用的LDO输出不使用的话可以悬空, 软件确保不能开启.
+参考FAQ: FAQ108061
+### 问题: SC2721G是否提供充电选择引脚和复位引脚？
+解决方案: 有CHG_PD,可以控制外部充电芯片.
+参考FAQ: FAQ108060
+### 问题: 充电电量检测的20mΩ电阻如果放在模块内部，该部分连线怎么实现
+解决方案: 如果不需要像手机一样准确的获得电量百分比,可以把20mohm删除,电量精度较低. 如果电量精度要求高,20mohm在模块里的话,SenseP和N还是接电阻两端,但模块外部电池负极到模块里20mohm的走线要宽.一般要求20mohm要靠近电池连接器摆放,放在大板上.
+参考FAQ: FAQ108059
+### 问题: SC9832E支持UHS-1 T flash的话，电流是否满足要求？
+解决方案: 使用UHS-1 T flash的话,需要VDDSD具有800ma的负载能力,而SC9832E的VDDSD的电流负载能力为400ma,需要外加LDO.
+参考FAQ: FAQ108078
+### 问题: 请问SC9832E是否支持USB 3.0?
+解决方案: Not support USB 3.0,Support USB2.0 High speed, 480Mbps.
+参考FAQ: FAQ108084
+### 问题: SC9832E支持几路SDIO？
+解决方案: 2路
+参考FAQ: FAQ108086
+### 问题: 请问SC9832E的MIPI Data lan支持的最大传输速率是多少？
+解决方案: Support MIPI DSI port, 4-data lane, up to 1.5Gbps
+参考FAQ: FAQ108085
+### 问题: 请问SC9832E支持的LCD最大分辨率是多少？
+解决方案: LCD resolution up to HD+
+参考FAQ: FAQ108088
+### 问题: 请问SC9832E的GPU规格是什么？
+解决方案: ARM Mali T820 MP1 as GPU, clock up to 680MHz
+参考FAQ: FAQ108091
+### 问题: 请问SC9832E的芯片工艺是多少nm？
+解决方案: TMSC 28nm HPC+ process
+参考FAQ: FAQ108094
+### 问题: SC9832E VDDSD用于给SD卡供电，VDDSDIO用于给BB接口供电？
+解决方案: 是的
+参考FAQ: FAQ108095
+### 问题: 请问SC7731E的芯片工艺是多少nm？
+解决方案: TSMC,28nm HPC+
+参考FAQ: FAQ108096
+### 问题: SC9832E  sim卡接口对于1.8Vsim卡和2.8VSIM卡是自适应的吗？
+解决方案: 是
+参考FAQ: FAQ108098
+### 问题: SC9832E 支持双4G吗？
+解决方案: 支持
+参考FAQ: FAQ108100
+### 问题: SC9832E内部集成的GPU是什麽？
+解决方案: Mali-T820
+参考FAQ: FAQ108102
+### 问题: SC9832E CTP接口使用哪路I2C？
+解决方案: I2C3
+参考FAQ: FAQ108104
+### 问题: SC9832E vibrator的默认驱动电压是多少？
+解决方案: 3.3V
+参考FAQ: FAQ108106
+### 问题: SC9832E vibrator的驱动电压步进是多少？
+解决方案: 10mv
+参考FAQ: FAQ108108
+### 问题: SC9832E vibrator的VIB_CTRL走线宽度有要求没？
+解决方案: 至少0.1mm线宽
+参考FAQ: FAQ108109
+### 问题: SC6531E软件如何调节按键背光亮度?
+解决方案: 可通过设置ANA_SetDevValue中第二参数为ANA_DEV_VAL_MIN,ANA_DEV_VAL_LOW,ANA_DEV_VAL_MID,ANA_DEV_VAL_HIGH, ANA_DEV_VAL_MAX来调节
+参考FAQ: FAQ108139
+### 问题: 请问SC9832E的GPS最大支持多少channels？
+解决方案: Support max 64 channels
+参考FAQ: FAQ109280
+### 问题: 请问SC9832E的FM频率范围是多少？
+解决方案: Support frequency range from 65MHz to 108MHz.
+参考FAQ: FAQ109276
+### 问题: 请问SC7731E支持的FM频率范围是多少？
+解决方案: Support frequency range from 65MHz to 108MHz.
+参考FAQ: FAQ109271
+### 问题: 请问SC7731E是否支持5G WIFI？
+解决方案: 不支持,仅支持2.4GHz 802.11b/g/n(20M).
+参考FAQ: FAQ109269
+### 问题: 请问SC9832E是否支持UFS Memory？
+解决方案: 不支持UFS Memory
+参考FAQ: FAQ109294
+### 问题: 请问SC9832E支持的BT标准是什么？
+解决方案: 1、Support V2.1+EDR; 2、Support Bluetooth V4.2 low energy; 3、Bluetooth V2.1 and BLE concurrent.
+参考FAQ: FAQ109278
+### 问题: SC7731E 平台PBINT脚和PBINT2脚有什么区别？
+解决方案: PBINT 下拉到地有开机功能和重启功能,短按是开机,长按7S会自动重启. PBINT2 下来到地只有开机功能,没有重启功能.用来做产线自动化测试开机或者flash验证 测试时自动开机等.
+参考FAQ: FAQ108155
+### 问题: SC9832E/SC9820E 平台PBINT脚和PBINT2脚有什么区别？
+解决方案: PBINT 下拉到地有开机功能和重启功能,短按是开机,长按7S会自动重启. PBINT2 下来到地只有开机功能,没有重启功能.用来做产线自动化测试开机或者flash验证 测试时自动开机等.
+参考FAQ: FAQ108156
+### 问题: SC9863A平台PBINT脚和PBINT2脚有什么区别？
+解决方案: PBINT 下拉到地有开机功能和重启功能,短按是开机,长按7S会自动重启. PBINT2 下来到地只有开机功能,没有重启功能.用来做产线自动化测试开机或者flash验证 测试时自动开机等.
+参考FAQ: FAQ108157
+### 问题: SC9863A 平台GPLL, RPLL, TWPLL, LPLL, ISPLL,MPLL锁相环的具体说明
+解决方案: GPLL: 指的是GPU PLL,默认550M,可以调范围(500到1G) RPLL:指的是 Reference PLL.两个功能:一个是出tune 26M;一个是出一个780M给EMMC SDIO (可调624---1040M) TWPLL:TD/GSM/WCDMA PLL,1536M 固定频率 LPLL:LTE PLL,1228.8 固定频率 ISPLL :(Image single processor) PLL; 默认936 (可调500到1G) MPLL :Main PLL;给CPU, MPLL0:1200 小核, MPLL1:1500 大核;
+参考FAQ: FAQ108158
+### 问题: SC9863A 平台MIC上串接电容隔直，耳机麦克的电容要求放在麦克跟前，而主副麦克的要求放在BB侧，有什么讲究？
+解决方案: 主副MIC需要放到屏蔽罩里,辐射干扰会小点 耳机MIC主要是考虑板型和走线方便
+参考FAQ: FAQ108159
+### 问题: SC9863A PMIC 1.8V的LDO输入电源是DCDC GEN1V85,压差足够吗？会不会出现输出的LDO不稳定或者电压过低的现象？
+解决方案: PMIC内部LDO专门做了处理,可以支持50mv压降
+参考FAQ: FAQ108160
+### 问题: SC9863A SC2721G PBINT 和PBINT2有什么区别？
+解决方案: PBINT: 一般用于开机和硬件7S硬复位; PBINT2:该pin接GND,vbat自动开机,一般用于自动化测试
+参考FAQ: FAQ108163
+### 问题: SC9863A USB PHY在AP，USB接口为什么要接到PMIC，逻辑关系？
+解决方案: USB经过PMIC主要是为了支持BC1.2
+参考FAQ: FAQ108164
+### 问题: 6531E modem版本GCF case 34.2.5.1 测试步骤
+解决方案: 开机后先发送AT+CMNI=3,1,0,1,0 开启接收短信提示.测试过程中收到短信AT会输出+CMTI: 提示字样. 测试步骤: 1)仪器提示清空SMS,可用AT+CMGD=1,4命令 2)仪器提示是否收到一条短信,点击仪器界面的YES按钮. 3)仪器提示此条短信能否被recalled, 点击仪器界面的NO按钮. 4)此时仪器会向MS不断的发送短信,使MS存储空间满.此时可以发送AT+SPSMSFULL=1设置空间满,缩短测试流程. 5)仪器提示是否收到一条短信,点击仪器界面的YES按钮. 6)仪器提示测试结果(PASS). 此条case测试后,用AT+SPSMSFULL=0或掉电重启,恢复设置,以免影响其他sms case测试.
+参考FAQ: FAQ108182
+### 问题: SC7731E平台LPDDR2 LPDDR3是否可以做兼容设计？如何设计？
+解决方案: 1. 目前eMCP2/eMPC3在SC7731E平台上已经可以做到Pin-to-Pin兼容,而且可以软件自动识别; 2. 为达到以上目的: 2.1. 请参考最新的CS图纸:《SC7731_A_CS_E_SCH_V0.1.2_SC2720_eMMC_LPDDR3》,更新最新的原理图库,并且CA和DQ[0:7]要完全按照CS图纸连接; 2.2. 请使用W18.19.2或更新的软件版本;
+参考FAQ: FAQ108196
+### 问题: Android8.1 CTS Audio Frequency Line test测试失败 无数据
+解决方案: 我们8.1版本audio结构升级了. 请使用新结构的audio_para,同步已调试音频参数. 正确的结构新增了ISCHandsfree ISCHeadfree Unprocess三个模式,且audio_para大小应在800+kb. 可以通过音频调试工具Audiotester读取music的nv做判断.
+参考FAQ: FAQ108198
+### 问题: 展讯平台是否支持eMCP兼容分离式Memory？如何设计？
+解决方案: 1. 通常我们强烈不推荐客户一块PCB板上eMCP兼容eMMC+LPDDR或者MCP兼容NAND+LPDDR; 这样做大大的增加走线长度,或者在走线上增加了T-stub,严重影响信号质量. 2. 如果必须做兼容,那么: 2.1. LPDDR2/3走线不允许分叉.所以,LPDDR2/3必须使用与eMCP/MCP Pin-to-Pin的封装; 2.2. eMMC/NAND信号线必须使用2颗电阻做通路选择,不能留长的Stub.
+参考FAQ: FAQ108202
+### 问题: vowifi支持的算法列表
+解决方案: 1) Encryption algorithm (ENCR): DES, 3DES,AES_CBC_128, AES_CBC_256. 2) Integrity protection algorithm (INTEG) : AUTH_HMAC_MD5_96, AUTH_HMAC_SHA1_96, AUTH_DES_MAC, AUTH_AES_XCBC_96, AUTH_HMAC_SHA2_256_128, AUTH_HMAC_SHA2_384_192, AUTH_HMAC_SHA2_512_256. 3) Pseudo-random function (PRF) : PRF_HMAC_MD5, PRF_HMAC_SHA1,PRF_AES128_XCBC, PRF_HMAC_SHA2_256, PRF_HMAC_SHA2_384, PRF_HMAC_SHA2_512. 4) D-H groups :768,1024,1536,2048
+参考FAQ: FAQ108234
+### 问题: WCDMA下开机驻网时，如何判断在哪些频点上进行了搜网？
+解决方案: 在初始接入时,当RFSCAN结果显示某个频点的RSSI超过阈值后,就会在该频点上进行小区搜索,目前7701上该门限为-100. 如下面两条TRACE所示,第一条显示RFSCAN结果,频点10788的RSSI为-63.453,大于阈值-100,所以会在该频点上进行小区搜索. 通过第二条trace可以快速找出某个band上有多少个频点进行了小区搜索. 第一条trace的搜索关键字为power_dbm64,第二条的关键字为handle initial ARFCN. RFCAL: uarfcn: 10788, power_dbm64:-4061, power_dbm =:-63.453 
+ meas: handle initial ARFCN=10788,PGC=123,BAND=1 measurement request
+参考FAQ: FAQ108243
+### 问题: SC9832E平台是否支持5G WIFI?
+解决方案: SC9832E 内部集成WIFI,BT,GPS,FM四合一芯片是 marlin2,不支持5G WIFI,只有2.4G WIFI.
+参考FAQ: FAQ108264
+### 问题: pdp激活IP地址的支持情况
+解决方案: 目前咋们平台可以支持PDP激活的IP地址的类型有ipv4, ipv6, ipv4v6(都是可配置的), 在真实应用场景中, 要结合网络的支持情况,才能决定最终的状态,比如UE支持ipv4v6, 网络支持ipv4,那么最终只能分配ipv4的地址.
+参考FAQ: FAQ108270
+### 问题: 什么是mailbox
+解决方案: mailbox是基于SIPC实现的AP与CP之间的一种通信方式. armlog的抓取,AT命令的主动上报,NV数据的同步以及数据业务都会用到mailbox, 比如armlog,从cp输出,但是在AP侧存储,就是通过SIPC通道将log数据从CP传输到AP的,传输的过程中就会有mailbox的中断,AP收到中断后会将armlog存储到指定路径.
+参考FAQ: FAQ108271
+### 问题: UEA2/UIA2这两个配置是什么含义？如何配置
+解决方案: UEA2表示一种UMTS加密算法,UIA2表示一种UMTS完整性保护算法;可以通过修改NV来打开/关闭UE的UEA2/UIA2能力 在仪表测试中,依据仪表侧的PICS配置,网络可能会对UE上报的安全算法能力做检查,若能力不匹配可能会导致用例失败
+参考FAQ: FAQ108269
+### 问题: VOTE终端支持的基本功能？
+解决方案: VoLTE(Voice over Long Term Evolution,长期演进上的语音)是什么?最直接简单的理解就是VOIP,与普通VOIP相比,网络的承载体由互联网变成了LTE,同时对VoLTE使用的DRB承载定义高优先级及速率保障等,保证业务QOS.VoLTE是基于IMS网络的LTE语音解决方案,通过IMS网络,移动运营商不仅可以无缝的继承传统的语音、短消息业务,还可以将语音通话与丰富的增强功能相整合,提供多样化的服务. 基本功能有: • Audio/Video Call • Normal/Enhanced Audio/Video Conference Call • IMS emergency call • SMS • Supplementary Services • eSrvcc, aSrvcc, bSrvcc • Evs, forking, USSI
+参考FAQ: FAQ108284
+### 问题: LTE下是否可以设置只注册PS域？
+解决方案: LTE下根据UE mode设置决定注册是CS+PS联合注册还是PS only的注册. 实际网络中一般不建议设置PS only,但Reliance等特殊网络除外. LTE下进行CS+PS注册不光是为了进行CSFB的电话业务,通过LTE信令的短信收发也要基于CS+PS的联合注册. 即使终端本身没有电话、短信等业务,进行CS+PS的联合注册也要比PS only的注册有更好的网络兼容性.
+参考FAQ: FAQ108277
+### 问题: 手机在3G下待机时接收USSD信息是否会引起长时间的高电流？
+解决方案: 手机在3G下待机时处于IDLE态, 接收USSD信息时会进入连接态接收数据,因而会出现短时间电流较高的情况.但是接收完信息后如果没有其他操作,手机一般会再次进入IDLE态,所以接收USSD一般只会产生很短时间(几秒钟)的高电流,不会引起长时间的高电流.
+参考FAQ: FAQ118448
+### 问题: 3.5mm耳机通用问题
+解决方案: 现在许多设备的耳机接口都采用3.5mm的耳机接口,看似好像都相同,但其实不然.耳机接口分为美标和国标(国际标准),现在我就给大家讲讲这两个的差别.我讲解的耳机是四极接口,即有左声道,右声道,地线,MIC. 1 1,首先是美标的.从最前头开始数第1、2、3、4节,分别是左声道/右声道/地线/MIC. 2,然后是国标的.从最前头开始数第1、2、3、4节,分别是左声道/右声道/MIC/地线. 从上面我们可以看出.美标和国标的差别就在于最后两个的MIC和地线的位置不同,这也就导致了错位,然后在听音乐时就像在听卡拉OK伴奏一样,只有音乐没有人声,只有按住接听键才正常.对于大部份耳机插头而言,美标的中间三节隔离绝缘圈,一般是都是白色的.而国标为了有所分别,一般是都是黑色的.大部份可通过此方法来识别. 4
+参考FAQ: FAQ118453
+### 问题: 如何设置可以同时写secureboot和keybox?
+解决方案: 在Securityserver工具的SecureOperations.ini里面,setKeybox前面加上一行SetROTPK,就可以实现secureboot和keybox同时写入,如同下面所示: [project name] 1=GetUID 2=SystemInit 3=SetROTPK 4=SetKeybox 5=SystemClose 6=DeployEnd ROTPK全称Root of Trust Public Key Hash,是根据硬件的ID来生成的一组KeyHash值.产线部署ROTPK,会将该KeyHash写入到Efuse中,即旧平台的SecureBoot功能.
+参考FAQ: FAQ108291
+### 问题: 什么是IVR？
+解决方案: 互动式语音应答(IVR,Interactive Voice Response)是一种基于电话的语音增值业务的统称.电话用户只要拨打移动运营商所指定号码,就可根据语音操作提示收听、点播或发送所需的语音信息以及参与聊天、交友等互动式服务. 最常见的业务有: 1 语音点歌 2 语音聊天交友 3 手机杂志 4 电子贺卡 5 客服中心 6交互式语音 英文解释: IVR: Interactive voice response (IVR) is a technology that allows a computer to interact with humans through the use of voice and DTMF tones input via a keypad.
+参考FAQ: FAQ108289
+### 问题: 平台是否支持Open Mobile API?
+解决方案: 什么是Open Mobile API (OMAPI)? Open Mobile API是由SIMalliance提供的开放源码项目允许手机应用和Secure Elements(SE)如SIM卡,嵌入式SE,SD卡等进行通讯的API. 平台是否支持Open Mobile API? 目前在我们的代码中已经支持.因该API是中国移动终端入库测试项,目前默认只在中国移动版本上编译集成. 其他版本如何添加OMAPI支持? 目前确实有海外客户如俄罗斯等反馈需要集成OMAPI. 如果需要集成OMAPI以及SE on UICC的支持,在device/sprd目录下的board编译文件里加入如下4个模块即可: PRODUCT_PACKAGES += \ SmartcardService \ UiccTerminal \ org.simalliance.openmobileapi \ org.simalliance.openmobileapi.xml
+参考FAQ: FAQ108324
+### 问题: 如何判断SIM卡槽中有物理卡
+解决方案: 卡槽中是否有物理卡的检测方式,有如下两种: 1) 硬件卡槽上带有 GPIO 检测是否有卡在位.GPIO 高低电平可以及时指示卡的插入和拔出.该方式可用于热拔插功能. 2) 软件上需要应用层定时发起卡识别指令来触发驱动检测卡槽中是否有卡存在, 在确认卡存在,且能正常通讯之后,再通过一个计时器定时检测卡槽中是否有卡可以正常交互,如果交互异常则判定卡已移除.
+参考FAQ: FAQ108328
+### 问题: 7731E产品两张卡都驻留WCDMA网络正常吗？
+解决方案: 7731E产品支持双W模式,故两张卡同时驻留WCDMA,是正常现象
+参考FAQ: FAQ108352
+### 问题: 为何动态测试时wcdma手机信号格有时显示为0又变好即不稳定？
+解决方案: WCDMA信号格是根据小区的RSCP值进行显示的,WCDMA PHY会把RSCP值转化为rx_lev,把rx_lev上报给L4进行收集显示.当驻留小区信号较差时,RSCP较低,则信号格可能出现为0,但是当切换到信号较好的小区后,信号格会变好.动态测试时,如果当前网络环境信号不稳定,则收集信号格显示也会不稳定,这是一种正常的现象,由动态测试环境不稳定小区切换导致. 相应关键trace:1. WRRC消息 WRRC_MM_RX_LEVEL_IND 2. PHY trace: rx_level 3. L4 trace: string: +CESQ
+参考FAQ: FAQ108391
+### 问题: 怎么测试WCDMA手机的底电流？
+解决方案: 在进行WCDMA手机底电流测试时,需要在芯片进入Deepsleep状态后,将晶振,PLL和不工作的LDO关闭,在芯片管脚和外围器件没有漏电的情况下,芯片VBAT管脚所消耗的最小电流才是底电流,在测试底电流是一定要注意进入Deepsleep时才能进行.
+参考FAQ: FAQ108392
+### 问题: 怎么测试WCDMA手机的平均待机电流？
+解决方案: 从手机开机开始测试,开机后,不进行任何操作,待屏幕熄灭后,静态等待5分钟后,测试VBAT管脚所消耗的电流. 测试时注意:1. 屏幕保持黑屏. 2.不操作手机. 3.放在信号较好的网络环境中测试,因为网络环境差时会经常重选,导致不能正确的反应手机待机电流.
+参考FAQ: FAQ108394
+### 问题: 如何将nv修改为支持cpc的
+解决方案: 需要修改nv file,将其中的dpcch_dtx_supported/slot_format4_supported/enhanced_fdpch_supported都修改为1即可.
+参考FAQ: FAQ108404
+### 问题: SC6531E平台是否支持A5/1，A5/3，GEA1，GEA2，GEA3这几种加密算法？应如何验证？
+解决方案: 6531E平台支持A5/1,A5/3,GEA1,GEA2,GEA3这几种加密算法. 验证A5/1,A5/3可测试GCF case 26.6.8.1. 验证GEA1,GEA2,GEA3可测试GCF case 44.2.5.2.1.
+参考FAQ: FAQ108485
+### 问题: Simba工具的LTE综测能否支持Signal模式？
+解决方案: Simba工具是支持LTE Signal综测的,但需要手动增加Signal测试项. 添加LTE Signal测试项方法如下图:
+参考FAQ: FAQ108522
+### 问题: handover到w的频点
+解决方案: 搜索关键字:"prepare hho inter 3 stage,DL_UARFCN= ",即可从对应的log中找到频点及小区信息
+参考FAQ: FAQ108534
+### 问题: 9820E平台锁卡，能否通过fota升级，去除锁卡功能
+解决方案: 如果使用的是simlock V2方案(通过直接配置NV的方式配置simlock数据),在FOTA升级的时候将NV配置成simlock关闭,并且不备份simlock相关NV. 如果使用的是simlock V5/V6安全方案(通过配置simlock.xml来配置simlock数据),则需要通过FOTA升级更换modem为不支持simlock安全方案的版本.
+参考FAQ: FAQ108554
+### 问题: 云sim种子卡的数据业务何时可用？
+解决方案: 云sim的数据业务何时可用? LW形态的云sim产品,如果只插入一张实体卡,实体卡的数据业务随时可用;如果实体卡和云卡都存在,实体卡数据业务仅仅在鉴权时可用,云卡负责其他所有数据业务. LL形态的云sim产品,实体卡和云卡的数据业务根据用户选择来决定.
+参考FAQ: FAQ108559
+### 问题: 不同运营商VoLTE配置差异如何处理？
+解决方案: NV重构前的版本: 不同运营商的VOLTE差异在代码中配置好,在开机初始化的时候,会根据当前注册网络的plmn,对相关变量进行初始化,与网络进行适配,以满足不同运营商的VOLTE差异处理. NV重构后的版本: 针对不同国家不同运营商的VoLTE的差异,终端有一套deltaNV进行适配. 在开机的时候,终端会根据注册网络的plmn,加载对应网络的NV参数,与网络进行适配,以满足不同运营商的VOLTE差异处理. 不同运营商的VOLTE差异处理根据我们之前的全球场测摸底和其他客户的反馈情况,都已在NV配置好,一般不需要客户再进行特殊配置. 如果有陌生网络或网络变化需要重新适配的差异,请您在发现问题时提供log,我们会根据具体情况重新提供NV进行适配.
+参考FAQ: FAQ108564
+### 问题: 什么是IMEI？ IMEI是如何组成的？
+解决方案: 全称是:International Mobile Station Equipment Identity国际移动台设备识别码,用于唯一的识别一个移动台设备,一般读写于手机内存中.它也是该手机在厂家的"档案"和"身份证号".它是一个15位的十进制数字,其构成为: 　 TAC(6位数)＋FAC(2位数)＋SNR(6位数)＋SP(1位数) 　TAC:型号核准号码,由型号认证中心分配,一般代表机型; 　FAC:最后装配码,一般表示表示生产厂家及其装配地; 　SNR:序号码,由厂家分配,一般代表生产顺序号; SP:通常是"0",目前暂备用.
+参考FAQ: FAQ108581
+### 问题: 什么是IMSI？ IMSI是如何组成的？
+解决方案: IMSI,International Mobile Subscriber Identity,通俗理解:(U)SIM卡号 国际移动用户识别码,国际上为唯一识别一个移动用户所分配的号码.IMSI共有15位,其结构如下: MCC+MNC+MSIN,其中: 　 MCC:Mobile Country Code,移动国家码,共3位,中国为460 　 MNC:Mobile Network Code,移动网络码,共2位,比如: 中国移动使用00,02,07 中国联通使用01,06 中国电信CDMA系统使用03 MSIN:Mobile Subscriber Identification Number,共有10位
+参考FAQ: FAQ108583
+### 问题: SD卡格式化为内部存储，数据迁移到SD卡后，拔出sd卡，文件管理器显示为空，没有显示存储设备是否正常
+解决方案: 文档管理器中内部存储访问的是storage/emulated/0(其中0代表主机,如果手机切到其他用户,0会随之变为其他用户的标示) SD卡格式化为内部存储后,可以分两种: 1.数据迁移到SD格式化的内部存储,此时SD卡内部存储会挂载到storage/emulated/0 2.数据迁移到手机原先内部存储,此时手机原先内部存储会挂载到storage/emulated/0 如果是第一种情况时,拔出SD卡.由于对文档管理器来说,可访问的内部存储已经不存在,故在文档管理器中会显示为空. 提示:此时查看设置-存储,还会存在有关SD卡的菜单.如果用户进去菜单,"取消保存"有关SD卡后,就相当于执行第二种操作,文档管理器会显示手机原先内部存储. 综上,SD卡格式化为内部存储,数据迁移到SD卡后,拔出sd卡,文件管理器显示为空,没有显示存储设备是正常现象,不是问题.
+参考FAQ: FAQ108618
+### 问题: NPI常用仪表波形文件下载路径是什么？
+解决方案: 经过展讯NPI实验室验证过的比较稳定的波形可以从以下地址下载; 打开时请在我的电脑文件夹的地址栏输入,不要用浏览器的方式打开. 推荐的仪表版本和波形文件可以从下面FTP地址下载: ftp://ftp.unisoc.com/Instruments •Account : bsptool •Password : 4wg17ckP PS:推荐的仪表版本随NPI工具包的NPI工具包发布说明中有说明,随着时间的推移,会不断更新.
+参考FAQ: FAQ108640
+### 问题: 如何修改STREAM_MUSIC系统默认的音量等级?
+解决方案: 如果需要修改STREAM_MUSIC系统默认的音量等级,例如,需要把STREAM_MUSIC的系统默认音量修改为8级,请修改对应工程\device\sprd\xxx\xxx下面主mk文件,在具有 PRODUCT_PROPERTY_OVERRIDES += 的地方后面添加如下属性值:
+ro.config.media_vol_default=8 即可.
+参考FAQ: FAQ108656
+### 问题: AGNSS SUPL APN 配置说明文档<<APN说明文档ForCustomer >>
+解决方案: AGNSS SUPL APN 配置说明文档<<APN说明文档ForCustomer >>下载地址如下: /ishare/uploadeditor/file/20180817/20180817112807_169.rar 该文档为Telephony团队同事准备,其中对AGNSS SUPL APN 配置说明比较齐全, 可以指导客户关于SUPL APN配置工作
+参考FAQ: FAQ108660
+### 问题: GNSS中TSX晶体方案的手机为什么需要进行TSX校准
+解决方案: TSX方案的晶体对温度较为敏感,为了更好的估计当前晶体的频偏,需要事先知道频偏和温度的对应关系,校准就是为了得出频偏 与温度变化的曲线
+参考FAQ: FAQ108675
+### 问题: GNSS中TSX晶体方案如何判断是否校准成功
+解决方案: TSX校准成功之后会在手机中/productinfo目录下生成txdata.txt文件,该文件包含了校准的温度和频偏.并且在空旷的地方可以搜星定位,如果TSX方案的手机在空旷的地方软件流程正常,硬件性能也正常时,但是不能搜星定位,校准可能是失败的(没有生成有效的txdata.txt文件).当校准过程中出现异常后,可以抓取ylog,gnss log我们可以分析确认. (当前查看/productinfo目录下生成txdata.txt文件,需要userdebug版本通过adb 命令到/productinfo目录中查看该文件, 后续该功能我们会集成到工程模式SGPS中自动确认是否校准成功/productinfo目录下生成txdata.txt文件,发布后会在FAQ中通知出来) adb 命令: adb root adb remount cd /productinfo
+参考FAQ: FAQ108686
+### 问题: LTE上行采用SC-FDMA多址接入方式，主要是基于什么考虑？
+解决方案: 1.显著降低PAPR 小区覆盖:可以在终端有限的功率条件下获得更大的覆盖范围. 终端成本:降低终端对于射频器件的要求. 2.便于和OFDMA相结合
+参考FAQ: FAQ108709
+### 问题: 把GNSS LOG导入Google Eearth看导航轨迹的方法
+解决方案: 在Google Eearth看导航轨迹的首先需要安装Google Eearth导航软件. 把GNSS LOG导入Google Eearth看导航轨迹的方法: 1.打开Google Eearth软件,点击[文件]->[打开] ,进入打开文件界面 2.在打开文件的对话框中选择GPS(*.gpx *.loc *.mps)后,再选择导航中保存起来gnss log(例如:0-cp-gnss-2018-08-16_16-08-19.log) 3.把该gnss log导入Google earth中后可以观看轨迹的情况,轨迹如下图:
+参考FAQ: FAQ108732
+### 问题: 展锐平台机器连接仪器（非现网）测试小区广播，需要特别注意的设置有？
+解决方案: 展锐平台机器连接仪器(非现网)测试小区广播,手机需要关闭数据开关再测试,否则会造成接收不到、接收延时等问题.
+参考FAQ: FAQ108767
+### 问题: 展锐平台机器GCF&PTCRB测试，手机必须要做的设置有哪些？
+解决方案: 展锐平台机器GCF&PTCRB测试,手机必须要做的设置有: 1. 工程模式中CFU(呼叫转移查询)需要设置为Always Not Query. 2. 关闭数据业务(少数如卡协议BIP case需要开启数据测试,再单独打开数据开关,测试完毕后再关闭数据开关). 3. 测试非IMS case需要关闭VoLTE开关. 4. 关闭短信重发.
+参考FAQ: FAQ108768
+### 问题: Google性能测试准备
+解决方案: 1、运行环境 Ubuntu 系统 2、版本准备,需要使用带root的gms-user版本,在user版本开启root权限(原则上使用展锐提供的修改方案,需要联系CPM获取) 3、预制条件和测试方法:关注3PL官网获取最新测试脚本(google不定期会有更新) 4、测试报告:提供各个目录下的summary_results即可,最重要的app相关测试(app安装、启动、卸载)
+参考FAQ: FAQ108777
+### 问题: 过6531C/6531E STK BIP GCF case(27.22.4.27 - 27.22.4.31系列)时有哪些设置？
+解决方案: BIP测试的设置项: 1. 关闭呼叫转移查询功能:输入#*8378#1#打开工程模式主页,App Set -> Call Forward Query -> close 2. 关闭开机获取时间时区的功能:Settings->Phone settings->Date & time->Update time settings->Auto update time 叉掉 3. 设置菜单里开启GPRS service:Settings->Connections->GPRS service 勾选,Settings->Connections->Data connection settings->Always connect 该设置适用于 27.22.4.27 27.22.4.28 27.22.4.29 27.22.4.30 27.22.4.31 这一系列case
+参考FAQ: FAQ108789
+### 问题: USER版本如何抓取modem assert现场？
+解决方案: USER版本中modem reset功能默认是打开的,因此在测试过程中如果遇到modem assert后不能抓到assert现场的log.这会对assert相关问题的分析造成障碍.因此当需要memory dump才能进一步分析modem assert类问题的情况下需要关闭该功能抓取log. 关闭的方式如下:进入工程模式->APP setting->Modem Reset,disable modem reset. 在提供的log中如果在ylog->modem路径下有×××.dmp文件则表示该次测试成功的抓取到了modem assert的现场.
+参考FAQ: FAQ108801
+### 问题: FPLMN和UPLMN设置的相关问题
+解决方案: 1 .物理卡的FPLMN与UPLMN设置是否直接写进卡文件里?是否会更新modem的缓存? 是写进卡文件的,会更改 modem 缓存 2. 物理卡UPLMN在app收到物理卡ready后设置,不保证在起协议栈前还是后,这样是否可以? 可以,UPLMN在协议栈开启前后都可以设置; 3. FPLMN在物理卡注册上后判断当前网络是否在FPLMN,若是则进行设置并重启协议栈,这样是否可以? 如果是FPLMN,就不会注册成功,但是FPLMN可以在协议栈开启前后都可以设置;
+参考FAQ: FAQ108806
+### 问题: 如何查看LTE模式下是否支持C-DRX功能
+解决方案: 我们的UE是支持C-DRX功能的, 这个功能是没有开启关闭的nv 控制开关的, 是否开启C-DRX是网络配置的,如果网络在重配消息中带了诸如如下字段,就是开启了C-DRX; rrcConnectionReconfiguration-r8 radioResourceConfigDedicated mac-MainConfig explicitValue drx-Config setup
+参考FAQ: FAQ108823
+### 问题: 在UE不支持LTE-TDD BAND的情况下，插入移动卡的时候，为什么出现了4G
+解决方案: 移动现在在现网不单纯只有LTE-TDD band (38,39,40,41),也有布 LTE-FDD BAND的情况了,比如 band 3,band 8,所以插移动卡,在UE不支持LTE-TDD BAND的情况下,也是可能驻留LTE网的,驻留到移动的band 3,band 8这些频段的小区.
+参考FAQ: FAQ108827
+### 问题: UE支持LTE/GSM，不支持WCDMA，为何驻留在联通LTE网络时，有时出现打CSFB电话失败
+解决方案: 在联通4G下打电话,是需要经过CSFB过程的,目前联通的网络基站,很多只配置了从LTE CSFB到WCDMA这种配置,不支持从LTE CSFB到GSM,基站在需要做CSFB的时候,发现我们的UE不支持WCDMA,就不会发起CSFB了,所以会出现电话失败; 综上,这类电话失败的原因是"联通网络基站配置策略的原因"+"UE不支持WCDMA";
+参考FAQ: FAQ108826
+### 问题: NV中如何查看UE的CA功能是否打开
+解决方案: 检查CA是否打开,有两个地方需要检查: 1,检查NV中的UE_category,如果UE_category是4,那么CA功能没打开,要打开CA,UE_category必须是6或更高; 2,检查NV中,lte_cfg字段的配置,lte_cfg字段是32bit的,第11位是控制CA打开与否,默认是1,代表打开,0代表关闭 以上两项同时处于打开状态,CA才算开启了,只要有一项是关闭的,CA功能就未开启;
+参考FAQ: FAQ108829
+### 问题: 如何修改CFT默认的程控电源供电电压？
+解决方案: CFT工具默认的程控电源供电电压是3.8V,此电压可以根据实际需求修改,以12V为例说明,操作步骤如下: 1.在Bin\CFTConfig目录下的CFTProject.ini里面找到要使用的project,把DC Output Voltage=3.8改为12V. 2.在Bin目录下的DCSource.ini里面,把Protect Voltage = 6改为14V. 3.打开CFT,选择对应project,点击OK,关闭CFT. 4.再打开CFT,选择同样的project,工具默认的power supply电压已修改成12V. 注意事项: 1.修改完毕后,测试前先运行工具,确认下电源输出电压是否跟工具设置的一致. 2.不能把修改后的工具直接用在供电电压为3.8V的项目上,以免电压过高烧坏主板.
+参考FAQ: FAQ108846
+### 问题: 如何修改Simba默认的程控电源供电电压？
+解决方案: Simba工具默认的程控电源供电电压是3.8V,可以根据实际需求做修改,以12V为例说明,步骤如下: 1.在Simba工具Bin\App\Device目录下DCS.ini里,把Protect Voltage = 6改为14V. 2.Simba的setting界面,把power supply的voltage修改为12V,点击"apply"保存即可. 注意事项: 1.修改完毕后,测试前先运行工具,确认下电源输出电压是否跟工具设置的一致. 2.不能把修改后的工具直接用在供电电压为3.8V的项目上,以免电压过高烧坏主板.
+参考FAQ: FAQ108848
+### 问题: 如何获取WRITEIMEI工具源码？
+解决方案: 可以从Write Imei工具包内获取,目录如下:.....WriteIMEI根目录下\Source文件夹内,可供二次开发.
+参考FAQ: FAQ108851
+### 问题: 如何获取SIMBA测试工具操作使用说明书？
+解决方案: SIMBA工具根目录下DOC文件夹内获取.
+参考FAQ: FAQ108855

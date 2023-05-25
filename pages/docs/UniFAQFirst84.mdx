@@ -1,0 +1,337 @@
+### 问题: 多用户切换过程，子用户（访客）媒体音量和主用户媒体音量互通，相互影响
+解决方案: 此现象是正常现象,google设计如此,以下是google回复: This is WAI and based on a UX decision: when listening music and switching from personal to work profile, the user does not want the music volume to change. 即基于用户体验设计,用户不希望各个用户切换时,媒体音量发生变化,google原生设计如此,不做修改
+参考FAQ: FAQ202377079
+### 问题: MOCOR平台状态栏图标设置左右对齐
+解决方案: 在函数DrawStatusBarCtrl时会调用CalculateItemRect,其中会执行 CTRLSTBDATA_SetItemRect (item_index, item_rect);将item的宽度做限制,因此目前对齐是无效的.
+参考FAQ: FAQ202377080
+### 问题: UMW2651 WIFI SISO/MIMO原理图设计与INI文件配置方法
+解决方案: 1、WIFI SISO电路设计 (1)WIFI/BT Pin:2.4g接分集,5g接主集,如下图 (2)wifi_board_config.ini文件中Section 2需配置如下 [Section 2: Board Config] Calib_Bypass = 1518 TxChain_Mask = 2 //2.4g通路,2表示分集(SISO) RxChain_Mask = 1 //5g通路,1表示主集(SISO) 2、WIFI MIMO电路设计 (1)WIFI/BT Pin: (2)wifi_board_config.ini文件中Section 2需配置如下 [Section 2: Board Config] Calib_Bypass = 1518 TxChain_Mask = 3 //2.4g通路,3表示MIMO RxChain_Mask = 3 //5g通路,3表示MIMO
+参考FAQ: FAQ202377087,含图片
+### 问题: 认证时LTE UE category支持能力填写
+解决方案: 认证测试时,经常需要填写UE category的支持能力,如下表的填写 确认步骤如下: 1、首先用NVAide工具正确配置相关NV逻辑,生成.nv文件. 2、配置完成后生成.nv文件,里面包含了支持能力的相关NV: PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategory=0x4 PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategoryDL=0xff PS_NV_PARAMS\LTE_NV_EUTRA_CUSTOMER_SETTINGS\ueCategoryUL=0xff 3、上面3个NV对应上图excel的3个选项,0xff表示不支持,如果是数字即实际category值 4、影响category值的因素:是否支持UL64QAM或更高的调制方式,是否支持CA等.
+参考FAQ: FAQ202377092,含图片
+### 问题: UMS9620x平台GSM分集强开方式
+解决方案: UMS9620x平台GSM分集动态开启,若要测量单主,单分或者主加分灵敏度,需要在NV中对分集开启的方式进行修改,具体修改位置如下: gsm_div_switch:bit7:bit4定义各band是否支持分集(bit7:GSM850; bit6:GSM900;bit5:DCS;bit4:PCS)置1表示支持 bit3:bit0定义分集打开方式,具体规则如下: 0x0:单主 0x2:主+分 0x3:单分 0x4:主路常开,辅路动态开启 平台默认配置0xF4,即表示主路常开,辅路动态开启 若要测试主+分灵敏度,可修改为0xF2
+参考FAQ: FAQ202377093,含图片
+### 问题: CA的实现方式
+解决方案: 一、CA支持情况: CA可以分为带内CA和带间CA,目前我司SR3595D CA支持情况是:DL支持带内和带间CA,而UL只支持带内连续CA;其中对于FDD+TDD CA,平台只支持FDD做PCC 二、实现方式: 1、带内CA的原理图设计与单CC一样; 2、带间CA可分为以下几种形式, a、可通过分离成多个链路来实现,如HB走一路,L/MB走一路;以下面RF框图举例 Note:如上面框图所示该方案需要采用两个开关,由于LB和MB走同一开关,且开关只有一个ANT口,因此无法满足L+M的CA组合;需根据客户CA需求来设计 b、可通过多ANT口的TXM来实现: Note:上述方案采用带三个Ant口的TXM,可实现L+M.L+H,M+H的CA方案,但是成本较高; c、可通过四工器来实现: Note:上述这种四工器方案目前主要针对同频率范围内的CA,如上图的B1/B3 CA组合.需留意双工器的选型,不能存在频率覆盖的情况
+参考FAQ: FAQ202377097,含图片
+### 问题: 使用飞镶TXM测试GSM带外杂散超标
+解决方案: 出现类似GSM带外杂散超标: 在TX on时候加入PA寄存器配置 Reg0=0x86, 设为 ANT端口与其它TRX端口为隔离状态. NV具体位置,注意tx_sw_on_word_num置0x1,使用GSM频段sw_tx_on_word0中添加寄存器值.
+参考FAQ: FAQ202377100,含图片
+### 问题: TX温度补偿介绍
+解决方案: 一. 各补偿位置对应的温度 查看NV如下位置,确定每个位置对应的温度(-50℃~110℃) 二. 各个制式的温补位置 NR : N78 TX0 为例 LTE : B1 为例 WCDMA : B1为例 GSM : GSM900为例 说明: 1.温补值的填写 正值直接转换成16进制,负值用补码的方式填写, 单位NR LTE为1/8dB,WCDMA为 1/32dB, 2G补偿电压值和功率不是线性关系. 2.NR/LTE/WCDMA 有PDET功能,如果需要对大功率(一般>20dbm为大功率)进行温度补偿,需要配置PDET温补. 注: 1.补偿的单位可能随着版本变化而不同,如发现和本文描述不符 请联系展锐. 2.有PDET功能的制式,APC温补也不可以删除.
+参考FAQ: FAQ202377101,含图片
+### 问题: 单软多硬RF BAND差分NV不生效
+解决方案: 如果使用单软多硬方案,RF BAND差分NV不生效,请自查几个方面: 1.单个hw_ver0x文件中,nv_type\REF_PARAMETER\nv_ver_flag是否配值了,且nv_ver_flag只有大于基线NV默认值, delta NV才能正常写入覆盖原始值. 2.单软多硬方式支持不同的RF band,是通过ADC值来区分硬件版本,不同ADC值通过GPIO输入电压范围来区分. 请测量单板用于Board ID的GPIO输出电平是否符合量程范围,具体信息查看对应平台客户文档:《xxx_Single_Software_For_Multi-Hardware_Application_Note》 注意上下拉电阻必须使用1%精度,保证量产时GPIO电平的精度. 3.使用NV工具合成的delta_nv.bin文件最大支持128KB,超过部分将不生效. 如果超出软件大小限制,或者单软多硬硬件方案超过8个,建议维护两个软件分支.
+参考FAQ: FAQ202377102
+### 问题: GSM天线tuner, 使能GPIO电平含有占空比原因
+解决方案: GSM采用TDMA帧结构,1个帧长4.615ms内包含8个时隙TS0~TS7,其中TS0是控制时隙.CS场景下,TX和RX各选取其中一个时隙进行通话.软件控制tuner仅在TX/RX/控制 时隙上使能,其它时隙不使能,所以示波器测量含有一定占空比波形是正常的,不会影响OTA测试.
+参考FAQ: FAQ202377103,含图片
+### 问题: WCDMA RSCP上报电平强度偏差
+解决方案: 遇到WCDMA UE RSCP上报值与仪器或基站给定的信号电平强度有偏差. 1.如果使用CMW500测试UE RSCP上报值,需要注意仪表显示CPICH RSCP(dBm)=Output Power+PCPICH 举例如图:PCPICH= -3.9dB,Output Power= -106dBm,计算Total Output Power= -106-3.9= -109.9dBm 此时仪表上显示UE RSCP上报范围-109dBm to -110dBm. 2 如果不是仪表参数设置原因,偏差较小时可以通过RSCP温度补偿优化. 3 如果还有问题,需要抓取log具体分析.
+参考FAQ: FAQ202377106,含图片
+### 问题: WCDMA LCD亮屏干扰灵敏度
+解决方案: WCDMA亮屏时LCD的MIPI频率引起某些信道desense干扰,影响灵敏度. MIPI DIS高速差分信号在传输过程中会辐射高频能量干扰无线通信. 展锐平台提供跳频方案用于解决MIPI DSI干扰问题.
+参考FAQ: FAQ202377107,含图片
+### 问题: WCDMA timing error fail 优化方法
+解决方案: 出现WCDMA Timing Error Fail Timing error最好不超过±0.5chip,如果该值偏移过大,会影响手机的handover和register以及掉话率. Timing Error数值如果跳变,请先确认DPDT功能是否关闭.如有屏幕,测试Case时进入工程模式(拨打*#*#83781#*#*),然后选择HARDWARE-ASDIV设置,根据测试需求将WCDMA DPDT固定切换到某个天线. 从Armlog关键字:ParseDPDTConfigIndex, disable 可以确认关闭DPDT. 通过如下NV调整: 以WCDMA band[0]为例,微调tx_hw_delay_adjust[0]数值,单位:1(dec)=1chip. 最终调整效果,以实际测试结果为准.
+参考FAQ: FAQ202377108,含图片
+### 问题: 开启simlock的版本，在擦除NV后是否会解除simlock?
+解决方案: 这个取决于simlock功能是透过哪种方式部署: 1. 透过xml配置NV的方式: 这种方式配置的锁卡,NV中的锁卡状态也会跟着被清空,simlock被关闭,原本不在白名单中的卡就变为可以使用 2. 透过simba部署: 由于efuse被写过,平台在开机时,会从efuse得知锁卡为开启而进行校验.但因为NV(白名单)被清除了,导致所有的卡都是非法卡,手机也就进入了永久锁状态,任何卡都无法使用 3. 透过MMI 代码部署 (宏MMI_SIM_LOCK_TYPE2_UNLOCK_SUPPORT): 在NV被清空后,锁卡状态会被回复为默认的上锁状态,又因白名单是部署在代码中不会被清除,因此只有在白名单中的卡可以使用,也就是回复到出厂的行为 需要注意的是,由于此方案为开源代码,这种情况仅适用于解锁逻辑仍为我司原生方案;如果贵司有修改解锁逻辑,那么需以贵司自行客制的为主
+参考FAQ: FAQ202377109
+### 问题: 展锐各平台Sensor Hub SPI接口支持情况
+解决方案: 在展锐现有平台中,仅有UMS9620系列(UMS9620、UMS9620S、UMS9620T、UMS9620W)和 UMS9230系列(UMS9230、UMS9230H、UMS9230S、UMS9230T)支持Sensor Hub使用SPI接口连接A+G Sensor (注意:即使这两个系列也不支持Sensor Hub使用SPI接口连接非A+G Sensor). 选用SPI时需要注意以下条件,能被AP控制的SPI则可以映射到CM4上(也即是能被AP控制的SPI可以被Sensor Hub控制) 对于其他平台(例如UMS512、UMS312、SC9863A/A1等),均不支持Sensor Hub使用SPI接口控制外部Sensor. 原因:对于这些平台,CM4代码空间有限,因此无法支持. 备注:以上展锐所有平台没有全部列出,但是该词条适用于展锐当前全部平台.
+参考FAQ: FAQ202377110
+### 问题: LED灯支持的最大电流如何查看
+解决方案: led支持的最大电流可通过闪光灯规格书进行查看,以SJ-TC1016QNX为例. 该led灯支持的最大电流为1000mA,则flash电流进行配置时,要小于1000mA,否则有烧坏led灯的风险.
+参考FAQ: FAQ202377116,含图片
+### 问题: FLASH电流和TORCH电流如何设置
+解决方案: FLASH电流和TORCH电流设置,以AW3641E为例. FLASH电流:FLASH电流由RSENSE和RSET共同确定,RSET=56kΩ,RSENSE=0.22kΩ,IFLASH=(1.26V/RSET)*10.2k Ω /RSENSE,最大1A. TORCH电流:TORCH电流只和RSENSE有关,ITORCH=47mV/RSENSE,最大不超过350mA. 注意事项:在配置TORCH电流和FLASH电流时,需要优先考虑TORCH电流大小,由此先决定RSENSE的阻值,RSENSE确定后再根据所要设定的FLASH电流换算出RSET阻值.
+参考FAQ: FAQ202377117,含图片
+### 问题: UMS9620系列平台测试关机时候电源下电时序注意事项
+解决方案: 查询UMS9620系列平台搭配的UMP9620的规格书关机时候电源下电时序如下: 但是实际测试时候如果直接通过按下power KEY,然后点击关机,这样测试时候电源掉电会和上图所示的时序有差异,因为这时候关机电源下电没有走硬件掉电的时序. 所以在测试关机时候电源下电时序需要使用adb 命令把UMP9620控制关机下电的寄存器 POWER_PD_HW 的bit0置1,使能PWR_OFF_SEQ_EN,这样测试才是真实的关机电源下电时序. 使能该寄存器的命令如下: adb shell su lookat -s 0x1 0x64422020
+参考FAQ: FAQ202377120,含图片
+### 问题: 如何进入下载（硬件方式进入下载模式和软件进入下载模式）
+解决方案: 硬件方法1:U1TXD脚下拉到地,插USB或按Powekey进入下载模式,无超时 硬件方案2:KEYIN0脚下拉到地,插USB或按Powekey进入下载模式,有16秒超时后走开机流程; 软件方案3:SPLLOADER分区数据为空或破坏,芯片认为需要刷机进入下载模式,可以通过擦除SPLLOADER分区数据,即通过执行adb reboot autodloader命令可以在重启后uboot中执行到erase_spl_enter_download_mode接口,再次重启进入下载模式 对于有at的平台也可以通过AT指令进入下载模式 AT+SPREBOOTCMD="autodloader"
+参考FAQ: FAQ202377122
+### 问题: refout输出WCN时钟的方法
+解决方案: UMP9620侧 WCN侧 平台通过EXT_XTL3_EN与WB_CLK_REQ连接,可通过寄存器TSX_CTRL2,设置EXT_XTL3_EN具备唤醒26M时钟的功能 若要REFOUT2输出WCN时钟,则将该寄存器的bit10 置1(如下图) 假设该寄存器初始值为0x0,则令REFOUT2输出WCN时钟的具体指令为 adb shell su lookat -s 0x400 0x644222f4 注意: 1.0x400为需要修改的寄存器值 0x644222f4为TSX_CTRL2地址 2.要其他refout口输出时钟则修改寄存器值相应位数即可 3.该指令掉电失效,仅供调试使用
+参考FAQ: FAQ202377123,含图片
+### 问题: 如何回读分区
+解决方案: 有些情况下无法开机需要回读分区与正常镜像对比,用于确认是否是分区损坏了,所以就需要知道如何进行回读分区.可以按如下步骤 1. 打开researchdownload工具加载与机器一样的pac,然后只勾选fdl1和fdl2 2. (1)选择Flash Operations,(2)勾选Active Read Flash,(3)选择需要回读的分区,如果需要回读多个分区,则多选,(4)如果选择的分区大小是0xFFFFFFFF,(5)则需要手动调整,可以查看分区实际多大,然后手动填进去 3. 如果是有备份分区,例如uboot_bak、spl_bak等,那么需要手动增加 4. 进入下载,然后就会回读选择的分区了 5. 回读出来的镜像所在的位置在工具对应的路径下 ResearchDownload_R26.22.2101\Bin\ReadFlash
+参考FAQ: FAQ202377124,含图片
+### 问题: 合入单软多硬功能设计之后校准卡顿在AFC
+解决方案: 问题:合入单软多硬设计之后,校准一直卡顿在AFC 原因:晶体类型跟主板采用的方案不匹配,导致校准不能正常进行下去.如下例 主板晶体采用的是32K+TCXO方案,对应的Board ID 0X1 解决方法:Board ID0电阻修改对应的上拉(R0604:NF,R0605:10K) 结论:平台默认设计为TSX方案,不做单软多硬,软件不做时钟检测,所以能够正常校准,当合入单软多硬时软件检测到Board ID0跟硬件设计不匹配就会导致不能正常校准.
+参考FAQ: FAQ202377127,含图片
+### 问题: Simba测试WiFi时channel estimation如何配置？
+解决方案: WiFi channel estimation未开放客制化配置,测试时自动调用Simba设定的配置. 默认配置如下: 802.11b:preamble 802.11g:preamble 802.11a:preamble 802.11n 2.4G:payload 802.11n 5G:payload 802.11ac:payload
+参考FAQ: FAQ202377132
+### 问题: 长短信不同页最大字符数变化问题
+解决方案: => 短信是用的PDU(Protocol Data Unit,协议数据单元)模式,PDU模式收发短信可以使用3种编码:7-bit、8-bit和UCS2编码. 根据协议 GSM23.038 ,一条普通短信(PDU串的用户信息(TP-UD)段)最大容量是140字节,采用GSM 7-bit编码方式 ,可以发送的短消息的最大字符数分别是160(140X8/7). 根据协议GSM23.040 ,而长短信中一条短信PDU串的用户信息(TP-UD)段)最大容量是134字节,采用GSM 7-bit编码方式 ,可以发送的短消息的最大字符数分别是153(134X8/7). 因此,输入第一页短信时,最大字符数为160,进入第二页时(已输入了一个字符)最大字符数变为145 (153x2-160 -1=145),进入第三页(已输入了一个字符)最大字符数变为152 (153 -1=152).这个字符变化是正常现象.
+参考FAQ: FAQ202377134
+### 问题: 随机数生成函数
+解决方案: =>目前平台没有随机数生成接口,可以用C库的函数, 可参考以下代码实现: static uint32 random = 0; srand(SCI_GetTickCount()); random = rand();
+参考FAQ: FAQ202377136
+### 问题: 能否对储存在SIM卡中的联系人进行标记操作
+解决方案: => 手机联系人是存储在NV中,做标记操作,如:设为最喜欢,设为最常用,设为紧急联系人,设为群组,在手机联系人NV中增加一项用于保存标记就可以实现. 但是SIM联系人是保存在SIM卡中的,没有办法在SIM联系人中去增加标记用保存标记,因此不能实现标记操作. 而群组的话,SIM联系人本身是会有一个SIM群组的,但是不能对SIM联系人添加进其它群组.
+参考FAQ: FAQ202377137
+### 问题: 切换滤镜,快速进行拍摄MotionPhoto，拍出的动图有之前滤镜效果帧。
+解决方案: 该问题是正常情况.MotionPhoto是记录拍照前后1.5秒的照片.如果从滤镜A快速切换到滤镜B,并立刻拍照,会将之前滤镜A的预览帧送去编码,导致出现该问题.
+参考FAQ: FAQ202377143
+### 问题: ylog默认设置
+解决方案: Debug版本所有log是默认打开的,AP侧不用修改 CP侧: /device/sprd/mpool/module/vendor/log/slogmodem/mrelease/userdebug/log_settings.xml
+
+修改log_settings.xml文件,将一系列CPlog都设置为off,如:
+
+--  <ps>on</ps>
+++  <ps>off</ps>
+
+也可使用user路径下的该文件将其替换
+参考FAQ: FAQ202377150
+### 问题: Tranceiver供电走线宽度要求
+解决方案: 有客户制作PCB时,询问Tranceiver供电最大电流,以确认供电走线宽度是否满足要求. 目前平台关于RFIC每个供电ball的最大电流没有具体数据,可以通过两种方法确认: (1)与同平台参考机对比,如果线宽≥参考机相同供电线宽,是满足要求的. (2)Transceiver供电电流能力不会大于PMIC对应DCDC/LDO的输出电流能力,按照DCDC/LDO输出电流计算,如果走线宽度可以承载,可以认为满足要求. 举例如下:
+参考FAQ: FAQ202377158,含图片
+### 问题: 耳机录音左右声道信号幅值不一致
+解决方案: 使用CVS录音算法的耳机录音,在调试工具中看到的界面如下: 出现左右声道幅值不一致,可能有以下两个原因: 1>>耳机录音左声道(上方的Analog Gain)中的模拟增益默认设置为30dB(调试参数修改无效),而右声道(下方的Analog Gain)的增益参数修改是有效的,所以 需要将Codec中上下两个Analog Gain都设置为30dB.才能保证左右声道模拟增益一致,如下图: 2>>旧版的CVS录音算法(220910之前版本)中,ADSP中EQ模快如果打开,只会处理左声道信号,对右声道无效,所以会造成左右声道不一致,需要提软件bug将CVS录音算法版本更新到最新版本
+参考FAQ: FAQ202377160,含图片
+### 问题: 大音量录音(CVS录音算法),声音破音失真
+解决方案: 1>>旧版的CVS录音算法(220910之前版本),ADSP中HPF或IIR模快如果打开,会造成录音幅值较高时有明显破音, 需要更新CVS录音算法版本到最新版本(220910之后版本),或关闭HPF和IIR模块. 2>>CVS录音算法中没有ALC模块,如果要限幅,需要打开AGC模块,通过设置Ideal这个值来实现限幅,防止大信号出现削顶破音. 3>>ADSP中的MBDRC模块中的Post DRC这个值为强制限幅,不能设置太小,建议设置为-3~-0.1之间.
+参考FAQ: FAQ202377166,含图片
+### 问题: 5G 使用GPIO PA的配置方法介绍
+解决方案: 按照NV架构,平台支持GPIO和MIPI控制的PA MIPI PA的配置方法参考 NV配置文档 GPIO PA配方法如下,下图为使用NR_RFCTL14控制PA的配置方法 注: PA中MIPI和GPIO的配置相互独立,如果只用其中一种控制,另外一个清零.
+参考FAQ: FAQ202377168,含图片
+### 问题: 如何校准FGU电流采样电阻
+解决方案: 方法如下: ① 在电池的正极和GND之间接4v稳压电源 ② 在电池负极和GND之间接稳压电源,电压设置1V,电流设置1A. ③ 通过log查看流过电池的电流,串口log中charger-manager charger-manager: battery voltage = 3994000, OCV = 3825820, current = 991000 使battery voltage电池电压很接近4v,查看current电流值 例如硬件上贴的fgu积分电阻为20毫欧,如果电流测试值为991000,请配置dts里 &pmic_fgu { sprd,calib-resistance-real = <991000/1000000*20000>; sprd,calib-resistance-spec = <20000>;
+参考FAQ: FAQ202377171,含图片
+### 问题: LINUX系统下如何信令测试BT BLE
+解决方案: 1、首先要确保开机后的端口有WCN AT的端口,如果没有,可以使用以下CP2软件版本. MARLIN2_18A_W23.09.3 MARLIN3_20A_W23.12.6/ MARLIN3E_TRUNK_W23.14.1/ 2、能读取端口后使用串口软件软件发送AT+SPBQBTEST=1 的命令,返回值为ENABLED,即代表进入BT BQB模式. 3、成功后将机器连接到综测仪,按照常规设置要求即可.
+参考FAQ: FAQ202377172,含图片
+### 问题: LINUX系统下如何测试GPS的传导
+解决方案: LINUX系统下如何测试GPS的传导: 只能使用GSS6700/GSS7000作为信号源,使用GNSS TOOL 来测试GPS的各项传导指标.
+参考FAQ: FAQ202377173
+### 问题: USM9117-L不支持EDGE
+解决方案: USM9117-L不支持EDGE,USM9117-L是基于USM9117经过内存裁剪来的,已经把EDGE移除,USM9117支持EDGE..
+参考FAQ: FAQ202377178
+### 问题: 26MHz晶体方案修改注意事项
+解决方案: 26MHz晶体方案修改注意事项 1)nv配置对应修改,NV时钟配置类型为PMIC_TSX,即RF_init_common\Crystal_type_config=0X6,NV时钟配置类型为PMIC_DCXO,即RF_init_common\Crystal_type_config=0X8. 2)硬件opinion也要对应修改.
+参考FAQ: FAQ202377179,含图片
+### 问题: UMS9620 双屏同显和异显的方案一
+解决方案: UMS9620硬件显示通路支持2路MIPI-DSI,实现双屏同显和异显方式一:双MIPI-DSI方案 双MIPI-DSI方案数据通路如下图: 注意: 1)分辨率和双屏的timing需要配置完全一致. 2)可以接2个相同屏幕,同显和异显均支持,也支持合并接1个8lane屏幕. 3)双MIPI-DSI加起来屏幕的宽不超过3360,总带宽不超过3360×1440@60Hz 具体参考文档《UMS9620双屏显示方案介绍V1.1.pdf》 https://unisupport.unisoc.com/file/index?fileid=102468
+参考FAQ: FAQ202377192,含图片
+### 问题: UMS9620双MIPI-DSI硬件方案
+解决方案: UMS9620 有两组DSI(DSI0&DSI1) 支持D-PHY V1.2,2.5 Gbps ,每组最多4 Data Lane. 可以每组DSI 连接一块屏幕,做双屏连接,通常同时点亮一块屏幕.或者接两块相同规格的屏幕,满足最大分辨率帧率,可以支持同显或异显. UMS9620双MIPI-DSI硬件连接图如下: 具体参考文档《UMS9620硬件基带设计指导手册V2.1.pdf》 https://unisupport.unisoc.com/file/index?fileid=101630
+参考FAQ: FAQ202377194,含图片
+### 问题: UMS9620 双屏同显和异显的方案二
+解决方案: UMS9620 双屏同显和异显的第二种方案:MIPI-DSI+DisplayPort MIPI-DSI+DisplayPort分为两种模式: DP(DisplayPort)正常模式 DP Bypass模式 DP正常模式数据通路如下图: DP Bypass模式通路如下: 具体参考文档《UMS9620双屏显示方案介绍V1.1.pdf》 文档编号102468.
+参考FAQ: FAQ202377195,含图片
+### 问题: 修改短信服务中心号码的AT指令
+解决方案: 修改短信服务中心号码的AT指令如下: AT+SPSMSCFG:只适用于该sim卡中不存在smsc的时候 AT+CSCA:通用的AT指令
+参考FAQ: FAQ202377199
+### 问题: multicolor_lcd_enable参数含义
+解决方案: multicolor_lcd_enable为屏幕补光双色温使能开关.固定为0 对于后摄,闪光灯不是屏幕补光,所以multicolor_lcd_enable必须置为0. 对于前摄,multicolor_lcd_enable置为1时,屏幕补光色温会随环境发生变化:预闪会根据色温找到适合的index,但主闪是先根据亮度找到合适的index组,再根据色温匹配合适的index,所以此时预闪和主闪档位可能是不一样的.主闪的色温与预闪不同,预览上反应出来就是会有颜色的变化. multilcden置为0时,预闪和主闪档位及色温是一样的且固定的. 前摄flash标定前,建议设置multicolor_lcd_enable为0,使用单色温补光,理论上这种方式对后续色彩调试也会更友好.
+参考FAQ: FAQ202377203
+### 问题: uart0怎样支持硬件流控
+解决方案: REG_PIN_CTRL2 改为0x60400300.此时ttyS1(uart1控制器)节点对应uart0,支持硬件流控,让ttyS0(cm4 uart)对应uart1 ,cm4不支持硬件流控
+参考FAQ: FAQ202377205
+### 问题: UMS9620 上电时序
+解决方案: UMS9620 上电时序是由UMP9620、UMP9621共同完成.具体的上电时序图如下: 这21路DCDC/LDO 中,绿色标注的3 -7是UMP9621 上电,其他路就是属于UMP9620的上电. 图中有部分信号是芯片内部信号,外部无法测量,包括Band Gap,LDO_EMM_PD,Rst_efs_n,Efs_read_start,LDO_FGU_PD,FGU_SD_RST,FGU_RST_RTC_N,POR_N. 具体参考文档《UMS9620硬件基带设计指导手册V2.1.pdf》 https://unisupport.unisoc.com/file/index?fileid=101630
+参考FAQ: FAQ202377208,含图片
+### 问题: Android GMS设备品牌认证要求
+解决方案: 关于Android版本,android 机器人logo,GMS应用的log使用要求,以及各种logo使用和android文本等需要添加的法律生明,可以参考Google的网站,相关链接如下. 品牌使用要求 https://partnermarketinghub.withgoogle.com/marketing-opportunities/android-13/android-13/whats-new/ 生成品牌法律声明 https://partnermarketinghub.withgoogle.com/tools/legal-line-generator/
+参考FAQ: FAQ202377210
+### 问题: android perf工具用法简单介绍
+解决方案: /system/bin/simpleperf record -g -p <pid> -o /data/perf.data --duration 10 /system/bin/simpleperf report --tids <threadID> --sort dso -i /data/perf.data /system/bin/simpleperf stat -a --duration 5 --per-core 更多用法及其介绍,请执行 /system/bin/simpleperf -h 查看
+参考FAQ: FAQ202377214
+### 问题: 如何查看perfetto trace是否有数据丢失
+解决方案: 在perfetto trace分析工具界面的左侧,点击"Query(SQL)" 在上侧的输入框中输入 select * from stats where name like "%delta%",然后按ctrl + Enter执行,查看结果 在上侧的输入框中输入 select * from stats where name like "%traced_buf_bytes%",然后按ctrl + Enter执行,查看结果
+参考FAQ: FAQ202377215
+### 问题: 如何简单快速生成大量io测试用文件
+解决方案: 在android机器中建立一个脚本文件,输入内容如下: time for i in `seq 512`; do dd if=/dev/urandom of=./$i bs=1M count=1; done; 然后,将脚本文件放置到将生成文件所在的目录,执行脚本,生成文件
+参考FAQ: FAQ202377216
+### 问题: N28 30M带宽灵敏度规范要求
+解决方案: 根据3GPP Release16的规范,N28 30M带宽的灵敏度要求为-78.5dBm+TT(SCS=15KHz)及-78.6dBm+TT(SCS=30KHz),TT表示Test Tolerance ,即允许的测试容限误差,N28为700MHz频段,TT=0.7,因此N28 30M带宽的灵敏度最低要求为-77.8dBm(SCS=15KHz)及-77.9dBm(SCS=30KHz)
+参考FAQ: FAQ202377218,含图片
+### 问题: UMS9117_L平台出现校准pass，但无法注网的情况
+解决方案: 问题描述:客户出现校准均可以pass之后出现LTE/WCDMA/GSM均无法正常注网的情况 问题分析: 1、先确定可以AFC校准pass,保证频偏正常; 2、检查PS NV,排除因Band信息没有配置导致无法注网 3、最终发现是因为以下NV配置错误导致的无法注网: 4、因为UMS9117-L平台LTE只支持Cat1,虽然UE Category配置成0x1;但是ue CategoryDL/ ueCategory UL 配置成0x4和0x5,与前面cat等级不符合,应该配置成0xFF. 问题解决:将ue CategoryDL/ ueCategory UL 配置成0xFF之后即可.
+参考FAQ: FAQ202377220,含图片
+### 问题: TD SCDMA制式支持情况
+解决方案: 后续我司平台均不支持TD SCMDA.
+参考FAQ: FAQ202377221
+### 问题: user版本使用AT命令打开modem to pc的方法
+解决方案: 在user版本打开modem to pc: 1.进入开发者模式,打开usb调试 2.通过sscom打开wcn at口发AT+DIAGOPEN //枚举diag口 3.发送AT指令:AT+SPATCPLOG=1,1 //打开modem to pc,这样就能在logel中通过diag口抓到cplog
+参考FAQ: FAQ202377223
+### 问题: DreamCamera2 App，手势自拍检测不到问题
+解决方案: 一、问题描述 DreamCamera2 App ,横着手掌无法触发拍照. 二、问题答案 目前算法的手势拍照功能不支持横着手掌拍照,支持竖着手掌拍照,且手掌的左右旋转角度小于30度内.手势拍照支持的所有手势如图1.1. 图1.1 手势拍照支持的手势
+参考FAQ: FAQ202377224,含图片
+### 问题: UMS9117平台是否支持LTE band71频段？
+解决方案: 美国运营商T-mobile需要支持LTE band71,UMS9117平台目前已经支持LTE band71频段. 1、modem需要基于FM_BASE_20A_THIN_MODEM_W22.50.4(含此版本或之后版本)验证. 2、具体band71 NV逻辑配置和注意事项,请参考Unisupport上发布的DCC文档"4G平台新增频段LTE Band71注意事项V1.0.pdf" https://unisupport.unisoc.com/file/index?fileid=102991(文档编号)
+参考FAQ: FAQ202377225
+### 问题: 使用白卡修改参数验证虚拟运营商APN加载需要注意什么？
+解决方案: 使用白卡修改SPN,插入手机,仍显示上一个SPN的APN,恢复出厂设置后才显示新写入SPN的APN. 设备识别是否是第一次插入这张SIM卡的唯一标识是IMSI,预置APN的加载仅发生在第一次插入这个设备或者换了不同的SIM卡后. 因此在验证预置APN加载时,如有涉及到SPN/GID变动,请同时修改本张卡的IMSI信息,否则设备会认为SIM卡没有换,不需要重新加载预置APN,仍显示之前匹配好并且存在NV中的预置APN.
+参考FAQ: FAQ202377232
+### 问题: 如何在数据开关关闭的情况下正常收发彩信？
+解决方案: 如客户需要在数据开关关闭的情况下收发彩信,可以通过打开宏 MMS_SUPPORT_IN_GPRSOFF 的方式来实现.需要注意的是,这种实现方式在收发彩信时是不显示数据图标的.
+参考FAQ: FAQ202377234
+### 问题: 如何配置xml白名单，在终端部署simlock锁卡方案后，终端能使用任意sim卡
+解决方案: 部署simlock后,终端开机会执行simlock_verify,如果插入的sim卡不是白名单上的卡,终端会被锁. 按如下步骤即可实现,终端部署simlock锁卡方案后,终端能使用任意sim卡. 1.修改xml白名单参数,关闭simlock锁,参数配置如下: 1.1.<CUSTOMIZE_DATA> <support value="0"/> 1.2. <USER_DATA> <simlock_status value="0"/> 2.将新配置的xml文件,转换成加密的bin文件 3.使用工具对终端重新部署simlock
+参考FAQ: FAQ202377237
+### 问题: 如何配置xml文件，使某个运营商的sim卡，在开启锁卡方案的终端上都能使用
+解决方案: simlock锁卡方案在配置网络锁时,需要配置"MCC"和"MNC",两个参数. 在实际使用中会要求某运营商的卡都在白名单上,即sim卡只要符合"MCC"即可. 以中国移动为例,做如下配置即可: MCC=460,MNC=65534 注:65534是0XFFFE转为十进制数的值
+参考FAQ: FAQ202377240
+### 问题: MFBI 功能协议解释
+解决方案: MFBI : Multiple Frequency Band Indicators ,多频段指示功能 当前频段协议划分有些band之间频率有重叠,但信道不一样,所以为区分frequency对应的频段信息,需要UE对如下重叠的band支持MFBI,基站会在SIB 广播消息中下发MFBI信息给UE 重叠的band信息在TS.36.307有总结,具体信息如下
+参考FAQ: FAQ202377249,含图片
+### 问题: Google原生设计设置壁纸逻辑
+解决方案: Google原生设计设置壁纸逻辑: 若预览的壁纸超出当前屏幕大小,则设置的壁纸包括当前屏幕预览区域以及该区域右边的壁纸部分,在主屏幕的表现为跟随桌面页面的滑动而滑动,且设置完后壁纸会被放大.此类壁纸即为滚动壁纸. 若预览的壁纸为当前屏幕大小,则设置的壁纸只包含当前屏幕预览区域,在主屏幕的表现为不跟随桌面页面的滑动而滑动,设置完后壁纸保持和预览一样大小.此类壁纸即为固定壁纸.
+参考FAQ: FAQ202377252
+### 问题: V2(包括SL8541E\SC9863A等)平台是否支持LTE B41 140M带宽？
+解决方案: V2平台NVAide中LTE B41 140M带宽显示灰色(不能勾选),V2平台是否支持LTE B41 140M带宽? V2平台包括SC9820E\SL8521E\SC9832E\SL8541E\SC9863A\UMS312\UMS512\UMS9230等平台. 1、V2平台目前modem都支持B41 100M\120M\140M\194M这四种带宽,Transceiver硬件上也都支持; 2、规划在下一版发布的NVAide中去掉LTE B41 140M灰色部分,修改为可勾选状态; 3、目前临时方案,可通过NVAide选择其它带宽后,手动在NV中修改为140M来解决; NV修改路径如下: LTE_DownloadParam\LTE_download_rf_common\LTE_Band_Support_info\Band_no6\band_reserved\reserved[0]=0x8C(转化为十进制为140).
+参考FAQ: FAQ202377253,含图片
+### 问题: 使用simlock5.0方案，写完imei后能否再重新写imei
+解决方案: Simlock5.0本身方案限制,只允许写一次imei.如果终端已经写过imei,是无法再写新的imei.
+参考FAQ: FAQ202377258
+### 问题: 终端部署simlock后，在校准模式下,如何通过工具将解锁码写到手机中,解锁手机
+解决方案: 在校准模式下可以使用AT+SPCLCK命令解锁. AT+SPCLCK=<fac>,<mode>,<password> 例如解网络锁: AT+SPCLCK="PN",0,"0123456789123456"
+参考FAQ: FAQ202377262,含图片
+### 问题: 如何配置xml白名单文件，使卡槽1插入的sim卡在白名单上且成功驻网后，卡槽2插入任意卡都能使用
+解决方案: 配置XML文件参数dummy2=7,使卡槽1插入的sim卡在白名单上且成功驻网后,卡槽2插任意sim卡都能使用. 扩展: 当配置Dummy2=3,无论卡槽1上sim卡是否驻网,只要卡槽1上sim卡在白名单上,卡槽2插入任意卡都能使用
+参考FAQ: FAQ202377264
+### 问题: UMM9620 USB3.2和 DP复用关系
+解决方案: UMS9620 支持DP1.4,和USB3.2 共用芯片接口,Type-C 输出
+参考FAQ: FAQ202377268
+### 问题: ROTS 8910 1.6 基线的USB 主模式，支持情况
+解决方案: 目前支持USB host模式,支持USB鼠标和键盘,
+USB摄像头没有支持,如果客户有需要,可以自行开发
+参考FAQ: FAQ202377270
+### 问题: 如何查询最新 CellBroadcast Mainline (按地区/国家)符合的规范
+解决方案: 从Android 11 开始 Google已将CellBroadcast功能整合到 Mainline包, 故无法直接修改代码. 详情可以参考官网说明: https://source.android.com/docs/core/ota/modular-system/cellbroadcast#integrate 要查询各地区中全国警报/预警系统规范支持与否, 可如下参考官网(需登入partner帐号)连结中的列表做查询 https://docs.partner.android.com/gms/building/mainline/modules/module-cellbroadcast#full-compliance
+参考FAQ: FAQ202377285
+### 问题: DU 42403运营商 Operamini 浏览器上网
+解决方案: DU 424/03被运营商block,不允许使用代理模式进行上网,而Operamini只支持代理模式.所以,当使用DU 42403 sim卡作为数据卡上网时,选择operamini浏览器无法进行上网.
+参考FAQ: FAQ202377290
+### 问题: 手机联系人数量
+解决方案: 平台默认手机联系人最大数量为2000.如需增大,需要修改相关宏,以增大到3000为例: 在mmipb_commmon.h中, 将#define MMIPB_NV_MAX_RECORD_NUM 2000 改为 #define MMIPB_NV_MAX_RECORD_NUM 3000. 由于手机联系人存储在user nv中,需要将原有的user nv空间增大: 文件Nand_PartTable_128k.c中, 将#define USER_NV_SIZE (32) /* 32 block, 4MB */修改为#define USER_NV_SIZE (40) /* 40 block, 5MB */
+参考FAQ: FAQ202377292
+### 问题: 开机APN下发
+解决方案: 开机驻网时,MMI会向modem侧下发预置的APN信息. (1)需要先抓一份开机log,搜索"MMINV_CONNECTION_APN_INDEX"打印用于确认当前设备下发的驻网及VoLTE使用的APN,其中init_index表示驻网使用的APN的索引,ims_index表示驻VoLTE使用的APN的索引,is_valid表示当前索引是否有效. (2)同时,还可以搜索setpdpcontext(不区分大小写),临近MMINV_CONNECTION_APN_INDEX之上的一条表示该索引对应的apn信息. (3)相关打印可以在文件mmiphone.c中的接口HandleSimReadyInd中找到.
+参考FAQ: FAQ202377293
+### 问题: ROTS关于Timer的说明
+解决方案: Q:osiTimerCreate如果thread传入NULL,贵司是否支持中断定时器?
+
+A:
+Timer类型:
+OSI_TIMER_IN_ISR //null
+OSI_TIMER_IN_SERVICE//0xffffffff
+TIMER_TYPE_THREAD_CB;//timer执行thread
+
+osiTimerCreate如果thread传入NULL
+==》
+表示是ISR Timer
+是由tmr_wq统一来进行管理的而已,执行的回掉在第二个参数注册的function
+
+中断定时器:
+可以通过osiTimerDelete来取消timer,传入创建timer的id即可
+参考FAQ: FAQ202377294
+### 问题: 如何确认彩信使用的User Agent？
+解决方案: 初始准备:带有收/发彩信过程的有 cap 文件的 log . 现以log 2023_05_04_19_06_28_311_armlog 为例进行说明: 1. 打开 2023_05_04_19_06_28_311_armlog 文件夹,找到对应的 cap 文件 2. 通过 wireshark 工具打开 armlog 中的 cap 文件并搜索 mmse 或者 mms 3. 查看 报文中的 User-Agent 字段 如何抓取带有cap包的log? 请在抓取log之前,请保证工程模式中的 Cap Output 处于开启状态,打开方法如下: #*8378#1# -> Para Set -> Tcpip Debug -> Cap Output -> On
+参考FAQ: FAQ202377297,含图片
+### 问题: UMS9230 CPU位数是多少？
+解决方案: Arm A75和A55 都支持64位和32位编码. 都是64位处理器.
+参考FAQ: FAQ202377308
+### 问题: 怎么选择中断GPIO？
+解决方案: CM4是BB内部一个低功耗的ARM处理器,我们用CM4配套的IIC和GPIO来控制那些小的SENSOR,这样可以让主ARM下电来节省功耗,比如待机状态下的计步功能. 如果不用CM4的GPIO而用主ARM的GPIO,功能都能实现,只是无法低功耗了. 其他器件基本都用主ARM控制,都用普通GPIO,只有想要实现低功耗的几个小sensor有必要专用CM4_GPIO.
+参考FAQ: FAQ202377309
+### 问题: WCDMA Transmit on off power的on power偏高，调试方法
+解决方案: Time mask 是开环测试不会调用温补和PDET,发射的功率是按照最大的Prach 功率发射的.在常温及极限条件下测试,都需要调试对应Band的prach功率,无高低温针对Transmit ON OFF Time mask 的位置,位置及修改方式如下:
+参考FAQ: FAQ202377312
+### 问题: 马达驱动的电压范围和寄存器对应的值
+解决方案: 1.8V - 3.3V   (10mV step)
+0x3C - 0xD2    
+
+默认3.0V,对应0xB4
+参考FAQ: FAQ202377313
+### 问题: 如何将设备类型修改为平板
+解决方案: 在device/sprd/sharkl3/uis8581_5h10/uis8581_5h10_Natv.mk增加定义(路径名里的uis8581_5h10需要替换为实际使用的产品型号): PRODUCT_CHARACTERISTICS := tablet,即可将系统的设备类型设置为平板
+参考FAQ: FAQ202377317
+### 问题: 如何从NV中获取4G CAT信息以及CA config
+解决方案: 4G Cat 信息NV中如何查找? [答复]: PS_NV_PARAMS/LTE_NV_EUTRA_CUSTOMER_SETTINGS/ueCategory PS_NV_PARAMS/LTE_NV_EUTRA_CUSTOMER_SETTINGS/ueCategoryDL PS_NV_PARAMS/LTE_NV_EUTRA_CUSTOMER_SETTINGS/ueCategoryUL 4G CA Config 如何填写?在那里查找? [答复]: PS_NV_PARAMS/LTE_NV_EUTRA_CUSTOMER_CA_SETTINGS 若还有不了解的可以提CQ到我司咨询
+参考FAQ: FAQ202377319
+### 问题: 3P3T器件CAN1133N规格书新旧版本逻辑真值表差异
+解决方案: CAN1133N新旧版本Datasheet中的RF control truth table存在较大差异,若有项目使用到该3P3T请注意获取最新版的规格书进行逻辑配置. Rev1.0, Sept, 2020 Rev 1.5, Jul 2022
+参考FAQ: FAQ202377324,含图片
+### 问题: FTV GL_TaskCreate创建线程参数 dStackSize的大小设置咨询
+解决方案: Q:FTV GL_TaskCreate创建线程参数 dStackSize的大小应该如何设置?
+
+A:FTV系统的线程栈最小就是16K,在创建线程时候设置小于该值,底层实际分配也是16K
+aps\_install\usr\include\bits\local_lim.h
+-----#define PTHREAD_STACK_MIN	16384
+dStackSize = dStackSize < PTHREAD_STACK_MIN ? PTHREAD_STACK_MIN : dStackSize;
+err = pthread_attr_setstacksize(&thattr, (size_t)dStackSize);
+创建线程只要不是功能特别庞大,按照目前软件中创建线程的方式指定即可,
+设置太大使用不了那么多,也是浪费memory
+目前主要方法就是参考之前的配置,然后就是做压测
+参考FAQ: FAQ202377346
+### 问题: 9863a平台上打印的眼图以0x656e6464结尾的处理方式
+解决方案: 需要定义RD_DDR_SCAN ,同时CFG_DRAM_TYPE与ddr的类型对应 例如: 在9863a_1h10_32b.h的工程上,扫描ddr4,需要定义RD_DDR_SCAN,并将CFG_DRAM_TYPE 定义成DRAM_LPDDR4
+参考FAQ: FAQ202377348
+### 问题: audio_structure.xml文件中ul_anr_rsv0这个参数的含义
+解决方案: ul_anr_rsv0 是AVC(Auto Volume Controller(自动音量控制器))开关 , Bit0: AVC gain 模块开关 Bit1: AVC HPF 模块开关下行 目前AVC模块暂时没有启用,软件默认是关闭状态(默认值为:0xffe8).开启(比如该值为0xffeb)可能会导致通话杂音问题. 如排除该值导致的通话杂音,请提交bug给我司协助分析.
+参考FAQ: FAQ202377349
+### 问题: OTG 不识别问题分析一
+解决方案: 当我们调试好USB2.0 host 和 device 眼图,结果pass. 同时我们需要测试下USB2.0 otg 功能. 我们可能会碰到otg不识别的情况下,可以从以下几个方向来逐一排查: 1) USB眼图余量太大,可以适当调低USB眼图的眼高,来debug 问题,确认是否有改善. 2)检查USB2.0 通路上是否有阻抗异常? 3)USB2.0 otg vbus 负载能力. 4) USB2.0 握手信号. 这个FAQ ,主要讨论USB眼图余量和眼高. 可以增大TFREGRES,降低眼高,再测试OTG 功能. TFREGRES这个寄存器,在每个平台不一样,具体参考文档《USB20_HS_Host_Mode_Test_SOP_V1.1.pdf》
+参考FAQ: FAQ202377350
+### 问题: A12，A13版本修改omacp代码后如何使之生效
+解决方案: 因为A12,A13版本omacp应用进行了货架化处理,所以修改源码后如果想要使之生效,就需要进行以下操作: A12上面: 修改源码后,make Omacp,生成的Omacp.apk改名为OmacpPrebuilt.apk,替换掉vendor/unisoc_decoupling/OmacpPrebuilt下的OmacpPrebuilt.apk A13上面: 修改源码后,make Omacp,生成的Omacp.apk改名为OmacpPrebuilt.apk,替换掉vendor/sprd/prebuilt/app/OmacpPrebuilt下的OmacpPrebuilt.apk
+参考FAQ: FAQ202377352
+### 问题: LTE case6.6.3.2 共存杂散问题
+解决方案: 1、对于大部分band来说,自身专用的TX saw都可以将带外的杂散抑制掉,因此TX saw是关键,不可以用LPF或带宽更宽的 BPF代替的,必须用本band专用的TX saw. 2、band38比较特殊,其tx saw的选择性不是非常优秀,标称通带和物理通带有一定的gap,而有些杂散正好落在了这个gap内, 导致无法被抑制,恰好协议又有要求.我司平台最初存在band38的共存杂散余量偏小的情况,原因是ADC CLK的混频产物 落到了gap内,现部分平台已经通过修改ADC CLK频率的方式将杂散移到了tx saw的带外,从而能被saw抑制,余量变大. 3、如果遇到band38的共存杂散问题,首先和展锐工程师确认软件版本是否合入了软件修改. 4、如果是其他band的共存杂物问题,首先确认是否有专用的TX saw. 5、如果不属于上面的情况,请提咨询展锐RF工程师
+参考FAQ: FAQ202377356
+### 问题: GSM PS nv 搜网频段和GSM MiPI配置频段要对应
+解决方案: GSM PS nv 搜网频段和GSM MiPI配置频段要对应,如果不对应就会出现assert,如下情况就出现assert,具体如下: GSM PS nv 配置支持GSM4频: GSM mipi switch配置3个频段,GSM900没有用到mipi器件,用的外部GPIO来控制 由于GSM mipi switch中RX_on_word_mun为1,由于支持GSM900,RX_on_word没有配置跟RX_on_word_num为1个有冲突,所以会出现assert.解决方案:GSM900 rx_on_word配置增加TXM TRX通路配置,保证GSM900 RX_on_word都为1个.
+参考FAQ: FAQ202377357,含图片
+### 问题: Camera 原理图设计时通用规则
+解决方案: 各个平台都有Camera 设计指导,以下为UMS312 UMS512 UMS512T UDS710 平台Camera 原理图设计时通用规则: 1 VDDCAMA需要有RC滤波网络,预防水波纹产生. 2 同时工作的camera共用VDDCAMA或者VDDCAMD时,需要预留外置LDO给高像素camera(16M及以上). 13M建议预留,优先预留VDDCAMA. 3 同时工作的camera不要共用MCLK、尽量不共用IIC、模组间需要有硬件帧同步串0欧姆电阻相连.RST、PWD信号不得复用. 4 CSI支持1lane、2lane、4lane模式,按顺序使用.建议<=8M用2lane,>8M用4lane.若只用3lane 可软件CQ确认是否可行.
+参考FAQ: FAQ202072364
+### 问题: 支持TF卡快速下电的平台
+解决方案: UMS312, UMS512, UMS512T, UDS710 平台,支持TF 卡快速下电功能.这些平台通过BB端 GPIO:BUA_TF_DET检测可以实现"百us级"的VDDSD快速开启关闭(如400us,具体结果可参考实测),可以避免TF,SIM卡的多合一卡槽烧SIM卡的问题.不支持快速下电的平台,若使用多合一卡槽,需要加快速下电保护电路避免烧SIM卡.
+参考FAQ: FAQ202072365
+### 问题: 8910DM 8910FF UART2接口可否外接给其他设备用
+解决方案: UIS8910DM UART2(U2RXD U2TXD U2CTS U2RTS):在有BT的产品中,固定与芯片内部BT的UART通信,不能被外设使用,有些小版本有取消掉内部的 BT的UART通信(这些小版本混在不同大版本里,无法示例出),因此在有BT的产品中,要将UART2接口外接用,需要确认软件版本是否可用(软件CQ确认),再将UART2配成UART 口或其他功能口使用.
+参考FAQ: FAQ202072368
+### 问题: SC9863A平台最大支持的RAM和ROM是多少？
+解决方案: SC9863A支持LPDDR4(x)和LPDDR3 LPDDR4(x)最大支持6GB LPDDR3物料限制,最大可以使用4GB ROM支持EMMC,不支持UFS EMMC理论上不限制容量,EMMC实际物料最大为128GB
+参考FAQ: FAQ202072370
+### 问题: SL8521E/EM平台是否支持外扩SPI FLASH？
+解决方案: SL8521E/EM可以外挂在空闲spi上,注意: 1、当前spi接口不支持qspi,需要按照SPI标准方式连接; 2、我们spi io使用1.8V电源,请保证电源匹配; 3、我们spi目前最高速率是48Mbps.
+参考FAQ: FAQ202072371
+### 问题: SC9820E平台支持2GB+16GB的内存吗
+解决方案: 9820E项目建议最大使用512MB内存, EMCP大容量DDR3硬件上与小容量没有区别. 9820E目前软件工程DDR最大是512MB,更大容量内存仍然使用512MB工程. 9820E平台目前验证最大DDR容量为1GB. 可以支持但不推荐9820E使用更大容量的DDR.
+参考FAQ: FAQ202072372
+### 问题: UIS8910FF可以使用uart下载吗？
+解决方案: 串口下载,主板通过串口线连接下载工具即可. 需要在工具选项中Options下勾选Uart Download
+参考FAQ: FAQ202072373,含图片
+### 问题: MTP/PTP等USB功能测试，不建议在UserDebug版本上测试
+解决方案: 尊敬的客户您好, 当您需要针对手机等产品做为device端时的usb功能做测试时,例如您通过usb数据线将手机接在PC机上,然后在手机侧usb功能菜单窗口选取MTP、PTP等功能的测试. 针对以上功能的测试,请您使用user软件版本作为测试pac,而非使用userdebug版本作为测试pac. 原因是: 在google当前架构的原生机制下,受多种因素制约,其底层端口的枚举时间,是不可控的,那么就会存在上层应用服务等待超时的情况,而这种情况,在userdebug版本(因其包含有大量调试信息输出)上则是比较明显的.这样就会存在概率性出现卡换mtp等功能模式失败的情况. 所以,建议使用最终的user版本作为测试pac,不复现即为正常.如果只能使用userdebug版本,那请先关闭adb后,再去测试,看效果如何. 请知悉 非常感谢
+参考FAQ: FAQ202072374
+### 问题: UMP510G5热阻参数
+解决方案: 答:UMP510G5热阻参数是:θjA=36.9 ℃/W,θjB=4.1℃/W,θjC=1.8℃/W.
+参考FAQ: FAQ202072376
+### 问题: 烧录gsi版本后，没有虚拟按键, 是否影响测试
+解决方案: 虚拟按键不起作用是因为treble机制,system无法访问vendor的prop
+qemu.hw.mainkeys : 主要是给qemu也就是虚拟机使用的,所以默认都不会配置.
+
+真机都是去配置默认不显示虚拟导航栏.而Google的GSI使用的是默认值,测试面也反映GSI送测不关注该项目, xts和vts不会受影响.
+参考FAQ: FAQ202072379
+### 问题: 展锐智能机是否有IO速率测试工具
+解决方案: android bench版本较旧,在android10版本上可能存在兼容性问题. 测速建议使用最新版本android bench,推荐使用5.2或以上版本,可从互联网上自行下载. 测速也可以使用展锐MSSV工具中IO测速功能: 从isupport path中搜索mssv可获取MSSV工具.
+参考FAQ: FAQ202072380
+### 问题: 智能手机DDR速率如何计算
+解决方案: 以SC9863 LPDDR3为例,我们clk频率为933MHz,手机DDR为32bit. DDR数据速率为clk的2倍,数据速率为1866Mbps. 不同电脑内存通常使用数据速率坐标称,手机DDR频率,通常指clk频率. 故SC9863 LPDDR3速率: 933×2×32/8=7.464GB/s DDR速率会影响到平台性能,相同平台不同DDR会对平台性能有较大影响. 如UMS512T平台支持LPDDR3 933和LPDDR4(x)1866, 选用两种内存DDR速率最大差异会相差1倍
+参考FAQ: FAQ202072381
+### 问题: UMS312平台支持最大内存和闪存容量是多少
+解决方案: 对于DDR和emmc UMS312平台支持: DDR:LPDDR4/4x最大8GB LPDDR3最大4GB(物料限制) EMMC:通常没有容量限制,目前主流规格容量均可支持.
+参考FAQ: FAQ202072382
+### 问题: SC9863A+SC2721G平台是否支持快充
+解决方案: SC9863A平台搭配的 PMU SC2721G 支持展讯快充SFCP,协议握手通过USB_DP,USB_DM信号线完成. 外部需要增加charger 如2颗BQ25601,一颗作为主充一颗作为辅充.软硬件流程及方案可参考DCC文档: 《UNISOC Fast Charger Customization Software Guide.pdf》, 《UNISOC Fast Charge Application Note V1.1.pdf》.
+参考FAQ: FAQ202072384

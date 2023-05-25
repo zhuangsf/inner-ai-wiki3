@@ -1,0 +1,317 @@
+### 问题: 能否修改SIM卡默认PIN码？
+解决方案: 默认的PIN码在SIM卡出厂的时候已写好,具体内容则由各运营商/厂商决定,同时软件上无法获取默认PIN码值,因此无法修改SIM卡中默认PIN码.
+参考FAQ: FAQ42975
+### 问题: 为何某些情况下百分比累加起来超出了百分之百?
+解决方案: Math类中提供了3中取整方法: Math.ceil(double d) —— 向上取整; Math.floor(double d) —— 向下取整; Math.round(double d) —— 四舍五入,算法为Math.floor(x+0.5),即将原来的数字加上0.5后再向下取整. 例如: Math.ceil(11.3) 结果为 12; Math.ceil(-11.3) 结果为 -11; Math.floor(11.6) 结果为 11; Math.floor(-11.) 结果为 -12; Math.round(11.5)结果为 12; Math.round(-11.5)结果为 -11. 由上面的实例可见,当使用ceil()和floor()方法取整时,很容易出现百分比求和超出或不足百分之百的情况.
+参考FAQ: FAQ43006
+### 问题: 如何查看系统wakelock的状态
+解决方案: 通过查看wakelock节点,能查看到整个系统使用到的wakelock及其状态: 用法: cat proc/wakelocks 解释: count: wakelock被激活次数.如果该数值比较大,说明它处理了大量的事件;该数值比较小则表示花了很长的时间来处理这些事件,或wakelock没有正确释放. expire_count:超时的wakelock的次数. active_since:当前状态下,仍持有锁的wakelock. total_time:wakelock 锁持有的总时间,该时间最重要. sleep_time:wakelock 在系统休眠的时候锁持有的时间. max_time:wakelock单次花费最多的时间. last_change:最后记录的时间.
+参考FAQ: FAQ43025
+### 问题: 如何使用命令行开关wifi
+解决方案: 在4.4上添加了svc这个命令,可以控制一些系统服务 连接上usb后: adb shell svc wifi enable 即可打开wifi adb shell svc wifi disable 即可关闭wifi 状态栏的图标也会随着命令变化.
+参考FAQ: FAQ43050
+### 问题: SC7715cache cache2分区的作用是什么
+解决方案: cache主要在recovery和gms等用作缓存空间 当系统挂载了sd卡,在sd卡上划分一部分空间挂载到cache目录,这样cache空间就会比较大了,而系统内部cache挂载到cache2目录 系统cache大小修改:工具xml cache分区配置,修改时请根据flash空间大小适当分配
+参考FAQ: FAQ43320
+### 问题: 如何避免dialog中的编辑框在输入状态时被输入法键盘覆盖其下方的区域
+解决方案: 通过调用窗口的setSoftInputMode方法,传入WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE参数即可,输入法窗口出现时,dialog会被整体往输入法窗口上方顶. 以PhoneUtils.java中显示USSD内容的dialog为例: newDialog.getWindow().addFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND); + newDialog.getWindow().setSoftInputMode( + WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE); // now show the dialog! newDialog.show();
+参考FAQ: FAQ43176
+### 问题: 如何利用ADB获取中断的状态
+解决方案: 首先,将终端连接到电脑,并进入ADB模式. 有两个路径可以获取,它们之前有所区别. 第一个方法是 cat /proc/interrupts,通过个这方法获取的中断信息包括了当前有哪些中断在工作,在每个CPU上产生的中断次数,以及注册了中断处理例程的设备名称. 第二个方法是 cat /proc/stat,找到以intr标记的行,第一个数是所有中断的总数,后面其它的数值代表一个单独的IRQ信号线的中断次数,从中断0开始.
+参考FAQ: FAQ43175
+### 问题: GPIO和EIC中断如何去抖动
+解决方案: GPIO采用软件方式,会启动Timer来做去抖动(Debounce);EIC支持硬件去抖动,配置相关寄存器即可. 二者在注册中断处理函数时的接口是统一的: BOOLEAN GPIO_PROD_RegGpio ( GPIO_PROD_ID_E id, BOOLEAN direction, BOOLEAN default_value, BOOLEAN shaking_en, uint32 shaking_interval, GPIO_PROD_CALLBACK gpio_callback_fun ) 参数shaking_en指明是否启用去抖动操作(SCI_TRUE为启用),shaking_interval指明去抖动时间(单位毫秒).
+参考FAQ: FAQ43173
+### 问题: Android怎么获取SIM卡2的本机号码？
+解决方案: 默认调用(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)获取sim卡1的对象(兼容原生). 如果是双卡的话可以使用如下: mTelephonyManagers[i] = (TelephonyManager) mContext.getSystemService(TelephonyManager .getServiceName(Context.TELEPHONY_SERVICE, i)); i有以下0,1值配置 //0 == sim1 //1 == sim2
+参考FAQ: FAQ43199
+### 问题: 从T卡验证升级包的方法
+解决方案: 使用make otapackage 命令编译,生成scx15_sp7715XXplus_UUIhvga-ota-XXXXX_Pxxxxxx.zip升级包 1.将此zip包push 到sdcard 卡,并命名为"update.zip"; 2.手机下载上一个版本的软件; 3.下完软件后开机,进入设置->关于手机->系统软件更新; 4.系统升级后重启系统,可查看新版本号.
+参考FAQ: FAQ43183
+### 问题: 如何使用adb 抓取radio/main/events log
+解决方案: 抓取radio log adb shell logcat -b radio -v time >d:\radio.txt 抓取main log adb shell logcat -b main-v time >d:\main.txt 抓取events log adb shell logcat -b events -v time >d:\events.txt
+参考FAQ: FAQ43251
+### 问题: 来电响铃后插入耳机，外放铃声音量发生变化
+解决方案: 来电未插耳机和来电插入耳机,是两种不同的音频模式;音量变化的问题,是由于两个模式下音频参数不一致导致.可以通过调整Headfree和Handsfree模式下的音频增益等参数来改善这个现象.
+参考FAQ: FAQ43243
+### 问题: SC7701是否支持添加自定义AT
+解决方案: SC7701平台AT模块以库的形式发布,代码未开放,所以不支持添加自定义AT
+参考FAQ: FAQ43269
+### 问题: slog默认的存储路径是哪里
+解决方案: slog默认的存储路径在sdcard,可以通过data/local/tmp/slog/slog.conf(userdebug版本)data/local/tmp/slog/slog.conf.user(user版本)查看,如下可知,默认的log路径是在外置的目录下,如若想更改默认的设置只需将external修改为internal即可. #type name value var logpath external
+参考FAQ: FAQ43280
+### 问题: 从T卡验证升级包不成功
+解决方案: 该问题经确认是客户的system分区太小导致,system分区与编译出来的镜像大小差不多. 调大system分区后,验证正常.
+参考FAQ: FAQ43212
+### 问题: 如何通过Java代码调用系统自带的卸载应用程序
+解决方案: 通过如下Java代码可以调用系统的卸载应用程序: Uri uninstallUri = Uri.parse("package:" + packageName);
+Intent intent = new Intent(Intent.ACTION_DELETE, uninstallUri);
+startActivity(intent); 1. 创建指定的Uri,其中带有关键字package,冒号后面是应用的包名 2. Intent为Intent.ACTION_DELETE 这样就可以进入卸载应用程序界面了
+参考FAQ: FAQ43315
+### 问题: GooglePlay登录困难或者无法下载原因之一
+解决方案: 若ro.product.model、ro.product.device、ro.build.product 信息存在空格,就会导致GooglePlay登陆困难或无法下载,所以在修改这些属性值的时候,需要确保不要出现空格.
+参考FAQ: FAQ43331
+### 问题: 耳机检测脚和左声道直连，耳机拔出后，状态栏上还有耳机图标，误识别
+解决方案: 有的耳机槽,耳机检测脚和左声道直连,需要打开宏CONFIG_SND_SOC_SPRD_USE_EAR_JACK_TYPE13=y,关闭CONFIG_HEADSET_STS_POLLING_DISABLED宏
+参考FAQ: FAQ43321
+### 问题: adb下如何通过命令让wifi停止对CP2的影响
+解决方案: adb 用root权限. 1.关掉wpa_supplicant: 使用terminate命令,-i、-p参数依实际情况指定. wpa_cli -iwlan0 -p/data/misc/wifi/sockets terminate 2.卸载wifi网络驱动,停止一起数据发送: rmmod ittiam
+参考FAQ: FAQ43310
+### 问题: 加大屏背光亮度
+解决方案: 设置背光亮度函数sprd_bl_whiteled_update_status() /*parallel mode*/ led_level = (bl_brightness >> 2) & 0x3f; reg_val = sci_adi_read(ANA_REG_GLB_WHTLED_CTRL0); reg_val &= ~(0x3f << 1); reg_val |= led_level << 1; sci_adi_raw_write(ANA_REG_GLB_WHTLED_CTRL0, reg_val); led_level = (bl_brightness >> 2) & 0x3f; 改为: led_level = (bl_brightness >> 1) & 0x3f; 或 led_level = (bl_brightness ) & 0x3f;
+参考FAQ: FAQ43328
+### 问题: MIPI在Escape模式下进行数据传输时的Clock如何产生？
+解决方案: mipi D-PHY 规范指出,MIPI在Escape mode传输数据时是不依赖clock lane的,它采用Spaced-One-Hot位编码方式,把时钟信息编码进Dp和Dn中;通过对Dp和Dn信号进行异或运算可提取clock信号,即LP clock=EXOR(Dp, Dn).因此在用示波器去观察波形时,例如观察MIPI LCD发送command时的数据,只需观察Data Lane 0的Dp、Dn信号.
+参考FAQ: FAQ43296
+### 问题: 如何通过Java代码调用系统自带的应用安装程序
+解决方案: 通过如下Java代码可以调用系统的应用安装程序: Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+startActivity(intent); 1. Intent为Intent.ACTION_VIEW 2. intent指定的类型为application/vnd.android.package-archive以及file格式的uri 3. apkFile是指定apk的文件绝对路径 这样就可以进入安装应用程序界面了
+参考FAQ: FAQ43327
+### 问题: Simlock 的常见类型解释
+解决方案: 当使用SIM LOCK锁卡功能后,在开机的过程中,会去检验SIM卡的对应信息是否匹配 (如MCC,MNC等),如果匹配则正常开机,如果被锁则通过密码解锁后才能使用手机 所有功能,否则手机的与SIM卡相关的通信业务不可用. SIM Lock的5种类型: Network lock Network subset lock SP lock Corporate lock User lock 实际中使用的一般都是Network lock,占据了90%以上
+参考FAQ: FAQ43366
+### 问题: MMI native下调试，UI挂死，电源键无法重启。
+解决方案: 可以通过adb shell命令实现重启与关机: 1.adb root 2.adb shell 进入手机的shell 3.reboot 重启 4.reboot -p 关机
+参考FAQ: FAQ43357
+### 问题: GSM小区重选的触发条件
+解决方案: GSM小区重选的触发条件: 当发生以下情况时,将触发小区重选 1、 移动台计算某小区(与当前小区属同一个位置区)的C2值超过移动台当前服务小区的C2值连续5秒. 2、 移动台计算某小区(与当前小区不属同一个位置区)的C2值超过移动台当前服务小区的C2值与小区重选滞后值(CELL_SELECTION_HYSTERESIS)之和连续5秒 3、 当前服务小区被禁止 4、 MS监测出下行链路故障 5、 服务小区的C1值连续5秒小于0
+参考FAQ: FAQ43370
+### 问题: 安装gms后,开机设置向导如何去掉
+解决方案: 不加入setupwizard.apk即可 \vendor\sprd\partner\google\products\gms.mk PRODUCT_PACKAGES += \ -- --SetupWizard \ setupwizard.apk 第一次开机时会做位置咨讯,应用备份等的同步,若跳过, 有些google服务器需要的信息无法及时获取,第一次login时,可能会同步比较长时间.
+参考FAQ: FAQ43376
+### 问题: 去掉未存联系人挂断电话后弹出是否保存的提示框
+解决方案: 去掉InCallActivity.java里面的以下两个方法 showSaveContactActivity(),并同时去掉调用此方法的地方:InCallPresenter.java里面的onCallDisconnectedTimeOut() checkNumberIsShouldBeSave(),并同时去掉调用此方法的地方:CallCardFragment.java里面的setPrimary()
+参考FAQ: FAQ43378
+### 问题: 开启自动闪光灯
+解决方案: 目前7715平台默认关闭了自动闪光灯 如果要开启,修改 idh.code\vendor\sprd\open-source\libs\libcamera\sc8830\inc\SprdCameraHardwareConfig.h 大概633行,增加一个auto选项 #ifndef CONFIG_CAMERA_FLASH_NOT_SUPPORT {"flash-mode-values", "off,on,torch,auto"}, {"flash-mode", "off"}, {"flash-mode-supported", "true"}, #else /*{"flash-mode-values", "off"},*/ /*{"flash-mode", "off"},*/ {"flash-mode-supported", "false"}, #endif
+参考FAQ: FAQ43379
+### 问题: Android程序内置APK，so库文件是否也需要内置？
+解决方案: Android程序内置APK,so库文件是否也需要内置? 1. 内置到/system/app的apk文件,so库文件也需要内置到/system/lib 2. 内置到/data/app的apk文件,so库文件不需要内置
+参考FAQ: FAQ43393
+### 问题: 只有开启数据连接时才显示示G、E等信号标识
+解决方案: 解决方案: 当数据连接关闭时,不显示当前网络类型图标. 代码修改: 定位到\frameworks\base\packages\SystemUI\src\com\android\systemui\statusbar\policy\NetworkController.java的refreshViews方法,然后按照下面修改即可(增加一句话). // Now for things that should only be shown when actually using // mobile data. if (mDataConnected[phoneId]) { ... } else { mMobileActivityIconId[phoneId] = 0; mDataTypeIconId[phoneId] = 0;//add for SPCSS00111142 } 备注: 这个是联通入库的要求,如果贵司的客户需要过联通入库,请不要合入这个需求.
+参考FAQ: FAQ43394
+### 问题: MOCOR 版本能打log但打不了自己写的log
+解决方案: 需在主Make里做下面的设置 TRACE_INFO_SUPPORT = TRUE
+参考FAQ: FAQ43396
+### 问题: 待机文件夹图标改成一个不半透的图标
+解决方案: 修改如下: packages\apps\Launcher3\res\drawable-XXXX\portal_ring_inner_holo.png 这个是显示的图标. 由于系统计算folder的图标比一般的应用图标要大, 所有最好是做好的图标比如mdpi是48X48的,做到原来的portal_ring_inner_holo.png里面, 这样不会出现图标被拉大的情况. 在packages\apps\Launcher3\src\com\android\launcher3\FolderIcon.java 中修改 private static final int NUM_ITEMS_IN_PREVIEW = 0; //from 3 to 0
+参考FAQ: FAQ43395
+### 问题: SC7731使用外接充电ic FAN5405 3.0v~3.3v低压充电时电流过低,只有8mA左右
+解决方案: 当3.05-3.4V之间,BB是可以起来的,此时OTG信号被拉低,通过FAN5405 spec可知,此时
+VCHG会被限流在100mA,同时大部分电流被消耗,只有几mA电流充进电池.
+需要将OTG信号上的电阻NC掉.
+参考FAQ: FAQ43406
+### 问题: 智能机过CTA测试，没有自动重拨功能是否有问题
+解决方案: 对于"自动重拨"功能,在功能机上,几乎是CTA测试的必选项,因此功能机上都要保证自动重拨功能.但是,在智能机上,目前CTA实验室没有指定要求增加自动重拨功能,因此,平台智能机上,没有自动重拨功能,且不会影响CTA测试的通过.
+参考FAQ: FAQ43419
+### 问题: android4.4 版本是否支持印度紧急呼叫号码100？
+解决方案: android4.4 版本不支持印度紧急呼叫号码100.
+参考FAQ: FAQ43434
+### 问题: android4.4 紧急呼叫失败后，自动重试打开会重试几次？
+解决方案: android4.4 版本紧急呼叫失败,自动重试功能打开,会重试8次. 如果需要修改,修改EmergencyCallHelper.java中如下定义: public static final int MAX_NUM_RETRIES = 8;
+参考FAQ: FAQ43436
+### 问题: android4.4 紧急呼叫失败后，重试功能打开，重试间隔时间是多少？
+解决方案: android4.4 紧急呼叫失败后,重试功能打开,重试间隔时间是10s. 如果需要修改间隔时间,请修改EmergencyCallHelper.java public static final long TIME_BETWEEN_RETRIES = 10000; // msec
+参考FAQ: FAQ43437
+### 问题: android4.4 版本默认是否打开紧急呼叫自动重拨？
+解决方案: android4.4 版本默认没有打开紧急呼叫自动重拨.
+参考FAQ: FAQ43441
+### 问题: android4.4 如何打开关闭紧急呼叫的自动重拨功能？
+解决方案: android4.4 紧急呼叫的自动重拨功能控制: persist.sys.emergencyCallRetry prop定义为1,开启自动重拨 prop定义为0,关闭自动重拨
+参考FAQ: FAQ43438
+### 问题: 如何在锁屏应用下的自定义类中实现当亮屏时开始执行自己的方法？
+解决方案: 解决方案步骤: 1.在frameworks/base/packages/Keyguard/src/com/android/keyguard下新建一个自定义类 2.在新建类中new KeyguardUpdateMonitorCallback()作为自己类的关于锁屏的一般信息的KeyguardUpdateMonitorCallback ,并重写Callback的onScreenTurnedOn().重写后的onScreenTurnedOff()执行自己要执行自己的方法 3.在自己类的构造函数中传入一个context,并在构造函数中注册这个CallBack以接收有关通用锁屏保护信息的通知 4.在其他服务类中的构造函数中,new一个自定义类,并将服务的context作为参数传入给自定义类. 如在KeyguardViewManager.java中的构造函数中传入.
+参考FAQ: FAQ43447
+### 问题: 为什么eclipse更新adt总是失败
+解决方案: adt更新比较频繁,一年会更新数次,一般情况下新更新是没有问题的.eclipse相对adt比较稳定,一般一年随版本更新而更新一次.adt的安装依赖eclipse中的某些jar包,如果这些jar包没有,则会出现adt不能更新的现象.因此当eclipse变更比较大,新添加一些jar包,adt有时更新是就是基于新的eclipse.这时如果eclipse没有更新,那么新的adt依赖的jar包没有就会出现更新失败的现象.解决办法是将eclipse更新到最新,建议使用eclipse EE版.
+参考FAQ: FAQ43462
+### 问题: 如何获取Android设备电池电量状态
+解决方案: 可以利用BroadcastReceiver机制,获取电池电量变化的ACTION_BATTERY_CHANGED intent,进而获取当前android设备的电池状态. 具体操作步骤: 1. 创建一个监听ACTION_BATTERY_CHANGED事件的intentFilter. 2. 创建一个BroadcastReceiver对象,该对象可以接收broadcast intent. 3. 注册BroadcastReceiver对象来监听ACTION_BATTERY_CHANGED事件. 4. 在BroadcastReceiver对象中,重写onReceive方法,在onReceive方法的传入参数intent里获取需要的电池状态信息. 5. 在生命周期结束时,取消step4中的注册.
+参考FAQ: FAQ43841
+### 问题: bludroid协议栈涉及到那些库文件以及相互依赖关系是什么？
+解决方案: bludroid协议栈涉及到的函数库及其依赖关系: bluetooth.default.so libbt-hci.so libbt-utils.so libbt-vendor.so audio.a2dp.default.so android.hardware.bluetooth.xml:该文件用于控制是否显示蓝牙的设置界面,位于/etc/permissions/目录下 bluetooth.default.so依赖于libbt-hci.so、libbt-utils.so、libbt-vendor.so等动态库.
+参考FAQ: FAQ43514
+### 问题: 怎么自定义路由器端显示的android设备名称？
+解决方案: 一、修改 device/sprd/编译版本/system.prop 在最后一行加入net.hostname=###,所有的符号均为英文字符,###换成你想要的名称.不能加空格. 二、重新编译.
+参考FAQ: FAQ74014
+### 问题: HCI链路控制指令介绍
+解决方案: 主机控制器在建立和保持蓝牙微微网和散射网时,通过链路控制指令来控制与其相连的蓝牙设备的连接.链路控制指令的OGF代码都为0x01,所有链路控制指令的简要描述如下表:
+参考FAQ: FAQ43513
+### 问题: HCI链路策略（Link Policy）指令介绍
+解决方案: 蓝牙主机控制器提供策略调整机制来支持多种链路模式,链路策略指令为主机控制器提供了如何管理微微网链路方法.链路管理器使用链路策略指令来建立和维护蓝牙微微网和散射网.这些策略指令既能改变链路管理器的状态,又能使蓝牙远程设备链路连接发生变化.所有链路策略指令的OGF为0x02.链路策略指令如下表所示:
+参考FAQ: FAQ43525
+### 问题: 主机控制器与基带指令介绍
+解决方案: 主机控制器与基带指令提供了识别和控制各种蓝牙硬件的能力,包括如何控制蓝牙设备、主机控制器、链路管理器及基带,主机可利用这些指令改变本地设备的状态.所有主机控制器和基带指令的OGF都为0x03.主机控制器与基带指令如下图所示:
+参考FAQ: FAQ43534
+### 问题: HCI信息参数指令介绍
+解决方案: 信息参数是蓝牙硬件制造商固化在蓝牙芯片中的有关蓝牙芯片、主机控制器、链路管理器、基带等信息,这些信息是只读的,主机不能修改.信息参数指令的OGF都为0x04.信息参数指令如下图所示:
+参考FAQ: FAQ43543
+### 问题: FFOS原始IDH包编译报错原因
+解决方案: FFOS编译环境建议在ubuntu12.04环境下,首先保证android4.4的代码能编译通过,另外还有autoconf2.13和ccache都已经安装,安装方法: sudo apt-get install autoconf2.13 sudo apt-get install ccache
+参考FAQ: FAQ43538
+### 问题: HCI状态参数指令介绍
+解决方案: 状态参数是有关主机控制器、链路管理和基带当前状态的信息.主机不能修改这些参数(除复位为指定参数),但是主机控制器可以修改它们.所有状态参数指令的0GF都为0x05.状态参数指令如下图所示:
+参考FAQ: FAQ43550
+### 问题: HCI测试指令介绍
+解决方案: 测试指令用于测试蓝牙硬件的功能和设置测试备件.所有测试指令的OGF都为0x06.测试指令如下图所示:
+参考FAQ: FAQ43555
+### 问题: 7701平台 简单查看assert时函数调用流程的方法
+解决方案: 按以下步骤取信息: 1. 将相应出问题的版本的map文件导入Logel工具,如下图所示; 2. 如果有现场,则直接连手机打开assert菜单,输入第8项,则栈信息输出时相应的栈信息为函数名调用流程 如果没有现场,有相应的assert log,则打开文件,相应的assert栈信息输出即为函数名调用流程; 按上步骤能得到我们想要的简单函数调用流程,直观明了;
+参考FAQ: FAQ43566
+### 问题: 如何解决在WINDOWS 7下安装编译环境 RVDS3.1报错(二)
+解决方案: 在windows7安装时,请按以下步骤安装: 1 . 右键打开RVDS安装文件setup.exe,选择属性; 2. 打开兼容性一栏; 3. 勾上"以兼容模式运行这个程序",选择Windows Xp 4. 确定后安装;
+参考FAQ: FAQ43567
+### 问题: 阿拉伯语环境下，通话记录中号码显示错位
+解决方案: 由于阿拉伯语是从右往左书写和阅读的,当系统语言设置为阿拉伯语后,号码显示有时候会显示错位.这时可以在布局文件中指定某一控件的文字显示方向为从左向右android:layoutDirection="ltr",或者在代码中设置setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+参考FAQ: FAQ43558
+### 问题: 蓝牙HCI错误代码表介绍
+解决方案: 当某一指令操作失败时,将返回指令错误原因的错误代码.错误代码长度为1字节,取值范围是0x01~0xFF.各种错误代码如下表所示:
+参考FAQ: FAQ43586
+### 问题: 蓝牙HCI传输层有哪些？
+解决方案: HCI传输层是指蓝牙主机和蓝牙主机控制器之间相连的物理接口.目前蓝牙HCI传输层的物理接口有: 1)通用串口总线(Universal Serial Bus,USB); 2)串行端口(RS232); 3)通用异步收发器(Universa Asynchronous Receiver andTransmitter,UART); 4)个人计算机存储卡国际协会(Personal Computer Memory Card International Association,PCMCIA,PC卡).
+参考FAQ: FAQ43603
+### 问题: [SC7715]7715 Android平台支持的蓝牙协议标准的版本
+解决方案: 蓝牙各个协议版本如下: CORE SPEC 2.1 HFG 1.5/HSG 1.2 A2DP SOURCE 1.2 AVRCP TG 1.4 OPP SERVER/CLIENT 1.0 PBAP SERVER 1.1 PAN NAP 1.0 MAP SERVER 1.1 HID 1.1 HDP SINK 1.0
+参考FAQ: FAQ43604
+### 问题: 7701版本协议Log太多，有时会丢，如何临时过滤Log
+解决方案: 连上Logel工具时,选择option->Log Filter后,可以看到过滤选项配置,配置去掉不想要的模块Log即可.
+参考FAQ: FAQ43600
+### 问题: 蓝牙链路管理协议（lmp）介绍
+解决方案: 蓝牙链路管理协议运行在controller中,蓝牙设备用户通过链路管理协议可以对本地或远端蓝牙设备的链路情况进行设置和控制,实现对链路的管理.
+参考FAQ: FAQ43617
+### 问题: 蓝牙链路管理协议（lmp）的作用
+解决方案: 蓝牙链路管理协议的主要作用如下: 1)设备功率管理; 2)链路质量管理; 3)链路控制管理; 4)数据分组管理; 5)链路安全管理.
+参考FAQ: FAQ43629
+### 问题: 蓝牙链路管理协议（lmp）数据包单元
+解决方案: 蓝牙设备链路管理协议接收到上层的控制信息后,不是向自身的基带部分发送控制信息,就是与另一个设备的链路管理协议进行协商.这些控制信息封装在链路管理协议数据包单元(LMP_PDU)中,格式如下:
+参考FAQ: FAQ43631
+### 问题: 蓝牙链路管理协议（lmp）的协商过程介绍
+解决方案: 设备A向设备B发送协商请求(LMP_PDU Request); 设备B根据自身情况作出接收(LMP_Accepted PDU)或者(LMP_Not_Accepted PDU)的响应(当不接受时,同时给出不接受的原因).
+参考FAQ: FAQ43643
+### 问题: 关闭EDGE上行方法
+解决方案: 若使用了不支持EDGE上行的pa,需要在nv里关闭EDGE上行 修改nv项如下: TD_TIANji2_NV_Type\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs=2 2 :no supp ul 8psk
+参考FAQ: FAQ43640
+### 问题: WCDMA BAND1的闭环功率
+解决方案: 可通过调整WCDMA频段校准的期望值来提高闭环的最大发射功率,此项在NV里面修改,具体修改位置如下: WCDMA_DownloadParam -W_download_params -W_all_tx_compensation_band_sequence -band[0] -max_tx_power 最小单位为1/32 dBm,默认为16进制,如0x2D0代表的功率大小为:720×1/32 dBm=22.5 dBm 需要注意的是,该修改的前提是要考虑与发射相关的射频参数,比如发射电流等,只有这些参数在可接受的范围内才可以进行如上修改.
+参考FAQ: FAQ43679
+### 问题: 如何获取字符串宽度？
+解决方案: 如果需要获取指定字符串的宽度,可以使用接口GUI_GetStringWidth@guifont.c来获取宽度信息.
+参考FAQ: FAQ43685
+### 问题: 蓝牙设备的呼吸模式
+解决方案: 呼吸模式下的从设备能够放宽对ACL链路的要求.主从设备先协商呼吸间隔(Sniff Interval)和呼吸偏移(Sniff Offset).呼吸偏移决定第一个呼吸间隙的时间,在此之后,呼吸间隙随着Sniff Interval周期性出现. 当链路处于呼吸模式时,主设备只能在呼吸时隙开始传输.有两个参数控制从设备的监听行为: 1)呼吸尝试(Sniff Attempt)参数决定从呼吸时隙开始算起从设备必须监听的时隙数; 2)呼吸超时(Sniff Timeout)参数决定从设备在连续收到只包含自己AM_Addr分组的情况下必须监听的额外时隙数.
+参考FAQ: FAQ43682
+### 问题: [SC7715]使用lookat工具控制PA_LDO的状态
+解决方案: 控制PA_LDO的状态是寄存器的ANA_CFG0(0x4003_8640)的第14位,先通过lookat命令获取此寄存器的值(lookat 0x40038640),确认第14位的值,如果不是我们所需要的,可以修改(lookat -s [data] 0x40038640).为了保证不影响其它状态,请将其它位保持不变.
+参考FAQ: FAQ43702
+### 问题: 蓝牙设备的休眠模式
+解决方案: 从设备不要加入信号但仍希望保持跳频同步时,就进入休眠模式.该模式下的从设备放弃蓝牙激活成员地址(AM_ADDR),与微微网间的数据通信分离.休眠模式的从设备再次加入微微网时,就可以不必经过查询与寻呼过程,很快重新进入微微网中.
+参考FAQ: FAQ43706
+### 问题: android 4.4 user版本如何默认开启slog？
+解决方案: android 4.4 平台user版本默认都是关闭slog的,为了测试需要,有时需要在user版本上打开slog. 开启方法: 修改slog配置文件 vendor/sprd/open-source/tools/slog/slog.conf.user .... #control: enable/disable disable .... 修改disable->enable,全编译版本. 说明: disable,默认关闭slog;enable 默认开启slog
+参考FAQ: FAQ43746
+### 问题: android 4.4 如何获取手机SN号？
+解决方案: SN号(serial number)序列号,是download版本后使用工具写入,在android 4.4 保存在AP侧. 获取SN号 可以参考上层工厂测试应用包下的PhaseCheckParse.java类,其中有获得sn的接口: packages/apps/ValidationTools/src/com/sprd/validationtools/PhaseCheckParse.java public String getSn1() { ... String sn1 = new String(stream, SN1_START_INDEX, SP09_MAX_SN_LEN); ... } public String getSn2() { ... String sn2 = new String(stream, SN2_START_INDEX, SP09_MAX_SN_LEN); ... }
+参考FAQ: FAQ43752
+### 问题: 如何修改锁屏界面显示的机主信息和充电信息字体大小
+解决方案: 在hvga版本中由于屏幕有限,在锁屏界面有时需要改小机主信息和充电信息字体大小,这样才能在锁屏界面中容纳更多的东西.在其他版本中有时为了布局的美观也会将字体改大或者改小. 需要修改文件frameworks/base/packages/Keyguard/res/values/dimens.xml中kg_status_line_font_size对应的值. 例如: 修改前: <dimen name="kg_status_line_font_size">20dp</dimen> 修改后: <dimen name="kg_status_line_font_size">12dp</dimen>
+参考FAQ: FAQ43764
+### 问题: 如何获取手机的校准测试信息？
+解决方案: 手机在出厂之前,都会进行校准.校准测试的信息可以通过at命令接口来获取. 在工程模式中有显示结果的界面,入口如下: *#*#83781#*#* ->DEBUG&LOG -> CFT Result 实现方案: AT+SGMR=0,0,3,0 GSM/TD 校准信息 AT+SGMR=0,0,3,1 WCDMA 校准信息 AT+SGMR=1,0,3,3 Lte校准信息 根据不同的产品形态,在"CFT Result"界面会显示GSM/TD/WCDMA/LTE 的校准信息.
+参考FAQ: FAQ43755
+### 问题: HTTP头中的Content-type字段值都有哪些？
+解决方案: HTTP头中的Content-type字段是用来表示网络文件的数据类型的,对上层如何处理所收到数据有着举足轻重的作用,那么到底都有哪些不同的Content-type呢? 可以在如下所示的地址内查看: http://tool.oschina.net/commons
+参考FAQ: FAQ44374
+### 问题: SC7715 如何获取当前服务小区的信息？
+解决方案: 获取当前服务小区的信息,可以沟通at接口来获取,在工程模式中已经提供相关的接口. *#*#83781#*#* ->TELEPHONY ->Netinfo 显示的NCELL 就是当前服务小区 实现方案:at+cced=0,1 第一参数 0 表示查询一次 第二参数 1 表示当前服务小区 返回: +CCED:< mcc >,< mnc >,< Lac >,< Cell id >,< Bsic>,< Arfcn >,< Rxlev >,< Rxqual> mcc : 移动国家号码 mnc : 移动网络号码 Lac :位置区域码 Cell id : 小区号 Bsic : 基站标示码 Arfcn : BCCH 信道号 Rxlev : 接收信号强度(0-63) Rxqual : 接收信号质量(0-7),无效值为 99 测试举例: at+cced=0,1 reponse: +CCED: 460,00,43074,7121,0,10055,142,99
+参考FAQ: FAQ43765
+### 问题: SC7715 如何获取邻近小区的信息？
+解决方案: 厂测过程中,经常需要查看邻近小区的信息.可以沟通at接口来获取,在工程模式中已经提供相关的接口. *#*#83781#*#* ->TELEPHONY ->Netinfo 显示的SCELL 就是临近小区 实现方案:at+cced=0,2 第一参数 0 表示查询一次 第二参数 2 表示邻近小区信息 返回: +CCED:< mcc >,< mnc >,< Lac >,< Cell id >,< Bsic>,< Arfcn >,< Rxlev >,< Rxqual> mcc : 移动国家号码 mnc : 移动网络号码 Lac :位置区域码 Cell id : 小区号 Bsic : 基站标示码 Arfcn : BCCH 信道号 Rxlev : 接收信号强度(0-63) Rxqual : 接收信号质量(0-7),无效值为 99
+参考FAQ: FAQ43785
+### 问题: 反射解析出来的类无法写入data目录下?
+解决方案: 原因:由于data目录下只有system用户才能读写  解决方案:将反射解析出来的类写入应用所在目录,即data/data/应用包名/app_dex.  参考实现代码如下:  File dexOutputDir = context.getDir("dex", 0);     //例如:data/data/com.android.mms/app_dex
+ DexClassLoader cl = new DexClassLoader(szjarPath,dexOutputDir.getAbsolutePath(),szcLibrary, this.getClass().getClassLoader());
+参考FAQ: FAQ43978
+### 问题: 如何修改锁屏界面密码框字体的大小
+解决方案: 有时为了布局的美观会将锁屏界面密码框字体改大或者改小, 需要修改文件frameworks/base/packages/Keyguard/res/layout/keyguard_password_view.xml文件中 <EditText android:id="@+id/passwordEntry" />对应的android:textSize属性的值 例如: 修改前: <EditText android:id="@+id/passwordEntry" ... android:textSize="26sp" ... /> 修改后: <EditText android:id="@+id/passwordEntry" ... android:textSize="22sp" ... />
+参考FAQ: FAQ43789
+### 问题: 如何修改锁屏界面中am/pm字体大小
+解决方案: 有时为了布局的美观需要将锁屏界面的am/pm字体改大或者改小. 需要修改文件frameworks/base/packages/Keyguard/res/values/dimens.xml中bottom_text_size对应的值. 例如: 修改前: <dimen name="bottom_text_size">18sp</dimen> 修改后: <dimen name="bottom_text_size">16sp</dimen> 原因: 锁屏界面中am/pm字体大小的设置是文件frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardStatusView.java中 mClockView.setFormat12Hour(get12ModeFormat( (int)getResources().getDimension(R.dimen.bottom_text_size)));
+参考FAQ: FAQ43791
+### 问题: 如何让状态栏半透明显示？
+解决方案: 参考FAQ41279实现状态栏透明显示后,如果期望状态栏半透明,可按照下面方式修改: 定位到修改frameworks\base\packages\SystemUI\src\com\android\systemui\statusbar\phone\BarTransitions.java的transitionTo方法,然后作如下修改: public void transitionTo(int mode, boolean animate) { + if (MODE_TRANSLUCENT == mode) mode = MODE_SEMI_TRANSPARENT; ... }
+参考FAQ: FAQ43792
+### 问题: 如何让锁屏界面壁纸与launcher的壁纸保持一致？
+解决方案: 定位到\frameworks\base\packages\Keyguard\src\com\android\keyguard\KeyguardViewManager.java的maybeCreateKeyguardLocked方法中: 修改前: Drawable drawable = wm.getDrawable(WallpaperInfo.WALLPAPER_LOCKSCREEN_TYPE); 修改后: Drawable drawable = wm.getDrawable(WallpaperInfo.WALLPAPER_DEFAULT_TYPE);
+参考FAQ: FAQ43941
+### 问题: 蓝牙L2CAP协议分段与重组介绍
+解决方案: 一、分段: L2CAP_PDU在传送到底层协议时将被分段,如果直接位于基带层之上,则分段为基带数据分组(BB_PDU),再通过空间信道传输.如图,将一个L2CAP_PDU分成若干个BB_PDU,在BB_PDU的有效载荷帧头使用了两位的LLID来标定L2CAP_PDU在分段后的起始和后续部分,其中"10"表示起始分段,"01"表示后续分段. 二、重组: 基带协议按顺序发送ACL分组并使用16位CRC码来保证数据的完整性,同时基带还是用自动重传请求来保证连接的可靠性.
+参考FAQ: FAQ43838
+### 问题: Shark和Dolphin平台的DDR变频周期是多少？
+解决方案: DDR变频动作历经:获取DDR loading、计算DDR Freq、DDR SET CLK等过程,这一过程是按照设定polling时间循环执行,Shark平台中polling时间默认设置为100ms,如下: #define SCXX30_POLLING_MS (100) static struct devfreq_dev_profile scxx30_dmcfreq_profile = { .initial_freq = SCXX30_INITIAL_FREQ, .polling_ms = SCXX30_POLLING_MS, .target = scxx30_dmc_target, .. }; polling参数也可以通过polling_interval节点属性来动态修改polling值.
+参考FAQ: FAQ44574
+### 问题: 如何设置彩信大小的限制值
+解决方案: 如下为对应600K的设置,请参考做相应修改,谢谢! 修改MmsConfig.java值 mMaxMessageSize = 600 * 1024 maxTDDownloadLimit = 600 * 1024 修改mms_config.xml值 <int name="maxMessageSize">614400</int> <int name="maxTDDownloadLimit">614400</int>
+参考FAQ: FAQ43943
+### 问题: 蓝牙逻辑链路控制与适配协议（L2CAP）的功能与特性有哪些
+解决方案: 一、L2CAP协议的功能: 如图L2CAP层位于LMP层之上,其主要功能是将基带层的数据分组转换为便于高层应用的数据分组格式,并提供协议复用和服务质量交换等功能.在高层应用开发过程中,开发人员可以通过使用L2CAP层的PDU进行数据传输,而不需要关心底层协议的细节. 二、L2CAP协议的特性 只支持ACL数据传输; 最大传输分组为64kb; 支持高层协议多路复用.
+参考FAQ: FAQ43809
+### 问题: 蓝牙设备L2CAP层间的互操作是怎样的?
+解决方案: 如图,客户端为L2CAP_Request的发起方,而服务器为接收方.Request事件总是返回Confirm行为,而Indication事件不一定返回Response.
+参考FAQ: FAQ43842
+### 问题: 蓝牙L2CAP协议数据传输与信道状态机示例
+解决方案: 如图,蓝牙设备间在L2CAP层上通过一系列的请求-响应进入不同的状态,并完成连接、配置、数据传输与断开过程.
+参考FAQ: FAQ43847
+### 问题: js中的page指令属性ContentType和pageEncoding有什么区别？
+解决方案: 一般HTML文档<meta http-equiv="Content-Type" content="text/html; charset=gbk">标识客户端编码即指定访问服务器浏览器用编码. jsp page指令ContentType和pageEncoding属性完全都是指定服务端对JSP文件进行编译时指定编码方式.这一点Tomcat的work目录或其web容器相应目录中查看就会发现,无论使用ContentType或者pageEncoding编译之后的代码都是一样的,即response.setContentType("text/html;charset=GBK"); 一般建议使用pageEncoding.
+参考FAQ: FAQ44369
+### 问题: 内核驱动模块需要调用静态库的函数接口，如何修改​
+解决方案: 1. 需提供文件 1) 对应的静态库文件(.a文件) 2) 声明库中定义的函数的头文件(.h文件) 2. 修改驱动Makefile,示例如下: 假设静态库为test_lib.a obj-m := drv.o drv-objs := driver.o test_lib.a 3. 在驱动中调用库文件中的函数,并且包含其头文件 假设对应的头文件为test_lib.h #include "test_lib.h"
+参考FAQ: FAQ43888
+### 问题: sim卡网络锁时，相应nv里加入移动网段，但插入移动卡却被锁住的原因
+解决方案: sim 卡任意锁配置后均需打开numlocks. numlocks:设置network locks的个数,其数值大小决定配置锁实际被锁住的网络段数目.比如如下配置: 配置锁为两项,分别对应联通与移动两个网段: locks[0],locks[1];locks[0]为联通网段,locks[1]为移动网段. 由于numlocks=1,此时只有锁配置locks[0],即联通卡网段不被锁住,插卡不需要解锁就可以正常使用;而移动卡网段,即配置locks[1]则会被锁住,如果移动卡要使用locks[1]网段,则要求输入密码,才能使用. 注: 1.不在以上两网段的其他卡同样也会被锁住.在配置网段的同时,一定要注意numlocks的相应配置. 2.其他,像网络子锁,SP锁,集团锁,用户锁原理与网络锁类似.
+参考FAQ: FAQ43923
+### 问题: 如何打开系统中的多用户功能
+解决方案: 系统判断当前设备是否支持多用户模式的依据是配置文件frameworks\base\core\res\res\values\config.xml中的config_multiuserMaximumUsers配置项.其取值为整型,决定着当前设备支持的最大用户上限.默认值为1,即不支持多用户.如需启用多用户,则设置此值 为大于1的值.
+参考FAQ: FAQ43948
+### 问题: 全局手势识别及处理
+解决方案: 系统中已实现相关的框架,在事件分发到应用之前进行截获处理. frameworks\base\policy\src\com\android\internal\policy\impl\SystemGesturesPointerEventListener.java 该文件实现了简单的手势识别处理:从上往下滑动(如全屏时候从上往下滑动调出状态栏)、从下往上滑动、从右往左滑动,可按自己的需求进行扩展. 其动作的处理在frameworks\base\policy\src\com\android\internal\policy\impl\PhoneWindowManager.java中.
+参考FAQ: FAQ44400
+### 问题: uui版本中浏览器资源如何修改？
+解决方案: 在uui版本中浏览器的对应的图片资源都在相应的主题目录下. 以HelloColor主题为例: 如需修改请将/vendor/sprd/UniverseUI/ThemeRes/HelloColor/BrowserRes/res/下的相应dpi图片资源替换.
+参考FAQ: FAQ44360
+### 问题: 如何解决阿拉伯语/波斯语下,界面显示异常的问题
+解决方案: 可以在manifest的application标签添加:android:supportsRtl 取值:true/false 这样就可以打开layoutRtl这个功能.如果当前系统语言是阿拉伯语/波斯语,打开了这个功能的应用的布局就会自动变成从右往左的,但是前提是布局没有写死控件间的位置,建议此情况下使用GridLayout来布局
+参考FAQ: FAQ44096
+### 问题: 如何去掉安全实用工具，安全能力配置，远程数据控制等系统功能
+解决方案: "应用自启管理"(ASA),"远程数据管理"(RDC),"安全实用工具"(PracticalTools) 
+这三项是安全能力3级才需要的apk,如果只需要支持安全能力1级,可以去掉,方法如下. 
+ "安全能力配置"(Permission), "应用自启管理"(ASA),"远程数据管理"(RDC),"安全实用工具"(PracticalTools)
+修改vendor/sprd/open-source/security_support.mk里
+PRODUCT_PACKAGES += \
+Permission.apk \
+framework-se-res.apk \
+ASA.apk \
+RDC.apk \
+PracticalTools.apk
+去掉不想要的apk即可.
+参考FAQ: FAQ44578
+### 问题: 安装程序INSTALL_FAILED_MEDIA_UNAVAILABLE问题解决方法
+解决方案: 使用adb shell命令让手机自己选择安装在哪里.命令如下: adb shell pm setInstallLocation 0 注:不同的setInstallLocation说明: pm setInstallLocation 0 由App自行决定软件能否安装在SD卡 pm setInstallLocation 1 强制全部App安装在ROM内 pm setInstallLocation 2 强制全部App安装在SD卡
+参考FAQ: FAQ44468
+### 问题: 如何查看音频相关的寄存器的值？
+解决方案: 在做功耗问题调试时,常会遇到与audio相关的功耗问题.解决此类问题, 常需要对比与audio相关的寄存器值.可以通过adb查看音频相关的寄存器值. 1、adb root 2、adb shell 3、cat /proc/asound/sprdphone/sprd-codec 这样就可以查看相关寄存器的值了.
+参考FAQ: FAQ44474
+### 问题: SIM2掉网不恢复，飞行模式切换后恢复正常
+解决方案: SIM1是WCDMA的,SIM2是GSM的,在某些地区没有WCDMA的小区广播,而SIM1的WCDMA的小区广播打开会影响到SIM2,导致掉网. 需将WCDMA的小区广播关闭. 即不需用WCDMA的小区广播的地区需将WCDMA的小区广播关闭. 修改NV中的以下项: TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_EM_CFG\is_cbmc_enable=0x0 此值改为0,关闭WCDMA的小区广播.
+参考FAQ: FAQ45315
+### 问题: 视频播放的显示范围是如何设置的
+解决方案: 视频播放的显示范围,大家可以参考framework/base/core/java/android/widget/VideoView.java中的resize()和onMeasure(), 当getHolder().setFixedSize(targetWidth, targetHeight)中的参数改变时,则会调用到onMeasure(),真正设置视频播放的显示范围的方法是调用setMeasuredDimension(width, height);所以当需要改变视频播放的显示范围时,必须使得getHolder().setFixedSize(targetWidth, targetHeight)和setMeasuredDimension(targetWidth, targetHeight)配对使用才能设置成功.
+参考FAQ: FAQ44530
+### 问题: SC7715平台emmc user版本异常关机后开机校验提示如何去掉
+解决方案: eMMC在CRC校验,System调用的时候系统调用本身出错导致无法执行,MocorDroid4.4_3.10_7715_P14.30.2_P1上已经合入此问题的修改,之前的版本需要在device/sprd/scx15/sepolicy/zygote.te 文件最后加一句: allow zygote shell_exec:file { open read write execute execute_no_trans };
+参考FAQ: FAQ44514
+### 问题: 如何设置wifi的channel默认为13
+解决方案: 目前WIFI正常使用功能下无法做到,不过可以使用adb shell 下访问手机通过iwnpi工具操作指定到固定channel如: iwnpi wlan0 set_channel X (x 为具体信道),
+参考FAQ: FAQ44549

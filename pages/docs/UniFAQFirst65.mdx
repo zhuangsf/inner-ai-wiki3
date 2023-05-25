@@ -1,0 +1,319 @@
+### 问题: 为什么处于RRC连接态的UE，在无数据业务一段时间后，会被网络释放连接
+解决方案: 为了UE能更省电,并且基站的空口资源得到最大化的利用,网络侧会维护一个定时器,从网络侧最后一次数据业务结束开始,如果在定时器超时前又有新数据业务,定时器会重置;如果到定时器超时,那么网络会主动下发RRCCONNECTIONRELEASE消息让UE回到idle态.
+参考FAQ: FAQ115419
+### 问题: 如何在modem log中确认是否打开了数据连接
+解决方案: 在modem log的trace中搜索"AT+CGDATA",如果有以下打印,说明打开了数据连接: AT+CGDATA="M-ETHER",1
+参考FAQ: FAQ115429
+### 问题: 如何从log中得知电话业务状态下的频点
+解决方案: 解决在log中如何通过搜索trace,获取电话业务下的频点信息,可以搜索关键字"prepare active multi, ARFCN =" 例如:搜索得到"meas: prepare active multi, ARFCN = 3063, PGC = 45, SearchLocation = 43004",即当前电话业务下的频点是3063
+参考FAQ: FAQ115444
+### 问题: 如何知道激活集小区配置的是DPCH或是数据业务
+解决方案: 我们可以通过trace来获取基站对UE的激活集各小区所配置的信息: 通过搜索trace:"rl_PGC"即可获取到每次激活集更新命令后,各小区所配置的业务信息: rl_PGC: 495 说明该小区ID为495 HS_Serving: 1 说明495小区配了下行DPA业务, 0代表没配DPA EDCH_Serving: 1说明495小区配了上行UPA业务,0代表没配UPA
+参考FAQ: FAQ115461
+### 问题: 理解SRLTE、CSFB和VoLTE方案
+解决方案: SRLTE:Single Radio LTE,俗称单待LTE,是一种单卡双待的方案,很多电信4G手机采用此方案,即终端插一张电信卡可以满足CDMA2000和LTE同时待机,并且发起CDMA2000通话时即断开LTE数据链接. CSFB:Circuit Switched Fall Back Voice over LEGACY 2G/3G (CS),快速语音回落,则是一种单卡单待的方案,终端只能工作在一个网络下,例如工作在LTE下,当有语音来电时,通过回落的方式回到2G/3G网络下工作.多数移动4G手机采用这个方案. VoLTE:Voice over LTE,上层应用IMS协议,下层使用LTE作为承载的一种方案,类似网络电话的这种,简单地说就是打电话也是在LTE上,所以叫VoLTE.
+参考FAQ: FAQ115489
+### 问题: 查看LTE SNR及参照值
+解决方案: SNR:Signal to Noise Ratio,信噪比,通过查看LTE DSP Log中的0xD52D打点,具体参照值: 好: 20 中: 10 差: 5 极差: 负数
+参考FAQ: FAQ115490
+### 问题: android 9.0如何自定义下拉状态栏里的快捷设置的行列数
+解决方案: 在android9.0 中自定义下拉状态栏里的快捷设置的行列数需要修改 frameworks\base\packages\SystemUI\res\values\config.xml里的 quick_settings_num_columns :代表快捷设置的列数 quick_settings_num_rows :代表快捷设置的行数 修改时请注意修改和手机分辨率对应的目录下的config.xml文件
+参考FAQ: FAQ115494
+### 问题: android9.0 如何修改锁屏界面上的日期格式？
+解决方案: 在android9.0上锁屏界面的日期格式定义在 framework/base/packages/SystemUI/res/values/donottranslate.xml里的system_ui_aod_date_pattern, 默认的格式是<item type="string" name="system_ui_aod_date_pattern">eeeMMMd</item>, 修改为需要的格式即可.
+参考FAQ: FAQ115530
+### 问题: android9.0如何调整滑动解锁的距离阀值
+解决方案: android9.0调整滑动解锁的距离阀值,可以修改Z:\9.0_sprdroid9.0_trunk\frameworks\base\packages\SystemUI\res\values\dimens.xml里的unlock_falsing_threshold . 默认值为 <dimen name="unlock_falsing_threshold">80dp</dimen>,可根据需要调整.
+参考FAQ: FAQ115535
+### 问题: SL8521E的GPRS Class等级是多少？
+解决方案: .SL8521E的GPRS Class等级是Class 12.
+参考FAQ: FAQ115545
+### 问题: CBS测试方法
+解决方案: (1)、仪表测试时,客户经常报CBS接收不到,而从log中看是未配置CBS,SIB5码流信息显示该小区不支持CBS.需要客户确认仪表侧已开启CBS功能,且先用对比机测试可以正常接收到小区广播消息,然后环境保持不变,直接使用我司测试机进行测试. (2)、如果客户插入单卡测试,请将数据业务关闭,再进行CBS测试(防止该卡因进行数据业务而无法保持在空闲态,无法收CBS) (3)、如果客户插入双卡测试,请将数据业务切换到不支持小区广播的那张卡上,然后在支持小区广播的那张卡上进行测试.
+参考FAQ: FAQ115576
+### 问题: Simba工具对CMW500配置和版本需求
+解决方案: 所需要的CMW500仪表Lisens对应的测试功能如下: 2G:KM200, KW200 或者 KV120; WCDMA: KM400, KW400 或者 KV120; TDSCDMA: KM750, KW750,KW751 或者 KV120; LTE: KM500, KM550,KW500 或者 KV120; WLAN:KM650/KM651,KW650/KW651; BT:KM610/KM611, KW610 ; GPS: KV620;
+参考FAQ: FAQ115571
+### 问题: WCDMA待机功耗高如何排查？
+解决方案: 1. 看网络配置的PAGING周期是多少,PAGING周期越短功耗越大. 2. 看是否启动了同频邻区,异频邻区,异系统邻区的测量.启动邻区测量越多功耗越大. 3. 看是否因为两个小区信号波动,导致多小区的乒乓重选.重选越多功耗越大. 4. 网络是否配置CBS功能,CBS周期越小,功耗越大.
+参考FAQ: FAQ115602
+### 问题: GSM支持哪些加密算法？
+解决方案: 2g only支持A5/1,A5/2,A5/3; 2g GPRS支持GEA/1,GEA/2,GEA/3;
+参考FAQ: FAQ115621
+### 问题: UE在GSM下打电话期间可以接收短信吗？
+解决方案: UE在GSM下打电话期间可以接收短信,其网络通过SACCH信道将短信发送给用户.
+参考FAQ: FAQ115622
+### 问题: FAT32格式理论最大容量？  单一文件最大容量？
+解决方案: FAT32格式,簇值由32位数表示,其中28位用于保存簇号.引导扇区使用32位字段作为扇区计数,将FAT32卷大小限制为2 TiB(扇区大小为512字节)和16 TiB(扇区大小为4,096字节). FAT32卷上文件的最大可能大小为4 GiB减去1个字节或4,294,967,295(2^32 - 1)个字节
+参考FAQ: FAQ116242
+### 问题: SD卡FAT32格式支持最大容量为32G，是否能支持更大容量？
+解决方案: 我司宣称FAT32格式支持最大容量为32G的原因是:支持"SD2.0规范",SDHC卡,分区格式FAT32,最大容量32GB. FAT32格式更高容量的卡,理论上是支持的,但未经过完整实验验证.
+参考FAQ: FAQ116235
+### 问题: 在9820E平台下，飞行模式下出现约每19秒一次的周期性电流突起的原因是什么？
+解决方案: 在9820E平台中,由于audio和GSM共用一个DSP,导致了软件流程处理上的限制.即GSM DSP不能完成shut down,GSM STC最大只能睡4096帧,对应18.9s(4096*4.615ms).因而在飞行模式下出现周期约19秒的电流突起,此唤醒对功耗的影响较小(小于0.05mA).
+参考FAQ: FAQ115661
+### 问题: 如何控制短信功能不受FDN影响?
+解决方案: 将nv中的feature_switch_2的bit2和bit3配置为0即可 例如默认的feature_switch_2是7,将bit2和bit3配置为0,即将该值修改为1即可
+参考FAQ: FAQ115668
+### 问题: 使用带GMS服务的版本并开启数据连接对功耗有什么影响？在这种情况下的正确测试方法是什么？
+解决方案: GMS全称为GoogleMobile Service,即谷歌移动服务.为手机提供地图,Gmail电子邮件, Android Market(ICS上更改为Play store)等一系列作用于手机上的应用服务. 在开启数据连接且首次联网时,带GMS的版本会发生play store触发后台自动更新或是google search下载语言包的等GSM原生行为,导致持续数分钟待机功耗偏高. 在网络连接不稳定的情况下,后台GMS服务会不断尝试连结google 服务器,GMS长时间持锁,同样导致待机功耗异常. 使用带GMS服务的版本在开启数据连接的情况下进行功耗测试,应在可稳定连结google服务器的环境下进行测试,关闭GMS版本后台bt/wifi scan,并且开机后过一段时间例如30分钟后再开始测试.
+参考FAQ: FAQ115675
+### 问题: WIFI网络的接入步骤
+解决方案: WIFI网络的接入步骤 WIFI网络的接入分为以下4步 1. 扫描 Scanning a.主动扫描 Active scanning b.被动扫描 Passivescanning 2. 认证 Authentication a.开放系统认证 OpenSystem authentication b.共享密钥认证 SharedKey authentication 3. 关联 Association a.关联 b.重新关联 4.连接 Connect 手机通过WIFI连接互联网
+参考FAQ: FAQ115716,含图片
+### 问题: 蓝牙认证BQB内容
+解决方案: 蓝牙认证BQB内容 蓝牙认证即BQB(Bluetooth Qualification Body)认证,只有通过蓝牙技术联盟(Bluetooth Special Interest Group)的BQB认证,才能使用蓝牙字标和徽标 蓝牙认证内容包括5方面: 1.射频(RF)一致性测试; 2.协议(Protocol)一致性测试; 3.配置文件(Profile)兼容性测试; 4.符合性声明; 5.相关技术文档审核
+参考FAQ: FAQ115717,含图片
+### 问题: SC9863A使用自身WCN模块与搭配marlin3模块切换需要注意什么？
+解决方案: 1. 选择对应方案的软件版本 2. WCN RF走线兼容设计中选取对应的方案 3. 尤其要注意GPS_LNA_EN网络也要选取为对应的方案
+参考FAQ: FAQ115730
+### 问题: 耳机推外置功放 音乐或免提通话无声
+解决方案: 所含平台使用耳机推外置PA方案,配置nv对应模拟增益为mute,需要修改为合适的值 需要修改的模式,音乐播放music下handsfree模式,免提通话项目用到的全部免提模式; 注意,Audiotester工具需要使用R6.18.4801及以上版本.
+参考FAQ: FAQ115746
+### 问题: SC6531E客户认证前需要关闭call forward query和时间自动更新功能
+解决方案: feature phone版本: 请连接仪器测试前进行如下设置: 1). 进入工程模式关闭call forward query. 进入工程模式,选择App Set->Call Forward Query->Close 2). 设置GPRS自动附着. Setting->Connections->GPRS Service打勾,Data connection settings->Always connect打勾. 3). 关闭时间自动更新功能. Setting->Phone Settings->Data&time->update time setting设为auto update time 去掉打勾. modem版本: 测试前发送AT+SAUTOATT=1设置开机自动进行GPRS attach.
+参考FAQ: FAQ115751
+### 问题: SC6531E在印度插入AIRTEL的sim卡，拨打100，101，102紧急号码，不能拨通问题
+解决方案: 插入AIRTEL的sim卡,以紧急呼叫的方式拨打100,101,102紧急号码不能拨通. 有些运营商的网络,不支持以紧急呼叫方式拨打紧急号码. 此种情况下,客户需要修改代码,以普通方式拨打此紧急号码.
+参考FAQ: FAQ115752
+### 问题: COB TP的BBAT测试实现(G3控制盒)
+解决方案: 测试原理: COB TP无法通过GPIO方式测试,BBAT模式下测试COB TP需要采用接实际触屏,工具读取单点或两点坐标方式来实现. 单点:项目只支持单点触摸,通过读取单点的X/Y坐标,并判断X/Y是不是预定值范围内 两点:项目支持多点触摸,通过读取两点的X/Y坐标,计算两点的距离,并判断两点距离是否在预定范围内 夹具接线: 由于目前大部分TP驱动设计为当有外部中断时才有响应,如果触摸笔一直点在触屏上则无法上报坐标值,所以需要工具下发读取坐标值的命令时夹具上的触摸笔需要有触摸动作,目前性价比比较大的方案是通过控制盒上的2路5V电压控制电磁铁的开关来带动触摸笔的上下动作. note:触摸笔固定在电磁铁上后不能有左右晃动,只能直上直下,否则会影响坐标值 支持工具: SP_BBAutoTester_G3_R1.0.0002及之后的版本
+参考FAQ: FAQ115780
+### 问题: 状态看信号图标，关闭数据连接时，如何使网络类型(如4G)也一起隐藏
+解决方案: 目前默认关闭数据连接时,网络类型依旧显示,如果需要一起隐藏,请参考以下修改 /vendor/sprd/platform/frameworks/base/packages/SystemUI/res/values/config_ex.xml文件中将 将<bool name="config_alwaysShowRAT">true</bool> 直接改为false即可
+参考FAQ: FAQ115612
+### 问题: Android 9.0版本上如何配置圆角效果
+解决方案: 在android 9.0版本配置圆角效果请参考以下修改, 修改frameworks\base\packages\SystemUI\res\values\dimens.xml里的 rounded_corner_radius:代表四个角的圆角半径;
+ rounded_corner_radius_top:代表顶部两个角的圆角半径,如果和rounded_corner_radius配置不一样,此值生效; rounded_corner_radius_bottom:代表底部两个角的圆角半径,如果和rounded_corner_radius配置不一样,此值生效; 注意:此三个值是用于软件实现圆角效果的,如果项目已经有实体圆角的话不建议配置此三个值.
+参考FAQ: FAQ115851
+### 问题: 什么是单软多硬自适应？
+解决方案: 展锐平台单软多硬自适应,是指一套软件可以自适应多个硬件配置.目前单软多硬自适应可以适应的硬件差异有:时钟方案和RF band信息. 1、时钟方案上 1)硬件上分别有:32K晶体、无32K晶体;2)26M晶体类型是DCXO、TCXO或者TSX; 2、RF band信息存在差异是因为客户手机出售的地区支持的band不一致,通信模块需要知道这些band的差异. 为了区分时钟方案和RF band信息,展锐平台硬件设计了单软多硬方案,即通过若干GPIO组合成board id区分时钟方案,通过ADC贴不同电阻区分RF band信息.基于此硬件方案,就有了软件单软多硬自适应.
+参考FAQ: FAQ115863
+### 问题: SC9863A平台DDR支持哪些频点
+解决方案: SC9863A支持的频点有:160 233 311 400 533 622 800 933 代码查看:chipram/ddr/ddr_init/init/ddrc/r1p0/ddrc_r1p0_lpddrx.c中查看数组ddrc_local_timing_lpddr4和ddrc_local_timing_lpddr3. 通过adb命令查看:adb shell cat /sys/class/devfreq/scene-frequency/sprd_governor/ddrinfo_freq_table
+参考FAQ: FAQ115881
+### 问题: SC9863 DDR驱动能力修改
+解决方案: Path:chipram/ddr/ddr_init/init/ddrc/r1p0/ddrc_r1p0.h 对驱动能力进行修改,配置如下宏的值即可: #define DDR_DRV_CFG 40 //34,40,48,60,80,120
+参考FAQ: FAQ115883
+### 问题: SC9863A处理器每个核的频率分别是多少？
+解决方案: SC9863A 包含了8个A55核心,其中4核心最高频率可达1.6GHz,另外4核心最高频率可达1.2GHz.
+参考FAQ: FAQ115932
+### 问题: 如何实现内存不足时禁止下载
+解决方案: 首先,直接自动关闭手机数据来停止下载的方法是不可取的,因为除了不能下载外,连上网等数据业务也不能工作了. 其次,对于内存不足时禁止下载这个功能,本身也有很多弊端,原因如下: 1.下载分为平台下载和第三方下载,对于平台下载可以采取上述修改方案来实现,对于第三方下载(例如部分chrome下载和其他浏览器下载)平台无法干涉,所以这个功能在某些情况下无法实现. 2.预留空间,从app的角度上是无法控制的,即使不允许下载,剩余空间也会被逐渐消耗,所以禁止下载没有太大意义. 3.空间不足引起的下载失败没有任何提示.所以,修改以后用户体验很差,用户会发现明明有剩余空间却无法下载,还没有任何提示,所以可能会引起客户投诉. 综上,非常不建议实现此功能. 如果客户强烈要求实现,可以考虑在DownloadThread的parseOkHeaders和transferData中,检查剩余存储空间,如果小于限定值抛出STATUS_INSUFFICIENT_SPACE_ERROR.但仍存在上述弊端,仅供参考.
+参考FAQ: FAQ115933
+### 问题: 如何通过命令切换摄像头？
+解决方案: Android9.0的版本上,切换摄像头的命令如下: 主摄:adb shell setprop persist.vendor.cam.id 0 前摄:adb shell setprop persist.vendor.cam.id 1 后副摄:adb shell setprop persist.vendor.cam.id 2(注意后副摄的尺寸,切换之前切忌选择大于副摄本身输出的尺寸,如副摄5M,但选择的尺寸是8M,会导致切换失败) 前副摄:adb shell setprop persist.vendor.cam.id 3(同上,注意前副摄的尺寸).
+参考FAQ: FAQ115953
+### 问题: 在Photos里面如何利用平台景深编辑器编辑景深照片的虚化效果？
+解决方案: camera中拍摄的景深照片,通过photos查看时,右上角会显示景深照片属性Bokeh,如果用户需要利用平台景深编辑器编辑景深照片的虚化效果,请点击左下角第二个按钮即编辑按钮,然后点击Bokeh Editor,再点击Blur picture,进入景深照片编辑界面,此时用户点击图片的某个位置,就可以看到对应的虚化效果.
+参考FAQ: FAQ115984
+### 问题: 平台OTP map版本与规范介绍
+解决方案: 如下是平台OTP 版本\区别\适用范围 版本 区别 使用范围 V0.4 静态分配buffer,客户定制化需追加 9850平台SBS方案 V0.5 与V0.4版本仅双摄数据长度不同 9850平台SBS方案 V1.0 动态分配buffer,方便客户定制化 基本所有平台OTP方案(目前使用平台有SC9853、SC7731E、SC9832E与SC9863A)
+参考FAQ: FAQ116002
+### 问题: 从modem log中如何查看WCDMA制式下的信号强度和信号质量？
+解决方案: (1)在空口消息中的测量报告和层间消息WRCC_WRRC_CELL_LIST_INFO_PRINT中显示的测量值计算方法如下:
+ECNO真实值=(ECNO显示值-49)/2
+RSCP真实值=RSCP显示值-116
+
+(2)在层间消息WL1_WRCC_INIT_MEAS_IND中显示的测量值计算方法如下:
+ECNO真实值=(ECNO显示值/4-49)/2
+RSCP真实值=RSCP显示值/8-116
+
+(3)trace中搜索关键字stored meas result显示的测量值计算方法如下:
+ECNO真实值=ECNO显示值/8
+RSCP真实值=RSCP显示值/8
+参考FAQ: FAQ116060
+### 问题: 如果排帧冲突且都不能反悔怎么办？
+解决方案: 冲突分两种,第一种是模式内部冲突,基本属于异常问题,可以理解是逻辑错误,需要进行修改; 第二种是模式间的,这个属于大层面的冲突,不能说是谁对谁错,解决办法基本是谁看得远,谁去解,避免冲突.
+参考FAQ: FAQ116516
+### 问题: 实网的无线参数设置对待机功耗的影响
+解决方案: 1. 各个通信制式(比如LTE/WCDMA/GSM等),在待机场景,网络会配置DRX周期,其周期不同将直接影响每次待机唤醒的时长和周期,DRX配置的越大,功耗越小.当然,DRX参数的配置需要根据网络部署进行优化,不见得越大越好或越小越好. 2. 在待机场景中另外最常见的是APK类的唤醒,其基本目的是应用软件与其服务器之间的定期同步.每次终端与网络间的同步都需要建立数据连接,并完成业务后,网络释放信道.在此过程中,网络会配置不同的信道参数,比如C-DRX,比如RRC release time等,这些参数都将影响待机过程的功耗. 3. 邻区测量.终端所处网络中的接收信号越好,则需要进行邻区测量的几率就越小,功耗越低.反之,邻区测量越频繁、内容越多,则功耗越大. 4. 搜网,对于信号覆盖不佳或网络基站布置策略等将会导致终端搜索网络或切换网络,也是功耗的主要贡献者.
+参考FAQ: FAQ116338
+### 问题: Android9.0中如何使用adb命令打开或关闭zsl模式
+解决方案: 关zsl: adb shell setprop persist.vendor.cam.zsl false 打开zsl adb shell setprop persist.vendor.cam.zsl true
+参考FAQ: FAQ116115
+### 问题: 如何开启power saving
+解决方案: 可以通过修改NV来开启power saving.
+可以通过修改NV工程PS_NV_PARAMS/NV_PARAM_TYPE_DM_GSM_CFG路径下的power_saving_in_dark_mode_flag NV项即可,0表示不支持power saving,1表示支持power saving.
+参考FAQ: FAQ116172
+### 问题: C1补偿策略
+解决方案: 目前C1补偿策略不区分现网和入库,只区分GSM单模和非GSM单模;
+a.GSM单模的情况是:如果NV工程中分别针对GSM850,EGSM,DCS和PCS的gsm850_thr,egsm_thr,dcs_thr和pcs_thr NV项配置小于6,就是配置多少就补偿多少,如果NV工程中分别针对GSM850,EGSM,DCS和PCS的gsm850_thr,egsm_thr,dcs_thr和pcs_thr NV项配置大于等于6,只补偿6dB.
+b.非GSM单模的情况,如果NV工程中分别针对GSM850,EGSM,DCS和PCS的gsm850_thr,egsm_thr,dcs_thr和pcs_thr NV项配置多少就补偿多少.
+参考FAQ: FAQ116173
+### 问题: 9832A平台无委测试中BT4.0 TX测试方法
+解决方案: 9832A平台无委测试中BT4.0 TX测试adb指令如下: adb root adb remount adb shell chmod 777 /system/bin/bdt chmod 777 dev/ttyS0 bdt enable le_test_mode 2 0 37 0(TX, channel, 包长, pattern type) *切换0/39信道测试需开关机重新启动,重下以上adb指令
+参考FAQ: FAQ116304
+### 问题: 蓝牙地址是唯一的吗
+解决方案: BD_ADDR共48位,分LAP, UAP, NAP三部分.其中UAP与NAP为蓝牙组织分配给制造商的唯一识别码,LAP由制造商内部自由分配,由此来保障设备BD_ADDR的唯一性.
+参考FAQ: FAQ116989
+### 问题: 待机功耗：【周期性凸起电流】飞行模式场景为什么会有26秒左右周期性凸起电流？
+解决方案: 1、26秒左右周期性凸起大电流是SIM卡检测周期,周期性检测SIM卡的在位状态; 2、如果未插卡,则不存在这样的检测周期; 3、因其对整体功耗影响很微弱,可不用关注.
+参考FAQ: FAQ116296
+### 问题: 待机功耗：【周期性唤醒】飞行模式场景为什么会有18.9s周期性唤醒？
+解决方案: 这是18.9s的GSM DSP周期性同步.具体解释如下:由于Audio和GSM DSP绑定造成的软件流程上的特殊处理,按照目前的sleep机制,GSM STC 最大只能睡4096帧,对应18.9s(4096 * 4.615ms),每隔4096 GSM帧(18.9s)需要DSP重新配置下一个周期的sleep,电流图上会隔18.9s定时起来(任何场景都一样,包括飞行模式),对待机的功耗影响<0.05mA.
+参考FAQ: FAQ116295
+### 问题: SL8521E手表项目无法进行MSC 测试
+解决方案: USB CV测试软件包含MSC测试. 手表软件MOCOR5是安卓4.4平台,可以支持MSC测试.(安卓6.0之后无需测试MSC) 但MOCOR5 需要插入microSD卡,并手动设置UMS,然后才能进行MSC测试. 一般儿童手表项目不支持microSD卡,所以不支持MSC测试.
+参考FAQ: FAQ116604
+### 问题: 展锐终端实现的Volte是否符合GSMA IR92规范？
+解决方案: 符合GSMA IR92规范
+参考FAQ: FAQ116319
+### 问题: NV中怎样控制开启和关闭视频通话功能？
+解决方案: (1)开启视频通话功能,将以下两个NV值分别设置为60000和1: port_video = 60000 ipVideocall = 1 (2)关闭视频通话功能,将以下两个NV值都设置为0: port_video = 0 ipVideocall = 0
+参考FAQ: FAQ116320
+### 问题: android P非Go版本，设置显示大小后，launcher中图标位置发生变化是否正常
+解决方案: 非Go版本,在系统设置-显示-显示大小,可以改变手机的显示大小.每次修改显示大小后,Launcher会重新计算当前屏幕区间,并重新适配布局配置,当由大的行列数变为小的行列数后,Launcher会重新计算每个图标的位置,根据算法将其放到最优的位置.因此,这种情况下会出现某些图标位置发生变化的现象. 这是google原生设计,属于正常现象. PS:Go版本只配置了一种profile标签,且图标大小、行列数是不变的,故不存在上述现象.
+参考FAQ: FAQ116384
+### 问题: android P GMS版本，怎么预置待机界面图标
+解决方案: android P GMS非Go版本中的配置文件在如下目录: vendor\partner_gms\apps\GmsSampleIntegration\res_XXXX\xml\partner_default_layout.xml android P GMS Go版本中的配置文件在如下目录: vendor\partner_gms\apps\GmsSampleIntegration\res_XXXX_go\xml\partner_default_layout.xml 其中res_XXXX/res_XXXX_go,请根据项目配置情况确认.
+参考FAQ: FAQ116390
+### 问题: 如何通过NV查看rohc支持的profile和maxcontext
+解决方案: 目前展瑞芯片,rohc只支持profile 0,1,2,4,maxcontext为15 通过nv editor,打开nv project,可搜索关键字rohc,或profile等,可以查看当前芯片支持哪几个profile,max context是多少
+参考FAQ: FAQ116492
+### 问题: 时钟方案的设计
+解决方案: –方案1: TSX+32Kless –方案2: DCXO+32Kless 在实际软件/硬件设计中,通过两个GPIO来实现以上两种时钟方案的区分 NV Crystal (26MHz)类型设置: 1.对于时钟方案,如果软件打开单软多硬功能,NV中的Crystal_type_config 需要设置为0XFFFFFFFF,如下图所示; 表示软件通过识别GPIO/board id来确定时钟类型 2.如果软件没有打开单软多硬, NV中的Crystal_type_config 需要根据当前使用的crystal 类型,设置为相应的值,对应关系如下,软件通过这个值确定时钟类型 0: VC-TCXO; 1: DCXO; 2: TSX; 3: TCXO
+参考FAQ: FAQ116456,含图片
+### 问题: CtsTelephonyTestCases模块fail项如何解决？
+解决方案: 此6条与telephony息息相关,需注意如下预置条件是否满足: 1、sim卡用联通; 2、phone number显示; 3、message》Settings》advanced》打开get sms delivery reports; 4、检查短信的自发自收功能; 5、检查给别的号码发送短信,是否有提示已接收到; 注:测试中常遇到sim卡被禁发短信导致的fail,故CtsTelephonyTestCases模块出现fail项,要再重复检查如上的预置条件.如条件满足,依旧fail,可提交bug给研发分析.
+参考FAQ: FAQ116491
+### 问题: SC7731E、SC9820E、SC9832E和SC9863A是否支持BT双模
+解决方案: BT双模是指同时支持传统蓝牙和低功耗蓝牙,SC7731E、SC9820E、SC9832E和SC9863A都支持
+参考FAQ: FAQ116511
+### 问题: 为什么排帧要提前？
+解决方案: 为什么要提前,如果直接在这一帧做不可以么. 假设没有任何性能瓶颈和硬件限制情况下,是可以的.但是这不是纯数字逻辑,而是涉及硬件操作,比如RF操作,说要去收数据,收数上升沿是需要花费时间的.所以必须要提前. 那么接着问题来了,提前多少合适,这个要区分不同的模式和模式形态,原则是尽量晚排,避免反悔.
+参考FAQ: FAQ116514
+### 问题: 因条件更改排帧需要取消或更改如何处理？
+解决方案: 这里要区分两种情况,一种是已经排下去的帧,无法反悔,只能suspend当前的状态,等该排帧行为结束后,再做更改,常见的有收寻呼等 第二种是可以反悔,提前较多排下去的帧,常见于GSM,反悔后要通知对应各模块,避免异常. 这类条件大概率为突发事件导致,比如一张卡打电话,或者突然进入无网区域,高铁模式等
+参考FAQ: FAQ116515
+### 问题: 排帧需要哪些前提条件？
+解决方案: 任何模式,是不是可以根据自己本模式行为做任意排帧. 答案当然是否定的,还是硬件限制,或者成本考虑,资源只有一套,要串行做,那么就需要拿到仲裁权,只有此时刻拿到了仲裁权才有资格去做事情. 下一节将会说到,仲裁权是如何确认的,又是如何操作的,还有可能发生的问题
+参考FAQ: FAQ116521
+### 问题: 排帧仲裁权的获取原则？
+解决方案: 稍微解释下排帧所谓的仲裁权,不是指当前排帧模式一定要有仲裁权,而是指排帧时刻,由仲裁权模式分配了资源给该排帧模式, 可以是相同的模式,也可以是不同的模式. 举"栗子"说明,当前L有仲裁权,L分配了6ms gap给W去做测量,在这6MS 里面W可以去排帧 再来解释下仲裁权,一般谁模式大谁有仲裁权,谁处于业务态谁有仲裁权,举栗,L+W,L有仲裁权,L+WPS,W有仲裁权
+参考FAQ: FAQ116522
+### 问题: 什么是任务冻结？
+解决方案: 任务冻结是一种在系统休眠或者系统挂起期间控制用户空间进程和部分内核线程的机制.
+参考FAQ: FAQ116526
+### 问题: 【任务冻结】为什么在冻结流程之后，应禁止执行文件系统相关操作？
+解决方案: 1、目前我们没有简单的手段来设置文件系统检查点,因此如果对磁盘上的文件系统数据和/或元数据进行了任何修改,我们就无法将它们恢复到修改之前的状态. 2、每个休眠映像都包含一些文件系统相关的信息,这些信息必须与系统内存状态存储在休眠映像中时的盘上数据及元数据保持一致,否则文件系统将被破坏,这种破坏一般是无法修复的. 基于以上两点,我们需要冻结可能导致在创建休眠映像之后和系统最终关闭之前修改磁盘上文件系统的数据和元数据的任务. 1、这些任务中的大多数是用户空间进程,但是,如果一个内核线程可能引起上述状况,也应该被冻结起来. 2、在冻结流程之后,也应禁止执行文件系统相关操作,驱动代码注册的suspend函数中应禁止文件系统相关操作.
+参考FAQ: FAQ116541
+### 问题: 电池内阻的阻值的组成
+解决方案: 一.电池内阻的组成: 电池内阻: 电池的内阻是指电池在工作时,电流流过电池内部所受到的阻力,包括欧姆内阻和极化内阻,极化内阻又包括电化学极化内阻和浓差极化内阻. 欧姆内阻:电极材料、电解液、隔膜电阻及各部分零件的接触电阻组成,与电池的尺寸、结构、装配等有关. 浓差极化内阻 :电极表面与溶液本体之间的反应离子浓度不一样,形成一定的浓度梯度,产生浓差极化离子扩散引起的极化内阻. 电化学极化内阻:当电流密度较大时,引起电极上电荷的累积产生电化学极化化学反应引起的极化内阻. 二.直流法测电池内阻 ΔU1 = ΔU2,由电池的欧姆内阻引起的这部分内阻,也称为"直流内阻"; ΔU3,表征了电池的极化内阻. 三.OCV内阻(Rint) 我司电池测试得出的OCV内阻Rint,相当于欧姆内阻与极化内阻相加.
+参考FAQ: FAQ116538
+### 问题: 库仑计电量显示方案，硬件需完成哪些调试？
+解决方案: 包括如下两个测试,得出的参数核入.dts&.dtsi文件中: 测试名称 参考文献 输出参数 FGU电压和电流检测精度 FGU电压和电流检测 测试及校准方法 rsense-real 电池参数测试 The Test Method of Battery Parameters for CT-3008 Cnom,OCV table,Rint
+参考FAQ: FAQ116545
+### 问题: 如何判断rohc解压异常？
+解决方案: 在volte通话中,如有卡顿,无声等问题,在配置了rohc的情况下,可check rohc是否存在解压异常. 在trace中搜索 sending feedback,如有feedback 含有NACK,即解压失败.
+参考FAQ: FAQ116600
+### 问题: 9820E平台无屏状态下打开Modem to PC方法
+解决方案: 9820E平台无屏状态下打开Modem to PC方法: 1. 停止存log到手机存储 adb shell cplogctl disable 5mode //停止保存MODEM log adb shell cplogctl disable wcn //停止保存WCN log 2. 设置engpc运行标志 adb root adb shell setprop persist.sys.engpc.disable 0 3. 如果此前未开启MODEM输出log,现在开启 adb shell echo "AT+ARMLOG=1\r" > /dev/stty_lte31 //这个命令可能会显示无路径,不影响 adb shell echo "AT+SPDSPOP=2\r" 4. 重启手机
+参考FAQ: FAQ116619
+### 问题: 电池参数测试中，OCV 内阻Rint计算方法
+解决方案: 电池参数的详细测试方法,参照文档"The Test Method of Battery Parameters for CT-3008". 得到原始数据后,如何计算某电压点的 OCV 内阻Rint? 以下图为例, Rint=(4146.5mV - 4098.7mV)/399.9mA = 119mΩ
+参考FAQ: FAQ116630
+### 问题: SC9863A平台WIFI/BT的INI存放目录
+解决方案: SC9863A平台的INI存放目录位于如下位置: vendor/etc 文件分别为: connectivity_calibration.ini connectivity_configure.ini
+参考FAQ: FAQ116628
+### 问题: 缓慢插入microSD卡，无法识别出来
+解决方案: 部分microSD卡卡座物理结构的原因,microSD卡插入时detect检测管脚会先接通(比如短路到GND pin),缓慢插入SD卡, detect接通和SD信号接通之间时间延时较长. 缓慢插入SD卡时,软件收到卡插入detect中断后初始化SD卡,SD卡管脚还没有接触上,导致初始化失败.引起卡不识别. 正常速度插卡没有此问题.
+参考FAQ: FAQ116611
+### 问题: SC9820E平台WIFI/BT的INI存放目录
+解决方案: SC9820E的INI存放目录位于如下位置: system/etc/wcn INI文件为: connectivity_calibration.ini connectivity_configure.ini
+参考FAQ: FAQ116633
+### 问题: SC9832E平台WIFI/BT的INI存放目录
+解决方案: SC9832E平台的INI存放路径位置如下: vendor/etc/wcn 对应文件为: connectivity_calibration.ini connectivity_configure.ini
+参考FAQ: FAQ116640
+### 问题: SC7731E平台WIFI/BT的INI存放目录
+解决方案: SC7731E平台的INI存放位置如下: vendor/etc/wcn 对应文件为: connectivity_calibration.ini connectivity_configure.ini
+参考FAQ: FAQ116641
+### 问题: 如何控制开机仅仅注册cs域？
+解决方案: GSM/WCDMA制式下 开协议栈前下发AT+SAUTOATT=0即可控制仅仅注册CS域
+参考FAQ: FAQ116659
+### 问题: 怎样设置和读取modem中的module name
+解决方案: 设置: 将nv中的module_name[40]配置上十六进制的module name的ascii码 读取: AT+GMM或AT+CGMM既可以读取nv中配置的module name
+参考FAQ: FAQ116661
+### 问题: 如何使用AT配置IMEISVN
+解决方案: 使用如下命令: AT+SGMR=card_id,1,2,"xx" card_id: 0表示卡1,1表示卡2 注意:最后一个参数必须带双引号表示字符串格式,且必须是2位不含字母的数字
+参考FAQ: FAQ116663
+### 问题: 打开FDN时,SDN号码如何也可以呼叫出去
+解决方案: 将如下路径的nv --》TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_MN_CFG\feature_switch, 将bit19(从bit0开始)设置成1,也就是将原来feature_switch值按位或个0x80000即可. 请注意该功能并不符合协议,有些客户或者运营商特殊需求如此,默认不建议打开.
+参考FAQ: FAQ116665
+### 问题: SC9863A是否支持DPDT功能
+解决方案: 1.DPDT 是什么? DPDT(Double Pole Double Throw) 即双刀双掷.在硬件设计上增加一个DPDT 开关,可以实现手机上下天线切换功能. 2.SC9863A是否支持DPDT功能? SC9863A支持DPDT功能,需要配置相关NV. 可以参考展锐文档:SC9863A Platform DPDT solution NV config notes V1.0.
+参考FAQ: FAQ116684
+### 问题: SC9832E和SC9863A平台是否支持wifi 802.11n HT40
+解决方案: SC9832E 和SC9863A 内置了展锐marlin2 wifi 芯片,不支持802.11n模 HT40,只支持到n模HT20. SC9863A如果需要支持 802.11n模 HT40,可以外挂展锐UMW2650 wifi 芯片.
+参考FAQ: FAQ116685
+### 问题: CAF模式下出现中心模糊四周清楚，怎么办？
+解决方案: 原因:当前机制下AF算法根据中心9块区域的权重和各区域的focus value加权得出统计值,CAF模式下如果边缘8块区域的focus value远比中心大,算法会倾向于让四周清晰,中心模糊. 解决办法:打开工具,找到ISP模块中AF下的weigh table mode1,此项代表caf模式,打开indoor_tab_val,修改前9项里的权重,第10个保持0值不变,然后针对outdoor和dark也做同样修改.注意:tab sum建议为10项总和,不能为0,方可生效.
+参考FAQ: FAQ116706
+### 问题: 单通道电源如何测试充电电流？
+解决方案: 答:可以. 可以使用simba工具调用两台程控电源来测试(一台供VBAT,一台供VBUS). 测试环境的接线方式如下: 测试工具内电源的具体配置方法如下(注意两台电源GPIB地址不可设置成一样): 1、VBAT电源设置界面: 2、VBUS电源设置界面.
+参考FAQ: FAQ116711,含图片
+### 问题: 校准模式如何用pandora关闭？
+解决方案: 答:可以. Setp1:将在校准模式的DUT使用USB连接到电脑; setp2:使用pandora工具调用到DUT对于的U2S daig口;并执行Power off操作即可. 具体操作如下图: 执行上述步骤后,DUT即会处于关机状态.
+参考FAQ: FAQ116722,含图片
+### 问题: [GCF&PTCRB测试]IMEISV CASE 26.6.8.5&26.7.3.1（2G）、9.3.1（3G）和9.1.4.2（LTE）测试注意事项。
+解决方案: 需要检查仪表PICS中的IMEISV这一项设置的是否和测试机(测试机可通过*#06#查看)一致,如: "TSPX_IMEI" Value="867400020852220" --IMEI最后一位为校验位,在仪表PICS中填0 "TSPX_IMEISV" Value="8674000208522201" --IMEISV为IMEI去掉最后一位86740002085222再加上SVN 01 如果需要修改IMEISVN,可通过修改NV值的方式来实现,方法: 1. 使用NVEDITOR打开NV工程. 2. 搜索IMEISVN. 3. 修改值为需要的SVN,注意SVN有效范围为00~98,且需要输入对应的十六进制数值. 4. 重新生成NV bin,烧入测试机验证.
+参考FAQ: FAQ116747
+### 问题: 展锐SC9863A平台中SC2703L和SC2703P的区别是什么？
+解决方案: 主要的区别是: 1.SC2703L支持4.3到5.5V的充电电压,最大充电电流为2.5A. 2.SC2703P可以支持4.3到13.5V的充电电压,最大充电电流为3.5A.
+参考FAQ: FAQ116751
+### 问题: 如何默认锁屏方式为无，即不显示锁屏
+解决方案: 默认设置锁屏方式为无,直接配置属性ro.lockscreen.disable.default=true即可
+参考FAQ: FAQ116756
+### 问题: FM与GND隔离的原因
+解决方案: FM取耳机座的GND作为天线,为了避免地噪声串扰到FM走线,需要通过并联1000Ω@100MHz来隔离
+参考FAQ: FAQ116876
+### 问题: sensorhub 口袋防误触测试方法
+解决方案: 手机灭屏之后,P sensor处于遮挡状态,手机不是水平放置,这个状态维持5s,会触发防误触,触发之后的表现为TP不能操作; 也就是该功能只会影响触摸屏不被误操作.
+参考FAQ: FAQ116772
+### 问题: 如何使下拉栏编辑界面的快捷方式默认显示在下拉栏中
+解决方案: 下拉栏编辑界面的快捷方式是通过 vendor/sprd/platform/frameworks/base/packages/SystemUI/res/values/config_ex.xml文件中字段quick_settings_tiles_stock配置的,如果要将编辑界面的快捷方式默认显示在下拉栏中,则需要在quick_settings_tiles_default这个字段中一起配置 需要注意,如项目有其他overlay目录,要在自己项目对应的overlay中修改
+参考FAQ: FAQ116767
+### 问题: SC7701是否支持呼叫转接(ECT)功能?
+解决方案: 呼叫转接? ECT(Explicit Call Transfer,呼叫转接)是一种较为特殊的补充业务.签约ECT业务的用户A先呼叫用户B,在与用户B建立通话后,用户A通过终端发起保持用户B呼叫的请求,此时用户B会听到一段背景音乐,并且与用户A的通话暂时断开.用户A紧接着呼叫另一个用户C,在与用户C建立通话后,由用户A发起呼叫转接业务请求,此时用户B听到的音乐背景将会取消,B、C两方相互通话,而用户A则退出呼叫. 是否支持? SPRD终端包括SC7701都是支持这种业务的,若当前插入的SIM卡签约了ECT业务,那么终端通过AT+CHLD=4即可发起呼叫转接请求,但整个业务功能能否实现,还要依赖于当前网络是否支持
+参考FAQ: FAQ116862
+### 问题: dBm和dBuv的换算
+解决方案: dBm和dBuv的换算 一、换算公式 在通信工程应用中,dBm和dBuv都可作为信号强度单位. 二者之间相互换算公式: 算法一:0dBm=+113dBuv或0dBuv= -113dBm,简称113算法. 算法二:0dBm=+107dBuv或0dBuv= -107dBm,简称107算法. 二、使用场景 区别图1、图2收、发等效电路中ZL上的功率与电压换算分2种情况: A .测量电压是Vi或Vo,则ZL的dBm和dBuv换算采用113法. B .测量电压是VL,则ZL的dBm和dBuv换算采用107法.
+参考FAQ: FAQ116865,含图片
+### 问题: FM与地线差分走线的原因
+解决方案: FM与地线进行差分走线可以抑制共模干扰,提高灵敏度
+参考FAQ: FAQ116869
+### 问题: CMCC合作型产品测试策略是怎样的？
+解决方案: CMCC合作型产品在入库前无需进行基础检查,仅进行后评估测试.
+参考FAQ: FAQ116888
+### 问题: 如何在Linux平台把Sparse格式的img分区文件转换为RAW格式
+解决方案: 首先我们保证本地有对应的可以编译通过的Android 版本源码,例如 Android P相关代码并已经完成编译,然后依次执行编译前的准备工作. source build/envsetup.sh lunch 选择工程 然后进入到/out/host/linux-x86/bin 目录,找到simg2img 执行simg2img <sparse_image_file> <raw_image_file sparse_image_file:要转换sparse格式的img文件路径和名字 raw_image_file:转换后的raw格式的img文件路径和名字
+参考FAQ: FAQ116982
+### 问题: 如何解析odex/oat文件
+解决方案: 遇到这类情况时,可以通过oaddump解析该类文件,具体的解析命令是: out/host/linux-x86/bin/oatdump --oat-file=boot.oat --output=boot.oat.txt 其中,oat-file参数后面的内容是出问题的odex/oat文件的所在位置,output参数后面填写想要输出的文件
+参考FAQ: FAQ116997
+### 问题: 如何修改产品LTE只支持CAT1
+解决方案: 需要设置如下nv项:
+
+PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\ueCategory=0x1
+PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\ueCategoryDL=0xFF
+PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\ueCategoryUL=0xFF
+PS_NV_PARAMS\LTE_NV_EUTRA_TDD_CAPA_INFO\numofBandCombination=0x0
+参考FAQ: FAQ117880
+### 问题: power_key是否可以开机时保持低电平，关机时保持高电平
+解决方案: 有两种方案,都需要软件进行对应修改. 方案一: 使用PBINT2管脚.开机时接GND,此pin没有7S复位功能,故开机可以一直接GND. 关机时接VBAT,上报release事件通知上层触发关机流程.用PBINT2软件还要注意进校准模式的情况,否测会延长开机时间. 方案二: 使用PBINT管脚.默认是两键复位,长按PBINT不会引起7s reset. 但在开机后,由于PBINT一直按着,如果这时按下EXTRSTN键7秒,就会reset,需修改软件.
+参考FAQ: FAQ117074
+### 问题: 如何添加代码来抓取strace？
+解决方案: systrace用起来是要在系统的一些关键地方插入一些TAG,通过TAG的开始和结束来确定某个核心过程的执行时间, 然后把这些信息收集起来得到系统关键路径的运行时间信息,进而得到整个系统的运行性能信息. 添加TAG的方法如下: 1. app层. import android.os.Trace; Trace.beginSection(String sectionName) Trace.EndSection() 1. framework层 import android.os.Trace; Trace.traceBegin(long traceTag, String methodName) Trace.traceEnd(long traceTag) 2. Native层 #include <cutils/trace.h> ATRACE_BEGIN("TEST"); ATRACE_END();)
+参考FAQ: FAQ117080
+### 问题: strace内部原理？
+解决方案: Systrace脚本发起开始和结束的命令,携带参数发给Atrace.并将数据通过js形成图表. Atrace用来接收数据,并提供部分API,应用程序只需要使用这些API,就可以和该线程进行简单的通信 .atrace接收到应用传来的信息,将数据写入kernel中ftrace框架中的buffer中,接口即为/sys/kernel/debugs/tracing/trace_marker 数据已写buffer,dump时从/sys/kernel/debugs/tracing/trace文件中去读取搜集到的信息. Atrace用户态和Ftrace Kernel态通过debugfs来交互.
+参考FAQ: FAQ117084
+### 问题: GSM codec语音功能的控制
+解决方案: 客户根据自身的设计情况可能会进行Codec语音功能的关闭或部分关闭. unisoc modem默认支持并打开所有协议规定的Codec type,如FS, EFS, HS, AFS, AHS等,可通过NV项进行关闭. gsm HR codec type --> half_rate_v1_supported gsm FER codec type --> full_rate_v2_supported gsm AMR codec type --> half_rate_v3_supported
+参考FAQ: FAQ117085,含图片
+### 问题: 界面出现弹框,dialog标题为"System info dumping..."是什么原因引起?
+解决方案: 出现此dialog提示为userdebug版本的系统中出现了modem assert,也可从状态栏中看到有骷髅头图标 (user版本发生modem assert则会直接重启)
+参考FAQ: FAQ117098
+### 问题: WiFi 5G DFS简介
+解决方案: 5G WIFI 认证需要做DFS测试,DFS测试目的是因为5Gwifi中的两个频率范围(5250-5350与5470-5725)与雷达的频率范围冲突.为了防止WIFI信号影响雷达信号工作,所以对5G WIFI产品要做DFS测试(Dynamic Frequency Select). DFS测试包括以下5项: 1.Beginning of cac 2.End of cac 3.off-channel cac 4.in service monitoring 5.channel shutdown 6.non-occupancy period
+参考FAQ: FAQ117258

@@ -1,0 +1,335 @@
+### 问题: CTS Verifier Sensor无法测试 -- “Ambient Display” 无法通过settings关闭
+解决方案: CTS Verifer R12版本中sersor测试新增了"Ambient Display"关闭的预置条件. 在Settings中,读取系统属性是否有"debug.doze.component",有的话才会去显示"Ambient Display"选项. "debug.doze.component"需要手指实现Doze的模式,目前SPRD只有在支持sensor hub的芯片上才实现了个Doze模式,而7731g/7731c/9830/9832/芯片均不支持. 故,在以上项目中,需要从系统级别隐藏"Ambient Display". 实现如下: 1.frameworks/base/packages/SettingsProvider/res/values/defaults.xml中新加字段: <integer name="def_doze_enabled">0</integer> 2.frame
+完整回答请参考FAQ: FAQ96537
+### 问题: 在输入界面时，闹钟或日历打断后，无法输入
+解决方案: 出现的原因为: InputMethodManager (IMM) has a latch switch named IMM#mHasBeenInactive to forcefully refresh IME focus state when an inactive client (IMM#mActive == false) is gaining window focus. However, it turns out that there is a race condition where the latch could be unexpectedly turned off, so the latch will be re-enabled if the app fails to start input while IMM#mActive is false as a short-term s
+完整回答请参考FAQ: FAQ96540
+### 问题: CTS Verifier 中"Bluetooth Test"中找不到BLE测试 1. BLE Advertiser Test 2. BLE Scanner Test
+解决方案: 1.首先通过CTS Code定位到Bluetooth 测试的相关code,(BluetoothTestActivity.java中): code 片段: protected void onCreate(Bundle savedInstanceState) { ...... if (!this.getPackageManager().hasSystemFeature("android.hardware.bluetooth_le")) { disabledTestArray.add( "com.android.cts.verifier.bluetooth.BleAdvertiserTestActivity"); disabledTestArray.add( "com.android.cts.verifier.bluetooth.BleScannerTestActivity"); disable
+完整回答请参考FAQ: FAQ96539
+### 问题: CTS Verifier测试中，BYOD Managed Provisioning测试条件、方法和注意事项
+解决方案: CTS Verifier测试中,BYOD Managed Provisioning测试条件、方法和注意事项 1、BYOD Managed Provisioning测试条件 BYOD Managed Provisioning测试项必须同时拥有android.software.managed_users和android.software.device_admin两个feature,才会在CTS Verifier测试中显示出来,否则就是隐藏的 (1)"android.software.managed_users"是支持多用户的feature,若项目支持多用户才需要打开该feature;低内存版本是不支持多用户的,必须关闭该feature (2)"android.software.device_admin"feature对于低内存和非低内存版本是没有限制的 补充信息: 1)通过以下命令查看手机支持
+完整回答请参考FAQ: FAQ96541
+### 问题: 6.0 Launcher3 Idle界面如何限制最大页数（禁止无限增加页数）？
+解决方案: 问题原因: 有些客户感觉Launcher3的workspace可以无限增加页数不好,需要限制最多只有几页. 解决方案: diff --git a/src/com/android/launcher3/Workspace.java b/src/com/android/launcher3/Workspace.java index 6b0ed80..b4627c0 100644 --- a/src/com/android/launcher3/Workspace.java +++ b/src/com/android/launcher3/Workspace.java @@ -273,6 +273,7 @@ public class Workspace extends PagedView @Thunk Runnable mDeferredAction; private boolean mDeferDro
+完整回答请参考FAQ: FAQ96550
+### 问题: CTS verifier 6.0_r12 版本 测试项：  GPS Test  fail（passive provider mean too small:1000.0(min:1500.0)）
+解决方案: 现象:CTS verifier 6.0_r12 版本 测试项: GPS Test fail(passive provider mean too small:1000.0(min:1500.0)) 示例:SPCSS00339649 原因:CTS verifier中的Gps Test是测试GPS的定位的,可以设置的定位请求时间上报间隔为0s,1s,5s,和15s,测试中passive provider被动监听的上报的平均值应满足不小于设置定位请求时间上报间隔的十分之一. 在cts/apps/CtsVerifier/src/com/android/cts/verifier/location/LocationVerifier.java中有: /* In passive mode, the mean computed for the deltas should not be smaller * th
+完整回答请参考FAQ: FAQ96583
+### 问题: 为什么BYOD Managed Provisioning Proifile owner --- Profile-aware location settings这一项测试时 Location那里work profile不存在？
+解决方案: 现象:BYOD Managed Provisioning Proifile owner --- Profile-aware location settings这一项测试时 Location那里work profile不存在 示例:SPCSS00341058, SPCSS00336188 原因:Profile-aware location settings fail的原因是没有合入相关功能的code导致测试失败. 在Android5.0上没有此Feature,在android6.0上的提交为: commit 86c877e9b66165bb46432de6172d1fdc6b2808fe Author: Zoltan Szatmary-Ban <szatmz@google.com> Date: Wed Oct 15 11:35:55 2014 +0100 Make Location Sett
+完整回答请参考FAQ: FAQ96586
+### 问题: 为什么恢复出厂设置之后快速进入设置-位置信息，报停止运行？
+解决方案: 现象:恢复出厂设置之后快速进入,就会报停止运行,稍微等个1分钟左右再进入则没有此问题 示例:SPCSS00349972 原因:通过AppOpsManager获取数据返回为NULL,此问题在Android7.0上对此问题进行了修正,参考的Android7.0上的修改如下: commit d6cc7909fd68626826fe4421c1485dd089b90ba7 Author: Tony Mantler <nicoya@google.com> Date: Tue Feb 9 14:12:43 2016 -0800 Handle null list from getPackagesForOps b/27101914 Change-Id: I468da1a0f38f78e1cd7fec50e3bc78cec6fd2771 packages/apps/Settings/src/com/andr
+完整回答请参考FAQ: FAQ96587
+### 问题: 位置信息开关开启后的定位模式为什么和关闭之前不一致？
+解决方案: 现象:位置信息模式异常 示例:SPCSS00350672 原因:在androidM及以前的版本中,设置中的位置信息开关在关闭状态时,用户点击开关开启后会将定位模式设置为"高精确度",不会记住上一次关闭时的定位模式.而在andriud N上用户点击此开关后设置的定位模式是上一次关闭时的定位模式及在androidN上添加了定位模式的记忆.如定位开关关闭前定位模式是"节电",关闭开关再开启后定位模式仍是"节电". frameworks/base/core/java/android/provider/Settings.java private static final boolean setLocationModeForUser(ContentResolver cr, int mode, int userId) { synchronized (mLocationSettingsLock) { bo
+完整回答请参考FAQ: FAQ96588
+### 问题: Chrome浏览器如何定制
+解决方案: 1.激活chrome应用 编译GMS后,可以将chrome浏览器作为系统唯一的浏览器.修改的文件为vendor/product/gms.mk,主要的修改如下图所示: 2.定制类型 chrome可以定制Bookmark,HomePage两种类型. Bookmark的定制主要是通过系统提供的ParterBookmarkProvider来定制,HomePage通过chrome中的setting来设置,默认此选项不存在,通过一个apk将此项设置为可用 3.定制Boomark Chrome允许合作商定制的标签页显示在chrome浏览器,通过定制ParterBookmarkProvider来实现.默认的ParterBookmarkProvider的源码在(packages/providers/PartnerBookmarksProvider).为了特使的定制,默认的值可以由合作商修改.生成的apk会作
+完整回答请参考FAQ: FAQ96608
+### 问题: 为什么多次设置同一张自定义图片为桌面壁纸后，发现设置壁纸界面重复显示该图片的缩略图？
+解决方案: 这是google原生设计,采用这种设计的意图如下: 首先,桌面壁纸来源主要有两大部分: 1. launcher自带的壁纸. 这类壁纸一般默认为标准宽屏壁纸,即宽为两倍屏幕宽、高为屏幕高度的壁纸,是不需要被裁剪的,会直接设置为壁纸,因不会被裁剪也就不会出现在已保存列表,不会生成新的缩略图,在预览界面也不支持缩放等拖动等操作. 2. 图库、资源管理器等中可查看到的图片资源. 这类图片一般都是用户在使用设备过程中产生的,其大小大部分都不符合标准宽屏壁纸的要求,且在设置壁纸的预览界面可以进行拖拽、缩放等处理. 这类图片在设置为壁纸时,会根据图片当前拖动到的位置裁剪出一个符合标准宽屏壁纸要求的图片副本,并最终设为桌面壁纸. 其次,标题中提到的自定义图片即属于上面所说的第二种图片资源. 一旦在预览该类图片时,对图片进行了拖拽/缩放处理,那么存放到保存列表中的缩略图就与没有拖拽或者拖拽到图片不同的位置时
+完整回答请参考FAQ: FAQ96620
+### 问题: 出现“桌面启动默认配置应用，提示：应用程序未安装 ”这种问题时该怎么办？
+解决方案: 这里的"默认配置应用"指的是恢复出场设置后,桌面上显示的那些应用. 出现该问题,通常是因为launcher的配置文件中针对该应用配置的包名/类名不正确导致的,只需对应将其改为正确的包名/类名即可. 下面以google搜索为例: 1. 在default_workspace_4x4.xml中加入google文件夹 <folder
+        launcher:title="@string/google_folder_title"
+        launcher:screen="1"
+        launcher:x="1"
+        launcher:y="3">
+        <favorite
+            launcher:packageName="com.google.android.googlequicksearchbox"
+        
+完整回答请参考FAQ: FAQ96621
+### 问题: 当使用第三方Launcher时，如何使设备中不出现Launcher3相关的应用？
+解决方案: 当设备不使用Launcher3而使用预置的第三方Launcher时,发现手机中仍存在addon.sprd.launcher3.drm等这样一些与Launcher3有关的应用. 这时因为展讯平台launcher3中采用了plugin机制对launcher3进行了一些功能扩展,这些扩展的功能的具体实现是在launcher3外部实现的,并参与编译.在全编后,会生成对应的apk. 以addon.sprd.launcher3.drm为例: addon.sprd.launcher3.drm应用是与launcher3设置壁纸功能相关的应用,其内定义了启动documentUI的接口来打开documentUI,进而可以将图库和文件管理器中的图片设置为壁纸. 若不使用launcher3的话,可令addon.sprd.launcher3.drm不参与编译,具体修改方法如下: 方案1: 找到addon.sprd.
+完整回答请参考FAQ: FAQ96623
+### 问题: 安卓6.0上如何使用多台手机测试CTS生成一份报告，缩短测试时间
+解决方案: 测试步骤: 1.需要新建一个文件夹,文件夹里面只有android-cts这一个测试包文件夹,不能包含其他文件. 2.按照测试CTS的要求配置需要测试的手机, 比如要用3台手机来测试,则需要保证3台手机软件版本等相同,然后拷入资源做好设置. 3.使用run cts [options] --shards number_of_shards 命令来测试 例如:要在3台手机上测试cts, 则输入命令: run cts --plan CTS --shards 3 就可以了,3台手机预计7个小时可以跑完, 4.当跑完一次测试后,会有fail 项和未执行项(此时继续处理这些项时无法直接用添加--shards 的方式来分布式测试) 处理这些fail和未执行项常规方法如下: 测未执行项可以直接用run cts --continue-session session_ID 测试fail项可以用add derive
+完整回答请参考FAQ: FAQ96975
+### 问题: 如何去掉长按桌面上快捷方式/小部件时桌面两侧出现的白色提示条？
+解决方案: 在packages/apps/Launcher3/src/com/android/launcher3/DragLayer.java中: ... private boolean mBlockTouches = false; //添加如下控制变量 + private boolean neverShowPageHint = true; protected boolean drawChild(Canvas canvas, View child, long drawingTime) { boolean ret = super.drawChild(canvas, child, drawingTime); // We want to draw the page hints above the workspace, but below the drag view. if (child instanceof
+完整回答请参考FAQ: FAQ97376
+### 问题: 如何使Idle界面图标的标题在双行情况下完整显示？
+解决方案: 某些应用的名称较长,一些客户会将launcher中的应用的标题修改为可以双行显示,由于每个图标所占用的空间受限于整个celllayout的大小,所以,经常会出现应用的第二行标题被截断的现象. 这里可以按照如下方法微调各值的大小: 1. packages/apps/Launcher3/src/com/android/launcher3/DeviceProfile.java private void updateIconSize(float scale, int drawablePadding, Resources res,
+                                DisplayMetrics dm) {
+      ......
+        // Calculate the actual text height
+        Paint textPain
+完整回答请参考FAQ: FAQ97385
+### 问题: 如何获取ICCID、IMSI、IMEI、CELL ID、LAC、GID
+解决方案: ICCID: 名词解释: SIM卡背面有20 位数字组成的IC唯一标识号ICCID. 以中国移动为例:前面6位(898600)是中国的代号: 第7位为业务接入号,在135 、136、137、138、139中分别为5、6、7、8、9;第8位是SIM的功能位,一般为0,现在预付费SIM卡为1;第9、10位是各省的编码;第11、12位是年号;第十三位是供应商代码;第14-19则是用户标识码;第20位是校验位. 读取接口: MNSIM_GetICCIDEx IMSI: 读取接口: MNSIM_GetImsiEx 注意事项: 返回的imsi为BCD码,相关处理可以参考code中其它地方对该接口的使用. IMEI: 读取接口: 请参考暗码*#06#的读取流程. CELL ID\LAC: 读取接口: MNPHONE_GetRSSIEx 注意事项: 请注意看返回值结构体类型,其中包含LAC和CELL ID
+完整回答请参考FAQ: FAQ97386
+### 问题: 关于下载工具（ResearchDownload等）勾选恢复出厂设置无效、添加恢复出厂设置的AT命令的问题
+解决方案: NPI 工具是往下兼容的.恢复出厂设置这项只是针对SC7731C SC9832 SC9830等平台,SC6531 暂时不支持,需要增加实现AT+ETSRESET、AT+SPDIAG两条AT命令. 1.添加AT命令的方法请见IDH包中内附的指导文档:\Docs\ATC_userguide\training_lectures 2.AT+ETSRESET、AT+SPDIAG的涉及修改: 1>atc.atd: +ETSRESET { 1, " " }; +SPDIAG { 2, "()" }; 2>chip_drv\chip_module\norflash\flash.c: 新增函数: void FLASH_EraseRunningNV() { uint32 i; for (i = 0; i < s_flash_sector_num; ++i) { FLASH_Erase(s_flash_efs_
+完整回答请参考FAQ: FAQ97388
+### 问题: PhaseCheck检测,MMI测试全部手动测试Pass后,检测位（站位信息）仍然显示not test，如何修改？
+解决方案: 手动MMI test没有写product info,需要写入product info. 一:参考接口、数据结构: 读写接口:IMEI_UpdateProductInfo_Protect、read_product_info方法 数据结构 typedef struct _PHASE_CHECK_HEADER { uint32 Magic; // "SP09" (老接口为SP05) int8 SN[MAX_SN_LEN]; // SN , SN_LEN=24 int8 SN2[MAX_SN_LEN]; // add for Mobile int32 StationNum; // the test station number of the testing int8 StationName[MAX_STATION_NUM][MAX_STATION_NAME_LEN]; // uint8 Reser
+完整回答请参考FAQ: FAQ97405
+### 问题: 如何在深度恢复出厂设置后，保留指定的配置项（Running nv）不被擦除
+解决方案: 6531: 深度恢复会擦除所有running nv: MMISET_CleanUserData @ mmiset_func.c: EFS_NvitemDelete(NV_USER_BASE,NV_USER_BASE + MAX_NV_USER_ITEM_NUM); //擦除NV_USER_BASE 到 NV_USER_BASE + MAX_NV_USER_ITEM_NUM所有的RUNNING NV 可以修改为 EFS_NvitemDelete(NV_USER_BASE,MMI_GetTrueNVItemId(新增RUNNING NV ID)-1); EFS_NvitemDelete(MMI_GetTrueNVItemId(新增RUNNING NV ID)+1,NV_USER_BASE + MAX_NV_USER_ITEM_NUM); //分两次擦除,把需要保留的RUNNING NV ID剥
+完整回答请参考FAQ: FAQ97403
+### 问题: Android 7.0中，如何默认打开电量百分比？
+解决方案: 1, 在frameworks/base/core/java/android/provider/Settings.java中的System类中加一个字符串常量 public static final String BATTERY_PERCENTAGE_ENABLED = "battery_percentage_enabled"; 2, 在frameworks/base/packages/SettingsProvider/res/values/defaults.xml中添加 <integer name="battery_percentage_enabled">1</integer> 3, 在frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java的 loadS
+完整回答请参考FAQ: FAQ98308
+### 问题: 升级（下载）软件后，需要指定配置项（NV项）不被擦除(保留)，如何配置？
+解决方案: 一.需要备份的项需要存储在Fixed nv,如果当前是通过Running nv存储的,需要添加(或使用已有的)Fixed nv来做备份: 1.由于默认有未使用的Fixed nv,建议使用,比如,gsp_config (ID:0x193)等. 2.如果实在需要新增Fixed nv,请参考如下: 新增Fixed nv方法: 1>.nv_item_id.h中增加Fixed nv ID 2>.nv文件(*.nvm)中按照所需的结果他类型新增对应项(可参考现有的,如NV_REF_IN_FIXNV) 3>读写方法:一样可参考NV_REF_IN_FIXNVfixed nv读写: 读取Fixed nv,使用NVITEM_ReadCaliBuf,使用前需要malloccalibuf,请参考如下代码(写Fixed nv可以使用NVITEM_UpdateNvParam_Protect,如下仅供参考): LOCA
+完整回答请参考FAQ: FAQ97485
+### 问题: 如何解决设置中不同的指纹可以命名为相同的名称的问题
+解决方案: 该问题是Google原生代码问题,每次修改存储指纹名称时直接去保存,没有去对其他指纹名称去做判断导致此问题的发生. 解决方案如下:(在保存时添加判断当名称存在时则提示名称已存在) diff --git a/res/values/strings_ex.xml b/res/values/strings_ex.xml index 3b483dd..c71ac9f 100644 --- a/res/values/strings_ex.xml +++ b/res/values/strings_ex.xml @@ -133,6 +133,7 @@ card only supports GSM mode.)</string> <string name="msg_confirm_password_not_same">"Twice input password is not consisitent"</st
+完整回答请参考FAQ: FAQ97597
+### 问题: 在指纹解锁/添加指纹界面点击“了解详情”，出现设置已停止运行
+解决方案: 问题的原因:learn more链接的url为空 解决方案:添加判断,若是url为空,则不显示learn more按钮 具体修改代码如下: diff --git a/src/com/android/settings/fingerprint/FingerprintEnrollIntroduction.java b/src/com/android/settings/fingerprint/FingerprintEnrollIntroduction.java index de5bf24..7017fa0 100644 --- a/src/com/android/settings/fingerprint/FingerprintEnrollIntroduction.java +++ b/src/com/android/settings/fingerprint/FingerprintEnrollInt
+完整回答请参考FAQ: FAQ97598
+### 问题: 如何分析FRP功能失效时报的avc: denied错误
+解决方案: 进行FRP操作时(如验证FRP功能)失败时,如果log中出现类似 avc: denied { read } for name="mmcblk0p21" dev="tmpfs" ino=5271 scontext=u:r:system_server:s0 tcontext=u:object_r:mmcblk_device:s0 tclass=blk_file permissi ve=0 的信息,表示FRP底层功能有错误,分析可以从persist分区的sepolicy配置着手. 具体步骤: 1. 电脑连接手机,adb进入手机根目录; 2. 执行su.如果提示权限问题,请给手机刷userdebug版本; 3. 执行ls -Z dev/block ,找到包含 u:object_r:frp_block_device:s0 的那一行,记住该信息对应的mmcblk,记为A; 4. 执行ls -l dev
+完整回答请参考FAQ: FAQ97624
+### 问题: 多个项目不同android平台Cts证书测试失败问题
+解决方案: Cts测试包中有对证书解析的测试,测试证书直接写在代码中,其中两个证书时间过期,导致cts测试失败. 解决方案: 1.前期由我们提供TR文档给客户,说明问题. 2.google在r13 cts测试包中已经修复该问题,直接使用r13进行跑cts可以通cts测试. google修改文件: diff --git a/luni/src/test/java/tests/targets/security/cert/CertificateTest.java b/luni/src/test/java/tests/targets/security/cert/CertificateTest.java index dd06249..8745f5e 100644 --- a/luni/src/test/java/tests/targets/security/cert/CertificateTest.java ++
+完整回答请参考FAQ: FAQ97646
+### 问题: 指纹名称可以命名为空
+解决方案: 问题原因: android原生问题,未对指纹名称为空做判断 修改方案: 添加指纹名称为空的判断,当为空时,按键"ok"置灰,无法选择 具体修改代码如下:(路径 --- /packages/apps/Settings) diff --git a/src/com/android/settings/fingerprint/FingerprintSettings.java b/src/com/android/settings/fingerprint/FingerprintSettings.java index dcc6b9b..80570c4 100644 --- a/src/com/android/settings/fingerprint/FingerprintSettings.java +++ b/src/com/android/settings/fingerprint/Fingerprint
+完整回答请参考FAQ: FAQ97656
+### 问题: 更改键盘输入法
+解决方案: 1.更改输入法键盘可以通过两种方式去修改,修改方式如下: 1)直接进入设置-》语言和输入法-》当前输入法 (此修改方式在7.0上已经没有) 2)状态栏(需要具备一定的条件.具体的条件如下说明) 2.相关代码的具体位置 1)setting中的: packages/apps/Settings/src/com/android/settings/inputmethod/InputMethodDialogReceiver.java packages/apps/Settings/src/com/android/settings/inputmethod//InputMethodAndLanguageSettings.java 2)InputMethodService中的代码: frameworks/base/core/java/android/view/inputmethod/InputMethodMa
+完整回答请参考FAQ: FAQ97663
+### 问题: Inputmethodservice常用变量简介
+解决方案: //启动inputmethodservice InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //当前输入法的list,通过infos.size()获得当前输入法的数量 List<InputMethodInfo> infos = imm.getInputMethodList(); //当前可用的输入法 String enable = Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_INPUT_METHODS); for (InputMethodInfo info : infos) { //通过方法info.getPackageName()可以获得输入法的包名 
+完整回答请参考FAQ: FAQ97664
+### 问题: 改变系统语言，输入法是如何变化
+解决方案: 1,当系统改变语言时,inputmethodservice会接收到广播ACTION_LOCALE_CHANGED 相关的代码: InputMethodManagerService.java的构造函数inputmethodmanagerservice()中,代码如下: // IMMS wants to receive Intent.ACTION_LOCALE_CHANGED in order to update the current IME // according to the new system locale. final IntentFilter filter = new IntentFilter(); filter.addAction(Intent.ACTION_LOCALE_CHANGED); mContext.registerReceiver( new BroadcastRe
+完整回答请参考FAQ: FAQ97665
+### 问题: 手机存储快满（人为主动）时操作联系人出现不能添加/删除联系人或apk crash问题
+解决方案: 解答:此时Contacts出现不能操作或者出现crash是正常现象. 一.问题出现的直接原因: 手机存储空间已满,任何操作数据库的行为都会报出如下数据库或磁盘已满的问题. ./0000:18721:A003-31 16:27:34.810 1279 12404 E ClearcutService: Caused by: android.database.sqlite.SQLiteFullException: database or disk is full (code 13) 二.ＡＰＫ不能给出提示的原因: １．此时Contacts ａｐｋ任何操作数据库的动作都会引起异常(android.database.sqlite.SQLiteFullException),类似操作数据库的ａｐｋ有Ｃｏｎｔａｃｔｓ/Diale/Email等,而不仅仅是Ｃｏｎｔａｃｔｓ会有问题,而是否出现crash取决于
+完整回答请参考FAQ: FAQ98043
+### 问题: 如何检查是否已配置前置闪光灯
+解决方案: SprdCtrl.mk文件中有如下的部分; ifeq ($(strip $(TARGET_BOARD_FRONT_CAMERA_FLASH_DEV)),true) LOCAL_CFLAGS += -DCONFIG_FRONT_FLASH_SUPPORT endif 意思是:如果BoardConfig中有 TARGET_BOARD_FRONT_CAMERA_FLASH_DEV 项且为 true,那么就定义了 CONFIG_FRONT_FLASH_SUPPORT 以平台的7731C手机为例,它是没有前闪光灯的,所以在它对应的BoardConfig文件中是没有TARGET_BOARD_FRONT_CAMERA_FLASH_DEV的. 如果客户出现前置闪光灯不亮的问题,可以先请用户检查前置闪光灯的配置是否正确: 请客户确认客户手机自己的BoardConfig文件中是否有此定义,如果没有,而客户手机
+完整回答请参考FAQ: FAQ98107
+### 问题: USB-互联网PC是否支持WIN10
+解决方案: 客户要求USB-互联网PC有WIN10的选项,请问能否支持? 试方法:选择共享手机网络,看pc分配的ip是什么地址段的,例如AAA.AAA.AAA.B,然后配置os_ip_values为AAA.AAA.AAA.1 res\values-zh-rCN\arrays.xml <string-array name="os_string_array"> <item>(未指定)</item> <item>Windows XP</item> <item>Windows Vista</item> <item>Windows 7</item> <item>Windows 8</item> <item>Windows 10</item> </string-array> <string-array name="os_ip_values"> <item>null</item> <item>192.168.0.1
+完整回答请参考FAQ: FAQ98170
+### 问题: 如何获取SIM卡号码
+解决方案: 在TelephonyManager中有一个接口getLine1Number() 和 getLine1NumberForSubscriber(subId)两个接口.前者是获取默认SIM卡的号码,后者是获取制定subId的SIM卡的号码.具体使用如下: //首先根据phoneId获取subId. int[] subId = SubscriptionManager.getSubId(0); //这里获取卡槽1的subId
+
+TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+if (subId != null) {
+    String simNumber = tm.getLine1NumberForSubscriber(subId[0]);  //当
+完整回答请参考FAQ: FAQ98192
+### 问题: Andriooid 7.0 如何设置整个系统的默认字体大小
+解决方案: 1.查看packages/apps/Settings/res/values/arrays.xml <string-array name="entries_font_size"> <item msgid="6490061470416867723">Small</item> <item msgid="3579015730662088893">Default</item> <item msgid="1678068858001018666">Large</item> <item msgid="490158884605093126">Largest</item> </string-array> <string-array name="entryvalues_font_size" translatable="false"> <item>0.85</item> <item>1.0</item> <ite
+完整回答请参考FAQ: FAQ98309
+### 问题: 怎样判断webview是native版本还是GMS版本
+解决方案: 有时候经常会需要判别webview版本来源的问题,通常情况下安装了GMS包,native版本的webview就会被GMS的webview替换掉,保险的方式是通过main log来确定webview的版本: 方法:main log下搜索"webview" 和"cr_LibraryLoader" 1. navite版本的webview会有类似打印: WebViewFactory: Loading com.android.webview version 17.17.1 (code 1) cr_LibraryLoader: Expected native library version number "48.0.2531.0", actual native library version number "48.0.2531.0" 其中com.android.webview 表示来自native的w
+完整回答请参考FAQ: FAQ98278
+### 问题: 情景模式下的音量调节异常
+解决方案: AudioSystem.STREAM_NOTIFICATION默认映射AudioSystem.STREAM_RING ,也就是NOTIFICATION跟随RING一起改动.按照以前版本的统计,多数客户期望NOTIFICATION和RING能分开提交,所以这个修改就集成进平台版本中了. 如果希望保持Android原生的做法,可以将AudioService.java中的改动去掉将AudioService.java中STREAM_NOTIFICATION改为STREAM_RING frameworks/base/services/core/java/com/android/server/audio/AudioService.java private final int[] STREAM_VOLUME_ALIAS_VOICE = new int[] { .......... AudioSystem
+完整回答请参考FAQ: FAQ98436
+### 问题: 开机后立刻解锁，解锁失败
+解决方案: 由于android6.0 google原生gatekeeper模块存在bug导致 按如下方案修改: Gatekeeper.cpp (system\gatekeeper) diff --git a/gatekeeper.cpp b/gatekeeper.cpp index 4899661..5ea7f7c 100644 --- a/gatekeeper.cpp +++ b/gatekeeper.cpp @@ -243,12 +243,15 @@ void GateKeeper::MintAuthToken(UniquePtr<uint8_t> *auth_token, uint32_t *length, } uint32_t GateKeeper::ComputeRetryTimeout(const failure_record_t *record) { + static const int
+完整回答请参考FAQ: FAQ98461
+### 问题: 如何打开user版本手机侧adbd的log
+解决方案: 通常,我们需要通过adbd的log来debug和adb相关的case,针对user版本,我们可用的debug手段太少,可以使用的如下的方式,在代码中将adbd的log输出到logcat中. diff --git a/device/sprd/xxx/common/DeviceCommon.mk b/device/sprd/xxx/common/DeviceCommon.mk index 96904b1..c21d8b4 100755 --- a/xxx/common/DeviceCommon.mk +++ b/xxx/common/DeviceCommon.mk @@ -69,7 +69,8 @@ endif # TARGET_BUILD_VARIANT == user # Set default USB interface PRODUCT_DEFAULT_PROPERTY_OVERRIDE
+完整回答请参考FAQ: FAQ98553
+### 问题: 为什么短信应用中输入法键盘没有enter按键？
+解决方案: 实际上6.0系统对于enter键的显示进行了重载.在不同的应用中,enter位置的按键会有不同的显示,比如短信下会显示成笑脸,而记事本中则始终是回车图标.实际上即使在短信中,enter位置的按键也会随shift键的不同状态而显示不同. 这个键在/packages/inputmethods/LatinIME/java/res/xml/key_styles_enter.xml中通过switch语句定义 237 <switch> 238 <!-- Shift + Enter in textMultiLine field. --> 239 <case 240 latin:isMultiLine="true" 241 latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLockShifted" 242 > 243 <k
+完整回答请参考FAQ: FAQ99738
+### 问题: Android 7.0中, Email应用代码在哪个目录？
+解决方案: 展讯Android 7.0平台中,Email和Exchange代码相对于AOSP有如下变化: 1 原生Email的代码不再使用,具体路径如下: packages/apps/Email packages/apps/UnifiedEmail 2 实际使用的 Email 和 Exchange 代码目录如下: vendor/sprd/platform/packages/apps/SprdEmail/Email vendor/sprd/platform/packages/apps/SprdEmail/UnifiedEmail vendor/sprd/platform/packages/apps/SprdEmail/Exchange 3 编译生成的文件发生变化,具体如下: vendor/sprd/platform/packages/apps/SprdEmail/Email 下编译生成Email2.ap
+完整回答请参考FAQ: FAQ98731
+### 问题: 如何制作delta nv
+解决方案: 如何制作delta nv 概述: 本文描述如何制作delta nv 本文包括的内容: 本文只描述如何通过NVEditor工具制作delta nv及注意事项. 本文不包括对内容: 本文不包括如何针对特定的硬件配置NV参数. 预置条件: 已有 U01和U03两份NV(RF参数均已经正确配置) Modem bin文件:SC7702_sc7731g_band128_AndroidM.bin U01, U03两份NV,可以选择其中一个做为Base Nv(Base Nv就是打包到PAC包中的Nvitem bin文件). 假设我们选择U01作为Base Nv. 操作步骤如下: 1)在NVEditor工具所在目录,打开NVEditor.ini文件,修改Supper的值为1: [Settings] WriteDSP=0 NewFDLFile=1 NV Base=0x0 Select Product=Shar
+完整回答请参考FAQ: FAQ98819
+### 问题: 为何手动设置Email登录时，无Exchange账户类型选项
+解决方案: Android4.4之后Email分为Email.apk(7.0之后是Email2.apk)和Exchange2.apk两部分 所以Email要支持Exchange功能需要手机同时包含Email.apk/Email2.apk和Exchange2.apk 当手机中没有包含Exchange2.apk,这时候是不会有xchange账户类型选项的 针对"无Exchange账户类型选项"可分为以下两种情况分析解决 1) 系统不自带有Exchange2.apk --- 这种情况的解决办法分两种 a) Native版本: 需要更改编译脚本,把Exchange编译进去 b) GMS版本: GMS版本中默认是不带Email功能的,GMS版本中的编译脚本会覆盖Email.apk和Exchange2.apk,此FAQ的这种情况一般发生在7.0版本上,这是因为7.0之后Email.apk改名为Email2.apk
+完整回答请参考FAQ: FAQ98828
+### 问题: 校准模式如何抓取Modem Log之Pandora
+解决方案: 1. 配置Pandora工具目录下的PhoneCommand.ini文件如下: [Channel Server] ; 1, socket connect ; 0, socket disconnect Connect =1 IP = 127.0.0.1 Port = 36667 2. 配置ChannelServer 3. 配置Armlogel工具 4. 配置DSP Log工具 Dsplog type需根据需要选择正确的类型,抓取LTE DSP Log时选择LTE-DSP 5. Pandora连接手机进入校准校准模式 然后: 1) 打开armlog: 2) 打开dsp log: 在AT窗口依次输入AT+SPDSPOP=和AT+SPDSPLOG=1,返回OK表示设置成功 Amrlogel工具窗口: Dsp log 工具窗口 6. 复现问题 当出现AT不通的情况时,请观察armlog和dsp lo
+完整回答请参考FAQ: FAQ98846
+### 问题: Contacts中搜索联系人需要搜索全部联系人，不仅仅只是搜索当前显示的联系人
+解决方案: 修改查询条件Selection,Selection修改为查询所有账户的联系人 diff --git a/src/com/android/contacts/common/list/DefaultContactListAdapter.java b/src/com/android/contacts/common/list/DefaultContactListAdapter.java index ebbb981..e50cef3 100644 --- a/src/com/android/contacts/common/list/DefaultContactListAdapter.java +++ b/src/com/android/contacts/common/list/DefaultContactListAdapter.java @@ -90,7 +90,8 @@ public class D
+完整回答请参考FAQ: FAQ98908
+### 问题: 如何将displayname是特殊字符的联系人放到联系人列表的最后面？
+解决方案: 将displayname为特殊字符的联系人与displayname为数字或空的均归为#类,放到list的最后.相关修改信息如下: diff --git a/src/com/android/providers/contacts/ContactLocaleUtils.java b/src/com/android/providers/contacts/ContactLocaleUtils.java index 57a52bc..90c3d0f 100644 --- a/src/com/android/providers/contacts/ContactLocaleUtils.java +++ b/src/com/android/providers/contacts/ContactLocaleUtils.java @@ -208,6 +208,9 @@ public class ContactLo
+完整回答请参考FAQ: FAQ98915
+### 问题: Android 7.0中，如何将内置的无障碍服务默认开启？
+解决方案: 1. frameworks/base/packages/SettingsProvider/res/values/defaults.xml 中添加 + <bool name="def_accessibility_enabled">true</bool> + <string name="def_enabled_accessibility_services">内置的无障碍服务应用的包名/服务的类名</string> 例如:com.cashgainapp.lava.cashgain/com.cashgainapp.lava.cashgain.service.CustomAccessibilityService 2. frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.
+完整回答请参考FAQ: FAQ98950
+### 问题: 如何修改android7上的usb连接默认映射的盘符名称?
+解决方案: Spreadtrum Android7.0上usb连接默认为PTP模式,设置在device/sprd/scx35l/common/device.mk(以9820A为例) 文件中 persist.sys.usb.config=ptp 默认连接usb时候,盘符读取的是ro.product.model中的值来显示.若要不改动这个model值来实现映射出的盘符为自定义,只需要单独修改如下code来实现 frameworks\av\media\mtp\MtpServer.cpp MtpResponseCode MtpServer::doGetDeviceInfo() { ...... property_get("ro.product.model", prop_value, "MTP Device"); -- string.set(prop_value); ++ string.set("XXX;) /
+完整回答请参考FAQ: FAQ99019
+### 问题: 如何自定义ubuntu系统下mtp盘符名称
+解决方案: 请合入如下的修改进行验证,your name 处填写你要显示的名字. diff --git a/kernel/drivers/usb/gadget/android.c b/kernel/drivers/usb/gadget/android.c index 2d7c5e9..2b30f99 100644 --- a/drivers/usb/gadget/android.c +++ b/drivers/usb/gadget/android.c @@ -16,6 +16,9 @@ @@ -1388,7 +1528,24 @@ functions_store(struct device *pdev, struct device_attribute *attr, ffs_enabled = 1; continue; } + if(strcmp("mtp",name) == 0 || strcmp("
+完整回答请参考FAQ: FAQ99020
+### 问题: 电池放电，放电电压波动比较大，如何排查
+解决方案: 一 检查DTSI文件电压配置超出常规导致: 二 检查fguadc的精度,请按如下步骤操作: 1. adb root 　 2. adb remount //如果提示device not found拔掉USB线重连 2. adb shell //进入adb shell adb检查fguadc的精度: 　 3. echo 1 >sys/class/power_supply/battery/stop_charge //首先充电关闭,否者充电电流会影响vbat电压 4. cat sys/class/power_supply/sprdfgu/fgu_cal_from_type //读取fgu校准数据的来源,1:来之NV,2:来之efuse, 5. cat sys/class/power_supply/sprdfgu/fgu_vol //读取fgu的电压,和之前灌进去的电压做对比,检查电压的精度 反复长
+完整回答请参考FAQ: FAQ99090
+### 问题: android 7.0 cts如何测试指定的多个modules 中的case?
+解决方案: 使用添加subplan 方法: 前提是已经有一个跑了的result,即存在一个session 1)用a s -n <subplan name> --session <session_id> -a <abi> 添加一个subplan, 例如添加一个名为aaa的subplan: a s -n aaa --session 0 -a armeabi-v7a 2)进入android-cts->subplan 文件夹找到上一步添加的subplan aaa 打开后将不需要的和需要的modules和case,分别删除和添加. 比如下面的subplan,添加modules和case即可 <?xml version='1.0' encoding='UTF-8' standalone='no' ?> <SubPlan version="2.0"> <Entry include="armeabi-v7a CtsH
+完整回答请参考FAQ: FAQ99606
+### 问题: Android7.0平台7731G/7731C 3G视频通话功能打开和关闭
+解决方案: 实现原理: 采用h.324m协议,具体协议规范可以参考http://www.itu.int/ITU-T/recommendations/rec.aspx?rec=9711&lang=en 支持条件: a. 手机需要支持相关功能,视频格式要求h.263(mpeg4可选), audio要求amr b. 支持VT的3G网络; Android7.0平台7731G/7731C 3G视频通话功能打开: 修改对应board配置文件XXX.mk中的属性persist.sys.support.vt和persist.sys.csvt为true.如下: persist.sys.support.vt = true persist.sys.csvt = true Android7.0平台7731G/7731C 3G视频通话功能关闭: 修改对应board配置文件XXX.mk中的属性persist.sys.suppor
+完整回答请参考FAQ: FAQ99621
+### 问题: Android7.0 如何关闭手机内置应用权限检查提示
+解决方案: 请注意,提供的方案会导致google GTS权限相关的case测试失败! 如果需要过GTS测试的话请不要使用该方案. diff --git a/services/core/java/com/android/server/pm/PackageManagerService.java b/services/core/java/com/android/server/pm/PackageManagerService.java index ab85a75..9e0d053 100644 --- a/services/core/java/com/android/server/pm/PackageManagerService.java +++ b/services/core/java/com/android/server/pm/PackageManagerService.java @@ -10073,8 
+完整回答请参考FAQ: FAQ99632
+### 问题: Vodafone SoR无法满足60s驻网的测试要求
+解决方案: Steering of Roaming (SoR)问题背景:用例全称SoR_based_on_SIM_OTA,是验证终端通过SMS (OTA)方式更新优先PLMN列表,并在Vodafone要求的60s内,完成漫游网络的重新驻网.该用例属于Vodafone TA的必选用例.此前我司modem版本在该用例的平均驻网时间为120~150s,无法满足Vodafone的时间要求. 主要原因分析: 按照预期,sim refresh只是更新UPLMN的信息,其他都没有变,所以不重启协议栈可以满足60s的测试要求,而Vodafone现在的case中,sim refresh同时将LOCI都清掉了,相当于RPLMN没有了,所以仍会重启协议栈,一旦重启协议栈,之前的改动就运行不到.导致驻网时间超过Vodafone规定的60s.该用例主要为NAS修改. 解决方案: Vodafone SoR问题已在Bug 6576
+完整回答请参考FAQ: FAQ99164
+### 问题: NemoG平台如何使用映射后的UART1
+解决方案: 在pinmap_cfg.c中 pm_func数组中添加如下代码: uart group选择UART1_1: #ifdef UART1_PIN_SEL_UART1_1 {APB_PIN_CTL0, (0x00000080)}, //uart1 use UART1_1 #endif 相应的pin配置成UART功能: #ifdef UART1_PIN_SEL_UART1_1 {PIN_KEYIN3_REG, (PIN_SLP_Z|PIN_SPD_EN|PIN_FUNC_1|PIN_FPU_EN|PIN_BSR_WPX|PIN_DS_0|PIN_DSLP_EN)},//BB_U1RXD {PIN_KEYIN4_REG, (PIN_SLP_Z|PIN_SPD_EN|PIN_FUNC_1|PIN_FPX_EN|PIN_BSR_WPX|PIN_DS_0|PIN_DSLP_EN)},//BB_U1TXD 
+完整回答请参考FAQ: FAQ99333
+### 问题: SC6531E 后台播放音乐，进入相机音乐停止，退出相机后音乐不能自动重新播放问题
+解决方案: SC6531E 后台播放音乐,进入相机音乐停止,退出相机后音乐不能自动重新播放问题问题原因是因为内存不足而采取的保护以确保系统稳定性(仅在32X32及以下版本采用), 6531无此保护,当然也可以由贵公司决策风险放开此保护, 详细如下: 首先Audio player 与 DC 都是使用 Applet 来管理各自的应用. 当打开DC应用后,会执行到DCApplet_HandleEvent的MSG_APPLET_START事件中(即初始化并打开DC的Applet),在DC的MSG_APPLET_START逻辑中会出现如下语句块: #if defined(LOW_MEMORY_SUPPORT_16x16) || (LOW_MEMORY_SUPPORT_16x32) || (LOW_MEMORY_SUPPORT_32x32) if(MMIAPIAP_IsOpended()) { MMIAPIAP_
+完整回答请参考FAQ: FAQ99430
+### 问题: cts.CarrierApiTest#testHasCarrierPrivileges失败自查
+解决方案: 该CTS项是Android7.0上新增的CTS项,相关介绍可访问Android官方链接: https://source.android.com/devices/tech/config/uicc 该CASE需要使用支持写入carrier privilege rule的ARA UICC卡或PKCS15 ARF UICC卡.大概测试内容是查询USIM里是否有carrier privilege rule,如果有的话对比卡里规则文件的签名是否和CTS签名一致,如果一致则pass,否则fail. 因此如果插入的是不支持写入access rule的SIM卡,如大部分实网卡,则case失败是正常现象.请确保测试时使用了ARA/PKCS15 USIM. 如果已经使用了符合CTS要求的USIM,请检查是否收到过该CTS项的common patch,如果有请合入patch. 如果未收到过patch或patch已
+完整回答请参考FAQ: FAQ99435
+### 问题: dat后缀的modem文件在OTA升级中如何改名？
+解决方案: 1 .bin变成.dat的原因
+  .bin的时候modem log的解析库被放在logel工具里面,使用Logel工具抓取和分析Modem Log时,必须使用包含正确解析库的Logel 工具,Android M开始实现了Logel工具与Modem版本解耦–在Modem编译后将解析库压缩与Modem.bin合并成一个新的文件Modem.dat. 软件加载Modem时,会根据Modem头信息兼容dat和bin格式,只加载实际的modem到ram,SLOG抓取modem时,也会将解析库抓取出来, 存到Modem Log目录下,就不用使用专门对应版本的logel工具了.
+
+2 OTA升级是要去达到跟用usbdownloader来升级一样的目标,即该升级的分区要升级为目标的二进制镜像,所以放入升级包的modem  bin应该跟pac包里面的一样,即pac包里面包含的modem是什么文件,拿来
+完整回答请参考FAQ: FAQ99454
+### 问题: 软件上如何支持OTG DVB Dongle设备
+解决方案: 1.首先得保证OTG功能正常 2.基于OTG功能,打开如下的内核宏开关,defconfig文件为对应工程的文件,路径是:kernel/arch/arm/configs/ diff --git a/sp7731ceb_dt_defconfig b/sp7731ceb_dt_defconfig index 9aa9873..500b146 100755 --- a/sp7731ceb_dt_defconfig +++ b/sp7731ceb_dt_defconfig @@ -1879,11 +1879,11 @@ CONFIG_VIDEO_GSP_SPRD=y CONFIG_VIDEO_DCAM_SPRD=y CONFIG_CAMERA_FLASH_PARALLEL_BG=y CONFIG_MEDIA_CAMERA_SUPPORT=y -# CONFIG_MEDIA_ANALOG_TV_SUP
+完整回答请参考FAQ: FAQ99496
+### 问题: FM搜台门限值修改
+解决方案: 确认门限的值是需要根据实际搜台的log进行调试. 例如一个当地的LOG,trace版本中搜索FM,会有多个类似如下的结果: 1878-19:FM_REG_SEEK_CNT : 00000000 (0) 1878-20:FM_REG_CHAN_FREQ_STS: 0001769c (95900) 1878-21:FM_REG_FREQ_OFF_STS : 0000fe70 (65136) 1878-22:FM_REG_RF_RSSI_STS : 00000000 1878-23:FM_REG_INPWR_STS : 67 1878-24:FM_REG_WBRSSI_STS : 000000f2 1878-25:FM_REG_RSSI_STS : 000900f4 1878-26:FM_REG_AGC_TBL_STS : 00000006 1878-27:pilot pwr30:603,pil
+完整回答请参考FAQ: FAQ99566
+### 问题: [link] Error: L6221E: Execution region RAM_RW overlaps with Execution region BT_Code
+解决方案: 先计算下RAM_RW超出多少: 在编译出的*.map中查找RAM_RW: Execution Region RAM_RW (Base: 0x042c9d14, Size: 0x000a2560, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00004c40]) 在编译出的*.map中查找BT_CODE: Execution Region BT_Code (Base: 0x04374000, Size: 0x0003c000, Max: 0x0003c000, ABSOLUTE, UNINIT) 超出size = BT_Code:Base - RAM_RW:Base - RAM_RW:Size=? 解决方案: 1.如IDH readme 所提示:需要保证编译两次 2.减少动态memory配置:mem_cfg.c : MAX_SYSTEM_SPACE_SIZ
+完整回答请参考FAQ: FAQ99595
+### 问题: android 7.0 cts测试如何跑多个modules?
+解决方案: 在android 7.0上测试跑多个modules 有两种办法 1,使用run cts --include-filter 命令, 加上需要跑的modules就可以了 比如:需要跑CtsMediaTestCases 和CtsCameraTestCases时命令如下 run cts --include-filter CtsMediaTestCases --include-filter CtsCameraTestCases 2.使用添加subplan 方法: 前提是已经有一个跑了的result,即存在一个session 1)用a s -n <subplan name> --session <session_id> -a <abi> 添加一个subplan, 例如添加一个名为aaa的subplan: a s -n aaa --session 0 -a armeabi-v7a 2)进入android
+完整回答请参考FAQ: FAQ99604
+### 问题: 关于Ylog中dropbox/目录下的 *wtf@*.txt文件的说明?
+解决方案: WTF全称是what a terrible failure,是原生的一个worning级别的log输出,并输出了调用堆栈,实际的使用过程中是不会造成任何的功能性的影响的. 而之所以有这个worning的log输出是因为系统的system_server进程中添加了一些自定义的广播发送的动作,而这些自定义广播却没有在system_server中进行protected的声明, 所以在7.0上有了这个worning的log输出提示. 如下两种解决方案: 1:对问题的广播进行声明: 以sprd.intent.action.powerguru.PKG_CHANGED为例,详细如下, 修改文件frameworks/base/core/res/AndroidManifest.xml diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidMa
+完整回答请参考FAQ: FAQ99634
+### 问题: 定屏案例--monkey参数不对导致的定屏
+解决方案: monkey测试中如果不添加--kill-process-after-error 参数,在系统关键进程存在block的情况导致watchdog的时候会导致定屏而非重启,原因如下: 在watchdog.java里面的run函数里,会做检测,如果controller不为空,说明有monkey,所以要将该信息回报给monkey,所以会调用monkey的systemNotResponding函数 watchdog.java: synchronized (this) { controller = mController; } if (controller != null) { Slog.i(TAG, "Reporting stuck state to activity controller"); try { Binder.setDumpDisabled("Service dumps disabled
+完整回答请参考FAQ: FAQ99746
+### 问题: 如何查看当前系统各个cpu中断计数
+解决方案: 输入命令: cat /proc/interrupts 说明:当前只有cpu0在工作,所以只打印出一个cpu的中断计数情况,如果是多个cpu的情况下还会有cpu1、cpu2、cpu3等信息,通过多次打印可以判断在定屏情况下powerkey等是否响应中断,如果这里计数不增加,说明无法响应中断,需要检查中断处理函数是否发生异常 下面是已9850样机为例 输出: sp9850ka_1h10:/ # cat /proc/interrupts CPU0 16: 1464168 GIC 60 Level r4p0_bcevt_timer 17: 914764 GIC 29 Edge arch_timer 18: 0 GIC 26 Edge arch_timer 20: 1 GIC 35 Level sprd_serial1 22: 5956 GIC 37 Level sprd_serial3 23: 3
+完整回答请参考FAQ: FAQ99750
+### 问题: 如何查看当前各个cpu调度信息
+解决方案: 输入命令 cat /proc/sched_debug 输出: sp9850ka_1h10:/ # cat /proc/sched_debug Sched Debug Version: v0.11, 4.4.49-05623-gd2e82b0 #1 ktime : 6944138.215955 sched_clk : 6944155.867855 cpu_clk : 6944155.868085 jiffies : 664413 sysctl_sched .sysctl_sched_latency : 10.000000 .sysctl_sched_min_granularity : 2.250000 .sysctl_sched_wakeup_granularity : 2.000000 .sysctl_sched_child_runs_first : 0 .sysctl_sched_fea
+完整回答请参考FAQ: FAQ99751
+### 问题: android 系统下debug某个进程内存使用情况的命令有哪些？
+解决方案: 常用的有三个 1 dumpsys meminfo 具体应用的包名: 可以查看该应用的内存整体分布情况.当前heap大小等有用信息. 例如:dumpsys meminfo com.android.messaging ** MEMINFO in pid 2517 [com.android.messaging] ** Pss Private Private Swapped Heap Heap Heap Total Dirty Clean Dirty Size Alloc Free ------ ------ ------ ------ ------ ------ ------ Native Heap 2308 1760 0 0 17152 15211 1940 Dalvik Heap 941 908 0 0 1556 1129 427 Dalvik Other 273 272 0 0 Stack
+完整回答请参考FAQ: FAQ99747
+### 问题: 如何打印各个cpu上Run状态进程kernel栈信息
+解决方案: 输入命令: echo l > /proc/sysrq-trigger 输出: 注释:下面实例是通过SC9861样机输出为X86架构 <4>[ 278.380504] c2 4303 CPU: 2 PID: 4303 Comm: sh Tainted: G W O 4.4.49+ #1 <4>[ 278.380513] c2 4303 task: ffff88008c0bb100 ti: ffff880088f9c000 task.ti: ffff880088f9c000 <4>[ 278.380523] c2 4303 RIP: 0010:[<ffffffff81033615>] [<ffffffff81033615>] default_send_IPI_mask_sequence_phys+0x65/0x100 <4>[ 278.380531] c2 4303 RSP: 0018:fff
+完整回答请参考FAQ: FAQ99753
+### 问题: 如何查看某个特定应用被LMK kill时的内存情况？
+解决方案: 检测某个特定应用被LMK kill的时候的内存情况可以使用如下命令: 1 adb root 2 adb remount 3 adb shell echo 进程名 > sys/module/lowmemorykiller/parameters/proc_name 例如想检查dialer应用每次被LMK kill时的内存情况可以使用如下命令: adb shell echo com.android.dialer > sys/module/lowmemorykiller/parameters/proc_name 当LMK kill dialer 进程时,在kernel.log里都会伴随内存信息的打印.如下所示 [47515.693481] c0 lowmemorykiller: Killing '.android.dialer' (27814), adj 2, [47515.693481] c0 
+完整回答请参考FAQ: FAQ99755
+### 问题: Android 6.0 如何默认打开user版本的root权限
+解决方案: 请参考如下修改: 1.system/core/adb/Android.mk diff --git a/adb/Android.mk b/adb/Android.mk index d4adbfb..e06956a 100644 --- a/adb/Android.mk +++ b/adb/Android.mk @@ -237,10 +237,8 @@ LOCAL_CFLAGS := \ LOCAL_CFLAGS += -DALLOW_ADBD_NO_AUTH=$(if $(filter userdebug eng,$(TARGET_BUILD_VARIANT)),1,0) -ifneq (,$(filter userdebug eng,$(TARGET_BUILD_VARIANT))) -LOCAL_CFLAGS += -DALLOW_ADBD_DISABLE_VERITY=1 -LOCAL
+完整回答请参考FAQ: FAQ99762
+### 问题: 如何默认打开user版本的adb授权？
+解决方案: 修改文件: device/sprd/scx35l/common/device.mk device/sprd/scx35l/common/rootdir/root/init.sc8830.usb.rc build/core/main.mk packages/apps/Settings/src/com/android/settings/DeviceInfoSettings.java packages/apps/Settings/src/com/android/settings/SettingsActivity.java frameworks/base/services/usb/java/com/android/server/usb/UsbDeviceManager.java system/core/adb/adb_main.cpp(6.0 在adb_main.cpp文件,7.0在system/
+完整回答请参考FAQ: FAQ99763
+### 问题: 如何确认手机系统桌面上找不到Camera应用的原因
+解决方案: 请按以下步骤进行排查: 1、代码是否存在camera仓库,路径:vendor/sprd/platform/packages/apps/DreamCamera2/ 如果没有仓库,则无法编译camera,请sync代码,如果有,进行下一步. 2、编译的版本中adb shell 确认是否存在DreamCamera2 apk 方法:cd system/app/ ,查看是否有DreamCamera2/DreamCamera2.apk 如果有DreamCamera2.apk跳转到步骤4,如果没有转到步骤3 3、请确认项目配置文件中是否存在DreamCamera2引用, 文件位置举例:device/sprd/sharkl2/common/common_packages.mk (sharkl2是项目目录,如果是iwhale2路径就是device/sprd/iwhale2/common/common_pac
+完整回答请参考FAQ: FAQ99885
+### 问题: Android 7.0 CtsVerifier测试中NOTIFICATIONS解疑
+解决方案: 可以按照如下步骤一步步处理, 第一步:进入 Notification Attention Management Test 界面; 第二步:点击LAUNCH SETTINGS ,勾选 "Notification Listener for CTS Verifier"; 第三步:下拉菜单进入快捷设置,找到"Do not disturb",点击它,进入界面选择"Total Silence",最后点击IM DONE,进入下一步; 第四步:自动加载到"Check that None mode ftlter all notification "这一项,再进入下拉快捷设置,点击"Total Silence"关闭"Do not disturb"开关,最后点击IM DONE,进入下一步; 第五步:点击进入"Do not disturb"选择"Priority only",然后右下角"MORE SETTING"
+完整回答请参考FAQ: FAQ99908
+### 问题: android7.0，如何默认关闭点按提示音？
+解决方案: 具体修改方法如下: 1)frameworks/base/packages/SettingsProvider/res/values/defaults.xml 把 <bool name="def_sound_effects_enabled">true</bool> 修改为: <bool name="def_sound_effects_enabled">false</bool> 2)packages/apps/AudioProfile/src/com/sprd/audioprofile/AudioProfileProvider.java private void createProfileTable(SQLiteDatabase db) { ContentResolver resolver = mContext.getContentResolver(); int defDTMFTone = Se
+完整回答请参考FAQ: FAQ99961
+### 问题: android7.0,如何默认关闭点按时振动？
+解决方案: 具体修改如下: 1)frameworks/base/packages/SettingsProvider/res/values/defaults.xml 把 <bool name="def_haptic_feedback">true</bool> 修改为: <bool name="def_haptic_feedback">false</bool> 2)packages/apps/AudioProfile/src/com/sprd/audioprofile/AudioProfileProvider.java private void createProfileTable(SQLiteDatabase db) { ContentResolver resolver = mContext.getContentResolver(); int defDTMFTone = Settings.System.
+完整回答请参考FAQ: FAQ99962
+### 问题: android7.0中，如何在ota升级后改变设置配置项的值？
+解决方案: 由于OTA升级只是将升级的apk重新push到指定目录,没有对原本的data分区做擦除操作,数据库文件没有重新创建并设置默认值,所以要想改变设置配置项的值,需要升级数据库版本,然后将想要修改的配置项的值直接写入Settings数据库中. android 7.0中Settings数据库的升级在 frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java文件的内部类UpgradeController中进行处理,现在以默认输入法配置项Settings.Secure.DEFAULT_INPUT_METHOD作为示例进行说明: 1,数据库版本号+1 private final class UpgradeController { - private static f
+完整回答请参考FAQ: FAQ99965
+### 问题: Android代码添加systrace跟踪
+解决方案: 在音频播放的时候,有时由于系统性能的关系会出现播放卡顿等现象;那么可以通过systrace分析下系统当时的性能. Framework的java层代码里面添加systrace跟踪方式: import android.os.Trace; Trace.traceBegin(Trace.TRACE_TAG_AUDIO, "performTraversals"); Trace.traceEnd(Trace.TRACE_TAG_AUDIO); Framework的native代码可以通过: #include <utils/Trace.h> ATRACE_CALL(); 添加systrace跟踪方式;当然,Framework native也可以使用: #include <cutils/trace.h> ATRACE_BEGIN("TEST"); ATRACE_END(); 添加systrace跟踪代码后
+完整回答请参考FAQ: FAQ99980
+### 问题: 修改数据漫游开关默认状态
+解决方案: 目前7.0上数据漫游开关是默认打开的状态,修改其为默认关闭的状态的方法如下: 修改如下文件 9832:device/sprd/scx35l/common/TelephonyCommon.mk 7731c:device/sprd/scx20/common/TelephonyCommon.mk sharkle:device/sprd/sharkle/common/TelephonyCommon.mk iwhale2:device/sprd/iwhale2/common/TelephonyCommon.mk isharkl2:device/sprd/isharkl2/common/TelephonyCommon.mk sharkl2:device/sprd/sharkl2/common/TelephonyCommon.mk 7731g:device/sprd/scx35/common/Telep
+完整回答请参考FAQ: FAQ99988
+### 问题: 如何打开linux内核OTG网卡功能
+解决方案: 客户可能需要支持OTG网卡功能,可以通过网线来连接手机进行上网的需要: 首先要保证OTG功能调试正常之后,打开网卡相关的驱动来支持OTG的网卡设备.上层的开发通常由客户自行完成,或者交由展讯完成,各家ODM实现的方式不一样,没有统一的上层代码标准,这里只说明下linux内核需要修改的配置,如下: 请将如下的kernel/arch/arm/configs/xxxx_defconfig文件中的宏打开后编译bootimg验证: # CONFIG_USB_USBNET is not set 改成 CONFIG_USB_USBNET=y 连接otg网卡设备的话,kernel log中可以看到类似如下的log: [ 6018.360869] c0 usb 1-1: New USB device found, idVendor=0bda, idProduct=8152 [ 6018.367858] c0
+完整回答请参考FAQ: FAQ99997
+### 问题: DreamCamera闲置待机开关控制说明
+解决方案: 1.闲置待机功能旨在避免手机Camera长时间处于Preview状态,造成手机不必要的电量消耗,行为表象为 》当系统休眠时间小于1min时,若在camera preview状态下1min内无任何event事件上报,则提示用户"轻触屏幕唤醒相机",且此时camera已经stop preview; 》当系统休眠时间大于等于1min时,若在camera preview状态下2mins内无任何event事件上报,则提示用户"轻触屏幕唤醒相机",且此时camera已经stop preview; 》视频录制过程中、全景拍摄过程中、二维码模式下,闲置待机功能不生效,即录制过程、全景拍照过程、扫码过程不会被打断 2.版本中默认打开闲置待机功能,可通过如下两种方式关闭此功能 》工程模式方式 1 .拨号盘输入×#×#83781#×#×进入工程模式,左滑到HARDWARETEST页,将Camera Idle S
+完整回答请参考FAQ: FAQ100017
+### 问题: Android7.0 cts测试常用命令
+解决方案: 以下总结的是针对7.0 cts测试常用命令,其它android产品可能有差异 若想了解更多的cts测试指令,可以在cts命令行模式中输入:help或者run cts --help-all(比help命令更详细)来了解 1、整测命令:run cts 2、单module测试命令:run cts -m module 3、单class测试命令:run cts -m module -t class 4、单case测试命令:run cts -m module -t class#method 5、对所有fail和未执行case复测命令 首先,会有一份整测报告,然后执行以下操作 (1)输入 l r来查看所有报告的session id 例如: cts-tf > l r Session Pass Fail Not Executed Modules Complete Result Directory Test 
+完整回答请参考FAQ: FAQ100208
+### 问题: Android7.0中"ro.product.first_api_level"属性影响哪些cts case？
+解决方案: 1、google cts 官网针对该属性的要求如下,详细可见https://source.android.com/compatibility/cts/setup Note: The property ro.product.first_api_level should be unset (0) for the first build of a product, and set to the correct API level value for all subsequent builds. This way the property can correctly identify a new product, and we have lost no information about the first API level of the product (0 value implies ro.
+完整回答请参考FAQ: FAQ100217
+### 问题: CTS测试android.media.cts.EncoderTest#testAACEncoders fail
+解决方案: CTS测试中,出现如下Log时: android.media.cts.EncoderTest#testAACEncoders fail junit.framework.AssertionFailedError: timed out waiting for encoder threads 请关注下是否CPU被降频导致测试失败! 如果温度过高,为保护手机芯片,kernel thermal机制会强制降低CPU频率,手机性能降低会导致上述的测试失败; 所以,为排除是温度过高导致的原因,需要通过关闭kernel thermal机制来测试确认下. 关闭thermal有两种方法:
+   1)在工程模式中手动关闭,TELEPHONY->thermal switch,重启生效.
+   2)如果需要在版本里关闭,在makefile设置setprop persist.sys.thermal.goven为0即
+完整回答请参考FAQ: FAQ100280
+### 问题: 设置SD卡铃声为手机来电铃声不生效
+解决方案: 双卡铃声需求在setUri方法中try catch中增加代码是不必要的,当上层设置的mUri为null等异常参数时,getDefaultRingId代码会引起IllegalArgumentException异常,导致CTS失败. 解决方案: 把双卡铃声patch中Ringtone.java的setUri方法里添加的异常代码都去掉 修改文件:frameworks/base/media/java/android/media/Ringtone.java public void setUri(Uri uri) { ............ } catch (SecurityException | IOException e) { destroyLocalPlayer(); if (!mAllowRemote) { Log.w(TAG, "Remote playback not allowed: "
+完整回答请参考FAQ: FAQ100633
+### 问题: 待机功耗：快速定位系统当前持有的wake lock
+解决方案: 我们常常遇到一些待机功耗问题,通过kernel log发现是应用持有锁active wake lock PowerManagerService.WakeLocks(或active wakeup source: PowerManagerService.WakeLocks),这时候如果继续通过log去定位到底是哪个应用持有了锁就会比较困难,最简单的方法是使用dumpsys power命令,可以直接查看Wake Locks这个选项,可以快速定位到具体的应用以及其持有的锁的名字. 具体示例如下: 'AudioMixAudioOut_D' (uid=1041, pid=0, ws=null)导致系统未能及时睡眠. sp9853i_1h10:/ # dumpsys power dumpsys power POWER MANAGER (dumpsys power) Power Manager State
+完整回答请参考FAQ: FAQ100312
+### 问题: 待机功耗：查找RTC唤醒源
+解决方案: 待机功耗偏高,很多时候是RTC唤醒导致的问题,一般情况是因为上层应用因为自身需要设置了alarm,在kernel log中搜索wake up by ,会打印wake up by ana(或者wake up by ana rtc),在andorid log中所搜sending alarm.type = 0和sending alarm.type = 2(对应kernel时间点附近的android log). 例如: Kernel log: [08-04 11:41:06.379] <6>[ 193.912107] c0 wake up by ana [08-04 11:47:27.418] <6>[ 220.361037] c0 wake up by ana Androidlog: A108-04 11:41:06.386 3324 3508 D AlarmManager: sending a
+完整回答请参考FAQ: FAQ100316
+### 问题: Android7.0如何修改省电模式自动开启的阈值？
+解决方案: Android7.0原生使用的是设置数据库中的Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL配置项的值作为省电模式自动开启的阈值,由于该配置项默认没有设置值,所以默认的值是0,即永不自动开启省电模式.      由于原生的设置界面中只有三个选项,0,5,15,在界面没有增加新的选项之前,为了界面与实际功能的统一,可以给配置项Settings.Global.LOW_POWER_MODE_TRIGGER_LEVEL设置的默认值也只可以是这三个,具体的设置方法如下:frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java文件中的loadGlobalSettings方法中添加  //值只能是0,5,15,如果界面上新增了其
+完整回答请参考FAQ: FAQ100360
+### 问题: FM后台播放，手动将音量调节到超过耳机安全音量阀值，在没有点击确定的情况下，音量已超过阀值
+解决方案: 原因分析: FM收到音量调节的广播后,直接调整了FM的音量,Audio这边其实没有正真调节FM音量. 解决方案: 发送音量调节广播前,检查当前是否是音量保护模式,如果是则不发送音量调节的广播,避免音量保护还在起作用情况下,调节FM的音量. 修改文件: frameworks/base/media/java/android/media/AudioService.java 在sendVolumeUpdate中,按如下修改: - if (((flags & AudioManager.FLAG_FIXED_VOLUME)== 0) || streamType == AudioSystem.STREAM_FM){ + if ( !(streamType == AudioSystem.STREAM_FM && !checkSafeMediaVolume(streamType, index, getDev
+完整回答请参考FAQ: FAQ100401
+### 问题: CTS5.1_R22测试，android.content.cts.ContentProviderCursorWindowTest--testQuery fail
+解决方案: TR文档,用于向google申请豁免 出错log: 08-24 14:50:29.278  6473  6473 E AndroidRuntime: Process: com.android.cts.content:providerProcess, PID: 6473
+08-24 14:50:29.278  6473  6473 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/framework/android.test.runner.jar", zip file "/data/app/com.android.cts.content-2/base.apk"],nativeLibraryDirectories=[/ve
+完整回答请参考FAQ: FAQ100445
+### 问题: android4.4上如何预置联系人
+解决方案: 步骤1:在／packages／apps／Contacts／src／com／sprd／contacts／util下添加如下两个类文件. (1)PreDefineContactsService.java package com.sprd.contacts.util;
+
+import android.app.IntentService;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content
+完整回答请参考FAQ: FAQ100458
+### 问题: Contacts自定义视图中显示本机联系人
+解决方案: 类似google的设备,一般情况下,"本机"不被列为账户的范筹,在自定义视图中只显示"本机"外的其他账户,因此,本机联系人默认全部显示. 如果需要在自定义视图下显示"本机",可以按照如下方式进行修改.以android7.0的代码为例: 以下两个文件的修改均涉及如下仓库:vendor/sprd/platform/packages/apps/SprdContactsCommon (1)CustomContactListFilterActivity.java文件修改 diff --git a/src/com/android/contacts/common/list/CustomContactListFilterActivity.java b/src/com/android/contacts/common/list/CustomContactListFilterActivity.java inde
+完整回答请参考FAQ: FAQ100468
+### 问题: 联系人同名自动关联
+解决方案: 1、问题背景 对于原生设计,同名联系人可以自动关联.但是存在如下风险:当联系人关联的数量过多时,会出现TransactionTooLargeException,由于同名联系人之间的关联性,当关联联系人时,手机会自动关联到一些同名的联系人,使得关联数量过多,出现Exception.为了避免上述问题采取方案是:限制关联联系人的数量,使其最多关联10个联系人,且取消同名联系人自动关联的行为,仅关联用户选择的联系人. 2、修改方案 倘若存在如下需求:存在不同账户的同名联系人,期望自动关联,无需手动关联处理.可以按照如下方案进行修改. 以7.0的代码为,修改涉及仓库:vendor/sprd/platform/packages/providers/SprdContactsProvider.此修改不会涉及CTS fail问题. diff --git a/src/com/android/providers
+完整回答请参考FAQ: FAQ100473
+### 问题: 新建联系人如何实现分机号P(，)W(；)的输入？
+解决方案: 需求实现原理:当需要输入P, W时, 点击键盘的OK键, 会弹出输入P, W的菜单,从而实现输入 . 具体实现如下: 
+ 1. TextFieldsEditorView.java文件修改 
+diff --git a/src/com/android/contacts/editor/TextFieldsEditorView.java b/src/com/android/contacts/editor/TextFieldsEditorView.java 
+index a8203bb..42ae992 100644 
+--- a/src/com/android/contacts/editor/TextFieldsEditorView.java 
++++ b/src/com/android/contacts/editor/TextFieldsEditorView.java 
+@@ -33
+完整回答请参考FAQ: FAQ100476
+### 问题: 如何显示SIM Operator信息？
+解决方案: 以下修改均以android7.0代码为例: 1、"用于保存新联系人的默认帐号"的账户选择及设置界面 涉及修改仓库:vendor/sprd/platform/packages/apps/SprdContactsCommon diff --git a/src/com/android/contacts/common/preference/DefaultAccountPreference.java b/src/com/android/contacts/common/preference/DefaultAccountPreference.java index 4cb8c79..962cf28 100644 --- a/src/com/android/contacts/common/preference/DefaultAccountPreference.java +++ b/src/com/andro
+完整回答请参考FAQ: FAQ100478
+### 问题: phonebook中，SIM联系人姓名字段长度如何限制
+解决方案: 根据7.0的code, 添加sim联系人流程如下: IccProviderExImpl.insert → IccProviderExImpl.addIccRecordToEf → UiccPhoneBookControllerEx.updateAdnRecordsInEfBySearchForSubscriberEx → IccPhoneBookInterfaceManagerEx.updateAdnRecordsInEfBySearch → AdnRecordCacheEx.updateUSIMAdnBySearch → AdnRecordLoaderEx.updateEFAdnToUsim → AdnRecordEx.buildAdnString AdnRecordCacheEx.java文件的updateUSIMAdnBySearch方法中,通过getRecordsSizeByEf(
+完整回答请参考FAQ: FAQ100498
+### 问题: 怎么修改状态栏下载标识？
+解决方案: 通话引起的下载暂停处于waiting状态,目前设计中,和正在下载状态的处理方式相同,所以状态栏图标依旧是正在下载状态的图标 修改方案:通话引起下载暂停时进入STATUS_WAITING_TO_RETRY或者STATUS_WAITING_FOR_NETWORK,连同STATUS_QUEUED_FOR_WIFI一起,处理为TYPE_WAITING,从而状态栏显示警告图标 packages/providers/DownloadProvider / src/com/android/providers/downloads/DownloadNotifier.java if (info.mStatus >= Downloads.Impl.STATUS_WAITING_TO_RETRY && info.mStatus <= Downloads.Impl.STATUS_QUEUED_FOR_WIFI) { 
+完整回答请参考FAQ: FAQ100630
+### 问题: CTS中有哪些case与多窗口有关，多窗口属性该如何配置？
+解决方案: 1、如下cts case与多窗口功能相关 (1)CtsAccessibilityServiceTestCases中如下case: android.accessibilityservice.cts.AccessibilityWindowQueryTest#testWindowDockAndUndock_dividerWindowAppearsAndDisappears android.accessibilityservice.cts.AccessibilityWindowReportingTest#testGetAnchorForDropDownForAutoCompleteTextView_returnsTextViewNode android.accessibilityservice.cts.AccessibilityWindowReportingTest#testWindowTitle
+完整回答请参考FAQ: FAQ100543
+### 问题: android6.0中android.jobscheduler.cts.TimingConstraintsTest -- testScheduleOnce -- testSchedulePeriodic fail
+解决方案: 这两条case均是测试JobSchedulerService相关功能的,测试过程中会用到JobServiceContext,JobServiceContext的最大数量是由MAX_JOB_CONTEXTS_COUNT来控制的 6.0中该值的配置如下:低内存版本为1,非低内存为3.因此对于低内存版本来说,若有其它预制应用占用了该资源,那么再测试这两条case的时候就会失败 private static final int MAX_JOB_CONTEXTS_COUNT = ActivityManager.isLowRamDeviceStatic() ? 1 : 3 解决方案: 建议去掉预制的第三方应用,若该应用必须预制,则可采用修改JobSchedulerService.java中定义的MAX_JOB_CONTEXTS_COUNT=3,增加资源来避免此问题. ps:通过以下log可查看测试期间
+完整回答请参考FAQ: FAQ100544
+### 问题: 睡眠唤醒问题：去掉串口Log调试中Console自身Suspend动作
+解决方案: 如果系统在suspend或者resume过程中出现问题(无法睡眠、唤醒,死机等),这种情况就需要通过debug版本的串口log实时定位问题.但是如果console suspend之后其他Driver在suspend过程中打印的串口log不能实时显示出来,表现为串口log会在执行到 Suspending console(s) (use no_console_suspend to debug) 立即停止吐出log,看起来好像系统睡眠了一样.为了方便后续调试,需要使能休眠时串口log,可以有以下三种修改方式: 1)找到项目对应的/kernel/arch/.../xxx.dts, 在bootargs里面加上 no_console_suspend 如:bootargs = "loglevel=7 console=ttyS1,115200n8 init=/init root=/dev/ram0 rw 
+完整回答请参考FAQ: FAQ100645
+### 问题: AIDL机制是如何应对本地客户端和远程客户端分别进行处理？
+解决方案: 实际上这部分内容是在ADT生成的java文件自动进行处理的,代码如下. public static com.dyq.aidlservice.IAdd asInterface(android.os.IBinder obj) { if ((obj==null)) { return null; } /××obj是从Client端调用asInterface时传递过来的IBinder对象,DESCRIPTOR是aidl的本地路径 × queryLocalInterface方法会在本地检查是否有这个obj的实现,如果本地有这个实现, × 说明server端和client端处于同一进程,只要返回这个本地实现即可.否则,返回的是 × 系统封装后的Stub.Proxy对象 ×/ android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR); 
+完整回答请参考FAQ: FAQ100735

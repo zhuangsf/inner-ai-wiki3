@@ -1,0 +1,304 @@
+### 问题: CTS Verifier 5.0安装失败  Failure [INSTALL_FAILED_NO_MATCHING_ABIS]
+解决方案: APK中的native库与CPU架构不一致,会报告INSTALL_FAILED_NO_MATCHING_ABIS,如果下载了X86版本的CTS Verifier进行安装的话,就会出现此问题,选择ARM版本的APK安装.
+参考FAQ: FAQ65525
+### 问题: CTS认证，测试报告如何提供？
+解决方案: (1)用run cts --plan CTS跑完整个测试计划,得到第一轮测试报告,不能有未执行项; (2)用add derivedplan --plan plane_name --session session_id -r fail从第一轮的session_id中继承一个包含所有fail项的测试计划plane_name ,然后再执行这个测试计划run cts --plan plane_name;得到fail项复测报告; (3)提交google认证时,将首测报告和复测报告一起提交;
+参考FAQ: FAQ65578
+### 问题: 安装CTS Verifier 5.0_r2后测试"Notification Attention Management test"时在 “Create contacts for notification annotations”项时无法Pass
+解决方案: 确认以下步骤: 选择"PRIORITY"之后,进Interruptions设置, (1)打开Message选项; (2)"Call/messages from"这项选择"Starred contacts only" 这个测试项有描述这个步骤: Please set the notification filter to "Priority" in the dialog that appears when you change the device's volume, and allow messages from starred contacts.
+参考FAQ: FAQ65579
+### 问题: GTS 2.1_r2版本测试 com.google.android.xts.search.GoogleSearchWidgetTest 此测项Failed该如何处理?
+解决方案: 此测项主要会执行Google Search Widget(小部件)是否放置于默认桌面上, 若有将Package name为com.google.android.googlequicksearchbox 的Google Search Widget(小部件)放置于默认桌面,则此测项会为passed.
+参考FAQ: FAQ65647
+### 问题: 如何在输入法中增加Google语音输入(Google Voice Typing)?
+解决方案: Google语音输入法是包含在Google Search 应用中,也就是需安装GMS包中的Velvet.apk, 在vendor/sprd/partner/google/products/gms.mk 中需添加 Velvet # GMS Mandatory Apps and libraries PRODUCT_PACKAGES += \ Books \ Drive \ Gmail2 \ GmsCore \ Hangouts \ Magazines \ Maps \ Music2 \ PlayGames \ PlusOne \ Street \ + Velvet \ Videos \ YouTube
+参考FAQ: FAQ65669
+### 问题: SC7731平台芯片所有的GPIO口都支持中断功能吗？
+解决方案: 所有的GPIO都支持中断功能.
+参考FAQ: FAQ66165
+### 问题: androdi5.1 user版本为何无法dump Slog
+解决方案: dump 打包关键代码如下: sprintf(cmd, "busybox tar czf %s/%s -C %s %s %s", external_path, name, external_path, "slog", INTERNAL_LOG_PATH); system(cmd); 由于在user版本中,busybox指令不能使用,导致以上代码不能实现,所以在user版本中slogUI不能进行log的dump. 所以在相应的userdebug版本中,进行dump相关测试ok即可.
+参考FAQ: FAQ66166
+### 问题: SC7731平台最大支持多大像素的cameara？
+解决方案: 1.在使用零延时拍照的情况下,camera只能支持到500万像素 2. 不使用零延时拍照.预览使用2M,拍照使用实际的sensor最大尺寸,最大可以到13M.优点是RAM消耗小一点,功耗小一点,但是拍照有个切换工程,所以需要1秒左右的拍照时间. 结论:在不使用零延时拍照的功能情况下,可以支持到1300万像素,且目前参考手机和95%客户都使用该方案 3. 使用5M以上的sensor并且需要零延时拍照. 方案:需要加一个mipi切换开关,这样后置摄像头就可以用4lane,这样就可以在使用这个功能的情况下使用到1300万像素.但是这个MIPI切换开关大概要0.5$--1$
+参考FAQ: FAQ66167
+### 问题: Email收件人处输入非法地址不提示错误，如何修改
+解决方案: 我们无法阻止用户输入错误格式邮箱地址的行为, 在选择发送或保存时,会对地址做合法性的判断, 自动加@后缀是Email原生的做法,在打开发送编辑页时,会把当前帐号的后缀传给RecipientEditTextView, 相关代码在ComposeActivity.java private void setupRecipients(RecipientEditTextView view) 如果客户不希望这个功能,可以去掉相关判断,修改account=null, 这样给RecipientEditTextView传入就会为空.
+参考FAQ: FAQ66600
+### 问题: 浏览器Crash在WorkerPool::Inner::Run()，这是什么原因
+解决方案: 这是android4.4.2原生bug,在官方网站上已经有人提了这个bug https://code.google.com/p/chromium/issues/detail?can=1&q=334992&colspec=ID%20Pri%20M%20Iteration%20ReleaseBlock%20Cr%20Status%20Owner%20Summary%20OS%20Modified&id=334992 并且已经在android4.4.4 fix了. 但是android4.4.2到android4.4.4改动太大,不宜升级,这是仅在低内存情况下的偶现问题,建议不做修改.
+参考FAQ: FAQ66594
+### 问题: gmail删除邮件后“加载中”图标长时间显示，这是什么原因？
+解决方案: 显示刷新图标的现象是android原生的设计,主要分两种情况 1)如果创建的账户使用的是imap协议,则这种现象就算正常,因为使用imap协议时,[已发送]和[已删除]文件夹需要同步服务器上对应的[已发送]和[已删除]文件夹的数据,一般本地有设置一次同步最近的25封邮件,等数据同步完成后,如果服务器上还有其他邮件没有同步,会有一个[加载更多]的项替代之前的[刷新]图标,如果没有,则[刷新]图标消失. 注意,如果时间长了再次进入这两个文件夹,还会再去服务器同步,此时会看到之前同步的数据,最下方还有[刷新]图标,等同步完后还是会消失. 2)如果创建账户时使用的是pop3协议,因为pop3协议的账户[已发送]和[已删除]文件夹不同步服务器数据,只加载本地数据,所以此时界面上的[刷新]图标就只有一个显示的作用,没有其他作用,也不影响本地数据的加载和显示. 综上所述,因为gmail谷歌默认配置的是imap协议,所以这种情况不是问题.
+参考FAQ: FAQ66604
+### 问题: 如何设置开机默认日期？
+解决方案: 1.在kernel/arch/arm/configs/core3_defconfig文件中修改年份的宏定义CONFIG_RTC_START_YEAR, 例如:CONFIG_RTC_START_YEAR=2014. 2.在kernel/drivers/rtc/rtc-sprd.c文件中修改mktime, 例如:mktime(CONFIG_RTC_START_YEAR, 1, 1, 0, 0, 0) 格式为:年,月,日,时,分,秒.(注意:月份是从1开始编号的) 3.在packages/apps/Settings/src/com/sprd/settings/timerpower/Alarms.java文件alarm_flag_setup()方法中,修改c.set(2012, 0, 1, 0, 0, 0), 例如:c.set(2014, 0, 1, 0, 0, 0),格式为:年,月,日,时,分,秒.(注意:月份是从0开始编号的)
+参考FAQ: FAQ65942
+### 问题: 如何设置屏幕默认亮度？
+解决方案: frameworks/base/packages/SettingsProvider/res/values/defaults.xml文件中 修改<integer name="def_screen_brightness">102</integer> 范围是0到255,102是40%.
+参考FAQ: FAQ65948
+### 问题: SC7731是否支持NFC功能？
+解决方案: 支持.
+参考FAQ: FAQ66159
+### 问题: 如何修改使得在Launcher3有循环滑页patch的基础上调用向左、向右滑页接口也可以循环滑页？
+解决方案: 在src/com/android/launcher3/Workspace.java中: public void scrollLeft() { if (!isSmall() && !mIsSwitchingState) { + if(mIsSupportCircular && getCurrentPage() == 0){ + snapToPage(-1); + }else { super.scrollLeft(); + } public void scrollRight() { if (!isSmall() && !mIsSwitchingState) { + if(mIsSupportCircular && getCurrentPage() == getPageCount() -1){ + snapToPage(getPageCount()); + }else { super.scrollRight(); + }
+参考FAQ: FAQ66143
+### 问题: 如何在文件管理器中修改特定的文件夹为不显示？
+解决方案: 比如修改文件夹xxx不显示可按照如下方式: 修改packages/apps/FileExplorer/src/com/sprd/fileexplorer/adapters/FileListAdapter.java文件refreshInternal()函数中: for (File f : files) { if (mCancelLoading) { break; } + if(f.getAbsolutePath().equals("/storage/internalsd/xxx")) { + continue; + } if (display) {
+参考FAQ: FAQ66181
+### 问题: Launcher3中如何使用属性类android.os.SystemProperties？
+解决方案: android原生设计在Launcher3的Android.mk里指定了LOCAL_SDK_VERSION,所以只能使用frameworks中属性为public的类和接口,android.os.SystemProperties属于hide类,因此无法直接通过import使用. 要使用android.os.SystemProperties类,除了常用的反射方法,还可以按照如下步骤操作: 1.注释掉Android.mk文件中的LOCAL_SDK_VERSION:=19; 2.将DragLayer.java中的isLayoutRtl方法的属性由private改为public; 3.删除/Launcher3/src/android/util/Pools.java这个文件. 按照上面修改后就可使用hide类和方法了.
+参考FAQ: FAQ65947
+### 问题: 如何修改下拉状态栏调节亮度的过程中不隐藏下拉通知栏界面，而是固定停留在该界面上？
+解决方案: 定位到:\frameworks\base\packages\SystemUI\src\com\android\systemui\settings\ToggleSlider.java的onStartTrackingTouch方法中的约170行: 修改前:             if (mMirrorController != null) {
+                mMirrorController.showMirror();
+                mMirrorController.setLocation((View) getParent());
+            } 修改后:             if (mMirrorController != null) {
+            }
+参考FAQ: FAQ65995
+### 问题: UUI版本中如何增加客户自己的主题？
+解决方案: 以MocorDroid4.4_3.10_14B_tshark_W15.17.5为例: 定义主题一般是在 device/sprd/scx35_sp7731gea/scx35_sp7731geaplus_UUI_dt.mk 配置文件中配置的, 如果没有定义,则需要在 vendor/sprd/UniverseUI/ThemeRes/universeui.mk 中配置. 1、定义有几个主题: PRODUCT_THEME_PACKAGES :=SimpleStyle HelloColor XX新主题名字 2、定义默认主题: PRODUCT_DEFAULT_THEME :=SimpleStyle 平台默认的主题为:SimpleStyle 一般是以SimpleStyle为默认主题,以HelloColor为基准添加主题. PS:当替换Icons时,必须保证所替换的图标在默认主题中存在,否则替换不成功.
+参考FAQ: FAQ66758
+### 问题: GPS室外静态测试（开阔场景）方式是什么？
+解决方案: 一般在周围无建筑物的地面或某个建筑物的楼顶处,对于正常工作的手机,可见卫星一般8-12颗,能量高的会在45-40(3颗左右),30-40(5颗左右),低于30(4颗左右),冷启动的TTFF 20次平均在60秒以内,热启动平均在5s-10s附近.定位精度在稳定后约在15米以内.
+参考FAQ: FAQ66519
+### 问题: GPS 室外静态测试（开阔场景）测试应注意什么？
+解决方案: 天气原因对于该项目的影响不大.主要关注的测试项目是冷启动,热启动,以及跟踪稳定性.由于此场景比较有对比性,不容易受其他条件影响,建议可以作为其他使用内置天线辐射测试项目的基准测试项目
+参考FAQ: FAQ66528
+### 问题: 如何调整关机电池温度
+解决方案: android原生态电池温度达到摄氏68度就会自动关机 调整温度只需要修改 frameworks\base\core\res\res\values\Config.xml <integer name="config_shutdownBatteryTemperature">680</integer>
+参考FAQ: FAQ66075
+### 问题: 当开机动画比较长时如何让开机动画播放完整才进入launch界面
+解决方案: 如果开机动画比较长的话,可能会播放不完整就进入了launch界面,解决办法就是开机动画需要采用c命令 比如将动画文件desc.txt 改为如下再打包bootanimation.zip即可 320 200 60 c 1 30 part0 c 1 0 part1
+参考FAQ: FAQ66076
+### 问题: android5.1 user版本编译自动打开WITH_DEXPREOPT修改
+解决方案: build/core/main.mk ifeq (,$(WITH_DEXPREOPT)) -ifeq ($(DALVIK_VM_LIB),libdvm.so) +ifeq ($(DALVIK_VM_LIB),libart.so) ifeq ($(user_variant),user) ifeq ($(HOST_OS),linux) WITH_DEXPREOPT := true endif endif endif endif
+参考FAQ: FAQ66078
+### 问题: 如何查看及调整 CSTAR_BITMAP 的字库大小及设定
+解决方案: 可以在MS_MMI\source\mmi_gui\source\se\c\gui_scripteasy.c 里头查看各个语言所支持的字型大小 至于如何调整大小 主要定义的地方是在 mmi_custom_define.h 中 可以根据不同的屏幕分辨率来设定字型大小 若要寻找当下字型大小的设定 , 可以到 gui_multilanguage_func.c 中的 Scripteasy_MapFontSize 设置中断点来查看
+参考FAQ: FAQ67777
+### 问题: 工厂测试模式中item项测试结果保存在哪里
+解决方案: 保存在productinfo分区,具体路径如下: /productinfo/engtest.db app通过访问和读取这个文件来进行数据库的读写操作 升级的时候,该分区可以根据需要进行保留和擦除,默认为保留
+参考FAQ: FAQ66168
+### 问题: 7731的开机logo的存储机制以及存储位置
+解决方案: 1.加载展讯pac包,Settings中可以看到一个临时生成路径,里面有一个.xml文件用于存放EMMC物理分区表,其中顺序定义各个分区的name和size,开机logo如下定义,分区大小为1M只能存储size在1M以内的logo图片 <Partition id="logo" size="1" /> 2.下载pac包时,工具会通过repartition功能写入xml的分区信息到手机中; 3.开机时,normal_mode(normal_mode.c)->vlx_nand_boot(normal_emc_mode.c)->_boot_display_logo->_boot_partition_read读logo分区数据,然后刷屏显示
+参考FAQ: FAQ66171
+### 问题: 展讯智能机平台硬件方面需要做哪些评审和仿真？
+解决方案: 需要做如下评审仿真: 1,原理图评审,PCB LAYOUT评审. 2,结构布局评审. 3,PI,SI仿真. 4,热仿真.
+参考FAQ: FAQ66170
+### 问题: SC7715打开DSP,MCU log待机电流是否会增加？
+解决方案: 打开DSP,MCU LOG测试待机电流,会导致待机电流增加1-2mA.
+参考FAQ: FAQ66175
+### 问题: 如何修改app不在最近任务列表中显示
+解决方案: 在相应应用程序的AndroidManifest.xml文件中的activity标签中添加如下属性: android:excludeFromRecents="true" 比如不需要xxxActivity显示在最近任务列表中: <activity android:name="xxxActivity" android:label="@string/app_name" android:screenOrientation="portrait" ++ android:excludeFromRecents="true" android:theme="@style/AppActivityTheme" >
+参考FAQ: FAQ66172
+### 问题: SC7731 PMU部分AM19和AN19，这两个脚可以不要吗？VDCDC使用VBAT供电，这样有什么影响？
+解决方案: 如果不用DCDC供电,直接把AM19,AN19悬空即可,VABT给VDDLDO供电,在摄像头预览时电流会大20mA左右.
+参考FAQ: FAQ66178
+### 问题: 7731上主副卡开机有主副卡选择dialog框设为自动
+解决方案: 在BasePolicy.java 把public boolean isMultiSlotNeedManualSet() 返回false. 如果没有这个方法,请在那边定义, public boolean isMultiSlotNeedManualSet() { return false; } 然后在BootCompletedReceiver.java case EVENT_SIM_STATE_CHANGED: if (sims.length > 1) { 修改这个条件,修改成 if (sims.length > 1 && mPolicy.isMultiSlotNeedManualSet()) {
+参考FAQ: FAQ66190
+### 问题: 7731上选择主副卡上，切换主卡时界面一直显示waiting 对话框，如何修改
+解决方案: 有时切换主卡一直提示waiting的dialog,原因是界面回来后在resume方法没有在dismiss. SelectPrimaryCardSettings.java文件onResume方法里 @Override protected void onResume() { super.onResume(); ....... + mIsForeground = true; + if (!isSelectCardInOperation() && mProgressDialog != null + && mProgressDialog.isShowing() && mIsForeground) { + mProgressDialog.dismiss(); +}
+参考FAQ: FAQ66191
+### 问题: 手动搜索网络，去掉运营商名称后面的2G\3G字样
+解决方案: 在NetworkSetting.java代码 private String getNetworkTitle(OperatorInfo ni) { //ni是从cp侧获取到的搜网数据 在里面 getDisplayStringFromAct(ni.getAct()) 这个act实现的. 所以只要把上面方法的拼接string去掉即可.
+参考FAQ: FAQ66196
+### 问题: SR3592 RX端口支持的频率范围是多少
+解决方案: 支持的频率范围是从729MHz-2690MHz
+参考FAQ: FAQ66215
+### 问题: SR3592 TX端口支持的频率范围是多少
+解决方案: SR3592 TX端口分为两组:1, TXLB 699MHz-915MHz; 2,TXHB 1710MHz-2690MHz.
+参考FAQ: FAQ66216
+### 问题: 如何修改密码解锁时弹出gmail解锁界面需要输入的错误密码次数?
+解决方案: 在使用密码解锁的前提下,解锁时输入错误密码次数超过限制时就会就会弹出gmail解锁的界面 下面的修改就可以让用户连续输入错误密码达到15次(默认为20次)就会弹出gmail解锁的界面. 修改文件frameworks/base/core/java/com/android/internal/widget/LockPatternUtils.java 修改前: public static final int FAILED_ATTEMPTS_BEFORE_RESET = 20; 修改后: public static final int FAILED_ATTEMPTS_BEFORE_RESET = 15; 值得注意的是,如果修改后测试时使用模块编译进行验证,不仅需要编译该文件所在的模块frameworks/base,还需要编译frameworks/base/packages/Keyguard模块并将这个两个模块编译生成的文件push到对应的目录中去
+参考FAQ: FAQ66234
+### 问题: SR3131内部集成的功率检测器检测功率范围是多少？
+解决方案: -20dBm to 3dBm
+参考FAQ: FAQ66257
+### 问题: SR3131内部集成的功率检测器工作频率范围是多少？
+解决方案: 824MHz to 2170MHz
+参考FAQ: FAQ66268
+### 问题: 为什么用户名和密码正确，某些账号但是无法登陆hotmail邮箱
+解决方案: 对于hotmail,outlook 163等邮箱,如果希望从移动设备上登陆,需要首先登录网页,并启用POP3.IMAP服务后,移动设备才能通过POP3/IMAP协议登录.因此遇到邮箱无法登陆的情况,应首先登陆网页检查邮箱是否启用了POP,3IMAP服务.
+参考FAQ: FAQ67550
+### 问题: 7731平台，T卡热插拔如何实现？
+解决方案: 有两个方法:第一种是采用软件实现,需要软件不停的循环扫描是否有T卡插入;第二种方式是硬件电路实现,需要使用带有T卡侦测脚位的连接器,当T卡插入的时候侦测脚位拉地或者拉高,侦测信号接入BB,以SC7731G为例,接入EXTINT0/GPIO71(T27pin).
+参考FAQ: FAQ66270
+### 问题: wifi扫描操作模式
+解决方案: wifi扫描操作模式分为如下三种: 1.CONNECT_MODE,这种模式下,STA可以scan并连接热点 2.SCAN_ONLY_MODE,这种模式下,STA只能扫描热点 3.SCAN_ONLY_WIFI_OFF_MODE,在这种模式下,当wifi是toggle off的情况下,也可以进行scan
+参考FAQ: FAQ66267
+### 问题: SC2663H是否支持上行EDGE?
+解决方案: 支持.
+参考FAQ: FAQ66283
+### 问题: SC2713\SC2711\SC2723 如何确认FGU电流读取准确性
+解决方案: 按照如下步骤操作: 1、使用电压电流源限制电流为1A,调整输出电压为1V输出,电流源正极连接手机电池触点的负极上,电流源的负极连接到主板地GND上,这样保证有1A的电流流过手机电池触点负极. 2、使用稳压源设置3.8V输出,正极连接到手机电池正极触点,电压源负极连接到主板GND(非电池负极). 3、手机开机并抓取log,搜索关键字vbat找到如下实例打印行: sprdbat: bat_log:time:91,vbat:3629,ocv:3713,current:1000,cap:14,state:2,auxbat:3637 查看此行中current这个关键字对应数值,如果此数值为1000是1000ma则代表FGU电流读取正确,误差范围应该是正负10ma左右 以上操作完成后可以证明FGU读取电流是否准确.
+参考FAQ: FAQ66350
+### 问题: Android5.x版本recover模式下如何使能adb
+解决方案: recovery模式下adb可用的调试接口较少, 有时候就需要借助adb来在线调试, 如何使能adb呢? 由于在Android 5.x版本上,对system分区的挂载不同于android4.4的默认挂载,而是改为了手动挂载,所以默认system分区是不能使用的, 需要首先挂载system分区, 才可以使用adb.手动挂载system分区的方法是在recovery系统菜单界面,连续切换音量上下键七次就可以在屏幕上看到"system mounted!"提示,说明system分区挂载成功. 接下来就可以是adb来在线调试了, 如果使用adb shell设备列出的设备名称是乱码(若干问号),权限也是no permission,通过以下步骤解决: $sudo adb kill-server $sudo adb start-server 这样就完全没有问题了.
+参考FAQ: FAQ66335
+### 问题: How open selinux in android5.x
+解决方案: 步骤2:File systems---> Ext4 Security Labels, 选中Ext4 Security Labels. 步骤3:Security options---> Enable different security models, 选中Enable different security models. 然后继续选中Socketand Networking Security Hooks和NSASELinuxSupport. 完成前面的步骤后,Security options ---> Defaultsecurity module (Unix Discretionary Access Controls) --->SELinux,选择SELinux.退出保存即可.
+参考FAQ: FAQ66339
+### 问题: [SC7731]android原生风格，如何去掉通话界面中显示大头贴的动画效果？
+解决方案: android原生风格,去掉通话界面中显示大头贴的动画效果,请做以下修改: InCallUI\src\com\android\incallui\CallCardFragment.java private void setDrawableToImageView(ImageView view, Drawable photo) { ...... //final Drawable current = view.getDrawable(); //if (current == null) { view.setImageDrawable(photo); //AnimationUtils.Fade.show(view); //} else { //AnimationUtils.startCrossFade(view, current, photo); view.setVisibility(View.VISIBLE); //} }
+参考FAQ: FAQ66395
+### 问题: [SC7731]*#*#83789#*#*进入后，电话测试时，拨出去的112，如何不显示在通话记录中？
+解决方案: *#*#83789#*#*进入后,电话测试时,拨出去的112,要求不显示在通话记录中,请做以下修改: packages\services\Telephony\src\com\android\phone\CallLogger.java -- final boolean okToLogEmergencyNumber = ++ boolean okToLogEmergencyNumber = mApplication.getResources().getBoolean( R.bool.allow_emergency_numbers_in_call_log); ++ if(PhoneGlobals.getInstance().getFactoryMode()){ ++ okToLogEmergencyNumber = false; ++ }
+参考FAQ: FAQ66399
+### 问题: [SC7731]一路通话静音中,如何添加一路呼出通话时，被添加的通话不被静音？
+解决方案: 一路通话静音中,添加一路呼出通话时,要求被添加的通话不被静音,请做以下修改: InCallUI\src\com\android\incallui\CallButtonPresenter.java @Override public void onStateChange(InCallState oldState, InCallState newState, CallList callList) { CallButtonUi ui = getUi(); if (newState == InCallState.OUTGOING) { mCall = callList.getOutgoingCall(); ++ muteClicked(false); } else if (newState == InCallState.INCALL) {
+参考FAQ: FAQ66400
+### 问题: soft-uvlo电压不是关机电压
+解决方案: soft-uvlo电压配置是软件允许的最低工作门限电压值,这个电压值是略高于硬件的最低工作门限,为了防止异常掉电而设置的软件保护电压值,因此不能通过设置soft-uvlo电压来设置关机电压,真正的关机电压是电量表中0%对应的电压值.
+参考FAQ: FAQ82231
+### 问题: 如何手动签名升级包
+解决方案: 有时候, 如果手动更改升级包内META-INF目录下的内容后, 可以手动签名进行验证, 这样可以加速调试过程. 手动签名, 可以参照make otapackage的最后的签名方式进行 java -jar out/host/linux-x86/framework/signapk.jar -w build/target/product/security/testkey.x509.pem build/target/product/security/testkey.pk8 source.zip source_signed.zip
+参考FAQ: FAQ66404
+### 问题: 如何通过ADB获取CP MEMORY
+解决方案: adb shell (root权限) cd /proc/cpw (如果是7731进入/proc/cpw;如果是LTE则进入/proc/cptl) cat mem > /data/mem exit adb pull /data/mem ./cp_memory.mem
+参考FAQ: FAQ66425
+### 问题: 如何实现一套NV配置不同的RF频段
+解决方案: 可以采用GPIO或者ADC来进行不同的硬件版本识别从而调用不同的RF参数,但需要升级相关patch
+参考FAQ: FAQ66442
+### 问题: SC7731 Nand控制器支持多少bit ECC校验？
+解决方案: SC7731 Nand控制器支持1/2/4/8/12/16/24/40/60bit ECC校验.
+参考FAQ: FAQ66445
+### 问题: SC7731 Nand支持哪几种Page size？
+解决方案: SC7731支持的Page size有512bytes/2k/4k/8k/16k.
+参考FAQ: FAQ66451
+### 问题: 如何在NV中关闭SR3131的26MHz时钟输出
+解决方案: 在NV中,修改WCDMA_DownloadParam\tranceiver_initial_registers\init_tbl_arrary中的ini_tbl_array[37]的值:0x7AC407:全部打开;0x7AC403:关闭REF3_OUT; 0x7AC405:关闭REF2_OUT; 0x7AC406:关闭REF1_OUT
+参考FAQ: FAQ66456
+### 问题: SC7731摄像头MIPI走线长度限制在多长
+解决方案: MIPI-D/MIPI-C都是控制在10cm之内,要包地保护,远离干扰源,超出了容易受干扰,数据可能丢失,跑不了最高速度
+参考FAQ: FAQ66460
+### 问题: 7731摄像头模块信号的电容27pF有何作用？是否可删除？
+解决方案: 7731是MIPI接口,没有行场同步CCIR_VS,CCIR_HS信号.也正因是mipi接口,camera信号间的耦合辐射要弱些,但7731 MCLK我们一般也建议增加串阻或预留滤波电容位置,遇到问题时可以优化.RST上的电容必要时可改成ESD器件.
+参考FAQ: FAQ66463
+### 问题: SC7731是否支持开关充电？
+解决方案: SC7731自身不支持开关充电,需要通过外加开关充电IC.
+参考FAQ: FAQ66467
+### 问题: GPS 室外静态测试（半天空场景）方式是什么？
+解决方案: 半天空(如窗口或大楼附近),此时性能和可见星数目以及可见星的能量关系很大(相同地点卫星数目和时间有关,不固定),若可见星数目在6-7颗附近则冷启动TTFF通常20次平均值在60-120s附近.若可见卫星数目小于6颗则根据可见星的分布和能量很可能无法定位测试.主要关注项目冷启动/热启动.
+参考FAQ: FAQ66532
+### 问题: GPS 外场动态测试应该注意什么？
+解决方案: 一般使用车辆在道路上行驶,同时将被测设备放置在车辆前窗附近以模拟一般车辆导航使用情况.(注意如果放在后排靠窗处,某些贴金属膜的后窗玻璃会导致较大衰减) 使用导航软件(离线的高德导航或在线的百度/谷歌地图导航)进行导航看是否可以正常给出车辆运动信息并正确提示导航信息
+参考FAQ: FAQ66533
+### 问题: GPS 室内静态场景-130dBm传导测试指标是什么？
+解决方案: 即使用信号仪器使每颗卫星的输出信号强度在-130dBm,卫星数目8颗.测试关注项目 信号强度CN0/冷启动/热启动.使用cable 直接连接仪器与信号仪器.一般通常冷启动TTFF 20次平均在32.5秒附近,正负5秒.热启动平均TTFF在3秒左右.CN0值在41-40.
+参考FAQ: FAQ66602
+### 问题: 如何开启/关闭Audio mem log
+解决方案: 开启Audio mem log方法: 在Logel工具中下发AT命令:at+spdsp=65535,0,0,4096,不断电设置将一直有效. 关闭Audio mem log方法: 在Logel工具中下发AT命令:at+spdsp=65535,0,0,0 在armlog路径下的2015_xx_xx_xx_xx_xx_xxx_audio.mem文件即为保存下来的audio mem log文件,
+参考FAQ: FAQ66585
+### 问题: QQ邮箱查看已发送邮件显示“内部错误”字样，这是什么原因？
+解决方案: qq邮箱出现内部错误的原因是qq的imap服务器返回的同步结果是一个异常,但该异常不是Email客户端定义的那几种已知异常,因此统一显示为内部错误,这是QQ邮箱服务器的问题. 参考三星的界面是同步后什么都不显示,因此此处参考三星手机界面的显示方法,在同步后不显示这个异常,具体修改方法为: UnfiledEmail/src/com/android/mail/browse/ConversationListFooterView.java的updateStatus方法 case UIProvider.LastSyncResult.INTERNAL_ERROR: actionTextResourceId = R.string.report; // SPRD: 286318, Dont report in Email. mErrorActionButton.setVisibility(View.GONE); ++ showFooter = false; break;
+参考FAQ: FAQ66606
+### 问题: Email已发箱滑动屏幕刷新时-界面上会有两个刷新图标，这是什么原因？
+解决方案: 该问题是正常的现象: 第一个刷新图标为文件夹loading的图标, 第二个为下拉list加载的图标, 两个图标代表的不是一个意思,不需要修改为一个.
+参考FAQ: FAQ66613
+### 问题: CTS com.android.cts.browser.BrowserBenchTest#testOctane测试FAIL，如何修改？
+解决方案: 问题原因: 预置了两个浏览器,测试进程中被浏览器选择框BLOCK,需要在开机时设置一个缺省的浏览器,StartActivity时直接调缺省的浏览器. 解决方案: 测试前消除浏览器启动提示. 消除browser启动提示的方法: (1)adb shell am start -a android.intent.action.VIEW -d http://www.google.cn/ (2)之后系统启动浏览器选择对话框,从里面选择原生浏览器,并且选择Alwalys,然后开始执行测试.
+参考FAQ: FAQ66616
+### 问题: 如何修改loglevel串口抓取boot log和调试？
+解决方案: 1、[dts方案]修改kernel/arch/arm/boot/dts/sprd-scx35l_sp7731ea.dts(对应平台或客户自建工程名的 "*.dts"文件)中loglevel=1改为loglevel=7,重编bootimage,再download到手机中. 2、[非dts方案]非dts方案修改loglevel在u-boot/include/configs/sp7731ga.h(对应平台或客户自建工程名的 "*.h" 文件)的loglevel=1改为loglevel=7,重编bootimage,再download到手机中.
+参考FAQ: FAQ66419
+### 问题: 如何修改Email附件大小限制
+解决方案: Email附件大小限制设置变量如下: 1、packages\apps\UnifiedEmail\src\com\android\mail\providers\Settings.java DEFAULT_MAX_ATTACHMENT_SIZE 2、packages\apps\Email\emailcommon\src\com\android\emailcommon\utility\AttachmentUtilities.java MAX_ATTACHMENT_DOWNLOAD_SIZE、MAX_ATTACHMENT_UPLOAD_SIZE
+参考FAQ: FAQ66618
+### 问题: 如何通过adb获取fixnv和runtime nv
+解决方案: $ sudo adb root restarting adbd as root $ sudo adb pull /dev/block/platform/sdio_emmc/by-name/wfixnv1 ./wfixnv.bin 3994 KB/s (1048576 bytes in 0.256s) 注: adb pull对应的的路径可能需要改一下,请adb shell进入手机查看一下具体路径,谢谢!
+参考FAQ: FAQ66624
+### 问题: 如何实现一套NV配置不同的RF频段
+解决方案: 可以采用GPIO或者ADC来进行不同的硬件版本识别从而调用不同的RF参数,但需要升级相关patch
+参考FAQ: FAQ66669
+### 问题: 如何去掉下拉栏快捷设置中的Owner按钮？
+解决方案: 如果想去掉下拉栏快捷设置中的Owner按钮,可按照下面方式修改即可: 定位到:\frameworks\base\packages\SystemUI\res\values\config.xml中,把下面的配置项修改为false即可,即: 修改前: <bool name="quick_settings_show_UserTile">true</bool> 修改后: <bool name="quick_settings_show_UserTile">false</bool>
+参考FAQ: FAQ66670
+### 问题: 如何去掉下拉栏快捷设置中的屏幕旋转按钮？
+解决方案: 如果想去掉下拉栏快捷设置中的屏幕旋转按钮,可按照下面方式修改即可: 定位到:\frameworks\base\packages\SystemUI\res\values\config.xml中,把下面的配置项修改为false即可,即: 修改前: <bool name="quick_settings_show_rotation_lock">true</bool> 修改后: <bool name="quick_settings_show_rotation_lock">false</bool>
+参考FAQ: FAQ66676
+### 问题: 怎样关闭selinux
+解决方案: arch/arm/configs/sp7731gea-dt_defconfig CONFIG_SECURITY_SELINUX_DEVELOP=y 改成 #CONFIG_SECURITY_SELINUX_DEVELOP is not set 同时 kernel/security/selinux/include/avc.h文件中 #define selinux_enforcing 1 改成 #define selinux_enforcing 0
+参考FAQ: FAQ66693
+### 问题: 将ap/cp 所有内部PLL source切换到clk26m_sine0，硬件断开CLK26M_SINE1,软件怎样修改？
+解决方案: 1、chipram 下 sp7731gea文件中,将以下语句注释掉 #define TDPLL_SELECT_SWITCH #define WPLL_SELECT_SWITCH 2、uboot下 ldo_sleep文件中,将以下语句注释掉 BIT_MPLL_REF_SEL BIT_DPLL_REF_SEL BIT_CPLL_REF_SEL BIT_WIFIPLL1_REF_SEL BIT_WIFIPLL2_REF_SEL
+参考FAQ: FAQ66711
+### 问题: c语言工厂模式，msg2238 TP测试，eng版本可以用，usr版本不能用，正常开机TP都是可以用的。
+解决方案: 驱动中将static DEVICE_ATTR(header, SYSFS_AUTHORITY, 改成static DEVICE_ATTR(header, S_IRUGO | S_IWUSR就可以了.SYSFS_AUTHORITY是驱动定义的权限0777
+参考FAQ: FAQ66712
+### 问题: 如何在非UUI版本中使用UUI效果？
+解决方案: 以MocorDroid4.4_3.10_14B_tshark_W15.17.5为例: 需要在 device/sprd/scx35_sp7731gea/scx35_sp7731geaplus_dt.mk 配置文件中配置如下: #DEVICE_PACKAGE_OVERLAYS := $(BOARDDIR)/overlay $(PLATDIR)/overlay 注释掉这行 #添加下面4行 PRODUCT_THEME_PACKAGES := SimpleStyle HelloColor PRODUCT_THEME_FLAGS := shrink DEVICE_PACKAGE_OVERLAYS := $(PLATDIR)/overlay_full $(DEVICE_PACKAGE_OVERLAYS) include vendor/sprd/UniverseUI/ThemeRes/universeui.mk 所使用的Launcher为SprdLauncher2或者Launcher3.
+参考FAQ: FAQ66755
+### 问题: A-GPS设置中“网络定位请求”一项，有什么功能
+解决方案: A-GPS模式分两种 SI 模式:用户发起定位请求 NI 模式:服务器发起定位请求.(开启网络定位请求项)这个情况下,网络端会通过WAP push 的方式给手机,手机收到后,会发GPS设备进行定位,然后将获得的位置再送回网络服务器. 开启网络定位请求,就是可以让A-GPS工作在NI模式. 目前NI定位只适用于实验室或者欧美一些国家的运营商网络.
+参考FAQ: FAQ66717
+### 问题: native mmi工厂测试如何英文显示测试项
+解决方案: native mmi 工厂测试模式一般是中文显示,如果改为英文显示,请按如下修改: vendor/sprd/open-source/apps/factorytest/resource.h 做如下修改: #include "./res/string_en.h" //#include "./res/string_cn.h"
+参考FAQ: FAQ66738
+### 问题: 在校准模式下发送AT指令重启整个手机应调用哪个函数
+解决方案: 在校准模式下发送AT命令 可以调用如下函数重启整个手机: android_reboot(ANDROID_RB_RESTART, 0, 0);
+参考FAQ: FAQ66739
+### 问题: 如何在UI层隐藏状态栏sim卡信号图标？
+解决方案: 修改: frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/NetworkController.java public NetworkController(Context context) { ...... - mHasMobileDataFeature = cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE); + mHasMobileDataFeature = false; ...... } 此时状态栏将不显示Sim卡信号图标.
+参考FAQ: FAQ66760
+### 问题: 如何用crash工具分析sysdump？
+解决方案: 前提是需要sysdump文件和对应的vmlinux. 然后, cat sysdump.core.* >> mysysdump ./crash -m phys_base=0x80000000 vmlinux mysysdump 在crash> 提示符下,输入crash工具的调试命令,如log等
+参考FAQ: FAQ66861
+### 问题: 如何快速编译某个android应用模块？
+解决方案: 1. source build/envsetup.sh 2. lunch 3. cd 到将要编译的那个应用模块所在的目录. 3. 输入mm,编译
+参考FAQ: FAQ66865
+### 问题: 如何修改邮件默认同步间隔
+解决方案: 在\packages\apps\Email\res\xml\services.xml文件中几种emailservice的配置信息,根据protocol类型找到需要修改的服务器,修改: email:defaultSyncInterval="mins15" 取值范围有:push / never / mins5 / mins10 / mins15 / mins30 / mins60
+参考FAQ: FAQ66942
+### 问题: 应用端为什么不能监听蓝牙耳机音量大小的按键事件？
+解决方案: 蓝牙耳机只有在有音频数据的时候,才会通过avrcp协议将音量按键通过keycode的形式返回到应用侧. 例如在相机中捕获蓝牙按键这个场景,不会有音频数据产生,所以就没有keycode返到应用侧. 这个keycode是耳机端发出的,我们没有办法来控制耳机的行为.
+参考FAQ: FAQ67132
+### 问题: 闹钟的响铃时长是指什么
+解决方案: 点击闹钟的展开按钮,有一项为响铃时长,默认为10分钟,是指闹钟时间到后,人为不干预(即不做任何操作),响铃10分钟,10分钟后该闹钟状态会置为MISS状态,在状态栏显示错过的闹钟. 闹钟的响铃时长是可以设置的,点击闹铃时长,会弹出闹钟时长对话框,可以设置闹钟的响铃时长.
+参考FAQ: FAQ67295
+### 问题: 闹钟的暂停时长是指什么
+解决方案: 闹钟-》菜单键 -》设置 -》暂停时长,是指闹钟要暂停多长时间,即闹钟时间到后,选择暂停后,该闹钟要暂停多长时间再次响起. 暂停时长默认是10分钟,点击暂停时长后,会弹出暂停时长对话框,可以设置暂停时长.
+参考FAQ: FAQ67297
+### 问题: 如何增加kernel printk buf大小保证开机时的kernel log不丢失
+解决方案: kernel/kernel/printk.c #define __LOG_BUF_LEN (1 << CONFIG_LOG_BUF_SHIFT) //默认是17, 128KB 改成 #define __LOG_BUF_LEN (1 << 20) //1MB
+参考FAQ: FAQ67361
+### 问题: 如何修改设置界面上每一条设置项的字体大小和颜色？
+解决方案: DashboardTileView表示设置主界面上的每一条设置项. 设置界面上每一条设置项的字体颜色默认为灰色,大小默认为Medium,这种风格是在framework中定义的,如果需要修改其字体大小和颜色,可以在Settings中引用的地方重新定义一下字体大小和颜色,如下: 请在packages/apps/Settings/res/values/styles.xml中找到如下字串并添加: <style name="TextAppearance.TileTitle" parent="@android:style/TextAppearance.Material.Medium"> + <item name="android:textColor">#ff000000</item> <!-- 重定义后的颜色 --> + <item name="android:textSize">18sp</item> <!-- 重定义后的大小 --> </style>
+参考FAQ: FAQ83536
+### 问题: 如何开启Email帐户设置导航界面
+解决方案: 进入Email帐户设置显示邮箱导航界面还是直接进入帐户/密码输入界面,可通过packages\apps\Email\src\com\android\email\activity\UiUtilities.java文件中的GUIDE_SUPPORT开关进行控制. 在packages\apps\Email\src\com\android\email\activity\setup\AccountSetupFinal.java文件中根据上述开关,设置状态初始值: private int mState = UiUtilities.GUIDE_SUPPORT ? STATE_GUIDE : STATE_BASICS;
+参考FAQ: FAQ67441
+### 问题: 在linux中，如何清除cache,buffer?
+解决方案: 清除前,cat /proc/meminfo,看一下buffer,cache和free memory的值. 1. 仅清除page pache sync echo 1 > /proc/sys/vm/drop_caches 2. 仅清除dcache和inode sync echo 2 > /proc/sys/vm/drop_caches 3. 清除dcache, inode和page cache sync echo 3 > /proc/sys/vm/drop_caches 执行完以上某个清除后,再cat /proc/meminfo,可以看到相应内存的变化.
+参考FAQ: FAQ67494
+### 问题: Exchange协议中错误代码177代表什么含义
+解决方案: 某些Exchange服务器,对同一账号,会对登陆到该服务器的不同设备的数量进行限制,如果有登陆过此账号的设备数量超过了限制的值,就会返回错误代码 177 (TOO MANY PARTNERSHIPS) .
+参考FAQ: FAQ67552
+### 问题: WCDMA下接收灵敏度无论调试双工器后端的匹配还是RX的差分匹配都无法改善怎么办？
+解决方案: 在Layout布局上要保证接收部分走线尽量短,且尽量靠近Transceiver,这是基本,如在在这个基础上还有问题,那就需排查是否是以下两个LAYOUT方面的问题: 1.双工器的ANT, TX和RX端口之间的隔离度不够,发射严重影响接收 2.Layout原因造成RF线路的收敛度没有达到最佳.
+参考FAQ: FAQ67583
+### 问题: PCB上双工器的TX和RX端口之间的隔离度是否良好如何确认？
+解决方案: 分别把手机发射目标功率设置成23dBm和0dBm,观察接收灵敏度的变化.好的LAYOUT无论目标功率是多少,它的接收灵敏度是不会有大的变化的.如果有很大的变化,就证明LAYOUT之前TX的RX的隔离度方面做得不够.
+参考FAQ: FAQ67584
+### 问题: WCDMA 双工器ANT端的PI型匹配如何摆放？
+解决方案: 双工器ANT端的PI型匹配必须靠近ANT pin脚摆放,离得远会造成收敛度很难调试好.收敛度性能会直接影响到手机射频TX和RX性能的调试.
+参考FAQ: FAQ67585
+### 问题: 校准PASS，但是在信令模式下终测时连不上仪器是什么问题？
+解决方案: DCXO晶体受到SR2351的时钟源TCXO的干扰,造成手机频率误差大,make call不上仪器,需检查PCB布线,mclk_26M_sin0的布线不能和 Mclk_26M_sin1布线平行,DCXO包地一定要完整
+参考FAQ: FAQ67589
+### 问题: 闹钟设置里的音量键功能在哪里生效
+解决方案: 闹钟-》菜单键-》设置-》音量按钮-》选择为暂停/关闭,这里设置的音量键功能是在闹钟提醒界面起作用的. 闹钟时间到时,会先在状态栏显示一个闹钟通知,此时音量键是调节闹钟铃声音量的,点击状态栏,出现闹钟提醒界面,在这个界面音量键所设置的对应功能可以生效.
+参考FAQ: FAQ67632
+### 问题: sc7731中，如何禁掉按电源键7s reset的功能？
+解决方案: 1. u-boot arch/arm/cpu/armv7/sc8830/misc.c中, void misc_init()中,将pbint_7s_rst_cfg(1, x, x);改为pbint_7s_rst_cfg(0, x, x); ,即第一个参数设为0 2. 同时,kernel/include/linux/input-hook.h中,注释掉#define HOOK_POWER_KEY
+参考FAQ: FAQ67637
+### 问题: 如何将备份恢复应用编译到版本中
+解决方案: 需要在vendor/sprd/open-source/common_packages.mk中添加SprdAppBackup. 即做如下修改: diff --git a/common_packages.mk b/common_packages.mk --- a/common_packages.mk +++ b/common_packages.mk @@ -14,7 +14,8 @@ PRODUCT_PACKAGES += \ Carddav-Sync \ SystemUpdate \ Caldav-Sync.apk\ - libsprd_agps_agent + libsprd_agps_agent \ + SprdAppBackup # TODO Add for not block ptr1 PRODUCT_PACKAGES += \ 然后全编的版本中就有备份恢复应用了.
+参考FAQ: FAQ67639
+### 问题: 如何开启Email帐户设置导航
+解决方案: 进入Email帐户设置显示邮箱导航界面还是直接进入帐户/密码输入界面,可通过packages\apps\Email\src\com\android\email\activity\UiUtilities.java文件中的GUIDE_SUPPORT开关进行控制. 在packages\apps\Email\src\com\android\email\activity\setup\AccountSetupFinal.java文件中根据上述开关,设置状态初始值: private int mState = UiUtilities.GUIDE_SUPPORT ? STATE_GUIDE : STATE_BASICS;
+参考FAQ: FAQ91281
+### 问题: 为什么POP3协议的邮箱，附件信息需要点击加载更多后才能显示
+解决方案: 由于POP3账户在同步邮件时,每次只下载固定长度的Email内容. 如果一封邮件的大小超过了这个固定的长度,则会向数据库中添加一个名为"加载更多"的虚拟附件,当用户点击这个虚拟附件时,才会加载尚未被同步下来的内容.
+参考FAQ: FAQ67655

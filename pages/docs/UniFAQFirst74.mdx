@@ -1,0 +1,310 @@
+### 问题: 缩短按电源键开机的时间
+解决方案: 一般按电源键3~4s机器才能开机,如何缩短该时间? 电源键按下会产生上电时序,硬件上限定电源键至少要按下1S,所以缩短最快也要按键1s多. 在uboot代码中有boot_pwr_check函数,该函数在uboot代码中多次调用,每次都是来check电源键是否按下, 最早调用该函数的地方是在board_late_init函数中,在此会检测一次按键是否按下,在do_cboot函数中还有检测按键是否按下,两次调用boot_pwr_check都检测到按键按下才认定电源键按下.这期间的按键按下的时间可以缩短. 可以修改宏值PWR_KEY_DETECT_CNT 将其改成1,那就是第一次调用boot_pwr_check键的时候,记录了按键按下的信息,后续代码执行依据此信息开机.
+参考FAQ: FAQ202273814
+### 问题: UMP510G是否可以读取CC线上的电压
+解决方案: AUX_ADC可以读取CC线上的电压,但是CC线上进入ADC会有一个2:1的分压电阻,所以得到的电压是真实值的一半. CC在电路里等效过一个diode接到50K电阻,然后再接到VBATA,因此如果CC线电压高于VBAT以后会有漏电存在. 所以AUX_ADC只能读取到等效5V的电压.
+参考FAQ: FAQ202273836,含图片
+### 问题: 优化GSM_ORFS性能时Reg41的修改方式
+解决方案: 当GSM输出调制谱受到26M的倍频干扰比较明显时,可以通过修改寄存器41来达到改善ORFS性能的目的,修改方式如下: 打开项目NV工程,将RF_init_common/RF_init_common/Mipi_init_common路径下的rf_cfg_mask值由默认值0X1修改为0X30001 下载后重新load出来时,再次检查NV可以发现除了rf_cfg_mask的值修改成功了以外,rf_init_table下的(reg41)0X41XXXX也将由默认的0X41002A更改为0X41003A.这是检验reg41是否被修改成功的一个方式. ...... rf_init_table下0X41寄存器的值是跟随rf_cfg_mask的值改变的,只修改rf_init_table下0X41寄存器的值是无法生效的.他们之间对应的关系是
+参考FAQ: FAQ202273837,含图片
+### 问题: WCDMA 校准 MinPower余量不足如何解决？
+解决方案: WCDMA 校准过程中,若出现个别频段的个别信道的 MinPower余量不足问题,可参考以下解决方法: 1.首先参考平台NV配置文档,检查目标功率/DCDC 配置/PA 增益切换点配置是否正确. 2.若NV检查无问题,请更新Simba版本到R8.21.5151及以后版本,更新此版本自带的Seq文件,用此Seq 进行校准看下结果. 如有所改善但改善不大的情况下,可修改Simba 参数LowModePowerSlopeTolerance 的数值,如下图所示,注意: 此参数范围要小于1.
+参考FAQ: FAQ202273843,含图片
+### 问题: 如何抓取带 cap 包的 log 信息？
+解决方案: 在设备上网过程中如何抓取带 cap 包的 log 信息? 客户在抓取 log 信息前可通过如下操作打开 Capture Output 功能然后抓取 log ,则如有与网络交互的操作,log 中会生成包含报文交互信息的 cap 文件. 方法: #*8378#1# -> Para Set -> Tcpip Debug -> Cap Output -> On
+参考FAQ: FAQ202273844
+### 问题: 数字耳机通话特性
+解决方案: whale平台仅支持48k,16bit,双通道,同步传输的数字耳机通话,可在耳机插入后,通过cat /proc/asound/card1/stream0信息确认,如下为支持通话的数字耳机信息,可对比参考
+参考FAQ: FAQ202273851,含图片
+### 问题: Type-c模拟耳机与3.5mm圆孔耳机配置切换
+解决方案: 在项目或具体板型相关的dts文件里(如bsp/kernel/kernel4.14(kernel5.4)/arch/arm64/boot/dts/sprd/ums9230-4h10-overlay.dts),如下节点中,增加标红部分(其中gpio号需要根据实际方案确认),即为支持type-c模拟耳机,删除标红部分,即为支持3.5mm圆孔耳机 &sprd_headset { status = "okay"; extcon = <&pmic_typec>; mic-gpios = <&ap_gpio 175 GPIO_ACTIVE_HIGH>; lr-gpios = <&ap_gpio 174 GPIO_ACTIVE_HIGH>; sprd,3pole-adc-threshold = <112>; };
+参考FAQ: FAQ202273852
+### 问题: FM内置天线，拔耳机后FM外放无声
+解决方案: 非内置天线的FM方案中,拔掉耳机就是拔掉天线,因此会主动mute FM 采用内置天线的fm方案,拔掉耳机FM可以正常工作,不需要mute fm 请按如下修改验证 &sprd_headset { status = "okay"; +++ sprd,no-fm-mute; };
+参考FAQ: FAQ202273856
+### 问题: 双摄标定新增sensor模组SN号条件验证
+解决方案: 为防止客户模组SN号未开发完毕,就进行售前整机标定,导致标定产生的文件没有模组SN号,影响售后功能的使用.特在标定APK中增加模组SN号防呆保护: 模组SN号防呆保护 包括:SN号读取错误 & 模组未正确识别 可能原因是模组sensor未identify成功,或sensor_config.xml中双摄sensor_role未配置,导致识别不到双摄模组;sensor未配置SN号或者配置不正确导致SN号读取错误.
+参考FAQ: FAQ202273859,含图片
+### 问题: 如何修改simba工具LTE max power的门限
+解决方案: 目前simba工具LTE max power的门限是22.5-23.5dBm,请问如何修改门限至22-23.5dBm; 若LTE APC校准max power低于门限22.5dBm的话,主板饱和功率差是主要问题,需要优化硬件匹配来解决根本问题. 若只是临时验证修改门限的话,可以在simba seq文件中,按照如下地方尝试修改: 将SEQ文件用记事本打开,将<TX>下的<SpecTolerance Description="Specification of TX linearity calibration.&#xA;Pass range of TX linearity calibration is [Target - Tolerance, Target + Tolerance]. ">0.5</SpecTolerance>里面的0.5改为1,若APCScan也出错的话将ScanTolerance也改为1即可. 注意:此修改只是临时验证问题,不能导入量产.
+参考FAQ: FAQ202273870
+### 问题: 8910 JTAG_TMS pin 默认上电状态和gpio 功能初始状态注意事项咨询
+解决方案: 8910 JTAG_TMS pin 上电复位的状态为JTAG_TMS 功能,这个是默认pull up的状态 如果需要使用这个pad的gpio功能,则需要注意这个上电状态对外设的影响. [注意]所有的JTAG 脚上电复位的状态都是pull up的.
+参考FAQ: FAQ202273880
+### 问题: 线性充电/开关充电时，VBAT_SENSE是如何采样的？
+解决方案: 在9863A平台展锐用的是开关充电,线性充电是预留的. 在采集Vbat_sense时,如果使用开关充电,则需要在电池端进行采集; 如果使用线性充电,则需要在充电端进行采集. 牢记一个原则,不要既在充电端,又在电池端采集,因为两者采集的数据并非一摸一样,当同时采集时就会产生矛盾,进而会对充电电压产生影响,导致充电异常.
+参考FAQ: FAQ202273892
+### 问题: UIS8910DM fsMountGeneralSpiFlash接口支持哪些spi flash
+解决方案: UIS8910DM fsMountGeneralSpiFlash接口支持哪些spi flash 接口不涉及具体的flash型号,需要客户自行先调通SPI FLASH驱动再调用这个接口来挂载FS.
+参考FAQ: FAQ202273928
+### 问题: UIS8910DM SFFS文件系统接口相关问题
+解决方案: UIS8910DM SFFS文件系统接口相关问题 1,vfs_sfile_write是否有判同处理 vfs_sfile_write 安全写接口每次会写在一个新的block,如果block的size和内容和旧的一样就仍然使用旧的block,如果有变化且新的content被写入了就用新的block 2,vfs_rename函数是如何实现的,是先复制文件再删除吗 vfs_rename 是把文件头读到内存里修改后写入,没有复制文件的动作
+参考FAQ: FAQ202273929
+### 问题: 如何确认主板中的ADC CLK频率
+解决方案: 对于一些LTE 频段射频杂散问题的余量问题,需要确认该主板内的ADC CLK频率,确认是否是时钟干扰,确认方式如下: 1.确认要读取具体哪个Band,哪个Channel的ADC CLK 2.主板通过Pandora "cal post mode"方式与仪表相连,注意该方式注网要关闭仪表鉴权,具体关闭方式可参考Pandora User Guide(https://unisupport.unisoc.com/file/index?fileid=34327)
+参考FAQ: FAQ202273947
+### 问题: CMW500 WiFi 5G VHT 速率模式下信令固定速率测试方法
+解决方案: CMW500 可进行WiFi 5G VHT速率模式测试,如果不手动固定测试速率,则只能测试最高速率. VHT固定测试速率方法如下: 1.仪表的Supported Rates设置为Enable,3.7版本后需设置为User Defined; 2.设置基准速率,VHT模式基准速率为BPSK 1/2 6Mbps,仪表上设置为Mandatory; 3.设置测试速率,在VHT速率中选择需要测试的速率,设置为Mandatory; 4.其余步骤按照信令测试步骤设置WiFi制式,速率,打开TX测试Packet Generator,在Data中确认测试速率; 5.特别注意,在Meas Control 中勾选Rate Restriction选项,否则无法固定速率测试.
+参考FAQ: FAQ202273958
+### 问题: hidl hal层访问驱动节点权限问题
+解决方案: hal层用api函数打开驱动节点时,始终返回失败,原因是驱动导出的节点的other组权限不能为6,只能为4 解决办法是: 方法一、在/system/core/rootdir/init.rc里用chown system system /sys/class/xxx,改变节点的分组 方法二、用chmod 666 /sys/class/xxx,将节点的访问权限设置为所有访问者都可读写
+参考FAQ: FAQ202273975
+### 问题: ntp校时流程
+解决方案: 当系统网络连接时(4G、wifi),AlarmManagerService和NetworkTimeUpdateService都会收到网络变化的广播,当网络连接时会启动校时流程, 1、NetworkTimeUpdateService 以R.string.config_ntpServer配置的服务器进行时间的获取和校时 2、AlarmManagerService 进行ntp校时流程时,会读取persist.delta.time的值,如果是一个无效值( 1LL << 63),则开启一个线程进行校时,需要注意的是AlarmManagerService的ntp校时,会尝试连接多个服务器,直至某一个服务器校时成功,具体可参考:com_android_server_AlarmNtp.cpp的startPollingNTPTime()
+参考FAQ: FAQ202273979
+### 问题: 如何获取当前小区的CID和LAC/TAC等信息？
+解决方案: 一些场景如销量统计、定位功能有时需要使用当前基站的CID、LAC/TAC等信息,那么可以采用如下方式获取: (1)使用TelephonyManager的getCellLocation获取当前小区信息,进而通过getLac()和getCid()获取相应的值 (2)使用TelephonyManager的getAllCellInfo获取服务小区和邻小区的信息,再对返回结果进行遍历,其中isRegistered=true的就是注册小区,然后判别CellInfoLte/CellInfoWcdma/CellInfoGsm,并通过getCellIdentity()获取相应的CellIdentityLte/CellIdentityWcdma/CellIdentityGsm对象,再通过getTac()/getLac(),getCi()/getCid()即可获取lac/tac,cid. 如问题仍不能得到解决的,请提交CQ给Telephony同事协助分析.
+参考FAQ: FAQ202273986
+### 问题: 如何查看是否检测到人脸以及检测到的人脸个数
+解决方案: 1.人脸检测log等级打开 adb shell setprop persist.vendor.fdtop.log 5 2.在抓取的log中搜索关键字 facedetect log中face_num的值表示检测到的人脸数,如果为0表示未检测到人脸
+参考FAQ: FAQ202273995,含图片
+### 问题: 如何从log上判断dre pro是否生效
+解决方案: 可以搜索关键字sprd_dre 下图是dre pro模块生效的log,可得知简要流程为dre_open(开始)、init(初始化),run(运行),deint(去初始化)、dre_close(结束).如果log中能找到这些关键字眼,表示dre pro模块生效
+参考FAQ: FAQ202274002,含图片
+### 问题: 如何通过adb命令关闭dre pro
+解决方案: 输入以下adb命令: adb shell setprop persist.vendor.cam.predre.predre_enable 0 setprop persist.vendor.cam.postdre.postdre_enable 0
+参考FAQ: FAQ202274003
+### 问题: V2平台GSM APC温度补偿具体定义
+解决方案: GSM APC温度补偿只补功率最大的PCL. GSM APC温度补偿的具体位置如下: 具体定义如下: GSM的APC温补补偿的是校准结果中的TX factor 例:0xFE3E对应十进制为65086,其补码为450,即在最大功率校准结果的TX factor基础上减去450,得到此时最大功率对应的Tx factor.当测试最大功率时,调用的TX factor就是温度补偿之后的factor. 提示:一般1000个factor为0.5db,但是不同主板之间存在差异,具体以实测结果为准
+参考FAQ: FAQ202274008,含图片
+### 问题: 如何使用adb 指令设置WiFi国家码
+解决方案: adb 指令可设置WiFi国家码,详细指令如下: adb root adb shell cmd wifi force-country-code enabled CN #设置国家码为CN(中国) adb shell cmd wifi get-country-code enabled #查看当前国家码 设置国家码之后可连上当前国家地区支持的信道,方便测试.
+参考FAQ: FAQ202274017
+### 问题: Wifi SAW HDF2442A-B2 调匹配推荐值
+解决方案: 最近有客户使用一个特殊的SAW FILTER,型号为HDF2442A-B2 ,多次盲调匹配也无法达成一致性,检查芯片发现是一个新的SAW ,通过Datasheet,发现有推荐的值可以尝试,将LC的并位调整为下图所示的值,验证一致性无问题.
+参考FAQ: FAQ202274018,含图片
+### 问题: RFTest工具在CMW500不同仪表版本上，跑出来的结果不一样，一个版本pass一个版本fail。
+解决方案: 问题解决: 主要是由于RFTester_R2.21.4801工具在两个不同版本的CMW500固件下的取值存在差异,造成了上述问题. 更新工具到RFTester_R02.22.1103版本,修复不同版本下CMW500仪表测试WCDMA的 ILPC时取值异常问题.
+参考FAQ: FAQ202274019
+### 问题: BT EDR POWER control 测试值不出数据
+解决方案: 1、首先Pull 出connectivity 的ini文件路径,操作如下: adb root adb remount adb pull vendor/etc (将新建的文件拖入到etc 的后面,即可将ini文件下载本地) 2、打开connectivity_configure.ini ,找到下面的这一项: feature_set = 0xFF, 0xFF, 0x8D, 0xFE, 0xDB, 0x7D, 0x7B, 0x87, 0xFF, 0xA7, 0xFF, 0x7F, 0x00, 0xE0, 0xF7, 0x3E其中0X87 的值不允许改变,如果改了,请按照上面的一一对应.
+参考FAQ: FAQ202274020
+### 问题: UMS9230平台HSDPA/HSUPA/HSPA+/DC-HSDPA/DC-HSUPA支持情况？
+解决方案: UMS9230平台HSDPA/HSUPA/HSPA+/DC-HSDPA/DC-HSUPA都支持. WCDMA支持Release 9. HSDPA:峰值速率14.4Mbit/s(Category 10); HSUPA:峰值速率5.76Mbit/s(Category 6); HSPA+:DL峰值速率 21Mbit/s(Category 14); UL峰值速率 5.76Mbit/s(Category 7). DC-HSDPA:峰值速率42Mbit/s Category 24(64QAM); DC-HSUPA:峰值速率11Mbit/s Category 7(16QAM);
+参考FAQ: FAQ202274022
+### 问题: Agilent8960测试GSM调制谱指标跳动
+解决方案: Agilent8960 GSM话务模式建立连接,默认是开启Echo,语音回环模式,样机麦克采集信号通过喇叭播出,用于音频指定场景debug; 开外放或者去掉麦克,能够让调制谱指标变得稳定; 使用Agilent8960正确测试GSM调制谱指标,需要将Speech setup=PRBS-9/PRBS-15.
+参考FAQ: FAQ202274024
+### 问题: 2.4G WIFI PVT测试不显示下降沿时间
+解决方案: CWM 500 测试2.4G WiFi 只能显示上升沿时间,无法显示下降沿时间; 需要要使用CMW 270测试
+参考FAQ: FAQ202274025
+### 问题: BT功率调整ini文件路径
+解决方案: 1,通过adb 指令(需debug版本且安卓解锁) adb root adb remount adb pull system/etc/wcn pull出connectivity_configure.ini文件 打开文件connectivity_configure.ini 找到setction 6 g_aBRChannelpwrvalue和g_aEDRChannelpwrvalue修改并保存. 2,将保存后的ini文件 通过adb push 回主板即可
+参考FAQ: FAQ202274048
+### 问题: SC7731E 调试GPS 传导不达标，降低DDR 的频率传导PASS时PCB 设计注意事项
+解决方案: SC7731E 平台在测试GPS 时,传导指标不达标,通过降低DDR的频率,指标能够达标.检查PCB 布线发现是因为DDR的信号通过屏蔽罩辐射到GPS的表层走线,这样导致GPS 的性能不达标.如下图:修改办法,GPS的线不要走表层,改为内层布线.
+参考FAQ: FAQ202274053,含图片
+### 问题: adb install 安装DreamCamera2 apk，点开其全景模式，相机闪退问题
+解决方案: 查看log发现, 存在全景模式算法库加载错误: E Mosaic : Load the library dream mosaic is error!!! 因为adb install 命令安装应用程序后,程序只能访问data/data/${程序包名}下的数据,无法访问system目录;而全景算法库存放的路径是system_ext/lib64(64位机器) 因此需要以adb push命令将DreamCamera2 apk放到system_ext/app/DreamCamera2文件夹下才有权限加载全景算法库,并正常使用其全景模式.
+参考FAQ: FAQ202274054
+### 问题: 外置LNA(ext_lna)与Transceiver(SR3595D)之间的匹配推荐值
+解决方案: 外置LNA与SR3595D之间的匹配,建议贴18pF~47pF,即射频直通,验证校准和灵敏度; 外部LNA支持情况请遵循平台要求.
+参考FAQ: FAQ202274055
+### 问题: A11，DreamCamera2 App，大光圈配置快显问题
+解决方案: Camera App的功能大都受底层控制,底层支持上层才能打开某些功能. SPRDROID11_TRUNK_20A 分支,9863a3h10芯片平台,默认支持配置大光圈快显功能.如果未配置快显功能,大光圈拍照会很慢(缩略图刷新时间约4s左右). SPRDROID11_TRUNK_20A 分支 DreamCamera2 App大光圈快显功能配置方法:    device/sprd/芯片型号/symbol/module/camera/md.mk
+   #blur fast thumb
+   PRODUCT_PROPERTY_OVERRIDES += persist.sys.cam.fast.blur = true;
+参考FAQ: FAQ202274056
+### 问题: 8521E mipi接口的LCD分辨率VGA，帧率支持多少？SPI接口分辨率QVGA,帧率支持多少？
+解决方案: MIPI接口屏最大支持60fps,SPI接口屏最大支持30fps
+参考FAQ: FAQ202274063
+### 问题: 使用Agilent8960调试GSM PVT，出现PVT图形偏移，如何处理？
+解决方案: 需在Call Parms界面,receiver control目录下将Expected Burst手动修改为TSC0,使得非信令模式下手机与仪表呈同步状态.
+参考FAQ: FAQ202274064
+### 问题: 7862S平台多摄像头硬件设计问题
+解决方案: 1.PHYID0~2对应原理图上CSI0~2; DCAM0~2对应的是Controller的0~2;CSI与Controller之间无一一对应关系,可以选择;对应关系可参考33383文档的page6. 2.单Lane的最大速率2.5Gbps,DCAM0+DCAM1协同工作单摄最大可支持32M @24fps.
+参考FAQ: FAQ202274065
+### 问题: 如何查看AE标定时的cali_bv值
+解决方案: 答: 1.通过安装Mlog来查看 2.通过抓在线抓log: adb root adb remount adb shell logcat |grep "cali_bv" 如以下log信息所示: 10-25 19:22:01.689 22954 22954 D LoadViewService: str is idx(0-402):402,cur-l:3, tar-l:24, bv(lv):-336, cali_bv: 0,expl(10893):7344, expt: 79998192, gain:23040, dmy:0, FR(5-30):12.50,
+参考FAQ: FAQ202274068
+### 问题: NVAide中的MIPI ID怎么选
+解决方案: 1、NVAide中的MIPI ID下拉菜单里有两项(如下图1):PCC-RFFE-SCK0 和 SCC-RFFE-SCK0,根据原理图(下图2)来选择用哪一项. 2、我司4G平台上最多支持两组mipi来控制mipi器件,对应原理图上基带芯片的RFFE0_SCK 和 RFFE1_SCK,个别平台只支持一组mipi(即原理图上只存在RFFE0_SCK), 3、NVAide中MIPI ID下拉菜单里的 PCC-RFFE-SCK0 和 SCC-RFFE-SCK0 分别对应原理图上基带芯片的RFFE0_SCK 和 RFFE1_SCK,在选择时根据原理图上前端器件挂在哪组MIPI上选择对应MIPI ID.
+参考FAQ: FAQ202274069,含图片
+### 问题: 单软多硬WiFi only版本NV是否需要配置？
+解决方案: 单软多硬WiFi only版本NV不需要配置,软件通过gpio(BOARD_ID_ADC0)识别硬件(wifi only). modem主要通过判别cmdline的wifi only属性,来进行动态加载modem. 具体为解析cmdline的属性: 当返回值为1时,即为wifi only属性,裁剪掉modem control ,不加载modem; 当返回值为0时,为lte属性,不裁剪掉modem control,正常加载modem.
+参考FAQ: FAQ202274070
+### 问题: UIS8910FF 是否支持热插拔，如何选用GPIO
+解决方案: UIS8910FF SIM_DET 可以选择普通GPIO, GPIO 外部建议预留上拉电阻到VDDIO18,来实现sim热插拔的功能.
+参考FAQ: FAQ202274073
+### 问题: 8910 文件系统最长目录名和文件名
+解决方案: 8910 文件系统最长目录名和文件名 最长目录名:64字节 最长文件名:64字节
+参考FAQ: FAQ202274074
+### 问题: VoLTE 场景功耗测试
+解决方案: 目前展锐VoLTE测试,相关参数基本遵循CMCC 规定的设置.CMCC 的VoLTE 功耗测试,实际包含三种场景,即Mute(双方静音)、Listen(手机端静音)、Talk(仪器端静音). VoLTE 功耗 = 0.2 × Mute + 0.4 × Listen + 0.4 × Talk. VoLTE有两个测试case: 1)TDD VoLTE 语音通话(Mute). 2)TDD VoLTE 语音通话. 目前展锐的VoLTE 测试,均是使用Keysight UXM E7515A 具体的测试方法和仪器的设置,请参考文档 《功耗测试操作手册(RF仪器设置)》 VoLTE 场景功耗测试章节.
+参考FAQ: FAQ202274075
+### 问题: Gicc_nsapr寄存器的作用
+解决方案: Gicc_nsapr寄存器的作用 NonSecure Active Priorities Registers GIC400的相关控制寄存器,用于保存和恢复中断相关的控制.GIC400是arm公司的中断控制IP,提供axi4接口,主要功能: 1)中断的使能(enable,mask); 中断的优先级(poriority); 中断的触发条件(level-sensitive, edge-triggered); 2)单独分为两个Group,来支持secure, non_secure的中断; Group0通常只能secure axi访问, 接口连接至CPU的FIQ中断; Group1通常只能none_secure访问, 接口连接至CPU的IRQ中断. 3)对multi-core和virtualized interrupt的支持.GIC400最多支持8核
+参考FAQ: FAQ202274076
+### 问题: CMW270/500测试 WIFI Tx，Expected PEP与PG设置与说明
+解决方案: Expected PEP为设置仪表测量最大发射期望功率,该值应比DUT实际发射功率高10至15db,因DUT接入时WLAN信号是以最大功率发射,如果该值设置小于DUT实际信号,仪表无法正确测量DUT功率,会导致DUT接入失败; Packet Generat(PG)功能为CMW发起的一个Ping网络探测,如果被测件收到后,对该探测进行回应,达到被测件发射的目的,Tx测试时需要点击勾选; 如果Expected PEP、PG等基础设置均正确,依然测不出功率,无其他错误信息提示并且DUT与设备均连接正常的情况下,可以降低Expected PEP值再进行测试.
+参考FAQ: FAQ202274082
+### 问题: 三态GPIO说明
+解决方案: gpio三态的方式(高电平/低电平/高阻)是可以支持的. 需要外部1K上拉,外部1K下拉,内部20K上拉,内部50K下拉; 三态原理: 高电平:硬件外部上拉电阻,软件将内部上拉,读出来值为1,软件内部下拉,读出来为1 低电平:硬件外部下拉电阻,软件将内部上拉,读出来值为0,软件内部下拉,读出来是0 高阻态:硬件外部上下拉NC,软件将内部上拉,读出来值为1,软件内部下拉,读出来是0
+参考FAQ: FAQ202274083
+### 问题: UMW2651、UMW2652的BT/FM语音数据线
+解决方案: 1.UMW2651、UMW2652的BT/FM语音数据都使用IIS走线 2.UMW2651的如下图 2.UMW2652的如下图
+参考FAQ: FAQ202274087,含图片
+### 问题: SC2721G 引脚 L13, M13，M14做呼吸灯的支持情况是怎样的？
+解决方案: L13---RGB_IB0, M13---RGB_IB1, M14---RGB_IB2都可以支持PWM模式输出; 全彩呼吸灯软件默认是恒流模式,推荐用恒流模式; 灯的正极接VBAT,负极接RGB_IBX脚,RGB每一路均支持单独控制,L13---RGB_IB0, M13---RGB_IB1, M14---RGB_IB2三脚的最大支持电流均为27.7mA.
+参考FAQ: FAQ202274092
+### 问题: 为什么不能使用NETWORK_PROVIDER服务
+解决方案: 由于原生Android平台并未提供NETWORK_PROVIDER,所以单纯的Native版本是无法实现Network定位的. 如果需要支持网络定位有两个方法: 1. 使用GMS版本,GMS版本有Google提供的Network provider,但是需要注意网络问题 2. 集成如百度、高德等第三方资源包,可以采用系统集成apk包的方式,也可以直接在app里集成相关的sdk包
+参考FAQ: FAQ202274093
+### 问题: DCDC bypass的关闭和打开
+解决方案: 当VDDWPA开启的时候,APT电压由0v打开到APT设置的电压. 为验证一些疑是PA供电引起的问题,有时候需要将VDDWPA这个DCDC电源修改成bypass模式,即VDDWPA直接由VBAT供电. 要实现这个需求,可以在NV里面配置,NV位置如下图,DCDC_bypass由0x0改为0x5555,即可以将VDDWPA改成bypass模式. 用VBAT供电之后,平均功耗会有所增大.
+参考FAQ: FAQ202274096,含图片
+### 问题: 支持usb hub的平台
+解决方案: 平
+参考FAQ: FAQ202274097,含图片
+### 问题: 对于UMS9117-L平台，做智能手表搭配mcu时，RTC mode怎么配置？
+解决方案: 对于用9117-L搭配mcu做智能手表方案中: 前期设计上RTC mode上下拉需要保留. 优先调试mcu供32k替代32k晶体方案. 手表上如果能确认mcu供32k稳定,可以考虑不再使用transeiver 26M分32k方案. 否则仍需预留RTC mode上下拉,以便配置transeiver clk方案.
+参考FAQ: FAQ202274099
+### 问题: UMS9117-L搭配mcu做智能手表，2720上对应的BOARD_TEMP_ADC NTC如何处理
+解决方案: ADC1~4 建议留一路ADC做RF PA的温度读取. 如果软件对ADC还有其它需求,可根据需求再做相应预留, 如没有,可将其余ADC直接NC掉.
+参考FAQ: FAQ202274103
+### 问题: LTE Band40/41 RX SAWLESS方案要点
+解决方案: LTE Band 40/41 采用LTCC filter代替SAW或者走PAM时,必须和LTE Band7和Band 1/2/3/4/25/66在transceiver端和FEM端间隔一个port口,因为使用滤波器或者走4G PA开关的对中频和相近频率的Band7滤波效果较差,可能会存在干扰的风险. LTE Band 40/41 和2.4G WIFI没有共存需求的情况,可以用LTE Band41 可以使用SAW LESS方案;如果有WIFI共存需求,则必须使用SAW,节省成本方案可以考虑RX和TX共saw.
+参考FAQ: FAQ202274118
+### 问题: 手动搜网结果显示逻辑
+解决方案: 搜网结果显示逻辑: 展锐搜网逻辑采用Google原生.搜网由ap侧下发,modem侧上报.modem通过AT指令SPFREQSCAN进行上报,上报的参数只包含plmn,不包含具体的长名和短名. 而长名在AP侧的显示逻辑具体为: OPL/PNN > ONS > NITZ > numeric_operator.xml > plmn(modem上报结果) numeric_operator.xml路径为:/vendor/sprd/telephony-res/operatorname_overlay/frameworks/base/core/res/res/values/numeric_operator.xml 相关代码可参考: /vendor/sprd/platform/frameworks/base/telephony/java/com/android/internal/telephony/uicc/UniOperatorNameHandler.java
+参考FAQ: FAQ202274139
+### 问题: W117平台若是项目不支持GSM，RF_PA_RAMP这个管脚该如何处理？
+解决方案: 项目不支持GSM的话,GSM PA RF_PA_RAMP对应的UMS9117_Digital Pin 悬空即可
+参考FAQ: FAQ202274155
+### 问题: SC6500FS取合电池开机慢问题
+解决方案: 6500平台在扣上电池后会有一个上电自检过程,不做任何操作过8s左右掉电,掉电后开机为正常3s左右开机.若在掉电过程之前按下Power键则会增加开机时间,是正常现象.
+参考FAQ: FAQ202274157
+### 问题: 8910 文件系统-vfs_open接口说明
+解决方案: 8910 文件系统-vfs_open接口说明 int vfs_open(const char *path, int flags, ...) const char *path :文件路径,如"/fota/fota.pack" int flags:该参数可以是以下选项,多个使用 "|" 隔开: O_RDONLY: 以只读的方式打开 O_WRONLY: 以只写的方式打开 O_RDWR : 以读写的方式打开 O_APPEND: 以追加的方式打开 O_CREAT: 创建并打开一个新文件 O_TRUNC: 打开一个文件并截断它的长度为零(必须有写权限) O_SYNC : 同步写入 O_NONBLOCK: 打开时不阻塞 int mode: 第三个参数在底层没有使用
+参考FAQ: FAQ202274161
+### 问题: 8910DM平台是否有单独的编译工具链
+解决方案: 8910DM平台是否有单独的编译工具链 没有,第三方调试建议可以给openSDk包.
+参考FAQ: FAQ202274162
+### 问题: 8910DM平台下载失败问题排查
+解决方案: 8910DM平台下载失败问题排查 1, 检查下载线的连接是否正常; 2, 确认板子硬件焊接正常; 3, 检查USB驱动是否正确安装,下载口是否有正常识别; 4, 检查客户是否有修改FDL下载程序; 5,尝试工具格式化下载;
+参考FAQ: FAQ202274163
+### 问题: 9832E平台eSIM卡的支持情况如何？
+解决方案: 1.9832E是支持ESIM卡的,需要将ESIM卡贴在PCB上并与ESIM_RST,ESIM_DAT,ESIM_CLK对应连接 2.ESIM芯片的连接方式与SIM卡槽的连接方式一致,可通过正常SIM卡的接口(SIMCLK1,SIMDAT1,SIMRST1)模拟成ESIM卡进行开发
+参考FAQ: FAQ202274168
+### 问题: VSEN_P/IVSEN_N/ISEN_P 这三个pin是用来做什么的？
+解决方案: 不支持VSEN_P/IVSEN_N/ISEN_P的功能
+参考FAQ: FAQ202274169
+### 问题: SC6533G平台RF Bring up, ORFS, PVT优化注意事项
+解决方案: 展锐SC6533G平台是一个2G功能机平台,所有的RF逻辑和参数优化均放在代码里,没有NV配置逻辑,因此RF前端逻辑需要用到的RFCTRL尽量和平台CS图纸保持一致的真值关系,那么就可以用平台默认的软件版本进行Bring up,但是像Vramp参数优化动作也是放在代码里的,需要出临时版本调试,具体调试方法详细可参考文档"SC6533G平台RF设计和调试指导手册V1.0" 文档路径:https://unisupport.unisoc.com/file/index?fileid=101777
+参考FAQ: FAQ202274173
+### 问题: SC6533G平台测试频段DCS1800,PCS1900灵敏度注意事项
+解决方案: SC6533G平台测试DCS1800和PCS1900灵敏度的时候需要分别注意如下事项: 第一次开机测试DCS1800灵敏度时,仪表上的BCH频段需要选择DCS1800,然后再测试DCS1800对应信道的灵敏度,后续再测试时可以选择BCH EGSM测试DCS1800的灵敏度就没有问题了,否则如果第一次测试选择BCH EGSM的话,DCS1800灵敏度测试结果有误,较大cell power时就会出现误码; 测试PCS1900灵敏度的时候,仪表界面BCH需要选择GSM850进行测试;
+参考FAQ: FAQ202274174
+### 问题: 单独升级某个分区镜像
+解决方案: Android OTA没有这样的方案,如果是升级某一个分区,可以通过 1.fastboot刷写,可参考isupport文档:32454 Fastboot下载指南.pdf 2. 使用researchdownload单独烧录.在Main page只勾选FDL1,FDL2和要烧录的分区镜像,其他操作和烧录pac包一样.
+参考FAQ: FAQ202274181
+### 问题: 第三方快充私有协议使用注意事项
+解决方案: (1)在硬件设计上使用第三方私有协议时,在DP、DM上不要串电阻或磁珠.如果串电阻或磁珠将会导致BC1.2识别时在DCD阶段产生错误(在DCD阶段会检测DP上的电压,DP同时会提供一个稳定的电流源,串电阻或磁珠将会导致DP上的电压大于0.8V,导致DCD检测失败). (2)DP、DM不能绕过PMU直接连到BB上.因为下载需要PMU中的BC1.2协议,如果绕过PMU,将会导致无法下载. (3)为避免平台的BC1.2和充电芯片的BC1.2之间存在的冲突,可以选用增加隔离开关的方案.使用开关在PMU和另一个具有BC1.2识别的模块(例如带BC1.2识别的充电IC)之间切换,以此实现充电和USB的枚举.
+参考FAQ: FAQ202274188
+### 问题: GSM edge all band开关谱异常但PVT正常时的NV修改方法
+解决方案: 
+参考FAQ: FAQ202274190
+### 问题: 使用Simba调试SC6531EF 21.1 Signal strength fail 的方法？
+解决方案: SC6531系列是展锐一款2G平台芯片,校准工具多为CFT.但是,有少数客户使用定制版本的simba 进行校准.在出现Signal strength(RX LEVEL) failed时,可以通过simba校准工具微调RX gain来改善RX level测试结果. GSM900为例,RX gain调试位置如图: CalCellpower 对应 received signal level ,CalCellpower -80,-80,-80,-69,-42分别对应 received signal level(dBm) -100,-90,-80,-69,-42. CalGainlndex为Gain Table索引.
+参考FAQ: FAQ202274191,含图片
+### 问题: LTE Only 项目不支持GSM情况下，GSM PA RF_PA_RAMP对应管脚该如何处理？
+解决方案: 随着模块以及穿戴项目增多,出现大量LTE Only 项目,且展锐平台多数是支持GSM、WCDMA和LTE模式的,因此有客户提出了GSM PA RF_PA_RAMP对应管脚该如何处理?因由于PA RF_PA_RAMP的功能是由对应Digital Pin 提供电压来控制2G PA输出功率的,此pin接地会带来功耗问题,因此对应的Digital Pin建议悬空即可.
+参考FAQ: FAQ202274192
+### 问题: LTE only AFC 项目校准注意事项？
+解决方案: 随着模块以及穿戴项目增多,出现大量LTE Only 项目,且展锐平台校准工具AFC校准多由GSM band来完成.而LTE Only 项目不支持GSM频段,就造成了按原来校准模式无法进行AFC校准的情况.不完成AFC会造成驻网时间较长、不同band切换掉线等情况,因此展锐开发了LTE Only情况下的 .seq文件. 综上,LTE Only 项目 AFC校准时需向CPM索要对应平台的 LTE Only.seq文件,以SC9820E+SR3593A为例,LTE Only AFC校准文件为:SC9820E+SR3593A(LTE Only).seq.
+参考FAQ: FAQ202274193,含图片
+### 问题: UIS8910FF-S平台中AGC校准时Min Gain测试值偏离下限概率Fail？
+解决方案: AGC的Min Gain测试值偏离下限的原因及修改方法: 1.Simab工具R8.21.2102版本开始LTE校准时MinGain测试时Rx Gain的Index位置(由Index14 变更为Index 0),导致实测Minimum Gain在原来的基础上减小14dB,因此门限须适当的修改,调整一下Mininmum Gain的下限,建议在原基础上放宽10dB. 2.重点关注修改门限前Fail band的RSL和MIL表现,如果正常按解决方案处理;如果异常,需要查硬件方面的问题;Mininmum Gain和Maximum Gain测试主要为了排查RX通路是否由严重的问题,客户可以根据自身硬件的特点维护所需要的门限.
+参考FAQ: FAQ202274197
+### 问题: SC9863A平台GSM APC校准时某信道的其中一个PCL等级功率偏大Fail，如何处理？
+解决方案: 1.通过Simba工具修改对应PCL的功率,对它前后PCL等级功率都稍微调整,保证每个等级的功率差值在2dB以内. 2.对照CS图纸重点检查RF_TX_LB_GSM 输入匹配靠近FEM的Π型匹配,一般对地有一个15nH左右的并联电感,这个对功率影响较大. 3.参考[FAQ202172939] GSM APC 校准提升带内发射功率平坦度.
+参考FAQ: FAQ202274198
+### 问题: 按IR按键时候LED需要闪烁一下
+解决方案: 宏定义在如下文件中 aps\customer\s2tek\sub_customer\s2tek\s2tek\customize.h #define SUPPORT_LED_FLASH_WHEN_IR_PRESS 代码实现部分: Z:\code\s2\aps\application\s2tek\formal\app_common_api\factory\app_factory.c int APP_CustomerFuncStart(UINT32 *pdMessage, UINT32 *pdParam) { #ifdef SUPPORT_LED_FLASH_WHEN_IR_PRESS else if(dMessage!=UI_EVENT_POWER) { APP_LED_Flash_Timer_Set_FullSetting(LED_FLASH_TYPE_REMOTE, 0,1); } #endif }
+参考FAQ: FAQ202274199
+### 问题: GSM的RX level温度补偿负数表达方式
+解决方案: NV中对GSM的RX level可进行温度补偿.该位置也可以补偿为负数,进行反向调节. NV的补偿位置如下: temperature_rx_level_compensate_value[0]: -20度对应的RF Level补偿 temperature_rx_level_compensate_value[1]: 0度对应的RF Level补偿 temperature_rx_level_compensate_value[2]: 20度对应的RF Level补偿 temperature_rx_level_compensate_value[3]: 40度对应的RF Level补偿 temperature_rx_level_compensate_value[4]: 60度对应的RF Level补偿 unit:1/16dB,负数用补码表示 (0x8即代表加0.5dB,0xFFF8即代表减0.5dB)
+参考FAQ: FAQ202274200,含图片
+### 问题: EDGE-只支持DL，如何测试？
+解决方案: MCS1-4为GMSK的调制方式,MCS5-9 为8PSK的调制方式,测试一般选择最大速率编码方式测试,所以EDGE一般选择MCS9. 若测试EDGE下行case,只需要测试测试MCS5-9的灵敏度,具体可参考3GPP协议.
+参考FAQ: FAQ202274203
+### 问题: FM_BASE_18A分支对于LTE B2&B25的支持能力以及NV配置注意事项
+解决方案: CP版本:FM_BASE_18A分支,支持B2 only\B25 only\B25 co_band B2 NV中Band info对应配置位置如下: 对应的射频逻辑需要配置在对应模块相应的band no里面.
+参考FAQ: FAQ202274205,含图片
+### 问题: 专业模式iso和曝光时间调节无效果
+解决方案: 在专业模式下,曝光时间和iso两个值共同作用的画面亮度情况 1、当这两个值得一个为auto,调整另一个值时,为auto状态的值会自适应变化,使得画面亮暗程度基本保持不变 2、两个值都不是auto的时候,调整一个值,可以观察到明显的画面亮暗变化 这个是正常现象
+参考FAQ: FAQ202274209
+### 问题: 状态栏RAT信号图标显示
+解决方案: 状态栏RAT信号图标指的是驻网类型图标(5G,4G,3G,2G等). 原生逻辑:该图标和数据连接有关,数据连接开启时才显示RAT信号图标,数据连接关闭时隐藏RAT信号图标. 平台逻辑:RAT信号图标和数据连接状态无关,即无论数据连接是否开启,只要当前sim卡状态时有服务,就显示当前网络类型图标. 修改为原生显示方式: 配置/packages/apps/CarrierConfig/res/xml/vendor.xml 将以下行删除即可 <boolean name="always_show_data_rat_icon_bool" value="true"/>
+参考FAQ: FAQ202274211
+### 问题: 语音信箱通知手动移除方法
+解决方案: 用户手机收到语音信箱留言后通知栏会显示通知,滑动可移除该通知 通过"voicemail_notification_persistent_bool" 实现运营商定制,默认为false,即可以手动移除. 设置voicemail notification不能手动移除的方法: 在 /packages/apps/CarrierConfig/assets 对应运营商文件中,进行相关配置: <boolean name="voicemail_notification_persistent_bool" value="true"/>
+参考FAQ: FAQ202274212
+### 问题: 为什么Camera在录像的时候来电会自动结束
+解决方案: 因为Camera 在录像的时候会监听电话状态,如果电话处于OFFHOOK,就自动终止录像.我们可以根据 onCallStateChanged监听来电状态值 可以在state为CALL_STATE_OFFHOOK,或者CALL_STATE_RINGING来结束录像 vendor/sprd/platform/packages/apps/DreamCamera2/src/com/android/camera/VideoModule.java @Override public void onCallStateChanged(int state, String incomingNumber) { switch (state) { case TelephonyManager.CALL_STATE_OFFHOOK: if (mMediaRecorderRecording) { stopVideoRecording(); } break; } }
+参考FAQ: FAQ202274213
+### 问题: UIS8910DM/FF/FF-S平台的GSM RX通路是否能够复用LTE RX通路？
+解决方案: UIS8910FF/FF-S平台GSM RX通路不能复用LTE RX通路,灵敏度会恶化较差,如果不关注GSM灵敏度的话可以使用LTE RX通路; UIS8910DM平台GSM RX通路可以复用LTE RX通路,灵敏度不会恶化; 如果GSM RX需要复用LTGE RX通路,只需要配置对应NV 即可,即将GSM RX逻辑配置成LTE RX通路上的Trans port和TXM Port;
+参考FAQ: FAQ202274215
+### 问题: 8850 有内置模拟 audio codec 吗？
+解决方案: 没有内置codec,调试外置codec不需要修改NV
+参考FAQ: FAQ202274217
+### 问题: “CONFIG_APPIMG_FLASH_SIZE”做什么用处
+解决方案: 可以设置为0,这个是OpenCPU应用在flash里的独立分区.如果不需要使用openCPU功能可以设置为0.
+
+如设置为0,请先将OpenCPU相关宏关闭.
+CONFIG_APPIMG_LOAD_FLASH 和 CONFIG_APPIMG_FLASH_ADDRESS
+使用menuconfig.py 的话,是在(Top)->Application start下面.
+参考FAQ: FAQ202274218
+### 问题: 如何编译双SIM卡版本
+解决方案: 如何编译双SIM卡版本 参考target:Customer_cat1bis_ds_novolte
+参考FAQ: FAQ202274219
+### 问题: 是否支持MicroPython
+解决方案: 是否支持MicroPython 不支持
+参考FAQ: FAQ202274220
+### 问题: UE operation mode支持以下哪几种？
+解决方案: 在8850平台中没有这些mode.
+参考FAQ: FAQ202274221
+### 问题: 如何关闭PSM串口唤醒功能
+解决方案: 关闭uart 中断唤醒可以在hal_pmu.c文件里使用halpmusetwakeenable接口进行配置
+
+halPmuSetWakeupEnable(HAL_RESUME_SRC_PMIC_GPIO, false);
+这样配置是可以屏蔽该中断源
+参考FAQ: FAQ202274222
+### 问题: 同一个时钟tick中断在gicd_isactive和gicd_ispend两个寄存器都置位
+解决方案: 这是属于正常情况. 根据GIC中断的处理规则, 一个中断在处理过程中还可以记录一次新的中断处于pend状态 .
+参考FAQ: FAQ202274224
+### 问题: 请问如何实现卡槽切换？
+解决方案: AP 侧,识别 这个 卡序 的操作,修改不了.
+ 这个需要在CP侧修改库函数才能实现,比较麻烦.
+参考FAQ: FAQ202274225
+### 问题: 8521E平台串口为什么只能同时使用2组？
+解决方案: 该平台只有两个Uart controller,所以只有两个Uart接口可以同时用来工作
+参考FAQ: FAQ202274226
+### 问题: 为什么wifi非信令设置的功率和实际测出来的功率不一致？
+解决方案: wifi非信令测试设置强发的功率和实际测出来的功率并不是一一对应的关系: 1、工程模式中设置的power level值代表功率等级,而wifi TX实际输出功率是基于ini文件的功率控制字配置,其中包括信道补偿和速率功率控制等部分,可针对ini文件中参数进行功率调整; 2、pandora中power level项对应的是不同挡位的输出功率,可以不勾选power level项,此时测试输出的为ini文件配置的功率.
+参考FAQ: FAQ202274230,含图片
+### 问题: SC6533G 平台不插卡如何拨打112连接仪器
+解决方案: 1 主板接上UART串口线连接电脑USB接口,上电开机 2 打开"FactoryCalibDebugTools.exe"软件 3 芯片选择"8851X" 4 按图示步骤进入校准模式 5 设置好仪器,点击"自动呼叫",稍等片刻主板就会拨打112连接仪器;默认连接GSM900或DCS,若要连接GSM850/PCS,需勾选"GSM850 PCS"
+参考FAQ: FAQ202274233,含图片
+### 问题: SC6533G平台不插卡如何通过coolwatcher拨打112连接仪器
+解决方案: 1 主板开机,接上UART串口线连接电脑USB接口 2 打开"coolwatcher.exe"软件 3 选择"8809e2",在"lastcomport"写入对于的COM口,点击"OK" 4 按图示步骤进入校准调试模式 5 设置好仪器,如果要连接GSM900或DCS,在命令框中输入"autoCallTest(0x190000)",稍等片刻主板就会拨打112连接仪器;若要连接GSM850/PCS,输入"autoCallTest(0x250000)"
+参考FAQ: FAQ202274234,含图片
+### 问题: 蓝牙MAC地址引用流程
+解决方案: 流程如下: 1、 framework打开蓝牙init hidl时会先来获取蓝牙地址get_local_address; 2、此时会先去读取/mnt/vendor路径下的btmac(此路径下蓝牙地址是出场时由产线工具写入的,eg:pandora); 3、若读取成功则将其备份至/data/vendor/bluetooth路径下,并以此作为蓝牙地址返回,若读取失败则去读取/data/vendor/bluetooth路径下btmac; 4、若读取成功则以此地址作为蓝牙地址,若读取失败,则随机生成一个蓝牙地址作为蓝牙地址返回并保存在/data/vendor/bluetooth路径下 在没有打开蓝牙的时候,读取mac只能在/mnt/vendor下读取
+参考FAQ: FAQ202274237
+### 问题: LVDS走线及SPI走线能否删除
+解决方案: 如果是支持到Cat4,LVDSRFB(SCC)六根线全部悬空即可,软件内部处理,若支持到Cat6(DL CA)和Cat7(DL & UL CA)LVDSRFB(SCC)不允许删除任何一组线. SPI的6根线在任何LTE能力下都不能删除.
+参考FAQ: FAQ202274238
+### 问题: 平台设备正常运行过程中导致异常关机的Vbat电压门限有哪些？
+解决方案: 平台设备正常运行过程中导致异常关机的Vbat电压门限有哪些? Vbat硬件关机门限电压: Vbat电压低于2.65V超过2ms,走硬件掉电流程,此为硬件UVLO电压(通过VbatA脚检测非vbatsense),该电压值不可修改,恢复电压Vbat大于2.95v超过16ms Vbat电压大于5V(4.2V~5.2V可配)超过1ms(0.25~2ms可配),走硬件掉电流程,此为硬件OVLO电压,恢复电压Vbat小于4.9V , Vbat软件关机门限电压: 电量为0时对应的电压,通常设置为3.4V,走软件掉电流程,通过Vbatsense检测 soft-vbat-uvlo门限(软件uvlo门限),当Vbat电压小于该值,会强制电量为0%,然后走软件掉电流程,这个值默认为3050
+参考FAQ: FAQ202274239
+### 问题: Pbint拉低多久后松开可保证设备开机？
+解决方案: pbint拉低时间>47ms后,PMIC电源进行上电 pbint拉低时间>500ms后,EXT_RST_B拉高,对BB复位完成 pbint拉低时间>1000ms, BB完成对PMIC的初始化,在这之前拉高Pbint,PMIC主导下电 同时uboot中会进行ddr和屏等的初始化,这个时间视初始化内容而定,在初始化完成后会检测Pbint是否为低,若为低则能正常开机,如不为低则会走软件掉电. 通常建议Pbint拉低大于2000ms进行开机.
+参考FAQ: FAQ202274241
+### 问题: 开机电压能否设置为3.4V以下？
+解决方案: PMU能够支持3.4V以下开机(最低2.95V),但是开机电压设置为3.4V以下时,供电为3.3V的模块工作可能受到影响 VDDUSB, 正常输出为3.3V,为USB模块供电,USB模块可能不能正常工作 VDDWIFIPA(1.8V-3.3V), VDDWPA(0.6V-3.6V)为WIFI PA和射频PA供电,可能发射功率上不去; AVDDVB(3.3V)为音频模块供电, 可能导致音频响度上不去,TDD noise;
+参考FAQ: FAQ202274242
+### 问题: 为什么实测开机上电时序中各LDO上电时间间隔超过PMU规格书中规定的最大值400us
+解决方案: 1.扣掉电池后再开机参考内部RC振荡器,由于振荡器误差大,同时内部数字分频器系数也有误差,每个ldo上电的时间间隔Tpwr2仿真误差为100us-1.35ms. 2.规格书中数据是以典型的32.768K为前提,时钟精度较高,Tpwr2的误差为100us-400us
+参考FAQ: FAQ202274244,含图片

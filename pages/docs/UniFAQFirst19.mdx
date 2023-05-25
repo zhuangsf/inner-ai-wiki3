@@ -1,0 +1,300 @@
+### 问题: 使用sc7715_modem_Band125_builddir 的modem无法校准
+解决方案: 参考机支持的频段是 BAND_1_2_8,即sc7715_modem_builddir这个版本. 如果要支持BAND_1_2_5,就要用sc7715_modem_Band125_builddir. 请根据硬件上PA的设置来设置NV,并选择正确的modem
+参考FAQ: FAQ44551
+### 问题: SC7715平台是否支持产线自动化测试
+解决方案: MocorDroid4.4_3.10_14A_W14.19.1_P14.26以后的版本都支持.
+参考FAQ: FAQ44557
+### 问题: moneky测试时停止，monkey.log中提示“Monkey aborted due to error”怎么回事
+解决方案: moneky测试时monkey停止,在monkey.log中提示"Monkey aborted due to error",是由于没有设置monkey命令选项,在测试过程中出现JavaCrash、ANR、NativeCrash后,monkey就会停止.一般测试时可根据情况设置命令选项: 1.为了防止monkey因为ANR错误而停止,需要使用--ignore-timeouts参数 2.为了防止monkey因为安全错误而停止,需要使用--ignore-security-exceptions参数 3.为了测试整个系统的稳定性,不希望monkey因为应用程序的crash而停止,需要使用--ignore-crashes参数 如果用monkey脚本进行测试则更为简单,直接设置测试级别即可.
+参考FAQ: FAQ44060
+### 问题: 如何根据log判断手机的当前屏幕状态
+解决方案: 在events.log中搜索关键字:screen_toggled,后面的数字代表屏幕的不同状态 screen_toggled: 0 //代表处于灭屏状态 screen_toggled: 1 //代表处于亮屏状态 screen_toggled: 2 //代表处于解锁状态 其定义是在system/core/logcat/event.logtags文件中 # 0 for screen off, 1 for screen on, 2 for key-guard done 70000 screen_toggled (screen_state|1|5)
+参考FAQ: FAQ44080
+### 问题: 如何判断一个文件是否为链接文件？
+解决方案: 如果是普通文件,file.getAbsolutePath()和file.getCanonicalPath()是一样的. 如果是link文件,file.getAbsolutePath()是链接文件的路径;file.getCanonicalPath是实际文件的路径.可通过判断这两个路径是否一样即可.
+参考FAQ: FAQ44134
+### 问题: ECC校验原理是什么
+解决方案: 当往NAND Flash的page中写入数据的时候,每256字节我们生成一个ECC校验和,称之为原ECC校验和,保存到PAGE的OOB(out-of-band)数据区中. 当从NAND Flash中读取数据的时候,每256字节我们生成一个ECC校验和,称之为新ECC校验和. 校验的时候:将从OOB区中读出的原ECC校验和新ECC校验和按位异或,若结果为0,则表示不存在错(或是出现了 ECC无法检测的错误);若3个字节异或结果中存在11个比特位为1,表示存在一个比特错误,且可纠正;若3个字节异或结果中只存在1个比特位为1,表示 OOB区出错;其他情况均表示出现了无法纠正的错误.
+参考FAQ: FAQ43955
+### 问题: 如何在selinux上开放zygote在tmpfs上面创建链接的权限
+解决方案: 在device/sprd/scx15/sepolicy/zygote.te添加allow zygote tmpfs:lnk_file create;
+参考FAQ: FAQ44136
+### 问题: UBIFS无序块镜像是什么意思
+解决方案: UBIFS:unsorted block image file system.MTD系统一种重要的子系统是坏块管理系统,坏块管理系统维护着一张坏块表bbt(bad block table),在MTD上一层ubi层,维护着另一张表:EAT(eraseblock assignment table).EAT将逻辑擦除块映射到物理擦除块.逻辑擦除块可以被映射到任何一个物理擦除块,因此在ubi层不存在坏块.尽管逻辑擦除块对用户来讲是连续的,但对应的物理擦除块在底层flash芯片上以一种无序的方式散布,这也是unsorted block image的来源.
+参考FAQ: FAQ44138
+### 问题: ubifs包括哪几个区域
+解决方案: Ubifs包括六大区域: 1、超级块区(superblock area):第一个逻辑擦除块LEB0,包含文件系统参数,如擦除块大小、数目等. 2、主区(master area):逻辑擦除块LEB1和LEB2,指向Wandering Tree的根索引节点(root index node) 3、日志区(log area):log信息 4、LPT区(LEB Properties Tree):LEB特性树,表征最后一次文件系统变化得到准许(commit)时文件系统的状态. 5、orphan area 6、main area:包含组成文件系统的数据和索引的结点.
+参考FAQ: FAQ44143
+### 问题: MTD设备和块设备有哪些主要差别
+解决方案: 1) MTD设备表示flash设备,flash设备包含很大的擦除块,典型大小为128KB;块设备包含小块(扇区),典型大小为512bytes 2) MTD支持3个主要的操作:在擦除块内部读取某一个偏移量出的数据;在擦除块内部某一个偏移量处写数据;擦除整个擦除块.而块设备包含两个主要的操作:读扇区(sector);写扇区(sector). 3) 擦除块(eraseblock)在重写数据之前必须先擦除,但块(block)可直接重写. 4) 坏扇区会被硬件重映射并且隐藏(现代的LBA硬驱).但MTD设备中的坏块不会被隐藏,而是由软件进行处理. 5) MTD设备经过一定数量的擦除周期后会损块;扇区则没有磨损(wear-out)特性.
+参考FAQ: FAQ44146
+### 问题: 使用高低温箱进行DDR高低温扫描需要注意哪些问题
+解决方案: 1) 首先应该在常温下进行扫描,确保能正常出串口log,并且log中无乱码出现,建议使用优质的usb转串口线.常温下正常出log后,再考虑进行高低温扫描,否则会浪费很多时间,并且耽误扫描进展. 2) DDR高低温扫描属于温度"定值"扫描,因此不需要设置程序段,直接输入温度和时间,选择定值运行即可,操作非常简单. 3) 在给手机上电之前,需要将手机在设定温度达到后预热或者预冷一段时间后再打印扫描log,否则会影响扫描结果的可信度. 4) 低温扫描时,在有条件的情况下,最好用塑料袋将手机密封,否则遇冷后,手机上会出现很多水,一方面影响电池供电,另一方面可能会损坏手机. 5) 低温扫描完毕后,需将温度设置到40度左右运行一段时间,将温箱内的水烘干,进行必要的设备维护.
+参考FAQ: FAQ44168
+### 问题: 7731 第三方移植过程中LIB库的问题
+解决方案: x86 mips 这个两个不要取, 优先取armeabi-v7a,次选armeabi
+参考FAQ: FAQ44205
+### 问题: 如何显示android 4.4 Launcher桌面hotseat图标的名称？
+解决方案: 以原生Launcher3为例: 修改如下: 1、定位到/packages/apps/Launcher3/res/layout/hotseat.xml: android:layout_marginBottom="10dp" //修改hotseat距离底部的位置 2、定位到/packages/apps/Launcher3/src/com/android/launcher3/WorkSpace.java ((FolderIcon)child).setTextVisible(false); 修改为: ((FolderIcon)child).setTextVisible(true);
+参考FAQ: FAQ44246
+### 问题: 如何修改android 4.4 Launcher主菜单应用列表界面的行数和列数？
+解决方案: 一些手机,需要单独定制主菜单应用列表界面的行数和列数. 以原生Launcher3为例: 修改如下: 1、定位到/packages/apps/Launcher3/src/com/android/launcher3/AppsCustomizePagedView.java: 搜索onDataReady方法: mCellCountX = (int) grid.allAppsNumCols;//修改列数 mCellCountY = (int) grid.allAppsNumRows;//修改行数 updatePageCounts();
+参考FAQ: FAQ44257
+### 问题: 7715硬件精简版本烧写对应的pac包后wifi无法正常使用，如何修改？
+解决方案: 最新提供的硬件精简版本costdown了wifi的外置ldo. 旧的硬件版本由GPIO169控制外置ldo芯片给wifi供电. 新的硬件精简版本由7715内置的VDDWPA来给wifi供电,默认的idh包中的代码打开wifi ldo有误,导致wifi无法使用. 解决: wifi power on时,需要打开VDDWPA.
+参考FAQ: FAQ44218
+### 问题: 展讯android4.4常用配置内核命令以及区别？
+解决方案: 常用配置内核的命令 kuconfig 基于make menuconfig,打开.config文件,如果没有.config文件则生成.config,并会复制一份覆盖$(project)-vlx_defconfig,是最常用的命令 kmconfig 基于make menuconfig,打开.config文件,如果没有.config文件则生成.confg,不会覆盖$(project)-vlx_defconfig. kdconfig 把通过lunch传入的工程名,会选择相应的$(project)-vlx_defconfig,生成.config.
+参考FAQ: FAQ44327
+### 问题: 浏览微博长图片为何会有卡顿？
+解决方案: 浏览微博长图片时有时会出现卡顿的问题如:http://m.weibo.cn/2671109275/BmdUy3yNQ ,这时在该网页中调出浏览器菜单并选择"请求桌面版网站",再次点选该图片后可以看到拖动图片不会发生跳闪的情况,通过分析网页代码和调试浏览器内核可知这是因为通过桌面版ua获取的网页js文件不会再去处理ACTION_MOVE事件,而由浏览器内核处理.该问题的根因是微博网页js脚本和android4.4 chromium内核适配的问题.这样的问题浏览器本身也是考虑到的,使用"请求桌面版网站"功能一般就可以正常浏览了.
+参考FAQ: FAQ44335
+### 问题: 如何修改浏览器audio focus请求类型？
+解决方案: 浏览器请求audio focus的操作是在external\chromium_org\media\base\android\java\src\org\chromium\media\MediaPlayerListener.java 文件中进行的,在MediaPlayerListener的create方法中可以看到创建了AudioManager类am am.requestAudioFocus( listener, AudioManager.STREAM_MUSIC, // Request permanent focus. AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK); 中AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK即为类型,可以根据需要修改.
+参考FAQ: FAQ44336
+### 问题: SC7715平台EDGE最大可支持的上下行速率是多少？
+解决方案: C7715平台上Edge最大支持能力 Edge Class 12, type B Edge上行/下行速率 236/236 kbps
+参考FAQ: FAQ44339
+### 问题: SC5735平台是否可以用来做双摄像头的行车记录仪？(MocorDroid4.4prime_3.10_14A_pad_W14.26.4)
+解决方案: 如果要求可以支持2个摄像头同时录像并且在屏上同时显示两个摄像头的影像的行车记录仪功能,目前的版本支持不了. 原因是:软件上没有两路摄像头同时工作的设计,IC虽然有MIPI / CCIR两路,但共用DCAM模块.
+参考FAQ: FAQ44348
+### 问题: 如何将平台显示的layer以图片的形式dump出来？
+解决方案: 手机连上USB后,输入如下命令: adb root adb shell mkdir /data/dump_bmp touch /data/dump_bmp/d_test 这时系统就会开始dump图片 想要停止dump就删除d_test这个文件 rm /data/dump_bmp/d_test 所有的图片都在/data/dump_bmp/中 这样就可以得到每一帧每一层的图像,对比相应层的图像,即可获知是否由于某一层的绘制出了问题
+参考FAQ: FAQ44362
+### 问题: chromium_org c++代码的一种简单加log方法
+解决方案: 在调试浏览器时会遇到需要在chromium内核中加log的情况,如下添加比较简单,可以直接使用. LOG(INFO) << "……."; 如上就行了 应该不需要包含头文件,如果发现编译不过去,可以#include "base/logging.h"
+参考FAQ: FAQ44363
+### 问题: HTML转义字符都有哪些？
+解决方案: 在网页中经常会遇到转义字符,那么可使用的转义字符都有哪些. 如下地址可以看到在html中所有可用的转义字符: http://tool.oschina.net/commons?type=2
+参考FAQ: FAQ44378
+### 问题: Android 中的长度单位有哪些
+解决方案: px(像素):屏幕上的点. in(英寸):长度单位. mm(毫米):长度单位. pt(磅):1/72英寸. dp(与密度无关的像素):一种基于屏幕密度的抽象单位.在每英寸160点的显示器上,1dp = 1px. sp(与刻度无关的像素):与dp类似,但是可以根据用户的字体大小首选项进行缩放.
+参考FAQ: FAQ44403
+### 问题: eGo拨号不能成功连接
+解决方案: 可以直接在pc上设置连接即可,具体操作如下: 插入有效SIM卡开机,SIM卡注册成功后,接上USB线,选择"pc connecting",PC端创建网络连接即可.
+参考FAQ: FAQ44406
+### 问题: SC7701支持的下载速度是多少
+解决方案: WCDMA/HSDPA/HSUPA baseband · Release 99 WCDMA up to UE Class 384kbps for both uplink and downlink · Release 6 HSDPA, up to 7.2Mbps(Category 8) · Release 6 HSUPA, up to 1.92Mbps(Category 3)
+参考FAQ: FAQ44413
+### 问题: 7701蓝牙是否通过通过BQB认证
+解决方案: bk3515 目前有客户在送测, 但是需要关闭 A2DP/EDR rda 5876 展讯送bqb 有end product 证书, 所以这个ic 都没问题
+参考FAQ: FAQ44418
+### 问题: 内置在system/app目录下的第三方应用为何无法更新
+解决方案: google默认是不允许从SD卡上升级/system/app/目录下的应用程序的,这可能会导致手机中关键的应用被替换从而造成手机出现错误或无法开机的情况
+参考FAQ: FAQ44428
+### 问题: 如何修改系统默认亮度
+解决方案: 修改device/sprd/TARGET_PRODUCT/overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml中 def_screen_brightness的值即可
+参考FAQ: FAQ44432
+### 问题: SC7731项目，如何定制USB驱动安装文件，直接运行install后，只安装客户需要的驱动？
+解决方案: 打开我们的USB驱动文件夹,找到dpinst.xml,找到<group>项,删除不需要的package path, 同时可以将driver目录中对应的.inf文件删除. <group> <package path=".\drivers\sprdmtp.inf" /> <package path=".\drivers\sprdadb.inf" /> <package path=".\drivers\sprdvcom.inf" /> <package path=".\drivers\sprdrndis.inf" /> </group>
+参考FAQ: FAQ48123
+### 问题: Dolphin平台上关DFS影响哪些场景的功耗？
+解决方案: Dolphin平台DDR变频有2个频点:333M和192M,一般在DDR loading不重的场景下,DFS功能会将DDR变频到192M,以减少功耗.经实际测量,若关闭DFS功能,在某些场景下有很大的功耗差异. 比如在插单SIM条件下测试: 1.light sleep电流(IDLE,灭屏)、屏亮默认亮度(IDLE,亮屏),该类场景下有60-70ma左右的差别; 2.使用耳机最大音量播放sample1.mp3(禁用SIM卡,灭屏),该类场景下有70ma左右的差别; 3.BT发送文件,WIFI下载(禁用SIM卡,灭屏),该类场景下有45ma左右的差别; 4.开启录音,灭屏后测量录音功耗3min,该类场景下有69ma左右的差别; ... 以上测试数据会因手机差异而有所不同,列举部分常见场景仅供测试时参考.
+参考FAQ: FAQ44568
+### 问题: UBI实现卷管理和负载均衡操作需要些哪些重要的表?
+解决方案: UBI需要以下三个重要的表来完成操作: 1)Volume table:包含每一个卷的信息,比如卷大小、卷类型等. 2)Eraseblock association(EBA)table:包含逻辑块到物理块的映射信息.例如,当读取一个LEB,UBI首先查找EBA表来找到对应的PEB编号,然后从这个PEB读取数据. 3)Erasecounter(EC)table:包含每一个PEB的擦除计数值.UBI负载均衡子系统在需要的时候使用这个表.
+参考FAQ: FAQ44596
+### 问题: UBI什么情况下会将一个擦除块标记为坏块？
+解决方案: 在以下两种情况下,UBI 会将一个物理擦除块标记为坏块: 1)当ubi从一个PEB移动数据到另一个PEB的时候,擦除块写操作失败,ubi将调度这个PEB进行进一步的鉴定.鉴定步骤在后台完成,目的在于确定该PEB是否真的坏掉,若该PEB未经过鉴定,则将被标记为坏块. 2)当擦除块操作以EIO错误失败时,该PEB将被直接标记为坏块.
+参考FAQ: FAQ44601
+### 问题: chromium中的默认ua中的chrome版本号在哪里修改
+解决方案: 代码位置:external\chromium_org\android_webview\common\aw_content_client.cc std::string AwContentClient::GetProduct() const { // "Version/4.0" had been hardcoded in the legacy WebView. // "Chrome/30.0.0.0" identifies that this WebView is derived originally // from Chromium M30. return std::string("Version/4.0 Chrome/30.0.0.0"); } "Version/4.0 Chrome/30.0.0.0"就是chrome的版本号.
+参考FAQ: FAQ44600
+### 问题: framework中webview相关的文件所调用的native方法所在的jni文件位置在哪
+解决方案: 在4.4中,chromium中的native方法在被java调用的时候并不是直接给出了对应的jni文件,而是在编译的过程中生成到out目录下了,对应的路径是: out\target\product\PRODUCT _NAME\obj\GYP\shared_intermediates\android_webview\jni\ 其中:PRODUCT _NAME是编译的产品名称
+参考FAQ: FAQ44604
+### 问题: 插着耳机时来电铃声和拔掉耳机时来电铃声为什么会出现音量大小不一致？如何调试？
+解决方案: 插着耳机来电铃声是Headfree模式下的参数,而拔掉耳机时是Handsfree模式下的参数,这是两种模式. 如果音量大小不一致可通过调整这两个模式下的参数解决.
+参考FAQ: FAQ44609
+### 问题: 视频通话的音量大小怎么用AudioTester工具调试？
+解决方案: 首先由软件抓LOG确认视频通话复用的是哪种模式下的参数; 再通过AudioTester对这个模式下的增益进行调试.
+参考FAQ: FAQ44625
+### 问题: browser启动的入口在哪
+解决方案: Browser的入口是Browser.java,它的oncreate中主要执行三个动作: CookieSyncManager.createInstance(this); BrowserSettings.initialize(getApplicationContext()); Preloader.initialize(getApplicationContext());
+参考FAQ: FAQ44631
+### 问题: 如何获取cookie
+解决方案: 取Cookie的API: CookieManager.getInstance().getCookie(mUrl); 注意:当你的应用初始化一个WebView实例之前用该方法的话,需要先调用: CookieSyncManager.createInstance(Context); 来创建一个CookieSyncManager实例.
+参考FAQ: FAQ44633
+### 问题: 底层如何获取系统的属性
+解决方案: 获取系统属性的方法定义在system_properties.h中,首先包含该头文件: #include <sys/system_properties.h> 按照如下方法即可获取对应属性: char os_build_id_str[1024]; __system_property_get("ro.build.id", os_build_id_str);
+参考FAQ: FAQ44638
+### 问题: 对于std::string类型的变量如何打印输出字符串
+解决方案: 底层代码中很多地方用到std::string类型的string,但是在打印log的时候,该类型的变量是无法直接按照"%s"格式输出字符串的,因为该string是一个类,要想让其按照字符串输出,需要调用其"c_str()": std::string user_agent; __android_log_print(ANDROID_LOG_ERROR,"ua", "user_agent= %s" , user_agent.c_str());
+参考FAQ: FAQ44655
+### 问题: 如何手动实时设置ldo电压值
+解决方案: 首先查看datasheet 对应ldo设置寄存器 电压值寄存器及对应bit电压使能寄存器及对应bit 如设置VDDSIM2电压值2.8v: 寄存器信息: Base address: 0x40038800 LDO_V_CTRL1(0x0024) :(bit9:8) ===>00:2.8 01:3.0 10:2.5 11:1.8 Base address: 0x40038800 LDO_PD_CTRL(0x001C) :(bit4) ==> (0 : en 1: dis) 操作过程: adb root adb shell lookat -s 0x00000005 0x40038824 //设置电压值 lookat -s 0x000009ee 0x4003881C //使能 完毕
+参考FAQ: FAQ58459
+### 问题: 如何把系统默认的Email应用删掉？
+解决方案: ---a\build\target\product\generic_no_telephony.mk +++b\build\target\product\generic_no_telephony.mk Camera2 \ CertInstaller \ -Email \ Exchange2 \ FusedLocation \ 即删除"Email \"这一行,然后编译得到的system.img已经没有了email应用
+参考FAQ: FAQ44677
+### 问题: 修改连接电脑后，设备管理器中存储设备名称
+解决方案: 在kernel/drivers/usb/gadget/f_mass_storage.c中: 函数: static struct fsg_common *fsg_common_init(struct fsg_common *common, struct usb_composite_dev *cdev, struct fsg_config *cfg) ...... ...... snprintf(common->inquiry_string, sizeof common->inquiry_string, "%-8s%-16s%04x", cfg->vendor_name ?: "XXXXX", /* Assume product name dependent on the first LUN */ cfg->product_name ?: (common->luns->cdrom ? "File-Stor Gadget" : "A354s"), i);
+参考FAQ: FAQ44793
+### 问题: YUV数据有哪些存储方式？
+解决方案: YUV,分为三个分量,"Y"表示明亮度(Luminance或Luma),也就是灰度值;而"U"和"V" 表示的则是色度(Chrominance或Chroma),作用是描述影像色彩及饱和度,用于指定像素的颜色. YUV格式有两大类:planar和packed. 对于planar的YUV格式,先连续存储所有像素点的Y,紧接着存储所有像素点的U,随后是所有像素点的V. 对于packed的YUV格式,每个像素点的Y,U,V是连续交*存储的.
+参考FAQ: FAQ44683
+### 问题: YUV420sp格式存储方式是怎样的？
+解决方案: YUV 4:2:0格式数据采样为每四个Y共用一组UV分量. 所以YUV420 数据在内存中的长度是 width * hight * 3 / 2. YUV420SP有两个格式: NV12: YYYYYYYY UVUV =>YUV420SP NV21: YYYYYYYY VUVU =>YUV420SP NV21格式如下图:
+参考FAQ: FAQ44684
+### 问题: H.265是什么视频编码标准？
+解决方案: H.265是ITU-T VCEG 继H.264之后所制定的新的视频编码标准. H.265标准围绕着现有的视频编码标准H.264,保留原来的某些技术,同时对一些相关的技术加以改进.新技术使用先进的技术用以改善码流、编码质量、延时和算法复杂度之间的关系,达到最优化设置.具体的研究内容包括:提高压缩效率、提高鲁棒性和错误恢复能力、减少实时的时延、减少信道获取时间和随机接入时延、降低复杂度等.H264由于算法优化,可以低于1Mbps的速度实现标清数字图像传送;H265则可以实现利用1~2Mbps的传输速度传送720P(分辨率1280*720)普通高清音视频传送.
+参考FAQ: FAQ44686
+### 问题: VP8是什么编码格式？
+解决方案: VP8 是一个开放的图像压缩格式,最早由 On2 Technologiesis 开发,随后由 Google 发布.同时 Google 也发布了 VP8 编码的实做库:libvpx,以BSD授权条款的方式发布,随后也附加了专利使用权.而在经过一些争论之后,最终 VP8 的授权确认为一个开放源代码授权. VP8与H.264视频对比,不同于需要收取专利授权费用的H.264标准.
+参考FAQ: FAQ44688
+### 问题: 为什么安装完GooglePlay后，需要重启机器验证应用才能真正起作用？
+解决方案: 因为,在验证应用的框架中,在PackageManagerService的构造方法中,已经检索了处理Intent.ACTION_PACKAGE_NEEDS_VERIFICATION广播的应用,那时候GooglePlay还不存在,所以PackageManagerService中的mRequiredVerifierPackage还是为空. 安装应用的时候,执行到handleStartCopy会检查mRequiredVerifierPackage是否为空,如果为空就不进行验证应用的过程.PackageManagerService的构造方法只在系统启动初始化的时候才会执行,所以mRequiredVerifierPackage一直还是空的,所以必须重启才会生效.
+参考FAQ: FAQ44694
+### 问题: 如何确认当前调试的手机系统已经处于ROOT状态
+解决方案: 通常在调试android系统问题的时候,我们都会通过adb来抓取相关log并确认当前系统是否具有root权限. 如果adb命令行末尾以"$"符号结束,则说明当前为 非root状态,通常在输入adb shell后是如下的显示: shell@scx35_sp7730ga:/ $ 如果adb命令行末尾以"#"符号结束,则说明当前是root状态,通常在输入adb shell后如下的显示: root@scx35_sp7730ga:/ # 如果是通过uart等串口连接adb的条件下,会出现不是以root@开头,比如shell@scx35_sp7730ga:/ # ,这种情况下,也说明当前的系统已经是root状态了.
+参考FAQ: FAQ44726
+### 问题: 为何展讯平台上设置中关于手机的状态信息中显示的信号强度和仪器上的不一致
+解决方案: 目前展讯平台上手机的信号强度都是经过平滑运算的,也就是说通过仪器给手机配置的信号强度dBm 最终送到手机AP侧后,软件上会做平滑处理,主要是为了防止手机的显示信号发生跳变的现象,因此导致界面实际显示的信号强度与实际的仪器配置有一定的差别. 如果需要了解关于展讯平台手机信号强度平滑算法相关的内容,可以联系展讯的FAE或者CPM获取相关的官方指导资料和设计说明.
+参考FAQ: FAQ44728
+### 问题: 如何简单的关闭Modem相关的功能
+解决方案: 目前展讯平台默认提供的手机软件版本中都是 Android AP + SPRD Modem的完整软件方案,如果客户的实际项目中不需要电话和短信以及手机GPRS上网等功能,并且想简单地从软件修改上就可以实现的话,可以通过默认将RILD进程关闭即可. 关闭RILD即切断了AP和CP通信的桥梁,但是实际上Modem还是在一个低功耗的环境下运行,但是协议栈并没有真正运行; 并且Android AP侧通信相关的功能也是无法正常使用的,但是客户的实际项目中也有可能会碰到AP侧phone进程以及systemui等相关程序出现运行异常,这些问题都可以根据实际情况进行解决即可,也可以通过展讯的FAE或者CPM获取更多的技术支持.
+参考FAQ: FAQ44729
+### 问题: 外部工具如何强制让Modem重新初始化
+解决方案: 展讯平台的Modem提供了AT+RESET=1的at command来控制Modem的重启, 客户的实际项目中如果需要通过外部工具来让Modem重新初始化,则可以直接向Modem发送AT+RESET=1即可完成相关的功能.
+参考FAQ: FAQ44730
+### 问题: 如何在Android Native层中动态修改某个文件节点或者设备的权限
+解决方案: 如果需要在Android Native层中动态修改某个文件节点或者设备的权限, 可以做如下类似操作,比如将某个文件的权限配置为777: if(chmod(device_xxx,777) < 0) // chmod 返回值 < 0,表示权限配置失败,否则配置成功
+参考FAQ: FAQ44732
+### 问题: 手机的优选网络模式的设置在恢复出厂设置后是否会恢复
+解决方案: 手机的优选网络模式的设置在恢复出厂设置后是不会恢复的,因为网络模式的选择是通过AT+SYSCONFIG的at命令配置到到Modem侧,Modem会保留这个网络模式的配置信息,并且在下一次选网和驻留的时候优先选用Modem中上一次的配置信息,所以通过Android侧的恢复出厂设置并不会将手机的优先网络模式的设置恢复到出厂的设置. 如果客户的目中对该功能有实际的需要并且要求网络模式的选择在恢复出厂设置后也必须恢复,这个可以联系展讯的FAE获取相关技术支持.
+参考FAQ: FAQ44733
+### 问题: 为何电池中的应用所耗的电量加起来超过100
+解决方案: android原生态问题, packages/apps/Settings/src/com/android/settings/fuelgauge/PowerGaugePreference.java public void setPercent(double percentOfMax, double percentOfTotal) { mProgress = (int) Math.ceil(percentOfMax); mProgressText = getContext().getResources().getString( --- R.string.percentage, (int) Math.ceil(percentOfTotal)); +++ R.string.percentage, (int) Math.round(percentOfTotal)); notifyChanged(); }
+参考FAQ: FAQ44746
+### 问题: 2351 WIFI是否支持漫游功能
+解决方案: 不支持
+参考FAQ: FAQ44760
+### 问题: 为何 slog下wcn modem log 勾选后 slog中的cp2 log 大小却始终为0
+解决方案: 需要同时在pc log 中的cp2 log 打开
+参考FAQ: FAQ44761
+### 问题: 如何确认非正常复杂AP环境下引起的WIFI 待机功耗高
+解决方案: 抓取空口包,并查看其BECON帧是否频繁的有组播下发,具体查看如下: Traffic Indication Map 对应的Bitmap Control 是否有如下信息: 1 Traffic Ind: Group Frames Buffered at AP [0-49]
+参考FAQ: FAQ44765
+### 问题: SC7701平台支持32G的T卡吗？
+解决方案: 支持
+参考FAQ: FAQ44776
+### 问题: SR3130的分集接收port口能和主集的接收port口一样使用吗？
+解决方案: 可以,根据选择的分集port口修改NV的端口配置即可.
+参考FAQ: FAQ44777
+### 问题: 工厂是否可以通过CFT log来找到某具体工位校准过的主板？
+解决方案: CFT的setup选项里有readSN选项,若勾选了此选项则校准及综测的log里会有主板的SN信息,可以根据这个来判断主板是哪个工位做的校准综测.
+参考FAQ: FAQ44778
+### 问题: SC7731平台涓流充电电流固定设为450mA的目的。
+解决方案: 0V电池激活后,一般为2.8V左右,用450mA充电可以快速的充到3.05V(硬件UVLO点),从而开机亮屏.
+参考FAQ: FAQ58068
+### 问题: 蓝牙低功耗连接技术与标准蓝牙技术的区别
+解决方案: 标准蓝牙技术是一种"面向连接"的无线技术,具有固定的连接时间间隔,是移动电话连接无线耳机等高活动连接的理想之选.相反,蓝牙低能耗技术采用可变连接时间间隔,这个间隔根据具体应用可以设置为几毫秒到几秒不等. 另外,因为BLE 技术采用非常快速的连接方式,因此平时可以处于"非连接"状态(节省能源),此时链路两端相互间只是知晓对方,只有在必要时才开启链路,然后在尽可能短的时间内关闭链路.
+参考FAQ: FAQ44799
+### 问题: 什么是蓝牙BLE
+解决方案: BLE,Bluetooth Low Energy.主要用于实现移动智能终端与周边配件之间的持续连接,是功耗极低的短距离无线通信技术,并且有效传输距离被提升到了100米以上,同时只需要一颗纽扣电池就可以工作数年之久,以上诸多技术优势使得BLE的发展前景相当可观. 蓝牙1.0版本为BR(Basic Rate),最大物理层数据传输为1Mbps 蓝牙2.0版本为EDR(Enhanced Data Rate),最大物理层数据传输率增至3Mbps 蓝牙3.0版本引入 AMP(交替射频技术),利用IEEE 802.11实现了高达数百Mbps的物理层数据速率 但是蓝牙4.0,BLE选择了完全不同的方向:并非只是增加数据传输速率,而是从尽可能降低功耗方面进行优化.
+参考FAQ: FAQ49034
+### 问题: google play在国内翻墙可以登录，而在国外却登不了
+解决方案: 原因是国外服务器(如菲律宾)认为空格是非法字符,即字符串中不能带有空格. 请检查以下字符串是否带有空格(红色部分): 1、build\tools\buildinfo.sh 2、device\sprd\scx15_sp7715ga\scx15_sp7715ga_plushvga.mk 3、frameworks\base\core\res\res\values\strings.xml
+参考FAQ: FAQ44797
+### 问题: SC7731平台最大能支持多大容量的T卡？
+解决方案: 最大支持32G.
+参考FAQ: FAQ44828
+### 问题: SC7701是否支持USB2.0 High Speed？
+解决方案: 支持USB2.0 High Speed
+参考FAQ: FAQ44829
+### 问题: SC7731 平台支持 512MB 和1GB DDR2的兼容设计吗？
+解决方案: 支持,需要DDR2的 CKE0 与CKE1 短接,然后连接到BB 的EMCKE[0](R1脚).
+参考FAQ: FAQ44831
+### 问题: SC7731平台是否支持 9Pf的32K晶体？
+解决方案: 不支持,SC7731平台只支持7PF的32K晶体 .
+参考FAQ: FAQ44834
+### 问题: SR2351 GPS方案电路的TCXO 由哪路电源供电？
+解决方案: 必须由SC7715等基带芯片的VDDRF0给TCXO供电,因为它是归CP2控制的.
+参考FAQ: FAQ44835
+### 问题: SC7731平台自带SPK PA输出性能如何？
+解决方案: SC7731平台自带内置SPK PA性能:PA output gain range from -24~+21dB, with 0.5dB step; PA driver @4.2V: 800mW on 8Ω load in Class-D mode, 500mW on 8Ω load in Class-AB mode.
+参考FAQ: FAQ44836
+### 问题: SC7731 平台 是否支持boost充电电路？
+解决方案: 不支持.
+参考FAQ: FAQ44837
+### 问题: SC7731 平台有无快速充电方案？
+解决方案: 不支持.
+参考FAQ: FAQ44840
+### 问题: USB2.0差分走线阻抗控制是多少?
+解决方案: 差分90欧姆
+参考FAQ: FAQ44843
+### 问题: SC7731 芯片AUX ADC精度如何？
+解决方案: SC7731平台AUX ADC精度是12位的,约可以到1.1mV.
+参考FAQ: FAQ44847
+### 问题: 如何使用DTS配置Timer的参数？
+解决方案: 我们平台在7731及后继平台上面强制使用DTS配置外接设备的参数,配置实例如下: 如Timer的DTS配置实例如下: kernel/arch/arm/boot/dts/sprd-scx35_sp7731gea_fwvga.dts timer{ compatible = "sprd,scx35-timer"; reg = <0xf5204000 0x1000>, <0xf51f4000 0x1000>, <0xf5202000 0x1000>, <0xf5292000 0x1000>, <0xf5294000 0x1000>; interrupts = <0 118 0x0>, <0 28 0x0>, <0 29 0x0>, <0 119 0x0>, <0 121 0x0>; }; clock: clockdevice{ compatible = "sprd,scx35-clock"; #clock-cells = <1>; };
+参考FAQ: FAQ44864
+### 问题: 如何修改信息字体默认大小
+解决方案: 信息字体默认大小在MessagingPreferenceActivity类中设置,目前信息字体大小范围为10--20,默认为18. 需修改以下两处: 1:修改常量DEFAULT_FONT_SIZE; 2:修改常量DEFAULT_FONT_SIZE_PROGRESS. 如DEFAULT_FONT_SIZE设置为16.0f,则DEFAULT_FONT_SIZE_PROGRESS需设置为60.
+参考FAQ: FAQ44865
+### 问题: 在DDR Memory扫描时一般先下载哪些文件到测试板子上？
+解决方案: A:一般需要下载fdl1、fdl2和SPL_LOADER.
+参考FAQ: FAQ44892
+### 问题: SC7715的RF是否支持WCDMA下的APT功能？
+解决方案: 支持.
+参考FAQ: FAQ44896
+### 问题: SC7715是否支持一套NV能通用多种不同WCDMA BAND的配置
+解决方案: 不支持
+参考FAQ: FAQ44897
+### 问题: SC7715耳机CLASS G PA的CAP_P和CAP_N之间并联的电容有什么要求
+解决方案: 要用0603封装1uF或者0402封装2.2uF
+参考FAQ: FAQ44898
+### 问题: SR3131使用DCXO方案时，26MHz crystal的NTC是否可以采用5%精度的？
+解决方案: 不可以,必须使用1%精度的,否则会对频偏和功控有影响.
+参考FAQ: FAQ44899
+### 问题: SC7715平台测试BT EUT，是否需要在设置中打开BT？
+解决方案: 不能在设置中打开BT,不然EUT无法连接.
+参考FAQ: FAQ44902
+### 问题: SC7715平台如何关闭上行EDGE？
+解决方案: 在NV中把TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs改成0x2
+参考FAQ: FAQ44903
+### 问题: SC7715平台如何关闭上下行EDGE？
+解决方案: 在NV中把TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_MS_RA_CAP\support_egprs改成0
+参考FAQ: FAQ44904
+### 问题: CTS Verifier测试：为什么Camera下的测试项没有了？
+解决方案: 检查frameworks\native\data\etc\android.hardware.camera.xml下的feature是否去掉: android.hardware.camera.any:至少一个摄像头,优先后置摄像头 如果去掉这个Feature,Camera的所有测试项不再显示.
+参考FAQ: FAQ44908
+### 问题: CTS Verifier测试：镜头的FOV实际是60度，为什么Camera的Reported FOV显示54度？
+解决方案: CTS Verifier测试项显示的FOV是通过getHorizontalViewAngle()接口获取,取值通过horizontal-view-angle配置; vendor\sprd\open-source\libs\libcamera\sc8830\inc\SprdCameraHardwareConfig.h下有FOV参数配置,请根据厂商支持的实际值替换: {"horizontal-view-angle", "54"}, {"vertical-view-angle", "54"},
+参考FAQ: FAQ44909
+### 问题: com.android.cts.browser.BrowserBenchTest#testOctane测试FAIL？
+解决方案: 按照google最新的测试手册android-cts-manual-r9.pdf,测试预置条件第20步,要求测试前消除浏览器启动提示: 20. Launch the browser and dismiss any startup/setup screen. 消除browser启动提示的方法: (1)adb shell am start -a android.intent.action.VIEW -d http://www.google.cn/ (2)之后系统启动浏览器选择对话框,从里面选择原生浏览器,并且选择Alwalys,然后开始执行测试.
+参考FAQ: FAQ44925
+### 问题: 如何添加通话设置中快速回复固定短语
+解决方案: 目前平台通话设置中快速回复固定短语默认为4个,以添加一条快速回复固定短语为例,修改如下: 1: 修改CallCommonSettings类,将String[] smsRes = new String[5]修改为String[] smsRes = new String[6],并在getSmsRejectStringArray方法中添加smsRes[5] = context.getString(R.string.####),对应字符串需自行添加. 2:修改Recommendation类中常量PHONE_PHRASES_FIXED_ITEMS_MAXIMUM为6. 3:编译packages\services\Telephony和packagespackages\apps\Mms模块并push到手机,删除data/data/com.android.mms/databases下mmssms_rem.db数据库,重启后验证.
+参考FAQ: FAQ44931
+### 问题: 如何定制FM录音文件目录名称？
+解决方案: FM保存的录音文件的目录名称是通过宏定义来控制的,修改起来比较简单 举例,如需要将 文件夹的名称,从FMRecorder修改为recordings 则 只需要修改 packages/apps/FMPlayer/src/com/thunderst/radio/Recorder.java 文件 将 private static final String DEFAULT_STORE_SUBDIR = "/FMRecorder"; 改为 private static final String DEFAULT_STORE_SUBDIR = "/recordings"; 即可
+参考FAQ: FAQ44952
+### 问题: Email默认头像背景
+解决方案: 电子邮件头像的背景色默认为随机的.见LetterTileProvider类的pickColor方法 private int pickColor(String emailAddress) { int color = Math.abs(emailAddress.hashCode()) % NUM_OF_TILE_COLORS; return mColors.getColor(color, mDefaultColor); } 而mColors是在其构造函数中初始化的: mColors = res.obtainTypedArray(R.array.letter_tile_colors); 如需统一默认头像背景色,只需将letter_tile_colors设置为同一个颜色值即可.
+参考FAQ: FAQ44955
+### 问题: 如何默认勾选有电话号码的联系人
+解决方案: 修改ContactsPreferences类的常量PREF_DISPLAY_ONLY_PHONES_DEFAULT为true即可.
+参考FAQ: FAQ44967
+### 问题: 用户自定义快速回复存储位置
+解决方案: 通话设置快速回复和短信常用短语均存储在信息的mmssms_rem.db数据库中,该数据库表的创建在RemProvider.java中完成. 用户自定义快速回复存储在数据库common_phrases表的content字段中. 可通过adb pull data/data/com.android.mms/databases/mmssms_rem.db方式导出并查看.
+参考FAQ: FAQ44971
+### 问题: 如何去掉QuickContactBadge边框
+解决方案: 在联系人头像右下角有一个三角形图标,该边框是在QuickContactBadge类的onDraw方法中绘制的,用于提示用户.客户定制UI时如需去掉该边框,直接在onDraw的时候return即可.
+参考FAQ: FAQ44979
+### 问题: 如何判断手机是否连接wifi网络
+解决方案: 可用下述代码判断手机当前是否连接wifi网络: ConnectivityManager cm = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE); NetworkInfo info = cm.getActiveNetworkInfo(); boolean isWifiNetwork; if (info != null) { if(info.getType() == ConnectivityManager.TYPE_WIFI) { isWifiNetwork = true; }else{ isWifiNetwork = false; } }else{ isWifiNetwork = false; } 当然,应用本身也需添加网络权限: <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+参考FAQ: FAQ44986
+### 问题: 如何在程序中实现振动功能？
+解决方案: 可通过下面这个这段代码来实现振动功能,其中250表示振动250ms: android.os.Vibrator vib = (android.os.Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE); vib.vibrate(250); 注意:使用以上代码需要在相应的AndroidManifest.xml文件中增加以下权限才行. uses-permission android:name="android.permission.VIBRATE" />
+参考FAQ: FAQ45020
+### 问题: 如何在程序中判断当前系统中是否开启了闹钟？
+解决方案: 如果需要在程序中判断当前是否开启了闹钟,可按照下面方式判断: 需要在程序中注册ACTION_ALARM_CHANGED这个广播,然后在收到该广播后,用下面的代码判断即可: if (action.equals(Intent.ACTION_ALARM_CHANGED)) { boolean alarmSet = intent.getBooleanExtra("alarmSet", false); } 也就是说ACTION_ALARM_CHANGED广播发送时会附带一个boolean类型的"alarmSet"来标识当前是否开启了闹钟.
+参考FAQ: FAQ45021
+### 问题: WiFi Display要求支持的最小分辨率？
+解决方案: 协议要求分辨率最小需要支持640×480(480P)的(对应帧率60fps).当前android4.4平台source服务器端支持的最大分辨率为720p(对应帧率30fps),具体设置可参见WifiDisplaySource的构造函数中,后续和sink客户端协商后会挑选最合适的分辨率和帧率来编码及播放.
+参考FAQ: FAQ45032
+### 问题: WiFi Display的rtsp协议交互端口号如何获取？
+解决方案: 如果上层在创建RemoteDisplay时传下来端口号则用此作为source服务器的rtsp协议端口,否则用默认端口号kWifiDisplayDefaultPort(7236).对于sink客户端rtsp协议端口的获取是在source端接受sink侧的socket连接请求后通过getpeername来获取的,具体可参见ANetworkSession.cpp文件Session的构造函数中.
+参考FAQ: FAQ45033

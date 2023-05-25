@@ -1,0 +1,311 @@
+### 问题: 7701平台，FDT模式下校准APC出现功率反转
+解决方案: 7701平台,FDT模式下校准APC, DCS 在-8dBm是出现功率反转,即-8,-8.5,-7.9,-8.7 这样子排列. 由于DCS的PCL0 的功率范围是 0+- 5dBm, 所以改APC的spec由-8改为-6,则校准pass.
+参考FAQ: FAQ123807
+### 问题: 用simba校准6531E平台时，把SAW 和 SAWless 的AGC gain 设置成一样。
+解决方案: 目前我们6531E平台只是SAWless的方案,但是由于以前项目的积累,在simba里面有SAW 和SAW less 两组不同的AGC gain值. 为了避免出现错误调用AGC gain 值, 要把SAW 的AGC gain值 设置成与 SAWless的一样.
+参考FAQ: FAQ123808
+### 问题: 认证测试出现很多的NSA项，也就是测不出数据怎么办？
+解决方案: 在泰尔,无委入网测试,移动联通入库测试时,有时候很多的测试项都显示NSA,也就是测不出数据. 实际是在测试中掉话造成. 遇到这种情况,要检查手机(终端)的数据业务是否关掉. 打开数据业务时,在测试中协议侧会发起数据业务,导致终端与仪表的测试中断. 所以送测前一定要关闭终端的数据业务.
+参考FAQ: FAQ123811
+### 问题: GSM 传导杂散（12.1.1）在载波附近fail了，怎么办？
+解决方案: 传导杂散,手机通话时测100M～12GHz的频谱. 以GSM900为例,信道62,发射频率是902.4MHz. 如果传导杂散在800MHz～900MHz 超标fail,那么就需要调整下timing,duration 和 delta值. 对于不同的PA,会有不同的适用范围. 当 duration和 delta的值确定后,再去调整ramp值.
+参考FAQ: FAQ123812
+### 问题: SC6531E 市场退机，手机不开机 电流20～30毫安分析
+解决方案: Dear all SC6531E平台是only 2G 的low cost feature phone 平台. 以往遇到手机不开机,首先测试各路DCDC和LDO供电是否正常、26M是否正常等. 最近分析市场退机时,遇到一些客退机,主要现象是没有漏电流、开机电流在20～30毫安、各路供电和26M时钟均正常.客户分析到这一步时会怀疑芯片是否有问题,连同主板一起寄给我司. 经分析发现主要是由以下问题引起的: 市场退机的LCD与主板是通过导电胶连接的,而不是焊接或B2B接口,如果脱胶,会导致LCD初始化失败进而不开机,电流20～30毫安.客户在其他平台上的经验是如果LCD部分出问题是不会导致不开机的,但SC6531E平台是这个现象.
+参考FAQ: FAQ123814
+### 问题: SC6531E 平台的2G PA 7276的SMT方案
+解决方案: Dear all 由于2G PA 7276的GND焊盘是异型的、不规则的,如下图: 7672的每一个不规则的GND pin都要焊接到PCB上,因为每个GND pin对应芯片内部不同模块的地. 如果在SMT时把GND焊盘做成一个大的焊盘或几个大的焊盘,很容易引起个别GND pin焊接不到的问题,从而引起发射功率低等. 所以7276的GND PCB焊盘需要做不规则处理,如下图: 7276 的bottom view: 7276 GND pin SMT 不规则处理:
+参考FAQ: FAQ123817
+### 问题: LTE 低频高带宽下灵敏度测试ULRB设置
+解决方案: 3GPP协议规定不同带宽下的ULRB设置如下图: 客户测试时一般10M默认为50RB,因此会存在测试手法问题.
+参考FAQ: FAQ123825
+### 问题: NewGallery2图库的图片编辑功能是否支持文本编辑？
+解决方案: 平台的NewGallery2图库的图片编辑功能不支持文本编辑.
+参考FAQ: FAQ123846
+### 问题: 如何在备份校准参数升级时修改2G搜网配置
+解决方案: 此问题最简单的方式是通过NVEditor/NVTool直接修改GSM搜网NV: NV1.0——nv_type\NV_BAND_SELECT NV2.0——PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_GAS_CUSTOMER_SETTINGS\gsm_band_select 由于认证机构不支持协助修改NV,客户只能提供软件升级包以完成此动作,但在升级时发现,无法有效修改2G频段. 这是由于Upgradedownload软件默认设置即备份band_select NV,因此需要使用Rresearchdownload同时将band_select备份选项去除方可实现.
+参考FAQ: FAQ123850
+### 问题: Auto save选项关闭时，在录音过程来电/闹钟提醒，录音文件为什么会自动保存？
+解决方案: 在平台录音机应用中,设置中的Auto save选项只对正常停止录音有效,如果关闭Auto save选项,正常停止录音时会弹出是否保存该录音文件的提示框供用户选择,如果打开Auto save选项,正常停止录音时则不会弹出是否保存该录音文件的提示框,而是自动保存录音文件.如果在录音过程中被来电/闹钟提醒打断,即使关闭Auto save选项,都会自动保存录音文件,此时来电/闹钟提醒优先,不弹出是否保存该录音文件的提示框,平台设计如此.
+参考FAQ: FAQ123848
+### 问题: GSM功率温度补偿
+解决方案: 以GSM850为例,下图为对应温度补偿的NV修改位置.可以修改对应温度下的温度补偿.特别要说明的是,GSM的温度补偿目前只针对最大功率生效.
+参考FAQ: FAQ123855
+### 问题: 馈点测试WIFI、GPS均无信号
+解决方案: 通过点测方式层层排查: 1.确认芯片口位置是否有信号测试到(WIFI直接强发然后点测,GPS需灌信号进去,用工模软件观测). 如均有信号,继续往天线方向排查;如无信号,需确认软件是否工作正常. 2.WIFI需点测SAW前后是否信号正常,如不正常更换物料;GPS需点测SAW和LNA前中后是否正常,如不正常更换物料. 3.WIFI/GPS的Diplexer双工前后位置需点测,确认双工管脚是否贴反或采用相反管脚物料. 题中问题经排查后确认为双工的WIFI/GPS管脚相反导致,客户更换供应商物料后解决.
+参考FAQ: FAQ123856
+### 问题: AGPS的优点
+解决方案: AGPS的优势主要体现在定位精度上,在室外空旷地区,其精度可以达到10米以内.另一个优点就是,首次捕获GPS信号的时间仅需几秒,大大缩小定位时间.
+参考FAQ: FAQ123858
+### 问题: GPS传导弱信号下定位时间超标
+解决方案: TSX方案参考分析思路: 1.查看软件BASE版本,确认是否为风险版本或者安全版本. 2.重新校准TSX,并确保TSX能正常校准通过. 3.上述校准TSX通过后测试若依旧不正常;可通过重焊或者尝试更换其他厂商的的TSX(重焊TSX后需重新进行校准).确认是否有改善. 4.如条件允许,更换为TCXO或者外灌26MHz晶振信号.确认弱信号是否定位正常. 5.基于上述基础查看layout,确认是否有走线不合理或者隔离未完整的地方.
+参考FAQ: FAQ123864
+### 问题: 接收灵敏度的定义及计算公式
+解决方案: 定义:接收机能够接收到的并且还能正常工作的最低电平强度. 接收灵敏度跟很多东西有关,如噪声系数,信号带宽,解调信噪比等,灵敏度一般来说越高(数值越低),说明其接收微弱信号的能力越强,但也带来容易被干扰的毛病,对于接收机来说,灵敏度只要能满足要求即可. 公式为: -174 + NF +10lgB + SNR ( NF为噪声系数,B为信号带宽,单位为Hz. SNR为解调信噪比 ,单位为dB) 例如:解调带宽为10KHz, 噪场系数取10dB,解调信噪比为12dB,则可以算得接收机灵敏度为-112dBm .
+参考FAQ: FAQ123866
+### 问题: 4G PA是否需要单独屏蔽盖？
+解决方案: 为了防止4G PA能量干扰Transceiver造成LTE EVM问题,建议4G PA单独加一个屏蔽盖. 考虑项目实际情况,优先推荐4G PA单独加一个屏蔽盖; 如果满不了,4G PA可与其他射频电路共用一个屏蔽盖,内部用隔离筋将4G PA与其他射频电路分开. 如果上述要求还满足不了,建议4G PA与其他射频电路同一个屏蔽盖,4G PA与Transceiver保持较远距离,如9mm以上,但LTE EVM效果不做保证,请研发阶段注意关注LTE EVM.
+参考FAQ: FAQ123884
+### 问题: EDGE上行支持8PSK不生效解决方法
+解决方案: 目前软件默认配置都是支持上行8PSK的,NV重构后的版本在编译NV的时候增强了对上行8PSK的检查,如果编译工程makefile中没有打开宏开关UPLINK_8PSK_SUPPORT,则强制设置成不支持上行8PSK.所以如果比较新的版本EDGE不支持上行8PSK的话,先确认下是否是NV重构后的版本,如果是请检查makefile中宏开关UPLINK_8PSK_SUPPORT是否打开,没有的话设置成TRUE即可.
+参考FAQ: FAQ123916
+### 问题: 把已设置支持上行8PSK后的NV编译后下载到手机后不生效的解决方法
+解决方案: NV重构后的版本,makefile中的宏开关UPLINK_8PSK_SUPPORT打开后编译,烧进手机后发给网络的接入能力仍然是不支持上行8PSK,即设置没有生效. 解决方法:用research download工具烧版本的时候,请不要勾选band select选项.否则新生成的support_egprs项会被篡改,导致设置不生效.
+参考FAQ: FAQ123917
+### 问题: 2.4G和5G WiFi的优缺点
+解决方案: 2.4G WiFi 1、优点:频率低,传播过程中衰减小,传播距离更远; 2、缺点:频带较窄,由于跟其它设备共用2.4G频段,容易受到干扰; 5G WiFi 1、优点:频带较宽,干扰小,稳定性较好; 2、缺点:频率较高,传播过程衰减大,覆盖范围较大.
+参考FAQ: FAQ123920
+### 问题: BT5.0与BT4.2的区别
+解决方案: 1、带宽提高了,理论传输速率提高国一倍; 2、传输距离增加了,理论有效传输距离为300米,而BT4.2最多100米; 3、抗干扰能力提高了,采用新技术减少同频干扰; 4、提高室内定位精度,可以广泛应用于室内定位.
+参考FAQ: FAQ123926
+### 问题: WIFI传导功率在RF测试座与天线匹配串联位处差异大
+解决方案: 1.该段走线未作好50ohm的阻抗匹配,信号线路失配导致WIFI功率差异大. 2.长信号走线之间需预留适当的匹配位置(一般预留L型匹配)便于调试,有助于提升WIFI性能.
+参考FAQ: FAQ123927
+### 问题: SC9863A支持FD-MIMO吗？
+解决方案: SC9863A不支持FD-MIMO. PS: FD-MIMO,指全维度多入多出技术(Full Dimension Multi-Input-Multi-Output). FD-MIMO采用大规模2D有源天线阵列,可以利用空间隔离度为极大数目的移动终端同时同频提供服务从而大幅提升系统容量,此外,2D天线面板可以充分利用竖直维的空间自由度实现3D波束赋形使得系统覆盖大幅提升.由于FD-MIMO技术对系统的覆盖和容量均有可观的增益,且随着有源天线技术的发展使得大规模天线阵列的实现成为可能,其发展前景被一致看好.
+参考FAQ: FAQ123937
+### 问题: 802.11 b/g/a/n/ac  streams及最大速率的关系
+解决方案: 在过去的几代WIFI 标准中,吞吐率是一直追求的目标.从第一代的2Mbps到第三代的54Mbps,吞吐率一直在快速增加,到四代有了质飞跃,最大可支持到600Mbps,而到第五代最大可以支持6.93Gbps,吞吐率性能大大提升,对应关系如下:
+参考FAQ: FAQ123938
+### 问题: FM灵敏度异常分析要点
+解决方案: 1.耳机口1NF电容串联位测试FM灵敏度是否异常. 2.芯片口串联位测试FM灵敏度是否异常. 3.检查FM差分地AVSS_FM.如差分地有预留对地0ohm电阻,去掉0ohm电阻确认是否有改善. 4.检查软件是否启动正常. 5.检查layout确认FM信号走线是否有做完整隔离. 6.排查走线附近的干扰源.
+参考FAQ: FAQ123929
+### 问题: 4G平台配置了edge但无法注册仪表进行8psk测试。
+解决方案: 最近有客户出现明明配置了edge 确连不上仪表的问题 对于edge无法连接有的是软件问题(比较少)和客户操作问题自查方法如下. 1. 确定edge校准是否正常,校准fail检查硬件通路和逻辑配置问题. 2.校准正常,检查edge支持的能力是否配对,测试8psk 需要支持UL EDGE 3.检查NV中标志位是否正确, support_egprs=0x1 表示支持edge UL&DL 4. 对于第3步要增加一次 将样机中的NV读出来 再确认一下标志位是否正确. 部分客户出现NV工程中的标志位正常 下载到手机中再读出来变成了support_egprs=0x0 导致无法连接仪表. 5.对于第4步问题发生在客户项目开始是不支持edge 后面增加edge的情况.原因是增加edge后没有格式化下载 导致之前的搜网信息已经备份 后面的修改不生效.解决方法是格式化下载
+参考FAQ: FAQ123932
+### 问题: SC9863A CA支持情况？
+解决方案: SC9863A平台支持CA,带间和带内CA均支持. 平台已验证过的组合有: DL CA: 1C,3C,5B,7B,7C,38C,39C,40C,41C,12B,66C; 3A-3A,5A-5A,7A-7A,2A-2A,4A-4A,12A-12A,66A-66A,40A-40A,41A-41A 1A-7A,3A-7A,3A-40A,3A-41A.5A-40A,7A-8A,7A-20A,39A-41A,2A-7A,5A-7A,7A-28A UL CA: 1C,3C,7C,38C,39C,40C,41C
+参考FAQ: FAQ123941
+### 问题: SC9820E平台能否一套NV参数兼容采用Smart PA和外置K类PA的两种配置的主板 ？
+解决方案: 答:可以兼容. 一套NV参数里面是可以兼容Smart PA和K类功放的参数的,在NV参数里面,普通功放和Smart AMP对应不同的NV参数,调试和保存时属于不同的模式,互不冲突.如下图为通话和Music场景中Smart Amp单独对应的各个免提模式: 通话场景: Music Play 场景: 另外,在软件"vb_control_parameters"里面有可以识别是否为Smart PA的代码来确定是否切换参数.如下所示,详细请联系我司软件.
+参考FAQ: FAQ124427
+### 问题: 当UMS312平台只有3\4G频段时，用Simba_R7.19.4201校准AFC会报错
+解决方案: 用Simba_R7.19.4201单独校准3\4G的APC\AGC是PASS的,但单独校准AFC就会报功能尚未支持的错误.需要升级Simba版本到R7.19.5101之后就可以正常校准AFC.
+参考FAQ: FAQ123947
+### 问题: 802.11n与802.11ac的特性比较
+解决方案: 802.11n 5G 的band进一步扩展就演进到了802.11ac,所以说11n是11ac的基础.11n与11ac的特性比较如下图所示:
+参考FAQ: FAQ123948
+### 问题: CMW RUN测试TIGO脚本容易测试FAIL
+解决方案: TIGO脚本对CMW500仪器固件版本有要求,REV 3.7及其以后较新的版本TIGO脚本测试容易出现读值有误,使用TIGO脚本测试时CMW500建议使用R3.5固件版本
+参考FAQ: FAQ123953
+### 问题: 展锐平台是否支持AMR-WB+？
+解决方案: 展锐平台不支持AMR-WB+,只支持AMR-NB(8K)和AMR-WB(16K)两种. AMR-NB: Adaptive Multi-rate - Narrowband 即 自适应多速率窄带编码;
+AMR-WB: Adaptive Multi-rate - Wideband,即 自适应多速率宽带编码;
+AMR-WB+: Adaptive Multi-rate - Wideband Plus,即 自适应多速率宽带编码+;
+
+AMR NB的语音带宽范围:300－3400Hz,8KHz采样;
+AMR WB的语音带宽范围: 50－7000Hz,16KHz采样;
+AMR-WB+的采样速率是在16～48 KHz之间;
+参考FAQ: FAQ124416
+### 问题: SC6531E simlock版本编译方法
+解决方案: 1. 请将project makefile文件中的SIM_LOCK_SUPPORT改为TRUE
+2. 替换相关的库文件:
+使用IDH包或patch包中的lib目录下对应工程目录下的
+l4.a ps.a layer1.a layer1_dsp.a simlock.a
+这5个库文件替换原工程中的库文件.
+参考FAQ: FAQ123974
+### 问题: SC6531E调整ATC堆栈大小的方法
+解决方案: 修改atc_main.c中的宏定义#define   P_ATC_STACK_SIZE
+参考FAQ: FAQ123978
+### 问题: SC6531E 支持几线SPI的camera接口？工作频率范围是多少？
+解决方案: Dear all: SC6531E支持几线SPI的camera接口?工作频率范围是多少? A: 最高支持 4线SPI的camera接口,具体看附件.Clk最高是24M. SC6531E对应camera的接口,包括SPI,I2C的通讯电平是1.8V还是2.8V? A 2.8V
+参考FAQ: FAQ124006
+### 问题: SC9820E GSM WCDMA LTE各个模式下的具体校准时间是多少？
+解决方案: Dear all 校准时间如下: 可以根据具体项目的具体RF情况估算出大概的时间. 平台 校准模式 进校准模式时间 TSX校准时间 GSM 单band校准时间 GSM单band非信令综测时间 EDGE单band校准时间 WCDMA 单band校准时间 WCDMA 单band非信令综测时间 LTE 单band校准时间 LTE 单band非信令综测时间 SC9820e FDT 12S 4S+4S 2.5S 4S 3.5S 6S 9s 3s 5.5S
+参考FAQ: FAQ124007
+### 问题: 请问卡里面的iccid、IMSI通过Modem日志怎么查看
+解决方案: iccid可以在modem log内搜索"+CCID",在Trace中会有iccid码打印 IMSI可以在modem log内在层间消息中搜MM_RR_MM_INFO_REQ,消息中会显示IMSI.
+参考FAQ: FAQ124013
+### 问题: 如何重置PUK次数
+解决方案: 目前3GPP SIM相关协议并没有看到重置PUK的次数的指令,无法修改PUK的次数.如果想修改,可以向SIM卡卡商获取修改方法.
+参考FAQ: FAQ124014
+### 问题: BCH信道设置对GSM 灵敏度测试的影响
+解决方案: 部分信道灵敏度差,原因很多 其中BCH的影响经常被忽略. 测试TCH信道灵敏度时 要注意BCH的信道不要和TCH信道相邻,广播信号会对灵敏度产生影响. 3GPP中也有相关规定
+参考FAQ: FAQ124047
+### 问题: UMW2652是否支持MU-MIMO
+解决方案: 支持,MU-MIMO是指在无线通信系统里,一个基站同时服务于多个移动终端,基站之间充分利用天线的空域资源与多个用户同时进行通信.在上行链路中,所有用户工作在相同的频段上,向同一个基站发送信号,然后基站通过适当的方法来区分用户数据,主要问题是基站如何针对不同的多址接入方式采用阵列处理、多用户检测(MUD)或者其他有效方法来分离各个用户的数据.下行链路中,基站将通过处理的数据串并转换成多个数据流,每一路数据流经脉冲成形、调制,然后通过多根天线同时发送到无线空间,每一个接收天线接收到的是基站发送给所有通信用户的信号与干扰噪声的叠加,主要问题是如何消除由此带来的多址干扰.
+参考FAQ: FAQ124054
+### 问题: BLE RX无法测试
+解决方案: 可按如下方法确认: 1.实验室采用CBT测试仪发送数据包. 2.仪表开启Bluetooth Low Enery Rx Quality;Level=-40dBm,Packets=5000,Single Shot,设置测试信道. 3.手机工模进入NS BLE RX,RX GAIN=0,BLE RX Addr=仪表当前界面下12位地址,其余设置与仪表对应上. 4.工模点击START,此时按仪表单次发送5000个包,待完毕后,点击工模READ,可读出手机当前的收包状态. 5.逐次降低仪表Level,然后工模STOP、START,接着仪表再发包,完毕后工模再READ…;即可确认当前设备BLE RX性能.
+参考FAQ: FAQ124051
+### 问题: LTE B28如果使用full band DPX,NV怎么来配置？
+解决方案: LTE B28如果使用full band DPX,NV建议按照 B28A+B28B来配置,推荐使用NVAide tool来配置.
+参考FAQ: FAQ124060
+### 问题: UMS312&UMS512平台WIFI only项目CPU的VDDMODEM power pin 供电可否删除？
+解决方案: 不可以,CPU内部VDDMODEM 给多个子系统供电.
+参考FAQ: FAQ124059
+### 问题: EMI问题的基本处理思路？
+解决方案: EMI问题一般指某器件(或者某部分电路)产生的电磁波能量对另一器件(或者某部分电路)产生干扰. 上述描述中某器件(或者某部分电路)称之为干扰源; 干扰源产生的干扰能量通过空间辐射/传导/间接耦合等方式到达另一器件(或者某部分电路)的过程称之为干扰路径. 了解了上述信息,故EMI问题的基本处理思路一般有两个: 1.干扰源消除 2.干扰路径切断 实际工程中,此二种方法会经常用到.
+参考FAQ: FAQ124083
+### 问题: 数字调制方式分类
+解决方案: 1,幅移键控(ASK),可分为:二进制幅移键控(2ASK) 和多进制幅移键控(MASK); 2,频移键控(FSK),分为二进制频移键控(2FSK) GMSK和多进制幅移键控(MFSK); 3,相移键控(PSK),分为二进制相移键控(BPSK)和多进制相移键控(MPSK) 如:QPSK、8PSK. 4,正交幅移键控(QAM)有: 16QAM、64QAM、256QAM.
+参考FAQ: FAQ124095
+### 问题: 如何打开和关闭fast dormancy功能？
+解决方案: 有两种方式: 1. 直接修改nv项:pdcpnodata_timer 如果该nv项是0xff,则表示关闭;如果该nv项是其他值,则表示打开,设置值代表FD timer的秒数,一般设置为5或者8. 2. 通过AT命令修改 AT*FDY=<enable>,<time> 该AT命令实际就是操作上述nv, 当enable=0时,就是把0xff写入nv,表示关闭;当enable=1时,就是把设置的time写入nv中,表示打开.
+参考FAQ: FAQ124098
+### 问题: PMIC UMP510G的输出LDO是否有短路保护和快速泄放功能？
+解决方案: 1. 有短路保护和快速泄放功能. 2. LDO 关闭后会有下拉泄放电阻打开.DCDC GEN0/GEN1供电的LDO 此泄放电阻typical是200欧姆,VBAT供电的LDO 此泄放电阻typical是100-200欧姆间,因数目较多具体可查看UMP510G SPEC.
+参考FAQ: FAQ124102
+### 问题: 如何通过trace信息快速查看WCDMA某个band是否支持双天线
+解决方案: 1、首先可以通过项目信息获知该项目的产品本身是否支持双天线,SC7731E项目本身不支持双天线. SC9832E, SC9863A项目本身都是支持双天线的. 2、在项目本身支持双天线的前提下,需要按照紫光展锐提供的射频NV配置文档对NV进行正确配置,然后可以通过trace信息查看对应band双天线配置是否成功, 对应trace信息关键字为:"HAL Get Div Band en band", 比如: (1)HAL Get Div Band en band 1 is 0  //该打印说明NV配置band1频段不支持双天线,此时需要再次查看射频NV配置文档或者向紫光展锐FAE求助 (2)HAL Get Div Band en band 1 is 1  //该打印说明NV配置band1频段支持天线
+参考FAQ: FAQ124110
+### 问题: UMTS协议基本能力配置
+解决方案: 下面几项能力nv配置如下: PS_NV_PARAMS\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY\ 1. 协议版本号为R9 access_stratum_rel_indicator = 0x5; 2. 下行HSDPA Cat14 dl_phy_fdd_cap\HS_DSCH_Category = 0x14; 3. 上行HSUPA Cat6 ul_phy_fdd_cap\edch_Category = 0x6; 4. ue-PowerClass 为 class3 rf_cap\BandInfo\BandInfo[]\BandInfo[][1] = 0x3.
+参考FAQ: FAQ124148
+### 问题: WCN与AP之间的WCI接口具体含义是什么？能否删除？
+解决方案: WCI是Wireless Co-existence Interface的缩写,我们知道LTE B40和2.4G BT&wifi频段是重叠的,TX/RX是很容易互相干扰(当然除了同频干扰,还有邻频干扰,谐波干扰等),所以需要一个通信端口实时监控. WCI_2_TXD:通知BT/WIFI, LTE正在发送,BT/WIFI需要避开易干扰信道; WCI_2_RXD:通知BT/WIFI, LTE正在接收,需要BT/WIFI减小发射功率甚至关闭发射; 所以常规手机等项目设计时(主要干扰频段是B40/B7/B38/B5/GSM850等),WCI-UART接口是不能删除的. wifi only项目是可以删除WCI-UART接口的.
+参考FAQ: FAQ124154
+### 问题: 纯RFCTL(GPIO)控制项目设计注意事项？
+解决方案: 1.纯GPIO控制的带LTE模式项目:原则上必须全部使用RFCTL0~11.(应该是够用的) 2.常规项目:RFCTL控制的器件,原则上必须接同一PAD,即统一接到RFCTL0~11或统一接到RFCTL16~20. 2.RFCTL16~20 只能用于LTE 模式.
+参考FAQ: FAQ124159
+### 问题: 使用DCDC充电芯片，Charge NTC电路能否删除？
+解决方案: DCDC充电芯片效率较高,发热相对线性充电芯片而言要小的多,但这是在相同充电电流情况下作比较的. 线性充电通常充电电流不会太大(建议不要高于700mA),而使用DCDC充电芯片的产品通常充电电流比较大,其发热量也会因充电电流的增大而显著增加. 因此建议充电电流在1.5A以上的产品,即使使用DCDC充电芯片,也需要Charege NTC电路,至少要做预留.产品实测温升较高的情况,可配合温升算法精确控制发热情况.
+参考FAQ: FAQ124165
+### 问题: 天线调谐开关的RFCTL电压测量值
+解决方案: 1、GSM为TDMA调制模式,正常工作时,TX/RX交替工作,且不是常开状态; 2、RFCTL常高电压约为1.75V,GSM工作时: 若天线调谐对应RFCTL状态,TX和RX均配置为1,则万用表实测电压约为0.66V;(此为常见场景,TX和RX通常配置成相同状态) 若天线调谐对应RFCTL状态,TX配置为1,RX配置为0,则万用表实测电压约为0.35V; 若天线调谐对应RFCTL状态,TX配置为0,RX配置为1,则万用表实测电压约为0.32V; 3、此三种状态,RFCTL电压均低于FDMA调制模式(如WCDMA/LTE FDD)下的电压值,是正常现象.
+参考FAQ: FAQ124207
+### 问题: LTE T3402定时器的时长是多少？这个定时器的时长可以修改吗？
+解决方案: 按照3GPP协议,T3402的默认时长是12分钟,网络可以通过4G下的attach accept/tracking area update accept/attach reject等消息对T3402的时长进行设置.
+参考FAQ: FAQ124209
+### 问题: LTE B28带内CA支持情况
+解决方案: 1、由于LTE B28主集通常采用A+B的硬件模式,故在不增加合路器的情况下LTE B28的DL 28C CA组合一直未获支持; 2、现已有可用的B28 Full Band Duplexer(TDK SAW duplexer B1250/1.8x1.4mm),可直接单通路支持LTE B28 的28C CA组合.
+参考FAQ: FAQ124211
+### 问题: CMW500测试LTE接收灵敏度时主加辅路接收灵敏度10M下比5M要好，是什么问题？
+解决方案: 此问题是部分客户反馈用CMW500测试LTE接收灵敏度时会掉线时发现,我们继续分析时候发现有个特别现象发现主加辅路接收灵敏度10M下比5M要好6dB左右,按正常5M要好于10M才是合理. 内部分析log后沟通得知这是R&S的已知问题,需要将CMW500的版本升级到V3.7.70(客户原始仪器版本:3.7.50). 问题原因是LTE灵敏度测试时MCS需要固定在5测试,出问题时候在带宽为5M的时仪器配置的MCS为15左右,导致在灵敏度附近误码太高.
+参考FAQ: FAQ124217
+### 问题: MIMO技术简介
+解决方案: MIMO技术是指能在不增加带宽的情况下,成倍地提高通信系统的容量和频谱利用率.它可以定义为发送端和接收端之间存在多个独立信道,也就是说天线单元之间存在充分的间隔,因此,消除了天线间信号的相关性,提高了信号的链路性能,增加了数据吞吐量. 研究表明,在瑞利衰落信道环境下,系统容量是干扰受限的,不能通过增加发射功率来提高系统容量.而采用MIMO结构不需要增加发射功率就能获得很高的系统容量.因此,将MIMO技术与OFDM技术相结合是下一代无线局域网发展的趋势.在OFDM系统中,采用多发射天线实际上就是根据需要在各个子信道上应用多发射天线技术,每个子信道都对应一个多天线子系统、一个多发射天线的OFDM系统.
+参考FAQ: FAQ124246
+### 问题: 检查2G模式下设置只支持GPRS而不支持EDGE是否生效的方法
+解决方案: NV中设置只支持GPRS后,如果UE驻留到支持EDGE的网络上,界面图标还会显示E图标而非G图标,这时可以通过log确认UE实际使用的是GPRS还是EDGE: 1.检查建TBF消息PH_MAC_TBF_CONNECT_REQ消息下的tbf_mode字段.如果该字段为0,表示是建立的GPRS mode TBF,说明正在使用的是GPRS.如果该字段为1,表示表示是建立的EDGE mode TBF,说明正在使用的是EDGE. 2.检查上行发送的trace: RLC_MAC_DATA_REQ,在log工具这是以消息形式显示的trace,方便debug.在该trace下找到解析的CS字段,如果为CS-1～CS-4,则正在使用的是GPRS.如果该字段解析出来的是MCS1～MCS-9,则表示正在使用的是EDGE.
+参考FAQ: FAQ124264
+### 问题: 部分项目PAM供电不想使用VDDWPA供电 而改用VBAT，可以吗 ？
+解决方案: 由于主板面积过小,或者节省VDDWPA PMU侧电感及电容成本等原因,部分项目不想使用VDDWPA供电 而改用VBAT,此方案可行但不推荐; 主要是VDDWPA为DCDC供电,会随着射频功率大小调节电压,以此达到节省功耗的目的; 如果客户不关注功耗,特殊情况下PAM供电 可改用VBAT.
+参考FAQ: FAQ124272
+### 问题: 各模式PS  handover到2G的类型以及展锐产品的支持情况
+解决方案: 2G/3G/4G模式PS handover到2G模式下的类型分为同步、预同步和非同步三种.同步handover新小区的timing信息包含在PS handover command消息中;预同步handover新小区的timing信息,如果PS handover command消息中包含,则使用该信息,如果没有则使用预同步模式的缺省值;非同步handover,UE需要在新小区发送PS handover access消息,网络将timing的测量结果通过packet physical information消息发给UE使用. 展锐产品PS handover 到2G下只支持同步和非同步类型,且只支持4G到2G的PS handover,2G、3G到2G间的PS handover均不支持.
+参考FAQ: FAQ124271
+### 问题: 【BBAT】BBAT模式下WIFI 5G信道测试说明
+解决方案: BBAT模式下是否要测试wifi 5G信号及对应的信号强度? WIFI 2.4G和5G硬件上走不通的通路,如果支持5G信道则需要测试. BBAT模式下wifi 5G信道测试原理? WIFI 5G信道测试原理与2.4G一样,也是判断是否能搜到5G信道及对应的信号强度是否满足工具设置的标准. 由于需要区分2.4G和5G信道,现有命令无法满足,需要增加单独的命令: PC->MS:7E 00 00 00 00 09 00 38 10 06 7E MS->PC:7E 00 00 00 00 13 00 38 00 xx xx xx xx xx xx yy yy yy yy zz zz zz zz 7E 其中: xx:6字节的MAC address; yy: 4字节的channel frequency; zz: 4字节的rssi(保留负号); BBAT G3工具增加了ID:1305的子项测试5G信道,手机软件需要Android 10及之后版本.
+参考FAQ: FAQ124284
+### 问题: 双工器的分类和作用
+解决方案: 双工器分为收发双工器和频段双工器. 1,收发双工器: 是为了解决信号收、发共用一副天线,利用同一副天线发射来自发射机的强信号和接收来自目标反射的弱信号的同时,确保两路信号互不干扰. 2,频段双工器:是将不同频段的信号输给同一传输线并借助同一副天线发射出去,同时将同一天线接收来的不同频段的信号分开以便分别进行检测.
+参考FAQ: FAQ124296
+### 问题: LTE+WCDMA模式下使用GPIO Switch，WCDMA射频逻辑配置问题
+解决方案: 当产品不支持GSM而支持WCDMA(WCDMA ONLY/LTE+WCDMA),且使用GPIO Switch时,在配置WCDMA的GPIO逻辑时需要特殊配置. 虽然无GSM,但在配置WCDMA的SWITCH逻辑时,GSM USED GPIO部分仍需把用到的GPIO置1.空置状态会导致机器assert.
+参考FAQ: FAQ124306
+### 问题: EDGE外场测试下行接收性能差的简要分析
+解决方案: EDGE外场测试下行接收性能差简要分析: 1.首先需要排除弱场和测试机校准异常.如果测试机和对比机信号强度有较大差距,首先最好重新校准下测试机,保证校准结果是通过的.校准没有问题后,检查下信号强度,检查ARM log中的RR_MN_SCELL_RSSI_IND消息下的rx_lev值,时间的信号强度为rx_lev-110.一般rx_lev值至少在20(十进制,log中为16进制)以上. 2.检查下行接收性能.在ARM log中搜索bep关键字,如果trace打印中的bep值比较低,比如小于10,那就需要抓log给物理层分析原因.如果bep的值在20以上,那么需要抓log给协议栈分析原因.bep介于其间先给协议栈定位问题.
+参考FAQ: FAQ124313
+### 问题: GPRS\EDGE加密算法种类及展锐产品支持哪些加密算法
+解决方案: GPRS/EDGE加密算法包括GEA1～GEA7共7种算法.目前展锐全系列产品支持GEA1、GEA2和GEA3共三种加密算法.
+参考FAQ: FAQ124319
+### 问题: 7701能否支持HD Voice？
+解决方案: 7701平台不支持HD voice. 需要注意在软件代码中关闭语音宽带,否则会有未知的语音质量问题. 具体关闭方法可以咨询我司软件.
+参考FAQ: FAQ124448
+### 问题: 新的NV架构（及NV2.0）中校准标志位怎么确认？
+解决方案: 新的NV架构(及NV2.0)中校准标志位请在如下寄出确认: gsm_research\gsm_calibration_param_remaining\adc\adc_reserved[7]=0x0 WCDMA_research\WCDMA_calibrationParam\w_cal_flag=0x0 LTE_remaining\LTE_cali_common\LTE_CaliParam_flag=0x0
+参考FAQ: FAQ124455
+### 问题: SC6531E平台是否支持RGB接口的屏
+解决方案: 不支持.SC6531E平台只支持MCU并口屏或SPI串口屏.
+参考FAQ: FAQ124515
+### 问题: SC9863A是否支持外接RJ45?
+解决方案: 可以通过添加SPI口的以太网口芯片来实现.
+参考FAQ: FAQ124551
+### 问题: SC2721G的CC PIN耐压值为多少？
+解决方案: 最高电压不超过VBAT.比如VBAT是3.8V,耐压值最高就是3.8V
+参考FAQ: FAQ124552
+### 问题: 耳机推外置功放，并且做喇叭听筒二合一，为什么免提模式的工具显示模拟增益不对？
+解决方案: 因为耳机推外置功放这种模式,和耳机推外置功放并且做喇叭听筒二合一功能的模式,软件配置是不一样的. 如果配置不对,就会造成工具模拟增益等级显示异常. 需要确认NV参数中是否有ro.audio_tunning.dual_spk=1(安卓8.1, 安卓9.0以及以上为ro.vendor.audio_tunning.dual_spk=1),如果为其他值,是不正确的,需要联系软件驱动 修改相关配置.此时的硬件连接如下:
+参考FAQ: FAQ124583
+### 问题: 32KLess方案关机状态下，如何关闭26M时钟？
+解决方案: 设置CLK32KLESS_CTRL0的 bit0/1设置成11,使用内部RC振荡器.正常开机状态下32K只能使用26M分出的32K
+参考FAQ: FAQ124591
+### 问题: WCDMA的smart paging功能是什么？
+解决方案: 该功能的目的是为了节省待机下的功耗. 由于手机在静止放置时在周期性接收paging,paging的接收会产生功耗. smart paging将周期性接收paging的周期拉长,这样就可以延长deep sleep的周期,从而降低功耗.
+参考FAQ: FAQ124600
+### 问题: 请问锁卡功能的修改能否通过fota升级
+解决方案: 与simlock相关的NV是会备份的,不能通过fota升级将不支持锁网的版本升级为锁网版本.
+参考FAQ: FAQ124618
+### 问题: legacy_FD功能的打开与关闭
+解决方案: 打开: 在FAST DOMANCY开启的情况下,而网络又没有配置T323的情况下,如果不需要发送SCRI. 那么就需要打开legacy_FD,即把legacy_FD_disable配置为1; 关闭: 在FAST DOMANCY开启的情况下,而网络又没有配置T323的情况下,如果需要发送SCRI. 那么就需要关闭legacy_FD,即把legacy_FD_disable配置为0;
+参考FAQ: FAQ124617
+### 问题: 调度数据和非调度数据的差别
+解决方案: 调度数据是需要网侧调度授权才可以发送的数据,不需要调度授权就可以发送的数据是非调度数据.
+参考FAQ: FAQ124690
+### 问题: AndroidP及之后对AppClone功能的支持说明
+解决方案: 展锐平台Andorid9.0及之后的版本不支持应用分身功能,原因如下: 1.功能涉及到对framework的大量改动,可能会引入一些未知问题,对系统稳定性产生不确定性. 2.AppClone功能依赖于多用户功能,go版本等多用户功能关闭的版本对应无法支持此功能. 3.应用分身功能本身涉及到的适配工作量巨大. 基于以上原因,平台9.0及之后默认不支持应用分身功能,同时不建议您基于平台 source code 开发应用分身功能.
+参考FAQ: FAQ124780
+### 问题: 网上下载应用为什么无法安装
+解决方案: 1、检查log,若发现安装失败时有以下信息,说明下载的应用native libraries与当前CPU架构不一致   E PackageInstaller: Commit of session  failed: Failed to extract native librarie 
+ 2、查看手机中的CPU架构 可以用adb shell ps -A | grep zygote64,如果有zygote64进程,则说明是64位系统,否则说明是32位系统 3、查看应用native libraries 解压下载apk,查看lib下相关库的只有armeabi-v7a(32位)或者arm64-v8a(64位),若与系统cpu架构不一致需要重新下载对应的应用即可安装
+参考FAQ: FAQ124781
+### 问题: LTE切换流程介绍
+解决方案: LTE切换流程: 当UE在CONNECTED模式下时,eNodeB可以根据UE上报的测量信息来判决是否需要执行切换,如果需要切换,则发送切换命令给UE,UE不区分切换是否改变了eNodeB.非竞争切换流程图如下:
+参考FAQ: FAQ124854,含图片
+### 问题: 软件默认是双SIM卡，如何改成单SIM卡
+解决方案: 软件版本默认支持双SIM卡,如果要将其修改为单SIM卡. 需要先确认下当前没有接SIM卡的卡接口是否需要连接其他的外部设备. 如果无需连接其他外设,那么modem不用做任何配置. 如果要连接其他外设,那么修改NV项auto_poweron_sim(bit0表示卡1, bit1表示卡20).例如,单卡接卡1,则需要将auto_poweron_sim = 0x1.
+参考FAQ: FAQ124887
+### 问题: Android10.0 平台 GSI 升级规则
+解决方案: Android 10.0 平台 GSI与安全补丁匹配规则引入了新的变化,Google 升级要求是 GSI的SPL >= 安全补丁的SPL. 举例说明: 如果当前安全补丁的SPL :2020-04-05, 则可选的GSI 的SPL:2020-04-05,2020-05-01,2020-05-05 等, 不可选的GSI的SPL:2020-04-01,2020-03-05等, 故建议在合入安全补丁前,需优先升级GSI,如果升级顺序不符,存在GSI版本无法开机的风险. 无法开机原因说明: 若 GSI的SPL比安全补丁旧,在first init阶段会发生GSI Rollback,导致GSI版本在lock状态下无法开机. 具体代码参考: system/core/init/first_stage_mount.cpp IsStandaloneImageRollback方法中触发GSI rollback.
+参考FAQ: FAQ124964
+### 问题: 插电信卡待机为什么会有两种周期性唤醒收寻呼?
+解决方案: 相比插移动/联通单卡待机,终端驻留在2G/3G/4G的某个模式下,进行待机,从电流波形看,只有一种周期性唤醒接收寻呼. 插单电信卡待机,会同时驻留在CDMA 1X和EVDO/LTE下,从电流波形看,会同时有两种周期性唤醒收寻呼.
+参考FAQ: FAQ124983
+### 问题: 待机时SIM卡电源是否能够关闭？
+解决方案: UNISOC方案,没有插入SIM卡时,SIM卡电源需要关闭;只有检测到SIM卡插入后,才会打开SIM卡供电,之后Sleep下也不会关闭.
+参考FAQ: FAQ124984
+### 问题: PBINT和PBINT2有效的低电平电压是多少？
+解决方案: PBINT和PBINT2有效的低电平是0-0.7V
+参考FAQ: FAQ124996
+### 问题: EXTRSTN有效的低电平是多少？
+解决方案: EXTRSTN有效的低电平是0-0.7V
+参考FAQ: FAQ124997
+### 问题: WCDMA IQ数据抓取方法
+解决方案: 怎么设置WCDMA IQ数据抓取方法? 可以按照下面两个步骤抓取IQ数据,以便算法SE分析数据: 1、测试机插联通卡,网络模式设置为W-only; 2、进入ylog -> settings -> Log setting ->Modem Log Setting -> IQ Mode Setting -> WCDMA IQ,选择开启WIQ Log后点确定重启;
+参考FAQ: FAQ125024
+### 问题: wcdma phy assert问题分析需要哪些log？
+解决方案: wphy 的assert问题分析需要死机前的modem log以及memery dump,modem log一定要包含assert点的log,不然无法分析软件流程. 注意:userdebug版本会自动抓memery dump,界面会有相关提示 如果是user版本,请测试前提前设置工程模式->Debug&Log->Ylog->setting->Log setting->modem log setting->关闭 modem modem log
+参考FAQ: FAQ125025
+### 问题: 如何关闭WCDMA协议侧的分集，以及AT命令如何配置
+解决方案: 对应的AT命令如下: 设置WL1天线 AT+SPDUALRFSEL=, w_rf_opt 其中w_rf_opt的值如下: 0 单主 17 单辅 1 主辅都开 即w_rf_opt=0的时候,只开主天线;w_rf_opt=17的时候,只开辅天线;w_rf_opt=1的时候,主辅天线都开
+参考FAQ: FAQ125026
+### 问题: wcdma phy 上行RACH时如何判断随机接入已经开始发送？
+解决方案: UE在IDLE通过上行RACH进行随机接入,以便建立数据通道,可以log_for_td上搜索下面的trace来查看是否开始了随机接入过程 搜到下面trace说明随机接入开始发送,其中Retrans_Count表示网侧允许preamble的最大发送次数,如果配置此时较小,是可能发送不成功,因为这个时候可能preamble功率还没有抬升到满足网侧需求就已经结束了preamble发送了; tx: TX_RACH_Init: P_CPICH_TX_Power x1:36,CPICH RSCP x2:-68,UL_Interference x3:-105,Constant_Value x4:-20Time: 236609 tx: TX_RACH_Init: RACH Initial_Power: x1-x2+x3+x4=-21 dBm,Retrans_Count=7
+参考FAQ: FAQ125027
+### 问题: SC6531E紧急呼叫是否携带号码
+解决方案: 紧急呼叫不会携带号码. 紧急呼叫与普通呼叫不同,当上层AP侧发起紧急呼叫,下发给协议栈走的是EMERGENCY SETUP,是紧急呼叫通路,发送给网络的信令不会携带号码,只会携带紧急呼叫的类别.
+参考FAQ: FAQ124961
+### 问题: SC6531E多方通话支持人数
+解决方案: 目前,SC6531E支持的多方通话最大人数为7人,但是实际情况要看运营商是否支持. 若添加电话失败,可以通过如下消息判断是否为网络拒绝: APP_MN_BUILD_MPTY_CNF中req_is_accepted = 1,    网络接受,上层AP会合并此通话 APP_MN_BUILD_MPTY_CNF中req_is_accepted = 0,    网络拒绝,上层AP不会合并此通话
+参考FAQ: FAQ124969
+### 问题: wcdma phy上行RACH过程中如何查看preamble是否发送成功？
+解决方案: 可以通过下面打印查看preamble是否发送成功,ack表示成功,nack,表示网侧拒绝接入,NULL表示没有检测到AI,继续发送preamble tx: HAL_XDSP_AICH_Result: AICH_ACK
+参考FAQ: FAQ125029
+### 问题: 如何查看WCDMA激活机小区的服务质量？
+解决方案: 可以通过下面trace查看激活集小区的频点和PGC: srch: prepare active multi, ARFCN = 10663, PGC = 322, SearchLocation = 35738, antenna=0, card_id = 0 服务小区信号质量可以查看下面打印,查看ECNO和RSCP的值: WRCC:CR Calc Serv_Cell UARFCN is 10688,PGC is 502,Meas ECNO Value is -8, Meas RSCP Value is -69 也可以通过下面trace查看服务小区的信号质量,但是所有的值都要除以8才是ECNO和RSCP的值 meas: Stored meas result, ARFCN = 10688, PGC = 363, ECN0_2 = -132, RSCP = -923, RSSI = -791, card_id = 0
+参考FAQ: FAQ125030
+### 问题: Powerkey 按键开机硬件时间
+解决方案: 1.power-off 硬件 识别 PBINT> 47ms 2.ARM BOOT 需要 PBINT > 1000ms 3. reset mode hw 进入 4.LDO ON After 149ms 5.ARM BOOT After 46ms 上面过程 power key 要保持 low 至少是 2000ms 以上. powerkey 是不能500ms 启动系统
+参考FAQ: FAQ125063
+### 问题: 手表项目memory稳定性测试自动停止
+解决方案: 导致高温环境下测试不能正常进行的原因,手表项目使用电池,热保护导致充电降流关机. 对于稳定性验证,我司要求: 稳定性验证需要外接电源来测试,通常我们验证是使用多路程控电源. 使用外接电源注意电源和主板之间建议增加滤波板,保证供电电源稳定性.
+参考FAQ: FAQ125132
+### 问题: NewGallery2中的VideoPlayer播放视频时，右下角的切换播放图标是什么功能？
+解决方案: 当视频开始播放时是默认为全屏幕放大播放的,也就是根据lcd的分辨率进行适配全屏显示,此时右下角的切换播放图标是两个箭头往外,表示当前是放大播放状态;然后点击右下角切换播放图标,则会进行原始尺寸播放,此时右下角切播放图标会变成两个箭头往里,表示当前是原始尺寸播放.视频播放器中需要播放各种分辨率的视频文件,但是播放时显示范围都是根据视频源本身分辨率的宽高和lcd的宽高进行自适配进行显示的,如果视频源的分辨率和lcd的分辨率相差不大,则全屏幕放大播放和原始尺寸播放的效果相当,看不出差别.
+参考FAQ: FAQ125134
+### 问题: 怎样判定随机接入物理层已经完成
+解决方案: 在WCDMA的log trace中搜索关键字"set state from",该值从0递增到4,说明UE侧随机接入过程物理层发送完成.
+参考FAQ: FAQ125148
+### 问题: 关于LTE paging的一些解释
+解决方案: LTE下收到paging,如果终端不支持VOLTE的情况下,paging中的Domain是CS域,表示是CS业务(电话,附加业务等都有可能).Domain是PS域,表示是数据业务(但也有可能是短消息等). 而如果终端支持VOLTE的情况下,那么即使收到的paging的Domain是PS域,也可能是电话(通过VOLTE进行). 所以具体是什么业务,还是需要等收到paging完成建链收到网络后续的消息才能确认.
+参考FAQ: FAQ125157
+### 问题: MusicFx是否可以删除？
+解决方案: MusicFx是Android自带的音频均衡器,代码路径位于:packages/apps/MusicFX,MusicFx音频均衡器有可能被其他第三方app调用,所以不能删除,如果被删除,被调用时找不到会报ActivityNotFoundException 异常停止.
+参考FAQ: FAQ125222
+### 问题: [AndroidQ]设置铃声后，把源铃声文件及手机内存中Ringtones目录下拷贝的文件都删除，设置的铃声显示无而不显示默认铃声？
+解决方案: 设置的铃声显示时会查询title进行显示,在设置铃声后,如果用户把源铃声文件及手机内存中Ringtones目录下拷贝的文件都删除,铃声显示时根据title查询不到结果,所以此时铃声会显示无,AndroidQ平台设计如此.
+参考FAQ: FAQ125248
+### 问题: [AndroidQ]为什么具有流派值的mp3不能预置成铃声？
+解决方案: AndroidQ上预置的铃声多媒体文件属性中不能包含流派值,这是AndroidQ的新增特性,所以如果预置的mp3文件属性中具有流派值,则不能预置成功.如果必须预置该音乐文件,则需要把该音乐文件属性中的流派值清空后再预置. 如何清空流派值,请参考如下方法: 把该mp3文件拷贝到PC机上,在PC机上右键点击该mp3文件,查看 属性--详细信息--流派,点击流派值,请参考如下图的操作步骤: 把上图中的流派值: other 删除后,如下图所示: 然后点击上图中的"确认"按钮,即已经把流派值清空了,最后如下图所示:
+参考FAQ: FAQ125249,含图片

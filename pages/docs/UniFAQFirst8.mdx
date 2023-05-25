@@ -1,0 +1,307 @@
+### 问题: 如何设置rtsp，rtp和rtcp的端口号？
+解决方案: (1)设置rtsp端口号的处理位于ARTSPConnection.cpp文件中ParseURL函数里,实现方式是从上层传下来的url中获取端口号,如果读取不到,则设置554作为rtsp的默认连接端口. (2)设置rtp和rtcp端口号的处理位于ARTPConnection.cpp文件中中MakePortPair函数里,实现方式是在15550到65536之间随机分配一对相邻的UDP端口,偶数端口作为rtp端口.而奇数端口号是偶数端口加一,作为rtcp的端口.
+参考FAQ: FAQ31681
+### 问题: 移动测试网页图形格式支持项FAIL原因
+解决方案: 1.登录移动测试网站->Browser15->24.2:图形格式支持 2.查看页面显示情况 结果:图片显示有缺失 从网页元素分析资源文件,其图片本身就是中间为空白的,为服务器提供资源就是如此,同时在windows电脑上使用chrome,ie,火狐浏览器打开中间都为空白,这是网页本身原因.
+参考FAQ: FAQ31682
+### 问题: 异常关机后,再次开机未何会进入系统检测界面
+解决方案: 在异常关机的时候,会检查data下面dalvikcache的crc校验值,如果和之前存储的不一致,那么就会删掉cache重新做,也就会出现正在升级的提示,这个是非常有必要的检测,保证重要文件不出错.
+参考FAQ: FAQ31674
+### 问题: Android4.4展讯浏览器是否支持自适应重排？
+解决方案: 从android4.1开始,原生浏览器修改为双击操作不再支持重新排版.因为每次双击都重新排版,很耗资源. 根据移动case要求,展讯版本添加了双击自适应重排的功能,目前我们的双击重排文字自适应屏幕大小的逻辑主要如下: 1.重排的文字按照node来算,双击的节点所对应的必须是文字节点, 2.该节点的文字宽于目前屏幕. 所以需要关闭"以概览模式打开网页", 如果"以概览模式打开网页"选中,那么文字不会宽于屏幕,也就不会重排. 关闭"以概览模式打开网页"后,重新访问测试网页,文字显示会超出屏幕,此时双击文字,网页会自适应重排.
+参考FAQ: FAQ31690
+### 问题: eng版本为何开机后有些应用没有生成dex文件
+解决方案: 在PackageManagerService的构造函数中,如果检测到是eng版本,就会将scanMode设置为SCAN_NO_DEX,在开机扫描APK时将不会执行dexopt操作,需要等到该应用被调用后才会生成dex文件
+参考FAQ: FAQ31692
+### 问题: 联通入库测试网址
+解决方案: 联通入库测试网址115.28.129.163 其中包含了wap测试、web测试、java测试、流媒体测试、MMS测试项目,可以根据终端业务支持情况进行自测试.
+参考FAQ: FAQ31702
+### 问题: 如何读取手机不同分区的数据？
+解决方案: 在分析一些不开机、定屏问题时需要确认不良机器中的只读数据是否发生变化,因此就需要将手机不同分区中的数据读取出来和pac包中的数据一一进行对比确认问题.具体的读取方法如下: 第一步、获取手机下载前使用的pac包. 第二步、使用reachdown工具加载pac包. 第三步、点击setting按钮进行设置 第四步、在Main Page页面只保留fdl1和fdl2. 第五步、在Flash Operations页面选择Active Read Flash. Base :该选项里边填写需要读取分区的名字,具体的分区名字可以查看main page中Base1字段. Size :该选项设置为具体的pac包中对应的镜像大小. File :该选项是读取的文件的保存路径. 完成以上修改之后点击Start downloading 即可.
+参考FAQ: FAQ31729
+### 问题: 为何运营商名称后面会附加“2G”、“3G”信息？
+解决方案: 运营商名称后面增加"2G"、"3G"是运营商入库要求,不建议去掉. 如果需要去掉,可以修改GsmServiceStateTracker.java文件, 屏蔽掉showVRTechStr()函数.
+参考FAQ: FAQ31762
+### 问题: 为何屏蔽掉手机信号后，手机显示从有信号到无信号需要很长时间？
+解决方案: 这个现象是正常的. 当前服务小区无信号了,modem会进行一次全频搜网,实在搜不到网了,才上报无服务给AP显示.这个过程需几十秒甚至一两分钟.
+参考FAQ: FAQ31770
+### 问题: 在没有硬件GPS的支持下，是否能实现网络辅助定位及导航功能？
+解决方案: 硬件不加GPS外围器件,不能实现A-GPS的功能. 只有一种通过网络辅助定位,走PS流量.应是通过设置中,通过在注册网络中使用AGPS功能开关. 缺点不能导航.只能大概定位,定位效果在不同情况下预计有几十米,几百米或几公里的误差.
+参考FAQ: FAQ31787
+### 问题: 7701平台是否支持HAC M3
+解决方案: 不支持.
+参考FAQ: FAQ31805
+### 问题: 7701 FM radio是否支持Stereo FM RDS功能
+解决方案: 不支持.
+参考FAQ: FAQ31809
+### 问题: 7701 使用的 Opera Mini 是哪个版本？
+解决方案: 虽然在mk文件是有如下表述: OPERA_MINI_SUPPORT = VER6 #opera mini support # Option1:VER6 OPERA_MINI_SUPPORT_VER6 # Option2:VER42 OPERA_MINI_SUPPORT_VER42 # Option3:NONE OPERA_MINI_SUPPORT_NONE 但 7701 使用的 Opera Mini 是 4.4 而不是 4.2.
+参考FAQ: FAQ31813
+### 问题: 单mic设计时免提通话无上行声音问题如何解决？
+解决方案: 展讯的参考机是双mic的,如此设计可以提高通话音质,免提时候使用back mic,如果硬件设计没有back mic,则会导致免提通话上行无声 修改方法如下: 使用audiotester修改所以audio mode中的handle free xx->path set->internal value bit 11修改为0,bit10修改为1, 如:value通常是0x0a18则需修改成0x0618
+参考FAQ: FAQ31849
+### 问题: 通话记录中能够保存的最多通话记录个数为多少条？
+解决方案: android4.4平台中,通话记录中能够保存的最多通话记录个数为500条,在CallLog.java中进行具体的实现,实现代码如下: private static void removeExpiredEntries(Context context) { final ContentResolver resolver = context.getContentResolver(); resolver.delete(CONTENT_URI, "_id IN " + "(SELECT _id FROM calls ORDER BY " + DEFAULT_SORT_ORDER + " LIMIT -1 OFFSET 500)", null); }
+参考FAQ: FAQ31934
+### 问题: boot.image里的zImage的编译生成过程
+解决方案: 1. Linux编译出的几种image的区别: vmlinux:ELF格式的目标文件 arch/arm/boot/Image:二进制目标文件 arch/arm/boot/zImage:压缩格式的目标文件 2. zImage的编译生成过程如下图,其中出现的文件的上一级路在 ./idh.code/out/target/product/scx15_spXXXX/obj/KERNEL/
+参考FAQ: FAQ31959
+### 问题: FFOS 7715如何修改bluetooth name
+解决方案: 修改device/sprd/XXX/XXXplus.mk中的PRODUCT_MODEL的值即可. 上面的XXX与编译的具体工程相关,加入编译的是sp7715ga,则上面的路径为: device/sprd/scx15_sp7715ga/scx15_sp7715gaplus.mk
+参考FAQ: FAQ32076
+### 问题: 在联系人详情页面按home键，再次点击Contacts应用图标，为什么没有进入之前的页面
+解决方案: 这是因为在Contacts应用的启动页面PeopleActivity中设置了android:clearTaskOnLaunch="true",这个标记将会清理此task中除了根页面之外的其他页面,导致不能记住之前进入的页面位置,而每次都会进入Contacts应用的的主页面. 类似的情况还出现在Settings应用中的部分子设置页面.
+参考FAQ: FAQ32017
+### 问题: 4.4平台相机应用如何实现连续对焦
+解决方案: 在4.4平台上,对于RawSensor,应用实现连续对焦的功能变的简单,只需要3个步骤: 1.实现AutoFocusMoveCallback接口,重写回调函数onAutoFocusMoving完成需要的操作 ; onAutoFocusMoving函数有一个start参数,当其为true时,表示对焦开始;当其为false时,表示对焦结束: void onAutoFocusMoving(boolean start, Camera camera); 2.通过setAutoFocusMoveCallback注册监听; 3.通过setFocusMode设置好连续对焦模式,目前支持的连续对焦模式为"continuous-picture".
+参考FAQ: FAQ32033
+### 问题: MPEG audio常见分有哪几种?
+解决方案: 常见的MP3 的全称为MPEG AUDIO LAYER-3. 这里LAYER是在MPEG1,MPEG2中定义的音频信号编解码标准(还有一个非官方标准MPEG-2.5用于扩展MPEG-2/LSF到更低的采样率), 它分为三层:layer1,layer2,layer3. 不同的MPEG标准和不同的layer.可以相互组合.
+参考FAQ: FAQ32050
+### 问题: MPEG音频的帧大小是多少
+解决方案: 帧大小是每帧采样数表示一帧中采样的个数.为恒定值.其值如下表所示. MPEG 1 MPEG 2 (LSF) MPEG 2.5 (LSF) Layer I 384 384 384 Layer II 1152 1152 1152 Layer III 1152 576 576
+参考FAQ: FAQ32057
+### 问题: MPEG 音频的帧长度如何计算？
+解决方案: 帧长度是压缩时每一帧的长度,包括帧头.它填充的空位也计算在内. 从帧头中读取比特率,采样频率和填充. LyaerI使用公式: 帧长度(字节) = (( 每帧采样数 / 8 * 比特率 ) / 采样频率 ) + 填充 * 4 LyerII和LyaerIII使用公式: 帧长度(字节)= (( 每帧采样数 / 8 * 比特率 ) / 采样频率 ) + 填充
+参考FAQ: FAQ32059
+### 问题: MPEG 音频的每帧持续时间如何计算
+解决方案: 每秒持续时间(毫秒)= 每帧采样数(帧大小) / 采样频率 * 1000 通过计算可知 MPEG1 Layer III 采样率为44.1KHz,则此时一帧持续时间为26.12ms.
+参考FAQ: FAQ32060
+### 问题: MPEG 音频标签有哪些？
+解决方案: (1)ID3v1 ID3v1标签用来描述MPEG音频文件.包含艺术家,标题,唱片集,发布年代和流派.另外还有额外的注释空间. 位于音频文件的最后固定为128字节.可以读取该文件的最后这128字节获得标签. (2)ID3V2 ID3V2 到现在一共有4 个版本,但流行的播放软件一般只支持第3 版,即ID3v2.3.由于ID3V1 记录在MP3 文件的末尾, ID3V2 就只好记录在MP3 文件的首部了(如果有一天发布ID3V3,真不知道该记录在哪里).也正是由于这个原因, 对ID3V2 的操作比ID3V1 要慢.而且ID3V2 结构比ID3V1 的结构要复杂得多,但比前者全面且可以伸缩和扩展. 每个ID3V2.3 的标签都一个标签头和若干个标签帧或一个扩展标签头组成.关于曲目的信息如标题、作者等都 存放在不同的标签帧中,扩展标签头和标签帧并不是必要的,但每个标签至少要有一个标签帧. 标签头和标签帧一起顺序存放在MP3 文件的首部.
+参考FAQ: FAQ32062
+### 问题: 编码格式中H.264,x264,h264,AVC,AVC1有什么不同
+解决方案: (1)H.264是MPEG-4的第十部分,也称为AVC.是一种视频压缩标准. (2)x264是一个编码器,他参照的标准是H.264. H.264是需要付费的编码格式,而 x264是符合H.264标准的一个开源项目,是免费的. 也就是H.264的一个简化版,不支持某些高级特性. (3)h264与AVC1都FourCC(Four-Character Codes) FOURCC为AVC1,没有开始码的H.264视频,主要用MP4或MKV等封装文件.它的数据流开始是1、2或者4字节表示长度数据. FOURCC为h264,是带有开始码的H.264视频.一般用于无线发射、有线广播或者HD-DVD中的.这些数据流的开始都有一个开 始码:0x000001 或者 0x00000001.
+参考FAQ: FAQ32067
+### 问题: ffos 7715如何修改Wifi Hotspot name
+解决方案: 修改gaia/build/config/common-settings.json文件中的tethering.wifi.ssid的值即可.
+参考FAQ: FAQ32079
+### 问题: 如何用生产工具读取ap软件版本信息
+解决方案: mobiletester工具已带有读取ap版本信息的选项,可直接使用,在Misc information页—》Read AP Version项. 可直接通过修改工程版本属性值进行显示即可.
+参考FAQ: FAQ32056
+### 问题: BugReport的格式和内容怎样定制？
+解决方案: BugReport通过dumpstate通过标准输出输出内容,所以BugReport里的内容最终都是通过printf输出的.可以查看dumpstate里的dumpstate()函数,位于frameworks/native/cmds/dumpstate/dumpstate.c. 为了操作方便,这里还使用了几个函数来帮助输出: dump_file() 用于把文件(一般是设备节点)的内容输出; run_command() 用于执行指定的命令把结果输出; 所以,BugReport里的内容就是dumpstate里用dump_file()/run_command()/printf()输出的内容,其输出格式和内容都由这个文件里的执行顺序和执行了哪些语句决定.可以通过更改这些语句来改变BugReport的输出. 注意:有些BugReport分析软件处理BugReport的时候按照既定的格式和内容来处理,更改BugReport里的内容可能会影响分析的结果.
+参考FAQ: FAQ32086
+### 问题: 如何查看进程oom_adj值？
+解决方案: 1.使用adb shell命令进入手机的shell模式 2.使用ps命令,显示进程名和进程号列表,通过进程名得到进程号pid 3.cat /proc/pid/oom_adj 4.显示结果:数字 5.若数字不准确,cat /proc/pid/oom_score_adj,得到oom_score_adj值 6.oom_adj = oom_score_adj*17/1000
+参考FAQ: FAQ32123
+### 问题: 短信群发号码支持多少个
+解决方案: 平台默认支持短信群发,对于群发号码的个数设置由宏MMISMS_DEST_ADDR_MAX_NUM的值控制.默认值如下: //支持最大的群发号码个数 #define MMISMS_DEST_ADDR_MAX_NUM 100
+参考FAQ: FAQ32173
+### 问题: aptana中编写好html程序如何直接运行？
+解决方案: aptana编写好html程序如果想要执行一下,选择index.html右键->properties,在location后面就是它的路径如/home/apuser/Firefox_work/app_examples/test-neluosi/index.html,把它复制到浏览器地址栏中即可执行,如果修改了程序,下一次执行可以在浏览器执行刷新操作. 也可在properties中设置好路径,点击运行,工具会自动调用浏览器,但注意一点就是设置路径前要加file:///,不然会被工具认为非法,调用浏览器后无法显示.
+参考FAQ: FAQ32546
+### 问题: camera帧率快慢有哪些条件决定？
+解决方案: 1. 最高帧率决定条件 1)平台支持最大极限帧率Fp; 2)sensor输出极限最大帧率Fs; 3)时钟、帧长、行长限制的最大帧率Fx; 2.最低帧率决定因素 最低帧率由sensor或ISP通过限制最大曝光时间(shutter)来进行限制,设为Fmin. 3.设相机预览过程中的实际帧率为Freal,则有下式: Fs>=Fx>=Freal>=Fmin,且Fp>=Fx,Fs与Fp之间关系由实际情况确定. 实际帧率Freal在上下限之间的大小,由环境亮度决定,环境光线越亮,帧率越高,反之则帧率降低.
+参考FAQ: FAQ32190
+### 问题: [GCF\PTCRB]CASE 27.22.4.XX.3-1 the ME shall  display "3PABCTBYHTE"
+解决方案: 在进行GCF、PTCRB测试时,如下CASE经常遇到因为手机未能正确显示 "3PABCTBYHTE"而导致CASE失败的情况.CASE为: 27.22.4.11.3/1 27.22.4.12.3/1 27.22.4.22.3/1 27.22.4.24.3/1 由于需要显示的字符为俄语字符,因此需要确保手机软件版本已经开启了俄语的支持,否则就无法正常显示这些字符.
+参考FAQ: FAQ32212
+### 问题: wcdma信令测试时，没有白卡怎么办？
+解决方案: wcdma信令测试时,需要使用白卡.应急时,可以采用CFT做信令测试,当仪器和手机建立连接时直接关掉软件,即可通过仪器和手机测试,需要注意的是,要把ul cl power ctrl mode设置为active bits.
+参考FAQ: FAQ32267
+### 问题: 7715的3组SIM卡是否规定了那组用于WCDMA，那组用GSM，能不能更换？
+解决方案: 现在的WCDMA平台都只有SIM0支持WCDMA跟GSM,其它两组只支持GSM. 且不能更换
+参考FAQ: FAQ32268
+### 问题: SR3131的RX为什么规定差分线要200欧姆阻抗？我们建议的叠层结构，如果200欧姆阻抗，那么线要走多宽，需不需要挖空？
+解决方案: 我们一般RX的差分走线走0.1mm,挖空不是强制要求,但是RX下面不能走其它走线,保留完整地.
+参考FAQ: FAQ32270
+### 问题: 关于LOCAL_OVERRIDES_PACKAGES的作用
+解决方案: 关于android.mk中的LOCAL_OVERRIDES_PACKAGES,此变量可以使定义的其它模块无法编译生成到系统中,使用本模块作为替换. 比如在SprdLauncher2的android.mk里 定义了LOCAL_OVERRIDES_PACKAGES := Launcher3 在使用了SprdLauncher2的工程里就无法集成原生的 Launcher3.
+参考FAQ: FAQ32286
+### 问题: FM自动搜台时，判断自动搜台结束的条件是什么？
+解决方案: FM自动搜台时,判断自动搜台结束的条件除底层返回搜台失败退出之外,自动搜台结束的条件有两个: 1.当前搜到的频点比之前搜到的频点小或与之前搜到的频点相等. 当满足这个判断条件的时候,我们认为:整个频段已经全部搜索一遍,则搜台结束. 2.当前搜到的频点比允许的最大频点大. 当满足这个判断条件的时候,我们认为当前的搜索结果已经超过FM的频段范围,则搜台结束. 相关代码如下: if (freq <= prev || freq >= WheelConfig.RADIO_MAX_FREQUENCY) { Log.e(LOGTAG, "current frequency is unnormal value=" + freq +","+ prev); break; }
+参考FAQ: FAQ32331
+### 问题: SR3131 APC校准的index和功率之间的关系？
+解决方案: SR3131的每个index的增益大约是0.125dB,8个index大约1dB.
+参考FAQ: FAQ32348
+### 问题: 蓝牙BNEP协议
+解决方案: 蓝牙网络封装协议BNEP即Bluetooth Network Encapsulation Protocol , BNEP被用来在蓝牙无线网络上传输以太包,可以对上层IP协议提供类似于以太网的接口,用BNE包的包头取代以太包的包头(包的正文不变),然后通过蓝牙L2CAP协议层进行无线传输,对IEEE802.3/Ethernet封装支持的网络协议,均以支持. 代码路径:/external/bluetooth/bluedroid/stack/bnep
+参考FAQ: FAQ32327
+### 问题: 联系人多选界面排序方式和联系人主界面不一致
+解决方案: 联系人主界面的排序方式设置为 if (getSortOrder() == ContactsContract.Preferences.SORT_ORDER_PRIMARY) { sortOrder = Contacts.SORT_KEY_PRIMARY; } else { sortOrder = Contacts.SORT_KEY_ALTERNATIVE; } 在\packages\apps\contacts\src\com\sprd\contacts\list\AllInOneDataListAdapter.java的configureLoader()方法中,调用loader.setSortOrder将联系人多选界面排序方式和联系人界面设置为一致即可.
+参考FAQ: FAQ32361
+### 问题: FM APP 中如何查询当前耳机是否存在？
+解决方案: FM APP 在isHeadsetExists()函数中,通过检查 "/sys/class/switch/h2w/state" 文件的值来判断耳机是否存在. 当值为0的时候判断为耳机不存在,当值为非0的时候判断为耳机存在.
+参考FAQ: FAQ32371
+### 问题: FM APP 中如何得知当前耳机状态改变？
+解决方案: FM APP 通过接收 Intent.ACTION_HEADSET_PLUG 来得知耳机状态的改变,通过检查其传递值来得知耳机是插入还是拔出. 同时,当耳机拔出时 audio 会发送 AudioManager.ACTION_AUDIO_BECOMING_NOISY 消息. AudioManager.ACTION_AUDIO_BECOMING_NOISY消息先于Intent.ACTION_HEADSET_PLUG,可以更早得知耳机拔出优化声音处理.
+参考FAQ: FAQ32378
+### 问题: 如何配置GSM Only的版本
+解决方案: 如果需要将展讯平台提供的3G或者4G平台的解决方案修改成功GSM Only的版本,可以通过如下两种方式: 1.AP侧可以通过sysconfig这条AT指令来动态设置Gsmonly的模式, 下发at命令at^sysconfig=13,3,2,4来设置. 2.可以通过配置modem nv来适配Modem侧只运行GSM Only,可以配置如下两个NV项,即可: TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_MS_PREFERRED_RAT ---》 设置为0 TD_TIANJI2_NV_TYPE\NV_PARAM_TYPE_USER_PREFERED_DUAL_MODE_RAT ----》设置为0
+参考FAQ: FAQ32431
+### 问题: SC7731 晶体的电容为什么用7pf
+解决方案: 由于芯片内部的调整,晶体的电容由原来的12.5pf改为7pf
+参考FAQ: FAQ32471
+### 问题: Android应用中有哪些情况会导致待机功耗太高？
+解决方案: 目前在Android手机上安装一些第三方应用后,会发现手机的待机功耗降不下去,耗电很快; 导致这些原因一般有: 1. 应用拿着锁一直没有释放,这时手机将无法进入睡眠,耗电会很快;可通过分析 PowerManagerService.java 中acquireWakeLockInternal和releaseWakeLockInternal中锁的获取和释放的log来确定具体没有释放的锁. 2. 网络连接,尤其是后台开一些服务,隔几分钟唤醒手机发起一次网络连接.最常见的两个唤醒: AlarmManager.RTC_WAKEUP,硬件闹钟,当闹钟发躰时唤醒手机休眠; AlarmManager.ELAPSED_REALTIME_WAKEUP,真实时间流逝闹钟,当闹钟发躰时唤醒手机休眠; 3. 后台开很多的服务,比如数据库更新/发送通知等,导致应用频繁的拿锁,释放锁,又再次拿....,这样手机 也很难真正进入睡眠,功耗也降不下去;
+参考FAQ: FAQ33505
+### 问题: SC7715A平台用耳机的地做FM天线需要注意事项
+解决方案: 需要注意耳机MIC,GND和耳机左右声道应串入磁珠且加MLV或TVS防ESD,磁珠更靠近耳机座,以防FM信号从MLV或TVS的结电容泄漏.
+参考FAQ: FAQ32486
+### 问题: 蓝牙协议总体构成
+解决方案: 1.蓝牙协议的构成分为controller协议和host协议 2.蓝牙controller协议包含radio/baseband/link controller/link manger/hci等协议 1)trout芯片是3合1芯片,trout硬件蓝牙部分包括arm7和蓝牙射频模块,用在没有cp的芯片上(xx10/xx25),蓝牙controller协议跑在trout芯片 2)2351芯片是4合1芯片,与trout不同的是2351只包含射频模块,用在有cp的芯片上(xx15/xx30),蓝牙controller协议跑在cp2上 所以,xx10/xx25只能搭载trout芯片,xx15/xx30一般搭载2351芯片 3.蓝牙host协议包含hci/l2cap/rfcomm/sdp以及相关的应用协议,蓝牙host协议跑在ap侧
+参考FAQ: FAQ32487
+### 问题: Android蓝牙native服务
+解决方案: 蓝牙host核心协议栈运行在Android蓝牙native服务中,是蓝牙host协议重要组成部分. 1)Android 4.1版本之前(包括4.1),蓝牙协议的核心native服务是bluz BlueZ基础代码均是由Maxim Krasnyansky完成的.包括:HCI,L2CAP,RFCOMM和基本socket的实现.他就职于Qualcomm(高通).Marcel Holtmann开发层的协议和应用,包括:BNEP, CMTP等.当然,这些中也有Maxim Krasnyansky的参预.有部分代码由Nokia提供的. 2)Android 4.2版本之后(包括4.2),蓝牙协议的核心native服务改为bluedroid 从Android 4.2即Jelly Bean开始,Google便在Android源码中推出了它和博通公司一起开发的BlueDroid以替代BlueZ.相比BlueZ,BlueDroid最值得称道的地方就是其框架结构变得更为简洁和清晰.
+参考FAQ: FAQ32506
+### 问题: 连接手机出现no permissions错误如何解决？
+解决方案: 如果连接手机出现
+$ sudo adb devices
+List of devices attached
+????????????    no permissions 就执行以下操作
+$ sudo adb kill-server
+$ sudo adb start-server
+
+这时就可以连接了
+参考FAQ: FAQ32537
+### 问题: 调试js代码时如何添加log？
+解决方案: 手机调试时打印log. js里 console.log("ssssss");语法和使用方法都和printf一样. 查看log,这个命令可以实时地查看,也就是我们可以一边执行我们关注的操作,一边在终端看log的打印信息. adb logcat | grep GeckoConsole
+参考FAQ: FAQ32550
+### 问题: html程序在浏览器中执行汉字出现乱码时的注意事项
+解决方案: 如果html程序在浏览器中执行时,汉字出现乱码,可以注意一下: (1)确认html程序中是否在<meta 中的 charset使用GBK或GB2312等汉字编码. (2)确认浏览器中是否也使用了汉字编码,如firefox->View->Character Ecoding->Chinese Simplifield是否也是GB.
+参考FAQ: FAQ32551
+### 问题: 蓝牙hci协议介绍
+解决方案: HCI协议是主机和蓝牙controller通信的对等协议,在蓝牙controller协议中HCI位于最顶端,在蓝牙host协议中HCI位于最底端. HCI是蓝牙主机-蓝牙controller模式应用模式中蓝牙模块和主机间的软硬件接口,它提供了控制基带和链路控制器、链路管理器、状态寄存器等硬件功能的指令功能格式(包括相应事件分组格式)以及数据通信的数据分组格式. 当主机和蓝牙controller通信时,HCI层以上的协议在主机上运行,而HCI层以下的协议由蓝牙controller完成,它们通过HCI传输层进行通信.主机和蓝牙controller都有HCI,它们具有相同的接口标准.蓝牙controller中的HCI解释来自主机的信息并将信息发向相应的硬件模块单元,同事还将模式中的信息根据需要向上报告给主机
+参考FAQ: FAQ32533
+### 问题: Firefox OS 中有哪些专有api？
+解决方案: Firefox OS中除了公共API外,Moziila还有一些专有的API,这些api属于手机平台专有,可以时web app实现一些基于手机硬件的专有功能,比较实用. (1)Privileged APIs 需要一定的权限才能使用的API TCP Socket API, TCP socket连接 Contacts API, 通讯录 Device Storage API, 文件系统接口 Browser API,浏览器开发接口 (2)Certified APIs, Web activities 的一些底层接口 Bluetooth API, Mobile Connection API, Network Stats API, Telephony, WebSMS, WiFi Information API, Camera API, Power Management API, Settings API, Idle API, Permissions API, Time/Clock API.
+参考FAQ: FAQ32556
+### 问题: 如何设置浏览器缓冲cache的大小？
+解决方案: 子资源的cache大小设置在如下代码地址: /external/chromium_org/third_party/WebKit/Source/core/loader/cache/MemoryCache.cpp:50 文件中cDefaultCacheCapacity的值代表cache大小,可以根据需求调整.
+参考FAQ: FAQ32566
+### 问题: 如何打开WebKit log？
+解决方案: 打开的方法为third_party/WebKit目录下: 1.Source/wtf/Assertions.h中,有个#define LOG_DISABLED XXXXX,将这个改为#deine LOG_DISABLED 0 2.Source/core/platform/Logging.cpp中,找到需要打开的通道,如这边的LogMedia,在后面将WTFLogChannelOff改为WTFLogChannelOn,就可以打开LOG(Media,"")这种了. 其余的如Progress等都是同理.
+参考FAQ: FAQ32569
+### 问题: 什么叫做应用程序的冷启动/热启动
+解决方案: 在Android系统中,启动应用程序有两种方法: 1. 冷启动:第一次启动程序及Android后台进程中没有该应用程序进程, 比如启动Camera程序:冷启动后,首先会通过zygote fork Camera进程出来,然后attach Camera程序获取上下文,最后再走Activity生命周期. 2. 热启动:被启动的程序进程已经存在,然后通过Launcher或者系统调用重新启动. 比如启动Camera程序:热启动后,会走完整的Activity启动过程,直接重新进入Camera程序,走Activity生命周期,比热启动少了fork进程及attach Camera等过程 ps:可以通过adb shell ps | grep xxx查看手机系统是否存在xxx进程
+参考FAQ: FAQ32599
+### 问题: 如何将越南语组合字中的下标字符0x0323调整至正下方中间位置？
+解决方案: 越南语语法规则要求,当组合字存在下标字符0x0323时,0x0323必须位于正下方中间处,目前平台在编辑控件中对输入 的字符在显示时会强制增加间距,这样如果字库中该字符左侧偏移量较大时,在组合显示时将不会位于正下方中间处而 向右偏移. 可以通过调整编辑控件中对字间距的控制,将宏MMITHEME_EDIT_CHAR_SPACE值修改为1.
+参考FAQ: FAQ32623
+### 问题: 7715如何开启视频通话功能
+解决方案: 如何只是测试时使用,可使用工程模式提供的菜单 *#*#83781#*#*->TELEPHONY->视频电话开关 进行控制打开和关闭. 若需要默认打开该功能 可在工程里配置属性 persist.sys.support.vt 值为true 打开该功能.
+参考FAQ: FAQ32635
+### 问题: 为何把应用进程加到GPU变频列表后，GPU频率没有相应的改变？
+解决方案: 把应用进程加到GPU变频列表后,若发现在打开此应用后GPU频点没有随之改变.在确保编译正确的情况下,可以从下面两个方面排查下 第一、检查进程名字是否加对.很关键的一步,因为变频是通过解析此名字字符串来匹配识别的. 第二、此应用没有调用OpenGL相关接口去绘图.这样的应用是不能通过加到变频列表来提高或者降低GPU运行频点的.
+参考FAQ: FAQ32634
+### 问题: 如何查看手机屏幕上的坐标？
+解决方案: 设置——>开放人员选项——>指针位置,勾选上.在屏幕滑动,可以得到从状态栏位置得到屏幕坐标.对于调试touch panel器件能够提供帮助信息.若开放人员选项没有,进关于手机菜单项,连续点击版本号就能出来.如下图所示,status bar位置显示当前触摸坐标信息 若开放人员选项没有,在关于手机菜单里,连续点击版本号就能出来了.
+参考FAQ: FAQ32636
+### 问题: 如何在lunch时添加user版本选项
+解决方案: 目前发布的IDH在编译lunch时没有user版本的选项 可以直接在工程的对应的vendorsetup.sh里添加 比如针对scx15_sp7715gabase 添加add_lunch_combo scx15_sp7715gabase-user 这样lunch时,便会增加该user版本项
+参考FAQ: FAQ32647
+### 问题: Dorado浏览器可以支持哪些俄文编码规则
+解决方案: 默认支持UTF-8 、KOI8-R 、Windows-1251 编码格式.ISO-8859-5编码格式可以支持,但需要合入patch,需要可以联系展讯FAE获取.
+参考FAQ: FAQ32660
+### 问题: 如何在EditText获得焦点的时候实现其内容全选
+解决方案: 参考浏览器的网址输入栏,当点击的时候,其网址内容被全部选中,其原理就是在Edittext获得焦点的时候实现全选. 应用端可如下设置: mEditText.setSelectAllOnFocus(true); 即可实现当获得的焦点时候,其内容全部选定
+参考FAQ: FAQ32661
+### 问题: FFOS如何查看手机RAM空间
+解决方案: Setting下的Storage栏下application storage是手机内存空间,可通过长按home键查看运行中的APP进程,并点击关闭将其结束,但是无法清除缓存,无android项目对应的清除缓存入口
+参考FAQ: FAQ32678
+### 问题: FFOS系统如何恢复出厂设置
+解决方案: 手机有恢复出厂设置功能,对应入口为:setting->Device information->More information->Reset phone
+参考FAQ: FAQ32681
+### 问题: FFOS系统中Internet Sharing和USB storage功能
+解决方案: Setting中Internet Sharing和USB storage,同android中连接USB线出现的共享网络,USB存储
+参考FAQ: FAQ32682
+### 问题: FFOS工程模式中modemlog开关
+解决方案: Slog抓取log时,无需关注灰化的"Record Modem Log",直接勾选其后的wcdma modem log和nwcn modem log抓取modem log即可(该项根据项目自适应,W项目会灰显)
+参考FAQ: FAQ32684
+### 问题: monkey分析log工具无法生成报告
+解决方案: 需要确认MonkeyLogAnalyse.ini该配置文件中,需要分析的log路径及生成报告路径中不包含"空格"及"中文",且生成报告需要确认可通过Microsoft Office Excel2007打开,否则测试数据无法写入表格中.
+参考FAQ: FAQ32689
+### 问题: FFOS怎么sysdump
+解决方案: 前提:手机必须插入SD卡、测试版为userdebug 方法一: 上下音量键+两次power键,手机出现sysdump 方法二: power键7s,手机出现sysdump 如果没有SD卡或版本为user版本,按照以上方法操作,手机只会出现重启,不会出现sysdump
+参考FAQ: FAQ32700
+### 问题: 如何打开快速控制功能。
+解决方案: 文件路径:\packages\apps\Browser\res\xml\lab_preferences.xml 代码: <!-- <CheckBoxPreference android:key="enable_quick_controls" android:defaultValue="false" android:title="@string/pref_lab_quick_controls" android:summary="@string/pref_lab_quick_controls_summary" /> --> 只需要去掉注释标签"<!--"和"-->"即可.
+参考FAQ: FAQ32780
+### 问题: 代码中如何隐藏地址栏。
+解决方案: 浏览器的地址栏在代码里对应的类是TitleBar(\packages\apps\Browser\src\com\android\browser\TitleBar.java),因为TitleBar继承了RelativeLayout,因此它也是View,从而可以通过View的setVisibility()来控制其显示. 例如在BaseUi(\packages\apps\Browser\src\com\android\browser\BaseUi.java)中有TitleBar的对象mTitleBar,调用如下代码即可: mTitleBar.setVisibility(View.GONE); //View.GONE是隐藏,View.VISIBLE表示可见
+参考FAQ: FAQ32785
+### 问题: MOCOR平台线程优先级说明
+解决方案: 关于MOCOR平台线程优先级说明如下: 1、对应旧的平台(10A及以前的平台),目前在用的芯片是880XG TD芯片,线程优先级定义为32级(0～31),数字越大,优先级越低.其中APP TASK优先级为27,因此,一般应用开发时,定义的线程优先级建议小于27(即值大于27). 2、对应新的平台(12A及以后的平台),目前对应的芯片6500/6531/7701/7702,线程优先级级定义为256级(0～255),数字越大,优先级越低.定义了4个优先级区间: a、Kernel,优先级区间[0, 15]; b、BASE,优先级区间[16, 47]; c、System,优先级区间[48, 175]; d、APP,优先级区间[176, 255]; APP TASK优先级为76, 在System优先级区间,一般应用开发时,线程优先级建议定义在APP优先级区间,即[176, 255].
+参考FAQ: FAQ32798
+### 问题: 如何去掉锁屏界面的相机widget？
+解决方案: android 4.4平台默认在开启了锁屏界面的相机widget,用户在锁屏界面,只需要向右滑动屏幕,则可以显示该widget,以便快速拍照. 如果需要去掉锁屏界面的相机widget,可按照下面的方式修改: 在frameworks/base/packages/Keyguard/res目录下搜索文件"bools.xml"(主要是每钟分辨率对应的配置文件不同),然后将搜索到的所有文件中的 kg_enable_camera_default_widget的值修改为true. 修改前: <bool name="kg_enable_camera_default_widget">true</bool> 修改后: <bool name="kg_enable_camera_default_widget">false</bool>
+参考FAQ: FAQ32815
+### 问题: 函数MMITHEME_GetCurThemeFontColor的颜色值是在哪里定义的？
+解决方案: 主题颜色值是在资源文件中定义的.如果需要修改某主题项的颜色值,修改对应项目资源目录mmi_res_***/color_table.xls中对应的颜色值即可. [说明] color_table.xls定义的颜色值为RGB565数据,前5位为R值,中间6位为G值,最后5位为B值.
+参考FAQ: FAQ32812
+### 问题: MOCOR平台通过手机上网，PC端该如何设置？
+解决方案: 1、modem驱动已经安装成功(安装IDH包中自带的串口驱动即可); 2、主mk中保证宏配置如下: SYNCTOOL_SUPPORT = TRUE; 3、SIM卡可正常上网. 操作步骤: 1、手机正常开机,SIM注册成功且ready; 2、通过USB线连接PC,手机端弹出菜单中选择"PC CONNECTING"("PC 连接"); 3、pc端设置拨号连接(XP系统建立连接的方法请参考附件演示视频),连接成功后即可通过手机上网.
+参考FAQ: FAQ32826
+### 问题: android中哪些资源是直接打包进apk的
+解决方案: android中除了assets和res/raw资源被原装不动地打包进APK之外,其它的资源都会被编译或者处理;除了assets资源之外,其它的资源都会被赋予一个资源ID. 1.在/res/raw目录下的文件,不会被编译,而原样转移到apk中,但每个文件会在R.java中生成一个id. 通过java代码访问示例: InputStream is = activity.getResources().openRawResource(R.raw.test); 2./assets目录和/res目录是同等级别,在/assets目录下的文件不会在R.java文件中生成资源ID,必须指定文件路径才能读取,文件路径以/assets开头的相对路径. 通过java代码访问示例: AssetManager am = activity.getAssets(); InputStream is = am.open("test.txt");
+参考FAQ: FAQ32859
+### 问题: 如何开关Launcher对点击应用进入的历史记录
+解决方案: Launcher 记录点击应用历史功能的开关: 文件:Stats.java public static final boolean ENABLE_STATS = false; 默认是关闭的.false为关闭,true为打开.
+参考FAQ: FAQ32878
+### 问题: 使用蓝牙耳机回拨电话，为什么呼出的通话为最后的通话记录，而不是最后的拨打记录？
+解决方案: 由于中移对此功能有明确要求. 《TD自测模版-20130924发布版》本地功能模块335行M项要求, 测试步骤: 测试终端使用蓝牙耳机进行回拨; 预期结果: 终端可以使用蓝牙耳机拨打通话记录中最新的电话记录
+参考FAQ: FAQ38344
+### 问题: 如何移除UUI锁屏？
+解决方案: 如果要移除UUI锁屏,使用默认锁屏,可以将KeyguardHostView.java文件中: mUniverseui_support = SystemProperties.getBoolean("universe_ui_support", false);注释即可.
+参考FAQ: FAQ32909
+### 问题: android4.4 recovery界面如何旋转
+解决方案: recovery界面的旋转原理: 变换概念:一张图片是由许多像素点所组成的,像素点越多则分辨率越高,因此实际旋转一张图片就是置换这些像素点的位置. 像素点是基于一个坐标系在屏幕上显示的,因此最终可以这样理解像素点的位置变换,新坐标系中的像素点在原始坐标系中的位置.如下是数学坐标系下逆时针旋转的公式 90度:y'=x 180度:y'=-y 270度:y'=-x x'=-y x'=-x x'=y 在屏幕定宽高的坐标系下 90度:y'=x 180度:y'=Height-y 270度:y'=Width-x x'=Height-y x'=Width-x x'=y 实现方式:recovery的背景界面是通过读取png图片后,经过合成再显示在屏幕上的,详细的代码可见 /bootable/recovery/minui/graphics.c
+参考FAQ: FAQ32871
+### 问题: 设置个性光标
+解决方案: 在布局的对应EditText中设置如下属性值即可,如下. android:textCursorDrawable="@null" "@null"是作用是让光标颜色和text color一样,当然这里可以设置图片等.
+参考FAQ: FAQ32944
+### 问题: SC7701如何快速将手机联系人填充至满?
+解决方案: 在测试时经常遇到需要将手机联系人填充至满的情况,而通过编辑添加的方式逐条添加会耗费大量的时间. 工程命令"#*8378#8#"可以将手机联系人快速填写满. 假设手机中存在1000个联系人. SC7701版本中会依次填充1000个联系人,联系人信息如下: 第一个: 姓名:a0001 号码:1230001 …… 第1000个: 姓名:a1000 号码:1231000 对应的API函数为: MMIPB_FillPhoneContactFull
+参考FAQ: FAQ32946
+### 问题: 蓝牙传输文件名是否有长度限制？
+解决方案: 由于BT协议层做了传输文件名长度限制,可支持的最长个数为63个字符,SC7701/SC6531通过蓝牙传输文件时, 发送端在传输超长文件名(超过63个字符)时,文件名会被截取掉,接收端看到的文件名将是已被截取后的文件名.
+参考FAQ: FAQ32949
+### 问题: 个性化文本字体
+解决方案: 将自己的字体文件 xxx.ttf 放在assets/font下,代码中如下使用即可. TextView scoreView = new TextView(getApplicationContext()); Typeface font = Typeface.createFromAsset(getAssets(), "font/xxx.ttf"); scoreView.setTypeface(font);
+参考FAQ: FAQ32948
+### 问题: 7731 MIC通路预留1K电阻作用
+解决方案: 1Kohm is reserved for improving ESD protection
+参考FAQ: FAQ39148
+### 问题: 如何使用android4.4 Latin输入法的语音功能
+解决方案: 使用此功能必须额外安装[谷歌语音输入]并且在语言和输入法设置里边选上. 此时,打开[Android键盘]输入法,就可以看见有一个话筒的图标了,即可进行语音输入
+参考FAQ: FAQ33027
+### 问题: 在系统应用中如何引入第三方jar包
+解决方案: 如果需要引入数值计算的jar包arity-2.1.2.jar,可以把此jar包放入应用的主目录下, 同时需要修改系统应用的Android.mk文件,添加 include $(CLEAR_VARS) LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := libarity:arity-2.1.2.jar include $(BUILD_MULTI_PREBUILT) 并修改LOCAL_STATIC_JAVA_LIBRARIES := libarity
+参考FAQ: FAQ33015
+### 问题: 通过widget创建“Direct dial”或“Direct message”的快捷方式时，如何去除图标上面的文字
+解决方案: 代码中是使用canvas.drawText()进行绘制的,只要在代码中去除绘制的代码就可有不显示图标上面的文字,具体修改 packages/apps/ContactsCommon/src/com/android/contacts/common/list/ShortcutIntentBuilder.java 中的generatePhoneNumberIcon()方法,修改如下: // Create an overlay for the phone number type - CharSequence overlay = Phone.getTypeLabel(r, phoneType, phoneLabel); + CharSequence overlay = null;
+参考FAQ: FAQ34229
+### 问题: android4.4蓝牙可见性有几种模式，以及各自的意义
+解决方案: 在 hardware/libhardware/include/hardware/bluetooth.h中定义了蓝牙的可见性模式 typedef enum { BT_SCAN_MODE_NONE, // 0 BT_SCAN_MODE_CONNECTABLE, //1 BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE //2 } bt_scan_mode_t; BT_SCAN_MODE_NONE:page scan 与 inquiry scan都不可以,表示别人不可以和手机配对,也不可以搜索到手机. BT_SCAN_MODE_CONNECTABLE:page scan 可以,inquiry scan不可以,表示别人可以和手机配对,但是别的手机搜索不到手机. BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE:page scan 与 inquiry scan都可以,表示别人可以和手机配对,也可以搜索到手机.
+参考FAQ: FAQ33061
+### 问题: 如何手动停止monkey测试？
+解决方案: 1.在ubuntu系统下,手机重新连接上电脑(monkey测试时,可能脱机测试) 2.打开cmd窗口 1)adb shell (进入手机) 2)ps (查看monkey对应的进程id号) 3)kill xx (xx表示上一步查看到的monkey对应的进程id号)
+参考FAQ: FAQ33083
+### 问题: SC7731 LDO_CAP K30pin的作用是什么
+解决方案: 给RF的IQ,DAC,ADC供电
+参考FAQ: FAQ33106
+### 问题: 7731G EXTINT0主要用在什么地方
+解决方案: EXTINT0主要用作SD卡(TFLASH卡)热插拔检测作用
+参考FAQ: FAQ33113
+### 问题: 7731GVDDCORE的电压是多少？
+解决方案: 7731G的VDDCORE是0.9V.
+参考FAQ: FAQ33114
+### 问题: 7731G VDDARM电压是多少
+解决方案: 7731G是28nm工艺,所以VDDARM电压比7730低,VDDARM是0.9V
+参考FAQ: FAQ33120
+### 问题: monkey测试出现问题时，如何将log dump出来？
+解决方案: 1.在ubuntu系统下,手机重新连接上电脑(monkey测试是有可能脱机测试) 2.打开cmd窗口 运行./dumplog -m 123(123是自定义手机编号,防止测试机太多,log混淆) log存放路径 log存放在./log的目录下(进入运行脚本中,有一个log的文件夹,log存放在此路径下)
+参考FAQ: FAQ33110
+### 问题: 7731G AVDD-MIPI电压是多少
+解决方案: 7731G是28nm工艺,所以AVDD-MIPI只支持1.8V
+参考FAQ: FAQ33122
+### 问题: 信息备份还原类问题log抓取方法
+解决方案: 使用第三方应用进行信息备份还原出现问题时,需要提供的信息如下: 1、T卡中的slog信息,包含android、modem、cap 2、信息备份数据包,即使用第三方应用是生成的备份文件包 3、手机中信息数据库,到出方法如下: 信息数据存放在以目录中/data/data/com.android.providers.telephony/databases, 故需要将该目录中的 mmssms.db和mmssms.db-journal 导出 将以上信息提供给研发即可
+参考FAQ: FAQ33124
+### 问题: CFT校准工具校准错误代码含义？
+解决方案: [E200 - E399] Calibration Error E200 =DIRECT_CURR E201 =LOADING E202 =ADC E203 =ACTIVE E204 =AFC E205 =EGSM900_APC E206 =EGSM900_8PSK_APC E207 =EGSM900_AGC E208 =DCS1800_APC E209 =DCS1800_8PSK_APC E210 =DCS1800_AGC E211 =PCS1900_APC E212 =PCS1900_8PSK_APC E213 =PCS1900_AGC E214 =GSM850M_APC E215 =GSM850M_8PSK_APC E216 =GSM850M_AGC E217 =SAVE_TO_FLASH E218 =ChangeCalMode E219 =TD AFC E220 =TD AGC E221 =TD APC E222 =TD_SAVE_TO_FLASH
+参考FAQ: FAQ33144
+### 问题: RF一致性测试
+解决方案: RF一致性测试是业内对移动终端在商用之前的非常重要的测试,也是运营商、手机厂家等非常关注的一项测试.各种移动通讯协议标准都明确定义了在各种状态下手机和网络的行为和反应,一致性测试检查手机的行为是否和协议标准规定相一致. RF一致性主要测试项如下: 1、在工作模式和空闲模式下的传导杂散. 2、在正常条件和多径干扰条件下的频率相位误差. 3、发射机最大输出功率. 4、发射机输出频谱. 5、阻塞、寄生响应. 6、3G性能测试—通道功率(Channel Power)、误差矢量幅度(EVM)、邻道泄露抑制比(ACLR)、占用带宽(OBW)和频谱辐射掩模(SEM,Spectrum Emission Mask)、邻道选择性(ACS)等.
+参考FAQ: FAQ33145

@@ -1,0 +1,320 @@
+### 问题: 如何获得__percpu类型变量的实际地址
+解决方案: 在kernel中,__percpu类型表示一个变量会根据cpu的个数有若干个备份.这种类型的变量需要一个__per_cpu_offset的全局数组来计算各个备份所在的地址 比如有一个__percpu类型的变量a,在System.map文件中的地址是ADDR,而运行在一个四核的机器上时,四个cpu对应的变量a地址分别位于 ADDR+__per_cpu_offset[0] ADDR+__per_cpu_offset[1] ADDR+__per_cpu_offset[2] ADDR+__per_cpu_offset[3]
+参考FAQ: FAQ21371
+### 问题: 为什么射频端的DCXO和SR2351的TCXO的信号端下面需要挖一层地？
+解决方案: 这样做的目的是为了让CRASTAL的信号焊盘,离地的距离远一点,这样就可以减少CRASTAL输出的负载电容,这样能保证输出频率的稳定性,对射频性能有较好影响.
+参考FAQ: FAQ21375
+### 问题: SR3131 GSM+WCDMA方案为什么还是需要GSM PA内部集成的开关？
+解决方案: 1. GSM是时分通信系统,TX和RX必须通过GSM PA内部集成的SWITCH切换. 2. WCDMA 是频分通信系统,WTX和WRX是同时工作的,WTX和WRX通道通过双工器分离. 3. 虽然WTX和WRX是通过双工器分离的,但是不同的WBAND 和 GSM 共用收发天线,所以WTRX还是需要连接到GSM PA内部的SWITCH上. 4. 理论上讲,如果只用一个WBAND的话,也就不需要SWITCH.
+参考FAQ: FAQ25289
+### 问题: 为什么背景播放FM时，使用音乐播放器播放音乐之后，FM不恢复播放
+解决方案: 根据AudioFocus机制,FM和音乐播放器都是需要长时间占用AudioFocus的, 所以当打开FM后,音乐播放器退出,打音乐播放器后FM退出. 当音乐播放器启动时,FM收到的消息是 AUDIOFOCUS_LOSS 而不是AUDIOFOCUS_LOSS_TRANSIENT 所以,后台播放FM,音乐播放器播放,音乐播放器退出后,fm没有继续播放是正常的,这不是问题.
+参考FAQ: FAQ25309
+### 问题: uboot在屏初始化的阶段程序跑飞
+解决方案: 分析: 在屏的驱动中,会定义屏参数如下 static struct info_mcu lcd_xxxx_info = {
+    .bus_mode = LCD_BUS_8080,
+    .bus_width = 24,
+    //.bpp = 24,     //问题出错点
+    .timing = lcd_xxxx_timing,
+    .ops = NULL,
+}; 而.bpp成员会在u-boot/drivers/video/sprdfb/sprdfb_mcu.c中的 void mcu_dispc_init_config(struct panel_spec *panel)
+{
+......
+    switch (panel->info.mcu->bpp)
+......
+} 由于此处没有log,所以很难发现问题. 结论: 编写mcu屏驱动一定要注意不要漏掉这个成员bpp.
+参考FAQ: FAQ21422
+### 问题: 如何设定默认时间比如出厂时间设在2014年
+解决方案: kernel/arch/arm/configs/下面对应的defconfig文件里面有定义CONFIG_RTC_START_YEAR CONFIG_RTC_START_YEAR 改成2014 /kernel/drivers/rtc/rtc-sprd.c文件中 rtc驱动读取后,上报给framework层的即可2014
+参考FAQ: FAQ21442
+### 问题: 耳机插拔过程中如何避免误触发Button中断
+解决方案: 由于硬件结构的原因,耳机插拔过程中headmic不可避免会接地,造成Button被误触发,如何避免呢? 首先,耳机插拔操作不支持慢慢地插拔,更不可以插入一半然后停止,转圈等操作. 在正常插拔的基础上,软件可以做如下规避: 1. 在耳机插入后延时一段时间再使能Button中断,使能之前可能需要先clean对应的中断标志位 2. 在耳机拔出时,立即disable Button中断 3. 在上报Button消息之前,先判断耳机是否存在,可以过滤部分Button中断.判断耳机是否存在可以通过检测L channel的状态,也可以读取L Channel的ADC值,看是否在合理范围之内,如不在,则丢弃
+参考FAQ: FAQ21434
+### 问题: RGB屏16位，8位spi 读ID的接口怎么区分
+解决方案: 7715平台一般会采用RGB屏,通常使用的spi协议来读写命令.我们知道要为了多个屏的兼容性,会先通过读lcd的id来识别当前的接到硬件上的屏. 展讯在7715上特地为读ID设置了一个接口spi_read_id,专门负责读写id.需要用户注意的是,8位的spi和16位的spi协议不一样,所以在调用这个接口的时候,首先得分清我们的RGB屏采用的是什么样spi接口(8位或16位). 在u-boot/drivers/spi/sprd_spi.c中定义了spi_ReadID ,spi_ReadID2两个接口.其中spi_ReadID对应的是8位的屏读id spi_ReadID2 对应是16位的RGB屏.具体读id的例子在平台自带的驱动上有.
+参考FAQ: FAQ23581
+### 问题: 如何解读虚拟机的gc log
+解决方案: 虚拟机中关于gc回收的log有两种: 第一种是这样,gc完成后吐出: GC_FOR_ALLOC freed 1621K, 17% free 13470K/16071K, paused 100ms, total 101ms 分别解释: GC_FOR_ALLOC 是gc启动的原因,这个是表示分配内存的时候,内存不够,启动gc. freed 1621k 表示这次gc释放的内存数量. free 13470K/16071K 表示当前使用的内存13470K,总共堆大小是16071K. paused 是表示暂停了的时间.单位ms. total 表示总共花费的时间. 这两个内存好的时候,可能就是1-2ms,如坏点就达到30ms,如再坏,100多也可能,再长就是比较坏了 如连续出这个log,并且耗时较长,可能导致anr. WAIT_FOR_CONCURRENT_GC blocked 94ms 是当前活动进程,等待gc完成消耗的时间.
+参考FAQ: FAQ21549
+### 问题: 如何理解LTE项目中SVLTE的产品形态
+解决方案: SVLTE:Simultaneous Voice and LTE的英文缩写. 在有VOLTE之前,LTE只能承担PS域的数据业务,因此还必须搭配2/3G的modem用来处理语音业务和LTE无网的情况下数据业务的回落. SVLTE的特点: LTE Modem只用来处理PS域的数据业务, 2/3G双模的Modem用来处理语音业务,LTE无网的情况下回落到2/3G继续处理数据业务.
+参考FAQ: FAQ21503
+### 问题: 展讯平台Modem待机状态有哪几种
+解决方案: 目前展讯Android平台上有较多关于多模和多卡的产品形态,这些不同的产品形态主要依赖于Modem的不同和具体的项目需求来定义. 比较常见的是单卡和双卡的设计,大概有如下三种主要形态: 双卡双待(DSDS):Dual-Sim-Dual-Standby, 1 sim has connection and another sim is standby 双卡双通(DSDA):Dual-Sim-Dual-Active, the 2 sims can have data connection at the same time 单卡双通(SSDA):Single-Sim-Dual-Active, 2 modems share 1 sim and be both active
+参考FAQ: FAQ21479
+### 问题: 展讯平台如何配置单卡和双卡的工程
+解决方案: 展讯平台默认的客户版本发布包中,同一个板级工程下默认都会定义单卡和双卡的不同makefile. 板级工程定义的目录在\device\sprd\scxxxxxxx 该目录下通常都会有类似 xxx_base.mk和xxx_plus.mk的工程makefile,比如7715ea的board就会有 scx15_sp7715eabase.mk和scx15_sp7715eaplus.mk 后缀base表示单卡的makefile 后缀plus表示双卡的makefile 两个makefile的最大差别就在于phone count的配置不一样: persist.msms.phone_count =1 :单卡 persist.msms.phone_count =2 :双卡
+参考FAQ: FAQ21515
+### 问题: 展讯平台中ModemD的主要作用是什么
+解决方案: ModemD的主要作用是在开机的时候启动Telephony相关的进程,比如rild,phoneserver等. 在Modem Assert的时候,重新load modem的镜像并重启telephony 相关进程. 相关的参考源码在如下目录: vendor\sprd\open-source\apps\modemd\...
+参考FAQ: FAQ21516
+### 问题: 打开飞行模式是否会关闭SIM卡
+解决方案: 展讯平台SIM卡的开启和关闭与协议栈的开启和关闭是独立的,打开飞行模式的时候只会做协议栈的关闭,不会去关闭SIM卡. 开机的时候,会先开启SIM卡,然后再打开协议栈,关机的时候会关闭协议栈和SIM卡. 可以通过radio log来分析和确认当前某种操作下是如何处理SIM卡和协议栈的开启和关闭的. at+sfun=2:开启SIM卡 at+sfun=3:关闭SIM卡 at+sfun=4:开启协议栈 at+sfun=5:关闭协议栈. 因此,即使是在关闭飞行模式的情况下,SIM卡的文件还可以读写.
+参考FAQ: FAQ21522
+### 问题: 关于bootlogo的选择问题
+解决方案: bootlogo(uboot启动时所显示的那张图片)理论上是可以自由选择的.但是在调试屏的阶段请注意以下几点: 1.图片分辨率至少要比当前的大,最好是和当前的屏是一样的. 2.图片最好不要选择大面积黑色或大面积白色的图片. 在uboot启动过程,会先清屏(刷成全黑).如果客户的屏有大量黑色画面,再加上屏的参数调得不对,可能只显示了LOGO的黑色画面部分.这样就干扰我们的判断,以为屏还没有调好. 白色的屏同理 ,很多屏默认为白色,出现显示问题时,同样不能判断真实情况. 3.在调屏过程中,请记得dump一下BOOTLOGO分区.命令如下: dd if=/dev/mmc0p5  of=/data/logo.bmp
+adb pull /data/logo.bmp 判断分区的方法: bootlogo分区是在cache分区之后的.用adb shell mount可以知道cache所挂载的哪个分区,如mmc0p4. bootlogo就是mmc0p5, fastbootlogo就是mmc0p6.
+参考FAQ: FAQ21552
+### 问题: 第3方跑MTBF时手机播放视频OK，但IDE设备上显示全黑
+解决方案: 处理方法如下: 1.设置->更多->关于手机->版本号(连续点击5次); 2.进入开发者模式后,选择停用Hw叠加层后,需要勾选上; 3.再做相应的测试,确认问题解决; 4.并将其作为预置条件送MTBF. 注:该处理方式会导致功耗增加,因此仅适用于MTBF送测.
+参考FAQ: FAQ21555
+### 问题: 如何理解PLMN的含义
+解决方案: PLMN(Public Land Mobile Network)公共陆地移动网络. 一般情况下,可以把一个 PLMN 理解为一个运营商. 在建设移动的网络的开始阶段,一个运营商只有一个PLMN , 但是随着网越布越大, 制式越来越多, 现在部分运营商有多个PLMN,比如中国移动就有 3 个PLMN . PLMN-Id公众陆地移动网,由MCC:MNC标识 PLMN-Id = MCC + MNC MCC:Mobile Country Code移动业务国家编码,唯一识别移动用户所属的国家,共3位,中国为460; MNC:Mobile Network Code移动网络编码.共2位. 比如中国联通的MCC 是 460 , MNC 是 01
+参考FAQ: FAQ21568
+### 问题: 如何理解LA的含义
+解决方案: Location Area(简称 LA,此概念用于 CS DOMAIN),对于一个特定Location Area,一个UE在此范围内可随意移动而无须更新Location Register中登记的位置信息; 这是一个由运营商规定的区域范围,其由一个或多个小区覆盖的范围构成(小区所在的RNC必须同属同一个MSC). LAI: 位置区 ID LAI = PLMN-Id + LAC LAC:Location Area Code
+参考FAQ: FAQ21570
+### 问题: 如何理解RA的含义
+解决方案: Routing Area(简称 RA,此概念用于 PS DOMAIN):对于一个特定Routing Area,一个UE在此范围内可随意移动而无须更新Location Register中登记的位置信息; 这是一个由运营商规定的区域范围,其由一个或多个小区覆盖的范围构成(小区所在的RNC必须同属同一个SGSN). 一般来说一个LA包含多个RA RAI: 路由区 ID RAI = PLMN-Id + LAC + RAC RAC:Routing Area Code
+参考FAQ: FAQ21572
+### 问题: 7701平台如何支持SIM LOCK功能
+解决方案: 7701平台的SIM LOCK功能支持,实现方式和6531有点差异,只需要设置mk中的SIM_LOCK_SUPPORT = TRUE,再 修改对应的nv项即可.其实现和7710平台类似,主要通过W协议栈来完成. 具体可以见如下附件 SIMLock功能使用说明.txt 7701上的SIM_LOCK方案.rar
+参考FAQ: FAQ21636
+### 问题: 怎么除去SIM卡待机设置中的数字序号（UUI）？
+解决方案: 实现的文件在: \frameworks\opt\telephony\src\java\android\sim\SimManagerService.java 代码中有五处: if (serial < 10) { name = operator + " 0" + serial; } else { name = operator + " " + serial; } 修改为: name = operator; 注:有两处需要修改为name = operName;
+参考FAQ: FAQ21670
+### 问题: CFT最新工具版本CFT_R9.0.0001 CFT综测标志位如何打开
+解决方案: 客户综测时候需要把这几个勾选上 校准的时候则不存在这个问题,因为系统会默认选上
+参考FAQ: FAQ21810
+### 问题: wcdma两组IQ线需要注意什么
+解决方案: wcdma是频分的,所以有两组IQ线,两组IQ线一定要注意隔离,绝对不能走到一起
+参考FAQ: FAQ21819
+### 问题: SC7715/SC8815/SC6815的SPI速率能到多少？
+解决方案: SC7715/SC8815/SC6815的SPI速率最大能支持到24Mbps.
+参考FAQ: FAQ22008
+### 问题: SC7715/SC8815/SC6815最大支持的camera能力？
+解决方案: SC7715/SC8815/SC6815 JPEG的camera最大能支持5M pixels, YUX的camera最大能支持2M pixels.
+参考FAQ: FAQ22016
+### 问题: 7715如何进入recovery模式
+解决方案: 样机设置是按volumedown和power键进入,但是若果按住volumedown再按power会无法进入,因为会进入下载模式. 正确方法是按下power约0.5秒后再按volumedown直到出现开机logo.
+参考FAQ: FAQ21898
+### 问题: 打包system的指令是什么？
+解决方案: 直接使用make snod可以实现打包system的功能.
+参考FAQ: FAQ22903
+### 问题: 预制gms包后，为什么安装应用会变慢
+解决方案: 预制了gms后,安装应用的过程中多了一个步骤,对应用进行verify,verify过后再对应用进行安装,所以预制gms后,安装应用的时间比没有预制gms的版本时间要长. 这个是google原生的流程,因为verify过程是到google的服务器上进行,所以这个过程会耗费一定的时间(一般会多消耗20s左右),但是是当网络状态不好的情况下有可能一直卡在安装界面. 如需要验证确认,请先在Google设置中将应用程序Verification那一项不勾选,然后看看安装apk的速度是否有所提高,即可确认此问题.
+参考FAQ: FAQ22217
+### 问题: GPS的LNA摆件位置要求
+解决方案: GPS的LNA必须要靠近GPS天线的馈点位置摆放
+参考FAQ: FAQ21952
+### 问题: SC7715/SC8815/SC6815的VIO_5能用1.8V吗？
+解决方案: SC7715/SC8815/SC6815的VIO_5域对应的GPIO用于connectivity,如果connectivity使用SR2351,则VIO-5的电源只能用2.8V.
+参考FAQ: FAQ21954
+### 问题: init.svc.bootanim宏什么作用
+解决方案: 守护bootanim运行状态 init在守护进程启动和停止的时候就会更新此属性值如init.svc.bootanim [running],就代表叫bootanim的守护进程正在运行.默认值为stopped
+参考FAQ: FAQ21990
+### 问题: 如何理解IMEI的含义和数据的组成
+解决方案: IMEI(International Mobile Equipment Identity)国际移动设备标识 是由15位数字组成的"电子串号",它与每台手机一一对应,而且该码是全世界唯一的. 每一部手机在组装完成后都将被赋予一个全球唯一的一组号码,这个号码从生产到交付使用都将被制造生产的厂商所记录. 手机用户可以通过输入*#06#可以查看当前手机的IMEI号.
+参考FAQ: FAQ22030
+### 问题: 如何理解ICCID的含义
+解决方案: ICCID(Integrate circuit card identity)集成电路卡识别码(固化在手机SIM卡中), ICCID为IC卡的唯一识别号码,共有20位数字+英文组成,每一张SIM卡都有自己唯一的ICCID. 该20位数字的前六位表示运营商代码:中国移动的为:898600;中国联通的为:898601;中国电信的为:898603. 展讯平台中,可以通过telephonymanager提供的接口获取到sim卡的iccid.
+参考FAQ: FAQ22032
+### 问题: 如何修改ANR广播和按键的超时时间
+解决方案: Android原生的ANR超时时间广播接收定义的10秒,按键定义的是5秒,所以更改这两个数字即可. 修改类名:./frameworks/base/services/java/com/android/server/am/ActivityManagerService.java 变量名字: //How long we allow a receiver to run before gicing up on it.
+static final int BROADCAST_TIMEOUT = 10 * 1000;  //广播
+
+//How long we wait until we timeout on key dispatching.
+static final int KEY_DISPATCHING_TIMEOUT = 5*1000;  //按键 注:ANR超时时间不建议修改
+参考FAQ: FAQ22386
+### 问题: 外部进程如何直接发送AT到modem
+解决方案: 通常情况下,外部进程都是通过AIDL的方式来调用telephonymanager对外提供的接口来与Modem通信. 展讯平台中,AP与CP通信的桥梁是AT command,因此对于客制化的at,通常需要在ril和phone进程中增加相关的at和接口来供外部进程调用. 对于一些简单的AT处理,外部进程也可以直接通过展讯平台已经封装好的IATUtils来发送一些AT指令到Modem侧,参考修改如下: (1)import IATUtils: import com.sprd.engineermode.utils.IATUtils; (2)配置自定义的AT Command: String CUSTOMER_AT_COMMAND = "AT+XXXXXXXX" (3)直接调用发送ATcommand的接口,sim_index: 0-sim1;1-sim2 IATUtils.sendATCmd(CUSTOME_AT_COMMAND, "atchannel"+sim_index);
+参考FAQ: FAQ22034
+### 问题: 7715可不可以支持500万像素摄像头
+解决方案: 7715平台可以支持5M像素的JPEG模式摄像头,但是YUV模式达不到那么高,YUV最高是2M像素
+参考FAQ: FAQ22033
+### 问题: 5735平台怎样扩大System分区？
+解决方案: 这个需要修改两处即可: 1):修改文件BoardConfig.mk BOARD_SYSTEMIMAGE_PARTITION_SIZE := 350000000 2):修改ResearchDownload工具中的xml配置文件: <Partition id="system" size="350"/>
+参考FAQ: FAQ27080
+### 问题: [7715]超长时间长按电源键，屏幕黑屏重启
+解决方案: 这个是我们的7sec按键重启功能;如果客户不需要只需要在u-boot/include/configs/sp7715ea.h(或sp7715ga.h)中定义:CONFIG_PBINT_7S_RESET_DISABLE 即可;
+参考FAQ: FAQ27072
+### 问题: dolphin平台的ddr模块相比之前平台有没有什么变化？
+解决方案: 相比以前的8810/7710/8825等平台: 1、现在的DDR扫描已经不再需要修改代码参数了,因为扫描功能足够强大,只要是扫描PASS,软硬件就能自适应.如果是扫描fail,也只能从硬件角度看看走线和焊接,以及memory型号是否有不良. 2、DDR不能自适应容量和类型,这部分必须在chipram/include/configs/sp*715**.h这种工程配置的头文件中修改相应的宏开关.尤其需要注意的是不能在一套bin中兼容相同容量但CS不同的两种型号DDR. dolphin平台的DDR模块沿袭shark平台的ddr模块,软硬件的原理和架构是几乎没有区别,只在芯片的封装上有些区别. 相比shark平台,dolphin平台的DDR驱动不支持DDR3. dolphin平台的DDR模块在软件编译方法上和之前所有的平台都不同,DDR驱动所在的spl和fdl1不再和uboot一起编译,这部分代码独立到根目录的chipram下,使用make chipram 命令编译.
+参考FAQ: FAQ23546
+### 问题: 派对随机播放关闭后,为何播放列表和正在播放的歌曲没有改变?
+解决方案: 派对随机的意思是通过某个随机算法,生成一个新的播放列表并按顺序播放,并且播放到最后时,再次生成一个新列表.类似于新建列表-》添加若干歌曲-》播放,也就是说开启派对随机相当于更换播放列表,之前的播放队列是不会保存的.关闭派对随机,是指停止继续随机生成列表,而不是要将之前的列表restore,派对随机播放设计如此,关闭后不会更新播放列表.
+参考FAQ: FAQ25035
+### 问题: Android的AndroidManifest.xml android:process元素说明
+解决方案: android:process 定义activity运行所在的进程名称.一般情况下,应用的所有组件都运行在为应用创建的默认的进程中,该默认进程的名称应用包名称一致.通过定义<application>元素的"process"属性可以为所有组件指定一个不同的默认进程.但是任意组件都可以重写默认进程,以便实现多进程操作. 如果该属性指定名称以":"开头,则一个新的专属于该应用的进程将会被创建.如果该进程名以小写字母开头,则为该activity提供权限以让其在一个全局的进程中运行.这样会允许多个应用的不同组件共用一个进程,以便节省资源.
+参考FAQ: FAQ22073
+### 问题: 如何在发生OOM时触发一个panic
+解决方案: Linux kernel在低内存时会通过OOM来确保系统不崩溃. 当需要获取发生OOM时系统的"现场"信息时,可以通过sysctl_panic_on_oom来触发一个panic. 方法如下: 1. adb shell登录系统(root帐号) 2. echo "1" > /proc/sys/vm/panic_on_oom 1: 开启本功能,0: 关闭本功能 3. cat /proc/sys/vm/panic_on_oom 查看设置结果
+参考FAQ: FAQ22078
+### 问题: 如何查看STTY通道是否正常
+解决方案: 1. 先通过adb进入手机,然后通过cd dev进入dev; 2. 找到需要检查的STTY通道对应的设备节点,比如stty_w25,先通过cat监听该节点,cat stty_w25 &; 3. 然后通过echo往该节点传入AT命令,echo -e "at\r" > stty_w25; 4. 如果该通道正常,可以看到OK的回复.
+参考FAQ: FAQ22093
+### 问题: Android4.4应用路径（priv-app）带来的一点权限上的问题
+解决方案: android4.4上增加了一个priv-app的文件夹,对于android:protectionLevel="signature|system"的权限,并且签名不一致的情况下,建议放在priv-app下面,否则PackageManager 会拒绝分配给你权限. 将app加入priv-app方法: 在对应的Android.mk中增加 LOCAL_PRIVILEGED_MODULE := true
+参考FAQ: FAQ22103
+### 问题: Shark/Dolphin平台是否能支持16位的DDR
+解决方案: Shark/Dolphin平台默认不支持16位的DDR器件,只能支持32位的DDR器件. 不过,有些memory厂家会有一些特殊规格的器件,是通过两个16位的die拼成的一个片选信号上的32位DDR器件,这个规格在Shark和Dolphin平台上理论上是能支持的,但是在软硬件方面有一些特殊注意事项: 1. 硬件方面,两个16位器件拼成的32位器件,DDR硬件设计上ZQ1电阻需要贴上,才能把两个die都用上; 2. 软件方面,需要找memory供应商了解最后拼成的器件相当于32位DDR什么规格,即每个片选信号上的32位器件是具体BANK、ROW、COL什么规格,得到这个信息后需要和ASIC确认是否非标规格,如果是非标规格需要ASIC给这种规格的地址映射表配置到软件中才能使用,如果是32位的标准规格则只需配置DDR_TYPE宏即可直接使用.
+参考FAQ: FAQ22109
+### 问题: shark，请问GPU是否支持2D硬解码，是否支持3D硬解码？
+解决方案: GPU英文全称Graphic Processing Unit,中文翻译为"图形处理器",其主要工作为实现2D、3D图形的硬件加速处理.如实现3D游戏加速,界面绘制加速等.其不参与图像视频的编解码工作,该部分工作由其他处理单元来完成. 目前我司所生产的android系统芯片都有GPU,可实现2D、3D加速功能.
+参考FAQ: FAQ22233
+### 问题: android 编译eng/user版本，有哪些方法？
+解决方案: 编译user和eng有三种方法(以5735c2ea工程为例): (1)采用choosecombo的方式,variant choice 选择 eng. (2) 采用lunch操作方法,lunch之后执行choosevariant操作,选择eng. (3)修改device/sprd/scx35_sp5735c2ea/vendorsetup.sh,执行source build/envsetup.sh后,执行lunch
+参考FAQ: FAQ37270
+### 问题: fastboot 找不到设备或出现错误："no permissions  fastboot"问题
+解决方案: 在Ubuntu下 1.通过"adb reboot bootloader"或"adb reboot-bootloader"命令或者按组合键进入fastboot mode之后,执行fastboot devices会出现无输出,其他命令出现"no permissions fastboot"提示. 2.这是权限问题,可以前面加sudo执行. 3.如果还是不行,那就修改fastboot属性,通过which fastboot找到fastboot,修改其owner属性 sudo chown root:root fastboot 再修改其权限 sudo chmod +s fastboot 即可继续执行fastboot命令了.
+参考FAQ: FAQ22179
+### 问题: 在slog.conf中修改了配置，为何不生效
+解决方案: 在device/sprd/common/tools/slog目录下,修改slog.conf slog.conf.user了配置后,编译image并烧录后,如果没有清除data分区,新的slog.conf不会生效. 这是因为slog默认会读取/data/local/tmp/slog/slog.conf配置文件,所以要让新的conf生效,可以 清除data分区;或者手工删除/data/local/tmp/slog/slog.conf文件,slog会将新的conf拷贝到会重启copy新的conf到/data/local/tmp/slog下.
+参考FAQ: FAQ22190
+### 问题: 进入图库时，图片文件夹列表行数是怎么确定？
+解决方案: 正常分辨率,会使用res/values/dimens.xml中的如下配置: <integer name="albumset_rows_land">2</integer> <integer name="albumset_rows_port">3</integer> albumset_rows_port:竖屏时3行. albumset_rows_land:横屏时两行. 这个决定了文件夹列表的行数,然后,根据view的width和height,计算出每一列的显示位置即可. 大分辨率时,使用res/values-xlarge/dimens.xml中的配置.其值如下: <integer name="albumset_rows_land">3</integer> <integer name="albumset_rows_port">5</integer>
+参考FAQ: FAQ22201
+### 问题: 蓝牙acl数据包的类型
+解决方案: 蓝牙空中acl数据包根据类型和传输长度分为以下几种数据包 数据包类型 长度 数据包类型 长度 数据包类型 长度 DM1 17 DM3 121 DM5 224 DH1 27 DH3 183 DH5 339 2-DH1 54 2-DH3 367 2-DH5 679 3-DH1 83 3-DH3 552 3-DH5 1021 最后的数字表示这个数据包需要占用空中几个slot时间,每个slot时间为625ns,第一个数字表示是edr2还是edr3,没有的话则是不使用edr传输
+参考FAQ: FAQ22204
+### 问题: 什么是“曝光”
+解决方案: 相机设置中的"曝光"就是"曝光补偿" 曝光补偿是一种曝光控制方式,如果环境光源偏暗,即可增加曝光值以突显画面的清晰度.曝光补偿就是有意识地变更相机自动演算出的"合适"曝光参数,让照片更明亮或者更昏暗的拍摄手法.拍摄者可以根据自己的想法调节照片的明暗程度,创造出独特的视觉效果等.一般来说相机会变更光圈值或者快门速度来进行曝光值的调节.曝光补偿的单位为EV 作用 拍摄环境比较昏暗,进行曝光补偿的时候,如果照片过暗,要增加EV值,EV值每增加1.0,相当于摄入的光线量增加一倍,如果照片过亮,要减小EV值,EV值每减小1.0,相当于摄入的光线量减小一倍.不同相机的补偿间隔可以以1/2(0.5)或1/3(0.3)的单位来调节.
+参考FAQ: FAQ22212
+### 问题: 4.4重复安装应用不再提示是否替换
+解决方案: 4.4不再单纯的提示替换,而是提示新版本、覆盖安装数据不变、以及新增加的权限等
+参考FAQ: FAQ22224
+### 问题: Android系统如何打印调用堆栈？
+解决方案: 1.java代码中打印堆栈: 堆栈信息获取和输出可以通过Throwable类的方法实现.目前通用的做法是在java进程出现需要注意的异常时,打印堆栈,然后再决定退出或挽救.通常的方法是使用exception的printStackTrace()方法: try { ... } catch (RemoteException e) { e.printStackTrace(); ... } 2.C++代码中打印堆栈 在Android的C++中,已经集成了一个工具类CallStack,在libutils.so中.使用方法: #include <utils/CallStack.h> ... CallStack stack; stack.update(); stack.dump();
+参考FAQ: FAQ22225
+### 问题: 关于android版本号
+解决方案: 可修改build\core\version_defaults.mk 里PLATFORM_VERSION值 比如: ifeq "" "$(PLATFORM_VERSION)" # This is the canonical definition of the platform version, # which is the version that we reveal to the end user. # Update this value when the platform version changes (rather # than overriding it somewhere else). Can be an arbitrary string. PLATFORM_VERSION := 4.4.2 endif
+参考FAQ: FAQ22287
+### 问题: 在7715平台上如何调整闪光灯电流
+解决方案: 7715 IC集成了闪光灯驱动电路,相应的闪光灯驱动源码在: idh.code/kernel/drivers/media/sprd_dcam/flash/flash_common.c, sprd_flash_on, sprd_flash_high_light函数,SPRD_FLASH_LOW_VAL / SPRD_FLASH_HIGH_VAL修改成自己想要的值(0~15,对应电流20mA~470mA,步长30mA).
+参考FAQ: FAQ22304
+### 问题: 7701如何调整内部PA的增益
+解决方案: 两种方法: 1. 更改NV.例如在外放模式下: audio_arm -> Handsfree -> AudioStructure -> reserve[45] = 0xbb0f bit15-bit12位是增益值,取值范围0~15. 2. 如果要主动调用代码来更改,可以调用inter_spk_pa_pga_set接口,参数就是增益值,取值范围0~15.
+参考FAQ: FAQ22313
+### 问题: 为何7715上联通3G卡在通话时网络连接状态图标会变成“H+"
+解决方案: 在7715上,插入3G联通卡,网络流量标识的图标为"3G",但是拨打电话时会变成"H+" 原因:连接状态显示图标是协议栈根据当前所驻留的小区的能力指示上报给AP的. 连接状态:是根据网络下发的空口消息的RELEASE版本来报, 如果网络下发RELEASE7版本的空口消息,那么该小区必然支持HSPA+,  协议栈会上报HSPA+给AP. idle状态:是根据所在小区的sib5中的能力指示来报.
+
+在拨打电话时,手机在3G小区上建立连接, 网络下发RELEASE7版本的消息,则认为小区是HSPA+小区,所以显示HSPA+.
+
+挂掉电话之后, 回到idle状态, 小区的SIB5消息没有指示该小区支持HSPA, 所以只能显示3G.
+参考FAQ: FAQ22341
+### 问题: 为什么展讯4.4平台UUI版本修改InCallUI的manifest文件的组件无效
+解决方案: 4.4平台UUI版本,通话界面的代码单独放到了packages/apps/InCallUI包里,专门负责通话界面的UI显示.这样的设计使得代码模块化更好. 但是系统编译InCallUI的时候,却是跟packages/apps/Dialer包一起合并编译.也就是说,系统编译结果里没有InCallUI.apk,只有Dialer.apk,而且Dialer.apk包含了InCallUI的功能. 从Dialer的Android.mk文件里可以看到,InCallUI的manifest定义的所有组件都转移放到Dialer的manifest文件中了,所以如果我们需要修改InCallUI的某个组件,如某个Activity的属性,那么正确的做法是修改packages/apps/Dialer/AndroidManifset.xml文件中该Activity的定义.然后编译Dialer.apk.
+参考FAQ: FAQ22355
+### 问题: Mocor 7701数据连接(Data connection setting)设置中省电模式(power saving mode)说明
+解决方案: 7701数据连接(Data connection setting)设置有三个选项:需要时链接(Connect when needed)、始终链接(always connect)、省电模式(power saving mode), 其中省电模式是7701上新增选项,该选项主要是由协议栈做了一些优化,比如 Fast Dormancy, 一定时间没有数据时,会自动 Release rrc connection 以节电.
+参考FAQ: FAQ27235
+### 问题: SC7715平台HSDPA HSUPA最高支持多高的速率？
+解决方案: SC7715平台HSDPA HSUPA最高支持多高的速率? HSDPA,up to 21Mbps HSUPA up to 5.76Mbps
+参考FAQ: FAQ22400
+### 问题: SC7715平台最大支持多大分辨率的LCD?
+解决方案: SC7715平台最大支持多大分辨率的LCD? FWVGA(854X480)
+参考FAQ: FAQ22402
+### 问题: SC7715平台支持YUV格式的image Sensor大小？
+解决方案: SC7715平台支持YUV格式的image Sensor大小? 2M pixels
+参考FAQ: FAQ22403
+### 问题: SC7715平台支持JPEG格式的image Sensor大小？
+解决方案: SC7715平台支持JPEG格式的image Sensor大小? 5M pixels
+参考FAQ: FAQ22404
+### 问题: SC7715平台支持的H.264最大编码速率？
+解决方案: SC7715平台支持的H.264最大编码速率? 720p 30fps
+参考FAQ: FAQ22405
+### 问题: SC7715平台支持的MPEG4最大编码速率？
+解决方案: SC7715平台支持的MPEG4最大编码速率? 720p 30fps
+参考FAQ: FAQ22406
+### 问题: SC7715平台是否支持BC1.2?
+解决方案: SC7715平台是否支持BC1.2? 支持
+参考FAQ: FAQ22407
+### 问题: Android Service有哪几种启动方法
+解决方案: 第一种是通过startservice方式启动:经历onCreate -> onStartCommand(在Service还没有运行的情况下,android会先调用onCreate()然后调用onStartCommand();假如Service已经在运行,那么只调用onStart());stopService的时候直接onDestroy,如果是调用者自己直接退出而没有调用stopService的话,Service会一直在后台运行. 第二种是通过bindService方式启动:这个过程也是先执行onCreate, 然后执行onBind方法,此方法会返回给客户端一个IBind接口实例,IBind允许客户端回调服务的方法,比如得到Service运行的状态或其他操作. 第三种就是在跨进程通信的时候通过AIDL方式.
+参考FAQ: FAQ22397
+### 问题: SC7715支持的ECC位数是什么？
+解决方案: SC7715支持的ECC位数是什么? 支持的ECC位数1/2/4/8/12/16/24/40/60
+参考FAQ: FAQ22426
+### 问题: SC7715支持LP DDR1每个片选最大支持多少容量?
+解决方案: SC7715支持LP DDR1每个片选最大支持多少容量? 最大4G bit
+参考FAQ: FAQ22427
+### 问题: SC7715是否支持SDIO3.0?
+解决方案: SC7715是否支持SDIO3.0? 是
+参考FAQ: FAQ22428
+### 问题: SC7715马达的电流有几档位可以设置 每档位支持多大的电流？
+解决方案: SC7715马达的电流有几档位可以设置 每档位支持多大的电流? 16档位 每档位支持10mA电流
+参考FAQ: FAQ22429
+### 问题: 智能手机存储器MCP和EMCP的主要区别？
+解决方案: MCP = LPDDR + NAND; EMCP = EMMC + LPDDR = NAND + NAND控制器 + LPDDR; NAND相当于PC机的硬盘,LPDDR相当于PC机的内存. MCP与EMCP的最主要的区别就是,前者没有集成存储控制器,后者集成了存储控制器. 因此,EMCP的使用更简单,IO接线更少,更适合在高速高端智能手机上应用,当然成本也更高. 目前展讯的dophine平台,两种MEMORY都支持兼容.
+参考FAQ: FAQ25158
+### 问题: 有关短信replypath问题
+解决方案: 这个功能是用于测试短信是否是经过相同的短消息中心进行回复的; 它是一致性测试的测试case,只针对测试用,版本里不用打开; 测试时,需要打开工程模式菜单 打开路径为*#*#83781#*#*-》app settings-》misc 将show mms reply choice的选择框选上 然后进入到MMS的设置中,确认回复路径设置中的回复路径的选择框选上;
+参考FAQ: FAQ25145
+### 问题: 在uboot中如何关闭LDO(VDDCAMMOT)
+解决方案: 首先在芯片spec中找到此LDO对应的控制寄存器以VDDCAMMOT为例,它对应的控制寄存器是ANA_REG_GLB_LDO_PD_CTRL,BIT_LDO_CAMMOT_PD此位置1即是关闭. 在u-boot/board/spreadtrum/sp7715ea/ldo_sleep.c中,在下面的函数中使用接口函数写值,即可. void init_ldo_sleep_gr() { ... ANA_REG_SET(ANA_REG_GLB_LDO_PD_CTRL,ANA_REG_GET(ANA_REG_GLB_LDO_PD_CTRL) |BIT_LDO_CAMMOT_PD); ... }
+参考FAQ: FAQ22455
+### 问题: 在kernel中如何关闭一个LDO(VDDCAMMOT)
+解决方案: 首先在芯片spec中找到此LDO对应的控制寄存器以VDDCAMMOT为例,它对应的控制寄存器是ANA_REG_GLB_LDO_PD_CTRL,BIT_LDO_CAMMOT_PD此位置1即是关闭. 在kernel/arch/arm/mach-sc/pm-scx35.c 中下面的函数中,可以关闭指定的LDO void pm_ana_ldo_config(void){ ..... //add here sci_adi_set(ANA_REG_GLB_LDO_PD_CTRL, sci_adi_read(ANA_REG_GLB_LDO_PD_CTRL) | BIT_LDO_CAMMOT_PD); )
+参考FAQ: FAQ22463
+### 问题: Android 通过命令点亮屏幕方式?
+解决方案: 通过命令来点亮屏幕在版本上稍微有点差别: 1、Android4.4/4.1版本上命令: echo brightness > /sys/class/backlight/sprd_backlight/brightness //设置背光亮度为brightness echo brightness > /sys/class/leds/keyboard-backlight/brightness //设置按键灯亮度为brightness 2、Android2.3.5版本上命令: echo brightness > /sys/class/leds/lcd-backlight/brightness //设置背光亮度为brightness echo brightness > /sys/class/leds/button-backlight/brightness //设置按键灯亮度为brightness
+参考FAQ: FAQ22489
+### 问题: 如何使用AXMLPrinter2反编译AndroidManifest文件
+解决方案: 反编译AndroidManifest文件的步骤: 1.将apk解压 2. java -jar AXMLPrinter2.jar AndroidManifest.xml > AndroidManifest.txt (AndroidManifest.xml是1中解压得到的xml源文件,AndroidManifest.txt是反编译后得到的文件) 工具
+参考FAQ: FAQ26440
+### 问题: 如何让ActionBar中的OverFlow按钮不显示？
+解决方案: 在部分场合需要不显示ActionBar中的OverFlow按钮,可以在ActionBar配置时使用getActionBar().setReserveOverflow(false)进行设置.
+参考FAQ: FAQ22548
+### 问题: zoom等级调到最大后拍照失败
+解决方案: zoom等级调到最大后拍照失败,怎么办? 一般此情况发生在,插值到最大像素后,将zoom等级也放到最大,然后,拍照出现失败,这是因为平台端的scale模块,插值能力有限,最大插值能力是X方向4倍scale up,Y方向4倍scale up.同时,打log可发现scale模块报error. 此时可考虑如下修改方案: 1、将cmr_common.h中 CMR_ZOOM_FACTOR 的值适当改小,越小则zoom效果越不明显. 2、将菜单项中拍照失败的zoom等级去掉 3、将菜单项中拍照失败的分辨率去掉
+参考FAQ: FAQ22559
+### 问题: 手机显示Invalid SIM（无效SIM卡）
+解决方案: 问题现象: 手机显示Invalid SIM(无效SIM卡),无法恢复正常服务 问题原因: 1. 手机写入的IMEI号非法,被网络识别为非法用户,注册失败. 2. 手机插入了不支持的SIM卡类型,(例如只支持联通的WCDMA手机,插入了移动的TD用的USIM卡) 3. SIM卡受到RF干扰、接触不良,导致SIM卡读写受到影响 4. 手机处在漫游网络,SIM卡无漫游权限 5. sim卡长期欠费,被运营商停用,无法完成注册. 问题解决: 1. 写入合法的IMEI和SVN 2. 确认sim卡类型和手机支持的制式是否相同 3. 注意SIM部分的屏蔽,避免被RF干扰 4. 用其他品牌的对比机插入同一张卡验证是否正常
+参考FAQ: FAQ22621
+### 问题: 原生camera 旋屏270/180度在 back/home 菜单对面有黑边
+解决方案: 当camera旋转时,会重新布局,此时会对以下变量添加偏移量,导致出现黑边,修改mOffset值即可. protected void onMeasure(int widthMeasu值即可reSpec, int heightMeasureSpec) { ........... ........... switch (rotation) { case 0: mBottomMargin += mOffset; break; case 90: mRightMargin += mOffset; break; case 180: mTopMargin += mOffset; break; case 270: mLeftMargin += mOffset; break; }
+参考FAQ: FAQ23590
+### 问题: 如何在wireshark中添加源端口和目的端口列？
+解决方案: 打开wireshark -> Edit -> Preference... -> User Interface -> Columns -> Add.Add后会在Columns中多出一项,每一项都有三个域,分别是Displayed复选框,Title和Field Type,按如下方法设置: (1)Displayed复选框确认勾选上 (2)Title列可以自定义命名,是显示在wireshark上的名字 (3)Field type列可以在下面的Field type下拉框选择对应的Source port或Destination port 设置完后点击OK按钮即可,在wireshark上就可以看到新添加的端口属性了
+参考FAQ: FAQ22636
+### 问题: 基于7715平台 修改供电方式
+解决方案: 我们平台提供两种供电的方式:(1)DCDC_LDO 省电方式供电 (2)VBAT 省钱方式供电 修改默认供电的方式: (1)在硬件上 将DCDCLDO 前面 L0303电感去掉. (2)软件修改方式: u-boot/board/spreadtrum/sp7715ga/ldo_sleep.c void init_ldo_sleep_gr(void) { .... ANA_REG_SET(ANA_REG_GLB_LDO_DCDC_PD, ... // 将此Bit 打开, 让其开机后就关闭此LDO BIT_DCDC_GEN_PD| ... ) ANA_REG_SET(ANA_REG_GLB_PWR_SLP_CTRL0, ... //将此位打开, 让其Deepsleep 后进入睡眠 BIT_SLP_DCDCGEN_PD_EN | ... )
+参考FAQ: FAQ22642
+### 问题: 如何解决最近任务列表截图模糊问题
+解决方案: 修改配置文件解决,配置文件的大目录:/frameworks/base/core/res/res,子目录需要根据自己屏的情况适配资源决定,而修改文件为dimens.xml. 需要修改的配置名称为:thumbnail_width、thumbnail_height,酌情把这两个资源变量的值调大. 注意:要清晰的显示字体,所截取的图片对应bitmap的宽高都会增大,则占用的内存也会相应的增大,需要根据自己终端考虑是否修改.
+参考FAQ: FAQ22646
+### 问题: 耳机的左右声道线是分开包地还是单独包地？
+解决方案: 最近经常看到客户在布板的时候,把耳机左右声道走在一起,一起包地,这是不对的,耳机左右声道不是差分线,走在一起会互相影响,需要分开包地,希望客户注意这一点.
+参考FAQ: FAQ22714
+### 问题: 测试MP4功耗为什么要将LCD设置最低亮度和speaker静音？
+解决方案: 测试MP4功耗一般需要将LCD的背光调到最低并且将speaker静音,这是因为不同LCD的背光和speaker的功率不同对MP4的功耗影响非常大,要准确评估平台本身播放MP4的功耗就需要降低LCD背光并将speaker静音.
+参考FAQ: FAQ22723
+### 问题: 为什么手机睡下去之后无法通过豌豆夹手机助手等工具截屏
+解决方案: 手机睡下去之后,fb设备的state会被设置为FBINFO_STATE_SUSPENDED,当通过手机助手或者cat /dev/graphics/fb0方法进行截屏时,会调用到kernel的fb_read方法,在fb_read方法中会判断fb设备当前的状态,如果不是FBINFO_STATE_RUNNING就会报错并且退出,这样截图就会失败. 修改方法在fb_read方法中去掉对state状态的限制判断就可以截图了. static ssize_t fb_read(struct file *file, char __user *buf, size_t count, loff_t *ppos) { ... if (info->state != FBINFO_STATE_RUNNING) //delete return -EPERM; //delete
+参考FAQ: FAQ22732
+### 问题: 播放本地视频时下拉状态栏可以同时播放已暂停的音乐，设计如此
+解决方案: 该问题属于android4.4原生设计如此,视频播放器只有在刚进行播放的时候才会get audiofocus,在onstop的时候才会abandon audiofocus,所以在视频播放过程中,如果用户人为地点击下拉状态栏中的背景音乐进行播放,就可以听到背景音乐的声音,其他对比机也是如此,事实上,在视频播放的过程中,只要状态栏是隐藏的,背景音乐是不会播放的.
+参考FAQ: FAQ22770
+### 问题: 耳机和speaker同时发声时调节音量以哪个为准？
+解决方案: 音量调节需要根据音量曲线进行指数运算得出一个0～1.0之间的一个浮点数. 在一些场景下耳机和speaker需要同时发声,那么此时调节音量以哪个为准呢? Android的设计是以speaker的音量曲线为准. 详见AudioPolicyManagerBase.cpp的getDeviceForVolume函数 内有注释 // - speaker + one other device: give priority to speaker in this case.
+参考FAQ: FAQ22773
+### 问题: 如何理解内存信息中的U、E、M、R、C字符
+解决方案: 为了方便识别系统剩余内存信息的类型,在打印mem_info的log中经常出现U、E、M等字符. 它们分别表示如下含义: 1. "U": MIGRATE_UNMOVABLE 不可移动的页 2. "E": MIGRATE_RECLAIMABLE 可回收的页 3. "M": MIGRATE_MOVABLE 可移动的页 4. "R": MIGRATE_RESERVE 保留的页 5. "C": MIGRATE_CMA CMA区域的页
+参考FAQ: FAQ22769
+### 问题: 如何查看STTY通信节点被什么进程使用
+解决方案: 1. 先通过adb shell进入手机,通过cd dev进入dev; 2. 通过lsof | busybox grep "stty*"就可以看到各个stty节点使用情况,如下图;
+参考FAQ: FAQ22808
+### 问题: slub_debug有哪些选项
+解决方案: 在启动命令行中可以指定slub_debug的选项: slub_debug=<Debug-Options> 对所有slab打开选项 slub_debug=<Debug-Options>,<slab name> 对选择的slab打开选项 调试选项有: F 健全检查(打开SLAB_DEBUG_FREE) Z 警戒区 P 染色(对象和填充) U 调用追踪(free 和 alloc) T 完全追踪(仅对某个slab进行追踪) O 当调试用的元数据引起order上升时关闭调试 - 关闭所有调试选项(当Kernel编译时打开了CONFIG_SLUB_DEBUG_ON,可以用此关闭)
+参考FAQ: FAQ22829
+### 问题: 设置曝光后再次进入相机，曝光值恢复为0
+解决方案: 为了进入相机时,能恢复为默认的预览亮度,所以在相机初始化时,检查曝光值.如果曝光值不为0,则重置为0. 可以根据项目需要修改. 进入相机时重置曝光值的方法为: void com.android.camera.PhotoModule.resetExposureCompensation() { String value = mPreferences.getString(CameraSettings.KEY_EXPOSURE, CameraSettings.EXPOSURE_DEFAULT_VALUE); if (!CameraSettings.EXPOSURE_DEFAULT_VALUE.equals(value)) { Editor editor = mPreferences.edit(); editor.putString(CameraSettings.KEY_EXPOSURE, "0"); editor.apply(); } }
+参考FAQ: FAQ22849
+### 问题: 8830平台DDR的CLK_DP,CLK_DM硬件接反了，软件能够调整吗
+解决方案: publ_basic_mode_init函数里面 //PGCR reg_bits_set(PUBL_PGCR,0,1,IS_LPDDR1(dram_type)?1:0);//0:dqs and dqs# 1:dqs only reg_bits_set(PUBL_PGCR,1,1,1); //0:active windows 1:passive windows reg_bits_set(PUBL_PGCR,2,1,0); //data strobe drift compensation 0:disable 1:enable + reg_bits_set(PUBL_PGCR,14,1,1); reg_bits_set(PUBL_PGCR,18,4,(cs_num==1)?1:3);
+参考FAQ: FAQ22859
+### 问题: Dopine平台校准电源负极可不可以接电池座的负极？
+解决方案: 不能,因为Dophin平台的电池负极是接了一个库伦计电路到负极,电池负极到主地之间是有20m欧的电阻,如果把电源负极接到电池负极,校准后的adc和相关参数都会不准,现在发现很多客户在平时校准的时候,把电源负极接到电池座负极是不对的,一定要接到主地上,主地一般会引出测试点,所以电源负极要接到这个测试点,做夹具的时候也要注意这点.
+参考FAQ: FAQ22870
+### 问题: 如何更改和隐藏Activity的title字样？
+解决方案: 只需直接调用下面方法即可—— public void setTitle(CharSequence title) { mTitle = title; onTitleChanged(title, mTitleColor); if (mParent != null) { mParent.onChildTitleChanged(this, title); } } 当直接调用setTitle("")的时候,就不会显示title了.
+参考FAQ: FAQ22884
+### 问题: PNP+NMOS充电方式软件的设置和PMOS+DIODE充电方式的要求是否一样？
+解决方案: PNP+NMOS充电方式软件的设置和PMOS+DIODE充电方式的要求一样,并不需要做任何修改.
+参考FAQ: FAQ22941
+### 问题: 充电部分采用PNP+NMOS方式时NMOS管选型应注意哪些因素？
+解决方案: NMOS的选型比较简单,只需要满足2个条件就可以: VGS(th) <1.5V RDS(on) < 10Ω
+参考FAQ: FAQ22943
+### 问题: 充电部分采用PNP+NMOS方式时PNP管选型应注意哪些因素？
+解决方案: PNP三极管的选型需要注意.条件相对比较苛刻一下.需要注意几个指标: 额定总功率Pt或者是PD > 1.2 W @ Ichg =800mA >1.4W@Ichg=1A 集电极电流IC >1A @Ichg=800mA >1.2A@Ichg =1A 放大倍数hFE(β)≈200~300 饱和压降VCE(sat),一般选用Low VCE(sat) PNP三极管选型特别注意的是功耗.功耗的计算方法是PPNP=UCE*I=(VCHG-VBAT-U0.1R)*Ichg 则PPNP = (5-3.2-0.1*I)* I = 1.8* I – 0.1*I2,如果功率选择偏小或者散热面积不符合要求.可能造成PNP三极管烧坏.
+参考FAQ: FAQ22944

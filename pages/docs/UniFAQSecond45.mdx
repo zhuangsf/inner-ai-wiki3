@@ -1,0 +1,466 @@
+### 问题: 如何通过控件id获取控件（控件图标、位置、布局信息等）？
+解决方案: 一、问题背景 在浏览APP代码时,为理解相关代码的含义,常常需要通过控件 id 查找控件.为了客户能够掌握此方法,自行解决简单的应用ui修改问题,本文主要说明如何通过控件id 粗略定位控件(获取控件的图标、位置、布局等信息). 二、解决方法 步骤如下: 1. 打开monitor.exe 双击打开monitor.exe,出现如下窗口 注:①. Android studio安装成功后,在c盘路径下会存在monitor.exe,参考路径(C:\Users\账户名\.android-sdk\tools\lib\monitor-x86_64) ②. 如果无法打开窗口,请重新adb root一下设备 2. 点击左上角的 Window -> Open Perspective - > Hierarchy View 拖动一下Tree View窗口的界面,即可看到控件id的树状图,如下图 3. 通过控件id搜
+完整回答请参考FAQ: FAQ202172797
+### 问题: DreamCamera2预览尺寸设置接口是？
+解决方案: 一、问题背景 处理平台camera 客户问题过程中,经常要涉及到camera预览尺寸,本文旨在给客户说明DreamCamera2预览尺寸接口及其用法,便于客户能自行解决简单的预览尺寸修改问题 二、DreamCamera2预览尺寸接口使用 DreamCamera2预览尺寸接口方法为:setPreviewSize(Size previewSize). 以android r为例,setPreviewSize接口使用场景如下. 1.拍照预览尺寸设置_常规模式(自动、专业、大光圈、连拍、间隔拍照、有声、滤镜、夜景拍照等) Z:\sprdroidr_trunk\vendor\sprd\platform\packages\apps\DreamCamera2\src\com\android\camera\PhotoModule.java protected void updateParametersPic
+完整回答请参考FAQ: FAQ202172798
+### 问题: 如何查看camera的 yuv 和 raw 图？
+解决方案: 一、问题背景 处理camera APP预览角度异常问题时,经常性要通过底层 yuv 图,raw 图角度来判断模组安装和camera底层配置配置是否正确,但发现大多数客户不知道用什么工具软件查看底层 yuv 和 raw 图,该 FAQ 旨在说明查看 yuv 和 raw 图工具和简单用法,让客户懂得查看底层出图情况,减少camera客户支持的工作量. 二、 如何查看 yuv 和 raw 图? yuv图查看,展讯使用的是YuvViewer工具,raw 图使用的是IspTool工具.工具图标分别为、 YuvViewer 和 IspTool工具的释放请联系项目对应的cpm. ①YuvViewer工具查看yuv图 双击YuvViewer工具,将yuv图拖动到YuvViewer打开即可,效果图如下: YuvViewer支持NV12,NV21,I420,YV12格式的查看,一般yuv的格式为NV12 ②I
+完整回答请参考FAQ: FAQ202172800
+### 问题: android R 如何适配挖孔屏
+解决方案: 挖孔屏在android R上已经默认支持,可以参考/frameworks/base/packages/overlays/DisplayCutoutEmulationHoleOverlay/res/values/config.xml中进行配置config_mainBuiltInDisplayCutout <string translatable="false" name="config_mainBuiltInDisplayCutout"> M 128,83 A 44,44 0 0 1 84,127 44,44 0 0 1 40,83 44,44 0 0 1 84,39 44,44 0 0 1 128,83 Z @left </string> 该M后面的数字 128,83表示起始点的位置,暂时称之为a,而A后面的数字7个为一组,44,44 0 0 1 84,127,前两个数44为挖孔屏的半径,
+完整回答请参考FAQ: FAQ202172803
+### 问题: 滑动锁如何将图标改成上锁状态
+解决方案: 原生滑动锁的图标为开锁状态,如果也要改成上锁的图标,请参考如下: diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockscreenLockIconController.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockscreenLockIconController.java index 3b9c0b6f35c1..2ab97b6d52c8 100644 --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockscreenLockIconController.java +++ b/packages/SystemUI/src
+完整回答请参考FAQ: FAQ202172804
+### 问题: 如何确认是否支持该地区小区广播需求？
+解决方案: 两种方式确认是否支持某一地区小区广播. 1、查看源码 对于Android9.0、Android10,可通过查看vendor\sprd\platform\packages\apps\CellBroadcastReceiver\res\xml\ config_mnc_mcc.xml代码,配置了各地区的mcc,mnc,看其备注信息确认是否支持某一地区需求; Android 11小区广播分为go版本和full版本.对于go版本,可在packages/apps/CellBroadcastReceiver/res/路径下搜索出货地区的mccmnc所对应的values文件夹,若存在mcc对应的values文件夹(如values-mcc001,或values-mcc655-mnc10),查看其中的config.xml和strings.xml代码;若不存在,直接查看values文件夹中的config.xml
+完整回答请参考FAQ: FAQ202172809
+### 问题: SD卡信号（CLK、CMD、Data）的上升和下降沿时间如何调整
+解决方案: 为了预防由于SD卡在数据传输时候产生的EMI、EMC问题或者以及增强ESD能力,通常在SD卡的信号里面串接电阻、在信号线上贴压敏电阻或者TVS管.串接电阻过大或者压敏电阻、TVS管的结电容过大都会影响SD卡信号的上升或者下降沿时间. 通常常用的调整SD卡信号上升和下降时间的方式如下: 1.硬件上进行调整,如下图所示的SD信号为例: 信号中串接的电阻尽量保持在5.1R以下,串接的电阻越小越利于信号的上升沿和下降沿时间提升.如果贴片压敏电阻或者TVS管器件,贴片器件推荐结电容在1pf以下,寄生电容越小越利于信号的上升沿和下降沿时间提升. 2.通过修改SD卡信号的驱动能力来改善信号的上升沿和下降沿时间: a:提交软件CQ,让软件同事提供修改方式,然后合入到软件里面烧录修改; b:通过adb 命令来手动修改,但是这种修改方式如果重启机器就失效,需要再次修改. 如下所示为用ADB命令,以SC9863
+完整回答请参考FAQ: FAQ202172820
+### 问题: 常用接口ESD、EOS设计注意事项
+解决方案: 首先我们来看下ESD、EOS的区别: a:ESD:electronstatic discharge 静电放电 现象:有限的大量的电荷在不同电位体之间快速转移的一种放电现象. 产生原因:摩擦,接触,耦合感应等. 特点:时间短(ns级),电压高(kv),电流大(A). 测试规范与方法:IEC61000-4-2,ESD GUN b:EOS:electrical over stress 电性过应力 现象:高压或者大电流导致芯片内部损坏,发热,从而伴随着外部烧糊的现象. 产生原因:感应,累计浪涌等. 特点:时间长(us级),电压跟电流视情况而定. 测试规范与方法:IEC61000-4-5,EOS tester(surge generator) 针对这些区别,我们在选择ESD和EOS保护器件时候是区分开选择的.针对EOS一般选择封装体积大、功率比较大的TVS又称作PTVS(功率TVS管,功率在200W
+完整回答请参考FAQ: FAQ202172821
+### 问题: CTS Verifier Biometric Tests 测试失败
+解决方案: 报错弹框截图: 问题分析: 若项目不支持指纹辨识功能, 请参考如下两个FAQ做移除指纹功能 FAQ202172555 FAQ202172484 确认以上皆添加后还有如上图弹框的报错, 请参考如下修改 修改代码路径: frameworks/base/core/res/res/values/config.xml
+
+修改前
+     <string-array name="config_biometric_sensors" translatable="false" >
+         <item>0:2:15</item>  <!-- ID0:Fingerprint:Strong -->
+         <item>1:8:4095</item> <!-- ID1:Face:Convenience -->
+     </string-array>
+
+修改后:
+     <s
+完整回答请参考FAQ: FAQ202172822
+### 问题: DreamCamera2如何屏蔽某种拍照或者录像模式？
+解决方案: 一、问题背景 当硬件设备不支持某一种相机模式(拍照/录像)时,DreamCamera2会报无法打开相机等相关错误,这时需要屏蔽不支持的相机模式,本文旨在说明如何屏蔽DreamCamera2某种模式,方便客户自行解决该问题. 二、问题答案 APP屏蔽的方法有:①取消模式的注册,②将模式图标设置为INVISABLE 底层屏蔽相机模式的方法:修改底层返回给上层的FeatureList值为false 本文只说明APP层的屏蔽方法,底层的屏蔽方法可咨询展锐camera hal/driver同事.APP层将模式图标设置为INVISABLE的屏蔽模式的方法并不可取,因为该修改方案仍然会注册需要屏蔽的相机模式. APP层推荐的方法是取消模式的注册.取消模式注册,可以在app层将需要屏蔽的模式的FeatureList值强制设置为false,这样该模式被屏蔽了,也不会注册该模式,因此也不消耗模式注册所需要的资
+完整回答请参考FAQ: FAQ202172825
+### 问题: 如何去掉systemui亮屏时注册psensor
+解决方案: 参考如下修改,该修改只涉及到锁屏防误触相关,去掉不会有其他影响 a/packages/SystemUI/src/com/android/systemui/classifier/brightline/BrightLineFalsingManager.java +++ b/packages/SystemUI/src/com/android/systemui/classifier/brightline/BrightLineFalsingManager.java @@ -132,11 +132,11 @@ public class BrightLineFalsingManager implements FalsingManager { } private void registerSensors() { - mProximitySensor.register(mSensorEventListene
+完整回答请参考FAQ: FAQ202172836
+### 问题: R版本扫描OTG设备
+解决方案: 在R上,该现象为正常现象. mediaprovider 的扫描依赖于收到对应存储设备的挂载广播,在R上,由于分区存储设计,otg作为即插即拔的设备,已回归谷歌原生,对应用来说是不可见的存储.故mediaprovider 无法收到相应广播,无法将对应媒体信息插入到数据库中. 如要实现mediaprovider扫描 otg设备功能,可以尝试合入如下diff文件进行验证,可能会存在 CTS fail等风险, Index: services/core/java/com/android/server/StorageManagerService.java IDEA additional info: Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP <+>UTF-8 ====================================
+完整回答请参考FAQ: FAQ202172838
+### 问题: 第三方应用使用jar包
+解决方案: 先添加: LOCAL_STATIC_JAVA_LIBRARIES := lib3part //该名为jar包名称,可任意命名 然后下面语句中间添加 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES :=lib3part:libs/lib3part.jar //该为jar包的具体路径 include $(CLEAR_VARS) include $(BUILD_MULTI_PREBUILT) libs/lib3part.jar代表:文件夹/文件名 如果有多个jar文件,可以这样 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := lib3part:libs/lib3part.jar \ lib4part:libs/lib4part.jar 同时可参考文档《 Android 11.0应用预置指南V1.0.pdf》 第6章,集成Jar包. htt
+完整回答请参考FAQ: FAQ202172839
+### 问题: 10，R，lmk怎么添加白名单
+解决方案: 如果要保活进程,使之不被lowmemorykiller杀掉,可以将要保活的进程加到白名单中: lmkd_param.conf文件是lmkd杀进程的白名单配置文件,其中配置的应用是不会被lmkd杀掉的 请在device/sprd目录中搜索lmkd_param.conf文件,然后确定出和你们项目对应的lmkd_param.conf文件 然后添加配置如: device/sprd/<soc>/common/DeviceCommon.mk: PRODUCT_COPY_FILES += \ $(LOCAL_PATH)/lmkd_param.conf:$(TARGET_COPY_OUT_VENDOR)/etc/lmkd_param.conf 或者 PRODUCT_COPY_FILES += \ $(call md-path-cur)/lmkd_param.conf:$(TARGET_COPY_OUT_V
+完整回答请参考FAQ: FAQ202172840
+### 问题: 怎么预置应用到framework下，并被三方apk调用
+解决方案: 1、预置jar包至编译的product目录下的system\framework文件夹中; 预置xml声明文件至编译的product目录下的system\etc\permissions文件夹中. \vendor\sprd\platform\frameworks\base\jar-prebuilt-test\Android.mk 以及smtest.jar Android.mk如下 LOCAL_PATH := $(call my-dir) include $(CLEAR_VARS) LOCAL_MODULE := smtest.jar LOCAL_MODULE_TAGS := optional LOCAL_MODULE_CLASS := JAVA_LIBRARIES # This will install the file in /system/framework LOCAL_MODULE_PA
+完整回答请参考FAQ: FAQ202172841
+### 问题: 怎么利用FileProvider给第三方应用分享自身私有目录下的文件
+解决方案: 1.定义一个fileprovider 在对应AndroidManifest里 <provider android:name="androidx.core.content.FileProvider" android:authorities="com.example.myapp.fileprovider" android:grantUriPermissions="true" android:exported="false"> <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/filepaths" /> </provider> 2.指明获取的文件路径 <paths> <cache-path path="/pdf" name="mypdf" /> </paths> 3.生成con
+完整回答请参考FAQ: FAQ202172842
+### 问题: Android 10预置资源
+解决方案: diff --git a/src/com/android/providers/media/MediaService.java b/src/com/android/providers/media/MediaService.java index d7c6bab..bb1a088 100644 --- a/src/com/android/providers/media/MediaService.java +++ b/src/com/android/providers/media/MediaService.java @@ import android.content.Context; import android.content.Intent; import android.media.RingtoneManager; import android.net.Uri; import android.
+完整回答请参考FAQ: FAQ202172844
+### 问题: 低内存版本GO documentsui不显示缩略图
+解决方案: 低内存版本时,documentsui默认不显示缩略图,贵司如需显示,可在如下位置注释掉低内存判断,将其默认值设为true 即可 diff --git a/src/com/android/documentsui/dirlist/DirectoryFragment.java b/src/com/android/documentsui/dirlist/DirectoryFragment.java index 82efc60a4..5664365f6 100644 --- a/src/com/android/documentsui/dirlist/DirectoryFragment.java +++ b/src/com/android/documentsui/dirlist/DirectoryFragment.java @@ -553,8 +553,8 @@ public class Direct
+完整回答请参考FAQ: FAQ202172847
+### 问题: Documentsui 固定显示u盘名称/sd卡名称
+解决方案: diff --git a/res/values-zh-rCN/strings.xml b/res/values-zh-rCN/strings.xml
+index 4d8e620a8..ca568e20b 100644
+--- a/res/values-zh-rCN/strings.xml
++++ b/res/values-zh-rCN/strings.xml
+@@ -248,4 +248,6 @@
+     <string name="open_tree_dialog_message" msgid="8545093618524340168">"它将允许"<xliff:g id="APPNAME">%1$s</xliff:g>"拥有对以下内容的完整访问权限:目前存储在此位置下
+的所有文件,以及日后存储在此处的任何内容."</string>
+     <string name="
+完整回答请参考FAQ: FAQ202172848
+### 问题: 使用textureview和surfaceview去渲染视频
+解决方案: package com.example.useso; import androidx.annotation.NonNull; import androidx.appcompat.app.AppCompatActivity; import android.graphics.SurfaceTexture; import android.media.AudioTrack; import android.media.MediaPlayer; import android.net.Uri; import android.os.AsyncTask; import android.os.Bundle; import android.util.Log; import android.view.Surface; import android.view.SurfaceHolder; import androi
+完整回答请参考FAQ: FAQ202172849
+### 问题: 如何在recent清除最近任务时，退出后台播放中的平台Music
+解决方案: --- a/src/com/android/music/MusicBrowserActivity.java
++++ b/src/com/android/music/MusicBrowserActivity.java
+@@ -144,6 +144,9 @@ public class MusicBrowserActivity extends AppCompatActivity implements
+                     return true;
+                 }
+                 return false;
++            case  KeyEvent.KEYCODE_BACK:
++                moveTaskToBack(true);
++                return fals
+完整回答请参考FAQ: FAQ202172850
+### 问题: 按键音如何更换为其他音频音效文件
+解决方案: 按键音应该叫Effect_Tick.ogg,播放的代码位置位于/frameworks/base/services/core/java/com/android/server/audio/
+
+ void onPlaySoundEffect(int effect, int volume) {
+242          float volFloat;
+243          // use default if volume is not specified by caller
+244          if (volume < 0) {
+245              volFloat = (float) Math.pow(10, (float) mSfxAttenuationDb / 20);
+246          } else {
+247              vo
+完整回答请参考FAQ: FAQ202172851
+### 问题: 当机器无听筒时，如何去掉录音机的听筒入口
+解决方案: 代码行数可能不一致.修改函数位置一致.
+
+--- a/src/com/sprd/soundrecorder/RecordFilePlayActivity.java
++++ b/src/com/sprd/soundrecorder/RecordFilePlayActivity.java
+@@ -372,9 +372,9 @@ public class RecordFilePlayActivity extends Activity {
+         mClipMenuItem.setVisible(false);
+         mReceiverModeMenuItem = menu.findItem(R.id.item_volume);
+         mReceiverModeMenuItem.setIcon(R.drawable.ear_speak_gray);
+完整回答请参考FAQ: FAQ202172852
+### 问题: 如何查看视频的音频流/视频流 的编码格式
+解决方案: 利用ffmpeg工具 ffmepg -i xxx.mp4 会输出视频流的编码信息 Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '2.mp4': Metadata: major_brand : mp42 minor_version : 0 compatible_brands: mp42mp41isomavc1 creation_time : 2015-08-07T09:13:36.000000Z Duration: 00:00:30.53, start: 0.000000, bitrate: 4675 kb/s Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709), 1920x1080 [SAR 1:1 DAR 16:9], 4486 kb/s, 30 fp
+完整回答请参考FAQ: FAQ202172854
+### 问题: android Q如何屏蔽点击状态栏而弹出通知栏
+解决方案: android Q要屏蔽点击下拉,可以参考如下方案: --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelView.java +++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelView.java @@ -323,7 +323,7 @@ public abstract class PanelView extends FrameLayout { switch (event.getActionMasked()) { case MotionEvent.ACTION_DOWN: - startExpandMotion(x, y, false /* startTracking */, mExpandedHeight); + /
+完整回答请参考FAQ: FAQ202172858
+### 问题: android R如何屏蔽点击状态栏而弹出通知栏
+解决方案: android R要屏蔽点击下拉,可以参考如下方案: diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java old mode 100755 new mode 100644 index eb6e6a793175..884e0568f590 --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java +++ b/packages/SystemUI/src/com/and
+完整回答请参考FAQ: FAQ202172859
+### 问题: 如何关闭录屏时，录屏本身发出的通知音和震动
+解决方案: 录屏时,如果只保留通知栏的倒计时,把通知铃声和震动去掉,可以参考如下方案: diff --git a/packages/SystemUI/src/com/android/systemui/screenrecord/RecordingService.java b/packages/SystemUI/src/com/android/systemui/screenrecord/RecordingService.java index a289730a73c4..5525063f03b1 100644 --- a/packages/SystemUI/src/com/android/systemui/screenrecord/RecordingService.java +++ b/packages/SystemUI/src/com/android/systemui/screenrecord/Recor
+完整回答请参考FAQ: FAQ202172862
+### 问题: 在Android11 APK开发中，如何调用Android原生的录屏功能
+解决方案: 原生的录屏功能是在systemui里的,先确认apk是否可以访问ScreenRecordHelper.launchRecordPrompt() /frameworks/base/core/java/com/android/internal/util/ScreenRecordHelper.java public void launchRecordPrompt() { final ComponentName launcherComponent = ComponentName.unflattenFromString( mContext.getResources().getString( com.android.internal.R.string.config_screenRecorderComponent)); final Intent intent = new Intent(); intent
+完整回答请参考FAQ: FAQ202172864
+### 问题: 锁屏界面上滑解锁比较困难如何优化
+解决方案: 原生解锁对速度,距离,角度以及防误触都有要求,可以做下面修改: 1,将滑动距离调小点试下,谢谢~~ /frameworks/base/packages/SystemUI/res/values/dimens.xml <dimen name="unlock_falsing_threshold">80dp</dimen> 2,/frameworks/base/packages/SystemUI/src/com/android/systemui/classifier/brightline/DistanceClassifier.java boolean isClassifierEnabled = context.getResources().getBoolean( R.bool.config_lockscreenAntiFalsingClassifierEnabled); SCREEN_FRACTI
+完整回答请参考FAQ: FAQ202172865
+### 问题: 锁屏界面添加年月日周显示
+解决方案: 参考下面修改,自行调整格式,谢谢~~ diff --git a/packages/SystemUI/res/values/donottranslate.xml b/packages/SystemUI/res/values/donottranslate.xml index 67293c57e344..2abeaccee647 100644 --- a/packages/SystemUI/res/values/donottranslate.xml +++ b/packages/SystemUI/res/values/donottranslate.xml @@ -21,5 +21,5 @@ <string name="system_ui_date_pattern" translatable="false">@*android:string/system_ui_date_pattern</stri
+完整回答请参考FAQ: FAQ202172866
+### 问题: DreamCamera2如何增加照片尺寸？
+解决方案: 一、问题背景 针对特殊的屏幕尺寸,客户常常要添加新的拍照尺寸.下面以android 10为例,说明如何添加. 二、解决方案 假设设备屏幕物理尺寸为8:5,以添加一组8:5尺寸为例. ①.在底层添加 8:5的size 参考路径:vendor/sprd/modules/libcamera/hal3_2v4/SprdCamera3Setting.cpp 420 const cam_stream_info_t stream_info[] = { ... 425 {{3264, 2448}, 33331760L, 33331760L}, 426 {{3264, 1836}, 33331760L, 33331760L}, 427 {{2592, 1944}, 33331760L, 33331760L}, + {{2592, 1620}, 33331760L, 33331760L}, //for cap
+完整回答请参考FAQ: FAQ202172871
+### 问题: 请问如何移除MMI相关代码，裁剪pac大小?
+解决方案: 因为每个客户需求不同,目前并没有方案可以直接使用.客户可以通过修改主mk档关闭不需要的功能,调整xxx.modules 跟 app.mk/app_main.mk 裁减不需要的代码. - 不需要上层UI介面,可以关闭像是 MMI_3DUI_SUPPORT、UI_P3D_SUPPORT、ROTATE_2D_SUPPORT、UI_MULTILAYER_SUPPORT等宏. - 应用可以依据需求关闭,像是 MMS_SUPPORT、MMI_MENO_SUPPORT, MMI_UNITCONVERSION_SUPPORT、VIDEO_PLAYER_SUPPORT、VIDEO_RECORD_SUPPORT、RECORD_SUPPORT 、GAME_SUPPORT、PIC_VIEWER_SUPPORT、WORLD_CLOCK_SUPPORT、COUNTEDTIME_SUPPORT、STOPWATCH_SU
+完整回答请参考FAQ: FAQ202172872
+### 问题: 联系人设置头像前置拍照未镜像
+解决方案: diff --git a/res/values/dream_camera_arrays_photo_part.xml b/res/values/dream_camera_arrays_photo_part.xml
+old mode 100644
+new mode 100755
+index 561eef4..82c56f1
+--- a/res/values/dream_camera_arrays_photo_part.xml
++++ b/res/values/dream_camera_arrays_photo_part.xml
+@@ -468,7 +468,7 @@
+     <integer-array name="pref_front_camera_mirror_key_array">
+         <item>@string/pref_front_camera_mi
+完整回答请参考FAQ: FAQ202172879
+### 问题: 平台是否有GPIO可以使用3V的IO输入输出电平
+解决方案: 平台是可以支持3V的IO输入和输出的. 下面以SC9863A平台为例描述如果设置GPIO是1.8V还是3V的电平输出输出: 在GPIO SPEC中,SDIO 2(VSD2)电源域的GPIO N2/L1/M2/M4/L4/L2 SIM2(VSIM2)电源域的GPIO E8/E9/C9 这些GPIO可以支持1.8V或者3V电平的输入和输出电平. 使用时候需要注意SC9863A的如下管脚供电 1.如果 J4(VSD2)管脚供电是1.8V,那么GPIO N2/L1/M2/M4/L4/L2 只能支持1.8V的电平输出和输出,如果这个管脚供电是3V,那么GPIO N2/L1/M2/M4/L4/L2 只能支持3V的电平输出和输出; 2.如果A6(VSIM2)管脚供电是1.8V,那么GPIO E8/E9/C9 只能支持1.8V的电平输出和输出,如果这个管脚供电是3V,那么GPIO E8/E9/C9 只能支
+完整回答请参考FAQ: FAQ202172882
+### 问题: 常用平台的base address
+解决方案: 我们在调试时,经常使用adb来控制某个寄存器,比如USB眼图调试,gpio输入输出控制,TF卡驱动能力调试,那么就必须要先知道对应平台的base address; 每个模块的控制地址 = SPRD_ADI SLAVE_BASE(base address) + 该模块offset + 该模块内部的偏移地址. 常用平台的base address如下: 芯片平台 搭配的PMIC adi master adi slave adi base address SC7731E SC2720A 0x403c 0000 0x8000 0x403c 8000 SC9820E&SC9832E SL98521E&SL98541E SC2721G 0x4038 0000 0x8000 0x4038 8000 SC9863A&UIS8581A&UIS8581E SC2721G 0x4180 0000 0x8000 0
+完整回答请参考FAQ: FAQ202172888
+### 问题: MOCOR5 modem log设置修改
+解决方案: 改/device/sprd/sharkle/sp9820e_1h10/log_conf/slog_modem_userdebug.conf文件
+
+-----#type state storage int_size ext_size
+2 minidump enable external 10 50
+3 
+4 log_file_size_internal 40
+5 log_file_size_external 512
+6 data_log_size 25
+7 sd_log_size 0
+8 
+9 #type name state size level
+10 stream cp_wcdma off 0 5 on
+11 stream cp_td-scdma off 0 5 on
+12 stream cp_3mode off 0 5 on
+13 stream cp_4mo
+完整回答请参考FAQ: FAQ202172889
+### 问题: 关于图库显示图片流程说明
+解决方案: 先说明进入图库后,图库显示图片的基本流程: 1.图库搜索图片流程: 接口调用:StartLoadPic(StartLoadPicWithFolders)->MMIAPIFMM_SearchFileInPathAndSort->FinshLoadPic(FinshLoadPicWithFolders) 此过程为图库搜索图片流程,并对获取的图片资源按规则进行排序,该过程结束后,图库中的每张图片会显示为默认(没有具体内容)的图片. 2.图库加载图片流程: 接口调用:AppendPicIconListIcon->GUIICONLIST_AppendIcon->InsertIcon->GUIANIM_SetParam->GUIANIM_Display 此过程为图库加载图片过程,可以将没有具体内容的图片通过解码的方式显示出来. 当使用FmmVideoThumbnailAdd来获取视频缩略图后,需注意要
+完整回答请参考FAQ: FAQ202172890
+### 问题: 指令实现扫描、识别、连接路由器
+解决方案: 开启服务:wpa_cli -i wlan0 -p/data/misc/wifi/sockets
+sta的扫描和配网:
+> scan /*下发AP扫描命令*/
+> scan_result  /*查看扫描结果中是否包含待连接AP,找到后开始设置连接参数*/
+连接到某个加密路由(ssid:a  psk:12345678):
+> add_network /*执行add_network后,返回network id,本例中返回值为0*/
+> set_network 0 ssid "a" /* set_network <network id> <variable> <value>*/
+> set_network 0 key_mgmt WPA-PSK
+> set_network 0 psk "12345678"
+> enable_network 0
+连接到某个非加密路由(ssid:a)
+完整回答请参考FAQ: FAQ202172891
+### 问题: B66功率回退异常
+解决方案: B66在NV中修改MPR或Backoff数值后,对功率回退不生效(其它band功率回退正常). 举例如下: 1、NV中修改MPR,功率无变化: LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_MPR_PCC_Band\Band_no18\LTE_MPR_PCC\QPSK_FRB=0x6 LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_MPR_PCC_Band\Band_no18\LTE_MPR_PCC\QPSK_PRB=0x6 2、Backoff场景回退功率,功率无变化: LTE_optimize\LTE_download_rf_compensation_cc0_optimize\LTE_Power_Backoff_Setting\Power_Back
+完整回答请参考FAQ: FAQ202172897
+### 问题: GPIO的边沿触发与电平触发的区别
+解决方案: GPIO的边沿触发与电平触发的区别是么,使用时候有哪些注意事项? 边沿触发:中断是可以锁住的,即:产生中断后,如果外部电平发生切换,也不会导致GPIO中断消 失,要配置对应的Interrupt clear register为1才会清 电平触发:中断是随着电平的消失就消失,不会锁住,即:产生中断后,如果外部电平高低发生切 换,会导致GPIO中断自动消失.使用电平触发要求电平稳定持续一定的时间(不同的场景时间可能 不同),确保软件中断处理程序可以处理完,避免引起APCPU挂死等异常.因此按键、触模、指纹 等人为操作,抖动严重,不能使用电平触发中断. 另外使用时候需要注意如下: 边沿触发: 1.没有RCO时钟方案的项目,chip deep sleep时,AON_APB是没有时钟的,不能使用边沿触发唤醒AP系统,如:SC9820E\SC9832E\SC7731E等. 2.有RCO时钟方案的项目, 
+完整回答请参考FAQ: FAQ202172899
+### 问题: 如何打开DreamCamera变焦
+解决方案: 1. adb shell dumpsys media.camera > result.txt 查看result.txt看zoom变焦,如果是能力值只有1则进行第二步的修改 com.addParameters.sprdZoomRatio (8000005e): float[1]
+          [1.00000000 ]
+android.scaler.availableMaxDigitalZoom (d0004): float[1]
+        [1.00000000 ] 2. 在文件SprdCamera3Setting.h中进行如下修 #ifndef CONFIG_ISP_2_3
+-----#define MAX_DIGITAL_ZOOM_RATIO (1.0f)//////请将这行修改为4.0f
+-----#else
+-----#define MAX_DIGITAL_
+完整回答请参考FAQ: FAQ202172904
+### 问题: flash标定后输出的fc_frame_rgb.txt文件的参数含义解读
+解决方案: flash标定完成后cameraserver会输出fc_frame_rgb.txt文件,该文件记录了预闪主闪走的具体档位以及每帧的的统计信息. 其中, pf是预闪,mf是主闪,ind1是 LED1, ind2是LED2 ; ind1&ind2对应-1,0,1,2....分别表示未开,第一档,第二档,第三档..... 举例说明:以下是主闪15帧的统计信息,LED1为2表示走的第三档,LED2为-1表示没开 mf ind1,ind2: 2 -1 expBase,gainBase,exp,gain: 50000000 1024 30007524 166 4.000000 7.944445 4.000000 // 闪光灯上电前2帧不稳定 0.000000 0.000000 0.000000 316.666656 540.277771 406.777771 // 开始稳定,该值的范围是(0至1024
+完整回答请参考FAQ: FAQ202172906
+### 问题: 如何在相机TopPanel上显示HDR图标
+解决方案: \vendor\sprd\platform\packages\apps\DreamCamera2\src\com\android\camera\PhotoUI.java TopPanel 上HDR图标和MotionPhoto图标本来设计只显示一个,优先显示MotionPhoto,并且把HDR图标REMOVE掉.只需要去掉list.remove(hdrIndex); 就可以显示HDR图标 protected void updateTopPanelMotionPhoto(ArrayList<TopPanelUtil.IconAndDes> list) { if(isMotionPhotoSupported){ int hdrIndex = getIdIndex(R.integer.hdr_toggle_button_dream,list); if(hdrIndex != -1){ // lis
+完整回答请参考FAQ: FAQ202172908
+### 问题: Camera在滤镜模式下未全屏显示，如何解决？
+解决方案: FilterModuleUISprd.java
+
+
+    public void setTransformMatrix() {
+        float scaledTextureWidth, scaledTextureHeight;
+
+       ....
+
+        params.width = (int) scaledTextureWidth;
+        params.height = (int) scaledTextureHeight;
+        RectF rect = mActivity.getCameraAppUI().getPreviewArea();
+//添加下面的调整滤镜显示宽高可以针对4:3和16:9以上的尺寸进行适配
++          int width = +mActivity.getWindowManager(
+完整回答请参考FAQ: FAQ202172910
+### 问题: Camera应用如何使能HDR功能
+解决方案: HDR说明 public static final Key<Integer> CONTROL_SCENE_MODE = new Key<Integer>("android.control.sceneMode", int.class); 该TAG声明在CaptureRequest.Java中. 其中HDR开,下发 public static final int CONTROL_SCENE_MODE_HDR = 18; HDR关,下发 public static final int CONTROL_SCENE_MODE_DISABLED = 0 生效时机 更改设置后,直接下发参数,无需重启预览. 互斥说明 HDR与闪光灯/色彩效果/auto3DNR,即HDR开启后,闪光灯关闭、色彩效果关闭、auto3DNR关闭. 生效log 12-10 02:50:33.407 433 10417 D cmr
+完整回答请参考FAQ: FAQ202172911
+### 问题: 如何区分google camera 和平台的DreamCamera2
+解决方案: 因为谷歌的原生 camera 和平台的 DreamCamera2 在 log 中看到的包名都是com.android.camra2 ,所以单从包名无法进行区分 1、从UI看区别 一般拍照按钮和录像按钮为以下形式的是谷歌的原生 camera 拍照按钮和录像按钮为以下形式的是平台的DreamCamera2 这个是在安卓11之后的UI,模式都在滑动栏里 这个是在安卓10以及之前的UI 2、从抓取的log中搜索 " Drea " 关键字,有类似如下的log,可判断为平台的DreamCamera2 04-21 08:34:16.348 16937 16937 I CAM_CameraActivity Drea: onStartTasks start! 04-21 08:34:16.349 16937 16937 I CAM_CameraActivity Drea: Keys.KEY_CAMERA_S
+完整回答请参考FAQ: FAQ202172913
+### 问题: AUTO HDR 降低功耗
+解决方案: 在app层通过减少黄色的"HDR"显示图标的不必要绘制过程降低功耗 如下修改,可以减少一些不必要的绘制过程 DreamCamera2\src\com\android\camera\PhotoModule.java
+public void onHdrDetection(boolean isHdrScene) {
+        Log.d(TAG,"onHdrDeteCtion: " + isHdrScene);
+        //Sprd:Fix bug959314/bug1011831
+        if (isShutterClicked() || mDataModuleCurrent.getInt(Keys.KEY_CAMERA_HDR) != 2) {
+            return;
+        }
+-       mUI.showHdrTips(is
+完整回答请参考FAQ: FAQ202172914
+### 问题: 人像和虚化模式的loading UI显示
+解决方案: 平台在"前摄人像"是有 loading UI 的,但是代码中CONTROL_SPRD_BLUR_CAPTURE这个key只有在单摄人像的时候才是有值的,其他情况都为null 同样的号是拍照操作还会发生在"后摄人像"和"大光圈模式",但是这两个模式只有在点击缩略图会显示出 loading UI ,属于被动调用,可以依照下面的逻辑添加主动显示 loading UI 的过程: DreamCamera2\portability\src\com\android\ex\camera2\portability\SprdAndroidCamera2AgentImpl.java public void onImageAvailableWithThumb(Image image, Handler handler, CameraPictureCallback jpeg) { if (jpeg != null) 
+完整回答请参考FAQ: FAQ202172915
+### 问题: 使用JTAG（TRACE 32）工具复位手机，原理图该如何设计
+解决方案: 使用JTAG(TRACE 32)工具复位手机,原理图该如何设计? 如果需要使用JTAG(TRACE 32)工具进行软件调试手机,需要TMS,TCK,VDD1V85,GND电源这几个信号,如果需要JTAG(TRACE 32)工具或者其他的单片机来复位手机主控,就需要单独从手机上引出一个复位信号.这个复位信号不能接PMIC的EXT_RST_B,因为这个信号是PMIC复位BB的信号,有严格的时序要求才能复位. 因此可以采用如下的电路来做一个复位电路(注意:需要考虑 JTAG_RST复位信号的默认状态,如果这个IO默认是高电平,管子需要选择PNP,如果IO默认是低电平可以选择NPN管子,如果使用MOS管需要在这个IO上增加一个下拉电阻到地): 其中:PBINT和EXTRSTN信号分别接到PMIC侧,JTAG_RST可以连接到需要控制的单片机IO或者JTAG的接口,无需连接到手机的主控IO. 使用时
+完整回答请参考FAQ: FAQ202172919
+### 问题: AUTO HDR如何使用
+解决方案: autoHDR说明 public static final Key<Integer> ANDROID_SPRD_AUTO_HDR_ENABLED = new Key<Integer>( "com.addParameters.sprdAutoHdrEnabled",int.class); 该TAG声明在CaptureRequest.Java中. 其中AutoHDR开,下发1,关闭下发0即可. 场景获取TAG public static final Key<Integer> ANDROID_SPRD_IS_HDR_SCENE = new Key<Integer>("com.addParameters.isHdrSceneForAuto", int.class); 该TAG声明在CaptureResult.java中,开启AutoHDR后,HAL每帧都会上报该状态,特别注意在关闭AutoHDR的
+完整回答请参考FAQ: FAQ202172925
+### 问题: 如何调整camera录像帧率为浮动帧率？
+解决方案: 第一种方案在APP VideoModule.java下修改,如下 
+   protected void updateFpsRange() {
+        if (CameraUtil.isDynamicFpsEnable()) {
+            int[] fpsRange = CameraUtil
+                    .getPhotoPreviewFpsRange(mCameraCapabilities, useNewApi(), true);
+            if (fpsRange != null && fpsRange.length > 0) {
+                mCameraSettings.setPreviewFpsRange(fpsRange[0], fpsRange[1]);
+            
+完整回答请参考FAQ: FAQ202172926
+### 问题: DreamCamera2如何查看当前人脸属性/人脸识别算法库版本
+解决方案: 可通过log查看 人脸属性算法库版本 Line 29776: M014C3E  07-02 19:28:12.893   496  8898 I libfaceattr: [FarCreateRecognizerHandle,58]: SPRD FAR version: LIBVER[1.16.11.4][Apr 24 2019][15:04:41]
+Line 29804: M014C5A  07-02 19:28:12.969   496  8898 I FAR     : [FarCreateRecognizerHandle_V2,136]: SPRD FAR version: CAM_ALGO_CV_FAR_LIBVER[2.1.5.1.1396036][Aug 27 2020][15:06:32] 人脸识别算法库版本 Line 9787: M0EF2DA  04-27 16:10
+完整回答请参考FAQ: FAQ202172929
+### 问题: DreamCamera2 aelock滑动条流畅度调节
+解决方案: 操作: 在相机预览界面,长按屏幕,会出现"对焦和曝光已锁定",此时可上下调节对焦框右侧ev值.默认值为0,调节范围为-32~32,共65个值可选. 可尝试调整seekbar滑动阈值,使调节更流畅,请参考如下修改: diff --git a/src/com/dream/camera/ui/AELockSeekBar.java b/src/com/dream/camera/ui/AELockSeekBar.java old mode 100644 new mode 100755 index ea5202f2b..975a95c8e --- a/src/com/dream/camera/ui/AELockSeekBar.java +++ b/src/com/dream/camera/ui/AELockSeekBar.java @@ -15,7 +15,7 @@ import com.androi
+完整回答请参考FAQ: FAQ202172930
+### 问题: 如何让vndservicemanager参与编译
+解决方案: Android原生在29之后的版本,将vndservicemanager和vndservice不参与编译. vndservicemanager和vndservice用于hidl hal service 在vendor分区进行通信,平台目前无vendor分区内部进行通信的hal service,所以平台未对Android原生不让vndservicemanager和vndservice参与编译的配置去除. 一些客户可能会有hidl hal service在vendor分区内部进行通信的需求,这种情况下,如果没有vndservicemanager和vndservice,可能会导致hidl hal service无法使用,甚至无法开机. 如果判断问题是由于没有vndservicemanager和vndservice导致,可以从log中搜索,是否有如下关键log: 01-01 02:08:29.72
+完整回答请参考FAQ: FAQ202172931
+### 问题: 展讯平台DearmCamera2去掉“更多”选项
+解决方案: 注释掉MODE_MORE_TAG的添加
+ vendor\sprd\platform\packages\apps\DreamCamera2\src\com\android\camera\module\ModuleInfoResolve.java
+
+    private void buildModeSlideList() {
+        ......
+            int panelRequireSize = 7;
+            for (int i = 0; i < panelRequireSize - 1; i++) {
+                mModuleScrollInfo.put(tmpModeList.get(i)/*modeindex*/, i/*modeadapter index*/);
+                mMo
+完整回答请参考FAQ: FAQ202172936
+### 问题: 短信输入字符数
+解决方案: 短信是用的PDU(Protocol Data Unit,协议数据单元)模式,PDU模式收发短信可以使用3种编码:7-bit、8-bit和UCS2编码.7-bit编码用于发送普通的ASCII字符,8-bit编码通常用于发送数据消息,UCS2编码用于发送Unicode字符. 一条短信(PDU串的用户信息(TP-UD)段)最大容量是140字节,所以在这三种编码方式下,可以发送的短消息的最大字符数分别是160(140X8/7)、140和 70(140/2). 短信默认使用7bit 编码,最大字符数为160, 7Bit编码中7 bit 默认字母表请参考协议: GSM23.038 0xC1 不在7bit默认字母表中,而是用到了国家语言转换表,使用转换表,一个信息的字符仍然能使用7-bit编码,但是可以使用一个不同的集合来正确显示重音和语言特定的字符,最大字符数为(160-8)152,参见协议:GSM2
+完整回答请参考FAQ: FAQ202172940
+### 问题: SIM卡优先语言问题
+解决方案: 打开SIM_LANGUAGE_SUPPORT开关,就会读取SIM卡中的优先语言设置为显示语言,有些SIM卡中的优先语言与期望的语言不一致,如移动或联通卡SIM优先语言为德语的情况 ,这种情况可以增加通过SIM卡MCC获取对应语言的接口进行处理,通过SIM卡MCC来设置prefer lang. 可参考以下代码实现:(波兰sim卡语言为 poland,) 1.实现通过SIM卡MCC获取prefer lang的接口 typedef struct { uint16 mcc; MMISET_LANGUAGE_TYPE_E language; }MMISET_MCC_LANG_T; //mcc ,lang结构体 //mcc与对应lang数组 LOCAL const MMISET_MCC_LANG_T s_mcc_lang_table[] = { 260, MMISET_LANGUAGE_POLISH,
+完整回答请参考FAQ: FAQ202172941
+### 问题: 如何判断无信号的情况？无卡无信号的情况下可以拨打紧急号码吗？
+解决方案: 判断当前网络状态可通过接口MMIAPIPHONE_GetPlmnStatus获取plmn_status进行判断,如果值为PLMN_NO_SERVICE,则当前未住上任何网络,无法拨打电话.如果当前值为PLMN_EMERGENCY_ONLY,则当前无法注册到正常网络,但已注册到紧急驻留,可以拨打紧急电话. 详情可参考如下枚举定义: typedef enum _MN_PLMN_STATUS_E { PLMN_NO_SERVICE = 0 , // no service PLMN_NORMAL_GSM_ONLY = 0x01 , // voice service available PLMN_NORMAL_GPRS_ONLY = 0x02 , // data service available PLMN_NORMAL_GSM_GPRS_BOTH = 0x03 ,// voice and data
+完整回答请参考FAQ: FAQ202172942
+### 问题: 如何确认某一运营商 VoLTE 功能是否支持？
+解决方案: 如需确认某一运营商是否支持VoLTE功能,请按照下述方法进行处理: 1. 确认该运营商的 MCC 及 MNC 后,在我司 release 的原始代码文件 ims_toggle_mnc_table.h 中查找该 MCC / MNC 是否存在,如存在,则该运营商支持 VoLTE 功能且 modem 侧相关参数已经配置. 2. 如该运营商的 MCC 及 MNC 在 1 中提到的文件中未找到,则请提交一个 CQ 并提供 modem 侧的版本号流转给我司底层同事进行确认. 3. 如底层同事确认该运营商 modem 未配置相关参数,且客户方面要求该运营商支持 VoLTE 功能,则请提供该运营商对应的 VoLTE 参数相关文档至 CQ 对应的 FTP 上,底层同事帮忙配置. 4. 在 modem 侧配置完毕后,客户方面需要按照 FAQ 202072062 在 MMI 侧配置 VoLTE 白名单,并按照文
+完整回答请参考FAQ: FAQ202172944
+### 问题: APN选择逻辑
+解决方案: 预置APN的匹配与预置APN列表顺序有关,可参考接口 SetDefaultNetworkAccount 的实现,大致逻辑如下: 1. 优先匹配 mvno type 不为空的预置 APN 如预置 APN 列表中存在 mvno type 不为空的预置 APN,则根据 mvno type 的类型取相应的 SIM 卡中的值进行比对.如比对成功,则按照此类 mvno type 优先进行加载. 举例:预置APN列表中有 mvno type 为 MMICONNECTION_MVNOTYPE_SPN 的预置 APN ,则取 SIM 卡中的 SPN 与预置 APN 列表中的 mvno value 数据进行比对.如比对成功,则记录匹配类型为 SPN ,其他类型(如 IMSI )的预置 APN 将不再进行匹配. 2. 如所有 mvno type 对应的预置 APN 均匹配不成功,则默认显示 mvno type 
+完整回答请参考FAQ: FAQ202172948
+### 问题: 短信编辑框的高亮颜色在何处修改？
+解决方案: 现提供如下接口用于设置高亮颜色,下面以黑色举例,请参考: 1. 联系人高亮颜色设置接口: LOCAL void MMSSetEditDispBG(MMIMMS_WINDOW_ID_E win_id,GUI_BG_TYPE_E bg_type) { //GUI_BG_T focus_bg = {0}; GUI_BG_T bg = {0}; MMI_HANDLE_T edit_handle = 0; bg.bg_type = bg_type; s_edit_to_bg_type = bg_type; if(bg_type == GUI_BG_COLOR) { //bg.color = GUI_RGB2RGB565(243, 255, 211); bg.color = MMI_BLACK_COLOR;//举例:当选中联系人窗口后高亮为黑色 } #ifdef MMI_MESSAGE_CONTACT
+完整回答请参考FAQ: FAQ202172949
+### 问题: Supplementary services/Emergency calls/SMS/MMS是否使用IMS？
+解决方案: Supplementary services 这个是不通过IMS的.它如果走UT,一般使用默认承载,或是单独的PDP,不会在基于IMS的PDP发起,但由于部分运营商会根据IMS注册与否来决定附加业务要走UT还是走CS域,这个根据运营商进行在delta NV中进行配置,相应的NV项是ss_domain, 默认值是优先走UT,失败后CSFB. Emergency calls 也是有delta NV控制 ,分别 用ecc_cs_prefer和emc_need_csfb_when_roaming来控制,漫游和HPLMN注册时,ECC如何走,默认是走IMS,自己建议紧急注册及紧急IMS PDP进行.这个也是根据运营商来的. 同时有些运营商的网络本身不支持ECC走IMS,所以有些我们设置的delta NV支持,但并不代表这张卡一定支持,要看卡及网络. SMS是要在IMS注册时,才会发IMS短信,如果没
+完整回答请参考FAQ: FAQ202172951
+### 问题: 如何判断短信发送是否成功
+解决方案: SMS发送是否成功可从两个方面查看: (1)首先可查看 MMISMS_AppSendSmsToMn 的返回值send_result,这里会检查SMS的发送的各个参数,如短信中心号码/收件人是否有效等,若send_result返回0,则进入短信发送过程(sending),返回其它值则失败,失败原因可根据返回值参照MMISMS_OPER_ERR_E中的值,比如 返回为1(MMISMS_NO_SC_ADDRESS),代表没有设置短信中心号. 并且发送失败时会调用MMISMS_DisplaySendErr ,弹出错误提示. (2)SMS发送后,MN层会给MMI上报 APP_MN_SEND_SMS_CNF 消息, 在mmismsapp_main.c文件中的HandPsMsg函数会处理该消息,调用MMISMS_HandleSendCnf函数, 根据消息带的参数sig_ptr->cause 值判断是否发
+完整回答请参考FAQ: FAQ202172953
+### 问题: [Android 11][user build]在fastbootd模式下刷入逻辑分区，重启后卡在开机动画不动
+解决方案: 1. [现象分析] 1.1 现象 Android 11的user版本上,在fastbootd模式下刷入逻辑分区,重启后卡在开机动画不动.抓取串口log,定位到是vdc加密错误: [ 20.175552] c0 vdc: Command: cryptfs mountFstab /dev/block/by-name/userdata /data Failed: Status(-8, EX_SERVICE_SPECIFIC): '0: ' [ 20.189135] c3 vdc: vdc terminated by exit(25) [ 20.193565] c3 vdc: [ 20.195880] c3 init: vdc call failed with error code: 25 1.2 原因 发生此错误是由于在fastbootd模式下刷入动态分区时擦除了metadata,导致升级后启动
+完整回答请参考FAQ: FAQ202172956
+### 问题: [GSI] APK签名不匹配，导致GSI版本开机异常，一直停留在开机动画界面
+解决方案: 1. [现象分析] 针对Android 11.0及之后的版本,vendor和odm等供应商分区的APK都禁止使用system进程的UID,否则会导致GSI版本开机异常,一直停留在Android界面. 2. [排查方式] l 若能抓到Android log,可直接定位异常,例如: E/AndroidRuntime( 5736): *** FATAL EXCEPTION IN SYSTEM PROCESS: main E/AndroidRuntime( 5736): java.lang.IllegalStateException: Signature mismatch on system package com.spreadtrum.sgps for shared user SharedUserSetting{80e888a android.uid.system/1000} vendor分区的
+完整回答请参考FAQ: FAQ202172958
+### 问题: 【GSI】刷入旧版本的GSI，bootloader上锁情况之下，设备直接进入“fastboot mode”
+解决方案: 1. [现象分析] Android 10.0及之后的版本上,若刷入GSI的SPL比vbmeta_system中的SPL日期旧,例如,vbmeta_system中的SPL是2021-04-05,而GSI的SPL是2021-01-05,则上锁状态下重启会导致设备直接进入"fastboot mode".原因是上锁状态下,会触发GSI回滚测试. 2. [排查方式] 此现象存在于上锁状态下,解锁状态下不会发生.为进一步确定原因,需要抓取串口log,并定位到关键log,示例如下: init: Image rollback detected for /system, SPL switches from '2021-04-05' to '2021-01-05' init: Failed to setup verity for '/system': No such file or directory ini
+完整回答请参考FAQ: FAQ202172959
+### 问题: 双摄标定失败code解析
+解决方案: 1.Calibration fail result code : 0x00000001 2.Code解析方式:1.打开计算器选择十六进制方式输入错误代码;2.转换为二进制数;3. 从右方开始从零开始升序数数;4. 数数中遇到1则记录所在位置值,依此位置值在对照表中查询"错误信息所在的bit",查询照错误信息; 3.对照表: 信息所在的Bit 错误信息 0 棋盘格标板中用于标定所需要的网格点没有都探测到 1 在标定矫正后,棋盘格标板对应的网格点通过矫正系数将其世界坐标系投影到图像后与实际坐标之间的平均距离差异超过阈值 2 棋盘格标板对应的网格点在矫正后与极线(epiploar)距离的平均值超过阈值 3 左相机自身的俯仰角在X方向超过阈值 4 左相机自身的俯仰角在Y方向超过阈值 5 左相机自身的俯仰角在Z方向超过阈值 6 右相机自身的俯仰角在X方向超过阈值 7 右相机自身的俯仰角在Y方向超过阈
+完整回答请参考FAQ: FAQ202172960
+### 问题: Android8.1 配置DreamCamera2预览回调流
+解决方案: Android8.1中 API2的预览回调通道在framework/ex尚未打通,因此只能使用API1的接口.在Android8.1中,PhotoModule使用的是API2,VideoModule使用的是API1,则在VideoModule中配置预览回调. 按如下方案进行修改,在autovideo模式下可以获得预览回调:
+
+
+diff --git a/src/com/android/camera/VideoModule.java b/src/com/android/camera/VideoModule.java
+old mode 100644
+new mode 100755
+index 9480a08..e39addd
+--- a/src/com/android/camera/VideoModule.java
++++ b/src/com/android/camera/Vi
+完整回答请参考FAQ: FAQ202172963
+### 问题: W307手表相册预览图片及视频回放界面预览效果如何修改
+解决方案: 1.相册预览图片的全屏显示方法: W307支持自适应分辨率显示 可通过修改GALLERY_PIC_ANIM_RECT和GALLERY_VP_DISPLAY_RECT两个参数修改显示效果 #define GALLERY_PIC_ANIM_RECT = DP2PX_RECT{36,36,203,203} //预览效果为显示在中间约为278×278的正方形范围内 #define GALLERY_PIC_ANIM_RECT = DP2PX_RECT{0,0,239,239} //图片预览全屏,显示范围400×400 同理,视频缩略图显示范围修改 #define GALLERY_VP_DISPLAY_RECT = DP2PX_RECT{36,36,203,203} //预览显示范围278×278 #define GALLERY_VP_DISPLAY_RECT = DP2PX_RECT{0,0,239
+完整回答请参考FAQ: FAQ202172966
+### 问题: DreamCamera 模式与功能开关
+解决方案: APP开关都在CameraUtil.Java中
+在  public static void initialize(Context context)  中的开关都是在cameraAPP中进行控制的,
+
+在private static void initializeCapabilitiesFromFeatureList(int[] featureList)中的开关都是在md.mk中进行配置的,对应着
+vendor/sprd/modules/libcamera/hal3_2v6/SprdCamera3Setting.cpp中的
+void SprdCamera3Setting::initCameraIpFeature(int32_t cameraId) 
+根据persist值在md.mk中进行配置
+
+以1.全景; 2.专业; 3.连拍为例
+CameraUtil.java (dre
+完整回答请参考FAQ: FAQ202172969
+### 问题: 开启card log模式W307相机出现死机或拍照失败等问题
+解决方案: 1.出现相机拍照卡死时可读取到的log信息: [MMIDC] MMIDC_AllocMemoryForReview ret=0 通过mmidc_flow.c中的GetCurrentFileBuffer()中执行的ret = MMIDC_AllocMemoryForPreview()时,返回0表示申请内存失败,否则会打印对应地址: [MMIDC] MMIDC_AllocMemoryForReview addr=0x%X 2.进入录像界面会立即出现卡死现象,可通过分析assert信息中的Memory状态(如下为例): magic____|avail___|size____|fragments|suspended|name_|
+87ED5A84 | 324844.|1024000.|   42.   |    0.   |Static Byte Heap
+8520D9D8 | 102392.
+完整回答请参考FAQ: FAQ202172970
+### 问题: SIMLOCK锁住后待机界面运营商显示问题
+解决方案: 运营商的显示是通过函数 MMIAPIPHONE_GetSimAndServiceString 获取的. (1)在simlock打开但是未锁定时,开机时MMI收到MN层上报的APP_MN_SIM_NOT_READY_IND消息,在HandleSimNotReadyInd中处理该消息, 该消息中带的参数 APP_MN_SIM_NOT_READY_IND_T 结构体中的reason 值(根据当前配置的simlock锁类型)可以是以下值: 代码:case MNSIM_ERROR_SIM_NETWORT_LOCKED: case MNSIM_ERROR_SIM_NETWORT_SUBSET_LOCKED: case MNSIM_ERROR_SIM_SP_LOCKED: case MNSIM_ERROR_SIM_CORPORATE_LOCKED: case MNSIM_ERROR_SIM_USER_L
+完整回答请参考FAQ: FAQ202172976
+### 问题: LTE PDT校准失败，频率低频段PDT数据=721409
+解决方案: 产线Simba校准LTE时出现低频校准失败; 对应地,WCDMA B5 B8 HDET校准已经调好了PDET网络和门限值,直通率较高; 此时产线可能出现比B5/8更低的频段PDET损耗依然过高的情况导致校准失败.如B28校准PDET失败(其它更低频段在研发阶段请密切关注下文所述的LOG检查步骤和校准要求): 打开校准LOG文件夹中的trace.log文件,可以查询到如下log,log贴在本文末尾. Band8A实际就是28A,错误代码L8A05代表LTE B28A PDT校准失败,以此类推, 一般可以看到,是由于PDET各range不线性导致校准fail,而线性检查是算法数据推算,取不到值的情况下同样也会报错.CAlgoPdtV4::GetResult:LTE Power detect Channel 27220 : None of the ranges(rang 0,1,2) is Li
+完整回答请参考FAQ: FAQ202172979
+### 问题: 平台工程编译时生成 PAC 文件关连的xts测试
+解决方案: A10 & A11版本: 使用ums512平台选择user版编译的生成文件对应后缀带有CTS_GSI/STS/VTS_GSI 1. 未带有任何xts后缀如ums512_1h10_Natv-user-gms_SHARKL5PRO_SUPER_R.pac 用来执行测试cts测试 2. 带有_CTS_GSI 后缀的pac文件表示可用来执行CTS-on-GSI测试 3. 带有_STS 后缀pac文件表示用来执行STS测试 4. 带有_VTS_GSI 后缀pac文件表示用来执行VTS测试 A12 & A13版本 使用ums512平台选择user版编译的生成文件对应后缀带有CTS_GSI_GKI/VTS_GSI_GKI 1. 未带有任何后缀如ums512_1h10_Natv-user-gms_SHARKL5PRO_SUPER_R.pac 用来执行测试cts测试 2. 带有_CTS_GSI或 _CTS_
+完整回答请参考FAQ: FAQ202172980
+### 问题: 如何修改MIPI DSI 接口电压
+解决方案: 调试过程中,有时需要把MIPI驱动电压调高,可以通过adb操作如下: DSI寄存器0x25 RW Bit[2:0]: LDO0P4_SEL, def=0x04 000: LDO_0P4:0.26V 001: LDO_0P4:0.28V 010: LDO_0P4:0.30V 011: LDO_0P4:0.32V 100: LDO_0P4:0.40V 101: LDO_0P4:0.44V 110: LDO_0P4:0.48V 111: LDO_0P4:0.52V 将DSI接口电压从0.4V改为0.48V: echo 0x25 0x06 > /sys/class/display/dphy0/reg_write 修改后确认是否修改成功: echo 0x25 0x1 > /sys/class/display/dphy0/reg_read cat /sys/class/display/dphy0/re
+完整回答请参考FAQ: FAQ202172981
+### 问题: 前摄不带对焦功能，怎么去除对焦圆圈？
+解决方案: /sprdroidr_trunk_21a/packages/apps/Camera2/src/com/android/camera/ 在 camera 为前摄的时候,去掉对焦区域和自动对焦. PhotoModule.java private void initializeCapabilities() { mCameraCapabilities = mCameraDevice.getCapabilities(); mFocusAreaSupported = mCameraCapabilities .supports(CameraCapabilities.Feature.FOCUS_AREA); mMeteringAreaSupported = mCameraCapabilities .supports(CameraCapabilities.Feature.METERING_AREA); mA
+完整回答请参考FAQ: FAQ202172982
+### 问题: vts_kernel_checkpoint_test 模块中 __main__.VtsKernelCheckpointTest#testCheckpointEnabled fail
+解决方案: 测试项: vts_kernel_checkpoint_test 模块中 __main__.VtsKernelCheckpointTest#testCheckpointEnabled fail 错误提示User Data Checkpoint相关: Traceback (most recent call last):
+  File "/home/gmsnew2/subowen/R/dailybuild/VTS/7483918/android-vts/testcases/vts_kernel_checkpoint_test/x86_64/vts_kernel_checkpoint_test/vts_kernel_checkpoint_test.py", line 115, in testCheckpointEnabled
+AssertionError: False is not true 
+完整回答请参考FAQ: FAQ202172985
+### 问题: UMS512无DCDC注意事项
+解决方案: 目前平台默认VDDCPU1有2种方案提供,一种是外置DCDC供电,一种是PMIC提供 硬件设计Option 1/2上下拉选择如下: Option Option1 Option2 UMS512+UMP510G5 0 0 UMS512+UMP510G5+ext DCDC(CPU1) 0 1 Reserved 1 0 UMS512+UMP510G5+ext DCDC(CPU1)+ LPDDR3/4 VDDMEMQ power supply for SDRAM 1 1 安卓11软件上默认只提供1H10 board(2H10暂未realease),带DCDC方案,如果客户采用无DCDC方案,需要向我司索取无DCDC sample code,不然开机进入kernel 后卡死,无异常显示log. 参考设计 软件版本 备注 UMS512_A_CS_A_SCH UMS512_1H10 带DCDC,兼容UMS
+完整回答请参考FAQ: FAQ202172986
+### 问题: W307相机切换摄像头时，如何保持原来的预览模式
+解决方案: 切换完sensor,如何保持原来的预览模式: 主要思路:在执行FlowStart()之前,调用MMIDC_SetCurrentMode() //若还保持录像的预览模式则设置DV_PREVIEW_MODE 代码逻辑: @mmidc_setting.c //切换前后摄操作 LOCAL void Watch_SwitchSensor(void) { SETTING_SENSOR_ID_E sensor_id = 0; sensor_id = MMIDC_GetSettingSensorID(); MMIDC_FlowFunction(DC_EXIT); //执行DC_EXIT后切换摄像头,然后执行FlowStart() if(SETTING_SENSOR_REAR != sensor_id) { MMIDC_SetSettingSensorID(SETTING_SENSOR_REAR); } e
+完整回答请参考FAQ: FAQ202172990
+### 问题: 横屏资源的编译方式
+解决方案: 当前的横屏编译处理方式: 先把所有资源文件拷贝到build/xxx/res目录下,然后执行脚本ProcessResDir.pl把横屏资源(MMI_RES_DEFAULT_H目录)覆盖竖屏资源(MMI_RES_DEFAULT目录),在make m=resource_main之后,clean的话会删除掉build/xxx/res目录. 这种编译方式,图片资源的目录和铃声资源的目录不一致,在增加铃声资源路径的时候,会遇到一些错误. 我们引入一种新的思路, 横屏资源按照竖屏资源的处理方案 具体方法如下: 1. 拷贝一份竖屏资源,
+   把MS_MMI_Main\source\resource\mmi_res_240x320拷贝一份,并且命名为MS_MMI_Main\source\resource\mmi_res_320x240
+   logo.bmp 需要手动改成横屏的图片
+   
+2. 
+完整回答请参考FAQ: FAQ202172992
+### 问题: 通话记录同时显示联系人名字和号码
+解决方案: 通话记录显示是在mmicl_wintab.c文件下的 AppendLogListItem 函数中实现的, 目前通话记录只显示名字(无名字时显示号码),若需要同时显示名字和号码, 则需要一个item content用于号码显示. 现在每个item 中item content最大值是6,在calllog中定义了0-5 的索引, #define CL_LIST_ITEM_TYPE_INDEX 0 //Image ID #define CL_LIST_ITEM_SIM_INDEX 1 //Sim Name #define CL_LIST_ITEM_NUM_OR_NAME_INDEX 2 //Contact Name or Number #define CL_LIST_ITEM_DATE_INDEX 3 //Date #define CL_LIST_ITEM_TIME_INDEX 4 //Time 
+完整回答请参考FAQ: FAQ202172993
+### 问题: UMP510G在外接模拟功放时的推荐接法是什么？
+解决方案: UMP510G在外接模拟功放时的推荐接法是SPK_P/N接外置模拟功放,如下图: 优点:相比耳机HP_R和AMPG_VCOM接外置模拟功放,避免了双响问题(即扬声器发声时,耳机右声道也同时发声的问题); 注意点:Codec输出端建议预留分压电阻位置,以便后期优化底噪问题需要;建议参考以下文档设计: 《基于UMP510G的外部音频模拟功放设计指导文档V1.0.pdf》,链接: https://unisupport.unisoc.com/file/index?fileid=33954 注意,SC27211G的外置模拟功放的推荐接法是耳机HP_R和AMPG_VCOM接外置模拟功放,可参考《基于SC2721和SC2720的外部模拟功放设计应用指导V1.2.pdf》,链接:https://unisupport.unisoc.com/file/index?fileid=30460 之所以和UMP510
+完整回答请参考FAQ: FAQ202173004
+### 问题: 如何通过USB枚举出来的端口发送AT指令？
+解决方案: 接上USB后,一般会枚举出来多个端口,其中SPRD LTE AT(WIQ) 用于PC侧工具往Modem收发AT命令,如果发现发送AT指令无响应,请使用userdebug版本按如下步骤排查: 1、执行如下命令,然后通过PC工具(如:串口调试助手)发送AT命令,如果命令窗口收到数据,说明USB通道正常,否则需要先解决USB通路的问题 adb root adb shell "cat /dev/ttyGS5" 2、上述步骤有收到数据的情况下,可以通过工程模式或命令的方式打开,操作完需要重启设备: 工程模式操作:*#*#83781#*#*进入工程模式->DEBUG&LOG->Log Settings->PC Log将EngPC Service打开即可. 命令操作:adb shell setprop persist.sys.engpc.disable 0 注:如果默认要开启engpc,可以到对应的mk
+完整回答请参考FAQ: FAQ202173017
+### 问题: Mocor平台移动多形态自注册新增上报字段
+解决方案: 1.前置条件 1.1使用的是Mocor平台 1.2已经合入移动多形态自注册功能,该功能正常,并且已经在移动终端适配管理平台查询到上报信息 2.新增字段 2.1新增字段的ID根据要求,从下列ID选取 Resource ID 字段 说明 6617 RouterMac 路由器Mac地址 6619 Brand 品牌 6620 GPU gpu信息 6621 Board 主板信息 6622 Model 型号 6623 Resolution 分辨率 更详细的信息,请参考《附件五:多形态终端上报接口规范V2.0.3(多形态二期)》,这个文档能在移动终端适配管理平台获取. 3.新增上报字段操作步骤 3.1新增宏定义 \MS_Code\Third-party\lwm2m\richinfo-lwm2msdk-M-v2.0\sdksrc\sdk路径下的object_dm.c 在object_dm.c文件中#def
+完整回答请参考FAQ: FAQ202173021
+### 问题: Mocor平台移动多形态自注册在终端适配管理平台上查询不到注册明细
+解决方案: 判断依据: 在log中能搜到"lwm2m_sdk_dm_get_devinfo,iret=-1" 原因: \MS_Code\MS_MMI_Main\source\mmi_app\app\dm\c路径下的mmicmccdm_interface.c 接口PUBLIC int MMICMCCDM_UEReportInfo(int resId, char **outbuff)走到 default分支. 解决方法: 1.查看接口PUBLIC int MMICMCCDM_UEReportInfo(int resId, char **outbuff)中的case的数值是否漏写. 如漏写6615-6618这几个case. 2. \MS_Code\Third-party\lwm2m\richinfo-lwm2msdk-M-v2.0\sdksrc\sdk路径下的object_dm.c中 上报字段的宏定义和接口
+完整回答请参考FAQ: FAQ202173022
+### 问题: camera framework编译
+解决方案: 1. 修改frameworks\base\core\java\android\hardware路径下的文件 framework/base/目录下Android.bp中,可以看到framework变为了framework-minus-apex,通过stem属性使编译出来的模块还叫framework.jar,这样修改的目的一个是为了向后兼容以前的jar名称,一个也是为了表示现在framework是减去了apex的模块,所以带个minus-apex的后缀. 那么编译的时候就要换成下面的命令:make framework-minus-apex 编译出framework.jar后,先用下面的命令remount: adb root; adb remount 然后把framework.jar push到system/framework/下面,同时还要删除这个目录下面的oat,arm,arm64三个目录(
+完整回答请参考FAQ: FAQ202173024
+### 问题: 联系人号码匹配规则
+解决方案: 1.号码匹配介绍(注意:号码匹配不要随意修改,会导致CTS认证过不了) 当来电、去电时,判断两组号码是否属于同一个号码,若能匹配到,将该联系人的cursor返回.号码匹配是后往前匹配的,如果后面连续N个数字相等的话,就认为是同一个号码.这里的N,即是N位号码匹配.Unisoc和Google默认号码匹配位数都是7位号码匹配,但是Unisoc加入了严格匹配逻辑,若要去除严格匹配逻辑,恢复为7位匹配,参考: ++ src/com/android/providers/contacts/ContactsDatabaseHelper.java	(revision )
+@@ -4346,7 +4346,7 @@
+ 
+     private void appendPhoneLookupSelection(StringBuilder sb, String number, String numberE
+完整回答请参考FAQ: FAQ202173025
+### 问题: [AndroidR][ADB][Go]如何默认打开USB调试，去掉USB调试确认弹窗
+解决方案: 适用版本:AndroidR user版本 适用场景:例如自动化测试等场景,需要在开机后可以直接使用USB调试,无需手动打开. 修改方案: 修改1为默认打开usb调试,修改2为默认不弹框 修改1: build/core/main.mk diff --git a/core/main.mk b/core/main.mk index 6b34939..dbae91f 100755 --- a/core/main.mk +++ b/core/main.mk @@ -270,7 +270,8 @@ # Target is secure in user builds. ADDITIONAL_DEFAULT_PROPERTIES += ro.secure=1 ADDITIONAL_DEFAULT_PROPERTIES += security.perf_harden=1 + ADDITIONAL_DEFAU
+完整回答请参考FAQ: FAQ202173026
+### 问题: WIFI和数据上下行在状态栏同时出现
+解决方案: [功能说明]数据业务和wifi 共存是Google在Android8.1 上新增的特性. [功能路径]该功能默认开启,可通过如下路径更改状态:开发者选项->始终开启移动数据网络. [修改方案]如需默认关闭该功能,可添加如下修改: frameworks/base/packages/SettingsProvider/res/values/defaults.xml <integer name="def_dock_audio_media_enabled">1</integer> + <integer name="def_mobile_data_always_on">0</integer> <!-- Notifications use ringer volume --> <bool name="def_notifications_use_ring_volume">true</bool> framew
+完整回答请参考FAQ: FAQ202173028
+### 问题: 非4：3比例的图片如何适应到320X240屏幕
+解决方案: IMG_PROC目前只支持图像等比例缩放,因此一个非4:3比例的原图经过GUIIMG_Decode缩小后,得到的buffer长宽与lcd尺寸不匹配.
+
+如果希望得到的buffer长宽与lcd尺寸匹配,需要为GUIIMG_Decode的入参display_ptr的crop_rect_ptr成员赋值(可按照如下方式赋值),赋值之后原图片将首先根据此值被截取,截取下来的部分再缩小成目标尺寸
+
+赋值方式:
+目标分辨率:dest_height * dest_width
+原图分辨率:src_height * src_width
+
+m = src_height / dest_height   (m为整数)
+n = src_width / dest_width      (n为整数)
+
+a = max(m, n)
+
+所要截取的矩形的宽 dest_width * a
+所要截取的矩
+完整回答请参考FAQ: FAQ202173031
+### 问题: 音频干扰导致GSM调制谱恶化左右不对称问题-测试注意事项
+解决方案: GSM调制谱性能偏差,左右指标不对称,30khz TX power功率偏低,且受外界音量影响,随着外界声音增大,恶化现象减弱. 音频mic mute时,GSM调制谱恶化且左右不对称,30khz TX power偏低,PCL0的调制谱数据如下图所示: 若切换至扩音器模式,GSM调制谱可恢复正常水准,30khz TX Power较高且保持稳定,对比结果如下图所示: 根据3GPP协议51010,测试上行调制谱时需要将数据源设置为一个随机数并开启loop back功能,以消除音频影响. 安利及罗德仪表的挂测软件中会自动开启loop back功能,但旧版RFtester没有添加对应配置,调制谱挂测数据可能有误,建议客户使用最新版RFtester或其他挂测软件确认调制谱性能. 手动测试时需注意对应的仪表设置,如CMW500对应设置应为: GSM signaling——Config…——Connecti
+完整回答请参考FAQ: FAQ202173033
+### 问题: 根据客户需求修改信号强度显示图标
+解决方案: 如何调整信号棒的格数? 信号棒的处理在函数HandleScellRssiInd函数中 目前的格子数对应的是5格,如果想修改格子数请按照以下内容修改 1.修改g_service_rxlev_map数组的内容为对应的格子数大小 2.修改格子数对应的处理函数算法 减少或者增加if(g_service_rxlev_map[rxlevnindex][xxx] <= srri_ind.rxlev)语句的判断次数 3.修正信号棒图片的显示并修改图片资源. 附当前平台信号棒对应的强度,请参考: 信号强度在函数HandleScellRssiInd函数中修改 修改g_service_rxlev_map对应的范围值 目前T117的信号轻度范围 GSM rxlev = RSSI + 110 五格:RSSI>-89dB 四格:-89dB>=RSSI>-97dB 三格:-97dB>=RSSI>-103dB 两格:-1
+完整回答请参考FAQ: FAQ202173038
+### 问题: 关于ESM Flag相关疑问解答
+解决方案: 不同运营商可能对 ESM FLAG 关闭或开启是有要求的. ESM: EPS Session Management, EPS 会话管理,主要负责处理 UE 和网络侧的 EPS 承载上下文. 上层在设备开机后 SIM 卡上报 APP_MN_SIM_READY_IND 时会 通过接口 MMIAPIPDP_ActiveInternalPdp 配置 default 一路的 apn 用于 init attach,如果不配置,则ESM FLAG就是关闭的. 针对不同运营商的客制要求,客户可通过SIM卡的mcc及mnc进行拦截选择是否配置default 一路的 apn 间接控制 ESM FLAG 的 开启关闭. 参考修改如下: LOCAL MMI_RESULT_E HandleSimReadyInd( DPARAM param ) { ...... apntype_index = MMIAPICONNE
+完整回答请参考FAQ: FAQ202173042
+### 问题: T117关于相机预览界面图片部分变为透明或存在黑边问题说明
+解决方案: 问题说明: Camera预览界面的图片部分黑色会变为透明色主要是由于,黑色部分的图片的RGB值与Camera OSD层设置的colorkey参数的的值是一致的,图片资源在完成解码操作后会先显示到buffer/layer上,此时,该层会在图片存在透明度的地方用colorkey的颜色进行填充,在向OSD层搬移的过程中,再将colorkey的颜色过滤掉,若colorkey颜色的RGB值也是与图片黑色部分的RGB值相同,在搬移过程中也会将该颜色过滤掉,导致在上层预览界面显示为透明色. Camera界面图片预览出现黑边问题,也是源于图片边缘(某些点存在透明度),从ARGB888->RGB565颜色空间转换的数值缺陷引起的,此问题在平台上也是一直存在. 目前从算法优化角度,其问题复杂度较高,相关修改还存在一定风险,平台目前暂未释放相关方案. 建议从编辑图片相关参数入手,可以通过修改图片出问题部分的AR
+完整回答请参考FAQ: FAQ202173043
+### 问题: 如何从log中确认VoLTE图标是否显示？
+解决方案: 1. 确认一下当前VoLTE白名单功能是否关闭,确认方法如下: #*8378#1# -> Telephony -> IMS White List Set -> Close/Open 2. 如果VoLTE功能是开启的状态,可以在接口MMIAPIPHONE_volte_icon_display_set中增加打印信息打印s_volte_icon_display_set[dual_sys]的值查看是否正确. 3. 刷新VoLTE图标的接口:StatusAreaSetVolteInfo 附相关参考log信息如下: 96 5693552-1 18:23:14.557 -- Time: 715302 StatusAreaSetVolteInfo dual_sys=0, index=0 97 5693553-1 18:23:14.557 -- Time: 715302 MMIAPIPHONE_GetIms
+完整回答请参考FAQ: FAQ202173044
+### 问题: T117如何降低FM暂停状态下灭屏待机电流
+解决方案: 问题分析:造成FM在暂停状态下灭屏电流较高的主要原因主要有: 1.若使用的是短天线对FM进行的搜台,需要在暂停状态下恢复天线的GPIO值,否则由于短天线是内置天线,产生的电流较大. 2.平台目前在FM暂停状态下底层的FM不是处于关闭状态,只是处于一个挂起状态,即底层FM依然在运行,而关闭FM后FM后台 播放的两种状态下底层FM都是处于关闭状态的,所以这两种状态下没有灭屏电流较高的现象产生. 解决方法: 1.在FM执行暂停操作时,恢复内置短天线的GPIO值. 2.在FM暂停时,关闭底层FM的运行状态同时调整上层FM的逻辑状态. 具体代码调整如下: @mmifm_app.c PUBLIC BOOLEAN MMIFM_Pause(BOOLEAN suspend_by_fm)
+{
+     ...
+     FM_PlayStop();
++    FM_Close();
++    #if
+完整回答请参考FAQ: FAQ202173046
+### 问题: DreamCamera2 人像拍照尺寸设置
+解决方案: 1. 首先判断是后置单摄人像还是后置双摄人像 在md.mk中对persist值进行设置: device\sprd\XXXX\XXXX\module\camera\md.mk 2. 如果是后置双摄人像则可通过设置 persist.vendor.cam.res.bokeh 可以使用ADB命令进行测试,例如 adb root
+adb remount
+adb shell setprop persist.vendor.cam.res.bokeh RES_5M
+adb reboot 3. 如果是后置单摄人像则可以通过设置 persist.vendor.cam.res.blur.ba 可以使用ADB命令进行测试,例如 adb root
+adb remount
+adb shell setprop persist.vendor.cam.res.blur.ba RES_5M
+adb reboot 
+完整回答请参考FAQ: FAQ202173049
+### 问题: W307如何提高录制视频的清晰度
+解决方案: 方案一: 在DRECORDER_StartRecord之前调用DRECORDER_ParamCtrl接口设置录像的bitrate参数. 平台默认的录像质量为QUALITY_MID编码码率为266000,可以将录像质量设置为QUALITY_HIGH 设置方法: @mmidc_flow.c LOCAL BOOLEAN StartRecord(void) {      ...      {  	MMISRVAUD_SetRoute(MMIDC_GetAudioHandle(), MMISRVAUD_ROUTE_EARPHONE);      } +    DRECORDER_ParamCtrl(DRECORDER_PARAM_CTRL_VIDEO_QUALITY, 2, NULL);      ret = DRECORDER_StartRecord(&recorder_start_t);    
+完整回答请参考FAQ: FAQ202173050
+### 问题: 使用fastboot刷写分区时报错：'Failed to write partition table'
+解决方案: [问题现象] 使用fastboot刷写分区时报错:'Failed to write partition table'. [原因分析] 在执行delete、create或resize动态分区等命令时报的错,因为在执行这些操作时会先进行一些基本的分区表的检查,比如槽位数(slot_number)、super分区的size以及安全上下文等,如有不匹配,则出现上述报错. [解决方案] 1. 若是super分区size不匹配,即BOARD_SUPER_PARTITION的值(单位:B)与{board}.xml中配置的super分区size(单位:MB)不一致导致的错误,则:修改其中一个的值,使其与另一个相同.BOARD_SUPER_PARTITION_SIZE的值一般在/device/sprd/<soc>/<board>/module/partition/md.mk中定义. 2. 若是 super分
+完整回答请参考FAQ: FAQ202173061
+### 问题: DreamCamera2双击音量下键熄屏快拍功能设置默认关闭
+解决方案: 双击音量下键熄屏极速抓拍功能是DreamCamera2应用设置项里面的一个功能,通常有三个选项供用户选择:熄屏使用后置摄像头抓拍,熄屏使用前置摄像头抓拍和关闭.如何修改这一项的默认值? 通常修改setting列表中的默认值,只需要找到相应的key值,在对应的dream_camera_arrays_camera_part.xml、dream_camera_arrays_photo_part.xml和dream_camera_arrays_video_part.xml中相应的修改即可. 参考路径\vendor\sprd\platform\packages\apps\DreamCamera2\res\values\dream_camera_arrays_camera_part.xml 但此项仅修改是不生效的,     <!-- quick capture -->
+    <integer-ar
+完整回答请参考FAQ: FAQ202173069

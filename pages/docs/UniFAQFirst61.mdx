@@ -1,0 +1,324 @@
+### 问题: SC9863A+SR3595D分集开关逻辑不通（MIPI控制方式）
+解决方案: 分集开关mipi控制,用到的是RFFE1这组mipi网络,除了常规检查逻辑配置和硬件匹配外,还需要重点检查下Pinmap.c文件,客户从平台取pinmap需要根据自己的board自行修改(平台是GPIO控制,没有用到RFFE1这组网络,此RFFE1网络是NC的).下图是正确的Pinmap配置:
+参考FAQ: FAQ111515,含图片
+### 问题: Unable to download "makemytrip" app from play store
+解决方案: 此项目硬件不支持 autofocus , 所以play store 不给下载. 属于google 原生设计.如果硬件不支持但强行加入 autofocus , 有可能会导致cts 测不过或 app 使用上出现异常等其他问题. 还请和客户说明
+参考FAQ: FAQ111523
+### 问题: 自定义手动搜网运营商名称
+解决方案: Logic code : 将如下文件中的阀值修改为想要数据即可. vendor/sprd/telephony-res/operatorname_overlay/frameworks/base/core/res/res/values/numeric_operator.xml 例如: 有些运营商搜网结果中会有 "CLARO PER", 但是运营商要求这个要显示 "Claro" 我们需要将如下item修改即可, <item>71610=CLARO PER</item> 修改为 <item>71610=CLARO</item>
+参考FAQ: FAQ111538
+### 问题: 在浏览器中搜索歌曲进入播放界面，部分图片水印效果差
+解决方案: 在浏览器中搜索歌曲进入播放界面,部分图片水印效果差 浏览器是com.google.android.apps.chrome
+参考FAQ: FAQ111541
+### 问题: 根据mcc mnc spn配置voicemailNumber
+解决方案: 需要到如下文件中配置 vendor/sprd/platform/packages/apps/CarrierConfig/assets/carrier_config_20404.xml 参考如下配置, <carrier_config spn="Hollandsnieuwe"> //这个就是根据mcc + mnc + spn配置voicemial的 <string name="vmnumber">1233</string> <string name="roamingvm">+31637001233</string> </carrier_config>
+参考FAQ: FAQ111551
+### 问题: 连接设备显示显示不美观
+解决方案: diff --git a/src/com/sprd/settings/wifi/Station.java b/src/com/sprd/settings/wifi/Station.java index 4d9b1c0..d3f3451 100644 --- a/src/com/sprd/settings/wifi/Station.java +++ b/src/com/sprd/settings/wifi/Station.java @@ -43,6 +43,7 @@ class Station extends Preference { stationIP = ip; isConnected = connected; isWhitelist = whitelist; + setIconSpaceReserved(true); if (stationName != null) { setTitle(stationName); if (isConnected) {
+参考FAQ: FAQ111557
+### 问题: 谷歌maps go定位不准确，与实际位置偏离1000米
+解决方案: 问题分析: 根据客户提供的log分析,在gps请求后会有gps的位置信息返回,本地通过经度纬度查询网站看位置是在附近,与测试同事描述的测试地点一致,但测试同事反馈测试中谷歌maps定位的点的位置与实际所处位置有很大的误差,而且测试在移动过程中位置点也随之更新,地图上更新的位移与方向与实际中的一致,确认gps提供的位置信息是实时更新的,只是存在较大距离的偏差.通过经度纬度查询网站查询(http://www.gpsspg.com/maps.htm)在同一经度纬度数值下,使用不同的地图对应在地图上显示的位置不一致.不同地图在同一经度纬度下位置显示有偏差.并且地图上同一位置在不同的地图经度纬度坐标显示上也有差异,故确认当前现象是由于使用的谷歌maps导致并不是定位不准,使用高德等地图不会出现此问题.
+参考FAQ: FAQ111560
+### 问题: 如何查看LTE band支持情况
+解决方案: 如果log中有开机的流程,那么会有一条消息"MSG_ID_CMD_ASM_STORE_INFO",其中会有band支持情况的具体信息,如下实例中,表示UE支持5个TDD LTE band(38/39/40/41/34)以及6个FDD LTE band(1/3/5/7/8/20).
+参考FAQ: FAQ111562
+### 问题: 去掉USSD铃声
+解决方案: 将下面路径下文件中的notifyIncomingUssd(context);语句注释掉即可,一共有两处.   /packages/services/Telephony/src/com/android/phone/PhoneUtils.java  
+参考FAQ: FAQ111565
+### 问题: SC9820W平台LPDDR2最大容量支持能到多少？
+解决方案: SC9820W上,当前最大支持2GB 的LPDDR2/3.
+参考FAQ: FAQ111576
+### 问题: LTE 分别测试主辅天线的OTA性能
+解决方案: LTE OTA测试时TIS 默认是 主+辅的测试数据 如果要单独看主天线或者辅天线的性能可以通过如下设置 1.开机通过暗码进入工程模式(平台默认*#*#83781#*#* ),在"HARDWARETEST"页面找到 "天线设置" 2.进入天线设置,按需求选择LTE的天线配置,重启后生效.
+参考FAQ: FAQ111574
+### 问题: Android8.1 给手机或者账户上的联系人添加头像保存后图像泛绿，退出重新进入该联系人详情显示正常
+解决方案: 及时清空colorFliter,并且设置Activity 的android:configChanges="orientation"提高Activity效率 vendor/sprd/platform/packages/apps/SprdContacts/AndroidManifest中 添加:android:configChanges="orientation" vendor/sprd/platform/packages/apps/SprdContacts/src/com/android/contacts/widget/QuickContactImageView.java中 添加: this.clearColorFilter();及时清空colorFliter
+参考FAQ: FAQ111587
+### 问题: 安装QQ应用，出现一次10分钟左右才安装完成
+解决方案: 1)请客户取消预置此应用,在进行相关测试,发现不再复现. 请客户跟此应用提供者进行沟通此问题.
+参考FAQ: FAQ111591
+### 问题: he phone has no option to switch from a Video Call to a Voice Call (during a Video Call active).
+解决方案: VOLTE网络环境下,展讯手机是支持从语音转为视频通话,或者视频转为语音通话. 其中在语音通话时,界面按钮中"视频通话"选项为测试机发起视频通话请求按钮;在视频通话时,界面中"语音通话"选项为测试机发起视频通话回落为语音通话请求按钮.目前3G网络环境下,协议不支持语音通话升级与视频通话回落,只在VOLTE环境可以相互切换.
+参考FAQ: FAQ111593
+### 问题: android.content.cts.ContentProviderCursorWindowTest#testQuery的解决方案
+解决方案: 修改原理 Google增加Parcel格式检测的patch,读取Parcel字段的格式需要与构造Parcel字段的格式匹配. 修改方案 在后续CTS版本上复测ContentProviderCursorWindowTest case, 如果google仍未解决该问题,可以考虑提TR.  
+		 
+			   
+修改路径
+		 
+
+		 
+			http://review.source.spreadtrum.com/gerrit/#/c/489562/
+		 
+
+		 
+			http://review.source.spreadtrum.com/gerrit/#/c/489564/
+		 
+
+		 
+			CursorWindowContentProvider
+case中读取Parcel字段的格式与构造Parcel字段的格式不匹配.未遵循该规则.
+参考FAQ: FAQ111600
+### 问题: 暗码获取设备信息功能
+解决方案: 获取SPN和IMSI接口均位于TelephonyManager.java中,具体接口如下: >SPN: String getSimOperatorName() String getSimOperatorName(int subId) String getSimOperatorNameForPhone(int phoneId) >IMSI: String getSubscriberId() String getSubscriberId(int subId)
+参考FAQ: FAQ111608
+### 问题: 北斗卫星导航系统组成
+解决方案: BDS导航系统主要由空间段、地面段和用户段组成 1.空间段:由5颗地球静止轨道(GEO)卫星、27颗中地球轨道(MEO)卫星和3颗倾斜地球同步轨道(IGSO)卫星组成.GEO卫星轨道高度35786Km,分别定点于东经58.75度、80度、110.5度、140度和160度;MEO卫星轨道高度21528Km,轨道倾角55度;IGSO卫星轨道高度35786Km,轨道倾角55度. 2.地面段: 地面段由主控站、上行注入站和监测站组成 3.用户段: 用户段由北斗用户终端以及与其他GNSS 兼容的终端组成.
+参考FAQ: FAQ111607
+### 问题: 通话界面不显示归属地信息
+解决方案: 来电归属地是CMCC和CUCC版本的功能,属于运营商需求,非cmcc/cucc版本无此功能. 如CQ描述,如果想显示显示归属地信息,请做如下配置. 尝试在sprdroid8.1_trunk_18a/vendor/sprd/feature_configs/base/config.mk中加入 SystemUIAudioProfile \ + CallerAddressPlugin
+参考FAQ: FAQ111611
+### 问题: 北斗二代的信号特征
+解决方案: 北斗二代的频段及信号特征: B1: 1559.052~1591.788MHz B2: 1166.22~1217.37MHz B3: 1250.618~1286.423MHz 信号 中心频点 码速率 信号复用方式 带宽 调制方式 服务类型 (MHz) (Mcps) (MHz) B1(I) 1561 2.046 CDMA 4.092 QPSK 开放 B1(Q) 2.046 授权 B2(I) 1207 2.046 24 QPSK 开放 B2(Q) 10.23 授权 B3 1269 10.23 24 QPSK 授权
+参考FAQ: FAQ111613
+### 问题: BT功率等级要求
+解决方案: 1.蓝牙功率等级分为class1~3. 2.蓝牙功率等级对应的功率范围如下: class1:0~20dBm. class2:-6~4dBm. class3:≤0dBm.
+参考FAQ: FAQ111506
+### 问题: 9832E、7731E平台是否支持DC-HSDPA？UMTS下上下行速率分别能达到多少？
+解决方案: 你好,不支持DC-HSDPA.
+3G速率能力是下行Cat 14,对应21.1Mbps;上行Cat 6,对应5.76 Mbps
+参考FAQ: FAQ111629
+### 问题: 7731E、7731、7701平台是否支持3个实体SIM卡的三待单通
+解决方案: 你好,77xx系列平台目前没有三个实体sim卡的三待方案.
+参考FAQ: FAQ111631
+### 问题: 是否支持GPSone？
+解决方案: 你好,我司平台暂不支持GPSone
+参考FAQ: FAQ111632
+### 问题: 请问7731E平台支持的maximum GPRS/ EDGE Multislot Class是多少？
+解决方案: 你好,7731E平台支持的maximum GPRS/ EDGE Multislot Class是12
+参考FAQ: FAQ111633
+### 问题: 7731E、9850、9832E、9863平台是否支持VAMOS I？
+解决方案: 你好,7731E、9850、9832E、9863平台均支持VAMOS I.
+参考FAQ: FAQ111634
+### 问题: 7701、7731、7731E平台是否支持CSD(Circuit Switch Data)功能？
+解决方案: 你好,7701、7731、7731E平台不支持CSD(Circuit Switch Data)功能
+参考FAQ: FAQ111635
+### 问题: 32K-LESS方案有那几种模式？
+解决方案: 32-LESS方案有如下几种模式: 1.High Current Mode/ Normal Mode 该模式需要26M clock的场景,e.g. 手机的唤醒状态;为保证足够的精度和幅度,驱动电流较大,大约1.5mA 2.Low Power Mode 在DeepSleep场景下使用,为节省功耗,降低了晶体的驱动电流;因为与Normal Mode下的时钟频率有偏差,所以会导致32K频率也会有偏差. 该模式又可分为Low Power Mode和Ultra Low PowerMode A)Low Power Mode(现用) 驱动电流大约200uA 频率偏差大约10ppm之内 CDAC保持 B)UltraLow PowerMode(处于验证阶段) 驱动电流大约50uA 频率偏差大约200ppm CDAC自动降低
+参考FAQ: FAQ111746
+### 问题: GPS天线效率要求
+解决方案: GPS天线效率是GPS整机性能非常关键的参数 展讯对GPS天线的要求如下: Total efficiency>40% Upper hemisphere >15% VSWR<2
+参考FAQ: FAQ111670
+### 问题: 受限驻留找网策略
+解决方案: 单卡受限驻留后会启动受限timer,等待受限timer超时后再找normal服务的网络 前5次受限timer的时长为5s,大于5次后受限timer的时长为30s 如果UE是双卡开机,当一张卡受限驻留后,启动受限timer的时长为1min; 时长为1min的原因是,如果一张卡频繁的找网会影响另外一张卡的业务,所以当一张卡受限驻留时,启动受限timer的时长为1min;
+参考FAQ: FAQ111677
+### 问题: [SC9820E][CARON][Tiger K1]Clear Codes for Claro Colombia
+解决方案: cp侧clear code值均已实现,上报给上层
+参考FAQ: FAQ111685
+### 问题: LTE ACLR不同带宽下不一样 ，有些带宽正常 ，有些带宽余量小 ？
+解决方案: 主要从两个方面来解决 : 1.RF 匹配 优化 . 2.4G PA电源排查 ,VBAT 及 VDDWPA外灌处理.
+参考FAQ: FAQ111692
+### 问题: SC7701 双卡是否可以支持双3G网络
+解决方案: 7701不支持双3G网络,
+ SIM1 WG + SIM2 G ONLY
+参考FAQ: FAQ112214
+### 问题: BT/WiFi展讯调试工具
+解决方案: 当前展讯为了满足客户调试BT/WiFi需求,自主研发两种调试工具;pandora调试工具和connectivity_test测试工具,两者都适用于板端的研发测试,快速便捷.
+参考FAQ: FAQ111744
+### 问题: SGPS的噪声扫描功能使用方法
+解决方案: 1、输入*#*#2266#*#*进入SGPS工程模式; 2、在INFOR Page打开SGPS switch后,切换到NOISE Page可实现Noise scan功能 3、将手机放置在屏蔽盒中,一般设置NOISE Page的参数设置为 period=120,times=2,max.Y=100 period——每次测试的周期(s) times ——测试次数 max.Y——纵坐标最大值
+参考FAQ: FAQ111753
+### 问题: LTE空闲态的S准则和R准则概述
+解决方案: S准则: S即selection,小区选择准则.终端能正常驻留到一个小区的一个基本条件是该小区可以提供满足S准则的服务水平,即只有在一个小区的测量评估结果满足S准则时,才有可能成为小区选择和重选目标小区. Srxlev ＞ 0且 Squal ＞ 0 其中: R准则: R即Reselection,同频/同优先级异频小区重选准则. 小区重选准则中s 代表服务小区, Rn 代表邻区,定义如下: 其中: Qmeas 小区重选中RSRP测量值 Qoffset 对于同频小区,如果Qoffsets,n有效则Qoffset即 Qoffsets,n, 否则Qoffset为0. 对于异频小区,如果Qoffsets,n有效则Qoffset= Qoffsets,n + Qoffsetfrequency ;否则Qoffset= Qoffsetfrequency. 小区重选执行条件: 　UE驻留在当前服务小区超过1S 　在Treselection时间段内,邻区比服务小区Rank值更高
+参考FAQ: FAQ111758,含图片
+### 问题: Noise Floor解读
+解决方案: SNR为零 ,即系统所接收的只有Noise,没有信号输入 那此时的灵敏度称为Noise Floor
+参考FAQ: FAQ111843
+### 问题: GSM小区重选的常见触发条件及判断方法
+解决方案: 1. 服务小区的C1值连续5s小于0 2. 邻区的C2值连续5s大于服务小区的C2值 判断方法: MPH_RR_CELLS_INFO_REQ 消息中会带有服务小区和邻区的C1、C2值,在发生重选的时间点附近可以通过此消息中的C1、C2值简单判断是否是由于C1、C2值引发的重选. 3. MS监测出下行链路故障 判断方法:出现MPH_ERROR_IND消息 4.MS随机接入时,在重传最大次数后仍不成功 判断方法:出现RR_T3146_EXP_IND或者RR_T3126_EXP_IND消息
+参考FAQ: FAQ111815
+### 问题: 32k不稳对通信功耗的影响
+解决方案: 32k不稳,包括真的32k晶振不稳或者32kless方案中输出的虚拟32k时钟不稳. 通信物理层每次醒来收paging时都是通过32k计数来恢复定时的.当32k不稳时,恢复的时钟就不准,影响到paging接收和测量结果. 当本小区测量值偏差较大时,会引发重选测量过程,甚至会真的导致小区重选.这时在电流图上会看到较多凸起,每次持续数秒,电流高度又达不到AP的高度.并会导致待机功耗增加
+参考FAQ: FAQ111830
+### 问题: 为什么插上USB后通信功耗问题消失了
+解决方案: USB对通信功耗有两个方面的影响 1、影响32k,当插上USB后,整个手机不会Deep sleep,这时26M时钟是一直工作的.一些因为32k不稳导致的功耗问题就会消失. 2、同样,插上USB后,整个手机不Deep Sleep,一些因为Deep sleep流程问题导致的Sleep时电流底高的问题,会被USB本身的电流掩盖掉,看起来像消失了一样
+参考FAQ: FAQ111832
+### 问题: Clock现在有几个默认消息组？
+解决方案: 9.0 alarms现在加入了自动分组功能,分别为: 1.UPCOMING_GROUP_KEY = "1"; 2.MISSED_GROUP_KEY = "4"; 分别代表将要响的闹钟和错过的闹钟.
+参考FAQ: FAQ111835
+### 问题: 手机与基站通信15
+解决方案: 前面章节讲了根据天线端口,PCI,带宽等值,可以推算出小区参考信号具体的时频域位置. 本章节还将继续从时频域内容填写的角度,描述除了同步信号和参考信号外,下行控制信号和数据信号占据那些位置. FDD中每个下行子帧被分成2部分:控制区域(control region)和数据区域(data region).TDD中除了下行子帧,还包括TDD中特殊子帧的DwPTS部分.控制区域主要用于传输下行L1/L2控制信令,包括PCFICH/PHICH/PDCCH;数据区域主要用于传输数据,包括PSS/SSS、PBCH、PDSCH和PMCH. 只有下行才区分控制区域和数据区域,上行是不区分的. 此图来源于《深入理解LTEA》 从上图中,如果下行带宽小于10RB,也就是带宽为1.5M的情况下,控制域 对象是2-4个symbol,其他都是1-3个symbol. 下一章节将会按照下行控制信令,逐个讲述每个控制信令应该放置的时频域位置.
+参考FAQ: FAQ111870
+### 问题: 手机与基站通信16
+解决方案: 前面章节讲了下行控制和数据信号的时频域位置,但是信号分布并不是用RE作为最小单位的.控制信号发送接收是有要求的. 本章节主要描述控制信号收发的最小单位REG. 此图来源于《深入理解LTEA》 还是上面这张图,从上图中,可以看出,在控制区域内,还有参考信号,参考信号是不能携带控制信息的,需要将其排出在外.另外一个REG等于4个RE,收发中要求是连续的四个,那么上图的控制域中,第一个symbol里有2个REG,symbol上有3个REG,symbol上有3个REG,一共可以携带2+3+3=8个REG. 扩展一下,这是一个RB携带的REG数字,如果带宽是20M的,那么结果就是8*100=800REG, 其他依次类推. 下一章节将会分章节介绍下行控制信号位置和内容计算.
+参考FAQ: FAQ111872
+### 问题: BT的传导数据DH5，2DH5，3DH5的含义？
+解决方案: BT的传导数据含义如下: DH5:packets,协议版本为V1.2,BR(basic rate),1Mbps速率,调制方式为GFSK(高斯频移键控). 2DH5:packets,协议版本为V2.1,EDR(enhanced data rate),2Mbps速率,调制方式为π/4 -DQPSK(差分正交相移键控). 3DH5:packets,协议版本为V2.1,EDR(enhanced data rate),3Mbps速率,调制方式为8DPSK(8相差分相移键控).
+参考FAQ: FAQ111857
+### 问题: VOLTE 紧急呼叫:当UE遇到380状态字问题分析总结
+解决方案: 第一,包含PAI头部(P-Asserted-Identity),且内容必须等于注册(SIP Register)时所带PATH头部的最后一项,即PCSCF的IP地址或者FQDN; 第二,包含ims-3gpp XML,有verstion属性,<alternative-service>子元素<type>设置为emergency.只有当这两个条件都满足的时候,UE才会继续选择合适的domain进行紧急呼叫.针对这两个条件,常出现由于运营商网络配置不当,造成的异常情
+参考FAQ: FAQ111881
+### 问题: 在移动实验室测试，由于环境很复杂，如果遇到注册问题可以通过下面方法解决
+解决方案: 先了解测试case band,目前有些入库手机不支持band38 通过at+cops?查询如果返回1,说明是手动搜网,需要修改为自动搜网 UE认为仪器的HPlmn为FPLMN 如果是2或者3原因,都可以通过at+spselmode=1解决 如果UE注册到外网,需要通过重启手机解决,由于注册外网一般都会被reject,根据协议要求只能重启解决 如果以上原因都不是,需要抓LOG解决
+参考FAQ: FAQ111882
+### 问题: SC9863A平台前摄支持16M的注意事项。
+解决方案: SC9863A平台最高支持后摄16M,前摄16M 硬件上连接4lane,还需要注意dts配置成host = "dcam0", 只有Dcam0支持16M,Dcam1最高只支持8M,前摄默认配置是dcam1.
+参考FAQ: FAQ111924
+### 问题: GPS实测无信号排查方法
+解决方案: GPS实测无信号,可从以下4点进行排查 1.时钟问题 ①.如果时钟为TSX方案,需要先进行AFC时钟校准,时钟准确时GPS才能正常工作 ②.如果是TCXO方案,测试GPS不需要校准时钟 2.GPS射频链路问题 ①双工器链路要求:双工器封装准确,且GPS链路前后处于直通状态 ②GPS_LNA链路要求:输入、输出、供电、地脚封装准确,供电电压正常,LNA_EN在工作时为拉高 ③电容电感要求:RF线路不能断开,到地的物料准确 ④其他:某个物料存在虚焊 3.天线问题 ①.在天线焊盘出焊接1根5CM长度的金属线当作天线,看是否能正常搜星 4.干扰问题 ①.如果是干扰问题,一般能搜索到卫星信号,但CN0变差,需要单独对干扰进行分析
+参考FAQ: FAQ111930
+### 问题: Android8.1和Android9.0如何确认USB控制器型号？
+解决方案: 不同的芯片平台,使用的USB的控制器,可以通过获取如下信息来确认控制器的型号: sp7731e_1h20:/ # cat config/usb_gadget/g1/UDC musb-hdrc.0.auto sp7731e_1h20:/ # 表示使用的是musb 控制器
+参考FAQ: FAQ111939
+### 问题: Android8.1和Android9.0 执行adb remount失败如何处理？
+解决方案: android8.1和android9.0加入了system as root的保护机制.需要解锁之后,才能执行adb remount. 如果在执行adb remount命令提示如下: remount of the / superblock failed: Permission denied remount failed 需要先执行解锁,才能进行adb remount动作. 注意: 解锁过程需要,使用解锁工具,faq上无法上传该附件.客户需要解锁,请联系对应的软件接口人,索要解锁工具.
+参考FAQ: FAQ111929
+### 问题: SOC设计中需要平衡的因素
+解决方案: 在做SOC设计的权衡时,有五点需要考虑. 第一是时间,包括事务或指令周期的划分、用于加速执行指令的基本流水线机制和优化程序执行的参数周期. 第二是面积,由于特定功能而导致的面积开销. 第三是功耗,功耗既影响性能也影响实现. 第四是可靠性,在处理深亚微米影响时,可靠性变得重要. 第五是可配置性,为权衡是否一次性设计的费用提供参考.
+参考FAQ: FAQ111961
+### 问题: WCDMA开机找网机制是怎样的
+解决方案: 1 先搜索历史频点 2 若历史频点的小区都无法驻留,则搜索手机支持的所有band 注:历史频点信息会存在sim卡和nv两部分,NV中的信息恢复出厂值设置之后就被清空了
+参考FAQ: FAQ111964
+### 问题: VOLTE电话收到错误码500或503后是否会发生CSFB回落？
+解决方案: 在既支持VOLTE也支持CS电话的网络下,INVITE消息拨出后如果收到网络的错误响应500或503会发生CSFB回落到CS域重新尝试拨打电话. 终端收到其他错误码是否会发生回落根据运营商的需求配置,如果需要确认请提供具体的运营商所在的网络plmn,如果有运营商规范,请提供运营商规范增加需要回落的错误码.
+参考FAQ: FAQ111978
+### 问题: 3G协议TS 34.123-1中AGPS case 17.2.4.7测试注意事项
+解决方案: 3GPP TS 34.123-1中AGPS case 17.2.4.7:LCS Mobile terminated location request/ UE-Based GPS/ Privacy Verification/ Location Not Allowed if No Response 测试前需要确认手机和仪表Spirent 8100配置的NotificationAndVerify时间一致,目前展锐平台手机侧配置的时间默认是8s,实验室仪表可能是默认值需要修改,仪表设置如下面截图中的Privacy Verification Timer:
+参考FAQ: FAQ112581,含图片
+### 问题: NV工程已经合入了CA，支持4G+还需要做什么配置吗？
+解决方案: 如果该版本正常支持CA.则在网侧给UE下发了CA配置之后,手机屏幕上的图标就会变为4G+,无需其他配置.
+参考FAQ: FAQ111980
+### 问题: Volte功能的支持情况
+解决方案: 能否正常使用Volte功能取决于以下两点:
+
+    1.运营商是否开通,SIM卡是否开通Volte服务;
+
+    2.如果该运营商的Volte APN非ims.则需要帮忙获取该运营商的Volte APN,反馈给AP侧.将其加入APN LIST中.
+参考FAQ: FAQ111989
+### 问题: SC7731E如何修改USB驱动能力？
+解决方案: 驱动能力从如下2个寄存器调整: 1、USB20_TUNEHSAMP,寄存器0x20E0302C,bit[31:30],值越小,eye边缘变缓 2、USB20_TFHSRES,寄存器0x20E03030,bin[7:3],值越大,幅值越低
+参考FAQ: FAQ111993
+### 问题: SC9832E/SC9820E+SR3593A RX PORT高中低频段支持范围？
+解决方案: SR3593A PRX/DRX均为宽带设计; RX_L port支持范围:LB:699~960MHz/MB:1805~2200MHz; RX_M port支持范围:LB:699~960MHz/MB:1805~2200MHz/HB:2300~2700; RX_H port支持范围:MB:1805~2200MHz/HB:2300~2700;
+参考FAQ: FAQ112129
+### 问题: 内置PA供电
+解决方案: 内置音频PA是由VBAT供电,供电电压就是电池电压,内部没有boost,也没有LDO.
+参考FAQ: FAQ112006
+### 问题: MIC使用单端输入
+解决方案: 可以的,但要注意差分走线.
+参考FAQ: FAQ112009
+### 问题: 耳机输出电容是否可以省掉
+解决方案: 2721G耳机的输出是classAB的,因此这两个电容需要加,不能省.
+参考FAQ: FAQ112010
+### 问题: 蓝牙对灵敏度的要求
+解决方案: 蓝牙对灵敏度的要求是: 1. BR模式下,应满足 BER ≤ 0.1% @-70dBm (minimum number of samples, 1 600 000 returned payload bits.) 2. EDR模式下,应满足 BER ≤ 0.01% @-70dBm after 16 000 000 bits 3. LE模式下,应满足 PER ≤ 30.8% @-70dBm for a minimum of 1500 packets transmitted by the tester
+参考FAQ: FAQ112012
+### 问题: 调整BT功率的方法
+解决方案: 1、可以通过优化射频通路匹配来调整BT功率; 2、通过修改connectivity_configure.ini文件参数,其中g_aBRChannelpwrvalue用于调整BDR的功率大小,而g_aEDRChannelpwrvalue则用于调整EDR的功率大小.
+参考FAQ: FAQ112030
+### 问题: 在线仿真平台如何查看任务信息
+解决方案: 1, 进入查看已提交仿真任务 2. 点击taskID,即可看到该任务信息
+参考FAQ: FAQ112036
+### 问题: 在线仿真平台如何快速提交单个仿真任务的复审
+解决方案: 下面是针对"单个仿真任务"的复审 1. 进去查看已提交的仿真任务,点击初审的taskID 2. 出现初审的仿真提交信息,同时在页面下面会看到 "复审",点击后即可快速进入该项目的复审
+参考FAQ: FAQ112039
+### 问题: 在线仿真平台如何快速提交多个仿真任务的复审
+解决方案: 针对"多个仿真任务的复审": 1. 进去查看已提交的仿真任务,点击初审的taskID 2. 出现初审的仿真提交信息,同时在页面下面会看到 "采用所有任务信息",点击后即可快速进入该项目的复审,勾选需要的仿真接口.
+参考FAQ: FAQ112040
+### 问题: 展锐CET测试流程和具体测试项是什么？
+解决方案: 
+参考FAQ: FAQ112390
+### 问题: 如果没有GSM900，AFC校准时候CFT的设置方法？
+解决方案: 由于CFT默认是用GSM900来做的校准,故如果没有GSM900,需要修改其它GSM band来做校准. 打开CFT校准文件,修改三个地方: 1.AFC-COMMON改为AFC-GSM 2.TCH信道修改 3.Band修改 具体如下图: 另外,如果是LTE Only项目,请选择LTE Only校准脚本,选择对应Band即可.
+参考FAQ: FAQ112062
+### 问题: 如何初始化手机的Phasecheck区域信息？
+解决方案: 有两种可以初始化手机内Phasecheck区域信息的方式,具体如下: 1、使用Factorydownload工具重下载(工厂使用方法); 将Factorydownload工具的Bin/phasecheck.ini文件内的站位信息按照所需要求配置OK后; 调用.pac包,正常下载.下载OK后,手机内PhaseCheck信息均初始化了. 2、使用Pandora工具初始化Phasecheck区域(实验室调试方法); 将Pandora工具的Config/phasecheck.ini文件内的站位信息按照所需要求配置OK后; 使用Pandora连接上手机(Cal Mode),然后按下图操作,即可完成Phasecheck区域初始化动作.
+参考FAQ: FAQ112081
+### 问题: 接地对wifi/GPS/FM/BT接受灵敏度的影响
+解决方案: 不同模拟地网络不做隔离,噪声会相互串扰,影响其接受性能,为了获得更好的WCN Rx的灵敏度, 在SC7731E芯片相邻层,需要SC7731E的下述3个GNS相互隔离: a.所有的AVSS_WCN管脚相连形成一个独立的GND岛 b.所有的AVSS_RF管脚相连形成一个独立的GND岛 c.所有其他的VSS管脚相连形成一个独立的GND岛
+参考FAQ: FAQ112092
+### 问题: 手机结构件与GPS天线布局规则
+解决方案: 为避免GPS的辐射干扰,一般对结构件和GPS天线的布局做一些要求: 1.SM卡座需要远离GPS antenna,同时sim卡走线在内层; 2.DC/DC电源需要远离GPS,同时进行屏蔽处理; 3.Speaker/camara远离GPS antenna; 4.GPS走线同表层附近少放Memory的去耦电容,周围尽量避免表层走线,特别是高速信号线,大电流走线; 5.GPS和wifi阻抗线保持大的间距,最低间距中间至少需要一排GND小孔,避免SAW和LNA的输入和输出RF traces平行走线;
+参考FAQ: FAQ112103
+### 问题: MediaScanner扫描文件的同时会不断将扫描完毕（成功）的文件信息录入数据库吗？
+解决方案: 扫描文件的同时会不断将扫描完毕(成功)的文件信息录入数据库, 所以可以在外部存储设备挂载成功以后,某个时间点内,将db文件pull出来, 看下是否有外部存储设备上的一部分文件已经录入到数据库中,如果确实是这样,那业务逻辑上是正常的. 在扫描过程中特殊目录不扫描,没变动的文件/文件夹也不去扫描,流程如下:
+参考FAQ: FAQ112102
+### 问题: 校准模式如何抓取软件log？
+解决方案: 抓取log准备工作: 1、将主板上的U1TX/U1RX/GND飞线出来连接上串口线连接到PC;(SC9832E和SC9820E平台机器log是从U0TX/U0RX/GND出,其他步骤一致.) 2、将复现问题现象的工具内PowerOff步骤关闭,即操作完成时不要关机; 3、使用修改后的工具正常复现不良现象;且不断电保持在校准模式状态; 4、在串口工具出现如下图时,输入"logcat -v time" 指令,串口工具内即可吐出相关logcat log; 5、将串口工具内吐出的log保存到.TXT文档中和工具生成的log一并提供即可.
+参考FAQ: FAQ112107
+### 问题: 如何计算GPS灵敏度
+解决方案: GPS灵敏度的计算公式: S=-174+ NF+10㏒BW+S/N-Gp 注:NF为噪声系数,BW为带宽,S/N为信噪比,Gp为扩频增益
+参考FAQ: FAQ112123
+### 问题: SC9863A+SR3595D RX PORT高中低频段支持范围？
+解决方案: SR3595D PRX/DRX均为宽带设计; RX_L port支持范围:LB:699~960MHz/MB:1805~2200MHz; RX_M port支持范围:LB:699~960MHz/MHB:1805~2700MHz; RX_H port支持范围:MHB:1805~2700MHz;
+参考FAQ: FAQ112125
+### 问题: 如何计算GPS C/N0值(载噪比)
+解决方案: GPS C/N0值计算公式: C/N0(dB.Hz)= PC(dBm)-PN(dBm)-NF 注: PC:载波功率 PN : 噪声功率 NF:噪声系数
+参考FAQ: FAQ112124
+### 问题: SC9863A+SR3595D TX PORT高中低频段支持范围？
+解决方案: SC9863A+SR3595D TX PORT定义为H port及L port. 具体L port频率范围:LB:699~915MHz 具体H port频率范围:MHB:1710~2690MHz
+参考FAQ: FAQ112127
+### 问题: SC9832E/SC9820E+SR3593A TX PORT高中低频段支持范围？
+解决方案: SC9832E/SC9820E+SR3593A TX PORT定义为H port及L port. 具体L port频率范围:LB:699~915MHz 具体H port频率范围:MHB:1700~2690MHz
+参考FAQ: FAQ112133
+### 问题: LTE-A和LTE的区别？
+解决方案: 3GPP在release 10版本中定义了LTE升级版,即LTE-Advanced, LTE-A新定义了Cat6及以上(最新到Cat15)UE能力等级,并向后兼容到Cat1. 而早期的LTE只定义了Cat1~Cat5 这五种UE能力等级. 相比于LTE, LTE-A 致力于提高通信性能,主要表现在以下几点 •更高的峰值下载/上传速率 •更高的频谱效率 •更好的小区边缘覆盖 •更强的同时接入能力
+参考FAQ: FAQ112134
+### 问题: LTE CAT4及CAT7上下行最大吞吐率？
+解决方案: LTE CAT4及CAT7上下行最大吞吐率请参考下图:
+参考FAQ: FAQ112135
+### 问题: 展讯平台是否支持LPWAN（Low Power Area Network）？例如NB-IOT、Cat-M1、Cat-M2、EC-GSM-IOT等？
+解决方案: 你好,我司6XXX、7XXX、9XXX系列平台目前暂不支持LPWAN功能
+参考FAQ: FAQ112157
+### 问题: 展讯平台是否支持LPP（LTE Position protocol）、LPPa（LTE position protocol annex）？
+解决方案: 客户你好,我司7731E、9xxx平台支持LPP(LTE Position protocol,3GPP 36.355 );LPPa(LTE position protocol annex 3GPP 36.455)是网络端的协议,需要咨询运营商网络是否支持.
+参考FAQ: FAQ112158
+### 问题: π型衰减器的计算？
+解决方案: π型衰减器的计算 1,设信号源的输出阻抗和负载阻抗均为R0,电压衰减器倍数为AT=VIN/VOUT, VIN和VOUT分别为衰减器的输入电压和输出电压,R2=R3=R , 如下图所示: R=R0(AT+1)/(AT-1) R1=R0(AT*AT-1)/2AT 例如,若输入输出阻抗为R0=50Ω, 衰减为10db的π型衰减器,计算如下: 20lg AT= 10db AT≈3.16 R=(3.16+1)*50/(3.16-1)=96Ω R1=(3.162-1)*50/(2*3.16)=71Ω
+参考FAQ: FAQ112153
+### 问题: T型衰减器的计算
+解决方案: T型衰减器的计算 1,设信号源的输出阻抗和负载阻抗均为R0,电压衰减器倍数为AT=VIN/VOUT, VIN和VOUT分别为衰减器的输入电压和输出电压,R2=R3=R, 如下图所示,这样已知R0和AT, 要确定R1和R的值. 所以T型电路的计算公式为: R=R0(AT-1)/(AT+1) R1=2R0*AT/(AT*AT -1) 例如,若输入输出阻抗为R0=50Ω, 衰减为10db的T型衰减器,计算如下: 20lg AT= 10db AT≈3.16 R=(3.16-1)*50/(3.16+1) = 26Ω R1=2*3.16*50/(3.16*3.16-1) =35Ω
+参考FAQ: FAQ112164
+### 问题: LTE非信令校准综测fail，需要提供哪些数据帮助研发定位分析？
+解决方案: LTE非信令校准综测软件流程相对信令流程是很固定的,但也会时常校准Fail,此时需要提供如下数据进行定位分析: 1.Arm log\lte dsp log; 2.CFT/Simba fail截图:截图能帮助研发快速找到fail的模块、流程、信道位置等关键信息; 3.CFT/Simba 工具校准log:工具校准后会在工具LOG目录下自动生成校准过程用到的一些表格文件以及一些仪表log文件,如:LTE_APC\LTE_AGC、Trace.Log等,必要的时候研发会需要这些文件辅助分析问题; 4.软件版本信息:包括PAC大版本及CP版本信息;
+参考FAQ: FAQ112186
+### 问题: GSM找网流程
+解决方案: 下图为gsm找网流程,只要在层间消息窗口过滤以下消息即可.
+参考FAQ: FAQ112198
+### 问题: 【BBAT】 G2测试盒关于闪光灯/三色灯/红外灯/按键灯的测试方案及接线
+解决方案: 1.闪光灯/三色灯/红外灯/按键灯的测试方案是什么? G2控制盒对于各种灯分两种测试方案,贴片和未贴片: 贴片:通过读光敏电阻的电压差判断闪光灯是否点亮 未贴片:通过读电流方式判断功能是否正常 除后置闪光灯和按键灯两种方案都支持外,前置闪光灯/三色灯/红外灯都只支持通过光敏电阻读电压差方式测试,其中红外灯需要使用红外光敏电阻. ps:后置双闪,如果两颗LED是单独控制的则需要勾选工具界面的二级色温 2.闪光灯/三色灯/红外灯/按键灯的测试如何接线? 具体接线定义如下,可以参考工具包里面的各平台夹具接线说明.
+参考FAQ: FAQ112207
+### 问题: 7701 使用 qq ,163 发送电子邮件失败
+解决方案: 1).qq发送给其他邮箱,必须从 http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=28&&no=1001256 这个网页,qq发送邮件时使用第三方应用的一些配置,需要设置授权码. 2).163发送给其他邮箱,因为是第三方软件,相关平台的服务器在对第三方邮件应用使用有很多要求, 其一授权码如上一条, 其二就是垃圾邮件判断机制,发送邮件内容可能会导致被当垃圾邮件处理如:"广告""test"等等.网页可以正常发送是因为使用的是网易本身客户端,对于第三方垃圾邮件机制限制很高(商业或者其他目的), 163如想发送成功建议发送正常的邮件内容,并在抄送框抄送自己邮箱测试一下.
+参考FAQ: FAQ112218
+### 问题: 能否透过at 命令发送http
+解决方案: 与平台确认 , 若是modem项目 , 目前无法透过at 命令发送http , 因为相较tcpip , udp 发送 http 交互流程较为复杂 , 此外还有ssl 加密需要考量 但若是手机项目 , MMI上层已经有http 相关架构 , 客户可以自行封装实现 , 工作量会比modem 项目少些 若有需要 , 客户可以参考手机项目 , 基于项目需求自行开发
+参考FAQ: FAQ112219
+### 问题: 11ac传输速率比11n有大幅提升的主要因素
+解决方案: 11ac传输速率比11n有大幅提升的主要因素有: 1. 带宽提升,从最大40MHz提升到最大160MHz,速率提升3倍. 2. MIMO天线数量增加,从最大支持4×4MIMO到最大8×8MIMO,速率提升1倍. 3. 调制优化,从64QAM提升到256QAM,速率提升33%. 4. 5G频段同频干扰源更少,MU-MIMO,RTS/CTS,A-MPDU等技术优化提升吞吐率.
+参考FAQ: FAQ112253
+### 问题: SC6531E现在版本是双卡双待的，如何配置成单卡单待的?
+解决方案: 改为单卡单待版本,只需将MMI_MULTI_SIM_SYS = DUAL改为MMI_MULTI_SIM_SYS = SINGLE, 然后重新编译版本即可. 至于宏开关MULTI_SIM_SYS,客户不能自行修改.
+参考FAQ: FAQ112266
+### 问题: SL8521E热点终端如何导出MODEM LOG?
+解决方案: 该系基于9820E的裁剪终端产品,没有界面显示屏; 若想导出MODEM LOG 需进行如下五步: 1.安装JAVA虚拟环境(安装之后,可在cmd窗口运行JAVA -VERSION命令确认安装是否成功) 2. 插上USB, 在cmd窗口,先cd到asm.jar文件夹下(如ASM_3_00文件夹),再运行java -jar asm.jar; 3.待跳出界面后点击加载SN号(需对应MIFI硬件上标注的SN号),直至PC上虚拟界面弹出; 4.在cmd窗口运行adb shell am start -n com.sprd.engineermode/com.sprd.engineermode.EngineerModeActivit,进虚拟界面工程模式,选到DEBBUG 中 UE LOG下,START LOG抓取; 5.运行一段时间后,执行LogAndroid2PC脚本导出LOG到其对应LOGS文件夹下; 该导出方法,其它没有屏幕的终端产品也可以借鉴.
+参考FAQ: FAQ112260
+### 问题: GPS外置LNA的布局布线要点
+解决方案: 1、LNA及其匹配电路要求靠近Antenna放置; 2、LNA对应的电容靠近对应的LNA power pin放置; 3、power走线首先经过decoupling cap,然后接入power pins; 4、LNA电源和使能信号VIA不可以打在LAN器件和RF走线下面.
+参考FAQ: FAQ112299
+### 问题: wifi/BT 高频杂散解决方案
+解决方案: FCC认证必测项目2nd,3nd harmonic ,如果测试Fail,可以通过外搭低通滤波器来解决: 常见低通滤波器:串联电感,并联电容下地,如果滤除2.4G的边带杂散, 一般可以串联4.3nH~6.8nH电感,并联两颗1~2pF电容下地
+参考FAQ: FAQ112336,含图片
+### 问题: AFC校准失败，提示GPS启动功能Fail
+解决方案: 1.如果该项目采用TSX晶体方案,但是不带GPS功能,那么NV需要做如下修改,AFC才会校准pass NV中需要把晶体类型配置成DCXO后,具体配置路径如下: -RF_init_common – -AFC_cali_config – -Crystal_type_config =0x1 注:单软多硬的方案需要注意区分不同硬件配置的delta nv
+参考FAQ: FAQ112335
+### 问题: wifi/BT 低频杂散解决方案
+解决方案: FCC 认证过程中,如果发现低频杂散(spur Frequency:700M~2.3GHz )Fail,可以通过外搭高通滤波器来解决 常见高通滤波器:串联一颗电容,并联两颗电感下地,如果滤除2.4GHz 的边带杂散, 一般串联1~2.2pF电容,并联4.3nH~6.8nH电感下地,
+参考FAQ: FAQ112341
+### 问题: SL8521E平台支持的3G的Category最高是多少？
+解决方案: 该产品下行能力最高支持14,上行能力最高7;对应速率如下: DL cat 14: 21Mbps
+UL cat 7: 11.4Mbps ( QPSK+16QAM) 
+ 具体配置时不超过最高值就可以,但是配置值比较低时将会导致某些3G feature不被支持;
+参考FAQ: FAQ112352
+### 问题: 联通关闭2G业务后，展锐芯片3G通话功能是否能正常使用？
+解决方案: 展锐所有支持3G功能的芯片,联通2G网络关闭后手机通话功能均没有问题
+参考FAQ: FAQ112355
+### 问题: 【待机功耗】为什么灭屏充电过程会出现因为待机功耗增加导致的充电电流大幅减小的情况？
+解决方案: 1、其直接原因是dex2oat在后台运行,dex2oat属于CPU-bound(计算密集型)操作,cpu占用率高,导致功耗增加. 2、后台dex2oat优化是Google原生后台优化特性.系统启动后会启动服务BackgroundDexOptService,它会在系统IDLE和充电时进行必要的后台优化,以提升用户体验.
+参考FAQ: FAQ112480
+### 问题: MediaScanner进行媒体扫描过程中，MIME Type定义到数据库中的流程。
+解决方案: 如下图,MediaScanner进行媒体扫描过程中,MIME Type根据不同场景定义也有区分处理:
+参考FAQ: FAQ112382
+### 问题: 802.11a/b/g/n协议区别
+解决方案: 见如下整理表格: 802.11a/b/g/n协议区别 标准号 IEEE 802.11b IEEE 802.11a IEEE 802.11g IEEE 802.11n 标准发布时间 1999年9月 1999年9月 2003年6月 2009年9月 工作频率范围 2.4-2.4835GHz 5.150-5.350GHz 5.475-5.725GHz 5.725-5.850GHz 2.4-2.4835GHz 2.4-2.4835GHz 5.150-5.850GHz 非重叠信道数 3 24 3 15 物理速率(Mbps) 11 54 54 单路150(4*4 MIMO可达600) 实际吞吐量(Mbps) 6 24 24 >100 频宽 20MHz 20MHz 20MHz 20MHz/40MHz 调制方式 CCK/DSSS OFDM CCK/DSSS/OFDM MIMO-OFDM/CCK/DSSS 兼容性 802.11b 802.11a 802.11b/g 802.11a/b/g/n
+参考FAQ: FAQ112367

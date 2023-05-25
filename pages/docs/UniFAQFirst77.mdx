@@ -1,0 +1,364 @@
+### 问题: 展锐WIFI 5G FEM认证物料
+解决方案: 展锐目前认证WIFI 5G FEM有2个:KCT8553C、SKY85720-11 2颗料是pin对pin,引脚定义均一样,性能一致,可以相互替换 替换后,需要重新验证射频参数是否达标,再决定匹配和ini是否重新要优化
+参考FAQ: FAQ202274863,含图片
+### 问题: UWS6130E项目各制式UE能力支持情况
+解决方案: 1.GSM: GPRS Multislot Class up to 12;EGPRS Multislot Class up to 12;SKT relaease R8; Support AMR/SKT/VAMOS/DARP ;Not support DTM. 2.UMTS:UMTS Release 9;DL Category 14;UL Category 6. 3.E-UTRA:E-UTRA Release 12;Category 4.
+参考FAQ: FAQ202274868
+### 问题: 小区广播Level如何配置
+解决方案: 不同的level channels差异主要在频道是否预设开启/可开关/显示频道,还有title或pop up message的名字等等,按照各国家定义的规格去配置即可,相关设置都可在CMAS_CHANNEL_INFO_T里参数里配置 CMAS_CHANNEL_INFO_T里的alert_level的值可用来设置1,2,3,不过在代码里功能是一样的,只要大于0都代表是紧急广播讯息,一般预设会配置成1,并非alert_level设置的数字就为不同level,主要还是以上述说明为区别
+参考FAQ: FAQ202274875
+### 问题: UMS9230多场景功率回退（步进0.125dB）2G功率最大回退范围是多少？
+解决方案: UMS9230平台多场景功率回退与提升,功率支持0.5dB和1dB步进,0.125dB步进也是支持的,可参考FAQ202274722. UMS9230+SR3595D功率回退与提升应用说明V1.0文档中,2G功率回退是基于最大功率做的回退,最大回退值分别为15dB(1dB步进),7.5dB(0.5dB). UMS9230多场景功率回退(步进0.125dB)2G功率最大回退范围是多少? 实测数据如下: 1、2G CS模式下:功率最大可降低27dB. 2、GPRS 1UP\2UP:功率最大可降低27dB; 3UP\4UP:最大可降低23dB; 3、EDGE 1UP\2UP:功率最大可降低27dB; 3UP\4UP:最大可降低18dB; 以上数据包含平台默认回退值(eg:2UP回退1PCL即2dB,3UP回退2PCL即4dB,4UP回退3PCL即6dB).
+参考FAQ: FAQ202274877
+### 问题: 限制会议电话参与者数目
+解决方案: 限制会议电话参与者数目可以通过配置ims_conference_size_limit_int和is_ims_conference_size_enforced_bool来实现,两个配置的主要功能如下 ims_conference_size_limit_int:设置参与者数目 is_ims_conference_size_enforced_bool:配置为true时,超过ims_conference_size_limit_int设定的参与者,再添加通话界面上的Merge按钮会置灰;配置为false时,上层不会对添加超过ims_conference_size_limit_int数目的参与者的操作做限制,但是添加过多的参与者也会导致运营商返回错误.
+参考FAQ: FAQ202274879
+### 问题: FOTA界面在进入BootLoader界面时会灭屏，如何做到不灭屏？
+解决方案: 在平台的bootloader代码中
+
+应该都有LCD Sleep
+
+所以想要bootloader 显示FOTA进度时
+
+LCD会灭屏
+
+不灭屏的作法是
+
+在Boot_LcdProgressBar()之前
+
+Boot_LcdEnterSleep(MAIN_LCD_ID, SCI﹍FALSE);
+
+关掉LCD灭屏
+参考FAQ: FAQ202274882
+### 问题: Simba如何添加EnterMode
+解决方案: 右击Root,首先点击NonRF.dll,再点击ChangeMode,最后选择EnterMode选项; 非信令测试时,EnterMode应放在最先勾选
+参考FAQ: FAQ202274884,含图片
+### 问题: 如何加快模拟器运行速度
+解决方案: 请按照如下操作: 1. 在模拟器画面按滑鼠右键,把Trace on关掉 2. 进到profiles设定,将模拟器设为静音
+参考FAQ: FAQ202274886
+### 问题: SC6533模拟器中SD槽档案
+解决方案: 在Code base中 soft\application\CoolSimulator\Bin\WIN32FS 模拟器编译完成后 会出现 C: 系统槽 D: UDISK E: SD 卡 可以自己新建folder后 再把相对应档案复制到想要位址 PS:建议先不跑CoolSimulator 来做档案复制动作
+参考FAQ: FAQ202274888
+### 问题: 安卓10、11、12的项目在NVAide里如何选择平台项
+解决方案: 1、展锐公司的NVAide是用来辅助客户配置RF NV的一款工具,使用时客户会根据实际情况选择不同的平台项. 2、在平台项里大家可能发现:有的平台会存在多个选项,比如SR3595D_SC9863A,SR3595D_SC9863_AndroidR(AndroidR代表安卓11),这里好像针对不同的安卓版本需要选择不同的选项,那么安卓12或者13该怎么选呢,选择安卓R即可,其实并不是每个平台都区分安卓版本,没有区分的平台直接选对平台即可,区分安卓版本的平台就按区分标识选,安卓11及以上的版本就选安卓R. 3、实际上,RF的NV配置和安卓版本没有任何关系,之所以在工具里个别平台进行了区分,是因为个别平台在不同的安卓版本上使用了不同的软件分支,而不同的软件分支之间极个别的NV路径做过修改,主要就是CA组合相关NV的修改.
+参考FAQ: FAQ202274889
+### 问题: T107 芯片是否支持LTE MIMO?
+解决方案: T107 产品LTE 不支持UL MIMO.对于下行MIMO,如果T107是2RX,则支持4X2、2X2 MIMO;如果T107只有1RX,那下行就不支持MIMO.并且MIMO是默认打开,不需单独进行设置. 要注意T107是LTE cat1产品,Category 1每个TTI最大传输块是10296bits,只有1Layer,不支持空分复用.参考:TS36.306 Table4.1-1: Downlink physical layer parameter values set by the filed ue-Category.
+参考FAQ: FAQ202274896,含图片
+### 问题: B39信令测试功率和ACLR发生大幅度跳变问题
+解决方案: Band39配置走TXM,在信令模式下测试,发生功率和ACLR发生大幅度跳变现象,一般是PA控制模式配置错误导致的,需将PA控制模式改成mipi&vramp控制,在NV中将PA_logic_config_status设为0x4,具体位置如下图:
+参考FAQ: FAQ202274898,含图片
+### 问题: AndroidQ上如何配置使用指定APN进行网络共享（针对移动数据）
+解决方案: 使用移动数据时,如果期望设备做为热点进行网络共享时和设备自身上网采用不同的APN,那么通过配置APN的type区分业务场景.: (1)网络共享所用APN,配置其type="dun" (2)自身上网所用APN,配置其type="default" AndroidQ上APN预置文件路径:vendor/sprd/telephony-res/apn/apns-conf_8_v2.xml
+参考FAQ: FAQ202274903
+### 问题: 如何在编译resource 时，用default图片？
+解决方案: 因为目前平台编译参数设定False [1.3.9.30.15]
+1.支持命令行参数  -rep [true|false]
+    true:用默认资源替换,给出全部警告,正常生成资源.
+    false:用默认资源替换,给出全部警告,不生成资源.
+
+需修改resource makefile
+
+在MS_Code\make\resource_main\resource_main.mk
+
+改为TRUE
+
+-----#define resource replace flag
+REP_FLAG := FALSE
+ifeq ($(strip $(SPRD_CUSTOMER)), TRUE)
+REP_FLAG := FALSE
+endif
+参考FAQ: FAQ202274904
+### 问题: camera app下发iso值的范围
+解决方案: public static final Key<Integer> SENSOR_SENSITIVITY =
+            new Key<Integer>("android.sensor.sensitivity", int.class);
+ 对于下发SENSOR_SENSITIVITY ,使用的参数传值可以是 0 100 200 400 800 1600 .
+参考FAQ: FAQ202274905
+### 问题: 如何查看进程的io信息
+解决方案: adb shell iotop -d 1 > io.txt
+参考FAQ: FAQ202274908
+### 问题: 如何查看kernel启动耗时
+解决方案: 在ylog的开机log(在poweron的目录中)中, 在0-kernel.log中搜索"init first stage started!",看看kernel log时间戳,得到kernel启动时间是多长
+参考FAQ: FAQ202274909
+### 问题: 如何查看系统最大中断延迟
+解决方案: 请执行如下操作,看一下系统的最大关中断时间是多少,方法如下: 1. cd /sys/kernel/debug/tracing 2. cat available_tracers,看看有没有irqoff tracer,假设有 那么 3. echo irqoff > current_tracer 4. echo 1 > tracing_on 5. echo 0 > tracing_max_latency 6. 复现问题(复现问题时,不要抓trace) 7. 问题复现后,执行echo 0 > tracing_on 8. 最后,执行cat trace
+参考FAQ: FAQ202274910
+### 问题: 如何查看安卓（不包含kernel）的启动时间
+解决方案: 在ylog中的开机log(在poweron目录中)中的0-android.log中以"boot_progress"为关键字搜索,可以看到各个阶段的启动时间,最后搜索"wm_boot_animation_done",可以看到安卓(不包含kernel)的启动时间,单位是毫秒
+参考FAQ: FAQ202274911
+### 问题: 黑名单来电被识别成了未接记录 ，而不是显示在拒接记录
+解决方案: =>黑名单来电被识别成了未接记录是因为打开了宏PHB_REJECTCALL_NO_RECORD_AND_MENU, 需要在 application\target_res\工程对应资源\mmi_cfg\conversion.mk 中 关闭宏: PHB_REJECTCALL_NO_RECORD_AND_MENU
+参考FAQ: FAQ202274914
+### 问题: 如何抓取T卡trace ?
+解决方案: => 首先通过coolwatcher 工具配置需要的trace level 并保存为ini文件, 将保存的ini文件名修改为 csd_fstracelevel.tfg, 再将 csd_fstracelevel.tfg 保存到T卡根目录, 开机后 ,输入*#005# 开始抓取trace,输入*#006# 结束抓取trace .
+参考FAQ: FAQ202274915
+### 问题: 无网时不能拨打紧急号码？
+解决方案: => 无网时打不了紧急号码是正常的. 无网就是手机没有信号且周围没有任何运营商基站, 所以提供不了紧急呼叫, 这种时候手机就是一直在搜网.
+参考FAQ: FAQ202274916
+### 问题: 请提供一下CheckBox的使用事例？
+解决方案: =>checkbox 使用可参考 设置 -> 显示设置->待机显示设置中的显示 函数是MMISET_AppendIdleDisplayListItem item_t.item_style = GUIITEM_STYLE_ONE_LINE_ICON_TEXT; image icon 选中: IMAGE_CHECK_SELECTED_ICON 未选中:IMAGE_CHECK_UNSELECTED_ICON
+参考FAQ: FAQ202274917
+### 问题: 如何修改代码中T卡trace 的默认trace level配置
+解决方案: => 如果要用代码中默认的trace level , 而不用T卡的 csd_fstracelevel.tfg文件进行配置. 可以修改代码将默认的trace level 配置成需要的trace level. 修改方法: 在 文件 Bal_fstrace.c 中的 函数 _fsTracesetLevel 参照MMI trace level 配置: tracelevel[__MMI] = 0xffff; 配置的项和level值 可以先通过 coolwatcher 配置后保存在ini文件,从 ini 文件中获取. 例如配置以下trace level: L1A 1 L1S 1 2 代码中修改为: traceLevel[__L1A] = 0x1; traceLevel[__L1S] = 0x3;
+参考FAQ: FAQ202274920
+### 问题: 打断USB共享网络后，无法进行上网
+解决方案: => 目前USB共享功能设计是来电时会直接退出USB共享. 而来短信/闹钟不会退出USB共享. 但是如果从USB共享界面退出,那么USB共享也会中断.
+参考FAQ: FAQ202274921
+### 问题: 如何将PC图片添加到模拟器SD卡?
+解决方案: => 将图片放置于 application/CoolSimulator/Bin/WIN32FS/DRIVE_E/ 下的Photos 文件夹下. auido文件可放于此目录下的 My Music 文件夹下. video文件可放于此目录下的Videos 文件夹下.
+参考FAQ: FAQ202274922
+### 问题: 电话本联系人头像用文件系统中的jpg图片中显示
+解决方案: => 如要实现电话本联系人头像用文件系统中的图片显示, 不能用GUIITEM_STYLE_1ICON_1STR进行修改,因为GUIITEM_STYLE_1ICON_1STR 目前是使用的图片ID且是公用的. 可参考电话本中的实现 AppendDyncListItem,动态加载图片. GUIANIM_FILE_INFO_T anim_path = {0}; item_data.item_content[0].item_data_type = GUIITEM_DATA_ANIM_PATH; anim_path.full_path_wstr_ptr = path_ptr; anim_path.full_path_wstr_len = path_len_ptr; item_data.item_content[0].item_data.anim_path_ptr = &anim_path;
+参考FAQ: FAQ202274924
+### 问题: Simba AFC校准Fail，校准提示“TEMP_CAL2 校准fail”
+解决方案: 问题原因:在AFC TSX 晶体温度校准时,升温不够1度,导致TEMP_CAL2 校准Fail. 问题分析:1、环境问题:多次校准之后,板子温度过高,需先将板子冷却之后再进行校准; 2、校准设置问题:TSX 晶体温度校准时,需勾选APC校准; 3、晶体自身问题:可替换我司认证过的晶体进行验证; 4、Layout问题:1)晶体离热源过近或过远都会导致升温校准Fail;2)晶体周边环境散热太差;TSX晶体Layout需遵守我司PCB Checklist来进行设计. 注:若晶体初始温度越高,后续升温速度越慢. 对于由于Layout原因导致的晶体温度校准fail可通过以下两种方法处理: a、若是最终校准温度和初始校准温度的差值与1度相差不大,可尝试在Simba中修改TSX校准时间来延长TSX升温时间,具体设置如下: b、若是延长校准时间依旧无法解决,则需要改版来处理解决.
+参考FAQ: FAQ202274926,含图片
+### 问题: UMS512T平台从安卓R升级安卓S音频上有什么需要注意的地方
+解决方案: UMS512T平台安卓R升级安卓S音频上有什么需要注意的地方 1.升级前后算法版本是否变更?如果变更,请帮忙列出变更影响点 算法不变更.即使CVS版本升级了,也兼容之前的,无影响 2.S版本参数是否可以直接使用R版本参数? 可以直接使用 3.参数架构是否有变更? 没有变更 4.若直接使用R版本参数,是否还会出现效果与R不一致的情况? 不会出现出现效果与R不一致的情况
+参考FAQ: FAQ202274927
+### 问题: UMS9230平台从安卓R升级安卓S音频上有什么需要注意的地方？
+解决方案: 1. 升级前后算法版本是否变更?如果变更,请帮忙列出变更影响点 答:该平台的主要分支CVS的当前版本是20211009. 升级后CVS版本是否发生变化,请根据升级和合并的分支来确定. 如果CVS版本发生更改,则不会影响当前效果.CVS版本更新与旧版本兼容. 2. S版本参数是否可以直接使用R版本参数? 答:主要参数可以直接使用,但改变了参数结构,增加了carkit模式. 因此,参数文件需要如下操作:导出安卓R版本的nv文件,然后使用audiotool将nv导入到安卓S软件版本中,再导出新xml文件,新xml文件中包含carkit模式,其他参数遵循安卓R参数.
+参考FAQ: FAQ202274928
+### 问题: 是否支持"通话连接提示"功能？
+解决方案: 目前版本中自研Dialer默认包含"通话连接提示"功能,在Dialer->设置->通话连接提示,包含两个部分: (1)去电连接后发出振动反馈 (2)通话结束后发出振动反馈 默认都是关闭的.勾选后相应功能开启.
+参考FAQ: FAQ202274931
+### 问题: 新增联系人Move功能的思路
+解决方案: Move功能可以参照Copy来实现,分为界面和业务逻辑. 界面:参考Copy功能,实现Move菜单,包括从电话本进入到Move操作界面,选择联系人界面,移动过程中的界面,移动后的界面; 逻辑功能:也可以参考Copy功能,在copy后删除对应的联系人.
+参考FAQ: FAQ202274935
+### 问题: 恢复出厂设置后手表重启，时间更新失败
+解决方案: 设置恢复出厂后,MMINV_SET_NDDE_SET_DATETIME为TRUE,没有将其设置为FALSE,所以每次开机都会进行时间复位.应该在恢复出厂设置后将MMINV_SET_NDDE_SET_DATETIME为FALSE,即: 在mainapp.c文件,函数IdleWin_HandleMsg()中: 将 #if defined(MMI_UPDATE_TIME_SUPPORT) MMIAPISET_RestoreDateTimeFactorySetting(); #endif 改为: #if defined(MMI_UPDATE_TIME_SUPPORT) MMIAPISET_RestoreDateTimeFactorySetting(); MMIAPISET_SetNeedResetDateTime(FALSE); // 新增 #endif
+参考FAQ: FAQ202274936
+### 问题: 时间同步流程
+解决方案: 系统开机后,SIM卡驻网成功后,底层会给上层上报消息,由HandlePsAndRefMsg来处理,进行时间同步,同步的方式有两种,分别是NITZ和SNTTP: (1)NITZ:NITZ的优先级高于SNTP,依赖于运营商的支持.接收到底层上报的消息APP_MN_NETWORK_INFO_IND后,进行NITZ,主要函数为ParseSysTimeFromNetworkInfo,更新后设置flag为不再更新时间,即NITZ后不再进行SNTP; (2)SNTP:若没有进行NITZ则进行SNTP.驻网成功后,底层上报消息APP_MN_NETWORK_STATUS_IND,进行SNTP,主要函数为MMIAPIPHONE_StartGetNitzTime. 而WIFI连接成功后,暂不支持时间同步.
+参考FAQ: FAQ202274937
+### 问题: Android8.1ylog默认配置
+解决方案: AndroidO上通过setprop persist.ylog.enabled属性来控制ylog开关 /device/sprd/sharkle/common/rootdir/root/init.common.ndbg.rc setprop persist.ylog.enabled 0 关 setprop persist.ylog.enabled 1 开
+参考FAQ: FAQ202274938
+### 问题: Ylog移除
+解决方案: 移除ylog可通过删除ylog相关的编译文件 1、删除/device/sprd/mpool/module/log/main.mk下的 $(call md-inherit-super, $(call md-path-cur)/ylog/main.mk) $(call md-inherit-super, $(call md-path-cur)/slogmodem/main.mk) 2、删除idh目录下的out/target/product/XXX/system/bin/ylog
+参考FAQ: FAQ202274939
+### 问题: 如何通过systrace获取pagecache信息
+解决方案: 性能滑动测试场景case下,相同时间内加载数据量的多少会直接影响用户的流畅度体验.可以通过pagecache对加载数据量的多少进行计算,方法: 1.通过文本工具打开systrace,检索mm_filemap_add_to_page_cache字段 2.根据当前滑动应用的packageName进行过滤,获取对应进程的行数 若测试机与对比机的pagecache差异较大,表明相同时间内访问页缓存数据差异较大,滑动时加载的数据量差异较大,可能与加载页面不同或对比机已提前加载过当前页面等原因有关. 属测试条件未对齐,需重新测试.
+参考FAQ: FAQ202274940
+### 问题: UIS8310 AT+COPS? 命令返回第四个参数AcT说明
+解决方案: UIS8310 AT+COPS? 命令返回第四个参数AcT说明
+参考FAQ: FAQ202274941,含图片
+### 问题: UMS9117 WCDMA 支持的速率是多少 ？
+解决方案: UMS9117属于cat4产品使用的是T117芯片,而UMS9117-L与UMS9117-N 属于cat1产品,使用的是T107芯片.故三颗料对UMS9117 WCDMA支持是不同的,具体如下: 1、UMS9117 1)Support 3Gpp release9 2)Support downlink Category14(64QAM, single-cell HSDPA),throughput up to 21Mbps 2)Support uplink Category7(QPSK, HSUPA),throughput up to 5.76Mbps 2、UMS9117-L、UMS9117-N 1)Support 3Gpp release9 2)Support downlink Category8, throughput up to 7.2Mbps 2)Support uplink Category5, throughput up to 2.0Mbps
+参考FAQ: FAQ202274943
+### 问题: 移动数据始终在线开关的功能以及如何验证
+解决方案: 功能:不打开该功能开关,灭屏后30min关闭数据连接,当屏幕亮起时,数据连接将重新连接;打开后,不会自动关闭数据连接
+ 作用:此功能可以减少屏幕关闭时的功耗. 相关代码:MobileDataAlwaysOnlinePreferenceController.java 注意:测试验证该功能时,不能对手机进行任何操作,例如充电等.
+参考FAQ: FAQ202274944
+### 问题: 始终开启移动数据网络
+解决方案: wifi与数据共存功能的实现是通过开发者选项中的"始终开启移动数据网络",其进入路径为: 进入开发者模式->系统->开发者选项->始终开启移动数据网络,该开关的功能为打开此开关后,wifi与数据可以并存. /frameworks/base/packages/SettingsProvider/res/values/defaults.xml该路径下的def_mobile_data_always_on即为"始终开启移动数据网络"选项在代码中的默认配置. 测试方法:进入开发者模式看下"始终开启移动数据网络"开关是否默认打开,然后打开wifi和数据(测试过程中不要有其他操作),然后查看下上行和wifi是否并存.
+参考FAQ: FAQ202274945
+### 问题: 6533g预览实际帧率与驱动配置不符
+解决方案: 平台不会做丢帧操作,一般帧率为10帧左右.
+若预览帧率未达到驱动设置帧率:
+1、可通过量信号,查看sensor实际输出帧率
+2、检查驱动配置是否正确
+根据代码逻辑,需要将驱动文件camerap_PrepareImageCaptureL函数中s_prevCount值设置为2,若设置为1,帧率会减半.
+参考FAQ: FAQ202274947
+### 问题: Pandora 调试PVT时调试ramp曲线不生效，如何处理？
+解决方案: 有客户反馈 PVT fail 使用pandora调试ramp曲线与 PA delta&Duration 时,save调试结果后强发功率PVT曲线无变化.此种情况为pandora tool 更新造成的,可以在save ramp\PA delta&Duration 值后,手机重新加电连接pandora,再强发功率,便可以观测到调试ramp或者PA delta&Duration对PVT的改善结果. PS:1)展锐较老的芯片如2G 平台6531系列,可以尝试回退到mobiletester 或者pandora R17版本,调试PVT提高调试效率. 2)pandora 更新后PVT调试方式,暂只验证9117、6531、8541系列芯片,其他系列芯片如有以上问题,也可以尝试加电重启查看PVT调试结果.
+参考FAQ: FAQ202274948
+### 问题: 待机休眠时 SENSOR_PWDN脚是拉高的
+解决方案: 在退出摄像头的地方进行以下修改,在sensor驱动的power_on函数中修改一下时序,在关闭电压AVDD与IOVDD后,再使用GPIO_SetSensorPwdn(!power_down)将该引脚拉低.同时增加以下代码:
+*(volatile uint32 *)(0x5010C000 + 0x00000080)  = (uint32)((((1<<28) | (1<<24)) | ((1<<16) | (1<<8)) | (((0)&15)<<0)));
+或者在pinmap_cfg.c中增加PIN_OUT_FRC_LOW
+{PIN_CAMERA_PWDN_CFG_REG,				    (PIN_IO_DEFAULT | PIN_PULL_FRC_NONE |PIN_OUT_FRC_LOW| PIN_FUNC_SEL(3))},	//CAM_PWDN
+参考FAQ: FAQ202274949
+### 问题: 实际User Agent与客制化不同的原因
+解决方案: Modem有sip_uaNamePrefix的配置,针对某些运营商UserAgent中有必带字段预配置. 运营商NV里有预配置,就会添加到User Agent中. 例如: PLMN(20810)可在运营商NV里可查到预配置如下: FR_Altice_S.nv //User-Agent prefix PS_NV_PARAMS\NV_PARAM_TYPE_SIM_DELTA_NV\ims_sim_nvinfo\sip_uaNamePrefix="Altice VoLTE" 此时SIM卡(20810)使用时在SIP Invite Message读取到user agent会多一个前缀"Altice VoLTE".
+参考FAQ: FAQ202274953
+### 问题: 平台Email登录Gmail和Yahoo账户注意事项
+解决方案: 平台Email应用(指的是SprdEmail)不能直接登录Gmail和Yahoo账户,需要按如下步骤配置后才可以登录: 1、Gmail 账号无法登录 Gmail账号默认不允许 Gmail 之外的 APK 进行登录的,可以参考如下操作步骤打开权限: Gmail 在电脑上登录网页版之后,点击左上方的设置 在"帐号和导入"选项卡中找到"更改帐号设置" 点击"其他 Google 帐号设置"链接,自动跳转到 Google 帐号界面 选择第一个选项中的 登录和安全 ""------"具有帐号访问权限的应用",打开允许不够安全的应用:已启用 2、无法登录 Yahoo 邮箱 Yahoo邮箱默认只能使用Gmail、Outlook和iPhone、iPad邮件应用登录,不能使用其它邮件应用登录. 若需要开通其它邮件应用登录的功能,请参考下述步骤: 浏览器通过网页登录Yahoo邮箱帐户登录; 开启"Allow apps that use less secure sign in"选项.
+参考FAQ: FAQ202274954
+### 问题: 307睡眠后app层创建的timer不准
+解决方案: 307项目睡眠机制问题:App调用的timer会在系统休眠时,也进入休眠不会计时,从而导致时间不准. 修改方案如下: 修改文件mmk_timer.c如下: 1. 函数StartAppTimer ...... +++SCI_LpsLoginWakeupTimer(s_mmk_timer[ timerIndex ].timer_ptr); SCI_ActiveTimer(s_mmk_timer[ timerIndex ].timer_ptr); return TRUE; 2. 函数DeleteTimerIndex ...... +++SCI_LpsLogoutWakeupTimer(s_mmk_timer[index].timer_ptr); SCI_DeleteTimer( s_mmk_timer[index].timer_ptr );
+参考FAQ: FAQ202274955
+### 问题: GNSS的NMEA Log在哪里抓取？
+解决方案: 1.输入*#*#2266#*#*,进入SGPS工程模式 2.在Information界面,打开GPS 定位和GNSS log switch 3.在NMEA Log界面,点击START
+参考FAQ: FAQ202274958
+### 问题: GNSS的组合选择
+解决方案: 1.GNSS主要包括4个全球定位系统:GPS、BDS、Galileo、Glonass 2.其中,GPS的性能最佳,所以GNSS的组合选需要以GPS为主,其他为辅的策略进行配置. 例如GPS+BDS,或GPS+Glonass,或GPS+Glonass+BDS等 3.同时需要注意,BDS Only没有GPS加持,性能不如GPS,实际使用不选该项配置.
+参考FAQ: FAQ202274959
+### 问题: SC9863A/A1平台Android 12版本WIF/BT ini文件存放路径在哪？
+解决方案: A11版本SC9863A WIFI/BT ini文件路径为vendor/etc,而SC9863A1路径为vendor/etc/wcn. 不同于A11,A12版本 WIFI/BT ini文件路径为vendor/firmware: SC9863A/A1 WIFI/BT ini文件都在该路径下,SC9863A对应ini文件为connectivity_calibration与connectivity_configure,SC9863A1对应ini文件为connectivity_calibration.22nm与connectivity_configure.22nm.
+参考FAQ: FAQ202274960,含图片
+### 问题: 展锐平台对于纹波的要求
+解决方案: 纹波是指在直流电压中,叠加在直流稳定量中的交流分量. 展锐平台对于纹波的要求如下: 1)开关电源纹波的要求为-4%到 +6%; 2)LDO的标准为 100mV.
+参考FAQ: FAQ202274963
+### 问题: camera相关电源纹波测试场景说明
+解决方案: 测试 camera相关电源.开机后,进入 camera recording状态. 在摄像头录像过程中,分别测量VDDCAMA ,VDDCAMIO,VDDCAMD的纹波. VDDCAMMOT是给摄像头变焦马达供电的,需要点击屏幕让摄像头处于变焦状态时,测量 VDDCAMMOT的纹波.
+参考FAQ: FAQ202274965
+### 问题: RF相关电源纹波测试场景说明
+解决方案: 测试 RF相关电源,样机插入白卡,连接综测仪,根据手机所支持的网络,设置GSM/TD/WCDMA/LTE模式 ,测试 DCDCMODEM VDDSIM VDDWPA VDDRFV25 VDDRF1V8电源的纹波 . 由于 VDDWPA是给 LTE/WCDMA模式下的 PA供电的,且会跟随 PA频率变化 (具体对应关系在射频 NV中配置) . 因此必须在仪表环境 WCDMA/LTE模式下测试 ,建议 校准综测后测试VDDWPA,如果不校准会因为功率波动较大引起电压波动.
+参考FAQ: FAQ202274966
+### 问题: Memory 相关的电源纹波测试场景说明
+解决方案: 测试memory 相关的电源,由于memory器件对纹波要求较高,可分别测试重载和轻载时的纹波. 1)轻载时手机亮屏待机即可测试VDDMEM,VDDQ,VDDEMMC 的纹波. 2)重载时跑Memtest APK后测试纹波.
+参考FAQ: FAQ202274967
+### 问题: 如何设置才能在编译出现错误时就暂停编译
+解决方案: 默认情况下,编译出错后将继续编译,直到完成编译.如果您需要Makefile支持编译出错时暂停编译, 请使用stop参数编译,并设置为1. 命令示例如下: make p=ums9117_240X320BAR_64MB stop=1 new 遇到异常时脚本会调用DOS下的Pause命令,用户敲任意键会继续编译
+参考FAQ: FAQ202274968
+### 问题: UIS8910 浮点数存储格式
+解决方案: UIS8910 浮点数存储格式 符号位 阶码 尾数 长度 float 1 8 23 32 double 1 11 52 64 实测:8.25在内存里存储的二进制为:0100 0001 0000 0100 0000 0000 0000 0000
+参考FAQ: FAQ202274976
+### 问题: sensor enable后前数笔数据异常
+解决方案: 有些sensor enable之后需要一段时间后才能稳定状态,如采用动态加载,则检查采集数据时间戳下对应sensor 是否为no ready状态,如是则可参考如下方法 1)检查sensor 对应 opcode中eCmdSetStatusArray[] 数组是否为空,如是请参考文档《Android 11.0 SensorHub客制化指导手册V1.3》中"Sensor功能寄存器配置(2/4)"或咨询厂商进行配置,该配置用于检查sensor status,当sensor status为 ready 则开始读取数据 2)也可在eCmdSetRateArray[]数组中增加一组延时配置,用以delay指定时间以待sensor status 稳定,或丢弃前数笔数据,丢弃数由 delay / sample_period决定
+参考FAQ: FAQ202274978
+### 问题: UMS9117平台夏令时问题
+解决方案: 功能机平台暂不支持在已经开机的状态下,等到了夏令时那一刻实现自动更新, 这一点不像智能机; 功能机在以下三种情况会进行时间更新,如果夏令时到来,更新的时间则为夏令时时间: (1)开机时 (2)在时间日期设置中打开自动更新时间开关 (3)在时间日期设置中点击手动更新时间 注意:第一次开机时默认自动更新时间开关是打开的.若在开机时想要自动更新时间,则不要关闭自动更新时间开关.如果关闭,则在开机时不会自动更新时间.
+参考FAQ: FAQ202274979
+### 问题: 平台是否支持基站定位
+解决方案: 平台这里只能提供小区id之类的信息,无法获取基站的位置信息,因此无法通过基站进行定位,类似的还有wifi定位.这些都是需要服务端配合才能实现定位功能(比如服务端通过小区id可以检索出当前基站的物理位置,从而通过一定的算法来计算用户的当前位置),通常有基站定位、网络定位的需求时,可以使用高德、百度等第三方地图厂家提供的sdk,里面有集成网络定位功能.
+参考FAQ: FAQ202274983
+### 问题: A12不支持factorytest模式及替换apk使用
+解决方案: A12不支持factorytest模式,开机下可以使用mmi apk替换native mmi模式, 方式: 拔号 *#*#83789#*#* 进行产线测试,与native mmi功能完全一样
+参考FAQ: FAQ202274986
+### 问题: W117平台RPC机制
+解决方案: (1)在AP端调用跨芯片的API时,调用的只是一个STUB,把输入函数tag及输入参数打包并序列化成一个数据流,发送到modem端,modem端解包并执行相应的API,执行完后将结果返回到AP端,而AP端在使用这些API时,不会感知RPC的存在,跟调用本地API没有区别.应用层不需要关心RPC的具体实现,只关心怎么使用接口就行,比如打电话,只需要找到打电话的接口,按照接口说明,传入参数,获取到接口的返回值即可; (2)当Modem端有事件上报时,会将上报的消息数据进行打包,通过RPC通道,透传至AP端,AP端收到后进行相应的解包,根据上报来的事件,应用层会进行处理.
+参考FAQ: FAQ202274994
+### 问题: Mocor平台获取宏定义文件的方法
+解决方案: Mocor平台可以通过命令行的方式获取工程中已定义的宏 1.获取整个工程的宏 make p=工程名 options 2.获得某模块的宏 make p=工程名 m=模块名 options 生成的宏定义文件可在如下路径中获取 MS_Code\build\<project-name>_builddir\options
+参考FAQ: FAQ202274996
+### 问题: T117平台simlock5.0方案写公钥失败
+解决方案: 现象: 1.使用simba工具部署simlock时失败 2.log有如下打印 Failed to write public key to dut Write Simlock Write Simlock Fail 解决方案: 1.使用的公钥类型和代码公钥类型不一致 2.代码逻辑默认是1024类型,如果是公钥是2048类型需要把宏SL_RSA2048_C打开
+参考FAQ: FAQ202274998
+### 问题: 移动多形态自注册失败原因分析
+解决方案: 1.首先联系移动官方,咨询移动自注册入库方式等是否有变化 2.如果没有变化,可能是服务端的问题,请选取不同时间段复测 不同时间段是指同一天上午或下午或者是选择不同日期复测
+参考FAQ: FAQ202275002
+### 问题: UIS8850 关于AT+CCLK获取到时区信息差异问题
+解决方案: UIS8850 关于AT+CCLK获取到时区信息差异问题 1,开机从运营商基站获取时间带了时区信息,在_onEV_CFW_NW_NETWORKINFO_IND这个函数里处理的,所以显示正确的时区信息 2,通过SNTP从网络服务器中获取的是获取的国际统一时间,需要自己设置时区信息,在gAtDefaultSetting 中timezone 设置,取值范围为-96 ~ +96.例改成32就是东8区
+参考FAQ: FAQ202275006
+### 问题: 全速电压适配图眼校准问题
+解决方案: USB眼图测试时需要调整寄存器的值和上电电压,以达到最佳的眼图效果.电压的调整会影响到USB的正常枚举. 在A11平台上如7731e等一些旧的平台,针对USB全速电压的修改使得一部分产线上出现无法正常二次串口枚举.新合入一笔修改将usb/phy/phy_sprd_sharkl3.c(此处以7731e为例)FULLSPEED_USB33_TUNE的值从3.3V改为2.7V,在其他新平台和A12对应的大部分平台上是没有问题的,眼图测试通过也能正常二次枚举.像7731e等旧型号的手机上需要进行测试,如果出现问题,可以调整回原来的3.3V. usb/phy/phy_sprd_sharkl3.c中定义全速时的上电电压FULLSPEED_USB33_TUNE,通过sprd_hsphy_probe()在初始化的时候过calimode获取全速上电vdd的电压值.修改电压是因为,不同平台在不同电压下,图眼质量不同,如果图眼质量太差,进不了校准.所以这笔修改需要适配硬件设备.
+参考FAQ: FAQ202275010
+### 问题: SC9863A1平台是否能够搭配Transceiver SR3595D1使用？
+解决方案: SC9863A1平台只能搭配SR3595D使用,不能搭配SR3595D1使用.
+参考FAQ: FAQ202275012
+### 问题: 8910FF/8910FF-S 如何得知当前网络是否支持VoLTE?
+解决方案: 要判断当下网络是否有支持VoLTE,请尝试调用函数 MMIAPIPHONE_GetImsStatus @ mmiphone.c
+
+函数 MMIAPISET_GetVolteInfo @ mmiset_func.c 只是取得在系统设置中是否开启VoLTE,并非当下网络是否有支持
+参考FAQ: FAQ202275013
+### 问题: 现有ANIM组件播放由帧图构成的动图时，是否支持支持倒播
+解决方案: 目前平台没有支持倒播功能,提供思路如下: 1. 当 GUIANIM_TYPE_ANIM 或 GUIANIM_TYPE_ANIM_ARGB 时,会调用 DisplayAnim 播放动画 2. 接著会调用GUIANIM_StartAnimTimer起一个播放动画的timer 3. 当timer时间到时,会调用HandleAnimTimer @ ctrlanim.c, 判断并取得 cur_frame 顺序 4. 可以试著调整取得 cur_frame 顺序的逻辑看下能否满足需求
+参考FAQ: FAQ202275014
+### 问题: UIS8850 关于phasecheck写入时机
+解决方案: UIS8850 关于phasecheck写入时机 phasecheck有两个写入时机: 1,factory工具下载时写入. 2,research工具全擦下载时写入.research工具在全擦时,如果检测到机器有phasecheck数据,会先把phasecheck和fixedNV备份,然后在写fixedNv时把备份的phaseCheck再进去,这时即使全擦除了flash但phasecheck 的数据还是会再次写进去;如果没有检测phasecheck数据,那么就不写入.
+参考FAQ: FAQ202275015
+### 问题: sprdroid11 手势拍照 /手势识别 HAL层逻辑
+解决方案: 手势识别功能可通过 CONFIG_GESTUREDETECT_SUPPORT 控制, 代码中,手势识别流程在prev_start中通过prev_gesture_detect_open进入: vendor/sprd/modules/libcamera/oem2v6/src/cmr_preview.c #ifdef CONFIG_GESTUREDETECT_SUPPORT if(!cxt->ipm_cxt.gesture_detect_inited && camera_id == 1){ prev_gesture_detect_open(handle,camera_id); } #endif
+参考FAQ: FAQ202275019
+### 问题: sprdroid 无拨号键进入工程模式
+解决方案: adb root adb remount ①进入*#*#83781#*#* adb shell am start -n com.sprd.engineermode/com.sprd.engineermode.EngineerModeActivity ②进入*#*#83789#*#* adb shell am start com.sprd.validationtools/.ValidationToolsMainActivity ③直接进入Calibration测试 adb shell am start com.sprd.cameracalibration/.itemstest.camera.CameraCalibrationVCMActivity
+参考FAQ: FAQ202275022
+### 问题: Camera最大ZOOM倍率调整
+解决方案: 最大ZOOM可通过MAX_DIGITAL_ZOOM_RATIO进行修改,例如使用ISP 2.3时: vendor/sprd/modules/libcamera/hal3_2v6/SprdCamera3Setting.h 88 #ifndef CONFIG_ISP_2_3 89 #define MAX_DIGITAL_ZOOM_RATIO (4.0f) 90 #else 91 #define MAX_DIGITAL_ZOOM_RATIO (2.0f) 92 #endif
+参考FAQ: FAQ202275023
+### 问题: LTE B28 NV设置标志位在哪里？
+解决方案: LTE B28 分为B28 full band\B28A\B28B NV 区分的标志位置为:LTE_optimize\LTE_download_dsp_compensation_cc0_optimize\LTE_Flag_config\reserved[11],NV值含义如下: B28 fullband=0x1 B28A=0xA B28B=0xB NV配置时推荐使用NVAide tool来配置,避免出错.
+参考FAQ: FAQ202275024
+### 问题: 本地图片做背景是否支持拉伸
+解决方案: 可透过控件GUIANIM_DISPLAY_INFO_T设置下面参数 display_info.is_zoom = TRUE; display_info.is_auto_zoom_in = TRUE
+参考FAQ: FAQ202275025
+### 问题: UIS8811 linux中文系统下编译报错问题
+解决方案: UIS8811 linux中文系统下编译报错问题 LINUX操作系统的语言为中文时,无法成功编译.需要将操作系统切至英文版.存在的场景如下: components/tfm/get_entry_point.sh里面通过readelf获取tfm_s.elf的entry point,并用grep "Engry"来过滤出这条地址,用作mksimage的--entry后面的地址参数. 在中文操作系统环境中,readelf打印的"Entry point"变成了汉语"入口点地址",所以grep就搜不到了,导致mksimage的时候,--entry参数后面是空.grep返回失败没有检查,所以返回的空值直接用于构造了add_custom_command中mksimage的命令行中的--entry参数,引起最后dtool报错.
+参考FAQ: FAQ202275026
+### 问题: NR与LTE 的TRX开关做MIPI初始化注意事项
+解决方案: NR项目后期客户难免会自己更换物料,射频的TRX开关有可能会选择同一个厂家同一款型号的物料(有可能不同的分支),如果同一型号的物料默认的USID是相同的,分别用在NR与LTE上做TRX开关,NR上所接的MIPI ID(SCK3=01),LTE 上所接的MIPI ID(SCK1=01).就会导致两个开关的Reg:1D,1E的Value值是一样,不能正确的区分两个开关,初始化失败,不能正确读取这两个开关的ID值. 如下例: 规避以上问题 1、严格参照展锐推荐BOM选择物料. 2、如遇到相同USID物料,注意避开RFFE ID 硬件连接,避免MIPI ID值也相同.
+参考FAQ: FAQ202275031,含图片
+### 问题: NVAide工具编辑之前生成的XML文件，生成的差分NV在原代码上不会修改，修改项会添加一项做覆盖
+解决方案: 通常更新或者更改NV,我们会采用NVAide工具在之前生成的XML文件进行修改,生成的差分文件导入到NV project里,由于代码不能在原修改项的值进行更改,只能添加相同项覆盖.导致差分nv有两个相同项,导入至NVtool工具里面除了需要修改项标红外,还有其它的标红差异项. 如下示范: 用NVaide(v3.4.2)工具采用LTE B41 120M带宽的xml文件更改全带宽生成的差分文件 避免出现以上疑问 1、NV修改尽量在Nvtool工具里面针对项做修改,或者重新用NVAide工具编辑生成NV文件. 2、该操作生成的差分NV,采用导入NV.BIN的形式不会出现相同的内容,在Nvtool工具里面不会标红.
+参考FAQ: FAQ202275034,含图片
+### 问题: UMS9230多场景功率回退，3\4G最大功率回退范围是多少？
+解决方案: UMS9230平台多场景功率回退与提升,3\4G功率支持0.5dB步进,0.125dB步进也是支持的,可参考FAQ202274722. UMS9230+SR3595D功率回退与提升应用说明V1.0文档中,3\4G最大功率回退范围没有相关介绍. UMS9230多场景功率回退(步进0.125dB)3G\4G功率最大回退范围是多少? 实测数据如下: 1、3G最大功率能降低23dB左右(举例:期望值为23dBm,可以降低到0dBm左右); 2、4G最大功率能降低15dB左右(举例:期望值为23dBm,可以降低到8dBm左右).
+参考FAQ: FAQ202275050
+### 问题: 为什么 SC9832E go 工程上配置 3GB RAM 只能显示 2GB 大小?
+解决方案: -----# 设备获取DDR大小是正常的 cat /proc/sprd_dmc/property 3072 # 设备获取 Linux Kernel 的可用内存大小 只有不到 2GB cat /proc/meminfo MemTotal: 1945848 kB 由于ARM是统一编址的,也就是外设和内存(ddr)进行统一的编址,在 32bit 上共同形成了 4G 物理地址空间 我司 ddr 的映射地址为 0x80000000, 32bit的最大寻址地址为 0xffffffff 所以,留给内存(ddr)的寻址空间为: 0xffffffff + 1 - 0x80000000 = 0x80000000 = 2048MB = 2GB
+参考FAQ: FAQ202275057
+### 问题: swap,zram和zram writeback的区别与联系
+解决方案: swap: 通过在磁盘上开辟专用的swap分区作为匿名页的后备存储设备(backing storage),在内存紧张时用于存放如heap,stack等匿名页; Linux中存在两种形式的swap, swap disk和swap file. zram: 即压缩的内存,使用内存模拟块设备(block device).实际不会写到块设备中去,只会压缩后写到模拟的块设备中(还在内存中),由于压缩和解压缩的速度远比读写IO快,所以被广泛的应用到嵌入式设备中,比如手机等等. zram writeback: 是在 /data 分区下创建了一个 swap file, 将数据交换到 flash 上. 由于该方法会对 flash 有磨损, 不建议将该值设置过大 在 unisoc 平台上 swap 即是 zram ; zram 是在内存(ddr)里,zram writeback 是在磁盘(flash) 中.
+参考FAQ: FAQ202275059
+### 问题: GSM温补功能标志位register_value[121]
+解决方案: GSM温补功能标志位register_value[121] 用于调整温补功能 具体位置如下: GSM_optimize/GSM_system_param_dsp_use_optimize/dynamic_RF_ctrl_struct/dsp_register_init_T/register_value[121] = 0x1 0:修改前的流程 1:修改后的流程 nv默认值为0,客户需要自行配置1来打开功能; 默认参数下:打开功率回退标志位register_value[179]=0x1,温补正值无法生效;修改参数后:打开功率回退标志位register_value[179]=0x1,温补可生效,具体功能流程如下: 相关修改已合入FM_BASE_19A正式分支.
+参考FAQ: FAQ202275060,含图片
+### 问题: CTS测试项Audio Frequency Line Test fail该如何排查？
+解决方案: 此测试项Audio Frequency Line Test ,用来检测音频线路完整性. 需要用到音频环回测试器,用其测量往返音频延迟.其电路原理图如下: 一般我们耳机电路图按照参考设计,是可以稳定PASS此项的,如果FAIL,可以CHECK 音频环回测试器的左右声道对地阻抗值是否为1.1K欧.如果直接使用耳机测试,则会导致FAIL.
+参考FAQ: FAQ202275072,含图片
+### 问题: Android11 如果对动态ta进行签名？
+解决方案: Android11 如果对动态ta进行签名? 签名密钥在: /vendor/sprd/proprietaries-source/packimage_scripts/signimage/sprd/config/dynamic_ta_privatekey.pem
+ 签名脚本在: /vendor/sprd/proprietaries-source/packimage_scripts/signimage/dynamicTA/signta.py
+ 运行命令: python signta.py --uuid <uid> --key <私钥> --in <原始elf文件> --out <签名后的文件>
+参考FAQ: FAQ202275076
+### 问题: Android 11 安全熔丝功能如何开启？
+解决方案: 安全相关的熔丝功能,需要使用我们的产线simba工具来完成. 工具从如下地址可以获取: Simba工具:https://unisupport.unisoc.com/tool/index?fileid=34562 SecurityServer工具:https://unisupport.unisoc.com/tool/index?fileid=34558 请参考工具里面的doc目录的文档 《UNISOC NPI Security User Guide(Simba) V5.1.pdf》 安全熔丝功能,需要跑一遍的第四章 "ROTPK部署". 需要注意,一旦进行了这个部署,您的手机烧写软件将受限,所以比较废手机.
+参考FAQ: FAQ202275078
+### 问题: Android 11 平台如何进行 emmc 绑定？
+解决方案: 我们emmc的绑定,是安全部署的过程进行的,安全部署我们使用的simba工具来做的, 如下地址可以获取到相应的工具: Simba工具:https://unisupport.unisoc.com/tool/index?fileid=34562 SecurityServer工具:https://unisupport.unisoc.com/tool/index?fileid=34558 上面两个工具通过C/S 方式一起使用. 使用方法,请参考里面的doc目录的文档 《UNISOC NPI Security User Guide(Simba) V5.1.pdf》 需要参考文档中的rotpk部署,需要把图4.1中的 "SetROTPK" 这个选项去掉. 这样走完部署就完成了emmc与CPU的绑定过程. 一旦绑定之后无法解除,更换emmc后需要重新进行绑定.
+参考FAQ: FAQ202275079
+### 问题: 展锐Android 11 平台安全启动的介绍哪里有？
+解决方案: 我们有发布的安全启动的使用指南, 启动过程介绍,image签名相关的内容里面都有介绍. 可以从下面地址获取: 中文版: 《Android 11.0 Secureboot使用指南V1.2.pdf》 https://unisupport.unisoc.com/file/index?fileid=34537 英文版: 《Android 11.0 Secure Boot User Guide V1.2.pdf》 https://unisupport.unisoc.com/file/index?fileid=100913
+参考FAQ: FAQ202275080
+### 问题: 展锐Android 12 平台安全启动的介绍哪里有？
+解决方案: 我们有发布的安全启动的使用指南, 启动过程介绍,image签名相关的内容里面都有介绍. 可以从下面地址获取: 中文版: 《Android 12.0 Secure Boot使用指南V1.0.pdf》 https://unisupport.unisoc.com/file/index?fileid=101653 英文版: 《Android 12.0 Secure Boot User Guide V1.0.pdf》 https://unisupport.unisoc.com/file/index?fileid=101722
+参考FAQ: FAQ202275081
+### 问题: SC9863A/A1 的 CPU GPU Memory分别由哪些电源供电
+解决方案: SC9863A/A1内部集成了GPU模块,但是并没有单独为GPU供电的电源.那么SC9863A/A1内部的GPU、CPU、Memory又是分别由哪些电源进行供电的呢? 答案如下: GPU的供电电源:VDDCORE CPU的供电电源:VDDCORE、DCDCCPU MEM的供电电源:VDDMEM
+参考FAQ: FAQ202275082
+### 问题: 平台机在深睡眠模式（deep sleep）下被周期性唤醒的原因
+解决方案: 客户经常问这个问题:平台机在深睡眠模式(deep sleep)下会被周期性唤醒. 这是正常现象.唤醒的时间和modem的寻呼周期相关. 具体原因如下: (1)当UE处于空闲状态,EPC需要与UE进行交互,网络侧也通过寻呼的方式通知UE,UE只有监听到寻呼消息才能响应;必须有寻呼,modem才能做业务. (2)每个平台都有,寻呼周期由网络决定 CDMA2000 典型Paging 周期:1280ms TD-SCDMA 典型Paging周期:640ms、1280ms GSM典型Paging周期:470ms W典型Paging周期:640ms、1280ms LTE典型Paging周期:320ms、640ms、1280ms NR典型Paging周期:320ms、640ms、1280ms
+参考FAQ: FAQ202275083
+### 问题: Android R APN authtype 参数配置
+解决方案: authtype:APN的认证协议,默认值 -1 . 参数值: NONE:0 PAP:1 CHAP:2, PAP/CHAP:3 通常与 USER 和 PASSWORD 配合使用. 配置格式:   <apn carrier="AR-Cloar Web"
+    mcc="722"
+    mnc="310"
+    apn="igprs.claro.com.ar"
+    user="clarogprs"
+    password="clarogprs999"
+    protocol="IPV4V6"
+    roaming_protocol="IPV4V6"
+    type="default,xcap,supl"
+    authtype="1"
+  />
+参考FAQ: FAQ202275093
+### 问题: Android R APN 设置为可编辑状态
+解决方案: 1.根据运营商 sim 卡信息(mccmnc,mvno_type,mvno_match_data) 在 packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb 中的 carrier_attribute 找到最匹配的,然后再看对应的 carrier_id 中的 canonical_id与 carrier_name. 2.只需要carrier_config_carrierid_xxxxx_yyyy.xml配置即可 <string-array name="read_only_apn_types_string_array" num="0"/>
+ 3./vendor/sprd/telephony-res/apn/apns-conf_8_v2.xml 文件中应配置 user_editable="1"
+参考FAQ: FAQ202275095
+### 问题: Android4.4 ApnSettings 页面隐藏 xcap 类型的APN
+解决方案: xcap 类型 APN 都是默认显示的,在 ApnSettings 列表界面隐藏xcap 类型 APN 选项,在 /vendor/sprd/platform/packages/apps/CarrierConfig/res/xml/vendor.xml <string name="operator_hide_xcap_apn">24202,242002,242020</string>
+ 中添加相应需要隐藏的mcc/mnc即可.
+参考FAQ: FAQ202275096
+### 问题: Android4.4 ApnSettings 页面显示 ims 类型的APN
+解决方案: 在 ApnSettings 列表界面显示 ims 类型 APN 选项,在 /vendor/sprd/platform/packages/apps/CarrierConfig/res/xml/vendor.xml <string name="operator_show_ims_apn">20801,22610,52000,52004,52005,502152</string>
+ 中添加相应需要显示的mcc/mnc即可.
+参考FAQ: FAQ202275097
+### 问题: 5G WiFi PCB Layout相关要点
+解决方案: 5G WiFi工作的频段较高,链路插损较2.4G WiFi更大,所以PCB设计时需要注意减小插损,设计要点如下: 1、5G WiFi RF走线需要走表层,避免打孔穿层,且走线越短,插损越小; 2、5G WiFi RF走线如需倒角,禁止倒锐角/直角,否则反射过大,影响信号连续性; 3、5G WiFi RF链路有时会涉及邻层挖地处理做阻抗变化,此时需要注意保持整段链路阻抗收敛连续性,禁止出现多段走线阻抗变化导致 链路不收敛. 4、如其余RF走线一样,5G WiFi RF链路需要完整的立体包地措施,保证链路不受干扰.
+参考FAQ: FAQ202275098
+### 问题: Android 9.0  ApnSettings列表界面显示 ims 类型的 APN
+解决方案: ims类型APN默认隐藏,在ApnSettings列表界面显示和ims类型APN选项,在 /packages/apps/CarrierConfig/res/xml/vendor.xml <string name="operator_show_ims_apn">
+ 20801,22610,52000,52004,502152,60201,73001,71606
+</string>
+​
+ 中添加相应需要显示的mccmnc即可.
+参考FAQ: FAQ202275099
+### 问题: Android 9.0 ApnSettings列表界面显示 xcap 类型的 APN
+解决方案: xcap 类型 APN 都是默认隐藏,在ApnSettings列表界面显示xcap类型APN选项,在 /packages/apps/CarrierConfig/res/xml/vendor.xml <string name="operator_show_xcap_apn">
+ 23415,46692,73001
+</string>
+ 中添加相应需要显示的mccmnc即可.
+参考FAQ: FAQ202275100
+### 问题: APN配置文件路径
+解决方案: Android9.0及之前版本APN配置文件路径为: vendor/sprd/telephony-res/apn/apns-conf_8.xml Android10.0 、Android11和Android12版本APN配置文件路径为: /vendor/sprd/telephony-res/apn/apns-conf_8_v2.xml Android13.0版本APN配置文件路径为:
+/vendor/sprd/telephony-res/apn/apns-conf_8_v3.xml
+参考FAQ: FAQ202275103
+### 问题: WIFI/BT的开机Log抓取方法
+解决方案: 1.先输入*#*#83781#*#*进入EngineerMode 2.在DEBUG&LOG里,选Ylog,进去点击打开 3.在设置界面,关闭WIFI/BT 4.然后关机,重启 5.开机后,在设置界面打开WIFI/BT 6.最后倒出Log
+参考FAQ: FAQ202275104
+### 问题: Simba搭配CMW500进行WiFi综测时，测试流程包括哪些？
+解决方案: Simba搭配CMW500进行WiFi综测时,默认的.seq测试脚本文件会进行3次非信令强发,取这3次强发结果的average值作为测试结果,并且CMW500为payload模式.所以单独使用CMW500进行信令测试,与simba非信令综测结果进行对比时,需要将仪表设置为payload模式,Test count设置为3次,取均值进行对比.也可修改.sep文件中的测试次数,在.seq文件下高级设置中修改common下AvgCount对应的数值即可.
+参考FAQ: FAQ202275105

@@ -1,0 +1,321 @@
+### 问题: 使用writeIMEI工具写IMEI号如何获取PC端串口log?
+解决方案: 在writeIMEI工具Bin目录下,将配置文件Channel.ini中log输出等级修改为5: [Log] ; Text log level ; 0, No text log ; 1, Log errors,default value ; 2, Log warnings ; 3, Log runtime information ; 4, Log data only ; 5, Log everything Level = 5 执行操作后在 log目录下会生成串口log文件.
+参考FAQ: FAQ53000
+### 问题: 7715平台如何进入校准模式?
+解决方案: /* idh.code\u-boot\property\cmd_cboot.c */ int do_cboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[]) { …… unsigned rst_mode = check_reboot_mode(); …… // 0 get mode from calibration detect if(cali_file_check() && !boot_pwr_check()&& (!rst_mode || (rst_mode == CALIBRATION_MODE))&& (!alarm_triggered())){ calibration_detect(2); } …… } 在uboot阶段,在满足未设置其他重启模式、电源键未按下等条件下,uboot首先执行calibration_detect(2)进行校准监听,通过与PC端以DIAG指令交互进入校准模式.
+参考FAQ: FAQ53003
+### 问题: sc7715校准模式下engpc服务是如何启动的?
+解决方案: 校准模式下,系统走的是 recovery流程,在init.rc中实现了engpc的启动: on cali service engpcclient /system/bin/engpc class cali user root group root init.c中通过判断bootmode添加了对其启动的支持: if (!strcmp(bootmode, "cali")) { action_for_each_trigger("cali", action_add_queue_tail); } …… }
+参考FAQ: FAQ53004
+### 问题: 7715平台engpc服务流程是怎样的?
+解决方案: Engpc服务主要功能为解析cmdline中相关参数、建立手机AP端与计算机、手机AP端与CP端、手机CP端与计算机之间收发指令的通道,以及对指令的解析并进行相应处理等.主要服务流程如图所示. 其中最为主要的是vdiag指令写线程(eng_vdiag_wthread),线程中完成了手机AP端通过USB从计算机工具端获取DIAG指令,并对指令进行解析,通过指令类型判断是否将指令传给手机CP端处理,若AP端能够处理则调用相应处理函数进行处理,并将处理结果封装成DIAG指令格式反馈给计算机工具端.若AP端无法处理则通过SIPC通道将指令传输给CP端,由CP端进行处理.
+参考FAQ: FAQ53005
+### 问题: 什么是icu4c
+解决方案: ICU4C是ICU在C/C++平台下的版本, ICU(International Component for Unicode)是基于"IBM公共许可证"的,与开源组织合作研究的, 用于支持软件国际化的开源项目.ICU4C提供了C/C++平台强大的国际化开发能力,软件开发者几乎可以使用ICU4C解决任何国际化的问题,根据各地的风俗和语言习惯,实现对数字、货币、时间、日期、和消息的格式化、解析,对字符串进行大小写转换、整理、搜索和排序等功能,必须一提的是,ICU4C提供了强大的BIDI算法,对阿拉伯语等BIDI语言提供了完善的支持. 平台增加新语言必须添加相关的ICU资源,请参考 FAQ31215
+参考FAQ: FAQ53006
+### 问题: 如何实现CTS权限和HAL层对设备控制权限的兼容性
+解决方案: 众所周知,HAL层实现对设备的控制有两种方法实现,分别是注册一个字符设备和注册设备属性节点.但为了实现CTS权限和HAL层对设备控制权限的兼容性,推荐使用字符设备来控制,这样也方便相同功能的sensor的兼容.
+参考FAQ: FAQ53027
+### 问题: 7715 多国语编译注意事项
+解决方案: 编译多国语言版本时,需注意: 1、在编译工程时,必须加上 MULTILANGUAGE_SUPPORT=true 编译选项去编译 2、检查工程对应的mk文件,应有如下内容: ifeq ($(MULTILANGUAGE_SUPPORT),true) PRODUCT_PACKAGES += $(MULTILANGUAGE_PRODUCT_PACKAGES) PRODUCT_LOCALES := en_US hi_IN hi_IN in_ID id_ID endif
+参考FAQ: FAQ53028
+### 问题: Android APK中如何实现activity间互相切换的功能
+解决方案: AndroidManifest.xm有这样一个字段android:allowTaskReparenting('true' or 'false'); 表示是否允许activity更换从属的任务,比如从短信息窗口任务切换到浏览器任务,如果设置成true就可以这样切换,否则不行.
+参考FAQ: FAQ53032
+### 问题: 什么是USB复合设备?
+解决方案: 实际设备虽然只有一个USB 接口,但连接到系统后会出现多个设备,比如会多出多个串口,或者还有ADB 网卡等,但其本身就只有一个USB 设备,这种有多个功能的设备就是所谓的复合设备.
+参考FAQ: FAQ53034
+### 问题: windows PC侧usb驱动安装包里的inf文件分别是负责哪个驱动的?
+解决方案: 这个驱动包含了功能机和智能机的其中: sprdadb.inf->ADB sprdmtp.inf->MTP sprdvcom.inf->智能机所有的串口 sprdrndis.inf->智能机网卡 sprdport.inf,sprdmodem.inf,sprdmux.inf-> 功能机的串口,modem,mux 驱动
+参考FAQ: FAQ53033
+### 问题: 7731项目读取sim卡gid1的接口是什么?
+解决方案: 获得GID1为: getGroupIdLevel1 使用方法如下: phoneId = 0为卡1,phoneId =1为卡2; TelephonyManager tm = (TelephonyManager)mContext.getSystemService(PhoneFactory.getServiceName(Context.TELEPHONY_SERVICE, phoneId)); String gid1 = tm. getGroupIdLevel1 ();
+参考FAQ: FAQ53050
+### 问题: 如何修改WLAN热点中的默认网络SSID名称AndroidAP
+解决方案: 修改frameworks\base\core\res\res\values\Strings.xml文件中的如下默认字符: <!-- Do not translate. Default access point SSID used for tethering --> <string name="wifi_tether_configure_ssid_default" translatable="false">AndroidAP</string> 可以修改为需要的字符串;
+参考FAQ: FAQ53061
+### 问题: SC7715 如何取消开机开机动画后开机过程的振动
+解决方案: 去掉解锁震动: \frameworks\base\packages\Keyguard\res\layout\keyguard_glow_pad_view_uui.xml - prvandroid:vibrationDuration="20" + prvandroid:vibrationDuration="0"
+参考FAQ: FAQ53092
+### 问题: Android4.4 如何删除项目预置的APK应用
+解决方案: 删除vendor/sprd/partner/prebuilt_apps/目录下相关的APK和so,并且删除mk文件,再删除项目mk中对apk的调用,编译平台代码重新刷机后,需要删除的应用程序已经从系统删除.
+参考FAQ: FAQ53098
+### 问题: Android 如何去掉开机动画
+解决方案: 可以采用下面方式中的任意一种来实现去掉开机动画 (1) 将system/core/rootdir/init.rc中bootanim的service去掉 (2) 将frameworks/native/services/SurfaceFlinger.cpp中的start bootanimd的调用去掉 (3) 将frameworks/base/cmds/ Bootanimation /Bootanimation_main.cpp中的noBootAnimation强置为1
+参考FAQ: FAQ53105
+### 问题: 各种卫星系统的卫星ID范围
+解决方案: Satellite System PRN numbers NMEA/PMTK SVID GPS 1 ~ 32 1 ~ 32 WAAS 120 ~ 138 33 ~ 64 GLONASS 1 ~ 24 65 ~ 88/89~96 reserved GALILEO 1 ~ 54 51~104 QZSS 183 ~ 187/193 ~ 197 reserved/193~197 BEIDOU 1~30 201~230
+参考FAQ: FAQ53086
+### 问题: 7731支持那个蓝牙版本?
+解决方案: 7731目前支持的是bt2.1 EDR;EDR 即Enhanced data rate,是蓝牙技术中增强速率的缩写,相比于bt2.0,其提高了蓝牙技术的数据传输速率,达到了2.1Mbps ,是2.0的三倍; 因此除了可获得更稳定的音频流传送的更低的耗电量之外,还可充分利用带宽优势同时连接多个蓝牙设备.
+参考FAQ: FAQ53111
+### 问题: BogoMips介绍
+解决方案: BogoMips ("bogus" 和MIPS, 伪MIPS) 是一种衡量CPU速度的不科学的方法.当计算机内核启动时,将执行一个计数循环. 对于特定的CPU,BogoMips可用来查看它是否是个合适的值.它的时钟频率和它潜在的CPU缓存.但是它不可在不同的CPU间进行比较演示
+参考FAQ: FAQ53138
+### 问题: 如何让内部存储的盘符支持大小写
+解决方案: 修改system\core\toolbox\newfs_msdos.c里面修改如下 static void
+mklabel(u_int8_t *dest, const char *src)
+{
+    int c, i;
+
+    for (i = 0; i < 11; i++) {
+	//c = *src ? toupper(*src++) : ' ';
+	c = *src ? (*src++) : ' ';
+	*dest++ = !i && c == '\xe5' ? 5 : c;
+    }
+}
+参考FAQ: FAQ53114
+### 问题: L2CAP层接收的event类型
+解决方案: L2CAP层接收的event类型有五类: 1. 来自低层的Indication和Confirm; 2. 来自高层的Request和Response; 3. 来自对等层的数据; 4. 来自对等层的Request和Response; 5. 定时器事件.
+参考FAQ: FAQ53123
+### 问题: 7715 Nand是否支持内置U盘功能
+解决方案: nand flash本身容量就小,主流都是512M,各个分区使用完剩余的已经寥寥无几,现在free空间都集中给了data分区,没怎么用就没了. UMS功能肯定是要能够挂载到pc上,如果将nand flash的分区做成fat格式的话读写均衡,坏块管理就得不到保证,安全性太低.
+参考FAQ: FAQ53130
+### 问题: L2CAP接收来自低层的事件有哪些？
+解决方案: L2CAP接收来自低层的事件有: 1. LP_ConnectCfm ->通知L2CAP层LP_ConnectReq请求成功,基带层链路已建立; 2. LP＿ConnectCfmNeg ->通知L2CAP层其LP＿ConnectReq请求失败,原因包括基带链路未能建立,拒绝请求和鉴权等; 3. LP_QoSCfm ->通知L2CAP层其LP_QoSReq请求成功,远端设备接受其中的配置参数; LP_QoSCfmNeg ->通知L2CAP层其LP_QoSReq请求失败; LP_ConnectInd ->通知L2CAP层已经成功地建立了连接,如果低层是基带层,则将是ACL链路; LP_DisconnectInd ->通知L2CAP层低层协议(基带)间的连接已经被LMP命令或超时事件断开 LP_QoSViolationInd ->通知L2CAP层低层协议发现有违反Qos协定的行为
+参考FAQ: FAQ53128
+### 问题: L2CAP层接收来自高层的事件有哪些？
+解决方案: L2CAP层接收来自高层的事件有哪些? L2CA_ConnectReq -> 收到高层的信道请求; L2CA_CofigReq -> 收到高层的信道配置请求; L2CA_DisconnectReq -> 收到高层的信道断开请求; L2CA_ConnectRsp-> 收到高层对于连接请求的肯定响应; L2CA_ConnectRspNeg -> 收到高层对于连接请求的否定响应; L2CA_CofigReqRsp -> 收到高层对于配置请求的肯定响应; L2CA_CofigReqRspNeg -> 收到高层对于配置请求的否定响应; L2CA_DisconnectRsp -> 收到高层对于断开连接请求的肯定响应,断开连接请求必须成功,因而没有否定的响应; L2CA_DataRead ->收到高层关于将L2CAP实体收到的数据上传的请求; L2CA_DataWrite ->收到高层将数据传到L2CAP实体再通过开放信道传送的请求.
+参考FAQ: FAQ53159
+### 问题: L2CAP层收到的定时器事件有哪些？
+解决方案: L2CAP层收到的定时器事件有哪些? RTX ->Response Timeout Expired 定时器用于在远端设备迟迟未对请求信令做出响应的终止信道. ERTX ->Extended Response Timeout Expired 定时器用来在远端设备正对请求信令作额外的处理时取代RTX定时器进行计时.
+参考FAQ: FAQ53163
+### 问题: L2CAP层发起的行为的类型
+解决方案: L2CAP层发起的行为的类型有: 1. 对高层的Confim和Indication; 2. 对低层的Request和Response; 3. 对对等层的Request和Response; 4. 对对等层的数据传输和定时器设置;
+参考FAQ: FAQ53164
+### 问题: LOCAL_MODULE_TAGS 编译说明
+解决方案: Android 使用LOCAL_MODULE_TAGS来决定编译版本. LOCAL_MODULE_TAGS :=user eng tests optional user: 指该模块只在user版本下才编译 eng: 指该模块只在eng或userdebug版本下才编译 tests: 指该模块只在tests版本下才编译 optional:指该模块在所有版本下都编译
+参考FAQ: FAQ53167
+### 问题: DRM的FL类型文件说明
+解决方案: DRM为数字权益保护.包含有FL/CD/SD 三种类型的文件. FL:Foward Lock 不能转发,可以无限制使用 不含RO权限 FL文件可以无限制使用.用IMEI做为唯一的识别码.只允许在download的手机上使用DRM.且只允许剪切文件到SD卡.倘若用户拔 掉SD卡.移除到另外一台手机上.由于IMEI已经变化.故用户还是无法播放FL文件.
+参考FAQ: FAQ53157
+### 问题: 陀螺仪在手机中的应用
+解决方案: 陀螺仪(Gyroscope):角速度传感器,它是测量物体偏转、倾斜、俯仰时的转动角速度. 1.动作感应的GUI:比如前后倾斜手机,实现通讯录条目的上下滚动;左右倾斜手机,实现浏览页面的左右移动或者页面的放大或缩小. 2.3D鼠标:也叫空鼠,手机在智能家居中扮演很重要的角色,通过手机可以轻松控制电视,电脑. 3.OIS光学防抖:防止手的抖动对拍照质量的影响.在按下快门时,记录手的抖动动作,将抖动结果通过高速SPI传输给图像处理器,可以抓到更清晰稳定的图片. 4.室内导航:当进入隧道或大楼内部,没有GPS讯号时,也没有可用wifi时,通过陀螺仪来测量偏航或直线运动位移,从而继续导航. 5.体感游戏:通过陀螺仪对动作检测的结果(3D范围内手机的动作),在游戏画面中体现出来.
+参考FAQ: FAQ53186
+### 问题: DRM CD文件格式说明
+解决方案: CD:Combined Delivery 有RO权限.RO+Content绑定在一起 目前的CD文件大致包括下列几种类型--- 有次数限制的,如count 6 times,只允许播放6次 有期限限制的,如2014年10月8日12点---2014年12月10日18点 期限截止的, 如2014年12月5日之前. 次数和期限结合的,,如2014年10月10日----2014年12月13日,count 8,,就是在这期间只能播放8次 且用户不可以手动更改时间来把已过期的CD文件变为有效的文件
+参考FAQ: FAQ53192
+### 问题: DRM的SD类型文件说明
+解决方案: SD:Sepearate Delivery 有RO权限.RO和Content分开.下载好conteng后.需要通过购买权限来获取密钥,并通过wappush获取RO权限 SD的文件是用户需要去服务业者的网络上先去下载内容文件.当下载内容文件后.还得花钱去购买权限RO 只有获得有效的RO,才可以播放SD文件,同CD一样,SD文件也是无法通过更改手机时间来把已过期的SD文件变为有效的文件 SD文件可以通过MMS进行发送.但是发送之前,用户必须购买SD的RO权限才可以经过MMS,BT,EMAIL等发送 如果用户只是用SD的内容文件去发送,可以发送出去,但是接收端的用户也是无法使用该SD文件的
+参考FAQ: FAQ53193
+### 问题: 如何查看gms client id
+解决方案: 输入暗码*#*#759#*#*,点击View Client IDs就可以看到
+参考FAQ: FAQ53195
+### 问题: HVGA分辨率下开机向导文字重叠
+解决方案: 这个是4.4 gms包的原生问题,google没有计划修改在低分辨率下的显示问题
+参考FAQ: FAQ53197
+### 问题: 2351是否支持5G信道
+解决方案: 目前2351只支持2.4G信道,不支持5G信道
+参考FAQ: FAQ53214
+### 问题: L2CAP发起的对低层的行为有哪些？
+解决方案: LP_ConnectReq -> L2CAP要求低层创建连接,如果并不存在对远端设备的物理链路,则该行为必须通知低层协议建立物理链路,两个设备间的基带ACL链路最多只能有一条,因此并存的L2CAP停产必须共享同一物权法ACL链路; LP_QoSReq -> L2CAP请求低层协议提供一特定的QoS参数设置; LP_ConnectRsp-> 对于先前接收到的来自低层的连接请求的肯定响应; LP_ConnectRspNeg -> 对于先前接收到的来自低层的连接请求的否定响应;
+参考FAQ: FAQ53165
+### 问题: 如何解决听音乐过程中，插入USB，音乐会无声音的问题？
+解决方案: 过压保护起作用了,芯片自动关闭Speaker PA,避免损坏芯片. 修改方案为:过压保护时不关闭PA,而是改变PA的供电,由VBAT改为LDO. samplecode
+参考FAQ: FAQ53237
+### 问题: 为何灭屏后再次点亮，已启动的紧急拨号盘会消失？
+解决方案: EmergencyDialer监听了ACTION_SCREEN_OFF广播消息,当收到ACTION_SCREEN_OFF广播消息时,会finish. 若客户不希望紧急拨号盘灭屏被finish,可将EmergencyDialer.java文件中对ACTION_SCREEN_OFF广播的处理去掉.
+参考FAQ: FAQ53246
+### 问题: 为何手机搜索蓝牙设备会概率性显示蓝牙地址？
+解决方案: 手机蓝牙搜索到蓝牙设备,会先获取对端的蓝牙地址,然后获取蓝牙设备名,上层应用根据获得的name request complete status来显示.概率性出现地址是与测试环境、蓝牙性能及对端蓝牙相关,当name request fail就会显示地址,一般手机都会概率性出现.
+参考FAQ: FAQ53241
+### 问题: 如何准确定义USERDATA分区的大小？
+解决方案: 1.恢复出厂设置. 2.用cat /proc/partitions查看userdata分区的实际大小. 3.将BOARD_USERDATAIMAGE_PARTITION_SIZE 配置为实际大小.为了安全起见,一般定义稍微偏小.
+参考FAQ: FAQ53245
+### 问题: 为什么NAND的ecc位数改变后，下载过改变前软件的板子无法升级？
+解决方案: 1.下载过改变前软件的板子与新的软件ecc位数不一致,不能兼容,导致ubi初始化失败. 2.需要用特殊的fdl2擦除旧的板子后才能下载新的软件.
+参考FAQ: FAQ53260
+### 问题: 如何配置bt wifi 开关的控制逻辑？
+解决方案: 需要对照硬件原理图进行代码修改,以sp7715gacuccspecAplus_UUI工程为例: vendor/sprd/open-source/res/productinfo/scx15_sp7715gacuccspecAplus_UUI_connectivity_configure.ini 82 wifi_tx = 1 83 bt_tx = 2 84 wifi_rx = 4 85 bt_rx = 4 配置方法为:CP2_RCTL[2]为第2位,值为4;CP2_RCTL[1]为第1位,值为2;CP2_RCTL[0]为第0位,值为1.
+参考FAQ: FAQ53243
+### 问题: callLog中区分已接和未接来电的原则
+解决方案: 来电挂断后,记录通话记录时,会存储一个callLogType字段用来区分是已接还是未接来电,这个字段的定义如下,即只有missed call会被当作未接来电,其余的都是已接. callLogType = (cause == Connection.DisconnectCause.INCOMING_MISSED ? Calls.MISSED_TYPE : Calls.INCOMING_TYPE);
+参考FAQ: FAQ53267
+### 问题: 恢复出厂设置后，userdata下的数据是否都会擦除？
+解决方案: 恢复出厂设置后,userdata下的数据都会擦除.
+参考FAQ: FAQ53273
+### 问题: 如何解决全景拍照保存后回到预览界面时会先闪一下之前拍照的最后一个场景的问题
+解决方案: [原因分析] 停止拍摄全景后,停止预览,TextureView上会残留最后一帧 [解决方案] 停止预览时,隐藏TextureView;渲染完成后,显示TextureView
+参考FAQ: FAQ53239
+### 问题: HFP 控制功能
+解决方案: 1、服务级连接设置; 2、释放服务级连接; 3、注册状态的通信; 4、呼叫状态的通信; 5、语音连接的建立; 6、语音连接的释放; 7、对呼人请求进行应答; 8、终止呼叫处理; 9、免提语音单元转移; 10、音频网关转移语音数据; 11、免提单元提供的电话号码进行呼叫; 12、免提单元进行记忆拨号;
+参考FAQ: FAQ53282
+### 问题: 网络封装协议  BNEP
+解决方案: BNEP BluetoothNetworkEncapsulation Protocol 网络封装协议. 为了使集成蓝牙技术的电脑、电话、PDA、家用电器等网络设备交换信息,需要在网络层统一数据分组.网络封装协议将来自不同网络的数据分组重新封装,通过L2CAP进行传输.这部分协议感觉在现实中用处不大,有更多简单便捷的方法去实现网络功能. BNEP支持Ipv4、Ipv6、IPX
+参考FAQ: FAQ53285
+### 问题: AVDTP信令
+解决方案: 命令 信令标识符 描述 AVDTP_DISCOVER 0x01 发现设备中的流端点 AVDTP_GET_CAPABILITIES 0x02 获得流端点的信息能力 AVDTP_SET_CONFIGURATION 0x03 对SEP进行配置 AVDTP_GET_CONFIGURATION 0x04 获取SEP当前配置 AVDTP_RECONFIGURE 0x05 对SEP重新配置 AVDTP_OPEN 0x06 成功的配置SEP后,打开流 AVDTP_START 0x07 流被打开:用于开始形成流;流暂停时:用于重新形成流. AVDTP_CLOSE 0x08 对SEP关闭 AVDTP_SUSPEND 0x09 请求SEP暂停 AVDTP_SECURITY_CONTROL 0x0A 设置设备内容保护、或者请求设备状况信息 AVDTP_ABORT 0x0B 中断正在建立或者传输的过程 AVDTP_GET_ALL_CAPABILITIES AVDTP_DELAYREPORT
+参考FAQ: FAQ53286
+### 问题: 7731如何修改该USB连接后的默认功能
+解决方案: 修改工程mk中的usb config . 如 scx35_sp7731geaplus_dt_origlaun.mk 添加如下内容: # Set default USB interface PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \ persist.sys.usb.config=mass_storage
+参考FAQ: FAQ53302
+### 问题: Camera模块中Face beauty功能如何测试及如何确认照片效果
+解决方案: Face beauty功能介绍: Face beauty中文意识为人脸美化,当选择此功能的时候,手机拍摄人脸照片的时,会对人脸进行处理,美化的效果具体体现在四个方面:美白,除皱,大眼和瘦脸. Face beauty测试结果确认: 1.在进行拍照的时候,将Face beauty功能打开后,手机在对人脸进行拍照的时候,在手机的预览界面,识别到人脸的时候,人脸会有方框框住 2.点击拍照按钮后,手机会自动生成两张照片,一张照片为原始的照片,另一张照片为对人脸美化后的照片. 3.美化后的照片对比原始的照片会有明显的区别,具体体现在皮肤会变白,人脸有皱纹的地方会加皱纹去除,眼睛会变大以及人脸会变瘦 备注:目前市场上的很多手机支持人脸美化功能的只支持在拍照的时候支持人脸美化.目前一些高端的手机在进行拍照预览以及录像的时候,也能够支持人脸美化
+参考FAQ: FAQ53301
+### 问题: 如何擦除ADC校准参数？
+解决方案: 用下载工具选择fdl1,fdl2和ProdNV,将备份选项中的ProdNV去掉,重新下载即可.
+参考FAQ: FAQ53321
+### 问题: 如何解决设置桌面壁纸成功后返回待机界面查看图片被放大变模糊的问题
+解决方案: [原因分析] 原生Launcher2的问题,目前原生Launcher没有分开设置锁屏壁纸和主屏壁纸的入口,增加了主题管理模块,主题模块恰恰有分开设置锁屏壁纸和主屏壁纸的入口,所以,主题管理中设置锁屏壁纸,会对主屏壁纸产生影响. [解决方案] 在frameworks/base/packages/WallpaperCropper/src/com/android/wallpapercropper/WallpaperCropActivity.java中增加入口
+参考FAQ: FAQ53318
+### 问题: SC7715影响开机速度因素有哪些
+解决方案: 在系统达到优化后的情况下,会发现有以下几个因素影响到开机速度: (1).客制化的开机动画和铃声资源; 建议先采用展讯版本发布的默认开机动画和铃声资源替换验证下,如果发现有效,可以排查修改后的动画和铃声资源, 可以适当降低动画的播放帧率,帧率即每秒钟播放的图片张数. (2).launch的选择;经验证使用展讯提供的launch,luancher1比luancher2能快4秒左右; (3).内置apk是否开启odex化;开启odex,能减少开机时间,具体影响时间要根据内置apk的个数而定.
+参考FAQ: FAQ53314
+### 问题: SC7731平台单片选最大支持的LPDDR2容量？
+解决方案: 单片选最大支持1GByte的LPDD2
+参考FAQ: FAQ53348
+### 问题: WIFI模块中的添加网络的测试点及测试步骤
+解决方案: 添加网络的测试点: 1.网络SSID中文最大10个字符,英文最大32个字符 2.添加的网络必须是隐藏网络,只要是在SSID列表中显示的AP,都无法通过添加网络添加到SSID列表 3.添加网络成功后,如果在添加AP的覆盖范围,就可以自动连接 测试添加网络的步骤: 1.PC与路由器通过一根网线连接 2.在PC浏览器端输入192.168.1.1,用户名和密码:admin 3.在打开网页左边部分点击"无线设置—>基本设置",如下图 4.取消勾选"开启SSID广播",重启路由器后设置才会生效 5.测试机打开WIFI添加网络的窗口,输入设置的"SSID&Security&Password"并保存 6.测试机进入到添加AP的覆盖范围内,查看手机是否能够自动连接
+参考FAQ: FAQ53320
+### 问题: 如何增加多套开关机动画?
+解决方案: 要实现多套开机动画,可以在现有2套开机动画的基础上修改,有2种方式: 1.增加开机LOGO分区,有几个LOGO就需要几个分区,然后在读取开机LOGO的地方根据选择读取不同的分区. 注意为了不影响已有分区的功能,尽量将分区加在最后. 2.扩大logo分区,将所有的logo数据放在该分区中,然后在读取开机LOGO的地方根据选择读取不同偏移的数据.
+参考FAQ: FAQ53337
+### 问题: 视频通话支持的分辨率是多大？
+解决方案: 3G网络限制视频通话的分辨率为176*144.
+参考FAQ: FAQ53341
+### 问题: ACL分组形式
+解决方案: ACL分组形式为:D(M|H)(1|3|5),D代表数据分组,M代表用2/3比例的FEC的中等速率分组;H代表不使用纠错码的高速率分组;1、3、5分别代表分组所占用的时隙数目; DM1、DM3、DM5、DH1、DH3、DH5
+参考FAQ: FAQ53342
+### 问题: SCO分组形式为：
+解决方案: SCO分组形式为:HV(1|2|3).HV代表高质量语言分组,1、2、3有效载荷所采用的纠错码方法.1为1/3比例FEC,设备2个时隙发送一个单时隙分组;2为2/3比例FEC,设备4个时隙发送一个单时隙分组;3为不使用纠错码,设备6个时隙发送一个单时隙分组 HV1、HV2、HV3
+参考FAQ: FAQ53343
+### 问题: SC7731平台双片选最大支持的LPDDR2容量？
+解决方案: 答:双片选最大支持1GByte的LPDD2
+参考FAQ: FAQ53349
+### 问题: 插上USB线，如何默认选中Camera (PTP)选项
+解决方案: device/sprd/scx15_sp7715ga/scx15_sp7715gabase.mk 中 把 persist.sys.usb.config=mass_storage 修改为: persist.sys.usb.config=ptp
+参考FAQ: FAQ53356
+### 问题: [7715]恢复出厂设置后，第一次截图没有声音
+解决方案: [分析] 截屏铃声是在第一次截屏时加载资源;有可能资源未加载完毕就去播放导致无声. [方案] 添加容错,如果播放失败等资源加载完毕后再播放. frameworks/base/media/java/android/media/MediaActionSound.java public synchronized void play接口 mSoundPool.play(mSoundIds[soundName], 1.0f, 1.0f, 0, 0, 1.0f); 修改为 int ret = mSoundPool.play(mSoundIds[soundName], 1.0f, 1.0f, 0, 0, 1.0f); if(ret == 0) { Log.d(TAG, "mSoundPool.play, ret = " + ret); mSoundIdToPlay = mSoundIds[soundName]; }
+参考FAQ: FAQ53361
+### 问题: 手机播放1080P的视频有卡顿现象
+解决方案: 可能是开slog导致的IO操作过多,请把slog关闭再试. 如果还有卡顿,应该就是T卡的速度问题了,请换一张高速T卡再试一下.
+参考FAQ: FAQ53379
+### 问题: 相机全景拍照偶现无法保存
+解决方案: 当全景拍照时,速度快或者上下运动幅度大时,会导致合成图片宽高的乘积大于每帧画面宽高乘积的10倍,或者短边大于每帧画面高度的2.5倍,都会返回一个错误值,不再进行图片的合成. 这个是全景拍照算法的正常容错机制.不是问题!
+参考FAQ: FAQ53371
+### 问题: lmp链路控制管理之时钟和计时器设置（三）
+解决方案: 一个设备可以通过发送LMP_Timing_Accuracy_Req PDU得到接收设备时钟的抖动和漂移量,这些参数用来优化处于保持、呼吸或休眠模式的设备的唤醒进程.这种功能是可选的,在被请求设备不支持这个PDU时,请求设备应该假定最大抖动量为10us,最大漂移量为250ppm.
+参考FAQ: FAQ53382
+### 问题: 如何关闭拨号盘的振动反馈
+解决方案: 1、关闭紧急拨号盘的振动反馈: Config.xml (packages\services\telephony\res\values)中config_enable_dialer_key_vibration的值改为false. 2、关闭拨号盘中的振动反馈: Donottranslate_config.xml (packages\apps\dialer\res\values)中config_enable_dialer_key_vibration的值改为false.
+参考FAQ: FAQ53396
+### 问题: lmp链路控制管理之时钟和计时器设置（四）
+解决方案: 每个蓝牙链路都有一个定时器用于链路监控.该定时器用来检测蓝牙设备移到通信范围以外、断电或其他原因引起的链路丢失.主设备通过发送LMP_Supervision_Timeout PDU设置监控超时值.
+参考FAQ: FAQ53394
+### 问题: 如何默认打开或关闭数据连接?
+解决方案: /packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java public class DatabaseHelper extends SQLiteOpenHelper { ... // "0,0"表示卡1,卡2全部关闭 loadSetting(stmt, Settings.Global.MOBILE_DATA,"0,0"); ...
+参考FAQ: FAQ53397
+### 问题: UUI版本如何将锁屏和非锁屏的来电界面修改为一致
+解决方案: 修改AnswerFragment.java (packages\apps\incallui\src\com\android\incallui)文件中的showAnswerUi方法.此方法中根据SprdUtils.getKeyGuardStatus(getActivity())条件分别加载显示不同的来电界面. 因此可通过去掉改方法中的SprdUtils.getKeyGuardStatus(getActivity())判断条件,根据自己的需求统一显示锁屏或者非锁屏时的来电界面.
+参考FAQ: FAQ53403
+### 问题: SC7731平台如何打开设置成双卡铃声
+解决方案: 目前平台已经有双SIM卡铃声的逻辑,只是默认是关闭的, 打开方法如下: /frameworks/base/core/java/android/provider/Settings.java public static final boolean IS_MULTI_CARD_RINGTONE_SUPPORT = false; 改为true即可.
+参考FAQ: FAQ53409
+### 问题: lmp链路控制管理之交换信息（一）
+解决方案: 蓝牙设备可以通过发送LMP_Version_Req PDU 请求得到被请求蓝牙设备的LMP版本信息.被请求设备的相应LMP_Version_Res PDU 包含3个参数:VerNr、Comld和SubVerNr.VersNr是该设备支持的LMP协议的版本号,CompID为公司代号,SubVersNr是公司对每一个LMP建立的一个唯一编号.在基带寻呼过程工程之后的任何时间,都可以请求LMP版本信息.
+参考FAQ: FAQ53401
+### 问题: lmp链路控制管理之交换信息（二）
+解决方案: 蓝牙射频和基带链路控制器可能只支持蓝牙规范规定的部分分组类型和特征,可以使用LMP_Features_Req和LMP_Features_Res这两种PDU交换这些信息. 在一次成功的基带寻呼后,可以在任何时间请求对方设备所支持的特征.一个蓝牙设备在了解到另一个蓝牙设备支持的特征之前,只能发送ID、FHS、Null、Poll、DM1和DH1分组.特征请求完成后,双方就可以进行共同支持特征数据的收发.
+参考FAQ: FAQ53417
+### 问题: 蓝牙物理信道与时隙介绍
+解决方案: 蓝牙的物理信道(physical channel)是由伪随机序列控制的79个跳频频点构成,即不同的跳频序列代表着不同的信道. 蓝牙时隙(Time Slot),蓝牙的跳频数率为1600次/s,每个频率持续的时间625us称为一个时隙.时隙按照微微网的主设备时钟进行编号,编号从0到227-1,并且以周期227循环.同一微微网内的主从设备之间按照时分双工进行数据传输.
+参考FAQ: FAQ53365
+### 问题: 登录移动测试网站->Browser15->24.4：脚本语言测试用例 - JavaScript/DOM-TC7，当前月份与周期显示错误
+解决方案: 分析js脚本可知,年数出现问题
+
+对于这个网页上使用的接口
+	var now = new Date()
+	var year = now.getYear()
+getYear()返回的值不总是4位的数字!对于介于1900与1999之间的年份,getYear()方法仅返回两位数字.
+对于1900之前或1999之后的年份,则返回4位数字!
+该方法总是结合一个Date对象来使用.
+ 重要事项:
+从ECMAScript v3开始,JavaScript的实现就不再使用该方法,而使用getFullYear()方法取而代之!
+
+由于移动测试网页的测试脚本版本较老,导致这个问题,此问题移动是知道的,浏览器不用修改.
+参考FAQ: FAQ53447
+### 问题: lmp链路控制管理之交换信息（三）
+解决方案: 一个设备可以通过向另一个设备发送LMP_Name_Req PDU 来请求命名.命名按照UTF-8标准编码(最长248字节),它可以分段封装在一个活多个DM1分组中. LMP_Name_Req中包含了分段的名称偏移参数.回应的LMP_Name_Res携带有同样的名称偏移、名称长度和名称分段. 一旦基带寻呼成功,就可以在任何时间进行命名请求.
+参考FAQ: FAQ53487
+### 问题: 蓝牙基带功耗管理
+解决方案: 蓝牙协议制定了一套低功耗操作和运行模式,包括分组微观操作和运行模式的宏观处理. 分组处理是收发双方都必须把分组处理降低到最低,发送方通过只发送有用的数据来降低功耗. 时隙占用,分组类型指示了该分组占用的时隙数目,主设备发送多时隙分组时,第一个时隙中的数据就可以指明接收该分组的从设备激活成员地址AM_ADDR,其它未被指定的从设备将在该多时隙分组剩余的时隙内保持睡眠状态,以降低功耗. 低功耗模式,蓝牙设备有三种低功耗模式:呼吸(Sniff)模式、保持(Hold)模式和休眠(Park)模式,它们的功耗依次降低.
+参考FAQ: FAQ53465
+### 问题: 如何检查代码中结构体是否已经定义
+解决方案: 可以用grep命令查看该结构是否已经在某个头文件中定了,在源代码的根目录下执行如下命令: find . -name '*.h' | xargs grep 'struct foo' | less
+参考FAQ: FAQ53454
+### 问题: 4.4非UUI工程使用FM 会报NullPointerException怎么改?
+解决方案: 非UUI 和UUI 工程,FM使用的layout文件不同. 但是非UUI的布局不再维护, 统一使用UUI的布局,因此如果不支持UUI ,可以修改 FMUtil.java中的UNIVERSEUI_SUPPORT 变量为true就可以使用. - public static final boolean UNIVERSEUI_SUPPORT =SystemProperties.getBoolean( - universeSupportKey, false); + public static final boolean UNIVERSEUI_SUPPORT = true;
+参考FAQ: FAQ53466
+### 问题: 登录移动测试网站-Browser15-TestCase6，表格显示不全，这是什么原因？
+解决方案: 测试网页中,表格2框线显示不全的原因是手机的屏幕相对原始网页的尺寸较小,所以网页会缩小以适配屏幕, 而框线原本就非常细,缩小后显示的部分太小了以至看不见,这是由于手机支持缩放的原因. 只要修改设置/高级/以概览模式打开网页,去掉这个选项;或者横屏,或者放大屏幕都能正常显示,可以符合移动的case要求.
+参考FAQ: FAQ53469
+### 问题: FM从扬声器模式切换到耳机模式时，响应不迅速有时会外放一声?
+解决方案: 鉴于不同的硬件speaker与耳机切换时,时间可能会长一些.在切换时可以适当延长一下静音的时间,可以根据需要,自己调整一下. 修改在FMplayService.java 中如下:将300ms 改为800ms public class FMplayService extends Service { //setVolume(); if (!isMuted()) { if (DEBUG) Log.d(LOGTAG, "is not mute.set volume"); - setVolumeDelay(300); + setVolumeDelay(800); }
+参考FAQ: FAQ53472
+### 问题: 调节FM speaker 音量大小和 headset 音量大小相等时，必现切换耳机会外放一声？
+解决方案: 在vendor/sprd/open-source/libs/audio/audio_hw.c文件 函数adev_set_parameters中如下一句导致 if(checkvalid && val != adev->fm_volume) 改为: if(checkvalid) 即可. 这是因为在相等的情况下音量无法设置.
+参考FAQ: FAQ53476
+### 问题: FM 线控与music线控冲突的一种解决方案
+解决方案: FM 和music 线控 都要监听action为 android.intent.action.MEDIA_BUTTON 的广播 而对应的广播接受者由AudioManager.registerMediaButtonEventReceiver进行注册.这个注册是全局的. 因此,如果FM注册了,music就要取消注册,否则fm线控将不可用.同样如果music注册,fm就要取消注册.因此 解决方案可以设计如下: 在FM 启动时注册registerMediaButtonEventReceiver,并发广播给music,music进行unregister操作 在FM退出时unregisterMediaButtonEventReceiver,并发广播给music,music进行register操作. 因为music 播放时,FM会退出.所以可以实现.这种方法缺点:发送广播和注册广播,都需要时间, 会出现线控暂时失效的情况.
+参考FAQ: FAQ53477
+### 问题: FM 在speaker状态下关闭，再次打开FM，声音还是从speaker发出，如何修改为默认从耳机输出？
+解决方案: 这是因为在FM每次切换状态都保留下来.再次打开会根据上次的结果,进行设置,这是个用户体验问题. 修改方法可以在FMplayService.java 的onDestroy方法中将mIsSpeaker关键字设置为false即可 public void onDestroy() { + SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this); + SharedPreferences.Editor ed = prefs.edit(); + ed.putBoolean("mIsSpeaker", false); + ed.commit(); super.onDestroy(); }
+参考FAQ: FAQ53484
+### 问题: 快速充电IC选型
+解决方案: 目前智能手机功耗比较大,电流消耗很快,迫切需要在短时间实现快速补充手机电池电量的功能. 目前快速充电IC有高通和TI两家占据消费类的高端市场. 高通型号:SMB346(1.25A),SMB347(2.5A),SMB349(4A),SMB358(2A). TI型号:BQ24160(2.5A),BQ24196(2.5A),BQ24296M(3A)
+参考FAQ: FAQ53522
+### 问题: MOCOR如何修改信号条平滑显示更新时间？
+解决方案: 为避免信号频繁跳变,MMI增加平滑显示处理,如果需要修改平滑显示更新时间,可以通过修改如下宏: 1、 MMI_SIGNAL_IDLE_MODE_TIMEOUT //非通话状态且非浏览器打开情况下使用此宏 2、 MMI_SIGNAL_DEDICATED_MODE_TIMEOUT //通话状态或浏览器打开情况下使用此宏 注意: 原则上 MMI_SIGNAL_IDLE_MODE_TIMEOUT >= MMI_SIGNAL_DEDICATED_MODE_TIMEOUT
+参考FAQ: FAQ53537
+### 问题: 使用WireShark工具中Export Selected Packet bytes导出包数据为指定的文件
+解决方案: 该功能在分析网络数据时,可以很方便的查看部分数据,比如下图中CAP 45 为包含一PNG图片的数据包,可以将该报文的数据部分保存成png格式,用户即可查看该png图片.
+参考FAQ: FAQ53553
+### 问题: MMS自动下载CAP包流程分析
+解决方案: 彩信接收有两种方式,一种为自动下载,另一种为手动下载.在UE侧收到彩信push消息之后,手机彩信自动发起下载业务,即为自动下载. 在收到彩信通知之后,UE马上发起彩信下载,如下: 在接收彩信之后,UE会向服务器回复m_notifiyresp_ind消息, 通过Status字段告知服务器接收情况. 其中status: Retrieved(0x81) 表示下载成功,Deferred(0x83)表示下载失败,延后.
+参考FAQ: FAQ53560
+### 问题: MMS 手动下载CAP包流程分析
+解决方案: 彩信接收有两种方式,一种为自动下载,另一种为手动下载.手动下载时,在收到彩信push消息之后,手机没有自动发起下载业务,而是需要客户自己手动点击进行下载. 在收到彩信push通知之后,不立刻发起接收彩信操作,而是向服务器发送m_notifiyresp_ind,并附带Status: Deferred(0x83) 表示延后下载. 用户手动点击下载,UE才发起下载业务. 在接收成功之后向服务器回复m_acknowledge_ind 消息.
+参考FAQ: FAQ53564
+### 问题: 如何获得剪切板中的字符串
+解决方案: 使用如下代码即可: ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE); String text = ""; if (clipboard.hasText()){ text = clipboard.hasText(); }
+参考FAQ: FAQ53574
+### 问题: 7731是否支持USB3.0
+解决方案: 不支持USB3.0.目前最高支持USB2.0.
+参考FAQ: FAQ53572
+### 问题: 7731 I-Cache和D-Cache多大
+解决方案: 7731 I Cache为32K byte;一级Data cache为32K byte,二级data chche为512K byte.
+参考FAQ: FAQ53584
+### 问题: FragmentStatePagerAdapter 与 FragmentPagerAdapter 的区别
+解决方案: FragmentStatePagerAdapter 与 FragmentPagerAdapter的用法基本相同,唯一的区别在于二者在卸载不再需要的fragment时,所采用的处理方法不同. 使用FragmentStatePagerAdapter 会销毁掉不需要的fragment.事务提交后,将fragment从activity的FragmentManager中彻底移除. FragmentPagerAdapter 的做法则不同.对于不再需要的fragment,FragmentPagerAdapter则选择调用事务的detach方法.也就是说FragmentPagerAdapter只是销毁了fragment的视图,但仍将fragment实例保留在FragmentManager中,因此,FragmentPagerAdapter创建的fragment永远不会被销毁.
+参考FAQ: FAQ53588
+### 问题: 检测下载连接的时间是否可以加长？
+解决方案: 不可以,下载的代码是存在芯片中的ROM,ROM的代码无法修改.
+参考FAQ: FAQ53590
+### 问题: 请确认是否支持FOTA功能(Firmware over the air upgrade)?
+解决方案: 支持第三方合作FOTA方案,需要集成第三方提供的APK客户端,前提是编译好版本升级的OTA包. OTA我们是支持生成的.
+参考FAQ: FAQ53593
+### 问题: 关于system区剩余空间的问题
+解决方案: System空间在正常的user模式下是只读的,可以剩余空间为0,不影响性能.但要注意下面情况 1. debug模式下的调试需要 2. 改变内置应用或代码,经常要调空间 3. 如果中间有升级等操作,空间要重新调
+参考FAQ: FAQ53599
+### 问题: “经典飞机大战”游戏不能玩
+解决方案: 第三方应用使用了与微信打飞机游戏应用同名的库 libgdx.so,造成冲突.需要第三方应用修改这个库名. /system/lib/libgdx.so, /data/data/com.tencent.mm/app_lib/libgdx.so
+参考FAQ: FAQ53605
+### 问题: 关机工程模式频繁打印“spi wake up store register”
+解决方案: 这个问题主要是2341A的GPS所导致,因为GPS是spi的接口,可以关闭GPS再进行测试,就不会打印这行语句.
+参考FAQ: FAQ53624
+### 问题: 7715上是否能用ov5647
+解决方案: OV5647是raw sensor,SC7715平台不支持raw sensor;
+参考FAQ: FAQ54183
+### 问题: 2341A支持SDIO/PCIE/USB接口吗？
+解决方案: wifi firmware对sdio,pcie接口都支持,但就2341A芯片而言只支持SDIO,2341A作为SDIO slave端
+参考FAQ: FAQ53646
+### 问题: 什么是Miracast?
+解决方案: Miracast实际上就是WiFi联盟(WiFi Alliance)对支持WiFi Display功能的设备的认证名称
+参考FAQ: FAQ53647
+### 问题: 2341A 连接芯片做射频测试时推荐使用哪种测试工具呢？
+解决方案: 2341A支持iwlist,iwpriv等多种测试工具,但官方推荐的测试工具是wl,该工具可以满足wifi,BT等多模块,多场景的测试需求
+参考FAQ: FAQ53649
+### 问题: 采用2341A做射频测试时，为验证当前支持信道需要获取国家码，如何获取？
+解决方案: 可以在adb shell中直接输入wl country命令,即会返回当前状态下所支持的国家码,比如CN代表中国,US代表美国.详细操作如下: 1 连上USB调试线 2 在CMD窗口敲adb root 或adb shell 3 执行wl country 4 察看返回的国家码
+参考FAQ: FAQ53650

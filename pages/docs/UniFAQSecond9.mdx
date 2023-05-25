@@ -1,0 +1,300 @@
+### 问题: 新建群组，光标焦点在群组名称，如何自动激活输入法界面
+解决方案: 编辑群组界面,使用SOFT_INPUT_STATE_ALWAYS_HIDDEN属性隐藏了输入法界面,需要点击群组名称,输入法界面才会显示.要改成自动激活输入法界面,将SOFT_INPUT_STATE_ALWAYS_HIDDEN属性去掉,并且重设焦点,按照如下修改, 修改GroupEditorFragment.java (\packages\apps\contacts\src\com\android\contacts\group)文件的setupEditorForAccount()方法, // If the group name is ready only, don't let the user focus on the field. mGroupNameView.setFocusable(!mGroupNameIsReadOnly); ++if(Intent.ACTION_INSERT.e
+完整回答请参考FAQ: FAQ46005
+### 问题: 如何修改来电号码显示的位数
+解决方案: 需要在对应分辨率\packages\apps\InCallUI\res\layout-mdpi\call_card_sprd.xml文件中 修改android:maxEms="6"的数值 <TextView android:id="@+id/name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_centerHorizontal="true" android:layout_gravity="center" android:layout_marginTop="@dimen/in_call_main_line_top_magin_mdpi" android:ellipsize="end" a
+完整回答请参考FAQ: FAQ46011
+### 问题: 图库中的文件夹列表，滑动到最边缘继续滑动，为何会出现倾斜？
+解决方案: 进入图库之后,向左滑动,到最边缘,继续滑动,此时SlotView中的onScroll方法会根据用户滑动的距离已经当前的实现的效果,来决定,是否做3D效果,具体代码如下: public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) { cancelDown(false); float distance = WIDE ? distanceX : distanceY; int overDistance = mScroller.startScroll( Math.round(distance), 0, mLayout.getScrollLimit()); if (mOverscrollEffect == OVERSCROLL_3D && overDistance != 0) { 
+完整回答请参考FAQ: FAQ46003
+### 问题: Android属性之build.prop生成过程分析
+解决方案: build.prop的生成是由make系统解析build/core/Makefile完成. 1)Makefile中首先定义各种变量,这在下一步执行时会用到.比如: ... PRODUCT_DEFAULT_LANGUAGE="$(calldefault-locale-language,$(PRODUCT_LOCALES))" \ PRODUCT_DEFAULT_REGION="$(calldefault-locale-region,$(PRODUCT_LOCALES))" \ ... 2)Makefile中调用build/tools/buildinfo.sh执行脚本,并输出到build.prop Buildinfo.sh很简单,只是echo一些属性,比如: ... echo"ro.product.locale.language=$PRODUCT_DEFAULT_LANGUAGE" echo"
+完整回答请参考FAQ: FAQ46022
+### 问题: 联系人列表如何显示头字母
+解决方案: 联系人列表是一个PinnedHeaderListView,其中的每个item是一个ContactListItemView,通过工具观察,一般情况下ContactListItemView包含两个重要View,显示头像的QuickContactBadge和显示姓名的TextView;但是表头字母的第一个ContactListItemView除此之外还包含了显示字母表头的TextView和字母头与联系人之间的分隔View.也就是说ContactListItemView控制了字母表头的显示与否,这是如何做到的? ContactListItemView类有一个方法setSectionHeader(String title),它就是被用来设置字母表头的,该方法根据传入的String的title是否为空来决定字母表头的显示与否,也就是说除了分组第一个ContactsContactListItemView
+完整回答请参考FAQ: FAQ46036
+### 问题: 为什么SystemProperties set属性后不起作用
+解决方案: SystemProperties的set属性时,是需要system权限的,一般需要做如下的配置: 1、在AndroidManifest.xml中,在manifest加入android:sharedUserId="android.uid.system". 2、在Android.mk中,將LOCAL_CERTIFICATE := XXX修改成LOCAL_CERTIFICATE :=platform. 但有时候在使用时,比如在SystemUI中需要使用set属性时,就会发现,SystemUI的AndroidManifest.xml中已经做了如下的配置: android:sharedUserId="android.uid.systemui" 注意:没有配置成android:sharedUserId="android.uid.system" 若修改为android:sharedUserId="and
+完整回答请参考FAQ: FAQ46080
+### 问题: 关于lrc歌词文件的说明
+解决方案: 1.格式 a、标准格式: [分钟:秒.毫秒] 歌词 注释:(如右图所示)中括号、冒号、点号全都要求英文输入状态; b、其他格式①:[分钟:秒] 歌词; c、其他格式②:[分钟:秒:毫秒] 歌词,与标准格式相比,秒后边的点号被改成了冒号. 2.使用 目前市场上的支持显示歌词的音乐播放器都有相同的规定,要求歌曲和LRC歌词的文件名相同(即除了扩展名.mp3、.wma、.lrc等不同之外,点前面的文字、文字格式要一模一样)并且放在同一目录下(即同一文件夹中),用带显示歌词功能的播放器播放歌曲时歌词就可以同步显示,方便查看和学歌. 3.详细说明 lrc歌词文本中含有两类标签: 一是标识标签,其格式为"[标识名:值]"主要包含以下预定义的标签: [ar:歌手名]、[ti:歌曲名]、[al:专辑名]、[by:编辑者(指lrc歌词的制作人)]、[offset:时间补偿值] (其单位是毫秒,正值表示整体提
+完整回答请参考FAQ: FAQ46118
+### 问题: forceStopPackage强制结束程序
+解决方案: 使用ActivityManager的killBackgroundProcesses方法,但使用此方法杀死进程后,进程会重启.为了强制关闭进程,可以使用ActivityManager的另外一个方法,forceStopPackage. 此方法是@hide的方法,使用java的反射机制完成调用. 用法: ActivityManager mActivityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE); Method method = Class.forName("android.app.ActivityManager").getMethod("forceStopPackage", String.class); method.invoke(mActivityManager, packag
+完整回答请参考FAQ: FAQ46127
+### 问题: ov5648无法自动对焦成功，马达不动
+解决方案: 请参照ov8865,马达初始化中,将写i2c改为每次写2个字节的方式. 并且在调用_ov8865_dw9714_SRCInit之前,调用Sensor_SetMonitorVoltage(SENSOR_AVDD_2800MV); 如下所示: LOCAL uint32_t _ov8865_dw9714_SRCInit(uint32_t mode) { #define DW9714_VCM_SLAVE_ADDR (0x18>>1) uint8_t cmd_val[2] = {0x00}; uint16_t slave_addr = 0; uint16_t cmd_len = 0; uint32_t ret_value = SENSOR_SUCCESS; slave_addr = DW9714_VCM_SLAVE_ADDR; switch (mode) { case 1: break; case 
+完整回答请参考FAQ: FAQ46139
+### 问题: 文件管理器的SD卡中存放较大的文件，复制时无响应如何解决
+解决方案: 1.分析anr时候的trace: at libcore.io.ForwardingOs.stat(ForwardingOs.java:131) at java.io.File.isDirectory(File.java:529) at com.sprd.fileexplorer.util.FileUtil.getAllFiles(FileUtil.java:1080) at com.sprd.fileexplorer.activities.MultiSelectActivity.onOptionsItemSelected(MultiSelectActivity.java:364) 2.分析原因: 是多选中长按一个文件,弹出contextmenu,点击复制的时候为了判断folder内是否存在drm文件,做了getAllFiles的操作,取出文件夹内所有的文件,当文件数量较大时在主线程耗时比较
+完整回答请参考FAQ: FAQ46165
+### 问题: [android4.4]用自带的视频播放器播放视频时，如何使得按一次返回键退出播放
+解决方案: 当用自带的视频播放器播放视频时,需要按两次返回键才可以退出视频播放,第一次按返回键时会出现提示:"请再按一次返回键退出",当立即再按一次返回键时,此时会结束播放退出播放器.需要需要只按一次返回键即可退出视频播放,请参考如下测试代码即可. --- a/src/com/android/gallery3d/app/MovieActivity.java +++ b/src/com/android/gallery3d/app/MovieActivity.java @@ -1117,14 +1117,14 @@ public class MovieActivity extends Activity { // TODO Auto-generated method stub Log.d(TAG, "onBackPressed() mFirstBack " + mFirstBack); //SPRD:bug
+完整回答请参考FAQ: FAQ46207
+### 问题: 建立TCP三次握手和终止TCP四次挥手过程
+解决方案: 建立TCP连接(三次握手) 由于TCP协议提供可靠的连接服务,于是采用有保障的三次握手方式来创建一个TCP连接.三次握手的具体过程如下: 客户端发送一个带SYN标志的TCP报文(报文1)到服务器端,表示希望建立一个TCP连接. 服务器发送一个带ACK标志和SYN标志的TCP报文(报文2)给客户端,ACK用于对报文1的回应,SYN用于询问客户端是否准备好进行数据传输. 客户端发送一个带ACK标志的TCP报文(报文3),作为报文2的回应. 至此,一个TCP连接就建立起来了. 终止TCP连接(四次挥手) 由于TCP连接是全双工的,因此每个方向都必须单独进行关闭.原则是主动关闭的一方(如已传输完所有数据等原因)发送一个FIN报文来表示终止这个方向的连接,收到一个FIN意味着这个方向不再有数据流动,但另一个方向仍能继续发送数据,直到另一个方向也发送FIN报文. 四次挥手的具体过程如下: 客户端发送一
+完整回答请参考FAQ: FAQ46217
+### 问题: nvedior工具打开nv project，某些项缺失
+解决方案: nvedior工具打开nv project,发现某些项缺失,例如audio. 需要确保nvitem目录下的audio相关的nvm文件的文件名和nvitem.prj中定义的文件名称一样. -----------------------nvitem.prj文件相关内容----------------------------------------- MODULE = SC7715_sr3130_Common_RFGPIO_config_gsm.nvm MODULE = Calibrationparam_sc8800g1_qs3200_td.nvm MODULE = Downloadparam_sc8800g1_qs3200_td.nvm MODULE = Calibrationparam_sc7715_sr3130_gsm.nvm MODULE = DownloadParam_sc7715_s
+完整回答请参考FAQ: FAQ46283
+### 问题: [android 4.4]后台播放mp3，进入视频播放器播放视频，锁屏，如何使得mp3不自动恢复播放？
+解决方案: 正常情况下,当后台播放mp3时,只要视频不处于播放状态,是可以允许mp3在后台继续播放的,所以该FAQ所提到的问题属于个别用户的需求性问题.如果后台在播放mp3,然后进入自带的视频播放器进行播放视频,在视频播放过程中,如果用户按power键锁屏,此时movieactivity会进入onstop,假如此时movieactivity不去abandon audio focus,则mp3就获取不到audio的焦点,那么mp3就不能自动恢复播放,所以把movieactivity abandon audio focus的操作移到ondestroy()中,以保证在视频播放完全退出时,后台mp3可以自动恢复. sample code请参考如下代码: --- a/src/com/android/gallery3d/app/MovieActivity.java +++ b/src/com/android/ga
+完整回答请参考FAQ: FAQ46328
+### 问题: 如何向联系人数据库中增加新的字段
+解决方案: 以向通话记录表calls增加用以表示格式化的日期字段formated_date为例: 1 修改CREATE_TABLE 语句 \packages\providers\ContactsProvider\src\com\android\providers\contacts\ContactsDatabaseHelper.java public void onCreate(SQLiteDatabase db) { ... db.execSQL("CREATE TABLE " + Tables.CALLS + " (" +... Calls.ICC_ID + " TEXT" ); db.execSQL("CREATE TABLE " + Tables.CALLS + " (" +... Calls.ICC_ID + " TEXT," + + "formated_date TEXT");//Add .
+完整回答请参考FAQ: FAQ46333
+### 问题: 如何在luancher中去掉视频播放器？
+解决方案: 在AndroidManifest.xml中声明了VideoActivity,并添加一些对action的监听,如果要在launcher中不显示视频播放器,需要将其中VideoActivity声明的一些信息注释掉. 另外,还需要将一些对视频的过滤条件添加到GalleryActivity 中,保证第三方应用可以通过图库正常处理视频. 具体修改如下: ----------------------------- AndroidManifest.xml ----------------------------- index f8372a3..7818935 100644 @@ -131,9 +131,7 @@ <category android:name="android.intent.category.OPENABLE" /> <category android:name="android.inte
+完整回答请参考FAQ: FAQ46698
+### 问题: UUI版本联系人拨号盘中屏蔽IP拨号
+解决方案: 1.packages\apps\Contacts修改文件: packages\apps\Contacts\res\layout\contact_detail_list_item_new.xml中注释掉一下内容: <!-- <LinearLayout android:id="@+id/call_ip_action_view_container" android:layout_width="0dip" android:layout_height="match_parent" android:layout_gravity="center" android:layout_weight="1" android:background="#00000000" android:duplicateParentState="false" android:gravity="center" android:pad
+完整回答请参考FAQ: FAQ46364
+### 问题: 定位摄像头互相干扰的调试技巧
+解决方案: 前后摄像头一般会共用I2C,CAMDVDD/CAMIOVDD/CAMAVDD,CCIR并口(非MIPI接口的摄像头), 因互相干扰,导致不能打开后摄像头或能打开后摄像头,但不能切换成前摄像头. 对于前者,只需在硬件上去除前摄像头即可;若去除后,后摄像头工作正常,则确认是前摄像头干扰了后摄像头. 然后采用如下FAQ介绍的方法分别来解决: FAQ30200 GC0309/GC0328分别用作前后摄像头,出现识别异常的原因分析和解决方法 FAQ33229 前后摄像头有相同的I2C地址,导致识别异常的摄像头组合汇总 FAQ35330 不能通过PowerDown脚设置进入CCIR并口高阻态的一类摄像头前后摄兼容的解决方法 FAQ40736 前后摄像头均为CCIR并口,因CCIR并口驱动能力不足导致预览和拍照出现绿条纹的解决方法 对于后者,由于应用每次都是先进后摄像头,然后才切换到前摄像头, 在不改动
+完整回答请参考FAQ: FAQ46457
+### 问题: Wifi电源用VDDWPA，如何设置？
+解决方案: 相关的电压设置在idh.code\kernel\drivers\misc\sprd_2351\sprd_2351.c 函数void rf2351_gpio_ctrl_power_enable(int flag) 以7715ga工程为例: 请在u-boot\board\spreadtrum\sp7715ga\ldo_sleep.c文件中作如下修改: void init_ldo_sleep_gr(void) { u32 reg_val; ANA_REG_SET(ANA_REG_GLB_PWR_WR_PROT_VALUE,BITS_PWR_WR_PROT_VALUE(0x6e7f)); + reg_val = ANA_REG_GET(ANA_REG_GLB_LDO_PD_CTRL); + reg_val &= ~BIT_DCDC_WPA_PD; + ANA_REG_SET(ANA_REG_GLB
+完整回答请参考FAQ: FAQ46454
+### 问题: SC6815/SC7715平台怎样增加一种主题？
+解决方案: SC6815/SC7715平台目前支持主题管理和切换,主题管理的支持依赖于UniverseUI. 主题管理的代码在 idh.code\packages\apps\ThemeSettings 中实现. 主题的配置数据在 idh.code\vendor\sprd\UniverseUI\ThemeRes 中. 增加一种主题步骤如下: 1、可以先按现有的两种主题HelloColor、SimpleStyle 来模仿修改,在idh.code\vendor\sprd\UniverseUI\ThemeRes添加对应的图片资源及配置文件. 2、修改对应的项目mk文件,如scx15_sp6815eaplus_UUI.mk 的PRODUCT_THEME_PACKAGES,加上对应的增加主题的名称.如 PRODUCT_THEME_PACKAGES := SimpleStyle HelloColor mytheme
+完整回答请参考FAQ: FAQ46476
+### 问题: BitmapFactory.decodeStream使用中的注意事项
+解决方案: 原因是InputStream在第一次被读取的时候已经到了结尾,所以在第二次使用的时候就出现了问题. 解决方案就是重新打开一次InputStream. …… InputStream is = getContext().getContentResolver().openInputStream(uri); BitmapFactory.Options opt = new BitmapFactory.Options(); opt.inJustDecodeBounds = true; BitmapFactory.decodeStream(is, null, opt); …… is = getContext().getContentResolver().openInputStream(uri);//这里重新打开一个InputStream opt.inJustDecodeBounds = false; /
+完整回答请参考FAQ: FAQ46477
+### 问题: Android4.4上拍照后查看照片为何显示模糊？
+解决方案: 在相机幻灯片列表显示的照片是经过decode压缩后的图片,具体代码在com.android.camera.data.LocalMediaData.PhotoData.PhotoBitmapLoadTask.doInBackground中 BitmapFactory.Options opts = new BitmapFactory.Options(); opts.inSampleSize = sampleSize; opts.inTempStorage = DECODE_TEMP_STORAGE; if (isCancelled() || !isUsing()) { return null; } //Bitmap b = BitmapFactory.decodeFile(mPath, opts); Bitmap b = Images.Thumbnails.getThumbnail(mReso
+完整回答请参考FAQ: FAQ46480
+### 问题: 增大数码变焦倍数的方法
+解决方案: 以640*480为例,其他分辨率同理可得. 1.vendor/sprd/open-source/libs/libcamera/sc8830/inc/cmr_common.h #define CMR_ZOOM_FACTOR 2 改成 #define CMR_ZOOM_FACTOR 4 2.vendor/sprd/open-source/libs/libcamera/sc8830/inc/cmr_oem.h #define ZOOM_STEP(x) (((x) - (x) / CMR_ZOOM_FACTOR) / CAMERA_ZOOM_LEVEL_MAX) 其中 #define CAMERA_ZOOM_LEVEL_MAX 8 则每级STEP:(640-640/4)/8=60 3.对应STEP0-7: 640/(640-60*0)=1.00 640/(640-60*1)=1.10 640/(6
+完整回答请参考FAQ: FAQ46487
+### 问题: 正确配置预览和拍照方向的解决思路
+解决方案: 解决步骤(以工程sp7715ea为例): 1.首先确认是否有预览旋转90度的问题,判定方法可参考:《FAQ30197,用软件方法实现摄像头安装角度的判定》 若前摄像头是,则: device/sprd/scx15_sp7715ea/BoardConfig.mk TARGET_BOARD_FRONT_CAMERA_ROTATION := true 若后摄像头是,建议重新打样,原因分析见《FAQ35332,后摄像头是否支持90度旋转安装》 2.配置device/sprd/scx15_sp7715ea/BoardConfig.mk TARGET_BOARD_CAMERA_ROTATION_CAPTURE := false 按照步骤1的结论,若前摄像头配置了TARGET_BOARD_FRONT_CAMERA_ROTATION := true,则竖屏拍照; 反之则横屏拍照,后摄像头同样横屏拍照,用Wi
+完整回答请参考FAQ: FAQ46497
+### 问题: OVERLAY内存不足导致相机预览闪烁一类问题的解决方法
+解决方案: 分析: 如下的典型logel段表明SPRDHWComposer模块申请ION内存失败: gralloc.scx15: alloc_device_alloc w:480, h:800, format:1 usage:0x1000000 start ion : ioctl c0144900 failed with code -1: Out of memory ion : ion_alloc: ION_IOC_ALLOC error! [Gralloc-ERROR]: int gralloc_alloc_buffer(alloc_device_t*, size_t, int, const native_handle_t**):279 Failed to ion_alloc from ion_client:22 gralloc.scx15: alloc_device_alloc handle:0x
+完整回答请参考FAQ: FAQ46504
+### 问题: 设置一联系人头像，退出联系人应用，再进入查看该联系人，该联系人头像会闪一下
+解决方案: 联系人头像闪烁是由于设置图片属性CrossFadeEnabled为true导致,改属性为false即可.此属性的作用是用于设置图片交差过渡显示的效果. 具体的修改如下: diff --git a/src/com/android/contacts/common/ContactPhotoManager.java b/src/com/android/contacts/common/ContactPhotoManager.java index 3bd6ecf..d476e56 100644 --- a/src/com/android/contacts/common/ContactPhotoManager.java +++ b/src/com/android/contacts/common/ContactPhotoManager.java @@ -626,7 +626,7 @@ class Cont
+完整回答请参考FAQ: FAQ46535
+### 问题: 如何实现恢复出厂设置时预置联系人？
+解决方案: 只对出厂设置时进行联系人导入功能,可以通过设置变量或判断是否存在某个文件来辨别是否是出厂设置.由于第一次启动EntropyMixer.java文件需要加载的entropy.dat文件不存在,所以恢复出厂设置后会导致报错,因此在此catch添加文件来判断是否是出厂重置情况,具体的修改如下: --- a/services/java/com/android/server/EntropyMixer.java +++ b/services/java/com/android/server/EntropyMixer.java @@ -107,10 +107,24 @@ public class EntropyMixer extends Binder { mHandler.sendEmptyMessageDelayed(ENTROPY_WHAT, ENTROPY_WRITE_PERIOD); } + Fi
+完整回答请参考FAQ: FAQ46540
+### 问题: 合并相同的多个联系人，如何将昵称、互联网电话、备注合并为一项显示
+解决方案: 可以使用Collapser.collapseList(List<T> list)方法将相同的list合并,在ContactDetailFragment.java (\packages\apps\contacts\src\com\android\contacts\detail) 的bindData()方法中如下修改: Collapser.collapseList(mPhoneEntries); Collapser.collapseList(mSmsEntries); Collapser.collapseList(mEmailEntries); Collapser.collapseList(mPostalEntries); Collapser.collapseList(mImEntries); Collapser.collapseList(mEventEntries); Collapser.c
+完整回答请参考FAQ: FAQ47818
+### 问题: [7731]Keypad的device tree配置
+解决方案: 在文件kernel\arch\arm\boot\dts\sprd-scx45_sp7731*.dts中: keypad@f5208000{ compatible = "sprd,sci-keypad"; reg = <0Xf5208000 0x1000>; gpios = <&a_eic_gpio 2 0>; interrupts = <0 36 0x0>; sprd,keypad-num-rows = <2>; sprd,keypad-num-columns = <2>; sprd,keypad-rows-choose-hw = <0x30000>; sprd,keypad-cols-choose-hw = <0x300>; sprd,debounce_time = <5000>; linux,keypad-no-autorepeat; sprd,support_long_key; ke
+完整回答请参考FAQ: FAQ46571
+### 问题: 如何判断手机已安装某程序的方法
+解决方案: packageName为要判断的包名 private boolean isinstall(Context context, String packageName) { final PackageManager packageManager = context.getPackageManager();//获取packagemanager List< packageInfo> pinfo = packageManager.getInstalledPackages(0);//获取所有已安装程序的包信息 List<String> pName = new ArrayList<String>();//用于存储所有已安装程序的包名 //从pinfo中将包名字逐一取出,压入pName list中 if(pinfo != null){ for(int i = 0; i < pinfo.size(); i++
+完整回答请参考FAQ: FAQ46625
+### 问题: Android如何判断网络类型是wifi，还是3G，还是2G网络
+解决方案: ConnectivityManager connectMgr = (ConnectivityManager) this .getSystemService(Context.CONNECTIVITY_SERVICE); NetworkInfo info = connectMgr.getActiveNetworkInfo(); 一、判断网络是否是wifi,在判断之前一定要进行的非空判断,如果没有任何网络 连接info ==null info.getType() == ConnectivityManager.TYPE_WIFI 二、判断是否是手机网络 info !=null && info.getType() == ConnectivityManager.TYPE_MOBILE 手机网络进行详细区分: info.getSubtype() 这里使用 getSubtype(),不是 getType(
+完整回答请参考FAQ: FAQ46626
+### 问题: Android 如何判断指定Service是否正在运行
+解决方案: 本方法判断一个Service-->com.android.controlAddFunctions.PhoneService是否已经运行 service的全称(一般为包名+service类的名称) public static boolean isWorked() { ActivityManager myManager=(ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE); ArrayList<RunningServiceInfo> runningService = (ArrayList<RunningServiceInfo>) myManager.getRunningServices(30); for(int i = 0 ; i<runningService.size();i++) { if(runningSe
+完整回答请参考FAQ: FAQ46628
+### 问题: 如何decode一个图片的一部分
+解决方案: 在Android中提供了这样一个类android.graphics.BitmapRegionDecoder,可以用来解码一个图片的局部 使用方法如下: BitmapRegionDecoder mRegionDecoder; Rect region = new Rect(); visibleInImage.round(region); if (mRegionDecoder == null) { InputStream is = getInputStream(); if (is != null) { try { mRegionDecoder = BitmapRegionDecoder.newInstance(is, false); //构建一个BitmapRegionDecoder实例 is.close(); } catch (IOException e) { Log.e(TAG, "Fail
+完整回答请参考FAQ: FAQ46660
+### 问题: 如何减少加载JPEG图片时的内存占用？
+解决方案: 主要有以下几个方法: 1. 增加decode时的sample size的值 BitmapFactory.Options option = new BitmapFactory.Options(); option.inSampleSize = 4 Bitmap b = BitmapFactory.decodeFile(mPath, opts); 2. 使用RGB565代替RGB8888 如果不设置BitmapFactory.Options中的inPreferredConfig,那么默认为RGB8888,每个像素占用4个字节,而改成RGB565后,每个像素占用2个字节. BitmapFactory.Options option = new BitmapFactory.Options(); option.inPreferredConfig = Bitmap.Config.RGB_565; Bitm
+完整回答请参考FAQ: FAQ46661
+### 问题: 关机铃声音量较小如何调整
+解决方案: 开关机铃声使用相同的音量、音频曲线等.如果开机铃声音量正常说明关机铃声音源文件本身音量就比较轻,建议首先更换关机铃声或使用软件修改音源音量.如果要在代码里修改,可考虑使用更陡峭一点的音频曲线. --- a/audio/AudioPolicyManagerBase.cpp +++ b/audio/AudioPolicyManagerBase.cpp @@ -3130,7 +3130,7 @@ const AudioPolicyManagerBase::VolumeCurvePoint }, { // AUDIO_STREAM_SYSTEM sHeadsetSystemVolumeCurve, // DEVICE_CATEGORY_HEADSET - sDefaultSystemVolumeCurve, // DEVICE_CATEGORY_SPEAKER + sSpeakerSonifica
+完整回答请参考FAQ: FAQ46739
+### 问题: 如何解决文件管理器中手机视图界面选择任意文件复制到手机内存后，会自动返回存储卡视图主界面
+解决方案: 问题描述: 1.进入文件管理器-手机视图-选择任意文件(或文件夹)-复制(或剪切)到手机内存; 2.当操作完成之后,会自动返回存储卡视图主界面,正常情况下复制完成后应该在手机视图界面. 分析原因: 在FilePasteActivity粘贴时,位于后台的FileExplorerActivity被系统杀掉,FilePasteActivity发送intent启动FileExplorerActivity时没有走onNewIntent(),直接走onCreate()导致粘贴后界面没有停留在被粘贴的界面. 解决方法: 将onNewIntent()中对数据的处理方法抽出,放到processExtraData()方法中,如下代码所示,在onCreate中调用processExtraData()方法.保证接受到该Intent后,对停留界面有一个合理的处理. 在/packages/apps/FileExplo
+完整回答请参考FAQ: FAQ46745
+### 问题: C 如何通过JNI 层调用Java 的(静态)方法
+解决方案: C 如何通过JNI 层调用Java 的(静态)方法? 主要流程如下: 1、 新建一个测试类TestProvider.java,提供一个静态方法 private static void postEventFromNative(Object ref, int type, int msec, int usec, int value) { TestProvider instance = (TestProvider)((WeakReference)ref).get(); if (instance == null) { return; } //这里处理自己的事情 } 2、 JNI中新建Provider.c a) 该文件中需要把Java中的类TestProvider映射到C中 b) 把TestProvider的两个方法映射到C中 c) 新建TestProvider 对象 d) 调用方法 主要代码如下: 
+完整回答请参考FAQ: FAQ46748
+### 问题: 如何理解ARM GPU 架构
+解决方案: 1.架构 图1 2.Mali GPU Linux 内核设备驱动程序 Mali GPU DDK 的 Linux 版本包含在内核中运行的以下三个组件: 1)设备驱动程序: 它是最重要的组件,提供对 Mali-200 或 Mali-400 GPU 的低级访问.其主要功能如下: •对 Mali GPU 硬件的访问 •中断处理 •低级内存管理 2) 统一内存提供程序 (UMP): 它是重要的辅助组件为,可以各种不同方式使用以实现驱动程序堆栈中的零拷贝操作. •通过安全 ID 访问分配的 UMP 内存.这可在不同的应用程序、驱动程序和硬件组件之间共享内存,以实现零拷贝操作 •设置 MMU 或 MPU 表所需的物理地址信息 •将 UMP 内存映射至 CPU 地址空间的方法,以实现读取和写入 3) Mali 直接渲染管理器 (DRM): 它将 Mali GPU DDK 集成到 X11 环境之中并启用直接渲
+完整回答请参考FAQ: FAQ46772
+### 问题: 如何使用java线程池？
+解决方案: 直接使用new Thread的弊端 a、每次new Thread创建对象,性能低. b、线程缺乏统一管理,可以无限制新建线程,相互之间存在竞争. c、缺乏更多功能,ex:定时执行、定期执行、线程中断. 使用线程池的好处 a、可以重用已经存在的线程,减少对象创建、消亡的开销. b、可以控制最大并发线程数,提高系统资源使用率,避免过多的资源竞争. c、可以提供定时执行、定期执行、并发数控制. 四种线程池使用方法: 1、newCachedThreadPool 创建一个可缓存线程池,如果线程池长度超过处理需要,可回收空闲线程,无可回收时则新建线程. ExecutorService cacheThreadPool = Executors.newCachedThreadPool(); 2、newFixedThreadPool 创建一个定长线程池,可控制线程最大并发数,超出的线程会在队列中等待. Exe
+完整回答请参考FAQ: FAQ46770
+### 问题: Mali GPU OpenGL ES 应用性能优化--有哪些基本方法？
+解决方案: 1. 常用优化工具 图 2. 常用优化方案 OpenGL ES优化的主要工作是在图形管道中找到影响性能的bottleneck,其bottleneck一般表现在以下几方面: • 在应用程序代码中,如冲突检测 • GPU与主内存间的数据传输 • 在VP(Vertex Processor)中的顶点处理 • 在FP(Fragment Processor)中的片断处理 可通过DS-5 Streamline来定位性能瓶颈(Locate bottleneck).为了获取更好的性能,可从以下具体功能着手优化: 2.1 纹理(Texture) 高分辨率的纹理占用大量的内存,它是Mali GPU上的主要负荷,可从以下几方面进行优化: • 除非必要,尽量不要使用大纹理 • 总是打开纹理映射(mipmapping),有时可能降低了渲染质量 • 如果可能,排序三角形,当按render的次序render时,使其有相互
+完整回答请参考FAQ: FAQ46783
+### 问题: native层looper处理异步操作
+解决方案: 所谓native层的Looper,实际上也是android 的java层Handler实现的基础.它的实现如下: 1、使用epoll创建一个MessageQueue,在这里循环等待Message的到来 2、发送消息时就是将Message添加到这个队列里面去 3、Looper收到Message后开始处理队列中的Message,处理到对应Message时回调对应函数就可以了. class Receiver : public LooperCallback { public: Receiver(int rFd); virtual ~Receiver(); virtual int handleEvent(int fd, int events, void* data); void start(); private: virtual void onFirstRef(); sp<Looper> mLoop
+完整回答请参考FAQ: FAQ46794
+### 问题: 出现TransactionTooLargeException 错误如何处理
+解决方案: 错误log: 10-17 18:37:35.119 5420 5420 W System.err: java.lang.RuntimeException: Package manager has died 10-17 18:37:35.119 5420 5420 W System.err: at android.app.ApplicationPackageManager.getPackageInfo(ApplicationPackageManager.java:79) 10-17 18:37:35.119 5420 5420 W System.err: at com.google.android.gms.analytics.bq.a(SourceFile:71) 10-17 18:37:35.119 5420 5420 W System.err: at com.google.android
+完整回答请参考FAQ: FAQ46804
+### 问题: 做帧动画的一种简单方式
+解决方案: 1.在res/drawable文件夹下,创建一个xml文件,如voice_anim.xml 2.添加animation-list节点,即动画节点,最后voice_anim.xml文件的内容为: <?xml version="1.0" encoding="utf-8"?> <animation-list xmlns:android="http://schemas.android.com/apk/res/android" > <item android:drawable="@drawable/recording_1" android:duration="200"> </item> <item android:drawable="@drawable/recording_2" android:duration="200"> </item> <item android:drawable="@draw
+完整回答请参考FAQ: FAQ46844
+### 问题: 自动灭屏时,如何去掉LCD背光从全亮到半亮的渐变过程？
+解决方案: 1、开启自动灭屏后,会调用函数updatePowerState更新手机的背光值;在将屏幕最终暗下去前,会根据设定的最低背光值,逐级将背光值降低到最低值. frameworks\base\services\java\com\android\server\power\DisplayPowerController.java private void updatePowerState() { ........... animateScreenBrightness(clampScreenBrightness(target), //背光逐级改变函数 slow ? BRIGHTNESS_RAMP_RATE_SLOW : BRIGHTNESS_RAMP_RATE_FAST); ........... } 然后调用如下的函数降低背光; frameworks\base\services\java\com\an
+完整回答请参考FAQ: FAQ46850
+### 问题: Android应用程序所有画图的操作是如何完成的呢？
+解决方案: 应用程序在建立窗口时,就申请创建一个surface,在申请创建surface的过程中,实际上会在surfaceflinger中创建一个layer,并对应这个surface.在创建layer的时候,surfaceflinger为其创建了两个图形缓冲区,front buffer, back buffer,同样在surface中存在着两个缓冲区.我们知道android中的作图全是在canvas上进行绘制,那么canvas跟surface是否有着什么关系呢?是的,两个图形缓冲区中back buffer也就是我们通常所说的canvas,要想在canvas上进行绘制,其前提就是必须已经将它和对应的图形缓冲区绑定完毕.其实,所谓的绑定只是获得back buffer的首地址,从该首地址起,对应了一个创建好的bitmap会与canvas进行绑定,这样我们在canvas上进行绘制便有了内存空间. 最后要做到就
+完整回答请参考FAQ: FAQ46864
+### 问题: 如何解决Android4.4开机启动收到boot complete消息慢？
+解决方案: Android 的启动, 会先启动SystemServer、AMS等service,然后启动Launcher显示界面;当Launcher启动以后, ActivityManagerService中finishBooting方法会发出 Intent.ACTION_BOOT_COMPLETED 广播.由于开机数据连接等广播也很多, 所以ACTION_BOOT_COMPLETED不是最优先的执行. 解决方法: 将ACTION_BOOT_COMPLETED置为前台广播,intent或上Intent.FLAG_RECEIVER_FOREGROUND; frameworks\base\services\java\com\android\server\am\ActivityManagerService.java final void finishBooting() { ....... Intent int
+完整回答请参考FAQ: FAQ46862
+### 问题: Adnroid4.4.3 如何修改MTU？
+解决方案: Android 4.4.3 后上层有了对MTU 值的管理和设置,所以当过去在RIL或 PhoneService中设置MTU的地方都会被Framework中的替换掉,在那些地方设置的MTU的值会无效. 代码如下: MobileDataStateTracker.java中 private void updateLinkProperitesAndCapatilities(Intent intent) { mLinkProperties = intent.getParcelableExtra( PhoneConstants.DATA_LINK_PROPERTIES_KEY); if (mLinkProperties == null) { loge("CONNECTED event did not supply link properties."); mLinkProperties = new Li
+完整回答请参考FAQ: FAQ46872
+### 问题: MSS与MTU的关系
+解决方案: MTU: Maxitum Transmission Unit 最大传输单元 MSS: Maxitum Segment Size 最大分段大小 MSS最大传输大小的缩写,是TCP协议里面的一个概念. MSS就是TCP数据包每次能够传输的最大数据分段.为了达到最佳的传输效能TCP协议在建立连接的时候通常要协商双方的MSS值,这个值TCP协议在实现的时候往往用MTU值代替(需要减去IP数据包包头的大小20Bytes和TCP数据段的包头20Bytes), 通讯双方会根据双方提供的MSS值得出最小值确定为这次连接的最大MSS值. 协商TCP MSS大小具体过程如下: TCP client发出SYN报文,其中option选项填充的MSS字段一般为(MTU-IP头大小-TCP头大小),同样TCP server收到SYN报文后,会发送SYN＋ACK报文应答,option选项填充的mss字段也为(MTU-I
+完整回答请参考FAQ: FAQ46877
+### 问题: android中native方式绘制图形
+解决方案: 在android中通常使用的绘图方式是使用java方式来绘制,使用native方式很少涉及到. 实际上,绘制一个图形的最基本要素是: 1、设置需要绘制的区域和大小,这一步是由绘制一个Surface 2、在framebuffer中申请一段内存用来进行显示 3、最后向上面申请到的内存中写入要显示的数据 具体做法如下: 1、创建可以操作SurfaceFlinger的client侧代理 sp<SurfaceComposerClient> client = new SurfaceComposerClient(); 2、创建一个Surface并会设置大小和显示区域 sp<SurfaceControl> control = client->createSurface 3、sp<Surface> surface = control->getSurface 这里得到了对应的Surface之后就可以开始往上面
+完整回答请参考FAQ: FAQ46913
+### 问题: 基于展讯样机适配WVGA的LCD问题
+解决方案: 基于展讯样机适配WVGA的LCD问题.LCD实际上是QHD. 以sp7731gea工程为例子: ./u-boot/include/configs/ sp7731gea.h #define CONFIG_LCD_WVGA 1 以lcd_nt35516_mipi为例: ./u-boot/drivers/video/sprdfb/lcd/lcd_nt35516_mipi.c ./kernel/drivers/video/sprdfb/lcd/lcd_nt35516_mipi.c struct panel_spec lcd_nt35516_mipi_spec = { //.cap = PANEL_CAP_NOT_TEAR_SYNC, #ifdef CONFIG_FB_LOW_RES_SIMU .display_width = 480, .display_height= 800, #endif .w
+完整回答请参考FAQ: FAQ46932
+### 问题: 共享service，provider或者activity等的数据
+解决方案: 如果你需要做一个application,将某些服务service,provider或者activity等的数据,共享出来,有三个办法: 1、完全暴露,这就是android:exported="true"的作用,而一旦设置了intentFilter之后,exported就默认被设置为true了,除非再强制设为false.当然,对那些没有intentFilter的程序体,它的exported属性默认仍然是false,也就不能共享出去. 2、权限提示暴露,这就是为什么经常要设置usePermission的原因,如果人家设置了 android:permission="xxx.xxx.xx"那么,你就必须在你的application的Manufest中 usepermission xxx.xxx.xx才能访问人家的东西. 3、私有暴露,假如说一个公司做了两个产品,只想这两个产品之间可互相调用,那么这
+完整回答请参考FAQ: FAQ46994
+### 问题: 如何修改Latin输入法符号键盘中字符？
+解决方案: 键盘位置:点击键盘?123按钮,后按shift相同位置的"=\<"键后的布局 涉及到的布局文件(packages/inputmethods/LatinIME/java/res/xml): rows_symbols_shift.xml -----为点击键盘?123按钮,后按shift相同位置的"=\<"键后的整体键盘布局 rowkeys_symbols_shift1.xml -----第一行具体字符布局 rowkeys_symbols_shift2.xml -----第二行具体字符布局 rowkeys_symbols_shift3.xml -----第三行具体字符布局 key_styles_currency.xml -----上述每行按键布局的字符通过此文件来进行在一些语言键盘中显示不同的字符 增加或修改字符可在rowkeys_symbols_shiftX.xml中增加或修改,针对某个国家的
+完整回答请参考FAQ: FAQ46983
+### 问题: Android APK中androidManifest.xml关于installLocation字段描述说明
+解决方案: android: installLocation= ["auto" | "internalOnly" | "preferExternal"] > installLocation安装参数,是Android2.2及以后版本中的一个新特性,installLocation有三个值可以选择:internalOnly、auto、preferExternal. 选择preferExternal,系统会优先考虑将APK安装到SD卡上(当然最终用户可以选择为内部ROM存储上,如果SD存储已满,也会安装到内部存储上); 选择auto,系统将会根存储空间自己去适应; 选择internalOnly是指必须安装到内部才能运行; (注:需要进行后台类监控的APP最好安装在内部,而一些较大的游戏APP最好安装在SD卡上.一般默认为安装在内部,如果把APP安装在SD卡上,首先得设置eclipse编译环境level为8,并
+完整回答请参考FAQ: FAQ47032
+### 问题: 如何修改latin输入法中各语言键盘在空格键上的名称？
+解决方案: 1.在packages/inputmethods/LatinIME/java/res/values/donottranslate.xml的subtype_locale_exception_keys中增加item; 增加item的内容为需要修改的语言键盘名称的locale,各语言键盘locale,请按照packages/inputmethods/LatinIME/java/res/xml/method.xml中列出的android:imeSubtypeLocale 属性值填写 2.在packages/inputmethods/LatinIME/java/res/values/strings.xml中增加想要的键盘名称字符串, 字符串id的命名规则为subtype_xx_XX (xx_XX 为上述item填入的locale) 例如,修改俄语键盘名称 1.查到在method.xml中俄语的loc
+完整回答请参考FAQ: FAQ47005
+### 问题: 4.4平台query_task_fd功能有什么作用
+解决方案: 1. 4.4平台加入了query_task_fd功能,目的就是统计活动进程的任务数和句柄数,该功能在生成snapshot.log时会被触发.其中会生成如下信息:会统计出任务数和句柄数以及任务名称和句柄指向的文件 ============ query_task_fd 14-10-20 10:23:54 ============== Use default value: task_threshold 30; fd_threshold 100 ******************** dirpath : /proc/568 ******************** SUMMERY: proc name : system_server task count : 72 (threshold 30) fd count : 295 (threshold 100) ...... 2. 该功能也可直接使用,
+完整回答请参考FAQ: FAQ47024
+### 问题: 7715 android如何客制化海外紧急号码？
+解决方案: 以添加130为例,只需要确保PhoneNumberUtils.java文件的如下两处正确添加就ok. PhoneNumberUtils.java (frameworks\base\telephony\java\android\telephony) 1.isSimEmergencyNumber()方法做如下修改 } //no ecclist system property, so use our own list. - return (number.equals("112") || number.equals("911")); + return (number.equals("112") || number.equals("911")||number.equals("130")); } 2. 数组CUSTOM_EMERGENCY_NUMBER中添加130 PS: 客制化紧急号码目前是通过ap
+完整回答请参考FAQ: FAQ47122
+### 问题: 如何调整system_server进程崩溃后系统重启前的等待时间？
+解决方案: 在SC7731平台中为便于分析native异常的情况,系统配置中打开了进程发生native异常后自动进行coredump的过程,通过Log4Android2PC脚本导出Log后会在根目录下的corefile路径下找到对应的dump文件以用于问题的推导和分析. 另外在system_server进程发生异常后由于会导致系统发生重启,为保证系统有足够的时间来完成coredump过程,可以根据实际情况调整system_server进程崩溃后系统重启前的等待时间,相应修改如下: 文件:./dalvik/vm/native/dalvik_system_Zygote.cpp static void sigchldHandler(int s) { ... if (pid == gDvm.systemServerPid) { ALOG(LOG_INFO, ZYGOTE_LOG_TAG, "Exit zygo
+完整回答请参考FAQ: FAQ48360
+### 问题: 如何实现杀死一个指定进程名的进程
+解决方案: 如何实现杀死一个指定进程名的进程? 以下是具体代码实现: #include <stdio.h> #include <sys/types.h> #include <dirent.h> #include <stdlib.h> #include <string.h> #define PATH_MAX 128 #include <cutils/log.h> //杀死所有能成功匹配的进程 void killall(char* procname) { int i, rv, pid_t[128] = {0}; rv = find_pid_by_name(procname, pid_t); if(rv == -1) return ; char process_pid[512] = {0}; for(i=0; pid_t[i] != 0; i++) { int pid = 0; memset(&proces
+完整回答请参考FAQ: FAQ47174
+### 问题: 如何为让某个工程使用独立的一套ini 配置文件
+解决方案: 4.4平台里不同board的2351配置参数有些差异,故每个board都使用独立的一套ini文件.可以使用修改给某个工程独立添加一套ini文件: 1.在vendor的res里添加改board的独立ini配置文件 2.LOCAL_PATH:= vendor/sprd/open-source/res/productinfo PRODUCT_COPY_FILES += \ $(LOCAL_PATH)/scx15_sp7715gbbase_connectivity_configure_hw100.ini:system/etc/connectivity_configure_hw100.ini \ $(LOCAL_PATH)/scx15_sp7715gbbase_connectivity_configure_hw102.ini:system/etc/connectivity_configure_hw1
+完整回答请参考FAQ: FAQ50452
+### 问题: shark fm有效台识别方法
+解决方案: 有效台的识别全部由 MODEM 自动完成,不需要软件参与.FM 的 MODEM 会解调 RF 送过来的数据,得到一些信息,比如频偏,导频能量,信号功率,并将这些信息与可配置阈值相比较,如果都落在有效范围之内,则判定此台有效,否则判定此台无效. 1. 频偏的比较.MODEM 计算所得的频偏值会反映在状态寄存器 FREQ_OFF_STS(0x402700bc),可配置的阈值为 SEEK_CH_TH(0x40270040) .有效范围:频偏小于 SEEK_CH_TH. 2. 导频能量信息的比较.MODEM 测算导频能量,给出 0,1,2 三个数据,反映在状态寄存器 RSSI_STS(0x402700B0)的[19:18]bit;有效范围:0 和 1 时,此台有效,2 时此台无效. 3. 信号功率的比较.MODEM 计 算 得 到 的 当 前 channel 的 能 量 , 会 反 映 在 寄 存
+完整回答请参考FAQ: FAQ47295
+### 问题: 一类模拟按键导致“monkey测试中灭屏”问题的快速定位思路
+解决方案: :首先要找到灭屏的时间点 一般在system.log 中搜索关键字"Going to sleep"这个关键字的解释 详见FAQ46993.这里如果为如下log Going to sleep by user request 则为用户主动进行的一次灭屏操作. 2:这种情况下去main.log 中找到时间点,向时间点前搜索关键字"screenIsOn" 找到距离最近的一次按键log,例如如下log WindowManager: interceptKeyTq keycode=88 screenIsOn=true keyguardActive=false policyFlags=b000000 isWakeKey=false down=false 如果显示screenIsOn=true则代表执行这次操作时屏幕处于亮屏状态. 如果是模拟按键导致的灭屏,基本可以确定就是对应的这次的按键操作导致灭屏的.键
+完整回答请参考FAQ: FAQ47322
+### 问题: SEAndroid中的安全上下文（Security Context）是如何定义的？
+解决方案: SEAndroid是一种基于安全策略的MAC安全机制.这种安全策略又是建立在对象的安全上下文(Security Context简称SContext)的基础上的.这里所说的对象分为两种类型,一种称主体(Subject),一种称为客体(Object).主体通常就是指进程,而客体就是指进程所要访问的资源,例如文件、系统属性等. 安全上下文实际上就是一个附加在对象上的标签(Tag).这个标签代表安全属性实际上是一个字符串,它由四部分内容组成,分别是SELinux用户、SELinux角色、类型、安全级别,每一个部分都通过一个冒号来分隔.格式为"user:role:type:sensitivity".进程和文件的role命名稍微有点区别,进程的role一般为"r"文件的role一般为object_r.例如"u:r:init:s0 root 1 0 /init"代表init进程的安全属性;" u:obj
+完整回答请参考FAQ: FAQ47326
+### 问题: SEAndroid 如何通过命令查看进程或文件的安全上下文（Security Context）的属性值？
+解决方案: 在开发中有时我们需要查看某个应用或文件的安全上下文(Security Context),可以通过如下命令获取 进程的SContext可通过ps -Z命令查看,第一列就是要查看的内容 root@scx35_ec:/ # ps -Z LABEL USER PID PPID NAME u:r:init:s0 root 1 0 /init u:r:kernel:s0 root 2 0 kthreadd u:r:platform_app:s0 u0_a57 947 157 com.android.launcher3 文件的SContext可通过ls -Z来查看 root@scx35_ec:/data/data # ls -Z drwxr-x--x u0_a70 u0_a70 u:object_r:app_data_file:s0 cmccwm.mobilemusic drwxr-x--x u0_a6
+完整回答请参考FAQ: FAQ47327
+### 问题: 如何理解SEAndroid中的安全策略文件(*.te)？
+解决方案: 安全策略文件(*.te)是配置安全策略的文件,是SEAndroid的核心,安全策略相关的文件主要分部在两个部分: external/sepolicy目录中,这里是andoird自带的.另一部分在device/sprd/scx*5/sepolicy目录中.这部分是开发人员可以自己制定一些安全策略. *.te中的权限配置都是通过allow语句赋予的.完整的allow相关的语法格式为五部分如下: "rule_name source_type target_type : class perm_set" 分别解释一下 1:rule_name:规则的名字,一共有四种: allow:赋予某项权限; allowaudit:记录某项操作,无论操作成功或失败. dontaudit:对那些权限检查失败的操作不做记录. neverallow:用来检查安全策略文件中是否有违反该项规则的allow语句. 2:sour
+完整回答请参考FAQ: FAQ47328
+### 问题: 执行“mounton”命令出现denied 的一类“SEAndroid权限引起的应用异常退出问题”的解决方案
+解决方案: 前提是权限问题,即如果在log中出现了Permission denied的字样,可以考虑检查一下是否为如下所述的情况 这类问题的典型的log特征: main.log 中出现 E dalvikvm: Failed to mount /storage/emulated/0 to /storage/emulated/legacy: Permission denied E dalvikvm: cannot mountExternalStorage(): Permission denied 对应时间点的kernel.log中出现 ] c1 type=1400 audit(1411960695.180:80): avc: denied { mounton } for pid=1941 comm="zygote" path="/storage/emulated/legacy" dev="fuse" in
+完整回答请参考FAQ: FAQ47329
+### 问题: SC7701平台是否支持UMTS 2100的HSUPA?
+解决方案: 查看7701 的feature: Compatible with GSM/GPRS/EDGE Release 1999, GSM850, GSM900, DCS1800, and PCS1900 recommendations EGPRS class12,type B (MCS1-9 in downlink and MCS1-9 in uplink) Release 99 WCDMA up to UE Class 384kbps for both uplink and downlink Release 7 HSDPA, up to 21Mbps(Category 14) Release 7 HSUPA, up to 5.76Mbps(Category 7) 所以目前不支持频段为UMTS 2100 的 HSUPA. UMTS(Universal Mobile Telecommunicatio
+完整回答请参考FAQ: FAQ47422
+### 问题: SC7701平台上怎么去掉List菜单右边对字体的模糊处理?
+解决方案: (1)见guistring.c的开头,有个宏定义:USE_STRING_ELLIPSIS, 如果这个宏有效,则遇到长字符串,后面会加上"..."; 如果这个宏无效,遇到长字符串,后面几个字符显示会渐变透明. 具体可在这个文件中搜索USE_STRING_ELLIPSIS,查看其对应的处理逻辑. (2)根据(1),如果需要"..."且不需要渐变透明,则保证USE_STRING_ELLIPSIS此宏有效定义即可; (3)如果"..."与渐变透明都不需要,那么做相关如下修改, 去掉USE_STRING_ELLIPSIS定义,且在函数DrawTextInLine@guistring.c中,把 #ifdef USE_STRING_ELLIPSIS param.format &= ~TEXT_FORMAT_ELLIPSIS; #endif 改成: //#ifdef USE_STRING_ELLIPSIS
+完整回答请参考FAQ: FAQ47447
+### 问题: SC6815平台Phone模块为什么对应的idh.code\packages\apps\Phone目录为空？
+解决方案: 因为SC6815\SC7715平台是基于Andorid4.4平台开发的,在4.4平台上做了对应的调整,原来的Phone应用不见了,取而代之的是Dialer和TeleService,具体对比情况如下: Android Phone module difference between 4.0 & 4.4 Android version 4.0(sc6825\sc6825c) 4.4(sc5815\sc7715) Target Phone Contacts Dialer Teleservice InCallUI source code idh.code\packages\apps\Contacts idh.code\packages\apps\Phone idh.code\packages\apps\Dialer idh.code\packages\apps\InCallUI idh.code\p
+完整回答请参考FAQ: FAQ47457
+### 问题: MIPI接口的摄像头驱动中pclk的意义
+解决方案: 摄像头驱动中,有一个结构SENSOR_TRIM_T,其中有成员pclk,例如: static SENSOR_TRIM_T s_Gc2155_Resolution_Trim_Tab[] = { {0, 0, 800, 600, 0, 0,0, {0, 0, 800, 600}}, {0, 0, 800, 600, 68, 490, 0x03b8, {0, 0, 800, 600}}, {0, 0, 1280, 960, 68, 496, 0x03b8, {0, 0, 1280, 960}}, {0, 0, 1600, 1200, 68, 496, 0x03b8, {0, 0, 1600, 1200}}, {0, 0, 0, 0, 0, 0, 0, {0, 0, 0, 0}}, {0, 0, 0, 0, 0, 0, 0, {0, 0, 0, 0}}, {0, 0, 0, 0, 0, 0, 0,
+完整回答请参考FAQ: FAQ47464
+### 问题: MIPI DSI数据读写协议与函数接口
+解决方案: MIPI DSI协议规定,MIPI 数据按Packet组织,每个Packet都有一个Data Identifier Byte,其中含有Data Type信息.Data Type 指明了数据用途,例如: Data Type Description ------------------------------------------- 0x03 Generic Short WRITE, no parameters Short 0x13 Generic Short WRITE, 1 parameter Short 0x23 Generic Short WRITE, 2 parameters 0x29 Generic Long Write 0x04 Generic READ, no parameters Short 0x14 Generic READ, 1 parameter Short 0x24
+完整回答请参考FAQ: FAQ47470
+### 问题: android4.4 Launcher中如何隐藏主菜单应用列表界面的应用图标名称？
+解决方案: 以sprdLauncher1举例: 请定位到vendor/sprd/UniverseUI/SprdLauncher1/src/com/android/sprdlauncher1/PagedViewIcon.java文件: 添加一个方法: public void setTextVisibility(boolean visible) { Resources res = getResources(); if (!visible) { super.setTextColor(res.getColor(android.R.color.transparent)); } } 然后定位到SprdLauncher1/src/com/android/sprdlauncher1/AppsCustomizePagedView.java文件: 然后定位到syncAppsPageItems方法: PagedViewIc
+完整回答请参考FAQ: FAQ47472
+### 问题: chip_drv初始化四个阶段简单介绍
+解决方案: chip_drv初始化阶段分为四个阶段,每阶段初始化如下: 第一阶段:public void CHIPDRV_InitOnPhase1(void) 主要功能:refbase boot之前关键资源的初始化,包括芯片类型获取,flash初始化,芯片初始化;其中芯片初始化包括系统与设备时钟初始化与使能(clock_cfg),pinmap和gpio设置初始化,但此时GPIO不含中断注册初始化. 第二阶段:public void CHIPDRV_InitOnPhase2(void) 主要功能:refbase power on 前驱动模块的初始化,包括LDO控制(包括睡眠控制)相关初始化,系统时钟与设备结构相关初始化,RTC(包括计时器与闹钟)相关寄存器初始化,timer等模块的初始化. 注:有关一些客户电压初始化配置比如ldo,就在此阶段完成. 第三阶段:public void CHIPDRV_In
+完整回答请参考FAQ: FAQ53633
+### 问题: 编辑第一条短信如何显示”剩余字数/第几条“
+解决方案: 当前设计: 第一条信息,只显示当前信息的剩余字数,大于一条信息,才显示:该条信息剩余字数/第几条短信. 修改方法: 去除第一条信息判断,统一显示为: 当前短信的剩余字数/第几条短信 修改文件:packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java public class ComposeMessageActivity extends Activity } private void resetCounter() { - mTextCounter.setText(""); - mTextCounter.setVisibility(View.GONE); + //mTextCounter.setText(""); + //mTextCounter.setVisibility(View.GONE); //如果是彩信编
+完整回答请参考FAQ: FAQ48327
+### 问题: init是如何解析init.rc的
+解决方案: 1)在目录system/core/init/下的init_parser.c文件中调用函数 init_parse_config_file("/init.rc"){ …… data = read_file(fn, 0); parse_config(fn, data); …… } init_parse_config_file函数调用read_file函数打开init.rc文件,并返回了文件的内容(char*类 型),然后调用init.rc核心解析函数parse_config,该函数也在init_parser.c文件中实现 2)parse_config函数首先调用 list_init(&import_list)初始化一个链表,该链表是用于存储通过import语句导入的初始化文件名.然后在一个for循环里面获取每一个token,调用类词法分析器next_token函数来分析这些token. stat
+完整回答请参考FAQ: FAQ47496
+### 问题: VGA摄像头插值拍摄2M照片的几种解决方案
+解决方案: 原因:DCAM模块最大支持4倍的scale up,VGA摄像头在2.0X 变焦时,是从360*268插值到1600*1200,已经超过了4倍,导致异常. 解决: 方案1.减少2.0X数码变焦实际对应的倍数 vendor/sprd/open-source/libs/libcamera/sc8830/inc/cmr_common.h #define CMR_ZOOM_FACTOR 2 //将2改小成1.5 方案2.减少step数, device/sprd/common/libs/libcamera/sc8830/inc/SprdCameraHardwareConfig.h struct config_element sprd_front_camera_hardware_config[]和 struct config_element sprd_back_camera_hardware_confi
+完整回答请参考FAQ: FAQ47558
+### 问题: 如何监听Phone的状态？
+解决方案: Android提供了类PhoneStateListener以方便非Phone进程时监听Phone的状态,如Phone State,Service State,Signal Strength等. PhoneStateListener的实现在文件:PhoneStateListener.java (frameworks\base\telephony\java\android\telephony)中 监听Phone状态: 1、 import android.telephony.PhoneStateListener. 2、 实现一个继承自PhoneStateListener的类: 例如 PhoneStateListener phoneStateListener = new PhoneStateListener(){...}; 对于需要监听的状态,重写相应的函数.例如:希望监听Phone的状态,则重写
+完整回答请参考FAQ: FAQ47545
+### 问题: IIS pinmap配置
+解决方案: 1、检查调试相关外设使用到IIS口,如IIS0,之前程序做其他功能脚使用; 2、如以下配置: \u-boot\board\spreadtrum\sp8830ec\pinmap.c(不同的配置,对应不同的配置目录) 配置为FUNC0 、 {REG_PIN_IIS0DI, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_IE, PIN_NULL, SLP_AP}, {REG_PIN_IIS0DO, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_OE, PIN_NULL, SLP_AP}, {REG_PIN_IIS0CLK, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_OE, PIN_NULL, SLP_AP}, {REG_PIN_IIS0LRCK
+完整回答请参考FAQ: FAQ47561
+### 问题: SoC/YUV摄像头针对开启闪光后，额外配置摄像头参数的接口实现
+解决方案: 因闪光灯的色温,光照的不均匀会造成原先针对自然光照下的效果调适变差,可用如下的方法,增加开启闪光灯下的额外参数调整, 以OV5640为例: 1.vendor/sprd/open-source/libs/libcamera/sc8830/src/cmr_set.c uint32_t camera_flash_mode_to_status(enum cmr_flash_mode f_mode) { struct camera_context *cxt = camera_get_cxt(); uint32_t status = FLASH_STATUS_MAX; int ret = CAMERA_SUCCESS; uint32_t autoflash = 0; switch (f_mode) { case CAMERA_FLASH_MODE_OFF: status = FLASH_CLOSE; 
+完整回答请参考FAQ: FAQ47564
+### 问题: 蓝牙耳机通话噪音（对端）
+解决方案: 1、通话有噪音; 通话噪音audio_hw_primary: ###bluetooth_nrec for test AT+SSAM=6 通话正常 audio_hw_primary: ###bluetooth_nrec for test AT+SSAM=5 2、上层通过获取耳机是否有NREC功能,设定不同的去噪音处理;耳机、AP同时有去噪音功能是,会出现问题; vendor/sprd/open-source/libs/audio/at_commands_generic.c static int at_cmd_route(struct tiny_audio_device *adev) { const char *at_cmd = NULL; if ((adev->mode != AUDIO_MODE_IN_CALL) && (!adev->voip_start)) { ALOGE("Error
+完整回答请参考FAQ: FAQ47565
+### 问题: 摄像头模块降低录像时电流值的几种可行方法
+解决方案: 1.减少录像时摄像头的输出分辨率从1600x1200到800x600 vendor/sprd/open-source/libs/libcamera/sensor/sensor_xxx.c static SENSOR_REG_TAB_INFO_T s_xxx_resolution_Tab_YUV[SENSOR_MODE_MAX]= { // COMMON INIT {ADDR_AND_LEN_OF_ARRAY(xxx_YUV_COMMON), 0, 0, 24, SENSOR_IMAGE_FORMAT_YUV422}, // YUV422 PREVIEW 1 {ADDR_AND_LEN_OF_ARRAY(GC2035_YUV_800x600), 800, 600, 24, SENSOR_IMAGE_FORMAT_YUV422},//新增 {ADDR_AND_LEN_OF_ARRAY(GC20
+完整回答请参考FAQ: FAQ47571
+### 问题: SC6531/7701平台 RGB(888)如何转化成RGB565颜色值，有没有相关工具？
+解决方案: 主要可以用下面两个函数实现: #define RGB565_MASK_RED 0xF800 #define RGB565_MASK_GREEN 0x07E0 #define RGB565_MASK_BLUE 0x001F void rgb5652rgb888(WORD wPixel, BYTE *R, BYTE *G, BYTE *B) { *R = (wPixel & RGB565_MASK_RED) >> 11; // 取值范围0-31 *G = (wPixel & RGB565_MASK_GREEN) >> 5; // 取值范围0-63 *B = (wPixel & RGB565_MASK_BLUE); // 取值范围0-31 *R = *R | (*R << 3); *G = *G | (*G << 2); *B = *B | (*B << 3); } WORD RGB888toR
+完整回答请参考FAQ: FAQ47588
+### 问题: 如何切换modem拨号和ECM/NCM设备模式拨号？
+解决方案: 目前一些客户在做数据卡、模块类产品时,要求产品也支持NIC(Network Interface Card) mode拨号上网功能,并要求NIC和modem 两种方式可以随意切换,at+sipmode即可实现两种拨号方式之间的切换,该指令详细介绍如下: AT+SIPMODE Description: Set or inquire the mode of transmitted IP data between TE and MT Set command: AT+SIPMODE=<ip_mode> Return: OK/ERROR Read command: AT+SIPMODE? Return: +SIPMODE: <ip_mode> Test command: AT+SIPMODE=? Return: +SIPMODE: (0,1) Parameter: <ip_mode> 0 modem 
+完整回答请参考FAQ: FAQ47593
+### 问题: 如何获取sim卡及其pin/puk的状态？
+解决方案: 使用AT+EUICC指令即可获取sim卡及其pin/puk的状态,详细介绍如下: AT+EUICC Description: Inquire related status of SIM card Read command: AT+EUICC? Return :+EUICC: <sim>,<pin>,<type> Parameter: <sim> Parameter Description 0 sim ready 1 Sim not inserted 2 Sim not ready <pin> Parameter Description 0 no PIN required 1 PIN1 needed 2 PIN2 needed 3 PIN1 locked, need to input PUK1 4 PIN2 locked, need to input PUK2 22 PUK1 locked 
+完整回答请参考FAQ: FAQ47598
+### 问题: 屏IC RM68180A，待机时底电流漏电0.5—1MA修改
+解决方案: 1. 平台默认的FB驱动,在屏驱动中如果没对panel_after_suspend赋值,sleep时会把对RST PIN拉低 2. 对于屏IC RM6818,进入sleep时,将RST PIN拉低会导致漏电0.5—1MA 3. 因此对应的修改方案就是进入sleep时不把RST PIN拉低 1)u-boot修改 u-boot/board/spreadtrum/sc9620openphone/pinmap.c {REG_PIN_LCD_RSTN, PIN_NULL, FUNC0, PIN_NULL, PIN_NULL, DS_L1, SLP_OE, PIN_NULL, SLP_AP}, 改为: {REG_PIN_LCD_RSTN, PIN_NULL, FUNC0, PIN_NULL, SLP_WPU, DS_L1, PIN_NULL, PIN_NULL, SLP_AP}, 2) kernel中
+完整回答请参考FAQ: FAQ47602
+### 问题: 查询modem软件版本和读取sim卡中EF-ICCID文件的AT指令分别是什么？
+解决方案: 1)查询modem软件版本的指令是AT+CGMR,详细介绍如下: AT+CGMR Description: This command is used to get DCE software version. Execution Command: AT+CGMR Return: < version number> OK Test Command: AT+CGMR=? Return: OK Example: AT+CGMR RIYUE_R1.8.7001.BL0005.BUILD0017 OK 2.读取sim卡中EF-ICCID文件的指令是AT+CCID,详细介绍如下: AT+CCID Description: This command reads the EF-ICCID file on the SIM card. Read Command: AT+CCID? Return: +CCID: 
+完整回答请参考FAQ: FAQ47603
+### 问题: 进入主菜单--->长按一项应用移至下方拨号上面，出现报错
+解决方案: MocorDroid4.4_3.10_14A_W14.24.5 之前的版本有这个问题,后续版本已经修正. 原因分析: 拖动主菜单图标到桌面,偶现图标丢失 workspace中createUserFolderIfNecessary方法的mDragInfo可能为空. 解决方案: 如果mDragInfo为空,不做任何处理,不需要返回. 请定位到Workspace.java的createUserFolderIfNecessary方法: if (mDragInfo != null) { CellLayout cellParent = getParentCellLayoutForView(mDragInfo.cell); hasntMoved = (mDragInfo.cellX == targetCell[0] && mDragInfo.cellY == targetCell[1]) && (cel
+完整回答请参考FAQ: FAQ47734
+### 问题: 如何修改“触摸按键灯持续时间”的默认值？
+解决方案: packages/apps/Settings/res/values/arrays.xml <!-- SPRD: add for touch light timeout --> <string-array name="touch_light_timeout_entries"> <item>"1.5 seconds"</item> <item>"6 seconds"</item> <item>"Always on"</item> <item>"Always close"</item> </string-array> <string-array name="touch_light_timeout_values" translatable="false"> <item>1500</item> <item>6000</item> <item>-1</item> <item>-2</item> </s
+完整回答请参考FAQ: FAQ47755
+### 问题: 如何设置后台进程限制？
+解决方案: 下面为"后台进程限制"在配置中对应的设置和入口参数,可以看到默认有-1、0、1、2、3、4这些值可以设置. packages/apps/Settings/res/xml/development_prefs.xml <ListPreference android:key="app_process_limit" android:title="@string/app_process_limit_title" android:persistent="false" android:entries="@array/app_process_limit_entries" android:entryValues="@array/app_process_limit_values" /> packages/apps/Settings/res/values/arrays.xml <!-- Titles for a
+完整回答请参考FAQ: FAQ47758
+### 问题: 如何默认关闭“窗口动画缩放”、“过渡动画缩放”、“动画程序时长缩放”？
+解决方案: 展讯在7715和7731上(Android 4.4版本)做了统一处理,请按如下方式修改: frameworks/base/services/java/com/android/server/wm/WindowManagerService.java /* SPRD: reduce animation scale default value when LC_RAM_SUPPORT is true @{ */ float mWindowAnimationScale = LC_RAM_SUPPORT ? 0.5f : 1.0f; float mTransitionAnimationScale = LC_RAM_SUPPORT ? 0.5f : 1.0f; float mAnimatorDurationScale = LC_RAM_SUPPORT ? 0.5f : 1.0f; 这三个值分别对应"窗口动
+完整回答请参考FAQ: FAQ47763
+### 问题: VelocityTracker如何使用
+解决方案: 用addMovement(MotionEvent)函数将Motion event加入到VelocityTracker类实例中.你可以使用getXVelocity() 或getXVelocity()获得横向和竖向的速率到速率时,但是使用它们之前请先调用computeCurrentVelocity(int)来初始化速率的单位 . 主要函数 示例: private VelocityTracker mVelocityTracker; //在onTouchEvent(MotionEvent ev)中 if (mVelocityTracker == null) { mVelocityTracker = VelocityTracker.obtain();//获得VelocityTracker类实例 } mVelocityTracker.addMovement(ev);//将事件加入到VelocityTr
+完整回答请参考FAQ: FAQ47722
+### 问题: 如何处理编译错误：error: do_inode_allocate_extents: Failed to allocate 562 blocks
+解决方案: 在编译时遇到如下错误: Creating filesystem with parameters: Size: 459997184 Block size: 4096 Blocks per group: 32768 Inodes per group: 7024 Inode size: 256 Journal blocks: 1754 Label: Blocks: 112304 Block groups: 4 Reserved block group size: 31 error: do_inode_allocate_extents: Failed to allocate 562 blocks + '[' 1 -ne 0 ']' + exit 4 error: failed to build out/target/product/scx35_sp7731gea/obj/PACKAGING/sys
+完整回答请参考FAQ: FAQ47766
+### 问题: UUI版本通话记录详情中如何显示通话时长
+解决方案: UUI版本通话记录详情是否显示通话时长是由OperatorUtils.ENABLR_CALLLOG_DURATION控制的,如要显示通话时长,可以将OperatorUtils.ENABLR_CALLLOG_DURATION相关代码去除,如下修改: 1. 修改CallLogger.java (\packages\services\telephony\src\com\android\phone)的logCall()方法 /** SPRD: add for dsds call log **/ public void logCall(CallerInfo ci, String number, int presentation, int callType, long start, long duration, int phoneId, int videoFlag) { final boolean i
+完整回答请参考FAQ: FAQ47783
+### 问题: 如何增加拨号盘中联系人的搜索功能？
+解决方案: 修改文件:packages\apps\Dialer\res\layout\show_all_contacts_fragment_sprd.xml 修改内容: --- a/res/layout/show_all_contacts_fragment_sprd.xml +++ b/res/layout/show_all_contacts_fragment_sprd.xml @@ -23,6 +23,48 @@ <!-- Shown only when an Account filter is set. - paddingTop should be here to show "shade" effect correctly. --> + <RelativeLayout + android:id="@+id/search_view_container" + android:layout_width=
+完整回答请参考FAQ: FAQ47812
+### 问题: 设置MT端实时时钟和停止/查询网络搜索及增值业务的AT指令分别是什么？
+解决方案: 1)设置MT端实时时钟的指令是AT+CCLK,详细介绍如下: AT+CCLK Description: This command sets the real‑time clock of the MT. If setting fails in an MT error, +CME ERROR: <err> is returned. Read Command: AT+CCLK? Return: +CCLK: <current date and time> OK Parameter: < time >: "yy/mm/dd,hh:mm:ss", total length is 17, users must input data according to this format, or it will return ERROR. Example: AT+CCLK=" 03/05/23, 09:45:
+完整回答请参考FAQ: FAQ47853
+### 问题: [android 4.4]从视频播放器播放视频时，如何修改代码弹出其他播放器应用供用户选择
+解决方案: 在视频播放器中播放视频时,默认为是使用自带的视频播放器进行播放,代码中指定了使用movieactivity进行播放,属于正常现象,对比机酷派大神F2也是如此,如果在视频播放器中播放视频,需要弹出其他播放器应用供用户选择,可以不指定使用默认的activity进行播放,请参考如下修改: --- a/src/com/android/gallery3d/app/PhotoPage.java +++ b/src/com/android/gallery3d/app/PhotoPage.java @@ -1449,8 +1449,8 @@ public abstract class PhotoPage extends ActivityState implements Intent intent = new Intent(Intent.ACTION_VIEW) .setDataAndType(uri, "
+完整回答请参考FAQ: FAQ47848
+### 问题: 将TE设备使用的字符集通知TA设备的AT指令是什么？
+解决方案: 将TE(Terminal Equipment)设备使用的字符集通知TA(Terminal Adapter)设备的指令是AT+CSCS,详细介绍如下: AT+CSCS Description: Set command informs TA which character set <chset> is used by the TE. TA is then able to convert character strings correctly between TE and MT character sets. When TA‑TE interface is set to 8‑bit operation and used TE alphabet is 7‑bit, the highest bit shall be set to zero. Set Command: AT+CSCS=<chset> 
+完整回答请参考FAQ: FAQ47874
+### 问题: 如何内置Pico TTS全语音包
+解决方案: /target/product/full_base.mk文件中有如下声明, TARGET_LOWCOST_SUPPORT定义的时候,就使用PicoLangEnUsInSystem.mk,即只内置英语的语音包. TARGET_LOWCOST_SUPPORT未定义的时候,就使用all_pico_languages.mk,即内置全语音包. 如希望在TARGET_LOWCOST_SUPPORT定义的时候,同时支持全语音包,可以直接将包含all_pico_languages.mk的语句移出判断即可. ifneq ($(TARGET_LOWCOST_SUPPORT),true) # Get the TTS language packs $(call inherit-product-if-exists, external/svox/pico/lang/all_pico_languages.mk) els
+完整回答请参考FAQ: FAQ47987
+### 问题: 设置-电池中，电池已用时间什么时候会清0
+解决方案: 从BatteryStatsImpl.java中的如下代码以及相关注释, // We will reset our status if we are unplugging after the // battery was last full, or the level is at 100, or // we have gone through a significant charge (from a very low // level to a now very high level). if (oldStatus == BatteryManager.BATTERY_STATUS_FULL || level >= 90 || (mDischargeCurrentLevel < 20 && level >= 80)) { doWrite = true; resetAllStatsLocked(
+完整回答请参考FAQ: FAQ48005
+### 问题: 如何获取CPU核心数？
+解决方案: 方法一: private int getNumCores() { // Private Class to display only CPU devices in the directory listing class CpuFilter implements FileFilter { @Override public boolean accept(File pathname) { // Check if filename is "cpu", followed by a single digit number if (Pattern.matches("cpu[0-9]", pathname.getName())) { return true; } return false; } } try { // Get directory containing CPU info File dir = n
+完整回答请参考FAQ: FAQ48006
+### 问题: 如何实现长按Power键手机重启？
+解决方案: 以kernel\drivers\input\keyboard\sc_keypad.c文件为例,在sci_keypad_init()函数中进行了input_hook_init()初始化: static int __init sci_keypad_init(void) { #ifdef HOOK_POWER_KEY input_hook_init(); #endif return platform_driver_register(&sci_keypad_driver); } 并在中断函数sci_powerkey_isr()中调用input_report_key_hook()对power key进行处理.input_report_key_hook()在kernel\drivers\input\keyboard\input-hook.c中实现,代码如下: void input_report_key
+完整回答请参考FAQ: FAQ48027

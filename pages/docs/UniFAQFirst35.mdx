@@ -1,0 +1,300 @@
+### 问题: user版本在开机情况下如何通过writeIMEI工具写imei号
+解决方案: 首先user版本开机模式下默认是不支持写IMEI号的. 如果需要在此情况下写IMEI号,需要做如下操作: 1,打开usb调试接口,方法:设置---->关于手机----->点击版本号在设置中出现开发者选项---->USB调试 打开即可 2,通过*#*#83781#*#*进入工程模式,进入选项: log settings----->PC Log---->EngPC Service将此项打开 然后连接上writeIMEI工具 选择对应的diag口就可以写入IMEI号了. 请注意:此操作不可用于产线生产.
+参考FAQ: FAQ69040
+### 问题: 如何判断加装gms版本libwebviewchromium.so是否使用的平台的
+解决方案: gms包内gms.mk PRODUCT_PREBUILT_WEBVIEWCHROMIUM为yes或no. 如果为yes, 则使用的是google gms包提供的libwebviewchromium.so, 通常google提供的so发生native crash, 属原生问题无法修改, 如果必须修复此问题只能升级gms版本看是否还会复现. 如果为no, 则使用的是由平台external/chromium_org原码所编出的libwebviewchromium.so.
+参考FAQ: FAQ69048
+### 问题: 如何获取TelephoneManager的subid？slotid/phoneid与subid的转换
+解决方案: int subid= SubscriptionManager.getSubId(slotIdx)[0];// SubscriptionManager静态类,返回当前卡槽的SIM的subid. int phoneId=SubscriptionManager.getPhoneId(subId);//返回当前subId对应的phoneId. slotId对应的终端卡槽的物理标识,phoneId对应的双卡管理的物理标识.在物理意义上是等同的,即卡1对应的slotId跟phoneId为0,卡2对应的slotId跟phoneId为1.以此类推.
+参考FAQ: FAQ82029
+### 问题: 如何通过log来确认是SIM卡的类型
+解决方案: 可以通过查看radio log来确认SIM卡的具体类型. 1.查询AT指令EUICC这个关键字,根据返回的参数判断. AT< +EUICC: 2,1,1 最后一位1,表示USIM,0表示SIM. 2.根据关键字ECIND来查询确认. +ECIND: 3,6,1 同样最后一位1表示USIM,0表示SIM.
+参考FAQ: FAQ80226
+### 问题: 启动activity时候的new task标志的典型问题
+解决方案: Intent.FLAG_ACTIVITY_NEW_TASK 标签的含义是如果当前系统中没有对应的taskrecord,则为此activity新建task record用于存放activity record 本问题,使用4.9版本的Gmail的版本没有问题,使用5.0的Gmail有此问题 分析得知是5.0版本的Gmail版本做了修改,在启动应用的时候没有进行new task的操作,使得gmail中activity存在在图库的task record 此种问题可以在启动的intent添加如下标签 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+参考FAQ: FAQ69146
+### 问题: MonkeyLogAnalyse_V5.0.5 log分析工具环境搭建有哪些注意点？
+解决方案: 1、配置环境变量D:\xx\Perl\bin 2、Perl文件夹不要与MonkeyLogAnalyse_V5.0.5 log放在同一个路径下面 3、MonkeyLogAnalyse.ini里面BLACK_PATH=需要下移一行再填写工具路径 如: BLACK_PATH= D:\MonkeyLogAnalyse_V5.0.5 4、当monkey测试时间超过25小时时需要在脚本里面进行如下设置才能正常显示monkey实际运行的时间:打开MonkeyLogAnalyse.pl文件,需要修改4个参数值:$cInfo >= 25、$cInfo = 25、$tempTime > 25、$tempTime = 25,(25代表测试总时间)将文档中所有以上4个参数值更改为需要的数值即可.
+参考FAQ: FAQ69649
+### 问题: TCP握手失败，服务器返回RST
+解决方案: 发生问题的cap包如下所示: 65 2015-07-12 12:58:18.761779 10.40.8.8 203.92.128.160 TCP 76 52458 > wap-wsp-wtp [SYN] Seq=0 Win=65535 Len=0 MSS=1460 SACK_PERM=1 TSval=127561 TSecr=0 WS=64 67 2015-07-12 12:58:18.845305 203.92.128.160 10.40.8.8 TCP 56 wap-wsp-wtp > 52458 [RST, ACK] Seq=1 Ack=1 Win=0 Len=0 上述cap包中这是一个发送彩信时的握手过程,我们发现请求的端口为9201,服务器收到握手请求后立刻返回了RST,最终我们发现是应为彩信中心的端口配置错误导致,将彩信中心端口修改为80后,数据传输正常. 所以,由上我们可以推论,遇到tcp握手失败,服务器马上返回RST的情况,我们首先要检查服务器端口配置是否正确.
+参考FAQ: FAQ69200
+### 问题: 如何修改手机连接应用宝后，显示的手机品牌信息？
+解决方案: 应用宝中厂商标识修改 ./device/sprd/scx35_sp7731gea/scx35_sp7731geaXXXX.mk文件中PRODUCT_BRAND.
+参考FAQ: FAQ69201
+### 问题: 俄罗斯就两个紧急呼叫号码112、911，如何去掉其它号码
+解决方案: PhoneNumberUtilsPlugin.java 去掉如下数组内客制化的号码,保留数组定义. private static final String CUSTOM_EMERGENCY_NUMBER = "110,119,120,122"; private static final String CMCC_SUPPORT_EMERGENCY_NUMBER = "000,08,999,118";
+参考FAQ: FAQ70689
+### 问题: xp系统下如何修改系统管理器中rndis网卡名称？
+解决方案: xp系统修改系统管理器中显示的rndis网卡名称,方法是修改PC驱动中的sprdrndis.inf AndroidDevice = "Android USB Ethernet RNDIS Gadget", 将"Android USB Ethernet RNDIS Gadget"替换成需要的字符串.
+参考FAQ: FAQ69204
+### 问题: win7系统下如何修改系统管理器中rndis网卡名称?
+解决方案: win7系统默认支持rndis网卡,驱动免安装.要修改设备管理器中rndis设备名称,可以安装展讯USB PC驱动包中的驱动,替换win7系统中原有驱动程序.安装前修改展讯驱动包中的sprdrndis.inf文件,将AndroidDevice = "Android USB Ethernet RNDIS Gadget" 字符串替换成需要的字符串.
+参考FAQ: FAQ69208
+### 问题: 合入优化手机烧写PAC包速度的修改，为什么出现烧写手机失败的情况？
+解决方案: 优化手机烧写PAC包速度的修改,需要researchdownload 工具支持二次枚举功能,要使用R2.9.9015以上的版本才可以.
+参考FAQ: FAQ69220
+### 问题: fdl1代码包含优化手机PAC包烧写速度的修改，使用R2.9.9015版本以上烧写工具，仍然失败的原因？
+解决方案: fdl1代码中包含了优化手机烧写PAC包速度的修改,使用R2.9.9015版本以上烧写工具,仍然失败.此时需检查research download,setting中的options选项,keep charge不能勾选.
+参考FAQ: FAQ69221
+### 问题: android手机间是否支持相互投射功能？
+解决方案: 不支持,android原生就不支持手机做sink,主要是没有做sink的相关代码.市面上会有一些支持做sink功能的机型,但其代码实现都是由平台厂商自行实现,这样的情况下,会出现不能兼容的情况,也即:只能是相同机型之间才能自由切换source或者sink的角色.
+参考FAQ: FAQ69230
+### 问题: usb mtp触发流程
+解决方案: mtp 触发分两个流程: 1.usb setting 2. property 由上面两个流程可知这里会触发init.rc的on property:persist.sys.usb.config这个触发器,更形它的状态,同时更新sys.usb.config这个属性,就会发ACTION_USB_STATE这个广播,当MtpReceiver.java接收到这个广播后就会启动mtp服务.
+参考FAQ: FAQ69347
+### 问题: FFOS版本如何在默认情况下获取NMEA LOG
+解决方案: NMEA LOG默认路径为data/cg/online/下,可以直接使用adb pull出来即可
+参考FAQ: FAQ69365
+### 问题: GPS greeneye与greeneye2 库文件是如何管理的
+解决方案: greeneye与greeneye2的库在不同目录下管理,具体如下: greeneye所在目录: vendor/sprd/gps/CellGuide_2351/ greeneye2所在目录: vendor/sprd/wcn/gps 另外vendor/sprd/wcn/gps/gps_so 目录是engpc相关的greeneye与greeneye2共用
+参考FAQ: FAQ69368
+### 问题: 使用JTAG调试如把系统的watch dog停掉
+解决方案: 项目make文件中打开JTAG_SUPPORT宏定义即可关闭系统watch dog
+参考FAQ: FAQ69370
+### 问题: 手持上行存在底噪
+解决方案: 请先确认下Handset->CVS->BNG模块是否打开,如果打开,关闭该模块或者将TX BNG Floor改到-90dB左右.
+参考FAQ: FAQ106438
+### 问题: 视频播放界面来闹钟提醒时为什么不弹出闹钟提示框？
+解决方案: 视频播放过程中来闹钟提醒时,不弹出闹钟提醒界面,而是采用震动提示,在视频播放结束后才会弹出闹钟提醒界面.因为当时有个入库case要求流媒体播放时,来闹钟提醒不要影响流媒体播放,如果弹出闹钟提醒界面,该提醒界面比较大,会遮盖住大部分视频播放界面,所以就改成震动提示了,因本地视频播放和流媒体播放的界面共用,因此就统一做处理了.
+参考FAQ: FAQ69489
+### 问题: 在转发邮件的时候，FWD应该随着语言的变化而变化。而当前无论什么语言都全部显示FWD。
+解决方案: 原因分析: 此字串是原生的,google建议" Do not translate",故只有英文字串,无其他语言下翻译 解决方案: 建议不做修改,如需修改,请添加其他语言下翻译<forward_subject_label>FWD和<reply_subject_label>RE
+参考FAQ: FAQ69509
+### 问题: insmod disagree about version of symbol 如何解决
+解决方案: insmod有时会报类似下面的错误,然后insmod失败. disagree about version of symbol module_layout can not insert "hello.ko",invalid module format 实际上每个kernel的符号(EXPORT_SYMBOL, 例如printk)都会有一个crc校验和表示符号的版本.根据函数名,以及函数各个参数类型定义计算出每个符号的校验和.因此如果某个struct 定义发生变化(经常是修改了一些config)之后,就会引起某些符号的crc不一致.这个时候的解决办法是,在新的kernel下面重新编译ko. 当然,如果经常要重编ko麻烦的话,也可以尝试修改下kernel,不要检测符号的版本(当然某些情况下可能有风险),修改方法是: kernel/module.c int check_version() { return 1; }
+参考FAQ: FAQ69533
+### 问题: [android5.1]在视频播放器中，为什么声道设置按钮和android4.4的不一样？
+解决方案: android5.1seekbar系统风格和android4.4的seekbar系统风格不一样,android5.1seekbar 系统风格是一个柱状的,android4.4的seekbar系统风格是一个圆球状的,
+参考FAQ: FAQ69562
+### 问题: arm log工具如何分割log文件大小
+解决方案: 1.在工具菜单Options->Configuration的设置界面中勾选All,即可不分割Log文件. 但不建议修改这个设置,因为这样会导致单个log文件非常巨大,可能会有10G以上,甚至达到100G以上.巨大的log,导致分析回放很慢 2. 发布的版本里有这两个文件,需要把客户报这个问题时用到的ArmLog工具发给我们检查一下,或者让客户确认一下他们用的工具,Logel_for_TD\Bin\Parser目录下是否有这两个文件?
+参考FAQ: FAQ69555
+### 问题: wifi 2.4G b/g/n 模式与速率匹配
+解决方案: 速率值 模式 1Mbps B rate 2Mbps 5.5Mbps 11Mbps 6Mbps G rate 9Mbps 12Mbps 118Mbps 24Mbps 36Mbps 48Mbps 54Mbps 6.5Mbps N rate 13Mbps 19.5Mbps 26Mbps 39Mbps 52Mbps 58.5Mbps 65Mbps
+参考FAQ: FAQ69953
+### 问题: 播放视频界面右上角菜单-参数设置，有什么作用？
+解决方案: 由于移动入库对流媒体参数有要求,因此这些参数主要是针对流媒体的: 1.网络设置中的APN:可以设置是否使用cmwap进行流媒体播放 2.代理设置:是否使用代理播放流媒体 3.RTP/RTCP端口设置:当播放RTSP流媒体时,是否使用所设置的RTP和RTCP端口号进行数据的接收 正常情况下,使用时一般不需要对以上参数进行设置.
+参考FAQ: FAQ69573
+### 问题: SC7731平台MTP模式下拷贝大文件过程中点取消后无法再次拷贝问题
+解决方案: android mtp原生代码的问题,解决方案是修改/media/mtp/MtpServer.cpp文件 bool MtpServer::handleRequest() { - if (response == MTP_RESPONSE_TRANSACTION_CANCELLED) - return false; + //if (response == MTP_RESPONSE_TRANSACTION_CANCELLED) + // return false; mResponse.setResponseCode(response); return true; }
+参考FAQ: FAQ69565
+### 问题: 后台播放google音乐，第三方视频播放器播放视频，为什么音乐继续播放？
+解决方案: Google player播放音乐,属于第三方播放器,视频播放器也是第三方的播放器,如果后台播放google 音乐,此时用第三方视频播放器播放视频,如果需要暂停音乐播放,则需要第三方视频播放器中进行audio focus的控制(进入视频播放时执行requestAudioFocus,退出视频播放时执行abandonAudioFocus),而此时我们是没法对第三方播放器代码进行控制的,所以音乐继续播放属于正常现象.
+参考FAQ: FAQ69574
+### 问题: 如何打印关机充电log
+解决方案: 关机充电log需要通过串口输出 修改文件: vendor/sprd/open-source/apps/charge/log.c #define LOG_LEVEL 4 将loglevel修改为 7即可打印charge.bin的输出log
+参考FAQ: FAQ69615
+### 问题: 在文件管理器中播放视频，为什么刚开始播放时会先黑一下？
+解决方案: 刚开始播放视频黑一下是正常现象,因为视频播放时需要创建surfaceview,只有surfaceview创建好了之后才能显示解码后的第一帧数据,这个黑一下的时间和创建surfaceview的时间及视频源解码的时间有关系,所以不同视频源可能这个黑一下的时间也不一样,对比机酷派大神F2录制完视频去播放时,也会先黑屏然后再显示视频的.
+参考FAQ: FAQ69628
+### 问题: 5.1长按home键怎么设置才能弹出最近应用列表
+解决方案: 5.1上默认打开最近任务的按键键值是KEYCODE_APP_SWITCH,可以采取以下两种方案 1.增加对应KEYCODE_APP_SWITCH键值的按键 2.修改frameworks/base/core/res/res/values/config.xml中 <integer name="config_longPressOnHomeBehavior">0</integer>的值至1
+参考FAQ: FAQ69630
+### 问题: 在没有拨号盘时，如何使用adb命令进入工程模式？
+解决方案: adb 命令进入工程模式:adb shell am start -n com.sprd.engineermode/.EngineerModeActivity
+参考FAQ: FAQ69641
+### 问题: 如何处理Monkey测试出现设置菜单中开发者选项与文件管理器消失的问题？
+解决方案: 该问题是由于有部分客户Android 5.1手机有多用户模式,monkey测试时会进入Guest用户,该模式下UserRestriction对这两项进行了限制,在该用户下无法看到开发者选项和文件管理器应用,属于正常现象.
+参考FAQ: FAQ69651
+### 问题: Dolphin温度检测电压量程修改注意
+解决方案: Dolphin温度检测ADC支持大小量程切换,量程修改需要修改2个地方: sprd_2713_charge.c 1、ADC读值 int sprdchg_read_temp(void) { ...... .scale = 1, //sm0为小量程,1为大量程 ...... } 2、ADC值转化为电压 static uint16_t sprdbat_adc_to_vol_channel(uint16_t channel, uint16_t adcvalue) { ...... sci_adc_get_vol_ratio(channel, 1, &vchg_numerators, &vchg_denominators); //第二个参数0为小量程,1为大量程 ...... }
+参考FAQ: FAQ69688
+### 问题: 进入recovery模式后如何按键进入菜单模式
+解决方案: 按home键或者同时按下power键和音量上键能出来菜单 定义的地方是在如下代码中 bootable/recovery/ui.cpp RecoveryUI::KeyAction RecoveryUI::CheckKey(int key) { if ((IsKeyPressed(KEY_POWER) && key == KEY_VOLUMEUP) || key == KEY_HOME) { return TOGGLE; } 如果项目没有home键则可以自己定义按什么键(比如单个音量键)进入菜单.
+参考FAQ: FAQ69693
+### 问题: android5.1上关闭selinux方法
+解决方案: 在kernel/arch/arm/configs/sp7731gea-dt_defconfig下 关闭selinux方法: 请将下面的config全部改成is not set. #CONFIG_SECURITY_SELINUX is not set #CONFIG_SECURITY_SELINUX_DEVELOP is not set #CONFIG_SECURITY_SELINUX_AVC_STATS is not set #CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE is not set #CONFIG_DEFAULT_SECURITY_SELINUX is not set 同时 kernel/security/selinux/include/avc.h文件中 将#define selinux_enforcing 1 改成 #define selinux_enforcing 0 这样就可以关闭selinux了
+参考FAQ: FAQ70927
+### 问题: 如何OTA升级和恢复出厂设置RTC复位
+解决方案: --- a/common/cmd_cboot.c +++ b/common/cmd_cboot.c @@ -92,10 +92,15 @@ boot_mode_enum_type get_mode_from_bat_low(void) return CMD_UNDEFINED_MODE; } - + int sprd_clean_rtc(void); boot_mode_enum_type write_sysdump_before_boot_extend(void) { unsigned rst_mode = reboot_mode_check(); + if(rst_mode==0x3) + { + debugf("cboot:recovery\n"); + sprd_clean_rtc(); + } debugf("cboot:write_sysdump_before_boot_extend!!!!\n");
+参考FAQ: FAQ70898
+### 问题: BTSIG认证如何关闭PAN功能
+解决方案: 在packages/apps/Bluetooth/res/values/config.xml中将<bool name="profile_supported_pan">true</bool>的true改为false
+参考FAQ: FAQ69799
+### 问题: 7701平台是否支持AWS
+解决方案: 支持
+参考FAQ: FAQ69734
+### 问题: 7731能否支持按键全键盘？
+解决方案: 可以用nand IO口复用为按键扫描矩阵,但是memory必须用emmc nand
+参考FAQ: FAQ69740
+### 问题: 7715是否支持VAMOS？
+解决方案: 支持
+参考FAQ: FAQ69741
+### 问题: 开机提示“您的设备内部出现问题，请联系设备制造商了解详情”如何解决？
+解决方案: 出现这个问题的原因:BUILD_NUMBER长度太长,大于97 解决方法: build/core/version_defaults.mk 中的如下注释掉,然后修改为自定义的值就可以, #BUILD_NUMBER := eng.$(USER).$(shell date +%Y%m%d.%H%M%S) //这个太长了 BUILD_NUMBER := SC //此项表示版本号,等号后面修改可以自定义 删除code目录的Out并全编译 BUILD_NUMBER:是"版本号"的意思,版本号是版本的标识号.每一个操作系统(或广义的讲,每一个软件)都有一个版本号.版本号能使用户了解所使用的操作系统是否为最新的版本以及它所提供的功能与设施.每一个版本号可以分为主版本号与次版本号两部分.内部版本号的不同表示对相同源所作的重新编译.这适合于更改处理器、平台或编译器的情况.
+参考FAQ: FAQ69786
+### 问题: BLE最多支持多少个设备连接
+解决方案: 由于ACL链路的最大连接数为7,所以BLE最多支持7个设备连接
+参考FAQ: FAQ69800
+### 问题: WRITEIMEI_R4.0.0001工具写入蓝牙地址与手机设置显示蓝牙地址不一致如何初步排查
+解决方案: 首先 adb shell进入手机查看如下文件中蓝牙地址: productinfo/btmac.txt data/misc/bluedroid/btmac.txt 这两个文件的蓝牙地址应该与写入的蓝牙地址一致. 如果两个问题地址不一致或data/misc/bluedroid/btmac.txt地址不存在则对应不同的问题,后续分开分析.
+参考FAQ: FAQ69801
+### 问题: 蓝牙耳机连接后待机功耗高如何初步分析
+解决方案: 首先进行如下排查: 1.是否插入SIM卡,插入SIM卡会导致蓝牙功耗偏高 2.是否打开slog,打开slog会导致蓝牙功耗偏高
+参考FAQ: FAQ69802
+### 问题: 5.1目前支持的蓝牙协议有哪些
+解决方案: 2351蓝牙芯片支持2.0+EDR,2341蓝牙芯片支持BLE 4.0. 支持蓝牙协议HSP/HFP/A2DP/AVRCP/OBEX/OPP/SDP/AVDTP/PBAP/GAP/AVCTP 不支持蓝牙协议FTP/DUN.
+参考FAQ: FAQ69804
+### 问题: 恢复出厂设置蓝牙地址是否应该改变
+解决方案: 分两种情况: 1.如果用WRITEIMEI工具写入蓝牙地址,则恢复出厂设置蓝牙地址不应该改变 2.如果没有用WRITEIMEI工具写入蓝牙地址或productinfo/btmac.txt文件不存在,则恢复出厂设置蓝牙地址改变,原因是恢复出厂设置data目录清空,导致data/misc/bluedroid/btmac.txt文件重新生成,如果productinfo/btmac.txt文件不存在,则随机生成.
+参考FAQ: FAQ69805
+### 问题: BT设备被其他设备搜索
+解决方案: 由于Android5.1系统的原生设计,只有被搜索设备在蓝牙设置界面,且屏幕不能为灭屏时才能被其他设备检测搜索到.
+参考FAQ: FAQ69816
+### 问题: FM设置频率时，寄存器值与实际值的转换关系
+解决方案: 50KHz: 寄存器值 * 5 + 10 = 实际频率值; 100KHz: 寄存器值>>1 + 1 = 实际频率值;
+参考FAQ: FAQ69834
+### 问题: FM影响待机耗电
+解决方案: 正常的待机电流为3mA,该问题表现为FM模块在弱信号搜台之后关闭,进入待机状态,待机电流始终维持在20mA以上. 该问题的产生原因为弱信号搜台之后关闭FM,会多调用一次sr2351_fm_dis()函数,导致挂起的锁出现异常,CPU只能进入earlysuspend状态,无法进入低耗电的suspend状态. 处理方法为在shark_fm_wait_int函数中将检测超时搜台失败时调用的sr2351_fm_dis()函数去掉即可.
+参考FAQ: FAQ69826
+### 问题: 某些androidL版本执行iwnpi命令前要执行wcnd_cli wcn poweron命令
+解决方案: 如果系统中有wcnd_cli工具,在执行iwnpi命令前请执行 wcnd_cli wcn poweron insmod /system/lib/modules/sprdwl.ko
+参考FAQ: FAQ69844
+### 问题: iwnpi  iwnpi wlan0 get_rx_ok (get_rx_count)命令三个返回值含义
+解决方案: iwnpi iwnpi wlan0 get_rx_ok 某些版本为get_rx_count 命令三个返回值含义: rx_end_count 成功接收到的包数, rx_err_end_count 包头检验出错包数,fcs_fail_count CRC 校验错误的包数.
+参考FAQ: FAQ69848
+### 问题: 2351系列wifi芯片在开启wifi dispaly功能时不能与station/softap模式共存
+解决方案: 2351上的wifi dispaly不能与station/softap模式共存,所以开启wifi dispaly后请将wifi界面里的已记录过的热点清空,否则如果周围有记录过的可连接热点会引起station自动连接导致wifi dispaly掉线.
+参考FAQ: FAQ69859
+### 问题: 微信收发蓝牙语音消息的协议栈结构
+解决方案: 在微信收发蓝牙语音消息的过程中,涉及到了拨打虚拟电话(VirtualVoiceCall)的操作,简单来说就是模仿正常打电话的流程来从AP侧发送语音数据给CP2.其协议栈如下图所示.
+参考FAQ: FAQ69908
+### 问题: 设置一个5s内的倒计时，按home键，为什么倒计时时间到会有延迟
+解决方案: 如:设置一个3s的倒计时,按home键,倒计时时间到不会立即弹出并响铃,而是延迟了2s了,这是因为倒计时按了home键之后,要等待接收AlarmManager的timers_up广播,而5.1原生AlarmManager的设计"5秒之内的都会调整到5秒的时间点上"(请参见[FAQ69348] :为何5.1之后闹钟应用即使设置小于5s的定时器,触发的时间同样是5s),所以设置一个3秒的倒计时会延迟2s.
+参考FAQ: FAQ69876
+### 问题: WIFI 信道范围是根据什么来设定的？
+解决方案: WIFI 信道是遵守802.11D协议的,7731、9830等平台是根据sim卡里国家码的值来确定信道范围,不插卡默认为1-14,几个典型国家码对应信道例子: 中国、日本 CN 1-13 美国、加拿大 US 1-11
+参考FAQ: FAQ69847
+### 问题: 终端蓝牙重命名成功后拔电池关机，重启后查看蓝牙，蓝牙名称还原
+解决方案: 蓝牙重命名后名字要保存在存储里的配置文件中,而保存的这个操作是在关闭蓝牙时flush进行的,问题中的case没有触发保存的操作,所以再次开机后名字会还原,解决方法是在app设置名字后bluedroid里强制进行一次flush的操作即可.
+参考FAQ: FAQ69878
+### 问题: WIFI Direct连接是如何确认Group Owner/ Client设备的？
+解决方案: 在进行Group negotiation过程中,Action报文会有一个名为Go intent 的element: 1. Go intent element中: Tie breaker(决胜因素):bit[0], 取值为随机0或1 Intent: bit[1-7], 取值0~15,值越高代表越想成为GO,15表示必须为GO, default为7 2. GO规则: Intent大者为GO Intent相同,Tie breaker大者为GO Intent、Tie breaker均相同,重新协商
+参考FAQ: FAQ69893
+### 问题: FM2351硬件架构
+解决方案: 如上图所示是SHARK FM硬件组成关系图,其中SR2351是四合一射频芯片(WIFI/BT/GPS/FM),该芯片接收模拟射频信号进行一系列处理后转换成数字信号,通过I/Q通道传输给MODEM部分.对于FM部分SR2351处理如下: 模拟射频信号经过Overload detector、LAN、mixer、synthesizer后经过ADC转换成数字信号,包括四根信号FM_RX_ID[0]、FM_RX_ID[1]、FM_RX_QD[0]、FM_RX_QD[1],这四根信号再复合成FM D0、FM D1,该信号向后传输给FM MODEM.
+参考FAQ: FAQ69897
+### 问题: FM2351 Driver注册过程
+解决方案: 文件:sprdroid5.1_trunk\kernel\drivers\misc\fm_2351sr2351_fm_ctrl.c init_fm_driver ->sr2platform_driver_register(&sr2351_fm_driver) ->.probe = sr2351_fm_probe ->misc_register(&sr2351_fm_misc_device) ->.fops = &sr2351_fm_misc_fops ->.open = sr2351_fm_open ->sr2351_fm_init
+参考FAQ: FAQ69904
+### 问题: 802.11规范中的物理组件
+解决方案: 802.11规范中包含四种主要的物理组件: 1、VM:无线媒介.其本意指能传送无线MAC帧数据的物理层.规范最早定义了射频和红外两种物理层,目前使用最多的是射频物理层. 2、STA:工作站.通俗的讲STA就是指携带无线网卡的设备. 3、AP:接入点.AP本身也是一个STA,只不过它还能为已关联的的STA提供分布式服务. 4、DS:分布式系统.DS涉及到BSS、ESS等无线网络架构. 举例熟悉: 智能手机就是一个STA,我们连接的无线路由器就是一个AP,AP连接的有线网络+AP+STA便组成了一个DS.
+参考FAQ: FAQ69895
+### 问题: 展讯wifi连接AP灭屏功耗测试预置条件
+解决方案: 目前展讯对wifi功耗测试预置条件如下: WIFI连接热点,IDLE(禁用SIM卡,IDLE灭屏,WIFI永不休眠模式),测试时关闭、卸载会进行网络通信的APP,GMS等. 同时由于AP MAC层广播策略(arp等)不同,电流会有几mA的浮动.
+参考FAQ: FAQ69909
+### 问题: SC7731蓝牙支持FTP功能吗
+解决方案: 之前有客户询问7731平台是否支持FTP功能,经过查证SC7731平台是不支持FTP功能的,client和server都不支持.
+参考FAQ: FAQ69914
+### 问题: 蓝牙PAN网络使用场景
+解决方案: 1. NAP; 一个网络接入点可以包含一个或多个蓝牙设备,它位于蓝牙网络和其它网络之间,起到网桥、代理或者路由器的作用. 2. GN; GN允许手机在没有任何网络设备的基础上,实现一个无线的ad_hoc网络,PAN 1.0版只实现了一种简单的个人ad_hoc网络,即两个或多个蓝牙设备组成一个蓝牙微微网. 一个微微网有两部分组成,其中一个蓝牙设备作为微微网的主设备,与其它1到7个活跃的蓝牙设备(作为从设备)进行通信.通信只在主设备和从设备之间进行,由主设备进行控制,可以以一对一的方式,也可以以一对多的方式.此外,在微微网中也可能存在处于park模式的不活跃设备,但最多只能有7个处于活跃状态的从设备.下图为由一个微微网组成的典型的GN网络. 3. PANU-PANU; 在此情景中,两个PANU可以直接通信.
+参考FAQ: FAQ69915
+### 问题: 执行iwnpi wlan0 set_mac 修改wifi mac地址后android界面为啥不显示修改后的值
+解决方案: iwnpi wlan0 set_mac命令仅仅是测试wifi芯片时使用,其地址是直接写入wifi芯片CP2的ram中,且CP2重新上电(卸载/加载wifi驱动、重启手机)就消失了.所以并不体现在wifi正常使用时的MAC地址.真正想要修改mac地址请通过IMEI工具烧写productinfo分区中的wifimac.txt文件.
+参考FAQ: FAQ69921
+### 问题: wifi网络架构类型分类
+解决方案: 802.11规范中,基本服务集(BSS)是整个无线网络的基本构建组件. BSS有两种类型: 1、独立型BSS 这种类型的BSS不需要AP参与.各STA之间可直接交互,这种网络一般称为自组网或者对等网. 2、基础结构型BSS 所有STA之间的交互必须经过AP.AP是基础结构型BSS的中控台.这也是家庭或工作中最常见的网络架构.在这个网络中,一个STA必须完成诸如关联、授权等步骤才能加入某个BSS.注意:一个STA一次只能属于一个BSS. 基础结构型BSS的覆盖范围是由BSS中的AP决定的,当几个BSS联合工作时候,讲覆盖一个更大的范围,这就是一个ESS.
+参考FAQ: FAQ69916
+### 问题: 访问MSN中文网，提示安全告警，这是什么原因？
+解决方案: 有没有安全提示取决于访问网页的连接方式, 通过https://访问网站是要求网站提供证书的,而通过http://访问是不会有证书相关提示. 访问的是MSN中文网(https://www.msn.com),访问https网站是要求网站提供证书的, 查看证书,提示"该证书并非来自可信的授权中心" 证书颁发给kyfw.12306.cn,而不是访问的www.msn.com,不匹配,所以浏览器提示用户是正常的.
+参考FAQ: FAQ69986
+### 问题: 什么是蓝牙4.1
+解决方案: 它采用了已经发布的蓝牙核心规范附录(CSA1,2、3 & 4),同时添加新特点和优点.蓝牙4.1给消费者带来更好的用户体验,拓展了开发人员的创新领域,同时扩展了蓝牙技术的基础,使之成为物联网 (Internet of Things)的应用中的重要部分.
+参考FAQ: FAQ69880
+### 问题: 蓝牙共享网络NAP服务解释
+解决方案: NAP和NAP服务:支持NAP服务的设备可以提供类似于网桥的功能来访问互联网,它可以在已连接的两个蓝牙设备之间转发网络数据包,这两个蓝牙设备指的是PAN设备,带有NAP服务的设备就是NAP设备,NAP设备和PAN设备采用BNEP协议交换数据,NAP设备通常还会连接到另外一种网络中,通过桥接和路由的方式发送数据.比如:GPRS. 下图为协议栈概况:
+参考FAQ: FAQ69923
+### 问题: 蓝牙低功耗技术
+解决方案: 是的,蓝牙4.1核心规范覆盖蓝牙4.0引入的蓝牙低功耗技术.
+参考FAQ: FAQ69924
+### 问题: WIFI Display使用过程中有规律卡顿？
+解决方案: WIFI Display卡顿是由于wifi 周期back ground scan导致,scan过程中天线会切到其他信道进行扫描和监听,避免此种情况需要在上层做修改,在使用wifi display过程中禁止back ground scan或者增大back ground scan周期
+参考FAQ: FAQ69912
+### 问题: 蓝牙共享网络GN服务解释
+解决方案: GN和GN服务:支持GN服务的设备能够连接其它蓝牙设备,并转发网络数据包,连接的蓝牙设备为PAN用户,它们能够使用BNEP协议进行数据的交换,GN网络并不提供额外的连接去访问互联网,GN网络只是用来让一些设备组成临时网络,并可以交换信息. 协议栈概况:
+参考FAQ: FAQ69928
+### 问题: 什么是蓝牙4.0，蓝牙4.0较之前版本蓝牙的区别。
+解决方案: 蓝牙4.0 共3种工作模式,普通蓝牙模式,高速蓝牙模式和低速蓝牙模式,而以前的版本只支持普通蓝牙模式,其他模式不和普通蓝牙模式兼容;
+参考FAQ: FAQ69929
+### 问题: 蓝牙4.0 是BLE么？
+解决方案: 蓝牙4.0包含BLE, BLE是蓝牙4.0中的单模模式.
+参考FAQ: FAQ69934
+### 问题: BLE蓝牙速率多少
+解决方案: 物理层速率1M,实际转发速率是每次连接事件传20字节.
+参考FAQ: FAQ69937
+### 问题: 蓝牙BLE模块的传输距离有多远？
+解决方案: 在0dB的情况下,标称100英尺,约60米.
+参考FAQ: FAQ69939
+### 问题: 蓝牙BLE模块的传输速率是多大？能传的数据量有多大？
+解决方案: 转发速率最快4K/S,可稳定工作在2.8K/S.能传的数据量有多大,取决于你传多久.
+参考FAQ: FAQ69941
+### 问题: 为什么有时Email应用无法登录Gmail邮箱
+解决方案: 1 Google在2012年关闭了Gmail的exchange相关服务,2012年之后申请的账户均不能以exchange登录. 2 Imap/Pop3登录时,需要在gmail网页版上确认开通Imap/Pop3登录的权限.
+参考FAQ: FAQ92202
+### 问题: WIFI 调频制式有哪些？
+解决方案: 802.11b 采用DSSS制式; 802.11a/g 采用OFDM制式; 802.11n 采用MIMO+OFDM制式;
+参考FAQ: FAQ69931
+### 问题: android5.1如何使视频通话界面填充控件下面所有空间
+解决方案: 使视频通话图像填充控件下面所有空间,请做以下修改: packages\apps\InCallUI\src\com\android\incallui\VideoCallFragment.java ...... ++ private int displayViewHeightForAdded = 92;//根据具体情况自行定义 private static final boolean DBG = Debug.isDebug(); ...... }else{ params.width = size.x; -- params.height = size.x*9/11; ++ params.height = size.x + displayViewHeightForAdded; } displayView.setLayoutParams(params);
+参考FAQ: FAQ82607
+### 问题: 保存百度图片链接，打开后点击链接，返回会有黑屏，这是什么问题？
+解决方案: 百度图片界面保存链接,保存的是一个index.htm文件,只是这个文件是无法显示百度图片网页的. 一开始可以显示图片,原因是缓存中有之前访问过百度图片的资源(如果浏览器清除缓存后,打开下载的链接无法显示内容). 查看图片返回后,百度图片页面需要执行脚本,而我们保存的指示一个index.htm文件,缺少其它网页文件,所以会黑屏显示, 这不是问题. 如果点击某个链接后(比如动漫,打开动漫图片页面),选择"保存以供离线阅读", 因为网页内容都保存了下来,是可以正常显示的.
+参考FAQ: FAQ69987
+### 问题: Email应用的帐户设置密码输入界面，如何修改Device ID的显示
+解决方案: 如果客户要修改Email帐户设置密码输入界面中Device ID的显示, 设置ID是在\packages\apps\Email\emailcommon\src\com\android\emailcommon\Device.java public static String getDeviceIdInternal(Context context) 客户可以去掉id = "androidc" + consistentDeviceId;这段, 改成客户需要的id = "客户Id";
+参考FAQ: FAQ69990
+### 问题: SC7SC7731 SINE0和SINE1 CLK在布线上应注意什么？
+解决方案: Sine0与sine1的走线要隔离好,两者之间保证至少3mm间距,并各自立体包地好.
+参考FAQ: FAQ69994
+### 问题: 外置AUDIO PA,LED灯，闪光灯的控制GPIO需如何选择？
+解决方案: 应该使用at reset,after reset都为低电平或者input状态并下拉的GPIO,防止开机时闪一下或有响声
+参考FAQ: FAQ69996
+### 问题: SC7731 analog部分的VCMI应如何布线？
+解决方案: VCMI需要串联1uF电容到AMPG_VCOM,然后串联BEAD接到耳机接口处,接的是FM_ANT下地磁珠的GND脚,以防刷屏有FM干扰问题,走线也必须走在HP_L/R中间才有效
+参考FAQ: FAQ69998
+### 问题: LCM的背光驱动电路的VBAT输入是否要串联BAED？
+解决方案: 需要串联BEAD,以减小驱动电路工作时对RF的干扰,同时必须注意BEAD的电流承受能力
+参考FAQ: FAQ70000
+### 问题: SC7731平台项目如要使用带热拔插T卡座时，卡座的选择要注意什么？
+解决方案: 在有TF热拔插需求时,不能使用默认DET脚短路到VDDSD型号卡座(电平不匹配会倒灌)
+参考FAQ: FAQ70002
+### 问题: USB_DM/DP之间跨接的2.2pF电容有什么作用？
+解决方案: USB_DM/DP之间建议预留跨接的2.2pF电容,以便调试眼图
+参考FAQ: FAQ70003
+### 问题: SR3131 TX端口在原理设计接法上要注意什么？
+解决方案: SR3131 TX_LB端口只能接GSM/WCDMA low band,TX_HB端口只能接GSM/WCDMA high band,接法没有要求,以方便LAYOUT为原则
+参考FAQ: FAQ70007
+### 问题: SR3131 RX端口在原理设计接法上要注意什么？
+解决方案: SR3131 RX端口接法上要注意:W Band1 RX与PCS1900/Band2 RX不能接在SR3131同一组RX port上,举例:Band1接在RX_HBA1 , PCS1900/Band2就不能接在RX_HBA2
+参考FAQ: FAQ70009
+### 问题: 为什么某些蓝牙耳机在搜索和配对时手机上显示的蓝牙耳机名称不一样？
+解决方案: 根据协议中写到: 在 Extended Inquiry Response Data 中 device name 有一个 Type 进行指示是 complete 还是 shorten 的 Device Name (shortened): Jabra CLI Length: 10 Type: Device Name (shortened) (0x08) Device Name: Jabra CLI 协议中还提到: 在 Extended Inquiry Response Data 中的 device name 是 shorten 类型,则如果需要用到该名字,可以通过 Remote Name Request 来获取其完整名字. Inquiry为搜索 Remote Name Request为配对过程中手机端向耳机端发送的命令
+参考FAQ: FAQ69870
+### 问题: 7731平台WCDMA网络在LCD休眠后马上掉线无法连接
+解决方案: 该问题是因为LDO没有做配置, 请做如下修改: 在u-boot/board/spreadtrum/sp7731xxxx/ldo_sleep.c里面找到 ANA_REG_SET(ANA_REG_GLB_PWR_XTL_EN4, 将里面的 //BIT_DCDC_WPA_XTL0_EN | 改为: BIT_DCDC_WPA_XTL0_EN |
+参考FAQ: FAQ70001
+### 问题: [7731][android4.4]生产时使用工具对手机恢复出厂设置，不能删除手机中的照片
+解决方案: 该问题使用工具在手机处于校准模式下以及在正常开机模式使用AT+ETSRESET都可以出现,原因是代码中节点有误导致,修改方法请参考如下: eng_cmd4linuxhdlr.c的函数:eng_linuxcmd_factoryreset 将: char convert_name[] = "/dev/block/platform/sprd-sdhci.3/by-name/sd"; 改为: char convert_name[] = "/dev/block/platform/sprd-sdhci.3/by-name/internalsd"; 重新编译验证.
+参考FAQ: FAQ70013
+### 问题: 为何开启Google两步验证功能之后无法正常登入google帐户
+解决方案: Google的两步验证功能请参考下面的网页 https://www.google.com/intl/zh-CN/landing/2step/ 透过网页开启了Google两部验证之后可以透过两种方法验证才能在新的手机上登入相同的帐号 1. 透过简讯 - 在旧的手机会收到认识简讯然后在新的手机上输入 2. 透过google authenticator app - 在旧的手机app上会收到认识码然后在新的手机上输入
+参考FAQ: FAQ70020
+### 问题: [7731]拨号盘输入数字时振感较弱
+解决方案: 请尝试如下修改: 在/kernel/arc/arm/mach-sc/vibrator.c文件中: #define VIBRATOR_INIT_LEVEL (0x0f) #define VIBRATOR_STABLE_LEVEL (4) 如果都要改成最强,就都设成0x0f, 如果改成最弱,就都设成0
+参考FAQ: FAQ70016
+### 问题: 为何Gmail添加附件时文件名后缀不显示
+解决方案: 1. 如果使用的"添加附件"功能是平台提供的话的确不支持,此为Google的原生设计,在对比机Nexus5上也是一样的情况 2. 如果使用的"添加附件"功能是第三方提供的有可能可以支持此功能,只要第三方传送给gmail的uri符合下面的格式 file://+路径的方式来返回,只针对audio文件做此转换,自测试邮件中附件可以显示后缀
+参考FAQ: FAQ70021
+### 问题: FM2351待机没声音时要排查项
+解决方案: 1,音量寄存器是否静音 2,晶振是否工作 3,电源是否掉电 4,dump所有相关寄存器 5,声音输出,audio处理是否出错
+参考FAQ: FAQ70043
+### 问题: 802.11 Servic关键功能简介
+解决方案: 802.11service 其实是指无线网络所提供的功能. 所有服务中最关键的三个如下: 1、数据传输服务:这是无线网络的一个主要功能. 2、安全方面的服务:由于无线网络的特殊性,所以安全性是它必须要考虑的问题. 3、无线电测量服务:无线电测量用于无线网络的组建.例如STA必须通过该服务去发现周围的AP.
+参考FAQ: FAQ70050
+### 问题: 原语类型
+解决方案: 原语分为四类: 1、请求(Req)型原语,用于高层向低层请求某种业务; 2、证实(Cfm)型原语,用于提供业务的层证实某个动作已经完成; 3、指示(Ind)型原语,用于提供业务的层向高层报告一个与特定业务相关的动作; 4、响应(Res)型原语,用于应答,表示来自高层的指示原语已收到. 现在空口协议栈原语的类型,基本就是按照上面简介去划分的,知道上面的定义,有助于理解业务的流程.
+参考FAQ: FAQ70052
+### 问题: LED灯HAL层如何控制
+解决方案: 控制LED亮度文件节点,最大255,最小0 sys/class/leds/red/brightness sys/class/leds/green/brightness sys/class/leds/blue/brightness 控制LED的呼吸功能文件节点 sys/class/leds/red_bl sys/class/leds/green_bl sys/class/leds/blue_bl high_time 高亮时间 low_time 灭时间 falling_time 从亮到灭时间 rising_time 从灭到亮时间 onoff 呼吸灯打开关闭 brightness是控制亮度
+参考FAQ: FAQ70196

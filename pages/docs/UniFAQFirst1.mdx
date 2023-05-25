@@ -1,0 +1,300 @@
+### 问题: 为什么FontTool工具生成的lib字库编译进去没有效果？
+解决方案: FontTool工具生成的Lib字体只针对 FONT_TYPE_SUPPORT = NONE 或 FONT_TYPE_SUPPORT = GRAY 才有效. FONT_TYPE_SUPPORT = CSTAR_BITMAP 时,虽然有把Lib字库编译到资源中,但用的还是cstar的显示字库,所以此时替换对应的Lib字库是没有效果.
+参考FAQ: FAQ18364
+### 问题: 7715的手机为何能正常开机但无法校准
+解决方案: 7715的手机必须用下载工具必须用ResearchDownload R2.9.9005以后的下载版本才能校准.
+参考FAQ: FAQ18286
+### 问题: 如何去掉开机动画
+解决方案: 修改方案: (一)将init.rc中bootanim的service去掉 (二)将SurfaceFlinger中的start bootanim去掉 (三)将Bootanimation_main.cpp中的noBootAnimation强置为1
+参考FAQ: FAQ18309
+### 问题: 字符串显示时如何设置换行方式？
+解决方案: 目前平台支持两种换行属性:按词换行和按像素换行. 如果需要控制这个属性,可以在字符串断行接口SPMLAPI_LineBreak()中通过控制BOOLEAN by_word来实现.
+参考FAQ: FAQ32729
+### 问题: 如何在应用程序中通过AT命令直接获取SIM卡的ICCID
+解决方案: 展讯平台在java层提供了at chennel service服务,通过该服务可以在java层实现通过at命令直接与CP通信(参考平台现有的IATUtils.java的实现),如果需要获取SIM卡的ICCID,可以参考做如下操作: ( 1 ) 使用"AT+CCID?"来读取SIM卡上EFiccid: String AT_CMD_GET_ICCID = "AT+CCID?" (2 )直接调用发送ATcommand的接口,sim_index: 0-sim1;1-sim2 string sim_iccid_info = IATUtils.sendATCmd(AT_CMD_GET_ICCID, "atchannel"+sim_index); 补充关于"AT+CCID?"的说明: Read Command: AT+CCID? Return: +CCID: <sim number> OK
+参考FAQ: FAQ32716
+### 问题: wallpaper显示相关问题
+解决方案: Wallpaper是由哪个程序绘制的? 如果是静态墙纸,例如系统自带的墙纸,或者从文件系统、图框选择的图片. 这种情况是先通过WallpaperManager的接口把图片剪裁后保存到WallpaperManagerService. 然后由ImageWallpaper.java通过WallpaperManager的接口把通过剪裁后的墙纸图片读出来,并绘制(draw)到墙纸窗口. 如果是动态墙纸,由动态墙纸(例如MagicSmoke)自行绘制. App怎样才会显示墙纸背景? Wallpaper是系统级别的窗口,是由WindowManagerService维护,作为特定应用的背景显示. 如果app的窗口设置了如下属性WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER, 并且背景透明.WindowManagerService会在该App的窗口后面显示墙纸.
+参考FAQ: FAQ19036
+### 问题: SC7715将VDDLDO改为VBAT供电有什么影响？
+解决方案: SC7715的VDDLDO的供电从DCDC修改为VBAT供电,主要影响是camera功耗会增加. 详细数据请参照《SC7715A platform VDDLDO DCDC cost down applicationnotes》文档.
+参考FAQ: FAQ18393
+### 问题: 蓝牙搜索后得到的设备类型有哪些
+解决方案: 应用上层接收到BT端搜索到的设备在这里处理:MMIBT_GetInqDevName---->MMIBT_AppendDeviceListItem---->GetDeviceListIcon这个函数对搜索得到的设备类型进行细化,最后有三种设备类型:HEADSET,HANFREE和PC,分别有已匹配和未匹配之分.
+参考FAQ: FAQ18764
+### 问题: NV中的WCDMA_arm_RFGPIO_config部分主要作用是什么？
+解决方案: WCDMA_arm_RFGPIO_config主要用于antenna switch控制,PA控制包含PA使能和增益控制设置.
+参考FAQ: FAQ18405
+### 问题: NV中WCDMA_DOWNloadparam部分的作用是什么？
+解决方案: WCDMA_DOWNloadparam中的参数设置主要包含:transceiver端口配置,温度补偿,电压补偿,Ts补偿,DCDC设置,HDET设置,PA增益切换点设置,初始化寄存器设置.
+参考FAQ: FAQ18411
+### 问题: RGB LCD数据线加的EMI filter能否用电容代替？
+解决方案: RGB LCD数据线优先推荐用EMI filter,如果布局合理,layout保护比较好的情况下可以考虑用电容替代EMI filter.
+参考FAQ: FAQ18396
+### 问题: 哪些在产品mk中定义的环境变量在Android.mk文件中可以被使用
+解决方案: 产品的mk文件,比如device/sprd/scx15_sp7715ea/scx15_sp7715eabase.mk这些文件中可以指定环境变量的值.但是这些文件中出现的环境变量并不都能在各个模块的Android.mk中被使用. Andoird在build/core/product.mk文件中对此项的编译规则做出规定 被包含在 _product_var_list 中的环境变量名才可以在产品mk文件被赋值且在模块的Android.mk文件中被正常使用,而其他环境变量如果在产品mk文件中被定义或者赋值,也只能在本文件内部使用.这是因为Android的makefile的实现,使得_product_var_list以外的环境变量如果在产品mk文件中定义,到了各个Android.mk中,其值往往是不确定的 需要在Android.mk中使用的环境变量,可以在Boardconfig.mk中定义
+参考FAQ: FAQ18378
+### 问题: 使用RGB LCD需要射频的影响？
+解决方案: 因为GSM带宽为200kHz,其灵敏度指标对噪声的干扰和固定频率的高次谐波干扰非常明显,所以RGB LCD在屏亮时对GSM的灵敏度有很大影响.
+参考FAQ: FAQ18394
+### 问题: 已插入T卡，为什么抓不到sysdump有效信息
+解决方案: 请检查MEM_TOTAL_SIZE宏定义的size是否正确.u-boot/property/sysdump.h中根据工程宏配置MEM_TOTAL_SIZE,如果和实际MCP DDR容量不匹配会发生即使插入T卡也会无法抓到sysdump有效信息的情况.例如7715GA工程默认4+2的MCP配置是256MB的RAM实际定义为0x10000000,更换为4+4的MCP配置需要相应修改MEM_TOTAL_SIZE为0x20000000;同样8830EC工程默认32+4的eMCP配置是512MB的RAM实际定义为0x20000000,如果更换为32+16的eMCP配置需要相应修改MEM_TOTAL_SIZE为0x40000000
+参考FAQ: FAQ18419
+### 问题: Audiotester中music各个mode针对哪些情况设置？
+解决方案: Audiotester中针对music的参数设置有四种mode 分别为 HeadSet:这个mode针对单耳机有效的时候起作用,如耳机播放音乐和FM耳机mode等 HeadFree:这个mode针对耳机和speaker同时输出的case起作用,例如插入耳机时候的来电铃声. HandSet:这个mode针对单听筒有效的时候起作用,如微信等使用听筒收听的信息 HandFree:这个mode针对单speaker播放的时候起作用,如speaker播放音乐
+参考FAQ: FAQ18427
+### 问题: VCHG网络上串100ohm的作用和影响？
+解决方案: VCHG网络上的100ohm电阻串接在充电connector充电管脚和芯片的VCHG管脚之间,主要用于提高芯片的防浪涌能力, 但有100ohm上有一定的压降导致OVP保护电压和实际设置有一定的差异. 例如: OVP保护电压设置为6.5V,实际OVP保护电压为6.8V
+参考FAQ: FAQ18431
+### 问题: Audio播放断续如何初步分析处理？
+解决方案: Audio断续问题,请先做如下两个实验 1.将slog关闭测试 2.将播放文件放在data分区测试 如果1 ok说明T卡限制,量产时候没有slog,应该不算真正问题 如果1不ok2ok的话,依然说明T卡是瓶颈,需要继续分析是否T卡问题或者系统瓶颈 如果1,2都不OK,说明是系统其他方面限制 问题提交时候可以将如上实验验证一下和并将信息反馈给我司测试人员.
+参考FAQ: FAQ18442
+### 问题: dolphin性能如何，CPU和DDR频率分别跑多少？
+解决方案: dolphin CPU是单核A7,最高跑1.2GHz或1GHz(根据工艺不同而定). dolphin主要使用LPDDR2,最高跑333MHz,降频省功耗时跑192MHz. dolphin性能比shark和tiger都低,比7710略高,比8810较高. dolphin 的CPU频率和DDR频率都不允许客户修改,硬件性能比较固定.
+参考FAQ: FAQ18554
+### 问题: 7715上如何打开视频电话功能
+解决方案: 1. 进入工程模式1 *#*#83781#*#* 2. 打开TELEPHONY标签下的"视频电话开关"选项 3. 重启手机,拨号界面即出现一个类似摄像头的图标,可以用于拨打视频电话 注:联通入库时,如果feature上注明了支持VT,则需要测试VT,如果注明不支持VT,则不需要测试该feature.
+参考FAQ: FAQ18636
+### 问题: SR3131 RX接口怎么配置HBAND，LBAND.
+解决方案: 通常来讲,以1G为门限,中心频率高于1G选择HBAND,低于1G选择LBAND. 对于WCDMA,因为band1与band2频率比较接近,所以BAND1与BAND2 不能选择紧邻的端口.
+参考FAQ: FAQ26924
+### 问题: 为什么工厂测试程序按HOME键无法退出
+解决方案: 因为工厂测试里需要进行按键测试,如果按HOME键会退出测试,将无法进行有效的按键测试. 所以目前将工厂测试里按HOME键退出的功能屏蔽了. 具体屏蔽是在PhoneWindowManager.java文件的interceptKeyBeforeDispatching接口里,如下语句: if (attrs != null && (null != attrs.packageName) && (attrs.packageName.startsWith("com.sprd.validationtools"))){ return 0; }
+参考FAQ: FAQ18647
+### 问题: TP触摸X触摸坐标不准确用户感知不好
+解决方案: 『发生原因』bugreport dump出的Touch Input Device信息,表明从kernel中获取到的TP ABS_MT_POSITION_X和ABS_MT_POSITION_Y相关信息中,其最大值都为1022,而surface width为540,height为960, 所以计算后相应的比例因子XScale: 0.528.YScale: 0.938,很明显在水平方向上,framework上报给界面的坐标值要明显小于实际滑动kernel上报的坐标值,相对来说,在垂直方向上差异不明显. [原因分析]:tp驱动代码中对ABS_MT_POSITION_X,ABS_MT_POSITION_Y参数信息设置有误. [解决方案]:更改TP的i2c_device的结构体中的ABS_MT_POSITION_X,ABS_MT_POSITION_Y最大值信息,与LCD 分辨率保持一致.
+参考FAQ: FAQ18724
+### 问题: user版本中预置的第三方应用为何在移动至SD卡会报错
+解决方案: user版本在编译过程会对system/preloadapp目录下的apk文件进行odex优化,系统在开机时检测到存在对应的odex文件,将不会再对apk文件进行dexopt操作,以此就不会在/data/dalvik-cache/目录下生成对应的.classes.dex,当移动应用程序到SD卡时需要将/data/dalvik-cache/目录下的文件也移到SD中,但此时并没有生成该文件,导致应用程序移动失败并出现点击应用程序意外停止的现象
+参考FAQ: FAQ19264
+### 问题: 如何理解cpu load average
+解决方案: 1. 什么是load average值 load是对系统处理任务多少的度量,简单的说就是是task队列的长度. load average就是一段时间(1分钟、5分钟、15分钟)内的平均Load. 2. 如何查看load average值 通过busybox top命令可以查看load average值. 三个值分别表示1分钟、5分钟、15分钟的平均数值. 3. 如何判断系统是否过载 当load average值小于cpu core的数,说明CPU负载没有过载. 当load average接近或大于cpu core的数,说明CPU负载较重了.
+参考FAQ: FAQ18867
+### 问题: 如何手动关闭/打开硬狗重启功能
+解决方案: 1. 通过engineering model界面修改(tshark2.3.5支持) App Settings --> Log Settings --> Slog UI --> HW watchdog, "选中"表示打开watchdog,"不选"表示关闭watchtog(默认). 2. 通过adb shell界面修改 使用adb shell(root权限)登录后,执行如下命令, 打开: echo 1 > /sys/module/sprd_wdt_sys/parameters/enabled 关闭: echo 0 > /sys/module/sprd_wdt_sys/parameters/enabled
+参考FAQ: FAQ18914
+### 问题: 如何掉锁屏界面导航栏上的相机图标？
+解决方案: android 4.4的锁屏界面默认在导航栏上有一个相机图标.如果需要去掉该图标,可按照下面的方式修改: 定位到frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarView.java中,搜索showCamera这个变量,将该变量的值设置为false,则不会显示camera图标.
+参考FAQ: FAQ32819
+### 问题: 4.4版本art打开后，无法开机。
+解决方案: 因为我们一些自有功能的修改,导致art开机失败,这个bug正在修正中.
+参考FAQ: FAQ19056
+### 问题: Java heap 设置问题
+解决方案: 有如下属性,对应用的heap size有影响. 应用: AndroidManifest.xml中设置属性:android:largeHeap 为true,则表明此应用是大内存模式,不设置或者设置为flase,是普通模式. 虚拟机环境,有如下属性影响,请按照需求调整. dalvik.vm.heapgrowthlimit 默认普通应用的heap 最大值. dalvik.vm.heapsize 大应用的heap size值.android:largeHeap 置位. dalvik.vm.heapstartsize 应用创建时,堆的初始化大小. 下面三个值,是虚拟机寄gc(内存回收)使用参数,请不要调整. dalvik.vm.heaptargetutilization dalvik.vm.heapminfree dalvik.vm.heapmaxfree
+参考FAQ: FAQ19057
+### 问题: rtsp流媒体如何更新时间戳？
+解决方案: rtsp流媒体时间戳更新有两种方式,一种是通过rtcp sr包更新,另一种方法是伪造时间戳: (1)通过rtcp sr包更新时间戳 终端接收到rtcp sr数据包后会对rtcp数据进行解析,并提取rtp-time和ntp-time回传到MyHandler.h中调用onTimeUpdate做时间戳更新,此时记下对应track的rtp锚时间和ntp锚时间,当所有track都有锚时间后则将音频/视频track上临时队列中的每个rtp数据打上时间戳,然后放入未解码队列,待后续提供给解码器 (2)伪造时间戳 有些服务器并不会发送rtcp sr包或发送的时间很晚,因此超时后终端会fake时间戳,rtp锚时间使用对应track上第一个rtp数据的rtp时间,ntp锚时间映射到0点,其余流程和sr更新时间戳相同.如果后续服务器来rtcp sr包后会修正时间戳
+参考FAQ: FAQ19090
+### 问题: 如何查看当前页面的详细布局
+解决方案: Android的SDK工具包中有一款叫hierarchyviewer的可视化调试工具,可以很方便地帮助开发者分析,设计,调试和调整UI界面.既可以调试模拟器也可已调试手机. 具体路径: window下路径:sdk/tools/hierarchyviewer.bat ubuntu下路径:sdk/tools/hierarchyviewer 启动命令: window下:tools目录下直接终端运行hierarchyviewer.bat ubuntu下:tools目录下终端输入:sh hierarchyviewer 打开模拟器或者连接手机,启动hierarchyviewer: 我们可以看到弹出界面并有三个按钮以及当前窗口的所有布局: 三个按钮: 1) Refresh:当手机或者模拟器页面改变时可以点击刷新 2) Load View Hierarchy : 可以查看你选中的布局的控件层次,我们主要就是看这个界面的布局结构. 3) Inspect Screenshot : 进入布局精确查看模式
+参考FAQ: FAQ19140
+### 问题: MocorDroid4.4_3.10 7715平台如何编译chipram目录下的代码，如何单独编译spl,fdl
+解决方案: MocorDroid4.4_3.10,7715代码,单独增加了一个chipram的文件夹. 此文件夹下放置了nand-fdl以及nand-spl相关的代码. 单独编译spl,fdl需要执行命令: make chipram 即可编译fdl,spl.
+参考FAQ: FAQ19423
+### 问题: 7730如何支持T卡热插拔功能
+解决方案: 首先硬件上要留有检测管脚,然后在pinmap中对该pin脚进行配置, 以EXTINTO0管脚 (GPIO71)为例,配置如下: {REG_PIN_EXTINT0, PIN_NULL, FUNC3, FUNC_WPU, SLP_WPU, DS_L1, SLP_IE, PIN_NULL, SLP_AP},
+参考FAQ: FAQ29664
+### 问题: 添加一个overlay的文件是否可以模块化编译
+解决方案: 在overlay目录下添加一个文件覆盖android原生的文件之后,还是可以模块化编译的.不过需要重新lunch project. 比如添加了一个MountService.java文件来覆盖android原生的MountService.java文件,这时我们需要 source build/envsetup.sh; lunch 24; //配置编译工程 然后再mmm -B frameworks/base/services/java/即可.
+参考FAQ: FAQ19456
+### 问题: 修改一个overlay下的文件是否可以模块化编译
+解决方案: 当直接修改一个overlay下的文件,模块化编译是会将overlay下的文件覆盖android原生的文件. 比如修改device/sprd/scx15_sp7715ea/overlay/frameworks/base/core/res/res/xml/storage_list.xml文件后, 可以直接mmm -B frameworks/base/core/res/即可将修改后的storage_list.xml包含进编译后的模块.
+参考FAQ: FAQ19459
+### 问题: 如果查看当前zram的使用状态
+解决方案: zram是用内存虚拟的磁盘交换区,这块磁盘又被用作虚拟内存,zram通过压缩算法扩大了内存的可使用空间,在调试内存相关的问题时,经常需要了解zram的状态 zram模块提供了一些文件节点用于自身使用状态的查看 可以在adb shell通过查看/dev/block/zram0/目录下的文件节点来获得这些信息,常用的包括 disksize (允许被压缩进zram的最大磁盘容量) orig_data_size(已经被压缩的部分压缩前的容量) compr_data_size(已经被压缩的部分压缩后所占的容量) zero_pages(zram中没有被使用的部分) mem_used_total(zram本身所消耗的内存,包括用于压缩的和用于自身管理的)
+参考FAQ: FAQ19463
+### 问题: 如何在代码中查看Android系统版本
+解决方案: 1. 可以在源代码中build\core\version_defaults.mk中查找PLATFORM_VERSION的值 2. 在编译过程中终端中会打印出来PLATFORM_VERSION字段的值
+参考FAQ: FAQ19520
+### 问题: 照片的EXIF信息
+解决方案: Exif是英文Exchangeable Image File(可交换图像文件)的缩写.Exif是一种图象文件格式,它的数据存储与JPEG格式是完全相同的.实际上Exif格式就是在JPEG格式头部插入了数码照片的信息,包括拍摄时的光圈、快门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、色彩编码、拍摄时录制的声音以及全球定位系统(GPS)、缩略图等.简单地说,Exif=JPEG+拍摄参数.因此,你可以利用任何可以查看JPEG文件的看图软件浏览Exif格式的照片,但并不是所有的图形程序都能处理Exif信息. EXIF 信息是镶嵌在 JPEG/TIFF 图像文件格式内的一组拍摄参数,主要包括摄影时的光圈、快门、ISO、时间等各种与当时摄影条件相关的讯息,相机品牌型号,色彩编码,拍摄时录制的声音以及全球定位系统(GPS)等信息.简单的说,它就好像是傻瓜相机的日期打印功能一样,只不过 EXIF 信息所记录的资讯更为详尽和完备.
+参考FAQ: FAQ19544
+### 问题: 7710 7715 mcu不接屏无法开机
+解决方案: 检查lcd驱动,例如nt35516 mcu, dev_id如果是SPRDFB_UNDEFINELCD_ID请修改成SPRDFB_MAIN_ID就可以开机了. struct panel_cfg lcd_nt35516 = { /* this panel may on both CS0/1 */ .dev_id = SPRDFB_UNDEFINELCD_ID, .lcd_id = 0x16, .lcd_name = "lcd_nt35516", .panel = &lcd_nt35516_spec, }; 因为dev_id设置为SPRDFB_UNDEFINELCD_ID时,驱动加载时该panel_spec会被挂到两个链表上,如果readid不能匹配成功,就会访问到非法内存引起panic,又因为显示驱动先于串口驱动加载所以看不到kernel log.
+参考FAQ: FAQ19573
+### 问题: 文件管理器中Slog如何使用
+解决方案: FileExplorer中的Slog是对系统android.util.Log的简单封装,提供Slog.i(tag, msg)/Slog.d(tag, msg)方法. 只是,还Slog还提供了Slog.i(msg)/Slog.d(msg)方法,用默认的TAG/"FileExplorer"; 也可以在FileExplorer的范围内通过Slog的开关,打开关闭是否打印信息: DBG变量控制 Slog.d()是否打印; NEEDINFO变量控制 Slog.i()是否打印.
+参考FAQ: FAQ19580
+### 问题: 电流源为何在低电流下不准
+解决方案: 展讯所有平台的电流源在最低的4档电流下会不准,想准的话需要提高电流.
+参考FAQ: FAQ19633
+### 问题: App获取存储卡路径的方法
+解决方案: 1. public File getExternalStorageDirectory() 函数可以返回存储卡路径 2. 当手机同时有TF卡与内部存储卡的时候,此时返回值就与我们设置的主卡相关联 3. init.board.rc的persist.storage.type的配置是2还是1决定我们设置的主卡; 1表示TF卡为主卡, 而2表示内部T卡为主卡; getExternalStorageDirectory()返回作为外部主卡的路径
+参考FAQ: FAQ19663
+### 问题: 如何让紧急号码通话记录不被记录到CallLog中
+解决方案: 目前我们平台紧急号码通话记录跟普通号码一样会被记录下来,这样在CallLog中可以看到.若不希望记录紧急号码通话记录,可做如下修改: 将Config.xml (packages\services\telephony\res\values)文件的 allow_emergency_numbers_in_call_log 的值改为false即可
+参考FAQ: FAQ19787
+### 问题: SC7715+SR2351+SR3131平台GPS功能测试工程命令
+解决方案: 目前,我司7715平台的GPS功能测试,采用GPS信号模拟器+手机软件APK的方式, GPS功能测试工程命令是:*#*#2266#*#*
+参考FAQ: FAQ19814
+### 问题: SC7715+SR2351平台是否支持北斗导航？
+解决方案: 目前我们SC7715+SR2351平台不支持国产北斗导航系统.
+参考FAQ: FAQ19830
+### 问题: 开机后SD卡已经准备好，但是视频播放器中仍然显示“没有可用视频”
+解决方案: 开机后,SD卡已经准备好,表示SD卡已经初始化完毕,文件系统可以正常使用.但是视频播放器中的视频列表是从系统数据库中读取信息的,media扫描是在后台运行的,需要一定的时间.所以如果开机后立即进入视频播放器,可能会显示"没有可用视频",请再等待一定的时间,视频文件的扫描时间和SD卡中视频文件的数量有关.
+参考FAQ: FAQ20171
+### 问题: 如何设置锁屏解锁的默认风格
+解决方案: Android4.4中,锁屏解锁的风格有三种,环形解锁,智能解锁,滑动解锁.可以通过锁屏设置应用进行设置 默认的解锁风格设置: 目录:vendor/sprd/UniverseUI/LockScreen/LockscreenSettings/src/com/spreadst/lockscreen 文件:Tools.java private static int DEFAULT_LOCKSCREEN = 0; 修改默认值即可. public static int getLockViewID(Context context) { return Settings.System.getInt(context.getContentResolver(), Constants.SYSTEM_SETTINGS_LOCKSTYLE, DEFAULT_LOCKSCREEN); }
+参考FAQ: FAQ19858
+### 问题: uboot如何打开交互式调试环境
+解决方案: 需求: 背光和屏作为手机项目中第一个需要调试的外围模块,调试手段却十分欠缺,只能打加入串口打印log,再编译烧录开机,非常麻烦,效率不高. 解决: 只需要三步,就可以拥有一个十分方便的uboot调试环境 1.在 cpu/arm/lib/board.c中 ,board_init_r的最后部分,注释掉 do_cboot()语句,不立即启用Linux 2.在uboot配置文件如sp7715ea.h,把BOOT_DELAY 0 改成BOOT_DELAY 5 3.启动手机,并在串口读秒的时候,敲入任何按键,就可以进入uboot shell.当然前提是,串口tx,rx都要焊上. 这样就可以自由查看和修改寄存器了,对于调试背光和LCD相当方便了,当然其它设备也是一样的. uboot shell 常用命令: mm 修改指定地址值的命令 mw 批量修改内存地址的值 md 　批量显示内存地址的值　
+参考FAQ: FAQ19869
+### 问题: CalDav简介
+解决方案: CalDAV是一个日历和日程安排的客户端/服务器协议,用于允许用户访问服务器上的日历数据,并与该服务器或其他服务器上的其他用户安排会议. 在CalDAV 访问协议已经由IETF标准化,并发布为RFC4791. 该CalDAV 日程协议已经由IETF标准化,并发布为RFC6638. 目前已知支持该协议的服务商有Google,Google为推进CalDAV协议的使用,已经停止支持通过Exchange同步日历.
+参考FAQ: FAQ19885
+### 问题: CardDav简介
+解决方案: CardDav是一个地址薄客户端/服务器协议,设计用来允许用户访问和共享服务器上的联系人数据. 该协议已经由IETF标准化,并且发布为RFC6352. 目前已知支持该协议的通讯录服务商有Google,Google为推进CardDav协议的使用,已经停止支持通过Exchange同步联系人.
+参考FAQ: FAQ19883
+### 问题: 为何QQ账户的电子邮件搜索功能异常
+解决方案: android4.4的Email不支持本地搜索功能,只支持远程服务器搜索,而目前QQ邮箱的imap服务器不支持远程搜索,所以出现异常.
+参考FAQ: FAQ19892
+### 问题: TASKANALYZER工具打点分析
+解决方案: 1. 原理 为了能够获取系统中状态的变化(如系统调度,中断,睡眠等),可以将各种事件发生时的时间及状态保存在数组中. TASKANALYZER 工具解析这个数组,将其以时间先后顺序打印出来,供分析. 2.分析 目前支持下列打点函数 TM_SendIdleRequest ------ 进入IDLE状态 TM_SendIrqRequest ------来中断,可以看到是哪个中断 TM_SendSleepRequest ------ 进入SLEEP TM_SendTaskRequest ------ 进入某TASK,可以看到TASK ID及TASK控件块地址 TM_SendTestPointRequest ------ 打点,可以看到两个参数信息 3.注意事项 如果发现点不够多,可以增加点的个数,但是内存有限时,可以尝试关闭以上部分函数,只将需要的点打出.
+参考FAQ: FAQ21016
+### 问题: 流媒体点播时seek操作如何实现？
+解决方案: (1)rtsp流媒体seek操作的执行过程:在不断开连接的情况下,通过rtsp协议先向服务器发送PAUSE命令,再向服务器发送PLAY命令,在PLAY请求中会携带播放开始时间 (2)http流媒体seek操作的执行过程:先关闭原有socket,然后重新发起tcp连接,连接建立后在向服务器发送GET请求时,Range字段会携带播放时间点,后续服务器就会根据此时间点返回数据
+参考FAQ: FAQ19928
+### 问题: gdb调试时出现Unhandled dwarf expression opcode 0xf3 如何解决。
+解决方案: 这个问题是由于gcc编译器版本较高,而gdb版本低于gcc导致,请升级gdb程序到最新的. 可以使用该工程下面的最新.或者从google网站下载最新的ndk程序.
+参考FAQ: FAQ19925
+### 问题: PC已经安装adb驱动，连接不同机器时经常要重新安装adb驱动，如何修改？
+解决方案: 将手机USB序列号写一致 修改 device/sprd/<board>/init.<board>.usb.rc -- write /sys/class/android_usb/android0/iSerial $ro.serialno + write /sys/class/android_usb/android0/iSerial 19761202 另外,修改序列号,对MTBF有和CTS影响外,暂无其它影响
+参考FAQ: FAQ43922
+### 问题: Andriod4.4,TP上已经有虚拟键，如何去掉LCD区域内的虚拟按键
+解决方案: 修改 device/sprd/<board>/system.prop 添加如下一句: qemu.hw.mainkeys=1 如果qemu.hw.mainkeys默认值是0,则修改为1
+参考FAQ: FAQ38701
+### 问题: 为何在原有项目文件中实例化新加文件中的类却无法识别？
+解决方案: 确保新加文件书写无误的情况下,请检查应用的Android.mk文件是否包含了新加文件. 如: xxx_dir := ../XXXX src_dirs := src $(xxx_dir)/src res_dirs := res $(xxx_dir)/res LOCAL_SRC_FILES := $(call all-java-files-under, $(src_dirs)) 则包含了指定目录下的所有文件; 若是: LOCAL_SRC_FILES := \ src/com/xxx/xxx/xxx/XXXXX.java \ 此种方式添加所包含文件,则需添加新加文件信息方能编译到该文件.
+参考FAQ: FAQ31415
+### 问题: 如何通过AT命令拨打和挂断电话？
+解决方案: 第1步:手机开机,插入USB,并检查设备端口有没有 第2步:打开ArmLogel工具,按照下列7个步骤进行配置工具选项 第3步:输入AT命令,检查AT通路是否ok 第4步:输入AT命令"ATD112;",拨打112 第5步:输入AT命令"ATH",挂断电话
+参考FAQ: FAQ19964
+### 问题: 为什么将SystemUI.apk push到手机后无效？
+解决方案: 从Android 4.4版本开始,SystemUI.apk所在路径发生了变化.Android 4.4之前该apk是在Sysyem/app/目录下的.而Android4.4开始该app的目录变更为System/priv-app/目录了. 因此在Android 4.4版本,push SystemUI 的正确方法为: adb push SyetemUI.apk System/priv-app/ adb reboot 这样push完等手机重启后就可以看到效果了.
+参考FAQ: FAQ19995
+### 问题: 为什么USB设定界面上勾选“记住我的选择”，下次插入USB，还是会弹出USB设定界面
+解决方案: 4.4版本上重新设计了USB设定界面上"记住我的选择"的功能,与之前的4.1,4.0等版本不一样. 勾选"记住我的选择"后,下次插入USB,会自动弹出USB设定界面,并自动勾选用户上一次记住的USB功能.
+参考FAQ: FAQ20074
+### 问题: 为什么APN设置界面，端口号可以不写或者写一个大于65535的值可以保存成功
+解决方案: android原生就没有对APN的端口号进行合法性的判断,对比机也是一样的表现. 并且APN的端口是否合法,也是和当前的运营商网关有关的, 比如中国移动的cmwap,端口不设或者设置成大于65535,都是没有问题,可以正常上网的.
+参考FAQ: FAQ20075
+### 问题: lcd唤醒时概率闪白屏，怎样延迟一点打开背光
+解决方案: 最简单的方法就是在背光驱动的lateresume方法中增加延时100ms,就可以达到这种效果. kernel/drivers/video/backlight/sprd_backlight.c 307 static void sprd_backlight_lateresume(struct early_suspend *h) 308 { msleep(100); //sleep for a while 309 sprdbl.suspend = 0; 310 sprdbl.bldev->ops->update_status(sprdbl.bldev); 311 PRINT_INFO("current brightness = %d\n", sprdbl.bldev->props.brightness); 312 }
+参考FAQ: FAQ20845
+### 问题: 用联通的3G SIM卡上网，在上网过程中状态栏上没有H网段图标的出现
+解决方案: 需要在对应的工程配置中检查cucc运营商的配置是否添加,示例: --- a/scx15_sp7715xx/scx15_sp7715xxcuccspecAplus_UUI.mk +++ b/scx15_sp7715xx/scx15_sp7715xxcuccspecAplus_UUI.mk @@ -15,7 +15,8 @@ $(call inherit-product, vendor/sprd/partner/shark/bluetooth/device-shark-bt.mk) PRODUCT_PROPERTY_OVERRIDES += \ persist.sys.support.vt=false \ - persist.surpport.50ksearch=0 + persist.surpport.50ksearch=0 \ + ro.operator=cucc
+参考FAQ: FAQ20160
+### 问题: 手机中有多条通话记录，上下滑动时，通话时间和SIM信息瞬间消失
+解决方案: 平台为优化通话记录列表的滑动速度,对列表的显示做了两点修改: 1.调整了滑动过程数据加载机制,在滑动之后才会重新显示最终的通话数据 2.在滑动的过程中不显示呼叫时间和SIM信息
+参考FAQ: FAQ20180
+### 问题: 如何设置背光晚一些打开
+解决方案: 可以修改背光驱动的lateresume方法稍微延迟打开背光. kernel/drivers/video/backlight/sprd_backlight.c static void sprd_backlight_lateresume(struct early_suspend *h) { msleep(100); //sleep for a while ... ... }
+参考FAQ: FAQ20197
+### 问题: sc7715工程如何连mobiletester
+解决方案: 1. 打开对应版本MobileTester工具,端口(port)选择是USB,下一个选项(chip)一定要选WCDMA,Mode选项根据使用情况选择,一般选WCDMA Cal Mode; 2. 点击Connect,按钮会变成Disconnect,工具下面LOG框,会显示Please connect the mobile,就可以连接USB从电脑到手机,然后再给手机上电;等待一下,连接成功时,LOG框里会有Connect mobile success提示; 3. 正常连接时,电脑上通过设备管理器,可以看到有一个USB转串口;
+参考FAQ: FAQ20256
+### 问题: 如何查看进程状态
+解决方案: adb shell登录系统后,可以通过ps命令或top命令来查看进程状态. Android上进程有5种状态: 1. 运行<R>(正在运行或在运行队列中等待) 2. 中断<S>(休眠中, 受阻, 在等待某个条件的形成或接受到信号) 3. 不可中断<D>(休眠中,收到信号不唤醒) 4. 僵死<Z>(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放) 5. 停止<T>(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运行运行)
+参考FAQ: FAQ20213
+### 问题: wifi 2.4G频段信道数以及各信道的频率
+解决方案: wifi在2.4G频段共有14个信道,各信道与频率的关系如下表所示 注意在某些国家有些信道是被限制不允许使用的 Channel Number Lower Frequency MHz Center Frequency MHz Upper Frequency MHz 1 2401 2412 2423 2 2404 2417 2428 3 2411 2422 2433 4 2416 2427 2438 5 2421 2432 2443 6 2426 2437 2448 7 2431 2442 2453 8 2436 2447 2458 9 2441 2452 2463 10 2451 2457 2468 11 2451 2462 2473 12 2456 2467 2478 13 2461 2472 2483 14 2473 2484 2495
+参考FAQ: FAQ20449
+### 问题: 如何读取7715平台GPU频率
+解决方案: 现在的cpu和gpu都能根据负载来调节频率,自动降低功耗.初始频率就是默认频率.而在需要提升核心频率时对提升显示性能比较明显.对于软件人员在测试GPU功耗/软件调试验证GPU频率时通过在线读取GPU的频率对其判断验证! 使用命令读取GPU寄存器相应位值确定GPU频率: 在terminal输入 adb root adb remount //必须获取root权限才能执行lookat 命令 adb shell lookat 0x60100004 // bit0-bit1:时钟源 4个模式: 0为208MHz 1为256MHz 2为300MHz 3为312MHz // bit11 - bit0 clock source: 1 for 4MHzbit3-bit2: frequency division频率系数 bit3bit2 值 为 0 时,系数为零时就是1
+参考FAQ: FAQ20281
+### 问题: 为什么开启辅助功能快捷方式后，进行快捷操作无反应？
+解决方案: 辅助功能快捷方式是用于开启辅助功能的快捷操作. 需要安装例如google的talkback应用或者第三方的有屏幕阅读功能的语音助手,在辅助功能的服务菜单里会生成所安装的辅助功能信息后,此时该快捷操作才能生效.
+参考FAQ: FAQ43905
+### 问题: SC7715上MCU屏刷新慢
+解决方案: 注意有个容易疏漏的地方:在具体lcd驱动panel_spec结构体中需定义fps为60,否则会出现该问题.
+参考FAQ: FAQ30307
+### 问题: 为何有时候连续输错图形密码已经远大于5次了才会提示用户“已连续输错密码5次，请稍后再试”？
+解决方案: Android平台的图形解锁默认是连续输错5次时,给用户提示"已连续输错密码5次,请稍后再试".但有时候会发现连续输入错误图形密码次数已经远大于5次了,才会提示用户"已连续输错密码5次,请稍后再试". 这是由于设置图形密码时,必须连接大于或者等于4个点才有效.因此在图形解锁界面,也同样需要连接大于等于4个点,才算一次有效输入.如果某次连接的点小于4个,则该次输入是属于无效输入.只有有效输入才会被统计进去.这就是为何有时候输入错误远大于5次才会提示用户请稍后再试的原因,因为这里面只有5次属于有效输入,其他的都是小于4个点的无效输入.
+参考FAQ: FAQ31019
+### 问题: 如何实时读写android的系统属性
+解决方案: 可以通过getprop/setprop来实时读写Android的系统属性 使用时需要先通过adb shell连接手机 getprop会列出当前系统中被设置过的所有属性,也可以通过getprop [propname]的方式读取具体某一条属性,比如 getprop ro.harware 会输出当前的硬件版本 srtprop的用法是 setprop [propname] [value] ,比如 setprop net.hostname sprdhost 可以将手机的网络名改为 sprdhost
+参考FAQ: FAQ20330
+### 问题: 播放音乐暂停后按home键返回，此时调整音量还是调整的音乐的音量
+解决方案: 调节音量时会通过getActiveStreamType获取当前活动的流类型,Android4.4平台考虑到music流上层停止播放后,底层有可能数据还没有消耗完,这期间的音量调节应该还是调节music的音量,所以添加了5秒的延时,即上层停止/暂停播放后的5秒内调节音量仍然调节music流类型的音量.其实一般情况下底层数据的消耗用不了那么长时间,可根据需求适当减小延迟时间. 宏定义为DEFAULT_STREAM_TYPE_OVERRIDE_DELAY_MS(AudioService.java)
+参考FAQ: FAQ20358
+### 问题: 在SD卡上ringtones目录下放入音乐，为何该音乐会出现在系统来电铃声列表里
+解决方案: 如果音乐放入SD卡上的ringtones目录,则在媒体扫描阶段,该音乐就会被认为是系统来电铃声. 因此该音乐会出现在系统来电铃声列表里. 同理,SD卡上的notifications目录中放入的音乐会被认为是系统通知铃声, alarms目录下放入的音乐会被认为是系统闹钟铃声.
+参考FAQ: FAQ31013
+### 问题: 常见耳机类型有哪些和如何判定是否支持？
+解决方案: 常见耳机类型有两种,一种是欧标,即我国广泛采用的标准,另一种是北美标准,苹果小米等采用. 两者的区别在于耳机的分段不同,通常耳机有三段和四段,三段耳机,两者一致,自耳机插头起,分别为左声道,右声道和地 四段耳机在三段的基础上增加了MIC,欧标的耳机的分段顺序为:左,右,MIC和地,美标为左,右,地和MIC 判断是否支持的时候,可以check硬件是否有switcher来转换"MIC"和地,如果没有则仅支持一种.
+参考FAQ: FAQ20362
+### 问题: 修改照片的EXIF中“照相机型号”，“照相机制造商“等信息的方法
+解决方案: 修改路径 vendor/sprd/open-source/libs/libcamera/sc8830/src/cmr_oem.c 按客户的需求修改如下对应项即可 #define EXIF_DEF_MAKER "Spreadtrum" #define EXIF_DEF_MODEL "spxxxx" const char image_desc[] = "Exif_JPEG_420"; /* const char image_make[] = "Spreadtrum"; */ /*the value will be read from system property*/ const char copyright[] = "Copyright,Spreadtrum,2011"; /* const char model[] = "SmartPhone"; */ /*the value will be read from system property*/
+参考FAQ: FAQ20399
+### 问题: 摄像机界面切换高画质到低画质，预览界面画质变差
+解决方案: 摄像机界面中的"高画质"和"低画质"分别对应高分辨率和低分辨率,并且录像的预览分辨率是与实际录制的数据源一致的.故在设定低分辨率录像时,预览的分辨率也降低了,相应也要变模糊一些,是正常的一种应用,无需解决.
+参考FAQ: FAQ20424
+### 问题: 世界上各地区对于wifi 2.4G频段可用信道的限制
+解决方案: wifi 2.4G 频段共有14个信道,对于这些信道,世界上各地区的可用范围限制大致如下图所示 Channel Number Europe (ETSI) North America (FCC) Japan 1 ✔ ✔ ✔ 2 ✔ ✔ ✔ 3 ✔ ✔ ✔ 4 ✔ ✔ ✔ 5 ✔ ✔ ✔ 6 ✔ ✔ ✔ 7 ✔ ✔ ✔ 8 ✔ ✔ ✔ 9 ✔ ✔ ✔ 10 ✔ ✔ ✔ 11 ✔ ✔ ✔ 12 ✔ No ✔ 13 ✔ No ✔ 14 No No 802.11b only 这些是一个概况,还有一些国家有更加特殊的规定,如在欧洲范围内 法国规定使用10-13这4个信道,而西班牙规定使用10-11这2个信道 另外以色列规定使用3-9信道
+参考FAQ: FAQ20463
+### 问题: 音效中低音增强和环绕声无法调节
+解决方案: 这些效果为耳机效果,插入耳机才能使用.需要插入耳机验证.
+参考FAQ: FAQ20460
+### 问题: 为何android4.4的Email附件保存后找不到？
+解决方案: android4.4的附件处理和android4.4之前的版本有了很大的变动, android4.4 之前版本的email下载附件会到DownloadProvider中去处理,可以选择下载的路径,文件名与附件名一致. android4.4 email增加了对用户权限的保护,下载附件在Email内部实现, 将文件下载到data区 email数据库下的指定文件夹中,下载下来的文件名称是以数字命名的,与原附件名称不一致, 并且在数据库中将该文件进行绑定, 指定文件的原始名称,mimetype等. 在email中可以对文件进行正常的查看,分享,转发等操作. 但用户在文件管理器中找不到该文件, 也无法在email app之外对该文件进行操作. p.s imap类型的账户在sd卡存在的情况下,可以保存附件到sd卡.
+参考FAQ: FAQ20646
+### 问题: 7715平台上怎样验证WiFi Performance
+解决方案: 我司会给出WIFI性能的测试报告,部分内容如下: 205# ini文件里11g功率控制字修改为24 11g功率控制字怎么修改呢? 4.4分支最新增加的与WIFI相关的文件,如下: vendor/sprd/open-source/res/productinfo/scx35_sc6815gaplus_connectivity_configure.ini 找到如下语句: _11g_tx_power_dr0 = 32, 96, 96 #(6/9M) 32就是11g功率控制字.
+参考FAQ: FAQ27005
+### 问题: ActionBar中三杠图标显示不全
+解决方案: 用三杠的伸缩表示侧边栏是否已显示:当侧栏出现时三杠伸长,隐藏时三杠缩短.
+参考FAQ: FAQ20681
+### 问题: 射频PA VBAT走线需要注意的地方
+解决方案: 射频PA电源VBAT走线需要完全独立,不能有任何分支,最好从电池的正级直接引过来,否则调试的时候电源的干扰就很不确定,给射频性能带来不利影响
+参考FAQ: FAQ20733
+### 问题: 如何在线修改GPU的debug_level方便打印log
+解决方案: user_debug版本中关于GPU驱动部分的log都用leve等级定义,为了屏蔽多余的log,驱动中大部分log等级为设置为3. 而mali_debug_level默认为2,只有高于此level的log才会打印出来. 可以通过终端进手机把debug_level动态修改为3,这样需要的log便能打印出来. 按下面步骤: adb shell echo 3 > /sys/module/mali/parameters/mali_debug_level 重启之后,上面修改失效.
+参考FAQ: FAQ20860
+### 问题: mpeg4视频流中如何区分I帧，P帧和B帧？
+解决方案: mpeg4的每一个视频帧开头都是固定的,前四个字节十六进制分别为:00 00 01 b6,而第五个字节的高两位可用来判断视频帧类型: 00: I Frame 01: P Frame 10: B Frame 例如,以下三个视频帧以16进制表示: 00 00 01 b6 10 00 18 5e 61 41 b7 f9 b6... 00 00 01 b6 57 53 18 08 a7 bd ef 7a 7b... 00 00 01 b6 96 88 99 06 54 34 78 90 98... 看上面三个视频帧各自的第五个字节: 0x10 -> 0001 0000 -> 高两位为00,I Frame 0x57 -> 0101 0111 -> 高两位为01,P Frame 0x96 -> 1001 0110 -> 高两位为10,B Frame
+参考FAQ: FAQ20882
+### 问题: 7715平台双MIC设计中，副MIC摆放可以放板边吗？
+解决方案: 双MIC设计中,AUXMIC不适合放在PCB板边缘位置
+参考FAQ: FAQ20990
+### 问题: 4.4闹钟铃声修改会修改闹钟默认铃声
+解决方案: 步骤: 将闹钟铃声设置为系统其他铃声(静音除外)或歌曲,再设置几个闹钟,后来设置的闹钟铃声默认为上一个设置的闹钟的铃声. 原因分析: 由于在设置闹钟时,如果修改铃声,会同时也去修改默认的铃声,所以会出现后设置的闹钟跟随前一个修改的闹钟铃声改变而改变.(此为google原生设计).
+参考FAQ: FAQ20893
+### 问题: NAND Flash 和 eMMC 的简单区别
+解决方案: 1、NAND Flash 是一种存储介质,要在上面读写数据,外部要加主控和电路设计. 2、eMMC是NAND flash+主控IC ,对外的接口协议与SD、TF卡一样;对厂家而言简化了电路设计,降低了成本. 3、使用emmc的好处是,除了得到大容量的空间(这一点,只用NAND FLASH多堆叠也可以做到),还有就是emmc可以管理NAND (坏块处理,ECC,FFS)等.
+参考FAQ: FAQ20932
+### 问题: 什么是蓝牙EDR,
+解决方案: 蓝牙EDR是蓝牙增强速率(Enhanced Data Rate)的英文缩写,其特色是大大提高了蓝牙技术的数据传输速率,达到了2.1Mbps ,是目前蓝牙技术的三倍.因此除了可获得更稳定的音频流传送和更低的耗电量之外,还可充分利用带宽优势同时连接多个蓝牙设备.
+参考FAQ: FAQ20937
+### 问题: 如何启动和停止在init.rc中声明的守护进程
+解决方案: 如果在init.rc中声明的守护进程默认是disable状态的,那么可以通过如下的方法来启动和停止它: 启动:property_set("ctl.start","demonname"); 停止: property_set("ctl.stop","demonname");
+参考FAQ: FAQ21030
+### 问题: 如何获取init.rc中声明的守护进程的运行状态
+解决方案: 假设守护进程的名字叫demonx 那么如下代码即可: void is_service_running() { char running[PROP_VALUE_MAX]; property_get("init.svc.demonx", running); return (!strcmp(adb_enabled, "running")); } JAVA的代码也类似. 如果是在4.4上,上层还可以使用接口: SystemService.isRunning("demonx"); 或者SystemService.getState(); 这些方法的原理就是init在处理service_start和service_stop的时候,会写入"init.svc.进程名字"这个属性的状态;
+参考FAQ: FAQ21037
+### 问题: 视频播放过程中来闹钟提醒时，只有振动没有闹钟提醒界面
+解决方案: 步骤:设置一个闹铃,进入视频播放器播放视频. 现象:闹铃时间到只振动了一下,不会弹出闹钟界面. [分析]这个测试现象是专门为了满足流媒体播放和闹钟并发的入库测试case要求做的修改,在流媒体播放时如果弹出闹钟提醒界面,会遮挡流媒体的播放,所以修改为振动提醒用户,在流媒体播放结束时,会弹出闹钟提醒界面,该测试结果是符合入库case要求的,这里把流媒体播放和本地视频播放做了一个统一:即在流媒体播放和视频播放时,如果来闹钟提醒,都是振动提示,在视频播放结束或者流媒体播放结束时才会弹出闹钟提醒界面,所以以上测试现象属于正常现象.
+参考FAQ: FAQ21111
+### 问题: 如何理解swappiness
+解决方案: 1. swappiness含义 swappiness是一个内核参数,其描述了系统对swap空间的使用倾向,默认值为60. swappiness的值越大表示越倾向于使用swap空间,越小表示优先使用系统内存. 2. 查看与修改swappiness 查看命令: #cat /proc/sys/vm/swappiness 修改命令: #echo 60 > /proc/sys/vm/swappiness
+参考FAQ: FAQ21171
+### 问题: android:configChanges中单独添加locale，切换语言后Activity依旧重启
+解决方案: AndroidManifest.xml中配置了configChanges locale属性 android:configChanges="locale" 之后在不退出应用的情况下切换到Settings里切换语言,发现该Activity还是重启了. 原因是android4.2增加了一个layoutDirection属性,当改变语言设置后,该属性也会成newConfig中的一个mask位.所以ActivityManagerService(实际在ActivityStack)在决定是否重启Activity的时候总是判断为重启. 需要在android:configChanges 中同时添加locale和layoutDirection. android:configChanges="locale|layoutDirection" 切换语言后Activity就不会重启.
+参考FAQ: FAQ21233
+### 问题: 恢复出厂设置后时间出现异常值怎么办？
+解决方案: 修改bootable/recovery/recovery.c 增加下面函数,然后在恢复出厂设置时候调用即可, 就是直接写死到特定值,比如:2014-1-1 static void reset_rtc_time(void) { struct tm tm; int fd; tm.tm_sec = 0; tm.tm_min = 0; tm.tm_hour = 0; tm.tm_mday = 1; tm.tm_mon = 0; tm.tm_year = 2014-1900;// reset time to 2012-01-01 0:0:0 fd = open("/dev/rtc0", O_WRONLY); if (fd != -1) { ioctl(fd, RTC_SET_TIME, &tm); close(fd); } }
+参考FAQ: FAQ29658
+### 问题: 如何测试TP的像素偏移值？
+解决方案: 1. 正常开机; 2. 使用机械手选定手机屏幕中心,左上角,右下角,左上角,右上角的固定坐标点,使用Multiouch visible Test软件记录 每次点击的x,y坐标值;每项测试次数20次; 3. 测试指标未达标像素偏移量大于1.5;偏移量小于1.5通过指标; 4. TP如果测试不通过,请联系TP厂商更新其固件程序,只有固件能够修改其像素偏移值.
+参考FAQ: FAQ29654
+### 问题: 缩放手势监听器何时开始反馈缩放比例值？
+解决方案: frameworks\base\core\res\res\values\Config.xml中的config_minScalingSpan,用户在做两点滑动时,只有当用户滑动的两点距离大于或等于config_minScalingSpan时,缩放手势才会开始.并向应用层反馈缩放比例值.
+参考FAQ: FAQ21242
+### 问题: 手机当做U盘，在电脑上看到可用空间为0，但无法拷贝文件
+解决方案: 由于MocroDroid4.1_3.4起MEM的分区信息由下载工具中工程配置文件SCXXXX.XML定义,当下载时EMMC中没有分区信息或分区信息与当前下载分区不一致时,工具会重新下载分区信息并写入EMMC.这个问题是用工具下载新软件pac包时没有将分区分配好导致,软件升级时其分区信息将可能发生变化.可以通过用下载工具加载对应版本的pac包,然后在如下的目录下获取到与该版本匹配的对应平台XXXX.xml表: C:\Documents and Settings\XXXXX\Local Settings\Temp\ _DownloadFiles454188609\ 使用该xml文件来下载打包自己同版本编译出来的软件,即可解决该问题.
+参考FAQ: FAQ29663
+### 问题: android4.4 如何查看GPU mali的当前频率
+解决方案: 有时用户使用lookat工具向GPU的寄存器写入数值后想查看更改是否有效,此时可以通过sysfile接口查询. 1.sudo adb shell 2.cat /sys/module/mali/parameters/gpu_cur_freq
+参考FAQ: FAQ21291
+### 问题: 如何确认进程加载了哪些动态库
+解决方案: 通过读取进程的map可以确认进程加载了哪些动态库 adb shell后先通过ps获得进程的pid 然后通过 cat /proc/<PID>/maps 读出 在很多native问题相关的分析时,会需要这些信息
+参考FAQ: FAQ21369

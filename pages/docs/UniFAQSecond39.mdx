@@ -1,0 +1,475 @@
+### 问题: dm-verity报错重启问题的ddr方向调试
+解决方案: 1.当机器出现异常重启,但现象为重启后能正常开机; 2.ylog中显示reboot: Restarting system with command 'dm-verity device corrupted; 3.通过对比回读镜像,super以及vbmeta中各个分区对比结果完全一致. 当满足以上三点条件时,机器异常重启的怀疑方向一般与ddr跳变相关,一般是数据加载到ddr或cpu获取到数据时出错,需要排查CPU/DDR/硬件上的单体颗粒异常 测试方法: 1.ddr降频测试(以UMS9230为例): /bsp/bootloader/chipram/include/configs/ums9230_1h10.h #ifdef DDR_SCAN_ENABLE #define CLK_DDR_FREQ 1866000000 #else - #define CLK_DDR_FREQ 1024000000
+完整回答请参考FAQ: FAQ202274988
+### 问题: UMS9117平台APN配置没问题，APN显示不出来
+解决方案: 当该APN为所在区间最后一个,且当前MCC只有这一个APN时,IsSamePLMNExistStill函数代码有误,导致运行不到SetDefaultNetworkAccount函数,即不会进行接下来的保存APN操作,导致最终要显示的APN列表为空,应修改IsSamePLMNExistStill函数. 将函数: LOCAL BOOLEAN IsSamePLMNItemExistStill(MMICONNECTION_RES_INFO_T *conn_res, uint32 index) { SCI_TRACE_LOW("IsSamePLMNItemExistStill enter, index = %d, cur_mcc=%d, cur_mnc=%d" , index, conn_res->res_item_ptr[index].mcc, conn_res->res_item_ptr[ind
+完整回答请参考FAQ: FAQ202274991
+### 问题: user版本打开串口和adb
+解决方案: diff --git a/adb/Android.mk b/adb/Android.mk old mode 100644 new mode 100755 index ece0645..4057e37 --- a/adb/Android.mk +++ b/adb/Android.mk @@ -350,9 +350,9 @@ -D_GNU_SOURCE \ -Wno-deprecated-declarations \ -LOCAL_CFLAGS += -DALLOW_ADBD_NO_AUTH=$(if $(filter userdebug eng,$(TARGET_BUILD_VARIANT)),1,0) +LOCAL_CFLAGS += -DALLOW_ADBD_NO_AUTH=$(if $(filter user userdebug eng,$(TARGET_BUILD_VARIANT))
+完整回答请参考FAQ: FAQ202274999
+### 问题: 客制化回铃音示例说明
+解决方案: 主要调用函数 1. 本地铃音播放函数: LOCAL void PlayLocalNetRing(uint8 timer_id, uint32 param) 2. 铃音实现函数: MMISRVAUD_PlayToneEx( uint16 pri, MMISRVAUD_TYPE_E tone_type, uint32 tone_id, unit32 duration, uint32 freq) uint16 pri 回铃音需使用MMISRVAUD_PRI_HIGH MMISRVAUD_TYPE_E tone_type 单频回铃音通常使用MMISRVAUD_TYPE_TONE_GENERIC 多频回铃音通常使用MMISRVAUD_TYPE_TONE_CUSTOM (客户提供正确的铃音示例嘟声类似颤音) uint32 tone_id 只针对tone type为MMISRVAUD_TYPE_TONE
+完整回答请参考FAQ: FAQ202275021
+### 问题: 如何快速判断LCD显示效果异常
+解决方案: 本文聚焦于显示效果带来的显示异常,区别于非PQ导致的显示异常(如白屏、闪屏、黑屏等). Debug方法如下: 1、 adb录屏、截图是正常的,而实际显示效果与之不符,极有可能是PQ导致. 2、 使用adb指令在线调试 2.1对不同的芯片关闭pq功能: adb root adb remount adb shell 312: lookat –s 0x00 0x20300200 //关闭pq 9863A: lookat -s 0x00 0x63000200 512: lookat -s 0x00 0x20300200 && lookat -s 0x05 0x20300004 //关闭pq 并更新 reg 9230: lookat -s 0x00 0x31000200 && lookat -s 0x05 0x31000004 9620: lookat -s 0x00 0x31000500 && l
+完整回答请参考FAQ: FAQ202275027
+### 问题: APP如何保存参数至可备份的分区里？
+解决方案: 如果需要将参数通过APP保存至备份分区(ota升级、恢复出厂设置时保持不变),可以将参数保存到Prodnv分区里,如下为Prodnv的相关信息,请参考: 一、Prodnv操作流程: 1、访问/Prodnv目录(挂载目录:/mnt/vendor). 2、使用open接口在该路径下新建或访问文件. 3、使用read/write接口访问文件内容. 4、使用close接口关闭,并释放资源. 5、APP访问需要system权限. 二、Prodnv特点: 1、ota升级,默认该分区会备份 2、恢复出厂设置,该分区默认会备份 2、通过UpgradeDownload或ResearchDownload下载,如果选择备份(默认值为选择备份),则该分区会备份,如果选择不备份,则会清除 3、FactoryDownload是产线下载工具,默认会清除该分区数据 三、APP Demo: import com.sprd.
+完整回答请参考FAQ: FAQ202275033
+### 问题: 设备进recovery问题如何抓log
+解决方案: 设备出现开机进recovery模式,一般需要: 1)进recovery界面拍照片 原因:这里一般会显示进recovery界面的原因. 如果是RescueParty字样,说明进紧急救援模式,需要转app 稳定性继续分析; 如果是显示诸如init_user0_failed字样,则说明是data分区挂载失败,需要转文件系统模块继续分析. 2)进recovery后可点击Try again看是否能恢复,还是依然会进recovery. 点Try again前,请接好串口log,抓个loglevel为7的串口log. 原因:try again后又进recovery,可以从串口log中看到进recovery过程的uboot和kernel log,进而得到一些信息. 3)可以回读下cache分区. 原因:针对init_user0_failed这种如果版本不是那么旧,kernel中有在cache下保存进rec
+完整回答请参考FAQ: FAQ202275038
+### 问题: A11中如何控制生物识别成功后的振动
+解决方案: A11中如何控制生物识别成功后的振动,比如移除振动(即识别成功后不振动)、只允许指纹或人脸识别成功后振动? 生物识别成功后触发振动的代码如下: frameworks/base/services/core/java/com/android/server/biometrics/AuthenticationClient.java
+...
+           if (authenticated) {
+                // SafetyNet logging for b/159249069 if constraint is violated.
+                if (isBackgroundAuth) {
+                    final ApplicationInfo appInfo = getContext().getApplicat
+完整回答请参考FAQ: FAQ202275039
+### 问题: FOTA升级动画如何调整字体，有没有大号的字体
+解决方案: bootloader 的字型 data 是在 s_ascii_8X16 @ boot_lcd.c , 目前是8x16 (宽:8 高:16) 的单色字库 , 目前有放了96个字 , 从 0x20 开始往下算起96 个字 , 范例如下 : LOCAL const uint8 s_ascii_8X16[96 * 16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x00, 0x00, 0x18, 0x18, 0x00, 0x00, <== 这个是 ! 1个byte 代表8个pixel , 16个byte 代表一个字 , 可
+完整回答请参考FAQ: FAQ202275046
+### 问题: A12中常用按键策略配置
+解决方案: 常用按键(包括实体键和虚拟键)都有对应的策略,不同的配置可以实现不同的功能,相关配置在 frameworks/base/core/res/res/values/config.xml 中实现.
+
+
+
+
+一 、power键
+
+1.1 长按power键
+
+长按power键可以配置如下功能,一般配置为1,即长按power弹出Global actions menu.
+
+
+
+
+959   <!-- Control the behavior when the user long presses the power button.
+
+960       0 - Nothing
+
+961       1 - Global actions menu
+
+962       2 - Power off (with confirmation)
+
+963       3 -
+完整回答请参考FAQ: FAQ202275053
+### 问题: A12中如何根据log判断当前statusbar、navigationbar禁用情况
+解决方案: 在log中可通过如下信息判断当前禁用情况,其中小写字母表示当前可用,大写字母表示当前禁用.比如这里表示当前Home、Recent键被禁用:
+
+2022-06-27 18:16:24.678 1458-1458/com.android.systemui D/StatusBar: disable<e i a s b H R c s > disable2<q i n >
+
+
+
+
+感叹号"!"说明禁用情况刚刚发生变化,比如这里Home、Recent键刚刚被解除禁用:
+
+2022-06-27 18:16:24.752 1458-1458/com.android.systemui D/StatusBar: disable<e i a s b h!r!c s > disable2<q i n >
+
+
+
+
+下面的log里全是小写字母,说明当前没有被禁用的控件:
+
+2022-
+完整回答请参考FAQ: FAQ202275055
+### 问题: zram 和 zram writeback 的大小配置
+解决方案: android version >= 10 1. non-go 版本 device/sprd/mpool/module/partition/mversion/full/fstab.enableswap #ZRAM /dev/block/zram0 none swap defaults zramsize=62%,zram_loopback_path=/data/per_boot/zram_swap,zram_backingdev_size=150M,zram_backing_dev_path=/dev/block/loop 2. go 版本 a. DDR = 2GB 路径: device/sprd/mpool/module/partition/mversion/go/fstab.enableswap_2g #ZRAM /dev/block/zram0 none swap defaults z
+完整回答请参考FAQ: FAQ202275061
+### 问题: 怎样限制LInux Kernel 获取的物理内存的大小
+解决方案: 1. 通过kernel 里的dts文件中的 bootargs 修改,示例代码如下: bootargs= "xxx mem=2048MB" 验证: adb shell cat /proc/meminfo | grep MemTotal 2. 直接修改ddr 获取到的ddr的大小,在下面的文件里添加下面的宏定义(以udx710为例): 路径: chipram/ddr/ddr_init/init/ddrc/r1p1/ddrc_r1p1.c(android9.0) #define CONFIG_CHIPRAM_DDR_CUSTOMIZE 0x80000000 //2GB ,大小可以修改为需要设置的 路径:bsp/bootloader/ chipram/ddr/ddr_init/init/ddrc/r1p1/ddrc_r1p1.c (android version > 9.0) #define CO
+完整回答请参考FAQ: FAQ202275062
+### 问题: Android4.4版本由于default apn隐藏导致无法上网
+解决方案: 1.如何判断无法上网是由于default apn隐藏导致的?
+可通过搜索关键字allapn,确认log打印的所有apn中是否包含default apn,如果有apn打印,但是没有default apn打印,则大概率是由于default apn隐藏导致的无法上网;如果有default apn打印,还是不能上网可按照模块正常提交CQ处理.
+2.如果确认由于default apn隐藏导致无法上网应如何解决?
+先确认下工程模式里面loadapn开关的状态,如果是开的话,关掉然后重启,看下问题是否复现;如果是关着的,插别的卡试试,如果问题仍未解决,可按照模块提交CQ,并提供对应测试ylog.
+3.loadapn相关代码逻辑如下所示:
+/frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnectio
+完整回答请参考FAQ: FAQ202275069
+### 问题: 虚拟运营商与实体运营商的apn匹配逻辑
+解决方案: 如下为apn匹配相关代码,从代码可知,平台apn匹配逻辑为:先匹配虚拟运营商apn,如果不满足再匹配实体运营商apn.
+注意:如果插入虚拟运营商的卡,也配置了对应虚拟运营商的apn,但是只配置了一部分,例如没有配置用于上网的default类型apn,则会出现不能上网的问题.根据代码逻辑,只要配置了虚拟运营商apn就会匹配虚拟运营商apn,这时即使配置了实体运营商对应的default类型apn也是不会走该部分逻辑的.
+/packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyProvider.java
+
+4038          // Separate the result into MatrixCursor
+4039          while (ret.moveToN
+完整回答请参考FAQ: FAQ202275070
+### 问题: 如何分析单个BROADCASTRECORD处理时长
+解决方案: 如何分析单个BROADCASTRECORD处理时长 1.确认广播record实例(hash) 在App调用sendBroadcast / sendOrderedBroadcast 后,会有 BroadcastQueue: Add broadcast 相关的log,如: BroadcastQueue: Add broadcast <BroadcastRecord{d0dc2a3 u-1 com.android.modemassert.MODEM_STAT_CHANGE}> into [parallel | background], pending size 0 BroadcastQueue: Add broadcast <BroadcastRecord{c26e31b u-1 com.android.modemassert.MODEM_STAT_CHANGE}> into [ordered 
+完整回答请参考FAQ: FAQ202275071
+### 问题: Android11如何查看发送广播的应用或进程
+解决方案: 也可以在frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java中 final int broadcastIntentLocked(ProcessRecord callerApp, String callerPackage, 16116 @Nullable String callerFeatureId, Intent intent, String resolvedType, 16117 IIntentReceiver resultTo, int resultCode, String resultData, 16118 Bundle resultExtras, String[] requiredPermissions, int appOp, Bundle bOptions, 161
+完整回答请参考FAQ: FAQ202275073
+### 问题: 国民飞镶PA使用注意事项
+解决方案: 客户在器件选型阶段会选用国民飞镶例如NZ5596G,FX5196等PA,飞镶PA未经展锐验证.如客户选用需要注意以下问题. 飞镶PA搭配展锐平台时由于MIPI控制方面存在异常,测量TXM MIPI信号,在GSM和TDSCDMA工作时,MIPI会有无用信号误触发.此时会导致TXM挂死,TRX口无法工作导致GSM PRX无法导通(GSM主集接收不通)和TDSCDMA输出无功率. 以GSM为例,该问题有以下两种解决方案: 1 在RFCTL0逻辑配高电平可以彻底解决该问题.如下图所示逻辑配高可以彻底解决此问题,如下图所示,分集开关 &tuner 等前端器件原理图设计均未使用 RFCTL0 的情况下,可以在 pinmap 中配置 R FCTL0 为 R F 属性,并在以下gsm truth table 中 bit0=1 . 2 在 switch 中配置 07 寄存器赋值为 00 ;逻辑配置到SWIT
+完整回答请参考FAQ: FAQ202275075
+### 问题: Android S 版本 手动选网失败弹窗显示定制
+解决方案: 如要设置为关闭,可按下面方案修改: 根据运营商 sim 卡信息(mccmnc,mvno_type,mvno_match_data) 在 packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb 中的 carrier_attribute 找到最匹配的,然后再看对应的 carrier_id 中的 canonical_id与 carrier_name. 在 /packages/apps/CarrierConfig/assets/carrier_config_carrierid_*canonical_id* _*carrier_name*.xml 配置 show_network_selection_fail 和 oem_key_permanent_auto_sel_mode_bool 值,*t
+完整回答请参考FAQ: FAQ202275077
+### 问题: 客户项目中USB的软硬件checklist
+解决方案: 我司平台默认的usb配置是typec接口,平台参考机也是typec接口.对于客户个别micro usb项目,需要做micro usb口的配置(见相关客户指导文档). bring up中常见的usb问题是:开机连接PC机不枚举,OTG不识别等 那么,请做如下排查: 1. 客户确认当前硬件是typec接口还是micro usb接口 2. Micro usb接口要在DTS和pinmap.c文件中对USB ID gpio做配置,并对usb的配置做调整,如去掉pmic_typec等,具体参考客户指导文档或FAQ 3. 客户的charger驱动完成了吗?OTG功能若要ok,首先要保证charger驱动完成,可以提供反向供电能力,之后才能去调试OTG 4. USB的device和host眼图参数调整.每个客户硬件设计和布线上会有差异,默认的眼图参数设置不一定能满足,需要做USB信号质量测定和眼图参数调整
+完整回答请参考FAQ: FAQ202275089
+### 问题: Android12上修改erofs为ext4
+解决方案: A11搭配的kernel4.14目前不支持erofs; A12上搭配的kernel5.4,默认只读分区使用的是erofs. 一些客户可能还想使用ext4,不想使用erofs,则可以参考类似如下的修改回退(需要在对应项目的目录下修改): device/sprd/mpool / module/partition/msoc/qogirl6/qogirl6.mk中 把这几行删除就退回ext4了: ifneq (kernel4.14,$(strip $(KERNEL_PATH))) BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs BOARD_VENDORIMAGE_FILE_S
+完整回答请参考FAQ: FAQ202275091
+### 问题: Android R 版本 APN 配置 bearer_bitmask 参数
+解决方案: bearer_bitmask:无线接入技术位掩码,用于标明当前APN可以包含的RAT. 配置格式:  <apn carrier="Internet"
+   mcc="340"
+   mnc="02"
+   apn="internet.sfr"
+   protocol="IPV4V6"
+   roaming_protocol="IPV4V6"
+   type="default,supl,xcap"
+   bearer_bitmask="1|2|3|4|5|6|7|8|9|10|11|12|13|15|17"
+ />
+ 参数含义: 默认值 0 ,对应所有网络制式.其他参数表示可以参考下面: frameworks/base/telephony/java/android/telephony/ServiceState.java ​
+/** @hide */
+public sta
+完整回答请参考FAQ: FAQ202275092
+### 问题: Android R 设置 APN 不可编辑，在这个状态的基础上添加右上角的＋号“添加apn”的菜单。
+解决方案: 1.根据运营商 sim 卡信息(mccmnc,mvno_type,mvno_match_data) 在 packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb 中的 carrier_attribute 找到最匹配的,然后再看对应的 carrier_id 中的 canonical_id与 carrier_name. 2.删除packages/apps/CarrierConfig/assets/carrier_config_carrierid_1403_Rogers.xml (Rogers 为例)  --  <string-array name="read_only_apn_types_string_array" num="1">
+ --    <item value="*"/>
+ 
+完整回答请参考FAQ: FAQ202275094
+### 问题: Android 10 及以上版本 ApnSettings 列表界面隐藏 ims 类型的 APN
+解决方案: ims 类型APN是默认显示的,在ApnSettings列表界面隐藏 ims 类型APN选项,需要找出对应mcc/mnc的CarrierId的配置文件中进行配置. 1、在/packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb文件中搜索需要隐藏IMS APN的mcc/mnc(如73002),找到对应的canonical_id值(如73002,canonical_id: 1428),到/packages/apps/CarrierConfig/assets/目录中,通过canonical_id值找到对应的carrier config文件(如carrier_config_carrierid_1428_Movistar.xml),如果没有,需要自己新建carrier config文件(命名规
+完整回答请参考FAQ: FAQ202275101
+### 问题: Android 10 ApnSettings列表界面隐藏 xcap 类型的 APN
+解决方案: xcap类型APN都是默认显示的,在ApnSettings列表界面隐藏 xcap 类型APN选项,需要找出对应mcc/mnc的CarrierId的配置文件中进行配置. 1、在/packages/providers/TelephonyProvider/assets/latest_carrier_id/carrier_list.textpb文件中搜索需要隐藏 xcap APN的mcc/mnc(如73002),找到对应的canonical_id值(如73002,canonical_id: 1428),到/packages/apps/CarrierConfig/assets/目录中,通过canonical_id值找到对应的carrier config文件(如carrier_config_carrierid_1428_Movistar.xml),如果没有,需要自己新建carrier config文件
+完整回答请参考FAQ: FAQ202275102
+### 问题: A11中如何实现锁屏界面旋转
+解决方案: A11中锁屏界面默认是不能旋转的.锁屏界面能否旋转由如下方法确定: SystemUI/src/com/android/systemui/statusbar/phone/NotificationShadeWindowController.java
+173      private boolean shouldEnableKeyguardScreenRotation() {
+174          Resources res = mContext.getResources();
+175          return SystemProperties.getBoolean("lockscreen.rot_override", false)
+176                  || res.getBoolean(R.bool.config_enableLockScreenRota
+完整回答请参考FAQ: FAQ202275128
+### 问题: A11 特定应用关闭手势上滑退出功能
+解决方案: Index: quickstep/recents_ui_overrides/src/com/android/quickstep/inputconsumers/OtherActivityInputConsumer.java IDEA additional info: Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP <+>UTF-8 =================================================================== --- quickstep/recents_ui_overrides/src/com/android/quickstep/inputconsumers/OtherActivityInputConsumer.java (date 1628737219055) +++
+完整回答请参考FAQ: FAQ202275130
+### 问题: A11 替换图标形状
+解决方案: 1.直接修改framework层资源 frameworks/base/core/res/res/values/config.xml <string name="config_icon_mask" translatable="false">"M50 0C77.6 0 100 22.4 100 50C100 77.6 77.6 100 50 100C22.4 100 0 77.6 0 50C0 22.4 22.4 0 50 0Z"</string> //修改该值 2.RRO OVERLAY diff --git a/packages/overlays/IconShapeHeartOverlay/AndroidManifest.xml b/packages/overlays/IconShapeHeartOverlay/AndroidManifest.xml index 82bff7d53d95.
+完整回答请参考FAQ: FAQ202275132
+### 问题: 非Sensorhub架构sensor I2C hold time问题导致通信失败或数据异常
+解决方案: 由于sensor 硬件特性导致的功能异常,建议咨询厂商关于该IC 的物料特性,检查sensor ic对i2c hold time的要求是多少,如要修改I2C HD:STA参数,请参考如下修改 > bsp\kernel\drivers\i2c\busses\i2c-sprd.c static void sprd_i2c_set_clk(struct sprd_i2c *i2c_dev, u32 freq) { …… /* Start hold timing = hold time(us) * source clock */ if (freq == 400000) writel((6 * apb_clk) / 10000000, i2c_dev->base + ADDR_STA0_DVD); else if (freq == 100000) writel((4 * apb_clk) / 100
+完整回答请参考FAQ: FAQ202275133
+### 问题: A11 去除非自适应图标的白色背景板
+解决方案: Index: src/com/android/launcher3/icons/LauncherActivityCachingLogic.java IDEA additional info: Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP <+>UTF-8 =================================================================== --- src/com/android/launcher3/icons/LauncherActivityCachingLogic.java (date 1631513786322) +++ src/com/android/launcher3/icons/LauncherActivityCachingLogic.java (date 163
+完整回答请参考FAQ: FAQ202275135
+### 问题: IO性能问题—客户测试前置检查说明
+解决方案: 问题说明: IO性能的一般测试手法有文件极客(gms)或其它三方文件管理APP、adb push 、或adb shell环境下的mv 、cp 命令. 使用文件极客或三方文件管理APP进行的复制速度测试或剪切速度测试,其影响因素主要包括: 文件极客的执行逻辑差异[通过提高CPU频率可以缩短这部分差距]àfuse文件系统的调用耗时àIO调度器+(驱动+器件)时间.而这其中最难以量化的部分为APP端逻辑,所以相关客户在做此类实验时,需另外以相同文件增加mv或cp命令的测试以对齐影响因素,并得到准确的IO时间. 从目前结果看多数为非IO速度原因[底层速度非瓶颈],以辅助命令对齐底层速度之后可大大缩短从问题提出到解决问题周期. 建议如下: APP+剪切测试—》time mv /storage/emulated/0/test /storage/3C02-1DEF/test #"3C02-1DEF"为S
+完整回答请参考FAQ: FAQ202275137
+### 问题: 如何修改mtp模式在电脑上显示的存储容量大小？
+解决方案: 目前PC上看到的总内存大小以及可用存储大小是通过如下方式计算出来的: /frameworks/av/media/mtp/MtpStorage.cpp uint64_t MtpStorage::getMaxCapacity() { 62 if (mMaxCapacity == 0) { 63 struct statfs stat; 64 if (statfs(getPath(), &stat)) 65 return -1; 66 mMaxCapacity = (uint64_t)stat.f_blocks * (uint64_t)stat.f_bsize; 67 } 68 return mMaxCapacity; 69 } 70 71 uint64_t MtpStorage::getFreeSpace() { 72 struct statfs stat; 73 if (statfs(getP
+完整回答请参考FAQ: FAQ202275153
+### 问题: 设置中如何语言项去掉国家名？
+解决方案: 去掉对应语言的国家名(以繁体台湾为例): diff --git a/src/com/android/settings/localepicker/LocaleFeatureProviderImpl.java b/src/com/android/settings/localepicker/LocaleFeatureProviderImpl.java index 64a01a3530..2579d4f9ed 100644 --- a/src/com/android/settings/localepicker/LocaleFeatureProviderImpl.java +++ b/src/com/android/settings/localepicker/LocaleFeatureProviderImpl.java @@ -27,10 +27,25 @@ public class LocaleF
+完整回答请参考FAQ: FAQ202275154
+### 问题: 展锐Android12 平台安全密钥生成方法
+解决方案: 1. 按照密钥闭源的设计,我们平台不再包含默认的安全密钥,客户拿到IDH包之后,需要自行生成需要的安全密钥.
+  注意:一个项目,只需要生成一次密钥.保存好,勿丢失.
+
+2. 密钥存在如下路径,如果没有,请先建好这个目录.
+    bsp/tools/secureboot_key/config/
+
+3. 平台密钥有三部分:BSP密钥、AVB密钥、动态TA签名密钥:
+  3.1 BSP密钥的生成
+   生成命令格式如下:
+      先生成私钥文件 : openssl genrsa -out [私钥文件名] [2048/4096]
+      再用私钥生成公钥文件 :openssl rsa -in [私钥文件名] -pubout -out [公钥文件名]
+
+   * spl、fdl1的签名密钥对:
+        openssl genrsa -out rsa204
+完整回答请参考FAQ: FAQ202275158
+### 问题: 展锐Android12 平台编译缺失avb version文件问题
+解决方案: 1. avb version 配置文件,如果没有,请先建好这个目录.
+
+bsp/tools/secureboot_key/config/
+
+
+2. 新建文件version.cfg,并放入如下内容:
+
+trusted_version=0
+avb_version_wcn=0
+avb_version_gps=0
+avb_version_vbmeta=0
+avb_version_boot=0
+avb_version_system=0
+avb_version_system_ext=0
+avb_version_vendor=0
+avb_version_product=0
+avb_version_socko=0
+avb_version_odmko=0
+avb_version_modem=0
+avb_version_vendor_boot=0
+
+
+3. 请注意:
+完整回答请参考FAQ: FAQ202275159
+### 问题: AndroidQ设置中的“运营商视频通话”功能如何默认关闭？
+解决方案: AndroidQ上,要将设置中"运营商视频通话"默认关闭,配置carrier_video_calling_setting_enabled_bool为false即可. 请视情况进行修改: 1.仅针对单个运营商,具体步骤: (1)找到packages/providers/TelephonyProvider/assets/sdk28_carrier_id/carrier_list.textpb,按mccmnc查找对应carrierid (2)有对应carrierid,则在packages/apps/CarrierConfig/assets/找到carrier_config_carrierid_***(carrierid)_***.xml,配置 <boolean name="carrier_video_calling_setting_enabled_bool" value="false"/> (3
+完整回答请参考FAQ: FAQ202275171
+### 问题: kernel中对pin功能的动态切换
+解决方案: pin功能的动态切换: SOC内部存在引脚功能的复用,一般通过pin控制器给指定的pin选择需要的功能,这个操作在pin_init()中完成配置(u-boot中).配置完成后在u-boot和kernel中一直生效.如果有特殊需求许哦啊在kernel中更改pin的功能,可以通过pinctrl子系统在kernel中动态配置pin的功能. 配置步骤: 1.在pinmap中找到指定的引脚,检查其配置情况; 2.在dts中找到pin_controller节点的引用(&pin_controller),添加该引脚的state定义; 3.确定需要设置该引脚功能的设备,在dts中找到该设备的节点,在该设备节点下边引用上述pin_controller中的state定义; 4.找到设备的驱动代码,调用以下三个接口实现引脚功能的切换: struct pinctrl *devm_pinctrl_get(struct
+完整回答请参考FAQ: FAQ202275172
+### 问题: AndroidR后台播放音乐，进相机录制视频，拍摄完后音乐不恢复播放是否正常？
+解决方案: 该现象为平台设计如此,相关代码如下: vendor/sprd/platform/packages/apps/DreamCamera2/src/com/android/camera/VideoModule.java private boolean silenceSoundsAndVibrations() { 3187 // Get the audio focus which causes other music players to stop. 3188 int ret = mAudioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, 3189 AudioManager.AUDIOFOCUS_GAIN); ------Camera录制视频音频焦点设置为AUDIOFOCUS_GAIN,要长期占有焦点,失去焦点者需要stop播放
+完整回答请参考FAQ: FAQ202275174
+### 问题: 如何在设置搜索栏搜索结果中屏蔽指定字符串
+解决方案: 1、屏蔽掉一个界面的搜索 直接将类名上面的注解删除,例如: 标记DisplaySettings可搜索的注解 2、屏蔽掉一个菜单的搜索 SearchIndexProvider中实现getNonIndexableKeys方法,将对应菜单的KEY添加进去 3、直接在搜索结果显示的地方过滤掉特定字符串 例如屏蔽掉字符串"vbration" @@ -276,6 +276,20 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi @Override public void onLoadFinished(Loader<List<? extends SearchResult>> loader, List<? extends SearchResult> data) { + android.ut
+完整回答请参考FAQ: FAQ202275177
+### 问题: 开启超级省电模式，页面没有固定电话，信息，通讯录的图标
+解决方案: 超级省电模式的3个应用配置是在: vendor/sprd/modules/power/fw-power-config/powercontroller.xml <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <powercontroller> <applist_in_ultrasave> <appname>com.google.android.dialer/.extensions.GoogleDialtactsActivity#0</appname> <appname>com.google.android.apps.messaging/.ui.ConversationListActivity#1</appname> <appname>com.google.android.contacts/com.android.contact
+完整回答请参考FAQ: FAQ202275179
+### 问题: 6533G平台如何查看当前软件的FLASH和RAM剩余空间
+解决方案: 6533G平台如何查看当前软件的FLASH和RAM剩余空间 1. FLASH : 编译完成之后正常生成lod和map文件,看看对应hex 目录下的.map 文件,查找_flash_end 看看 0xffffffff8831c260 _flash_end = . 0xffffffff88370000 _user_data_start = . FLASH的剩余空间: _user_data_start - _flash_end = 0x88370000 - 0x8831c260 = 0x53DA0 注意0xffffffff 是片选地址可以不用管 2. RAM 编译完成之后正常生成lod和map文件,在.map-stage1 文件中查找 _heap_size 就是编译完剩余的RAM空间,但是这部分RAM空间是包含实际的HEAP空间和没有使用的RAM空间. 实际使用的HEAP空间的配置在tgt_ap
+完整回答请参考FAQ: FAQ202275185
+### 问题: 6533G平台FLASH空间不够，无法编译生成lod文件怎么办
+解决方案: 1. FLASH空间不够,无法编译生成lod文件怎么办 把编译命令里的CT_USERGEN=no 改成 CT_USERGEN=yes,编译之后,如果越界会提示类似下面的错误信息. LD sc6533g2_qqvga_debug.elf mips-elf-ld: Flash overflow: there is no more space available in flash memory. mips-elf-ld: section .user_data loaded at [ffffffff8839a000,ffffffff883f9fff] overlaps section .get_compressed_data load at [ffffffff88164f30,ffffffff883a65bf] mips-elf-ld: /cygdrive/d/projects/sc6533g/s
+完整回答请参考FAQ: FAQ202275186
+### 问题: 耳机和外放一起响是否正常
+解决方案: 理论上此问题在我司智能机芯片上是通用的,除了product中列出的芯片型号,还有SC9863A,SL8521E等. 主要分为两种情况. 一、正常情况:外置PA接在耳机通路(HP_L/HP_R)上. 这种情况下PA和耳机共用一个通路.选择耳机播放时数据从HP_L/HP_R输出到耳机播放;选择外放时数据从HP_L/HP_R输出到PA,再输出到喇叭播放. PA有GPIO作为开关,控制其打开或关闭;但是耳机是没有开关的. 这样就会导致:当耳机在位时,如果选择喇叭作为输出设备,就会把耳机通路打通,因此耳机也会出声.这种就是正常情况. 如果需要解决,可以硬件上在耳机前面添加一个开关,在问题场景下把耳机开关关闭,使耳机无声. 单从软件上没法修复. 硬件修改后,软件也需要适配,可以提cq咨询. 二、异常情况:这种情况下原因不确定,主要有以下怀疑方向. 1、PA同样接在耳机通路(HP_L/HP_R)上,但是
+完整回答请参考FAQ: FAQ202275189
+### 问题: 如何缩短按键响应时间
+解决方案: 长按键的控制在COS_KeyEventHandler 函数中
+END(POWER)键目前是设置的3秒,其他键设置的是1.5秒
+
+-----#define LONG_PRESS_TIME 1500      // 1500ms,如果想改短可以改成1000,改成1秒
+
+
+如果想改短的话,可以修改这里.
+
+if(Coskeycode == KEY_END)
+		{
+-----#if !defined(TGT_USING_POWER_KEY)
+			StopTimer(KEY_TIMER_ID0);
+			StartTimer(KEYPAD_LONG_PRESS, 3000, KeyLongPress);    // 3000ms,如果想改短可以改成1500,改成1.5秒
+-----#endif			
+		}
+		
+-----#if defined(TGT_USIN
+完整回答请参考FAQ: FAQ202275190
+### 问题: Camera API2中，如何查询CameraDevice状态？
+解决方案: 答案: Camera2 没有直接的接口去查询 CameraDevice 的状态,但使用 mCameraManager.openCamera 后,可以通过重写的 CameraDevice.StateCallback 的 onOpened、onDisconnected、onError 方法得知当前 CameraDevice 的状态; onOpened 方法:如果 openCamera 成功,可以在 onOpened 中拿到 cameraDevice 实例,用于后续的 createSession,创建 CaptureRequest,close Camera 等操作 onDisconnected 方法:当相机设备不再可用时调用的方法 onError 方法:相机设备遇到严重错误时调用的方法,可通过int型的 error 码查询打开失败的原因 应用打开相机发生错误时,最常见的是 onError 方法 
+完整回答请参考FAQ: FAQ202275193
+### 问题: SCI_GetTickTime()与SCI_GetTickCount()
+解决方案: 首先看看SCI_GetTickTime()输入参数 PUBLIC uint32 SCI_GetTickTime( //if successful, return SCI_SUCCESS, else return others SCI_TICK_TIME_T* tick_time //input parameter to save system tick time ); 其中 typedef struct SCI_TICK_TIME_Tag { uint32 milliseconds; uint32 second; }SCI_TICK_TIME_T; SCI_GetTickCount()在UIS8910FF/FFS上限是131071 Sec 详情请看 [FAQ202275176] SCI_GetTickCount()的限制 简单说SCI_GetTickTime()扩展的SCI_GetTick
+完整回答请参考FAQ: FAQ202275194
+### 问题: 去除图库NewGallery2中HDR图片的HDR水印
+解决方案: 若用的图库软件是NewGallery2,可参考以下修改: diff --git a/src/com/android/gallery3d/v2/page/PhotoViewPageFragment.java b/src/com/android/gallery3d/v2/page/PhotoViewPageFragment.java old mode 100644 new mode 100755 index 5296f1c3..41b50ede --- a/src/com/android/gallery3d/v2/page/PhotoViewPageFragment.java +++ b/src/com/android/gallery3d/v2/page/PhotoViewPageFragment.java @@ -1953,7 +1953,7 @@ public class PhotoVie
+完整回答请参考FAQ: FAQ202275195
+### 问题: 编译ota包时报Filesize would require ZIP64 extensions错
+解决方案: 首先查看python版本是否是2.7.6及以上,低版本的zipfile库对zip64处理不一样. 其次,python版本确认后,可再看具体报错的位置,在对应报错行中添加参数:allowZip64 = True,例如: build/make/tools/releasetools/ota_from_target_files.py中: def GenerateAbOtaPackage(target_file, output_file, source_file=None): output_zip = zipfile.ZipFile(staging_file, "w", compression=zipfile.ZIP_DEFLATED) 改为: output_zip = zipfile.ZipFile(staging_file, "w", compression=zipfile.ZIP_DEFLAT
+完整回答请参考FAQ: FAQ202275196
+### 问题: ISR功能简介
+解决方案: 功能简介 ISR,全称Intelligent Super Resolution,即智能分辨率,相比较普通的切换系统整体分辨率,ISR可以根据白名单配置只对个别应用生效,实现方式是基于原生窗口兼容模式实现,不需要硬件真正支持切换后的分辨率,相对更加智能. 参数配置 代码配置路径: vendor/sprd/platform/frameworks/base / core/res/res/values/config_ex.xml 配置说明:   <!-- <item>packagename;scale;ivnscale;density</item> -->
+  <!-- for example: <item>com.tencent.pocket;1.5;0.66666667;320</item> -->
+
+  <string-array name="isr_compat_config_lis
+完整回答请参考FAQ: FAQ202275197
+### 问题: Android8.x如何定制ylog开关？
+解决方案: user版本默认关闭ylog,userdebug版本默认开启ylog,如需修改默认开关,可参考如下方法: 1、userdebug默认关闭ylog方法: (1)关闭aplog:device\sprd\sharkle\common\rootdir\root\init.common.rc on post-fs-data ....... start ylog //去掉这一行,即可关闭ap log的抓取. #start ylog_lite (2)cp log关闭: device\sprd\sharkle\XXXX\log_conf\slog_modem_userdebug.conf( XXXX为对应的board,如sp9832e_1h10): #Type Name State Internal Size External Size File Size Level overwrite stream c
+完整回答请参考FAQ: FAQ202275199
+### 问题: 如何解包ext4格式的super.img？
+解决方案: 1.判断img镜像类型 从设备中回读出super.img或者pac包中提取出super.img后,需要看下是否回读出来的是sparse的,sparse的需要转换为raw格式的. 通过file命令来判断其格式,在linux下面执行如下命令(以system.img)为例: #file system.img -->system.img: data //如果显示是data,则为sparse格式 2.sparse转raw 可通过simg2img工具转换,在windows和linux都有相应的版本,在命令行中执行如下命令: #simg2img <sparse_image_file> <raw_image_file> 执行完之后,sparse格式的sparse_image_file 就被转换为raw格式的ext4镜像文件raw_image_file. 备注:Android源码目录sytem/core/l
+完整回答请参考FAQ: FAQ202275200
+### 问题: 谷歌Camera API官方介绍链接
+解决方案: 一、问题描述 开发和适配Camera app需要了解Camera API、Camera app流程信息,该FAQ提供谷歌官网Camera API参考链接. 二、问题答案 谷歌Camera APP架构包括Camera API1(谷歌已废弃,但仍能使用)、Camera API2,Camera API介绍和使用可参考android开发者网站Camera部分,该网站有详细的Camera API和Camera流程介绍. android开发者网站Camera API和流程介绍链接: Camera API1:https://developer.android.google.cn/training/camera-deprecated?hl=en Camera API2:https://developer.android.google.cn/training/camera2?hl=en 除了Camera A
+完整回答请参考FAQ: FAQ202275204
+### 问题: 连上翻墙网路后, 开启gms 相关 app 容易闪退
+解决方案: 主要是因为连上翻墙网路或刚登陆 google 帐号会触发 google play services 后台自动更新, 此时开启 gms 相关app, 因无法调用 google play services 内相关方法, 所以导致闪退. log 会有类似以下: play store 显示更新 com.google.android.gms I Finsky : [710] ktn.V(18): Installer: Notifying status update. package=com.google.android.gms, status=INSTALLING, isid=9uhD0XdQR3COlhjP2Z19hg ams 停用 com.google.android.gms I ActivityManager: Force stopping com.google.android.gms app
+完整回答请参考FAQ: FAQ202275207
+### 问题: Android.appsecurity.cts.AdoptableHostTest#testApps
+解决方案: 此报错 com.android.tradefed.device.DeviceUnresponsiveException[DEVICE_UNRESPONSIVE|520751|LOST_SYSTEM_UNDER_TEST]: Attempted shell sm partition disk:7,29 public multiple times on device HRP1M6201D300042 without communication success. Aborting. 测试期间做sm partition disk 报错通常会伴随著如下log, 在执行格式化命令等待超时, 如下是格式化超时的提示 W StorageManagerService: Thread Binder:931_D still waiting for partitionPublic... E StorageMana
+完整回答请参考FAQ: FAQ202275210
+### 问题: GtsPermissionTestCases fail
+解决方案: GtsPermissionTestCases - com.google.android.permission.gts.DefaultPermissionGrantPolicyTest#testDefaultGrantsWithRemoteExceptions fail 此测项会检查目前内置的app 预设取得的权限是否有符合 google 规范, 观察测试报告, 会类似以下, 特别注意的是 packageName 以及哪些 permission 不符规范. java.lang.AssertionError: packageName: com.sprd.firewall { priv app: false targetSDK: 31 uid: 1001 persistent: true signature: FC98DAE63AD39626C8C67FBE83F2F06F74932A9CD14
+完整回答请参考FAQ: FAQ202275213
+### 问题: 视频通话适配小窗口的预览位置
+解决方案: 预览窗口默认为左上角,所以上层无法修改;在isp_service中增加了位置修改代码,可以自定义显示窗口位置和大小 Index: MS_Ref/source/isp_service/src/isp_service_uws6131.c =================================================================== --- MS_Ref/source/isp_service/src/isp_service_uws6131.c (revision 100541) +++ MS_Ref/source/isp_service/src/isp_service_uws6131.c (working copy) @@ -551,6 +551,16 @@ SCI_PutSemaphore(s_isp_service_sema); } LCD_GetLc
+完整回答请参考FAQ: FAQ202275215
+### 问题: mocor项目去掉相机等待窗口
+解决方案: 1.把上面这部分代码放开,这部分下面的代码全部屏蔽掉; /*MMI_WINDOW_TABLE_CREATE_T win_table = {0}; win_table.applet_handle = applet_ptr->caf_applet.app_handle; win_table.win_table_ptr = MMIDC_DC_WAIT_TAB; win_table.add_data_ptr = (void*)mode; MMK_CreateWinTable( &win_table );*/ 2.修改case:MSG_DC_MMI_CMD流程如下: 3658 case MSG_DC_MMI_CMD: ---- pubwin_info_ptr = MMIPUB_GetWinAddDataPtr(win_id); ---- if(PNULL != pubwin_info_ptr) --
+完整回答请参考FAQ: FAQ202275216
+### 问题: APN编辑界面为何不显示xcap类型？
+解决方案: apn配置文件中配置了xcap类型apn,但是进入系统设置---->网络和互联网---->移动网络---->高级---->接入点名称,点击查看默认apn,检查APN 类型,发现缺少xcap类型.
+这是因为ApnEditor.java中设置了对xcap类型apn隐藏的逻辑,如果需要取消xcap类型隐藏逻辑,可以将hideApnMatchTypes这一行给注释掉即可.
+Android10和Android11相关代码:
+/packages/apps/Settings/src/com/android/settings/network/ApnEditor.java
+      void fillUI(boolean firstTime) {
+......
+              //UNISOC:check whether apn type xcap need to be hidde
+完整回答请参考FAQ: FAQ202275217
+### 问题: APN设置界面为何不显示xcap类型APN？
+解决方案: apn配置文件中配置了xcap类型,但是进入系统设置---->网络和互联网---->移动网络---->高级---->接入点名称,检查所有APN,发现缺少xcap类型APN.
+
+这是因为UniCarrierConfigManager.java中设置了对xcap类型APN隐藏的逻辑,如果需要取消xcap类型APN隐藏逻辑,可将KEY_HIDE_APN_TYPES_STRING_ARRAY其后置为空即可.
+Android11相关代码:
+[/vendor/sprd/platform/frameworks/uniframework/base/telephony/java/android/telephony/UniCarrierConfigManager.java]
+
+sDefaults.putStringArray(KEY_HIDE_APN_TYPES_STRING_ARRAY, new
+完整回答请参考FAQ: FAQ202275219
+### 问题: 平台otp数据与sensor otp数据的区分方法
+解决方案: otp数据分为sensor端和平台端,区分两者可以从log与驱动函数这两个角度进行鉴别 1、从驱动角度: 打开otp_drv.h文件 otp_drv_entry_t hi846_back_drv_entry = { .otp_cfg = { .cali_items = { .is_self_cal = TRUE, /*TRUE: OC calibration on,FALSE: OC calibration off*/ .is_awbc = TRUE, /* TRUE: support awb calibration, FALSE: Not support awb calibration */ .is_awbc_self_cal = FALSE, /*TRUE: Sensor side calibration, FALSE: ISP Side calibration*/ .is_lsc =
+完整回答请参考FAQ: FAQ202275221
+### 问题: 工程代码增加NFC相关代码的编译
+解决方案: 1、在mk文件里增加如下编译项 @@ -285,6 +285,12 @@ PRODUCT_PACKAGES += \ Stk1 \ MsmsStk +PRODUCT_PACKAGES += \ + libnfc-nci \ + libnfc-nci-jni \ + NfcNci \ + Tag + # Screen Capture PRODUCT_PACKAGES += \ ScreenCapture 2、编译Tag时,需要做如下修改才能解决Tag访问系统隐藏库的错误 diff --git a/Android.mk b/Android.mk old mode 100644 new mode 100755 index eb37347..eea6054 --- a/Android.mk +++ b/Android.mk @@ -15,6 +15,7 @@ LOCAL_SRC_FILES := 
+完整回答请参考FAQ: FAQ202275223
+### 问题: GTS testSupportedFormFactor fail
+解决方案: arm64-v8a GtsLensTestCases Test Result Details com.google.android.apps.lens.gts.LensBaseIntegrationTest#testSupportedFormFactor fail Large screen (tablet) devices are not supported. The smallestScreenWidthDp must be less than 600 dp units. log 显示此项目的屏无法支持google lens. 根据google 规范 [GMS-7.14-012] Lens in Camera doesn't support large screen (tablet) devices. Lens in Camera MUST NOT be integrated on de
+完整回答请参考FAQ: FAQ202275224
+### 问题: 如何简易排查STS测试失败?
+解决方案: 如何简易排查STS测试失败, 说明如下: 1.STS需用debug版本测试. 2.STS测试项多为CVE id, 如果测试失败可以用CVE id, 到google 官网找到相对应的补丁, ex: CtsSecurityBulletinHostTestCases android.security.cts.CVE_2022_20007#testPocCVE_2022_20007 Google 安全补丁官网:https://source.android.com/security 3.在Google 官网找到相对应的补丁,现官网找到相对应的补丁,皆为android 12版本. 如贵司为非android 12版本,请纪录此补丁为几月的安全补丁及Change-Id. 如:CVE_2022_20007为202205月的安全补丁,同时Change-Id为I7903494cf928b5b5613700262
+完整回答请参考FAQ: FAQ202275226
+### 问题: 检查人脸识别算法是否存在问题的方法与步骤
+解决方案: (1)抓取yuv数据指令如下: 1. adb root 2. adb remount 3. adb shell setprop persist.vendor.fdtop.dump 1 4. adb shell setprop persist.vendor.fdtop.debug_switch 1 adb shell setprop persist.vendor.fdtop.log 4 复现bug场景,会在data/vendor/cameraserver下出现很多yuv400文件(如果未复现出来,请将data/vendor/cameraserver下的yuv400文件清空), 复现bug后,adb pull /data/vendor/cameraserver 将yuv数据dump到本地. 复现完成后,请按照如下指令关闭yuv数据开关 5. 关闭yuv抓取:adb shell setprop 
+完整回答请参考FAQ: FAQ202275256
+### 问题: 带间CA（inter-band DL CA without UL CA）灵敏度注意事项
+解决方案: 关于带间CA灵敏度的3GPP标准可以参考Table 7.3A.3.5-1: Reference sensitivity QPSK PREFSENS for inter-band,如下截图为表格的部分内容 本文主要针对表格Note 4说明的灵敏度回退情况进行说明,详情如下: Note 4: Reference sensitivity for the high band for which the 3rd harmonic of the low band is within transmission bandwidth, as specified Note 5 in Table 7.3A.0-0a. 这个注释表明了当低频段的3rd谐波落在了高频段的RX范围内的时候需要做灵敏度回退,以截图中标注了Note4的1A-28A举例说明,根据协议规定,测试28A-1A的灵敏度时候需要注意B28的3rd谐
+完整回答请参考FAQ: FAQ202275260
+### 问题: RF 差分NV制作简介
+解决方案: 差分NV介绍 差分NV存储的是一个NV工程的修改项.NV项以绝对路径的方式存储,文件格式为xxx.nv 注:如果差分NV中有相同项,则导入之后下面的会覆盖上面的值.如下图示mipi_reg_init[0]的最终值为0x4 差分NV制作 1. 通过NV tool/NV editor 进行对比导出 1) 准备好项目对应的量产NV工程A,和与A工程同版本的base NV工程B 2) 用NV tool打开工程B中的customer部分(baseNV),导入工程A的nv.bin 3) 修改项会变红,点击cust_nvitem右键将修改项全部导出保存. 注:采用此方法生成差分NV,后续升级要求baseNV customer部分不能变动 2. 用NV aide生成差分NV 目前除8910FF/DM系列外的所有的4G平台都可以使用NV aide进行NV配置.配置完成后会生成差分NV. NV aide生成的
+完整回答请参考FAQ: FAQ202275264
+### 问题: 人脸解锁活体检测版本与闭眼检测
+解决方案: 1 如何确认活体检测版本是眨眼活体/静默活体? facehal配置checkLiveness=1(宽松眨眼)时log: "FaceIdHal: user[0] auth set to liveness grade=1"
+facehal配置checkLiveness=2(静默活体)时log: "FaceIdHal: user[0] auth set to liveness grade=2"
+facehal配置checkLiveness=3(严格眨眼)时log: "FaceIdHal: user[0] auth set to liveness grade=3"
+ 2 如何确认算法中是否有闭眼检测,单眼能否解锁? 目前静默活体A11及以上版本支持单眼解锁,但是闭眼检测结果在默认log等级中暂时无法看到,得开到4
+
+Line 174940: M027D1D  07-15 10:44:31
+完整回答请参考FAQ: FAQ202275267
+### 问题: GPIO Plus中断使用注意事项
+解决方案: SC9863A、UIS8581A、UIS8581E采用的GPIO为GPIO Plus,相关的IP介绍可以参考《XXXX Device Specification》文档中的GPIO Plus章节. 该IP支持同时使用的中断数最大为32,即:各个子系统同时使用的中断数之和为32个,平台针对各个子系统的中断源数量进行划分,参考如下: bsp/kernel/kernel4.14/drivers/gpio/gpio-plus-sprd.c enum sprd_channel_base { SPRD_CHANNEL_AP = 0, SPRD_CHANNEL_AP_SECURE = 12, SPRD_CHANNEL_CM4 = 20, SPRD_CHANNEL_PUBCP = 28, SPRD_CHANNEL_MAX = 32, }; 通过上述可以看出供AP侧同时使用的中断数为12个,超过的话则会导致中
+完整回答请参考FAQ: FAQ202275271
+### 问题: 手机套餐功能相关问题
+解决方案: 1.手机套餐功能进入路径:在设置->网络和互联网->手机套餐->提示"has no known provisioning website"
+2.不插卡情况下,菜单中是否有手机套餐选项?
+从如下代码看,无论是否插卡菜单中都会有手机套餐选项.
+/packages/apps/Settings/src/com/android/settings/network/MobilePlanPreferenceController.java
+    @Override
+    public boolean isAvailable() {
+        final boolean isPrefAllowedOnDevice = mContext.getResources().getBoolean(
+                com.android.settings.R.bool.confi
+完整回答请参考FAQ: FAQ202275277
+### 问题: tinyplay/tinycap操作介绍
+解决方案: 1. 功能实现 平台代码编译后,默认不编译生成tinypaly和tinycap,因此需要使用tinyplay或者tinycap测试时,请按照以下操作: 1、请按照以下patch修改 diff --git a/tinycap.c b/tinycap.c
+index fe80de7..83c2d68 100644
+--- a/tinycap.c
++++ b/tinycap.c
+@@ -212,7 +212,7 @@ unsigned int capture_sample(FILE *file, unsigned int card, unsigned int device,
+   config.stop_threshold = 0;
+   config.silence_threshold = 0;
+ 
+-  pcm = pcm_open(card, device, PCM_IN,
+完整回答请参考FAQ: FAQ202275279
+### 问题: AndroidR/S录音机MP3录音怎么修改为单声道？
+解决方案: /src/com/sprd/soundrecorder/service/SprdRecorder.java public class SprdRecorder { mRecorder.setOutputFormat(FILE_FORMAT.get(requestType)); mRecorder.setAudioEncoder(RECORDER_MAP.get(requestType)); //BUG:896235 double track recording MP3 format -- if (AUDIO_MP3.equals(requestType)) { -- mRecorder.setAudioChannels(CHANNEL_STEREO); -- } ----------在sprdrecorder中注释掉录音类型判断为MP3是进行双声道的设置相关代码即可. 如果直接编译版本未生
+完整回答请参考FAQ: FAQ202275296
+### 问题: CtsProviderUiTestCases android.providerui.cts.MediaStoreUiTest#testImageCaptureWithInadequeteLocationPermissions[0]
+解决方案: 若log和下面信息一样,表示当前测试要求拍照不保存gps信息 直接请客户关闭 camera 设置中的, 保存位置信息 后复测验证即可通过. //log 10-26 16:51:07.582 4282 4302 E TestRunner: failed: testImageCaptureWithInadequeteLocationPermissions[0](android.providerui.cts.MediaStoreUiTest) 10-26 16:51:07.582 4282 4302 E TestRunner: ----- begin exception ----- 10-26 16:51:07.583 4282 4302 E TestRunner: java.lang.AssertionError: Should not contain location information
+完整回答请参考FAQ: FAQ202072219
+### 问题: VtsTrebleFrameworkVintfTest#SystemVendorTest.ServedHwbinderHalsAreInManifest_64bit / VtsTrebleFrameworkVintfTest#SystemVendorTest.ServedHwbinderHalsAreInManifest_32bit
+解决方案: 测项报错,示例如下三类,指的是已经有提供该功能,但实际在 manifest 没找到; 以第一个 vendor.sprd.hardware.radio@1.0::IExtRadio/slot1 为示例,可查找 device/sprd/sharkl3/common/TelephonyCommon.mk 和 vendor/sprd/proprietories-source/rild/rild/manifest_dualsim.xml 二边是否匹配,需确认是否需要该功能,自行新增设定或移除相关代码后,再测试,若还是 fail,需再查看 log 进一步调适. 示例: device/sprd/sharkl3/common/TelephonyCommon.mk 1. vendor.sprd.hardware.radio@1.0::IExtRadio/slot1 2. android.hardware.r
+完整回答请参考FAQ: FAQ202072220
+### 问题: 进行CTS测试，CtsMediaTestCases--android.media.cts.MediaActivityTest#testVolumeKey_afterSessionReleased fail
+解决方案: 执行CTS测试时, 若出现以下报错信息, 一般与样机中各个情境音量的配置有关, 常见的Error log pattern: 10-26 16:57:13.441 6133 6160 E TestRunner: failed: testVolumeKey_afterSessionReleased(android.media.cts.MediaActivityTest) 10-26 16:57:13.441 6133 6160 E TestRunner: ----- begin exception ----- 10-26 16:57:13.441 6133 6160 E TestRunner: java.lang.AssertionError: Volume keys were ignored [分析testVolumeKey_afterSessionReleased case代码] 重点在执
+完整回答请参考FAQ: FAQ202072221
+### 问题: PhaseI阶段ECC配置的支持情况
+解决方案: 目前MOCOR_20A_W20.29.5版本及之前的版本,均不支持根据国家码自动识别ECC号码,即根据PLMN配置ECC号码. MOCOR_20A_W20.29.5版本及之前的版本,只能一个pac包配置一套ECC号码,配置方法是这样的: 一、 ECC Number类型 有三种可以供配置的ECC Number的类型 1. Default SIM ECC 手机有SIM卡时的紧急呼叫号码 2. Default NoSIM ECC 手机无SIM时的紧急呼叫号码 3. Default FAKE ECC 手机有SIM卡时显示紧急呼叫界面,但是下发正常的呼叫 .手机没有SIM卡时,拨打紧急呼叫. 二、ECC Number配置方法 主要是三种配置方法,选一种即可: 1、使用数组方式配置,与读取NV获取ECC的方式不可共用,使用方法如下: 在target.mk中开启定义MMI_ECC_IN_LOCAL_CO
+完整回答请参考FAQ: FAQ202072224
+### 问题: 语音信箱配置问题
+解决方案: 语音信箱(voice mail)最主要的功能是,当客户因各种原因无法接听来话时,转由语音信箱接听,并自动录下来话留言,且及时通知客户有留言的业务,前提是运营商支持此功能. 117平台上VM number使用的优先级为: SIM卡读取>用户设置>预置. 1. SIM卡读取:各运营商出厂时SIM卡中设置VM号码,有的为空,有的不为空, 是否可读写各运营商情况也不同. 从SIM卡读取VM号码的结果,通过消息APP_MN_GET_VMW_ADDR_CNF传递给MMI. 2. 用户设置:即读取NV设置,读取SIM卡失败或者为空后,读取NV中存储的号码. 用户设置方法:Message->options->voice mail server->Line 1 Number中输入号码并保存.保存时先存SIM卡,SIM卡存失败存NV. VM号码存SIM卡的结果,通过消息APP_MN_SET_VMW_ADDR_
+完整回答请参考FAQ: FAQ202072227
+### 问题: VTS测试项：VtsHalRadioV1_0Target 模块fail
+解决方案: 执行VTS测试VtsHalRadioV1_0Target 模块, 若出现以下报错信息与样机有无插上SIM卡相关: 透过VTS测试生成的host_log_xxx.txt查看若有出现"Expected: CardState::ABSENT" 关键字, "hardware/interfaces/radio/1.0/vts/functional/radio_hidl_hal_test.cpp:48\n Expected: CardState::ABSENT\n Which is: 4-byte object <00-00 00-00>\nTo be equal to: cardStatus.cardState\n Which is: 4-byte object <01-00 00-00>" [解决方法] 检查测试样机, 若存在SIM卡/测试卡. 请拔掉SIM/测试卡后重新验证 [分析VTS rad
+完整回答请参考FAQ: FAQ202072234
+### 问题: 什么是聊天功能 (Chat features) , 如何开启.
+解决方案: 聊天功能 (Chat features) 主要实现在短信app 内, 功能包括: 显示用户的输入状态 提供已读回执(在对方读过或收到您的信息后显示,以及在您读过信息后向对方显示) 通过移动数据网络和 WLAN 发送信息 支持分享文件和高分辨率照片 使用聊天功能时, 系统会使用富通信服务 (RCS) 协议通过 WLAN 和移动数据网络发送信息.仅当对话中的所有参与者都具有聊天功能时,系统才会启用聊天功能. 目前 RCS 服务提供商(如移动运营商)或 Google 的 Jibe Mobile 均可提供聊天功能. 如何开启: 当对话中的所有参与者都具有聊天功能时, 系统才会启用聊天功能. 如果 Google 有支持运营商和设备提供聊天功能,则 Google Message 会提示您同意 Jibe 相关条款. 在聊天功能的设置过程中, 系统可能会要求您输入手机号码. 手动开启聊天功能的步骤如下:依
+完整回答请参考FAQ: FAQ202072236
+### 问题: PNG图片在list控件显示透明效果
+解决方案: 显示原理: 现在代码中不显示透明效果是因为在进行图片decode的时候 没有进行透明度的解析,设置的图片类型为RGB565 在SetDecEncTarget函数中 判断当前的is_handle_transparent值为FALSE,所以不会进行透明解码. 修改方式 1. 在函数ListSetItemContentByPtr中添加一个参数 LOCAL BOOLEAN ListSetItemContentByPtr( CTRLLIST_OBJ_T *list_ctrl_ptr, const GUIITEM_CONTENT_T *item_content_ptr, uint16 item_index, uint16 item_content_index, BOOLEAN is_syn_decode, BOOLEAN is_update +++++++ BOOLEAN is_handle_tran
+完整回答请参考FAQ: FAQ202072247
+### 问题: 如何新建一个模块ID？
+解决方案: 下面以 MMI_MODULE_EXAMPLE 举例新建一个module id 1. 在app文件夹下新增一个 example 模块路径,并在该路径下新建 c 文件夹和 h文件夹,用于存放该模块对应的 c 文件和 h 文件,建立完效果如下: MS_Code\MS_MMI_Main\source\mmi_app\app\example\h MS_Code\MS_MMI_Main\source\mmi_app\app\example\c 在新增的h文件夹内新增文件 example_mdu_def.h: MS_Code\MS_MMI_Main\source\mmi_app\app\example\h\example_mdu_def.h 2. 在文件mmi_res_prj_def.h中新增如下信息: RES_ADD_MODULE(MMI_MODULE_EXAMPLE,"\\example\\exam
+完整回答请参考FAQ: FAQ202072248
+### 问题: 双卡配置为单卡
+解决方案: 1. 各分支单卡配置方案 9.0之前的分支ril是闭源的,如有涉及需要替换文件的,须由我司根据客户分支进行编译后提供. 测试建议: 1.看界面sim卡相关显示是否符合单卡需求,已经插卡能否正常识卡、驻网等. 2.查看AP log,看channel 使用情况是否正常 1.1. MOCOR5_SFPHONE_17F_RLS1单卡配置 配置单卡方案如下: 以sp9820e_xxx为例: 1.将/device/sprd/sharkle/sp9820e_xxx /sp9820e_xxx _native.mk中属性修改如下: SIM_COUNT := 2 PRODUCT_PROPERTY_OVERRIDES := \ ro.modem.l.count=2 \ persist.msms.phone_count=2 \ persist.radio.multisim.config=dsds \ $(PROD
+完整回答请参考FAQ: FAQ202072260
+### 问题: wifionly配置方案
+解决方案: 说明: 项目不需要modem通信功能(如平板项目)需要为其配置wifionly,可参考此方案. 该方案适用于10.0分支. 裁剪方案如下: 1. 修改路径: device/sprd/sharkl3/common/DeviceCommon.mk 删除或注释掉 include $(LOCAL_PATH)/TelephonyCommon.mk 这行代码 在该文件中添加如下代码: PRODUCT_PROPERTY_OVERRIDES += \ ro.radio.noril=true \ persist.vendor.radio.phone_count=1 \ #add radioInteractor PRODUCT_PACKAGES += radio_interactor_service \ radio_interactor_common PRODUCT_BOOT_JARS += radio_in
+完整回答请参考FAQ: FAQ202072264
+### 问题: 如何快速修改字符串未翻译、字符串显示错误的问题
+解决方案: 分析问题: 判断是否与字符串表格相关: 1. 切换系统语言后字符串跟随系统语言变化. 2.将系统语言切换成"IDTest"模式后,字符串显示为ID号. 字符串有以上变化,确定该问题与字符串表格相关. 问题分类: 1.字符串跟随系统语言变化,或者切换成"ID Test"模式后,显示成ID号,字符串表格中已经包含该字符串, 只需修改某种语言下字符串即可. 2.字符串不跟随系统语言变化,且只显示为英语.在代码中直接搜索该字符串,如果在字符串资源中对应一个 字符ID,需要将这个ID添加到字符串表格.翻译字符串. 修改步骤: 1.更新str_table &str_table1 2.1将系统语言切换成"IDTest"模式,切换到字符串显示有误的界面,找到显示有误的字符串对应的字符串ID, 在字符串表格中搜索字符串ID,修改该字符串ID在特定语言下的字符串. 2.2. 在字符表格中直接搜索显示有误的字符
+完整回答请参考FAQ: FAQ202072266
+### 问题: SMS编码格式选择
+解决方案: 可以. 开启宏MMI_SMS_ALPHABET_SETTING_SUPPORT后,message设置菜单中多了一个Coding management 选项,其中有四个选项 分别为 auto 、8bit coding、 UCS2 coding、GSM-7bit coding. 用户可以根据这个设置选择短信编码格式,发送底层协议的短信格式会自动转换成相应的类型. typedef enum _MN_SMS_ALPHABET_TYPE_E { MN_SMS_DEFAULT_ALPHABET = 0 , // 英文7位编码, 这是 gsm 的默认编码方式 MN_SMS_8_BIT_ALPHBET , // 8-bit 编码通常用于发送数据消息,比如图片和铃声等 MN_SMS_UCS2_ALPHABET , // UCS2(16bit),中文pdu编码,发送中文时,必须用 UCS2 进行编码 MN_S
+完整回答请参考FAQ: FAQ202072281
+### 问题: 如何去掉Camera录像过程中，被录制进去的自动对焦声音
+解决方案: 在相机录制的过程中,很容易触发自动对焦,导致对焦的声音录制进去了. 只需要修改 FocusOverlayManager.java的 updateFocusFinsh方法                  mFocusRing.startActiveFocusedFocus();
+                 if (mFocusArea != null) {
+
+                     if (mAppController.isPlaySoundEnable()) {
+-                        mCameraSound.play(MediaActionSound.FOCUS_COMPLETE);
++                        if (!(mListener instanceof VideoModule && ((Vi
+完整回答请参考FAQ: FAQ202072284
+### 问题: 修改Slide MAINMENU的翻页速度
+解决方案: 如果想修改slide风格的MAINMENU的翻页速度, 可以通过减少帧动画的次数,或者直接去掉对应的动画效果, 具体修改方式如下: 修改SlidePageMenuAutoSlidePage@mmi_mainmenu_slide_page.c 两种修改方案, 1. 注释掉对应的帧动画,不显示过度动画 for (current_frame = 0; current_frame <=GO_MAINMENU_TOTAL_FRAME_MAX; current_frame+=GO_FRAME_STEP_NUM) { SlidePageMenuDrawUpdateGoMenuLayer(menu_ctrl_ptr,first_page_index, next_page_index,direction,current_frame,is_disp_active); GUILCD_Invalidate( GU
+完整回答请参考FAQ: FAQ202072291
+### 问题: 是否支持Facebook和twitter
+解决方案: 目前Mocor平台不支持facebook,twitter等APK,后续也没有支持计划. 如果facebook(或twitter)可以支持web网页登陆方式的话,可以考虑使用浏览器打开的方式来支持. 如果由于服务器升级之后导致web方式不支持的话,目前没有解决方案.目前web方式登录应该还可以使用,不了解后续是否会升级. 使用Web方式登录的修改方式,可以参考下面 LOCAL const char* const s_mainmenu_browser_url[BROWSER_URL_TYPE_MAX] =
+{
+    "http://m.facebook.com",     //可能会变,具体根据实际来修改
+    "http://mobile.twitter.com", //可能会变,具体根据实际来修改
+};
+PUBLIC void MMIMAINMENU_StartBrowerU
+完整回答请参考FAQ: FAQ202072294
+### 问题: Android 10 CTS Verifier Notification Listener Test
+解决方案: [log分析] 报错信息显示"noisy notification test: getLastAudiblyAlertedMillis not set" 11-24 15:45:12.147 9560 9560 I InteractiveVerifier: next test is: AudiblyAlertedTest ... 11-24 15:45:15.183 9560 9560 I InteractiveVerifier: running test for: AudiblyAlertedTest 11-24 15:45:15.185 9560 9560 E InteractiveVerifier: noisy notification test: getLastAudiblyAlertedMillis not set 11-24 15:45:15.185 9560 9560 E I
+完整回答请参考FAQ: FAQ202072295
+### 问题: UMS312/512(T)平台USB2.0的驱动能力及眼高可以通过哪些寄存器修改？
+解决方案: UMS312可调节USB2.0眼图驱动能力及眼高的寄存器为analog_usb20_USB20_TRIMMING,寄存器地址为:0x323B0064. 其中bit[26:25]可以修改DP/DM的驱动电流大小,可以改善眼图边沿的倾斜率.修改值与电流大小关系如下: 如果眼图眼高不足,可以通过修改bit[24:19]来改善眼高,将值调小可以抬升眼高.另外此值的修改还与OTG识别相关,因此只需调至适当值让眼图通过即可.如果调至过低导致OTG不识别,请将bit[8:7]提升一下,该值可修改OTG设备插入时的检测阈值.相关描述如下: 如上修改都可以通过串口工具连接UMS312的UART1实现手动修改,修改时USB线不能插拔.命令如下: su -----获取权限 lookat 0x323b0064 -----查看该寄存器值 lookat -s 0x673d0c0 0x323b0064 ------将寄
+完整回答请参考FAQ: FAQ202072297
+### 问题: 获得uboot log方法
+解决方案: 一 通过串口获得UBOOT LOG,具体需要用那个串口,受如下宏控制 bsp/bootloader/u-boot15/include/configs/sp9863a_1h10_32b.h #define CONFIG_CONS_INDEX 1 二 从内存中获得,uboot log保存在如下地址.用JTAG时,可以直接 访问eaxi:0x92400000,如果是想从sysdump中获得,需要将此物理地下转换为虚拟地址 32位中0x92400000对应的虚拟地址是0xd2400000(vir_addr=(phy_addr-0x80000000)|0xC0000000), 64位中0x92400000对应的虚拟地址是0xFFFFFFC012400000 (vir_addr=(phy_addr-0x80000000)|0xFFFFFFC000000000) bsp/bootloader/u-boo
+完整回答请参考FAQ: FAQ202072301
+### 问题: android10.0 user版本下开启adb root权限方法
+解决方案: 尊敬的客户您好, 开启adb root权限和打开adb调试方法如下: >> 开启adb root platform/system/core/init/selinux.cpp bool IsEnforcing() { return false;<<<-------直接返回false } platform/system/core/adb/daemon/main.cpp static bool should_drop_privileges() { #if defined(ALLOW_ADBD_ROOT) // The properties that affect `adb root` and `adb unroot` are ro.secure and // ro.debuggable. In this context the names don't make the expected beha
+完整回答请参考FAQ: FAQ202072305
+### 问题: 增加字符包边显示
+解决方案: 字符要显示包边,不仅需要设置字符包边颜色,还需要设置text_state及effect
+(1)定义text_state , 需要加上 GUISTR_STATE_EFFECT
+    GUISTR_STATE_T text_state = GUISTR_STATE_ALIGN|GUISTR_STATE_EFFECT;(2)设置包边颜色及effect
+     text_style.edge_color = MMI_RED_COLOR; //设置所需的包边颜色
+     text_style.effect = FONT_EFFECT_CUSTOM;  //设置effect为FONT_EFFECT_CUSTOM
+
+(3)传入参数text_style,text_state
+GUISTR_DrawTextToLCDInRect( 
+                          
+完整回答请参考FAQ: FAQ202072306
+### 问题: CA-MPR功率调整，NV修改
+解决方案: ULCA MPR/AMPR Delta值回退法 l需求:在ULCA场景下,发射杂散和交调对输出功率要求比较苛刻,需要通过NV读取MPR和AMPR,方便快速调试 l实现:Delta值回退法,先利用3GPP协议的方法对MPR,AMPR,Tol.,P-max进行计算,然后读取ULCA MPR/AMPR read from NV使能标志位 LTE_optimize\LTE_download_dsp_compensation_cc0_optimize\LTE_Flag_config\reserved[54] lNV存放位置: LTE_optimize\LTE_download_rf_compensation_cc0_optimize\Reserved_band_info\Band_nox\Reserved_info\reserved[13:29] lNV Delta值精度0.5dB,如果需要回退功率
+完整回答请参考FAQ: FAQ202072308
+### 问题: 如何创建自己的工程
+解决方案: 如何创建自己的工程? 先确认一个project是否完整,先看看project_xx.mk是否存在,再看看lib/xxx是否存在. 以UMS9117-L为例,我们可以看到有一个project_ums9117_240X320BAR_48MB_CAT1.mk的文件, lib/ums9117_240X320BAR_48MB_CAT1/ 下面的闭源lib也是完整的. 举一个例子,我们想自己创建一个128X160分辨率的工程,步骤如下 1. 复制一份project_ums9117_240X320BAR_48MB_CAT1.mk,更名为project_ums9117_MyTest.mk, 打开project_ums9117_MyTest.mk, 在文件最后添加下面 PRODUCT_BASELIB_DIR = ums9117_240X320BAR_48MB_CAT1
+MAINLCD_DEV_SIZE =
+完整回答请参考FAQ: FAQ202072310
+### 问题: LTE平台用CMWRUN测试AMPR测试fail
+解决方案: 问题现象 : - 客户项目在用CMWRUN脚本测试时发现B1的低信道在AMPR项测试FAIL,且测试值 特别低,与LIMIT有很大的差异.详细测试结果如下: 问题分析: 1. 拿客户的机器能复现此问题,且是必现.客户机器其它测试项都测试PASS,只有此项 目在低信道测试FAIL. 2. 查看3GPP协议发现关于AMPR测试项,其对测试频段的测试频点有要求. B1只工作在在网络信号:NS-05模式下,且其对测试频点有要求. 在3GPP协议的AMPR测试项没有定义B3 Note1:当分配的E-UTRA UL信道带宽频率的下边缘大于或等于PHS频带 的上边缘(1915.7mhz)+4mhz+所分配的信道BW,其中信道BW 如第5.6款所定义.除注2中的信道分配外,由于可能无法满足 6.6.3.3.3.2中的排放要求,本规范版本中未涵盖低于此频率的运行 的A-MPR.对于载频大于或等于1945 M
+完整回答请参考FAQ: FAQ202072311
+### 问题: IMS的客制化SIP User-Agent
+解决方案: 如何配置IMS的客制化SIP UA? SIP User-Agent头域用于携带终端的品牌信息、产品型号、软件版本信息和硬件版本信息等.展锐正式版本中默认不配置SIP User-Agent,由客户根据自己的产品情况自行进行客制化. 方法有2,第一种方法不理解建议咨询IMS组,第二种方法不理解咨询APP组,建议使用第二种方法: 1.修改NV灵活配置. (1)使用NV工具NVTool打开NV工程nvitem.prj, 找到"sip_uaName". (2)User-Agent携带的内容是ASCII码,例如,如果期望IMS消息携带"User-Agent: VOLTE",则需要将"VOLTE"的ASCII码配置在sip_uaName[0] - sip_uaName[4]的数组中,如下: sip_uaName[0] ---- 0x56 ---- 'V' sip_uaName[1] ---- 0x4F 
+完整回答请参考FAQ: FAQ202072313
+### 问题: sharkle/pike2/sharkl3/sharkl5/sharkl5pro 等平台ddr scan的方法介绍
+解决方案: sharkle / pike2 ddr scan的方法: 1.开启 .\chipram\arch\arm\cpu\sprd_dmc\r3p0\dmc_sprd_r3p0.h下的 CONFIG_DDR_SCAN 2.编译chipram 3.用编译好的out目录下的u-boot-spl-16k-sign.bin文件替换pac包中的u-boot-spl-16k-sign.bin文件 4.下载spl 5.开机抓开机时的串口log,将串口log提交到展锐分析 sharkl3 ddr scan的方法: 1.先确认是ddr4还是ddr3,根据实际情况配置 ./chipram/include/configs/工程.h 中的 CFG_DRAM_TYPE 宏 2.编译chipram 3.在out目录下找到 ddr_scan-sign.bin替换pac包中的u-boot-spl-16k-sign.bin文件 4
+完整回答请参考FAQ: FAQ202072325
+### 问题: 将可信证书预置进系统
+解决方案: 背景:客户提供自定义.cer证书文件,想要预置到系统,开机后可以自动安装 实现步骤: 1.将.cer转化为.pem openssl x509 -inform der -text -in ***.cer -out ***.pem 2.由于Android系统级别的证书文件名是以'0'为后缀,以证书的hash值为名字,所以,需要根据证书生成对应的hash值,命令如下: openssl x509 -inform PEM -subject_hash_old -in ***.pem | head -1 生成的结果如:fe3d635c 3.将.pem复制到目标证书,fe3d635c.0 cp ***.pem fe3d635c.0 4.请将步骤3的证书文件fe3d635c.0放入证书代码路径下(system/ca-certificates/files),重新编译即可 也以将目标证书先push到系统证书目录
+完整回答请参考FAQ: FAQ202072342
+### 问题: 客户开启keyguard左下角助手功能后白屏问题优化
+解决方案: 1.在config.xml中设置 config_keyguardShowLeftAffordance为true, /frameworks/base/packages/SystemUI/res/values/config.xml 71 <!-- Show mic or phone affordance on Keyguard --> 72 <bool name="config_keyguardShowLeftAffordance">false</bool> 2.这样一来设置锁屏时,会在keyguard界面左下角显示电话图标(非go版本在第一次开机显示电话图标,解锁之后该图标会切换成语音助手),通常会遇到以下问题: 1) 滑动电话图标进入pattern界面,长时间不操作,pattern背景会变透明,效果为keyguard上方显示pattern圆点 2) 进入pattern界面后点击back返回
+完整回答请参考FAQ: FAQ202072343
+### 问题: Partner Android Build (PAB)
+解决方案: CTS, VTS, GTS 测项失败,要申请 waiver 都需要有对应的 patch 修改.为了减少 waiver 的申请,若是 google 在正式 release XTS 版本前已经修复该问题,则可以通过下载 Partner Android Build (PAB) 最新的测试工具,若测试项在 PAB 可以 pass, 则可以将测试结果提交到 Android Partner Approvals (APA), 流程大致如下: 1. 准备正式版本的完整 CTS 测试报告, ex:CTS 10.0 R6, Suite/Build = 10_r6/6958444 2. 使用最新版本的 PAB 版本验证该 fail 测项 3. 收集测试报告提交到 Android Partner Approvals (APA) 注: Partner Android Build (PAB) 连结示例: https:
+完整回答请参考FAQ: FAQ202072347

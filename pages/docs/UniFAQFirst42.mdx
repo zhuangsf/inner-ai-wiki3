@@ -1,0 +1,305 @@
+### 问题: android5.1通话中如何通过PhoneAccountHandle获得subid，slotid，phoneid
+解决方案: android5.1通话中通过PhoneAccountHandle获得subid,slotid,phoneid,如下: int accountSubId = Integer.parseInt(accountHandle.getId());//获得subid int slotId = SubscriptionManager.getSlotId(accountSubId);//获得slotid int phoneId = SubscriptionManager.getPhoneId(accountSubId);//获得phoneid
+参考FAQ: FAQ80265
+### 问题: android5.1拨号后，设置定位里为何显示NO apps have requested location recently
+解决方案: android5.1中位置信息的功能需要GMS包支持,所以在不包含GMS包的版本中拨号后,即使location功能打开,也会显示"NO apps have requested location recently"
+参考FAQ: FAQ80270
+### 问题: android5.1通话界面中调出拔号盘输入号码后为何不能删除
+解决方案: 通话界面中dialpad中没有删除按钮,是android原生设计如此. 通话界面中dialpad,按照运营商后台提示输入数字,不会涉及到删除操作.
+参考FAQ: FAQ80273
+### 问题: CTS android.media.cts.MediaCodecCapabilitiesTest--testAvcHigh40测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80281
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHTTP_H264Base_AAC_Video1测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80282
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHTTP_H264Base_AAC_Video2测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80285
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHTTP_MPEG4SP_AAC_Video1测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80286
+### 问题: CTS测试case：android.media.cts.StreamingMediaPlayerTest--testHTTP_MPEG4SP_AAC_Video2测试fail怎么办
+解决方案: 该条CASE测试时会访问国外网站播一段视频,所以测试的时候必须翻墙才能pass
+参考FAQ: FAQ80287
+### 问题: CTS测试case： android.net.http.cts.ApacheHttpClientTest--testExecute_withMobile fail怎么办
+解决方案: 这条case测试时必须有已保存的ap,且打开wifi后可自动连接 出现的fail信息如下: junit.framework.AssertionFailedError: Wifi must be configured to connect to an access point for this test.
+参考FAQ: FAQ80290
+### 问题: CSTAR 智能输入法如何修改丝印
+解决方案: 关于CSTAR 智能输入的丝印配置 , CSTAR 有提供每个语言的丝印组合 请参考 .\Third-party\cstar\doc\cstar_digit_keymap.xls 可以找到客户想要的丝印配置 , 然后修改代码里头的丝印配置 => mmiim_cstar.c 里头找到对应的语言加以修改 但由于展讯目前已经没有跟CSTAR 签约 , 若这样的设置碰到问题 , 请直接与CSTAR 联系 展讯无法在提供相关支持
+参考FAQ: FAQ80701
+### 问题: Android系统顶端下拉菜单中把关于蓝牙，wifi，飞行模式的控制栏去掉
+解决方案: android的状态栏的下拉栏QSPanel中,关于系统自带的快捷设置的条目是从frameworks/base/packages/SystemUI/res/values/config.xml中的quick_settings_tiles_default读取加载的. config.xml--片段 <string name="quick_settings_tiles_default" translatable="false"> wifi,bt,data,inversion,airplane,lte,rotation,flashlight,location,cast,hotspot </string> 客户如果有需求不显示某些条目,比较简单的方法就是直接从这个字符串中删除不需要的项目.
+参考FAQ: FAQ80331
+### 问题: layout-xxXxx布局文件的使用
+解决方案: 至于为什么没有加载800x480下的资源,我们要理清几个关系. 我们平常所说的800x480、1280x720都指的是px也就是800pxX480px.而屏幕适配的单位是dp. dp和px的关系如下: 1dp = (目标屏幕密度/标准屏幕密度)*px. 目标屏幕密度也就是设备的density,可以通过adb shell getprop ro.sf.lcd_density查看. 标准屏幕密度是160dpi(mdpi). 假设density是240.此时1dp = 1.5px,800x480 px大约为 540x320dp.所以这个时候会去优先加载layout-540x320目录下的资源,如果不存在就加载layout目录下的资源. 如果设备的density是160dpi在这里就会去加载layout-800x480下的资源. 这种布局形式我们一般是很少用.大多与都是使用layout-dpi这种带有dpi的布局.
+参考FAQ: FAQ80356
+### 问题: 如何修改IMEISV
+解决方案: IMEISV(INTERNATIONAL MOBILE EQUIPMENT IDENTITY SOFTWARE VERSION) SV表示软件版本 它跟IMEI的唯一区别就在于最后一位 IMEI有15位,最后一位是Check digit,即检验位; IMEISV有16位,是去掉了Check digit,加上了两位SVN,即software version number.(从00 - 98,99备用) 一般我们默认都是1,如需有需求,可以修改. 修改方法: 修改如下nv值: nv_type -> NV_IMEISV
+参考FAQ: FAQ81721
+### 问题: IMEI号的含义是什么
+解决方案: IMEI(INTERNATIONAL MOBILE EQUIPMENT IDENTITY)国际移动设备标识码. IMEISV(INTERNATIONAL MOBILE EQUIPMENT IDENTITY SOFTWARE VERSION) SV表示软件版本 它跟IMEI的唯一区别就在于最后一位 IMEI有15位,最后一位是Check digit,即检验位; IMEISV有16位,是去掉了Check digit,加上了两位SVN,即software version number.(从00 - 98,99备用)
+参考FAQ: FAQ82030
+### 问题: sta自主切换热点(roaming)
+解决方案: 最近遇到了些相关wifi 认证的问题,其中就涉及到了wifi漫游相关的问题. 在此简介下wifi漫游的原理: 例如:两个AP1、AP2. 这两个AP需要注意的特性是: 1、无线AP必须设置为相同的SSID.不同的SSID意味着不同的无线网络,而无法实现无线漫游. 2、必须采用相同的WEP或WPA加密.(这两个AP的密码一致) 当STA成功登录到AP1后,关闭AP1或者AP1信号比AP2信号弱的时候,sta可以自动的切换到AP2,中间不存在断开重新关联的情况,这便是漫游成功了.
+参考FAQ: FAQ80406
+### 问题: 如何在通过adb命令行查看CP2版本信息（2351方案）
+解决方案: 2351方案中,CP2对应的AT命令接口是/dev/spipe_wcn5,因此向这个接口发送获取CP2info的AT命令,CP2就能够返回CP2版本相关的信息,再用cat命令查看这个接口就能看到CP2版本信息. adb root adb remount adb shell echo "at+spatgetcp2info\r" > /dev/spipe_wcn5 cat /dev/spipe_wcn5
+参考FAQ: FAQ80425
+### 问题: 2351芯片是否支持802.11r协议，如何打开
+解决方案: 2351芯片默认是支持802.11r(fast roaming)的,如果需要从界面打开fast roaming,需要修改对应工程的system.prop文件,文尾添加一行: ro.support.auto.roam=enable 亦可通过adb动态修改: adb root adb remount adb push build.prop /system/build.prop ------------修改后的文件 adb reboot 之后再WLAN高级选项就能看到"自动漫游"的开关,打开即可;
+参考FAQ: FAQ80259
+### 问题: WIFI WFA 5.2.16项（pmk cache）测试需要注意什么
+解决方案: Wi-Fi_CERTIFIED_n_Test_Plan_2.0.35中规定要观察空口包中pmkid情况的操作较复杂,实际操作中可做如下简化: 漫游过程是不应该出现deauth的情况的,如果第一次漫游(AP1漫游到AP2)出现断开的现象(STAUT给AP1发送deauth帧),STAUT和AP1这边第一次关联缓存的PMKID就会被清掉,第二次漫游(AP2漫游回AP1)时,没有了PMKID缓存,就不会走入PMK caching的过程了,肯定就是出现full EAP过程,所有只要第一次漫游失败,这个case就判断是测试失败的.
+参考FAQ: FAQ80413
+### 问题: 什么是DTM？
+解决方案: DTM: Dual Transfer Mode(双重传输模式),DTM是GSM/GPRS/EDGE向UMTS演进的一个关键技术,除了与网络有关,还与终端有关.支持DTM的终端可以同时附着在GPRS和GSM网络上,可同时接收GSM和GPRS的寻呼信息.可以同时进行GPRS和GSM业务,在接收数据的同时可以打电话.支持DTM功能的终端为Class A.另外,还有Class B和Class C类终端: Class B: 1) 可以同时附着在GPRS和GSM网络上,可同时接收GSM和GPRS的寻呼信息; 2) 但不能同时进行GPRS和GSM业务,即通话和数据传输不可同时进行.在进行数据传输过程中可以接收GSM寻呼消息,这时用户可以选择暂停数据传输而接听电话,或者拒绝接听电话而继续数据传输. Class C: 只能附着在GSM或GPRS网络上,这就意味着如果用户选择GPRS模式,将不能接收GSM呼叫请求.
+参考FAQ: FAQ80407
+### 问题: wifi 802.11的协议标准？
+解决方案: wifi 802.11协议包含下面四个标准: (1)802.11a,1999年9月制定,工作在5gHZ的频率范围(频段宽度325MHZ),最大传输速率54mbps,但当时不是很流行,所以使用的不多. (2)802.11b,1999年9月制定,时间比802.11a稍晚,工作在2.4g的频率范围(频段宽度83.5MHZ),最大传输速率11mbps. (3)802.11g,2003年6月制定,工作在2.4gHZ频率范围(频段宽度83.5MHZ),最大传输速率54mbps. (4)802.11n,2009年才被IEEE批准,在2.4gHZ和5gHZ均可工作,最大的传输速率为600mbps. 这些协议均为无线网络的通信所需的基本协议,最新发展的,一般要比最初的有所改善.
+参考FAQ: FAQ80460
+### 问题: 预先身份认证
+解决方案: 预先身份验证用来加速关联转移.从工作站决定转移至新的接入点,到新接入点开始传送帧给工作站,身份验证是这段时间内最容易造成延迟的因素,预先身份验证的目的就是缩短这段时间,在需要之前先进行这项费时的操作以建立彼此的认证关系. 例如: 假设有AP1,AP2两个热点. 不采用预先身份认证: 1、sta与AP1形成关联 2、sta逐渐脱离AP1靠近AP2到其重叠区 3、AP2信号比AP1强,sta决定与AP2关联 4、sta与AP2进行身份认证 5、sta与AP2重新关联 6、sta开始使用网络 采用预先身份认证: 1、sta与AP1形成关联 2、sta逐渐脱离AP1靠近AP2到其重叠区,检测到AP2存在,sta与AP2进行预先身份认证 3、AP2信号比AP1强,sta决定与AP2关联 4、sta开始使用网络 上面区别是,当sta检测到AP2就立即进行身份认证,当其决定关联AP2时候就可以立即关联,使漫游更加顺畅.
+参考FAQ: FAQ80416
+### 问题: 802.11与“漫游”
+解决方案: 802.11标准完全没有提到"漫游"(roaming)这个词(最近成立任务组负责解决漫游的问题). 漫游指的是工作站转换接入点的过程. 决定是否转换接入点完全取决于所使用的软硬件,由各家厂商自行决定.
+参考FAQ: FAQ80420
+### 问题: 什么是WIFI active scan？
+解决方案: STA依次在每个工作信道发出Probe Request广播帧,并在当前信道等待Probe Response(or Beacon)一段时间,寻找与STA所属有相同SSID的AP,若找不到相同SSID的AP,则一直扫描下去. 其中Probe Request帧又分为两种: Directed probe — STA发送一个具有特定ssid的Probe Request帧,只有和此ssid匹配的热点才会回复一个Probe Response帧. Broadcast probe — STA发送一个不具有ssid element的Probe Request帧,所有热点在收到此帧后都会回应一个Probe Response,其中包含了热点支持的每个ssid(开启隐藏ssid功能的热点不会显示支持ssid情况).
+参考FAQ: FAQ80417
+### 问题: 什么是WIFI passive scan？
+解决方案: Passive Scan是指通过在每个工作信道侦听AP定期发送的Beacon帧来发现网络,热点默认每100ms发送一个Beacon帧,该帧提供了AP及所在BSS相关信息,特点是找到时间较长,但STA较省电,目前市场上大部分STA设备使用的是Active Scan.
+参考FAQ: FAQ80474
+### 问题: 什么是background scan（bgscan）？
+解决方案: Background Scan — STA会定时扫描一小段时间或者当网络空闲时才扫描监视周围热点信号强度等信息,以减少对用户正常使用(数据通路)的干扰;一旦之前使用的热点信号强度低于某个阈值,STA可快速切换到某个信号更强的热点.
+参考FAQ: FAQ80479
+### 问题: 什么是type 0短消息？
+解决方案: type 0短消息是系统确认终端是否可接收短信,属于确认信息终端界面无任何提示.
+参考FAQ: FAQ80503
+### 问题: 标清、高清、全高清的分类标准和分辨率
+解决方案: 标清=Standard Definition=SD NTSC制式标清:纵向480线=480i/p (640x480, 704x480, 720x480, 848x480等 PAL制式标清:纵向576线=576i/p (720x576, 768x576, 1024x576等 高清=High Definition=HD=纵向720线=720p (960x720,1280x720 全高清=Full High Definition=FHD=纵向1080线=1080i/p(1440x1080,1920x1080)
+参考FAQ: FAQ80523
+### 问题: 下载完版本后第一次开机背光半亮如何修改成全亮
+解决方案: 如下位置修改: framework/base/packages/SettingsProvider/res/values/defaults.xml <integer name="def_flipping_silence_data">0</integer> <bool name="def_accelerometer_rotation">true</bool> <!-- Default screen brightness, from 0 to 255. 102 is 40%. --> - <integer name="def_screen_brightness">102</integer> + <integer name="def_screen_brightness">255</integer> <bool name="def_screen_brightness_automatic_mode">false</bool>
+参考FAQ: FAQ80559
+### 问题: 我司SC2351C 蓝牙芯片的 Timer for TX Power Control是多少？
+解决方案: 300ms
+参考FAQ: FAQ80565
+### 问题: 什么是FCC认证,和BQB认证有什么区别？
+解决方案: FCC 是美国联邦通信委员会( Federal Communication Commission )的缩写,成立于 1934 年,直接对国会负责,它主要对无线电、通信等进行管理与控制,属政府机构,有执法权.为了履行通信法、各种条约以及国际规定所赋予的职责,为了促进更加有效的利用频谱资源,美国联邦通信委员会为射频设备制定了技术标准. FCC 认证是美国 EMC 强制性认证,主要针对 9KHz-3000GHz的电子电器产品,内容涉及无线电、通信等各方面,特别是无线通信设备和系统的无线电干扰问题,包括无线电干扰限值与测量方法,以及认证体系与组织管理制度等. BQB认证是蓝牙认证,专门针对蓝牙功能的产品,由蓝牙组织SIG的要求使用蓝牙技术的产品都必须通过BQB专利认证,才能使用拥有蓝牙技术的使用权和蓝牙的LOGO. FCC适用于涉及美国50多个州、哥伦比亚以及美国所属地区,而BQB是专门针对蓝牙功能的产品的.二者的适用范围是不一样的.
+参考FAQ: FAQ80628
+### 问题: FCC认证或者BQB认证时BT不支持哪些Profile？
+解决方案: 有四项蓝牙profile(HID,MAP,HDP,PAN),需要在测试时关闭并声称不支持. HID,MAP,HDP,PAN四项profile配置为不支持.正式版本的时候可以打开.
+参考FAQ: FAQ80629
+### 问题: 当做BQB认证测试时，需要关闭不支持的profile时，在哪里修改？
+解决方案: 代码修改的文件路径如下:/packages/apps/Bluetooth/res/values/config.xml, 把相对应的profile的地方修改为false.
+参考FAQ: FAQ80631
+### 问题: 什么是QDL（DID）列名认证？
+解决方案: QDL列名:蓝牙产品"最终产品列表",原来称呼:EPL列名.指蓝牙BQB认证的列名形式,例如蓝牙音箱成品, 如果蓝牙模块已经过了BQB认证,那么蓝牙音箱这个产品可以不用重新申请BQB认证,只要取得模块供应商的授权,就可以把产品以列名的形式上传到BQB网站. *从2012年起,BQB的QDID号,变更为DID号 *从2014年2月起,EPL列名变更为QDL列名 QDL是一种列名方式(类似之前叫的EPL列名) DID是QDL的编号,类似证书编号一样,因为申请QDL列名成功后,证书上会体现DID号.故现在也可以称QDL列名为DID列名,性质是一样的.
+参考FAQ: FAQ80633
+### 问题: 什么是Power Class（射频功率等级）， SR2351 WCN 芯片支持的Power Class是多少？
+解决方案: PowerClasss是蓝牙技术,决定传输距离.现在大部分手机和移动装置所使用的是PowerClass2,标准传输距离为10米. PowerClass1通讯距离大约在80~100米之间.通常用在大功率/远距离的蓝牙产品上,因成本高和耗电量大,多用在商业特殊用途上. SR2351 WCN 芯片支持的Power Class是Power Class 1.
+参考FAQ: FAQ80634
+### 问题: 充电过程99%到100%时间过长问题
+解决方案: 现象:充电的时候长时间维持在99%不能显示100%,一般维持在1小时以上 原因:adc校准的时候电流零点不准确导致软件无法读取正确的截至充电电流,从而不能达到充电结束条件,最终超时截至充电.可以使用一个稳压源连接手机主板GND的方式给手机供电并开机,检查log中关键字current:对应值,此数值如果和0偏差超过20则可以确定是电流零点不准. 解决办法:adc重新做校准,校准的时候供电电源需要连接到手机的主板GND,而不是电池负极.
+参考FAQ: FAQ80650
+### 问题: 为什么在状态栏按钮中点击关闭wifi，wifi按钮的状态不能立即显示关闭？
+解决方案: 从用户点击按钮关闭wifi开始,到wifi关闭完成,这一关闭过程是需要时间的. 在Setting界面(或WLAN界面),按下wifi关闭按钮后,按钮由绿色变为深灰色,这表示wifi正在关闭, 当wifi关闭完成后,按钮由深灰色变为浅灰色,表示wifi已关闭. 同样在状态栏中,按下wifi关闭按钮后,按钮由亮蓝色变为暗蓝色,这表示wifi正在关闭, 当wifi关闭完成后,按钮由暗蓝色变为浅灰色,表示wifi已关闭. (亮蓝色与暗蓝色是有区别的,对比该界面其他亮蓝色按钮可以看出区别) 所以,在设置界面关闭wifi也需要这么长的时间,这个时间是wifi断开网络并关闭WIFI射频芯片然后更新wifi状态并返回的时间. 因此,状态栏上显示的 wifi从开启状态,到正在关闭wifi状态,到wifi关闭成功状态,这是正常现象不是问题.
+参考FAQ: FAQ80681
+### 问题: 为什么Android4.4 版本中下拉状态中wifi不显示wifi名称？
+解决方案: 现象: 连接wifi后,在下拉状态栏,查看wifi的名称为WI-FI,而不是所连接的wifi的名字. 解释: 下拉状态栏wifi名称显示为WI-FI 不显示所连接的AP的名称,这是Android4.4 原生设计.SPRD 未对此原生设计做过修改,不是bug.
+参考FAQ: FAQ80695
+### 问题: Why wifi display icon displayed when playing webpage video?
+解决方案: 此问题与装置是不是low ram devices有关,如果是low ram MediaRouter.java中的isRouteAvailable函数会直接返回true导致 wifi display icon显示 MediaRouter.java中的isRouteAvailable函数如下,此为chrome本身用的库无法做修改 // On low-RAM devices, do not rely on actual discovery results unless asked to. if ((flags & AVAILABILITY_FLAG_REQUIRE_MATCH) == 0 && mLowRam) { return true; }
+参考FAQ: FAQ80703
+### 问题: 为何进入google的语音搜索界面不能手动锁屏
+解决方案: 旧版本的google search与launcher3搭配才会存在此问题, 如果要搭配launcher3需要更新google search到5.6.24.19之后的版本才能解决此问题
+参考FAQ: FAQ80712
+### 问题: 如何关闭GMS应用的自动更新功能?
+解决方案: 1. GMS应用的自动更新可以在Google play store应用透过设定禁止更新,步骤如下 Google play store -> 设定 -> 关闭自动更新应用程式 2. Google play store应用本身与Google play service会自动背景更新无法控制
+参考FAQ: FAQ80719
+### 问题: 验证simlock功能时如何通过log确认白名单配置是否正常
+解决方案: 由于国内测试卡除白卡外主要是移动,联通,而这两个运营商的MCCMNC通常有多个,如下所述: 中国移动 mcc:460 mnc:00/02/07 中国联通 mcc:460 mnc:01/06/09 首先需配置全部或者包含测试卡的MCCMNC的白名单,才能确保simlock功能正常验证. 通常采用radio log来确认当前sim的MCCMNC,可以搜索IMSI字段来确认,也可以搜索MCCMNC等.
+参考FAQ: FAQ80729
+### 问题: 通过adb命令查看以及设置手机中的语言（国家）
+解决方案: 这个问题涉及到两个属性 persist.sys.language persist.sys.country 我们可以通过在adb shell下使用getprop命令来查看手机当前的语言设置,通过setprop命令修改当前手机的语言设置,修改后重启手机即可生效,如果想恢复出厂设置后依然生效,则需要进行项目mk文件的修改.下面以修改当前语言设置为中文,举例说明: 查看系统属性 adb shell getprop persist.sys.language 修改系统属性 adb root adb remount adb shell setprop persist.sys.language zh setprop persist.sys.country CN 国家和语言两个属性要一起修改,重启手机后生效.
+参考FAQ: FAQ80792
+### 问题: 修改手机默认语言不生效问题
+解决方案: FAQ 24602和FAQ 12630中已经给出了修改手机默认语言(即恢复出厂设置及第一次烧机后的语言)的方法但有时会出现修改后不生效的情况,排除修改代码不正确的情况外,还有一个地方需要注意. 首先查看添加了上述两种方法的修改后编译出来的build.prop中是否已经修改成功,如果不成功的话,可能是您的修改存在问题,需要查看是否哪步修改不正确.如果build.prop中已经成功,但是版本pac包或者system.img烧入手机中,手机系统语言仍不正确,那么需要检查代码中是否存在OEM分区.OEM分区中的内容会覆盖掉您的修改,解决方案是删除或修改vendor/sprd/oem/config/AreaConfig/custom.prop这个文件中冲突的部分.
+参考FAQ: FAQ80799
+### 问题: 触宝输入法能否根据系统语言进行键盘切换
+解决方案: 触宝输入法是我司提供的一个第三方输入法.它支持在烧机后的首次启动后,根据系统locale自动设置locale对应的默认语言,前提是有该语言包,但不支持之后的随语言切换键盘.
+参考FAQ: FAQ80804
+### 问题: wifi之PSK、PMK
+解决方案: 我们平时说的WPApassword事实上叫PSK(pre-shared key),长度通常是8-63字节,它加上ssid通过一定的算法能够得到PMK(pairwise master key).PMK=SHA-1(ssid,psk) ,PMK的长度是定长的,都是64字节.
+参考FAQ: FAQ80816
+### 问题: wifi之PTK
+解决方案: 认证的时候会生成一个PTK(pairwise temporary),这是一组密钥,它的生成方法也是採用的哈希,參数是连接的clientMAC地址、AP的BSSID、A-NONCE、S-NONCE、PMK,当中A-NONCE和S-NONCE是两个随机数,确保每次连接都会生成不同的PTK.
+参考FAQ: FAQ80822
+### 问题: 怎样实现SPI设备（如指纹识别）的兼容
+解决方案: SPI设备不像I2C设备,可以在一个I2C总线上通过注册不同的地址挂载很多设备.而是通过CS来区分不同的设备. 目前只有一个CS,故最多可兼容两个SPI设备.以指纹识别为例: 目前指纹识别最多可以兼容两家.硬件上修改其中一家指纹芯片SPI片选信号为高有效,软件上做以下调整(见标红部分). /kernel/drivers/input/fingerprint/et300/et300-spi.c static struct spi_board_info et300_spi[] __initdata = { [0] ={ .modalias = "et300", .bus_num = 1, 对应总线SPI1 .chip_select = 0, => .chip_select = 1 .max_speed_hz = 15000000, .mode = SPI_MODE_3, }
+参考FAQ: FAQ80821
+### 问题: 如何删除设置中的设置日期和时间里的“使用GPS提供时间”选项?
+解决方案: 请做如下修改: packages/apps/Settings/src/com/android/settings/DateTimeSettings.java中的
+public static boolean GPS_SUPPORT = !(SystemProperties.get("ro.wcn").equals("disabled"));
+ 如果贵公司没有用到"ro.wcn"属性,请将
+GPS_SUPPORT的值直接写成false即可.
+参考FAQ: FAQ80845
+### 问题: CTS Verifier测试，BYOD Managed Provisioning第二个测试项fail
+解决方案: 步骤:安装CTS Verifier,按照步骤进测试项:Badged work apps visible in Launcher 现象:发现 Downloads、Google Settings、Play Store 这三个应用没有办公图标标识 分析:这个测试项检测多用户模式下,应用图标能否在Launcher正常显示,如果显示异常,一般情况下是Launcher修改引入的问题.,排查Launcher的改动进行问题定位.
+参考FAQ: FAQ80852
+### 问题: CTS verifier_R4 Notification Attention Management Test项FAIL
+解决方案: 现象:Notification Attention Management Test项:测试到create contacts.....项fail,无法测试下去 这个测试项测试创建联系人和电话号码匹配规则,如果测试出现FAIL,一般情况下是修改联系人创建逻辑或者号码匹配规则引入,排查类似修改进行定位.
+参考FAQ: FAQ80863
+### 问题: CTS如何去掉BLE的feature，在测试报告不显示？
+解决方案: 找到工程配置文件,一般在device\sprd\scx35\device.mk或者*.mk下: PRODUCT_COPY_FILES += \ ...... frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \ ...... 去掉这个feature的拷贝.
+参考FAQ: FAQ80869
+### 问题: adb命令修改系统时间
+解决方案: adb 命令修改系统时间 在setting设置中修改时间,但是这里的设置时间单位最多到分钟 如果想修改的时间到秒 可通过如下adb 相关命令修改系统时间 adb shell date -s "yyyymmdd.[hhmmss]" 如 adb shell date -s "20120801.120503" 补充: 也可以单独设置日期,设置时间到小时/分钟/秒 如: adb shell date -s "20120801" 就是20120801,日期变了,但是时间依然保持不变 adb shell date -s "20120801.12" 就是20120801.12时 adb shell date -s "20120801.1205" 就是20120801.12时05分
+参考FAQ: FAQ80875
+### 问题: 如何对system.img进行签名处理，确保CTS签名项可以PASS？
+解决方案: 目前user版本编译使用的是build\target\product\security\release\下的一组release-key,编译出来的system.img已经是release-key签名过,跑CTS签名项直接可以PASS.
+参考FAQ: FAQ80878
+### 问题: 如何配置APN协议和APN漫游协议
+解决方案: 配置文件路径: 一. CUCC版本 vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 二. 通用版本 vendor/sprd/operator/operator_res/apn/apns-conf_8.xml 配置方法: 1.APN 协议 protoco="IP" 表示IPv4 protoco="IPV6" 表示IPv6 protoco="IPV4V6" 表示IPv4/IPv6 2. 如果是APN漫游协议,参考上面. roaming_protocol="配置项"
+参考FAQ: FAQ80887
+### 问题: 如何配置APN身份验证类型
+解决方案: 配置文件路径: 一. CUCC版本 vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 二. 通用版本 vendor/sprd/operator/operator_res/apn/apns-conf_8.xml 配置方法: authtype="3" 表示:PAP or CHAP authtype="2" 表示:CHAP authtype="1" 表示:PAP authtype="0" 表示:None
+参考FAQ: FAQ80890
+### 问题: 如何配置APN承载系统
+解决方案: 配置文件路径: 一. CUCC版本 vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 二. 通用版本 vendor/sprd/operator/operator_res/apn/apns-conf_8.xml 配置方法: bearer="0" 表示:Unspecified bearer="13" 表示:eHRPD bearer="14" 表示:LTE
+参考FAQ: FAQ80891
+### 问题: 如何配置APN的MVNO类型
+解决方案: 配置文件路径: 一. CUCC版本 vendor/sprd/operator/cucc/specA/res/apn/apns-conf.xml 二. 通用版本 vendor/sprd/operator/operator_res/apn/apns-conf_8.xml 配置方法: mvno_type ="" 表示:None无 mvno_type ="spn" 表示:SPN mvno_type ="imsi" 表示:IMSI mvno_type ="gid" 表示:GID
+参考FAQ: FAQ80896
+### 问题: 怎样取消状态栏漫游图标的显示
+解决方案: 修改如下路径文件: frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/NetworkControllerImp.java public void notifyListeners() { //省略其他 // int roamIcon = (isRoaming()&& hasService()) ? TelephonyIcons.ROAMING_ICON : 0; int roamIcon = 0; // 修改为0
+参考FAQ: FAQ80958
+### 问题: 如何替换CP2的bin文件？
+解决方案: 使用ResearchDownload.exe工具将settings中的WCN文件替换,具体如下:FDL_WCN替换为fdl1.bin;Modem_WCN替换为EXEC_KERNEL_IMAGE0.bin;
+参考FAQ: FAQ80962
+### 问题: 怎样取消指定漫游卡注册到指定网络时，漫游图标的显示
+解决方案: 以漫游卡Airte为例,mccmnc=40410,当注册到 40402 或者 40414 时,取消漫游图标的显示. 需要配置文件路径: /frameworks/base/core/res/res/values-mcc404-mnc10/ Config.xml 配置方法: <string-array translatable="false" name="config_sameNamedOperatorConsideredRoaming"> </string-array> <string-array translatable="false" name="config_operatorConsideredNonRoaming"> <item>40402</item> <item>40414</item> </string-array>
+参考FAQ: FAQ80984
+### 问题: 光传感器与背光的匹配值是在哪里修改
+解决方案: 修改文件 frameworks\base\core\res\res\values\Config.xml 里的2个对应关系表 <integer-array name="config_autoBrightnessLevels"> <item>20</item> <item>85</item> <item>347</item> <item>1500</item> </integer-array> <integer-array name="config_autoBrightnessLcdBacklightValues"> <item>20</item> <item>100</item> <item>150</item> <item>200</item> <item>250</item> </integer-array>
+参考FAQ: FAQ81003
+### 问题: 如何在开机向导界面长按powerkey也要弹出选项菜单
+解决方案: frameworks/base/policy/src/com/android/internal/policy/impl/GlobalActions.java中 mDataModeSwitch = new ToggleAction( ... public boolean showBeforeProvisioning() { return false;//需要改为true ,在开机向导界面就可以弹出选项菜单 } ...
+参考FAQ: FAQ81004
+### 问题: 如何修改系统中12小时制AM/PM在各语言下的显示
+解决方案: 以修改俄语为例: 在external\icu4c\data\locales\ru.txt文件中, 把 gregorian{ AmPmMarkers{ "AM", "PM", } 修改为 gregorian{ AmPmMarkers{ "ДП", "ПП", } 如果需要修改其他语言下的显示,那么只需在external\icu4c\data\locales目录下找到对应语言文件(例如英语en.txt),修改AmPmMarkers下的字符串即可. 修改完成后在external/icu/icu4c/source/目录下需执行sh makeData.sh,再进行全编后便可生效.
+参考FAQ: FAQ81046
+### 问题: 在第三方应用中如何打开FM应用？
+解决方案: FMRadioMainActivity是FM的Main Activity,因此当第三方应用想打开FM应用的时候 我们可以通过如下代码实现: Intent sintent = new Intent(Intent.ACTION_MAIN); sintent.addCategory(Intent.CATEGORY_LAUNCHER); sintent.setComponent(new ComponentName("com.thunderst.radio", "com.thunderst.radio.FMRadioMainActivity")); startActivity(sintent);
+参考FAQ: FAQ81050
+### 问题: 在第三方应用中怎样才能关闭FM？
+解决方案: FM自定义了一个广播"com.thunderst.radio.RadioService.SHUTDOWN" 当收到这个广播的时候,FM会自动关闭. 因此当第三方应用想关闭FM的时候,发出这个广播即可.
+参考FAQ: FAQ81051
+### 问题: FM完全退出后，再次进入FM不能自动播放，如何解决？
+解决方案: FM完全退出后,再次进入FM不能自动播放,如何解决? 首先我们在抓取的main log中搜索是否存在下面这句log FMPlay : onCreate yangjf mPowerChecked = false 如果存在我们需要如下的修改: 修改文件packages\apps\FMPlayer\src\com\thunderst\radio\FMPlay.java 在onCreate()方法中修改 - mPowerChecked = prefs.getBoolean("isPowerChecked", true); + //mPowerChecked = prefs.getBoolean("isPowerChecked", true); + mPowerChecked = true;
+参考FAQ: FAQ81052
+### 问题: 如何通过adb命令查看手机的屏幕密度？
+解决方案: 我们可以通过下面两种adb命令从手机中获取 (1).adb shell getprop ro.sf.lcd_density 输出信息 320dpi ==》它就是当前手机的屏幕密度 (2).adb shell dumpsys window displays 输出信息 Display:MDisplayId=0 init=720x1280 320dpi cur=720x1280 app=720x1280 rng=720x670-1280x1230 ==》对应的屏幕密度为320dpi
+参考FAQ: FAQ81053
+### 问题: cts测试org.apache.harmony.tests.java.net.MulticastSocketTest Fail
+解决方案: WIFI和P2P是同一个芯片设备,此芯片仅有一个MAC过滤,不能同时为WIFI和P2P给出不同的MAC地址.硬件限制导致,无法解决.有澄清文档.
+参考FAQ: FAQ81161
+### 问题: spn如何只显示sim/usim卡中存储的名称？
+解决方案: 修改如下路径文件: frameworks/opt/sprd/frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/SIMRecordsSprd.java protected void onAllRecordsLoaded() { // 省略其他 // setSpnFromConfig(operator); 注释掉该行,不需要再从配置里读取设置spn,用卡里面的spn名称 mRecordsLoadedRegistrants.notifyRegistrants( new AsyncResult(null, null, null)); }
+参考FAQ: FAQ81124
+### 问题: 卫星的星历和历书的区别是什么
+解决方案: 具体区别如下: 星历: 实时的,有效期为星历一般为参考时间的前后二个小时,轨道参数精度较高,大概在米级别,是当前接收机观测到的卫星的精确位置,用于定位 历书: 非实时的,有效期一周,只是包含卫星轨道的一些大体的参数,包括全部卫星的大概位置,精度低 ,一般是用来预测卫星的大概位置,可用来对可能出现在视野内的卫星进行有针对性的捕获,缩短首次定位时间
+参考FAQ: FAQ81194
+### 问题: 开机后屏幕最下方提示“Sending SMS”是怎么回事
+解决方案: 这是STK功能,是SIM卡里发起的命令,要求开机发送一条短信(注意:并不是每张卡都会要求开机就发送一条短信,这个取决于SIM卡).这串信息是手机给用户的提示,属于正常现象.
+参考FAQ: FAQ81132
+### 问题: 有的SIM卡在SIM卡管理中，显示不了SIM卡号码,怎么回事
+解决方案: SIM卡号码显示是存在SIM卡内EF-MSISDN文件中的,若是SIM卡出厂之前没有保存过,那么这边是获取不到的.
+参考FAQ: FAQ81141
+### 问题: AGPS的定位方式MSA ,MSB具体是指什么
+解决方案: 具体如下: MSB: 即终端通过网络侧下发的辅助数据接收GPS卫星信号,并在终端直接进行测量与定位,最终计算出位置 MSA: 即终端通过网络侧下发的辅助数据接收GPS卫星信号,并将测试量发送给网络,由网络侧计算出终端的位置
+参考FAQ: FAQ81196
+### 问题: 什么是COO定位
+解决方案: COO即Cell of Origin 是一种单基站定位,即根据设备当前连接的蜂窝基站的位置来确定设备的位置,其定位的精度就取决于蜂窝小区的半径
+参考FAQ: FAQ81198
+### 问题: 网络定位有几种方式
+解决方案: 网络定位有二种定位方式:基于Wi-Fi MAC地址定位 和 基于小区信息CELL ID定位
+参考FAQ: FAQ81200
+### 问题: 如何判断外置存储是否挂载成功？
+解决方案: 通过adb shell cat /proc/mounts,如果为running,表示挂载成功.
+参考FAQ: FAQ81210
+### 问题: 如何通过AT命令判断当前Sim卡处于漫游状态?
+解决方案: userdebug版本, 查看slog中的radio.log, 搜索关键字:CREG, 其中第二个参数表示是否漫游, 如下日志: 02-25 13:35:02.256 187 276 D use-Rlog/RLOG-AT: [1] Channel4: AT< +CREG: 2,5,"6206","000EC68B",6 第二个参数为5,表示当前驻留在Roam网络上, 非漫游状态一般为1. 若想了解更多参数含义, 请参考展讯官方发布的AT指令手册
+参考FAQ: FAQ81514
+### 问题: 工厂模式下摄像头的效果能否做到跟正常开机使用时摄像头的效果一样？
+解决方案: 不能,因为工厂模式下是用软解码,没有ISP.
+参考FAQ: FAQ81230
+### 问题: 如何通过monkey.log，来确定monkey执行的总时间
+解决方案: 在monkey.log中,查找system_uptime这个关键词,会有如下的信息: [calendar_time:2016-02-21 13:36:27.349 system_uptime:161525072] system_uptime就是系统开机后,流逝的时间.所以使用最后一个数据,减去第一个就是这份monkey.log的实际运行时间.不过这个时间单位是毫秒,需要除以3600*1000,就是单位:小时了.
+参考FAQ: FAQ81242
+### 问题: monkey测试能指定准确的测试时间吗，例如测试24小时就停止？
+解决方案: Monkey测试中没有指定测试时间的选项,只能指定输入间隔和输入事件的总数.所以不能通过参数来指定MONKEY准确的测试时间. 如果必须要这么做,可以修改monkey.java中的相关代码,增加MONKEY测试时间的判断,来实现该功能.
+参考FAQ: FAQ81243
+### 问题: monkey测试中，如果settings不放入黑名单，需要做那些处理？
+解决方案: 1.开发者模式需要屏蔽 2.T卡不能被卸载 3.Contacts这个应用,不能被禁止使用(contactsprovider被禁用后,会导致其他相关模块的异常)
+参考FAQ: FAQ81245
+### 问题: 如何判断monkey中出现定屏现象
+解决方案: monkey测试中,有时系统会在某个简单的界面停留较长的时间,看起来就像定屏了一样.这有时是和内存紧张导致系统处理慢有关系.这时可以通过短按power键,看手机是否可以锁屏,来判断手机是否还在运行.如果手机可以进入锁屏状态,那么说明还在运行中,只是系统运行比较缓慢.如果连续点击power都不能锁屏,那么就说明手机已经定屏了.
+参考FAQ: FAQ81246
+### 问题: 当做蓝牙FCC认证测试时，需要关闭不支持的profile时，在哪里修改？
+解决方案: 代码修改的文件路径如下:/packages/apps/Bluetooth/res/values/config.xml, 把相对应的profile的地方修改为false.
+参考FAQ: FAQ81254
+### 问题: 如何删除系统中的LatinIME（android keyboard）输入法？
+解决方案: 删除系统中的LatinIME(android keyboard)输入法,只需要保证LatinIME不被编译到系统中即可. 具体可在源码build 目录下搜索LatinIME,把相关.mk文件PRODUCT_PACKAGES中的LatinIME注释掉即可. PS: PRODUCT_PACKAGES中内容在源码如下三个路径中会被重新定义或增加,如果需要删除其他应用也在以下路径三个中搜索. 1. device/sprd/ 2.vender/sprd/ 3.build/target/product/
+参考FAQ: FAQ81253
+### 问题: 蓝牙耳机通话时如何调整音量？
+解决方案: 蓝牙耳机是通过AT命令向手机设置通话音量的. 设置Speaker音量AT 命令:AT+VGS=<value> 设置microphone音量AT 命令:AT+VGM=<value> value 调整范围:0 -15 对应的代码如下: external/bluetooth/bluedroid/bta/ag/bta_ag_cmd.c /* AT command interpreter table for HFP */ const tBTA_AG_AT_CMD bta_ag_hfp_cmd[] = { {"A", BTA_AG_AT_NONE, BTA_AG_AT_STR, 0, 0}, {"D", (BTA_AG_AT_NONE | BTA_AG_AT_FREE), BTA_AG_AT_STR, 0, 0}, {"+VGS", BTA_AG_AT_SET, BTA_AG_AT_INT, 0, 15}, {"+VGM", BTA_AG_AT_SET, BTA_AG_AT_INT, 0, 15}, };
+参考FAQ: FAQ81259
+### 问题: android5.1源生android keybaord输入法（LatinIME）支持词典种类？
+解决方案: LatinIME源生词库存放路径为packages/inputmethods/LatinIME/dictionaries/ 其中各个语言.combined的压缩包即为支持的全部词库. 具体文件命名方式为:语言码_国家码_worklist.combined 语言码遵循的规范为 ISO 639-1 地区码遵循的规范为 ISO 3166-1 PS: LatinIME词典存放路径:packages/inputmethods/LatinIME/java/res/raw/(需要编译进输入法apk的词典就放在此目录下) 词库.combined文件生成词典.dict 方法请参考FAQ70846.
+参考FAQ: FAQ81261
+### 问题: 浏览器测试网站 中国移动浏览器测试用例 22：标记语言测试用例 - HTML TestCase5 有些文本显示超出界面
+解决方案: 小屏幕手机有此现象,问题与文字和屏幕大小有关, 建议"设置〉辅助功能〉文字缩放"改为80%以下,可显示正常.
+参考FAQ: FAQ81284
+### 问题: 如何配置虚拟运营商apn
+解决方案: 虚拟运营商的配置也是在默认的apn配置文件中进行配置,一般默认的配置文件在下面这个目录: vendor/sprd/operator/operator_res/apn/apns-conf_8.xml 不排除各个项目不同路径不同的情况,还需要根据各个项目的具体情况来定. 虚拟运营商apn数据比实体运营商apn数据需要多配置两个属性即可: mvno_type="写入该虚拟运营商sim卡匹配类型" mvno_match_data="写入该虚拟运营商sim卡匹配内容" 例如: 阿里通信sim卡对应apn数据需要额外添加两条属性: mvno_type="spn" mvno_match_data="阿里通信"
+参考FAQ: FAQ81323
+### 问题: 如何获取iccid、imsi、手机号、运营商信息等接口
+解决方案: 可以在frameworks\base\telephony\java\android\telephony\TelephonyManager.java中找到相应的接口 获取iccid: getSimSerialNumber()或getSimIccId() 获取imsi: getDeviceId() 获取手机号: getMsisdn() 获取运营商信息: getNetworkOperator() 获取cellid,和location area code: getCellLocation() 获取网络类型: getNetworkTypeName() 获取sim卡状态: getSimState()
+参考FAQ: FAQ81324
+### 问题: 如何在log中快速定位modem出现Assert
+解决方案: 我们可以通过在main log中查找"Modem Assert" 例如: 在如下main log中有下列输出 09-11 23:24:23.910 115 137 D MODEMD : modem assert happen 这个时候就说明modem发生了重启.
+参考FAQ: FAQ81325
+### 问题: 如何配置simlock解锁次数
+解决方案: 可以在nv配置中通过配置SIM_LOCK_CUSTOMIZE_DATA->max_num_trials 来解决.
+参考FAQ: FAQ81327
+### 问题: 如何确认是数据连接开关没有打开导致无法连接上网问题
+解决方案: 通过日志(radio.log): 03-04 09:55:31.319 705 1022 D DCT : [1]getDataEnabled: getIntWithSubId retVal=false 关闭:retVal=false 打开:retVal=true retVal确认是否有打开、关闭数据连接,所以这样就可以快速定位是否是数据连接没有打开导致无法连接网络 [0]表示卡1, [1]表示卡2
+参考FAQ: FAQ81496
+### 问题: 为何不能添加book、Bookmark 小部件到桌面？
+解决方案: book、Bookmark 小部件 默认是空的,所以不支持拖动到桌面,这是android原生设计.
+
+如果希望book、Bookmark 小部件能成功添加,请首先在浏览器中添加几个书签后再操作.
+参考FAQ: FAQ81646
+### 问题: 蓝牙传输层HCI的物理接口
+解决方案: HCI传输层是指蓝牙主机和蓝牙主机控制器之间相连的物理接口.目前,蓝牙HCI传输层的物理接口有通用串行总线(Universal Serial Bus,USB)、串行端口(RS232)、通用异步收发器(Universal Asynchronous Receiver and Transmitter,UART)和个人计算机存储卡国际协会(Personal Computer Memory Card International Association,PCMCIA,PC卡).蓝牙设备可以采用一种或几种不同的物理接口来实现通信.
+参考FAQ: FAQ81554
+### 问题: 蓝牙HCI的RS232传输层特性
+解决方案: 主机和主机控制器之间通过RS232传输层进行连接,传输HCI命令事件和数据,通过RS232传输层可发出四种HCI分组:指令分组,事件分组,ACL数据分组和SCO数据分组.其中HCI指令分组仅能用于蓝牙主机发送到蓝牙主机控制器,HCI事件分组仅能由蓝牙主机控制器发送到蓝牙主机,ACL/SCO数据分组可自由发送和接收.主机控制器不能区分四种HCI类型,因此如果通过同一物理接口发出一个HCI分组,则HCI分组必须添加指示器. 除了这四种HCI分组外,还有两种用于支持动态协商和错误报告.接收端使用错误信息分组(0x05)将错误报告发到发送端,协商分组(0x06)则用于协商通信设置和协议.每次发送一个以上HCI分组时,HCI分组指示器将在一个8bit序列号上每次加1,除非抓发分组作为纠错的一部分,HCI分组紧跟在该序列号域后,所有四种HCI分组都有一个长度域,该域用于确定HCI分组长度为多少字节(错误信息和协商分组都是基于扩展域的定长分组).
+参考FAQ: FAQ81558
+### 问题: 蓝牙OBEX协议如何进行数据交换
+解决方案: OBEX定义了Object model来进行数据的交换,形式为Request-Response.OBEX定义了Headers来描述数据,结构如下: <HI, the header ID> 1byte <HV, the header value> n byte 由HI和HV两部分组成.HI的最高两位表示这个Header的编码形式,低6位表示header的类型,HV表示数据实体. 高两位的编码如下: 0x00和0x40两种后面会跟上2字节的length(length prefixed),表示的是整个Header的长度,包括HI和HV. 低6位的定义类型如下:
+参考FAQ: FAQ81588
+### 问题: 有些分辨率下，小部件预览界面，部分小部件显示偏下，如何调整？
+解决方案: 由于小部件距离顶部的距离是一个固定值,导致部分分辨率下,例如Analog clock、Calendar、Email等显示明显偏下甚至有显示不全的情况,此时可以通过padding值来调整. 在Launcher3/res/values/dimens.xml中修改 <dimen name="app_widget_preview_padding_top">32dp</dimen> 请自行改小至满意值.
+参考FAQ: FAQ81591
+### 问题: 测试相机功耗有哪些注意事项？
+解决方案: (1)注意测试方法. 与对比机器对比需采用如下方式对比: 首先开飞行模式,屏幕打最亮(不灭屏),测试idle状态机器的平均电流a.然后进入相机预览界面,保持取景画面不动,测平均电流b. Camera预览的电流 c = b -a . 注意对比测试时两台机器要对着同一个取景画面不动. (2)camera的电流与模组有关. 不同的sensor外设电流不一样,单外设功耗可能相差很大,需要和sensor原厂确认. (3)录像功耗比较高 平台默认录像是固定帧率,帧率越高功耗越大.可以在不影响效果的前提下联系sensor原厂适当减小录像帧率.
+参考FAQ: FAQ81595
+### 问题: 展讯不同平台的摄像头驱动文件是否可以共用，比如9830和9832上是否可以使用同一摄像头驱动文件。
+解决方案: 从V4版本开始(即mipi_raw.c文件中开头部分注释最后标志 V4.0),驱动文件已经可以支持跨平台.但参数文件则不能垮平台,即sc7731g的只能用于sc7731g,sc7731C的只能用于sc7731C,sc9830的只能用于sc9830.sc9832的参数可以和sc9838、sc8341通用. 对于sc7731和sc9830还需要注意: 1. 参数生成工具的版本要和手机版本的基线相匹配; 2. 前后摄必须使用相同的isp算法,即awb模块的alg_id标准必须相同.
+参考FAQ: FAQ81616
+### 问题: android5.1蓝牙无法共享网络如何排查
+解决方案: 首先查看操作步骤是否正确: 1.A手机开启网络,勾选蓝牙共享网络 2.B手机和A手机配对 3.进入B手机的已配对设备列表,选择A手机,进入勾选网络共享,发起连接 同时注意查看A手机和B手机的蓝牙地址,在关于手机-〉状态信息-〉蓝牙地址
+参考FAQ: FAQ81663

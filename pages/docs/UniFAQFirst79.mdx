@@ -1,0 +1,343 @@
+### 问题: UMS9117与UMS9117_L有什么区别？
+解决方案: UMS9117内部集成了64M的LPDDR2,UMS9117_L相比于UMS9117属于costdown版本,LPDDR2从64M降低为48M.两个型号都是pin to pin.
+参考FAQ: FAQ202072279
+### 问题: Camera有声拍照后，播放的时候无声音
+解决方案: 因为有声拍照播放的时候是依赖com.android.gallery3d的
+
+
+请先使用adb shell命令查看一下如下两个文件是否存在?
+/system/priv-app/USCPhotoEdit/USCPhotoEdit.apk
+/system/priv-app/USCPhotosProvider/USCPhotosProvider.apk
+如果不存在,则在
+/vendor/partner_gms/products/gms.mk 或者gms_go.mk (这边的文件根据贵司自己项目决定)
+
+
+ # SPRD Applications 加入如下模块参与编译
+ PRODUCT_PACKAGES += \
++     USCPhotosProvider \
++     USCPhotoEdit
+参考FAQ: FAQ202072282
+### 问题: 相机连接自拍杆拍照时无快门声
+解决方案: 因为自拍杆是会被识别成耳机设备的,所以声音无法出声
+
+
+如果必须要修改可以做如下修改让拍照音强制外放,
+强制拍照声是需要从Speaker出来的(即使插入耳机的情况下)现在平台默认的是拍照音外放是关闭的.如果想让拍照音走外放需要做如下修改:
+将frameworks/base/core/res/下包含config_camera_sound_forced的所有config.xml文件
+把config_camera_sound_forced设为true
+比如
+sprdroid10_trunk_19c/frameworks/base/core/res/res/values/config.xml
+sprdroid10_trunk_19c/frameworks/base/core/res/res/values-mcc450/config.xml//根据项目修改
+参考FAQ: FAQ202072283
+### 问题: UMW2651作为外置WCN芯片与展锐各平台搭配时，GPIO0/1/2/3该怎么连接？
+解决方案: GPIO0:通常与UMP510G的PTEST0管脚连接,当UMP510G挂载TSX给GNSS供应时钟时,GPIO0需要连接PTEST0去选择读取当前TSX的温度还是UMP510G芯片内部OSC的温度给GNSS做温补.由TSX/TCXO直接供时钟给WCN时,此pin不需要连接. GPIO1:SDIO data interrupt.顾名思义只有SDIO接口作为WCN与BB的主通信接口时才需要连接到平台对应的GPIO口.当选择PCIE做为接口时不需要连接. GPIO2:WF wake HOST,WIFI唤醒主机,实际上此信号没有用到仅作为备用.可根据项目实际情况删减. GPIO3:WF HOST wake,主机唤醒WIFI,同GPIO2一样此信号实际也没有使用,仅作为备用.可根据项目实际情况删减.
+参考FAQ: FAQ202072287
+### 问题: UIS8910外接音频codec时推荐使用哪些接口？
+解决方案: GPIO0~GPIO3默认用作外部codec的I2S数据接口; GPIO4~GPIO5默认用作外部codec的I2C控制接口.
+参考FAQ: FAQ202072288
+### 问题: 如何修改默认蓝牙的名称
+解决方案: 请按照格式修改,注意Size大小,修改路径如下 MS_Customize\export\inc\bt_cfg.h的BT_DEFAULT_LOCAL_NAME 目前T117蓝牙名称获取的函数调用过程如下 _DB_LoadFromNV(库函数不可更改,可以搜Log中的打印) MS_Customize\source\product\driver\bt\bt_prod.c BT_GetConfigInfo SCI_MEMCPY(config->local_name, BT_DEFAULT_LOCAL_NAME, sizeof BT_DEFAULT_LOCAL_NAME); //拷贝蓝牙名称 如果想要看是否修改成功,可以在 BT_GetConfigInfo中添加打印 SCI_TRACE_BUF("[BT_GetConfigInfo] local_name", BT_DEFAULT_LOCAL_NAME,sizeof(BT_DEFAULT_LOCAL_NAME));
+参考FAQ: FAQ202072289
+### 问题: 进入浏览器,密码输入个数受限
+解决方案: 登录某些需要帐号密码的网站,有时password字符被换行显示,其实是与当前Dorado浏览器排版机制有关: 1、对于文本显示,当前浏览器是按字符断行而不是按单词断行; 2、输入框控件会在一行内显示,但其后的label控件则不会单独断行,而是根据屏幕显示区域断行. 所以会存在被换行现象. 可以照以下修改 : GUIEDIT_InitPassword @guiedit_password.c //set edit password default is single -- edit_ctrl_ptr->style = GUIEDIT_STYLE_SINGLE; ++ edit_ctrl_ptr->style = GUIEDIT_STYLE_MULTI;
+参考FAQ: FAQ202072290
+### 问题: SDN号码是什么
+解决方案: SDN (Service dialling number)是服务拨叫号码. SDN是存储在SIM卡中EFSDN 文件, 因此SDN号码是从SIM卡中读取的. 该号码只能读取,用户不能修改 ,可查看协议3GPP31102. SDN 需要网络和SIM卡支持, 该号码是网络服务提供商预先提供的, 它们将呼叫您的网络服务提供商同意的服务. SDN号码的显示: (1)SDN不会显示在电话本主列表中 (2)从电话本选项菜单的服务号码菜单进去, 若SIM卡不支持该功能,会提示不支持服务号码. 若支持,但从SIM卡读取不到SDN,则列表显示为空. 若支持且获取到SDN号码,则会进入SDN列表, SDN列表中显示从SIM卡中读取到的SDN, 每一个SDN进到详情,可以拨打号码,但是不能进行编辑.
+参考FAQ: FAQ202072292
+### 问题: USB-互联网PC功能如何设置(PC侧)
+解决方案: 尊敬的客户您好, 通常手机通过USB数据线与PC互连后,通过功能设置,可使得一方能够使用另外一方分享的网络资源实现自己在无网条件下的上网功能. 一般有两种功能选择: 1. USB共享网络功能: 意思是PC(host端)使用手机侧(device端)分享的网络资源,实现在PC侧上网的功能 2. USB-互联网PC功能:意思是手机侧(device端)使用PC(host端)分享的网络资源,实现在手机侧上网的功能 而当在手机端选择"USB-互联网PC功能"后,必须要在PC端做一系列设置后,才可以实现上网,PC侧的操作步骤是: 1. 进入网络共享中心 2. 选择本地连接 3. 点击属性 -> 共享 4. 勾选 -> 运行其他网路用户通过此计算机的Internet连接-> 确定.如果已经勾选过,取消->确定,再进入属性->共享->勾选->确定 注意:如果发现"运行其他网路用户通过此计算机的Internet连接"已经沟通过,要取消掉,确定后再重新勾选(详见步骤4) 以上请知悉 非常感谢
+参考FAQ: FAQ202072300
+### 问题: LTE平台不用白卡，PANDORA信令连接仪器注意事项
+解决方案: 1. PANDORA的具体设置如下图,需要注意点如下图,BCCH的CH一定要与仪器MAKE CALL的信道保持一致. 2. 仪器端CMW500,点击"CONFIG", 在"Network" -》 Security Setting -》 Integrity Algorithm设置成"NULL" 3. 以上都设置好之后,点击PANDORA的"CONNECT",上电,仪器就能找到手机的IMEI和IMSI号,在仪器端连接上即可.
+参考FAQ: FAQ202072309,含图片
+### 问题: CDMA模式Simba小功率下APC校准fail
+解决方案: 1、CDMA模式Simba小功率下APC校准fail,Simba校准界面fail显示CDMA APC Line超出了范围 2、Trace提示: Error Description: 测量不到期望的功率值 Error Solution:可能是因为手机已经达到饱和状态,发射功率无法再调整.请检查log文件获取详细信息 3、修改PA low_mode下的bias可以解决此问题. 如由原始0x59修改为0x22或0x11(0X45054). nv中修改路径如下: C2K_logic\C2K_rf_mipi_config\RF_MIPI_PA\c2kband_pa_mode_ctrl\band1\low_mode\ctrl_word\crtl_word0=0X45054
+参考FAQ: FAQ202072312,含图片
+### 问题: 系统盘C盘-MMI_DEVICE_SYSTEM的存取
+解决方案: Ans: MOCOR的File System一样都有提供接口去设定档案属性, API: MMIAPIFMM_SetAttr(); 如果要存取或保护档案时 可以变更属性来达到所想要的需求 系统盘操作也是如此.
+参考FAQ: FAQ202072314
+### 问题: FGU电流测试，检查FGU高精度精密采样电阻是否焊接好。
+解决方案: 1、simba工具R8.20.4901及以上版本,新增测试项,选择current.dll\current\V2 2、勾选FGU电流测试项,高级设置电流上下限,正常FGU电流和poweron电流差不多,可以参考poweron到的电流范围设置.(必须使用R8.20.4901及以上版本工具才可以设置上下限) 3、为了测试电流稳定,建议在电流测试之前增加sleep 2秒左右,新增测试项选择NonRF.dll\sleep\sleep 4、开始测试
+参考FAQ: FAQ202072320,含图片
+### 问题: Android 10.0 上media进程被杀的解决方案说明
+解决方案: Android10.0 版本上进行Mtp的相关操作,如复制文件时,media进程在内存不足时会被lmk kill,导致出现功能异常,如何解决? 确认当前的board 中是否有配置文件:lmkd_param.conf 如果没有,需要新增配置文件,lmkd_param.conf 将media进程的进程名添加到当前的配置文件: device/sprd/pike2/common/lmkd_param.conf 如:android.process.media 低内存时,lmkd将不会kill 当前新增到白名单的进程android.process.media,确保Mtp相关功能可以正常完成.
+参考FAQ: FAQ202072322
+### 问题: UMS512 选用TSX NV如何设置
+解决方案: UMS512平台使用的是PMIC_TSX方案,不能简单的配置为TSX,需要配置为PMIC_TSX
+参考FAQ: FAQ202072323,含图片
+### 问题: UMS512选择eLNA设计是否对版本有要求
+解决方案: UMS512如选择eLNA设计,则NV中需要有相应的gaintable,否则会校准FAIL. 19C版本均已合入,V2 trunk版本需要在FM_BASE_TRUNK_V2_W20.49及之后版本验证.
+参考FAQ: FAQ202072324
+### 问题: ums512 ddr降频运行安兔兔死机
+解决方案: antutu会通过backdoor将DDR升至1866,但1866未training导致挂死,需要将backdoor的目标频点设置为降频到的频点值,例如1333,修改如下: bsp/kernel/kernel4.14/arch/arm64/boot/dts/sprd/ums512-mach-p.dtsi backdoor = <1866>;改成 backdoor = <1333>; bsp/kernel/kernel4.14/arch/arm64/boot/dts/sprd/ums512-mach.dtsi backdoor = <1866>;改成 backdoor = <1333>;
+参考FAQ: FAQ202072329
+### 问题: 为什么工程模式中有Strore meid At Sim Init开关？
+解决方案: 由于3GPP2协议和电信CDMA短信自注册协议的冲突,版本默认遵守3GPP2协议,在csim卡初始化时会将本机的Meid写入sim卡,导致电信DM会有问题:在配合终端短信自注册成功的卡,再次放入测试机端开机,不能发起短信自注册. 电信送测/预测时,需要进入工程模式,关闭开关 Strore meid At Sim Init(csim卡初始化时无需写meid).关机或者恢复出厂设置后进行相关case的测试.
+参考FAQ: FAQ202072330
+### 问题: 泛智能终端和手机终端在电信DM业务中有何差异？
+解决方案: 目前手机终端和泛指能终端共用同一套代码,但是配置上有些差异,参见如下: 数据域自注册和手机终端有何差别? Ø 支持的协议有点差异,泛智能终端不仅可以用HTTP协议也可以用CoAP协议,目前代码中仅支持HTTP,和手机终端保持一致.但消息格式亦有差异: 泛智能终端消息格式:http://zzhc.vnet.cn:9998/ 手机终端消息格式:http:// zzhc.vnet.cn/ Ø 上报字段有差异,泛智能终端终端需要上报的字段包括:REGVER、MODEL、SWVER、UETYPE、SIM1ICCID、SIM1LTEIMSI、MACID、OSVER、IMEI1、SIM1CELLID. UETYPE需要根据不同的产品类型设置,具体可参考《9-中国电信移动终端需求白皮书-数据自注册功能分册(2020.V1).pdf》的附录A.这一点参考电信最新的DM规范即可. Ø 业务流程上和手机终端无差别. 短信自注册和手机终端有何差别? 短信自注册和手机终端自注册无差别.
+参考FAQ: FAQ202072331
+### 问题: Android9.0 版本上解决Mtp设备跟PC设备连接时，新增文件时device 设备跟PC设备同步问题
+解决方案: 原因分析: device设备端新增文件时会发送event 给PC端,PC可以同步到设备端的文件,如果用户在文件为成功写入之前,在Host端查看 就会出现可以查看到文件信息,但是大小为0,open 文件不成功的现象,因此需要设备端在写入文件后,发送event 给Host端 ,host进一步同步文件信息.才可以解决此类问题. 修改方案:
+参考FAQ: FAQ202072332,含图片
+### 问题: 7731E ddr freq 支持包含哪些？
+解决方案: 7731E 支持 ddr freq包括以下几个: lpddr3:533,466,400,384,256,192,166 lpddr2:533,466,400,384,256,192,166
+参考FAQ: FAQ202072334
+### 问题: 9832E/9820E 支持的ddr freq包括哪些？
+解决方案: 9832E/9820E 支持 ddr freq包括以下几个: lpddr3:667,533,466,384,256,166 lpddr2:533,466,400,384,256,166
+参考FAQ: FAQ202072335
+### 问题: 9863A 包括的 ddr freq 有哪些？
+解决方案: 9863A 支持 ddr freq包括以下几个: lpddr4(4x): 933, 800, 622, 400,311, 233 lpddr3: 933, 800, 622, 400, 311, 233
+参考FAQ: FAQ202072336
+### 问题: 5G wifi信令连不上CH100-144，如要测试CH100-144，需要如何配置？
+解决方案: 由于国家码导致的,中国是不支持CH100-144的,可以通过修改国家码来实现; 欧洲国家或者美国是支持的CH100-144的,可以更换为FR或者US,命令如下: adb root adb remount adb shell wpa_cli -iwpa_wlan0 -p/dev/socket DRIVER country FR //开关wifi失效,重启失效; 如果wpa_cli工具提示找不到,可以find一下,试试如下路径./vendor/bin/hw/wpa_cli,没问题可以直接执行; 执行完之后,就可以搜到CH100-144的SSID,请按照上述步骤执行.
+参考FAQ: FAQ202072337
+### 问题: 在FDE开启后，设置锁屏为Pattern/Password/Pin，重启手机，开机后锁屏页面显示异常，Pattern、Password或Pin图案显示非常小，如何解决？
+解决方案: 此问题可能和集成第三方输入法有关,Unisoc发布版本都是OK的.建议如下: 1)请检查贵司版本,建议采用二分查找方法,逐步缩小排查范围. 2)规避方案,修改layout/crypt_keeper_pattern_field的宽高为固定值(根据项目的实际分辨率而定,比如350dp).
+参考FAQ: FAQ202072338
+### 问题: ums312 ddr freq 支持包含哪些？
+解决方案: ums312支持 ddr freq包括以下几个: lpddr4(x): 1333, 1200, 933, 768, 512,384,256 lpddr3: 933, 768, 512, 384, 256
+参考FAQ: FAQ202072339
+### 问题: ums512(T) ddr freq 支持包含哪些？
+解决方案: ums512(T) 支持 ddr freq包括以下几个: lpddr4(x): 256, 384, 512, 768, 1024, 1333, 1536, 1866 lpddr3: 256, 384, 512, 768, 933
+参考FAQ: FAQ202072340
+### 问题: UMS312/512(T)平台SPK有哪些接法？
+解决方案: UMS312/512(T)平台主要有以下几种接法: 1.使用内置PA去推喇叭: a.直接使用UMP510G内置的classA/B去推喇叭,Pin SPK_P/N直接连接喇叭.使用图一的方案三电路. 图一 b.直接使用UMP510G内置的classK去推喇叭,Pin SPK_P/N直接连接喇叭.电路设计变更为图一中的方案二. 2.使用外置PA去推喇叭: a.使用模拟PA去推喇叭: 如果是单个喇叭设计,模拟PA的信号输入建议使用SPK_P/N这对差分信号.如果是双喇叭设计,模拟PA的信号输入建议使用HP_L/R+AMPG_VCOM的组合.电路设计方面均使用图一中的方案一设计. b.使用数字PA去推喇叭: 单个喇叭或者双个喇叭都使用一组I2S去连接.鉴于I2S0接口是给BT传输voice用的,不建议使用I2S0接口,I2S2接口与ADI接口部分相重复也不推荐使用,推荐使用I2S1或I2S3接口.PMU侧电路连接设计使用方案一或者方案三.
+参考FAQ: FAQ202072344,含图片
+### 问题: UMP510G平台有哪几种复位
+解决方案: UMP510G一共有4种复位方式,SW reset、watch dog reset、external pin reset和7s reset. 其中7s reset包含单键和双键两种模式.单键为PBINT1按键,双键则为PBINT1和EXTRSTN的组合按键. 7s reset按照复位方式又被分为:HW reset(同时复位BB与PMU,先关闭所有电再重新上电)、SW rest(仅复位BB)、long reset(复位动作超过门限值7s,之后释放复位按键执行复位动作)、short reset(复位动作超过门限值7s,不需要释放复位按键就可以执行复位动作). 单键和双键的配置以及触发复位(默认值为7秒)的时间都可以通过寄存器:POR_7S_CTRL进行修改. 当软件上设置成单键模式并且将EXTRSTN设置为reset键时,EXTRSTN保持低电平40~48ms时,系统会进行复位动作,整个过程中PMU默认为ON的电压将保持不变,OFF的电压会被关闭.
+参考FAQ: FAQ202072345
+### 问题: Mocor平台 png 图片必须带 alpha 通道才能编译过
+解决方案: 1.因为 Mocor平台 PNG 资源要求 png为 32位元 , ARGB 占8位元, 如果 png 为24位不包含alpha信息就会导致编译报错. 2.32位PNG = 8位红色,8位蓝色,8位绿色,8位 Alpha通道(透明度) 3.不带有alpha信息的png图片,解决方法是使用 PhotoShop 等工具添加 alpha 信息至png图片中 , 重新制作包含alpha值的32位深PNG 再行验证.
+参考FAQ: FAQ202072348
+### 问题: LPDDR4/4X  DDR物料上ODT CA电阻应该如何配置
+解决方案: 这个管脚是LPDDR4 ODT开关. 按照JEDEC的标准,LPDDR4X是内部MR寄存器控制ODT开关,不需要这里控制. 需要通过上下拉给这个管脚一个稳定状态. 实际物料,LPDDR4大部分也是内部MR寄存器控制ODT开关. 需要确认具体物料,如果这颗LPDDR4使用外部ODT开关,就需要按照参考设计连接.
+参考FAQ: FAQ202072349
+### 问题: UIS8910FF怎么进入下载，下载方式有什么区别
+解决方案: KEYIN0+VDD1V85可以进入强制下载模式 KEYIN0+1.8V是用于进入下载模式, UART2 or USB指可以通过此接口将软件下载到UIS8910FF主芯片
+参考FAQ: FAQ202072351
+### 问题: UMS312和UMS512共板项目设计
+解决方案: 1 UMS312对比UMS512上有较多NC管脚,兼容设计按照UMS512来做对应设计即可. 2 UMS312和UMS512兼容设计,需要按照UMS512设计,兼容设计需要参考UMS512 B的原理图, 如果为分离式方案,可以在此基础上修改为分离式方案: UMS512_B_CS_A_SCH_V0.0.1_UMP510G_SR3595D_UMW2652_6M_eMMC_LPDDR4x.sch https://unisupport.unisoc.com/file/index?fileid=24409 3 由于UMS312和UMS512这两个平台LPDDR4X 频率不同,需要按照UMS512走线要求设计.
+参考FAQ: FAQ202072354
+### 问题: UMS9117最多支持多少乘多少的矩阵键盘？
+解决方案: 
+参考FAQ: FAQ202072355
+### 问题: 怎么查看样机里面所有的ini文件
+解决方案: 我们拿到客户样机往往有时候修改不能生效: 我们可以使用以下命令来确实是否有其他路径的ini文件: adb shell busybox find / -name *.ini 所有样机的INI文件路径就会显示出来,确定是否调用正确的.如下图:
+参考FAQ: FAQ202275300,含图片
+### 问题: CMW500测试Throughput时Reduced PDCCH该如何勾选
+解决方案: 在CMW500 中Reduced PDCCH是专门给下行吞吐测试使用的,所以在下行吞吐测试的时候一定勾选上,速率容易测满; 测试上行吞吐的时候Reduced PDCCH不能勾选,勾了以后,影响PDCCH的长度,导致上行的控制资源变少.所以上行测试的时候勾选了容易出现误码.
+参考FAQ: FAQ202275301
+### 问题: 支付宝移植问题
+解决方案: pac包无法下载,主要是因为编译不完全,编译的pac包大小不对 T117编译支付宝需安装ARMcompiler6.0,没有安装编译出来会有问题 安装后编译如报出编译Link问题,通常为第三方提供的支付宝库文件在调用平台函式时未涵盖到平台头文件, 需将编译错误提供给第三方,请第三方提供新的库文件
+参考FAQ: FAQ202275307
+### 问题: List空间如何配置滑动反转
+解决方案: list滚动状态定义如下: typedef enum { CONTINUE_MOVE_INVALID, CONTINUE_MOVE_UP, /*!< continue move up */ CONTINUE_MOVE_DOWN, /*!< continue move down */ CONTINUE_MOVE_LEFT, /*!< continue move left */ CONTINUE_MOVE_RIGHT /*!< continue move right */ }CONTINUE_MOVE_TYPE_E; 若是想要改变List控件上滑/下滑的滚动逻辑,可以试著调换 CONTINUE_MOVE_UP / CONTINUE_MOVE_DOWN 状态, list控件滚动处理请参考收到 MSG_TP_PRESS_MOVE 消息后在 ListHandleTpMove 函数.
+参考FAQ: FAQ202275317
+### 问题: SL8541e支持SensorHub吗？
+解决方案: 不支持
+参考FAQ: FAQ202275322
+### 问题: 如何读写wcmda寄存器控制字
+解决方案: 首先Pandora进入wcdma模式,强发或者强收后就可以读写对应寄存器值,具体如下:
+参考FAQ: FAQ202275323,含图片
+### 问题: 关于使用锐石PA RR88643-31使用注意
+解决方案: 关于平台使用锐石PA RR88643-31使用注意事项: 由于LTE PA nv配置0x0/1/3/4寄存器控制字,WCDMA PA nv配置0X0/1/3寄存器控制字,当WCDMA B1设置回退场景为6dbm,直接测试WCDMA B1 白卡场景的功率为17dbm,符合预期要求.测试LTE后切换测试WCDMA B1白卡场景的功率为13 dbm,功率减少6dB.当LTE 再回到wcdma B1过程中,0X4寄存器还是有值,没有被初始化为0,调用还是B41 0x4寄存器控制字.0X4寄存器表示PA bais step,0x400表示PA bais最小step. 问题解决在LTE所有band PA off增加0X400控制字,具体如下:
+参考FAQ: FAQ202275324,含图片
+### 问题: android 10有声照片录音格式和采样率
+解决方案: 系统相机有声照片录音功能调用的代码路径: vendor/sprd/platform/packages/apps/DreamCamera2/src/com/sprd/camera/voice/PhotoVoiceRecorder.java, 从上初始化代码可知,有声照片录音格式为: AAC_ADTS,没有明确设置采样率参数,则默认采样率为8K.
+参考FAQ: FAQ202275327,含图片
+### 问题: SC2721 HEAD MICBIAS是做什么用的，设备插入耳机后它是什么状态
+解决方案: HEAD MICBIAS是插入耳机过程中:检测耳机是否带MIC,并当检测到MIC后,给耳机MIC提供正常的工作电压; 耳机座子分为美标和欧标(国标),耳机有分为3段式、四段式;其中四段式又分为美标和欧标(国标); 不同的耳机座子和不同耳机组合,HEAD MICBIAS最终状态不一样: 从上图中,可以得出:同标准的耳机座子+同标准的耳机,系统才能够检测出MIC,并最终打开HEAD MICBIAS功能.
+参考FAQ: FAQ202275331,含图片
+### 问题: 校准可以pass但某些band无法连接综测仪器是为什么？
+解决方案: 所有band AFC校准、TRX校准都可以pass,物料也没有漏贴,其他band可以连接仪器,但是只有某一个band无法连接仪器,一般出现这种情况是ps搜网频段没有配置该band. LTE NV 检查如下,下图中红圈位置表示TDD配置了3个频段,FDD配置了12个频段. 下图红圈表示TDD配置了band38/40/41,若频段数量不一致,或者漏掉了其中一个,那么该band就会无法连接仪器. FDD同理: 以上是LTE搜网频段配置的NV位置,关于WCDMA的搜网频段配置在NV中的位置见FAQ202275341
+参考FAQ: FAQ202275339,含图片
+### 问题: WCDMA的搜网频段配置在NV中哪里修改？
+解决方案: WCDMA的搜网频段配置在NV中如下位置: PS_NV_PARAMS\NV_PARAM_TYPE_EXPORT_WAS_CUSTOMER_SETTINGS\rf_cap 如截图所示.NumBand表示支持频段的数量,图中表示支持5个频段,分别为band1/2/4/5/8.NumBand必须与下面的频段数量对应上,否则就会出现可以校准pass,但是无法连接仪器的问题.
+参考FAQ: FAQ202275341,含图片
+### 问题: UMS9620+UMP9620默认是单键还是双键复位？
+解决方案: UMS9620+UMP9620搭配,UMP9620默认是单键7S复位,只要长按PBINT按键超过7S拉低就可以触发硬件或者软件的复位操作. 但是在软件运行起来后,可以通过配置UMP9620的寄存器 POR_7S_CTRL将单键复位修改位双键复位,同时按下EXTRSTN+PBINT超过7s触发硬件或者软件复位的操作. 关于复位时间的修改可以详细参考《UMP9620 Device Specification》 中Power Key 7s reset介绍,单键或者双键复位时间在 POR_7S_CTRL寄存器中的PBINT_7S_RST_THRESHOLD比特位进行修改.
+参考FAQ: FAQ202275346,含图片
+### 问题: 关闭sleep mode的方法
+解决方案: 修改NV写成0(disable),NV信息所在目录参考如下信息: MS_Code\common\nv_parameters\refbase <ITEM name="enable_arm_sleep" type="uint8" varname="enable_arm_sleep" value="0x3" desc="0:disable, 1:enable deepsleep, 3: enable deepsleep&amp;&amp;retention(for sc880xg)"/>
+参考FAQ: FAQ202275347
+### 问题: 锐石PA(RR88643-31) WCDMA APC FDT校准Fail
+解决方案: 手动Pandora gain index=0,饱和功率有25dBm.Simba校准,出现如图所示校准Fail. 根据PA Application note,TX配置4个寄存器,Reg0/1/3/4.由于wband_pa_mode_ctrl 寄存器个数限制(≤3), 将Reg4配置在wband_pa_crtl中.重新校准PASS. 正确配置结果: 各个寄存器,具体配置值,参考PA原厂Application Note.
+参考FAQ: FAQ202275353,含图片
+### 问题: UIS8910FF平台Band40/41 RX走4G PA灵敏度恶化问题
+解决方案: Band40/41 RX走4G PA 的HBRX1/HBRX2,TRX校准可以pass,但是实测灵敏度只有-80dBm,在排除硬件通路问题后,匹配也无法再优化,但是实测灵敏度还是很差,这是由于平台要求TX_Mipi_PA_Close配置R0和R2寄存器,OFF掉PA和相应的开关引起的.如图所示: 对于TDD的Band,如果高频RX使用了PAM的的Switch,比如展锐的RPM6743-31,在配置PA Close的时候,只需要对PA的R0寄存器操作,不能对R2寄存器进行操作,因为R2寄存器是控制PAM的Switch的,RF驱动在开逻辑通道的时候,在TX>Rx的过程中,是先操作RX MIPI的寄存器,然后再操作TX OFF,这样就会导致RX MIPI把PA的Switch打开之后,在TX OFF的时候又把PA的R2寄存器给置回来了,导致灵敏度变差.因此需要把R2寄存器配置去掉,灵敏度即可恢复正常,NV修改如图所示:
+参考FAQ: FAQ202275354,含图片
+### 问题: UIS8850 下载和开机的验签流程
+解决方案: UIS8850 下载和开机的验签流程 下载流程: 上电rom检测到boot键短接后进入下载模式,并对fdl验签加载,然后由fdl完成验签下载的动作 正常开机流程: 上电rom启动后,按下面流程逐级验签启动
+参考FAQ: FAQ202275355,含图片
+### 问题: 连接WIFI后路由器上显示dummy
+解决方案: 平台默认station的host name为dummy,当前可通过调用接口sci_dhcp_sethostname修改主机名. 修改方法如下: 所在文件:mmiwlan_manager.c PUBLIC BOOLEAN MMIWIFI_Dhcp(MMIWIFI_PROFILE_T* profile_ptr) { ...... profile_ptr->state = MMIWIFI_PROFILE_STATE_DHCPING; sci_dhcp_sethostname("JustTest"); //修改点,在此处添加需要设置的名字 // IPV4 dhcp ret = sci_async_dhcp(MMIWIFI_DHCP_TIMEOUT, SCI_IdentifyThread(), MMIAPIWIFI_GetNetId()); ...... return result; }
+参考FAQ: FAQ202275356
+### 问题: 修改音频参数，实际不生效是什么原因导致的？
+解决方案: 修改音频参数,实际不生效是什么原因导致的?有以下几个排查方法供参考 1)首先确认实际通话当前的模式和自己工具修改的模式是否是对应的,例如通话走的handset VOLTE WB,而实际却在handset下修改,这样实际通话调用的参数还是handset VOLTE WB默认参数,可以读取current mode观察是对应哪个模式,在这个模式下修改即可. 2)如果音频工具有报错,则可能是工具写入出现问题,通过工具生成的LOG,提供给AE分析即可. 3)确认是否是音频通路配置不正确,而导致写入参数无效.例如硬件为耳机推外置功放,而实际软件驱动配置成内置功放输出,这样在工具里修改免提模式参数也不会生效.
+参考FAQ: FAQ202275357
+### 问题: UMS512T从安卓R升级到安卓S,以及升级到安卓T，音频有什么需要注意的地方？
+解决方案: UMS512T从安卓R升级到安卓S,以及升级到安卓T,音频有什么需要注意的地方? 1.升级前后算法版本是否变更?如果变更,请帮忙列出变更影响点. 答:算法不变更.即使CVS版本升级了,也兼容之前的,无影响. 2.安卓S版本/安卓T版本参数是否可以直接使用安卓R版本参数? 答:可以直接使用. 3.参数架构是否有变更? 答:没有变更. 4.若安卓S版本/安卓T版本直接使用安卓R版本参数,是否还会出现效果与R版本不一致的情况? 答:不会出现出现效果与R版本不一致的情况. 以上摘自客户的提问.综上所述,UMS512T从安卓R升级到安卓S,以及升级到安卓T,音频参数以及CVS版本可以保持不变.
+参考FAQ: FAQ202275358
+### 问题: u-boot阶段读写flash的接口
+解决方案: <u-boot_dir>/common/sprd_common_rw.c int common_raw_read(char *part_name, uint64_t size, uint64_t offset, char *buf) int common_raw_write(char *part_name, uint64_t size, uint64_t updsize, uint64_t offset, char *buf) 请在flash驱动初始化后再调用以上的读写接口,往misc或者miscdata分区内写入数据,请确认好对应的位置是否已被使用.
+参考FAQ: FAQ202275367
+### 问题: 我司PMU（SC2721G UMP510G）的VCHG管脚在充电插入检测时是电平触发吗
+解决方案: SC2721G和UMP510G的VCHG管脚触发功能一致. 两者VCHG管脚的充电插入检测都是电平触发,默认高电平持续时间为50ms,同时具有去抖功能. 电平触发时间可调范围:1ms-4s. 通过修改EIC0CTRL寄存器可对该功能进行修改. 关于寄存器的修改请查看PMU对应规格书章节:Ext Interrupt Controller(EIC).
+参考FAQ: FAQ202275370
+### 问题: 系统录音机默认用主MIC还是辅MIC录音
+解决方案: 系统录音机APP默认情况下使用的是哪个MIC呢? 录音机的实现代码,路径:vendor/sprd/platform/packages/apps/DreamSoundRecorder/src/com/sprd/soundrecorder/service/SprdRecorder.java 从mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC); 可以确认录音机默认使用主MIC. 如果要把默认改成辅MIC,可以参考如下设置: mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER).
+参考FAQ: FAQ202275377,含图片
+### 问题: 提示 “Requested service option not subscribed -33-”
+解决方案: 有些运营商要求当激活PDP失败返回结果码29或33时,需要提示用户如下信息: Requested service option not subscribed -33- User authentication failed -29- 该功能由宏MMI_CLEARCODE_33_29控制,如无该需求可将此宏关闭. 关于返回错误码33可能出现的几种情况,现提供如下信息供参考: 1. 当网络拥塞时,运营商网络发送33,这意味着用户设备请求服务但当前网络没办法处理. 2. 当用户没有付费,欠费或没有注册相应的服务时(数据业务或附加业务).网络将拒绝用户设备端 PDP 激活. 3. 手机终端发起的请求使用的APN错误,可能会出现网络返回33错误码.
+参考FAQ: FAQ202275381
+### 问题: Pandora强发GSM制式使其处于Continues发射模式
+解决方案: 一、如射频通路上SP8T开关为MIPI控制NV修改前后对比如下: 二、如射频通路上SP8T开关为GPIO控制时NV修改前后对比如下:
+参考FAQ: FAQ202275382,含图片
+### 问题: Band34/39走TXM，APT参数影响信令连接问题
+解决方案: Band34/39走TXM,TRX校准可以pass,搜网配置、PA/SW的逻辑配置以及 TRX port均无异常,但是信令无法连接,建议查看band34/39的apt_status是否打开,若打开,必须确保各分段参数完整且正确,否则APC校准将无法Scan完整的功率控制字,如果在未扫描功率段的功率大小下进行信令连接,将会无法连接. NV位置:band39:RF_nv\RF_NV_T\RF_LTE_NV_T\LTE_APT\APT[12] band34:RF_nv\RF_NV_T\RF_LTE_NV_T\LTE_APT\APT[14] 如图,HPM_config、MPM_config和LPM_config必须保证各组pwr_seg正常.HPM_config有3组,MPM_config有2组,LPM_config有7组.
+参考FAQ: FAQ202275386,含图片
+### 问题: 如何在线打印log来确认软件YNR(YNRS)的算法版本信息
+解决方案: 答:关键字"YNR_LOG" 在cmd界面输入adb shell logcat | grep "YNR_LOG" 然后打开手机,在对应的模式于暗处拍照即可打印出对应的版本信息. 举例说明: C:\Users\haoran.ge>adb shell itel-S662LC:/ # logcat | grep "YNR_LOG" logcat | grep "YNR_LOG" 08-05 11:25:05.297 541 1219 D YNR_LOG : ynr_init start 08-05 11:25:05.297 541 1219 D YNR_LOG : CAM_ALGO_CV_YNR_LIBVER [1.0.2.0.1764885][Dec 10 2021][10:10:13] 08-05 11:25:05.297 541 1219 D YNR_LOG : ynr_init end
+参考FAQ: FAQ202275387
+### 问题: 如何在线打印log来确认CNR3的算法版本信息
+解决方案: 答:关键字"CNR3_LOG" 在cmd界面输入adb shell logcat | grep "CNR3_LOG" 然后打开手机,在对应的模式于暗处拍照即可打印出对应的版本信息. 举例说明: 输入以上命令会打印出如下: M4E11C5 08-03 01:25:45.673 564 7621 D CNR3_LOG: cnr3_init start M4E11C6 08-03 01:25:45.673 564 7621 D CNR3_LOG: CAM_ALGO_CV_CNR3_LIBVER [3.0.1.3.1764885][Dec 10 2021][10:10:06] M4E11C7 08-03 01:25:45.673 564 7621 D CNR3_LOG: cnr3.0 handle pos: 0xe218a510 M4E11C8 08-03 01:25:45.673 564 7621 D CNR3_LOG: cnr3_init end
+参考FAQ: FAQ202275388
+### 问题: EDGE 850/900开关谱优化经验
+解决方案: 1、优化ramp曲线.EDGE所有PCL等级共用一组ramp曲线,且相对GSM的曲线明显较宽,对应RF_ramp_table中的stage14. 2 、优化EDGE Ramp电压值.最大可配置值0x7FFF,对应电压2.0V,其它数值等比换算即可.如图 0x6600即为26112/32767×2.0=1.6V. 3、优化0X1寄存器值.根据现有项目调试经验表明从55修改至DB有较为明显的提升. 4、优化LB输入匹配网络.按照RTM7916-51的参考设计和调试经验,串12pF并15nH匹配对EDGE有较好的性能.
+参考FAQ: FAQ202275397,含图片
+### 问题: TDD B40\B41 RX是否支持BPF方案？
+解决方案: 为了节约成本,TDD B40\B41 RX是否可以使用BPF方案?相比SAW方案RF性能上有无大的差异?过认证是否有风险? TDD B40\B41 RX若走BPF方案,相比SAW来说,单从灵敏度看应该会好些,但接收带外、带内、窄带Blocking会差些(需要实测). 另外B40 RX不走SAW的话,B40跟WIFI共存指标会有很大影响. 综上UMS9230平台,推荐使用SAW方案,BPF没有验证过,不推荐使用.若项目不打算过B40\B41 RX Blocking、spurious、B40_wifi共存认证的话,建议预留BPF与SAW兼容方案.
+参考FAQ: FAQ202275399
+### 问题: GSM ILoss校准fail如何解决？
+解决方案: 1、 首先确认灵敏度是否正常,若灵敏度不正常请先优化接收灵敏度 2、 若灵敏度正常但是此项依旧fail,可以查看ILoss值是否临近门限值,若是这种情况可以按照实际情况修改门限值,修改路径如下:RF_nv\RF_NV_T\RF_GSM_NV_T\gsm_stub_flag 补偿方法:
+参考FAQ: FAQ202275405,含图片
+### 问题: 后台播放音乐，打开相机开始录像后，会录进几秒的音乐声音
+解决方案: 后台在播放音乐, 当打开平台相机开始录像后,相机应用会去获取音频焦点,然后开始录像,但是音乐播放器收到音频焦点丢失后,会有个渐变过程,并非立即停止播放,所以停止前的音乐会被录进视频里. 对比google原生机,原生机的相机录像并不会去获取音频焦点,所以音乐并不会停止,音乐一直播放,都被录进视频里. 所以这个只是App的设计逻辑不一致,目前平台设计如此,正常现象.
+参考FAQ: FAQ202275406
+### 问题: A12 随卡配置国内漫游开关
+解决方案: /vendor/sprd/platform/framework/base/core/res/res/ 路径下根据SIM卡 mccmnc 配置随卡国内漫游开关. 新建文件夹 values-mccxxx-mncyyy 例如 :values-mcc460-mcc01 在 values-mccxxx-mncyyy 下新建 config.xml 文件 ++ <bool name="national_data_roaming" translate="false">true</bool>
+参考FAQ: FAQ202275409
+### 问题: A11 随卡配置国内漫游开关
+解决方案: /vendor/sprd/platform/framework/base/core/res/res/ 路径下根据SIM卡 mccmnc 配置随卡配置国内漫游开关. 新建文件夹 values-mccxxx-mncyyy 例如 :values-mcc460-mcc01 在 values-mccxxx-mncyyy 下新建 config.xml 文件 ++ <bool name="national_data_roaming" translate="false">true</bool>
+参考FAQ: FAQ202275410
+### 问题: USB Type A接口与USB HUB自动切换电路实现方式
+解决方案: 在硬件电路上可以做USB Type A接口与USB HUB的自动切换,实现的原理如下: 可以默认设备为host模式,当插入type A的 USB接口后通过一定的硬件电路自动切换到device 模式,具体电路以及实现的硬件逻辑如下: 使用该电路时候,在做device和host切换需要软件配合修改如下的逻辑: 1.正常情况下 Vbus与USBID_CTRL之间是有时序要求的,该电路上当插入Type A usb时候VBUS 与USBID_CTRL几乎是同时出现,所以需要软件增加适当的延时调整时序; 2.在device或者host正在工作时候如果突然出现角色的切换,会引起系统的异常,需要软件上处理这个突发的动作. 该电路已经经过软件调试验证,实际结果可行的.
+参考FAQ: FAQ202275431,含图片
+### 问题: app增加trace监控
+解决方案: 如下方式增加代码 import android.os.Trace; Trace.beginSection("set your TAG here"); the code you want to monitor Trace.endSection();
+参考FAQ: FAQ202275445
+### 问题: SC9832E电池过流保护和短路保护参数如何选择
+解决方案: 1.过流保护电流不小于5.5A,过流保护延迟时间不小于5ms. 2.短路保护电流不小于6.5A,短路保护延迟时间不小于50us.
+参考FAQ: FAQ202275446
+### 问题: UWS6130E/UWS6131E电池过流保护和短路保护参数如何选择
+解决方案: 1.过流保护电流不小于5.5A,过流保护延迟时间不小于5ms. 2.短路保护电流不小于5.5A,短路保护延迟时间不小于50us.
+参考FAQ: FAQ202275447
+### 问题: 基于SC2721G的平台电池过流保护和短路保护参数如何选择
+解决方案: 1.过流保护电流不小于6.5A,过流保护延迟时间不小于5ms. 2.短路保护电流不小于7.5A,短路保护延迟时间不小于50us.
+参考FAQ: FAQ202275448
+### 问题: YOCTO操作系统的音频参数PULL路径是多少？
+解决方案: YOCTO操作系统的音频参数默认路径如下: etc/audio/ 对于参数调试结果在/var/audio目录,调试完成后导出此目录下的audio_para文件合入版本
+参考FAQ: FAQ202275449
+### 问题: UIS8850 dtools工个抓GDB时提示”Elf version is not the sam
+解决方案: UIS8850 dtools工个抓GDB时提示"Elf version is not the same as in target"错误 原因:1,elf文件不匹配;2,diag device配置不正确 解决办法:diag device配置不正确需要根据实际的物理连接口(USB/UART)进行如下配置,设置后会自动保存,重启生效. USB: AT+SYSNV=1,"diag_device",2 UART: AT+SYSNV=1,"diag_device",1
+参考FAQ: FAQ202275450
+### 问题: 回铃音的播放
+解决方案: 回铃音(Ringback Tone)指的是当发起电话到电话接通这段时间,手机播放的等待音. 回铃音播放有两种方式: 上层AP播放 网络播放 分析此类问题前置是需要弄清楚当前回铃音是上述两种方式的哪一种. 拨打电话时,电话的状态变化是Connecting->Dialing,当电话状态变成Dialing时,上层需要下发"SET_LOCAL_TONE data = 0"给底层,通知底层当不是方式2时,优先上层播放回铃音. 如果是方式1,上层播放Hold音时log中会打印"start ringback"字样,当log中有此字样,表示此时上层正常播放回铃音. 如果是方式2,Dialing状态后,底层会上报"UNSOL_EARLY_MEDIA 1"通知上层由网络播放回铃音,不需要上层播放回铃音,此时上层会停止播放回铃音的操作,由底层播放网络音频. 当通话结束时,上层会下发"SET_LOCAL_TONE data = 1"给底层,标识着当前流程的结束.
+参考FAQ: FAQ202275451
+### 问题: UMS9230平台NFC芯片外部中断接口要求
+解决方案: 优先连接具备EXINT功能的管脚;其次为任意一个普通GPIO.
+参考FAQ: FAQ202275452
+### 问题: UMW2652 UART3接口是否可以删除？
+解决方案: UMW2652 UART3当前没有使用到,可以删除这两个信号连接.
+参考FAQ: FAQ202275453
+### 问题: W307平台VoLTE/ViLTE/VoWIFI/ViWIFI支持情况
+解决方案: W307平台VoLTE/ViLTE/VoWIFI/ViWIFI支持情况如下: W307平台仅支持VoLTE功能,不支持ViLTE/VoWIFI/ViWIFI. 其中VoWifi及ViWifi硬件依赖WIFI支持情况.如客户方面需要ViLTE/VoWIFI/ViWIFI相关功能支持,需要联系对应CPM走正式的RAT评审流程进行评估. VoLTE功能相关配置方法可参考如下信息: [FAQ202274693] W307平台客户项目VoLTE白名单进行配置方法 VoLTE使用的ims类型预置APN配置方法参考如下文档: Mocor平台预置APN列表更新指南V1.2.pdf https://unisupport.unisoc.com/file/index?fileid=31001
+参考FAQ: FAQ202275458
+### 问题: 通过代码修改虚化强度
+解决方案: 修改文件位置:SprdBokehAlgo.cpp (libcamera\hal_common\multicamera) 定位函数:(默认虚化强度为255) 第一处:mCapbokehParam.bokeh_level = 255; 第二处:mCapbokehParam.bokeh_level =(MAX_F_FUMBER + 1 - f_number) * 255 / MAX_F_FUMBER; 如果虚化强度想改成245,可以改成 mCapbokehParam.bokeh_level = 245; mCapbokehParam.bokeh_level =(MAX_F_FUMBER + 1 - f_number) * 245 / MAX_F_FUMBER; 建议:减弱虚化程度,可以把255改成245、235…以10的倍数为步进减小值即可,直到效果满意
+参考FAQ: FAQ202275459
+### 问题: 关闭数据视频电话回落为语音
+解决方案: 需要在对应运营商设置下列 2 个CarrierConfig配置: 1)配置项:ignore_data_enabled_changed_for_video_calls,在CarrierConfig 中默认为 true ,表示关闭数据不会影响视频电话.先排查下在对应运营商是否有设置为false,如果有,则先配置为 true <boolean name="ignore_data_enabled_changed_for_video_calls" value="true" />  
+ 2)配置项:vilte_data_is_metered_bool,在CarrierConfig 中默认为 true ,如果设备达到数据限制或在ViLTE呼叫期间数据被禁用,则呼叫将降级为音频电话. 如果不想在关闭数据的时候,视频电话回落为语音,需要在对应的运营商将其配置为false <boolean name="vilte_data_is_metered_bool" value="false" />
+参考FAQ: FAQ202275460
+### 问题: 配置是否支持视频通话功能
+解决方案: 将下列配置项在对应的运营商设置为false,则表示不支持视频电话,无法拨打视频电话、不会在 IncallUi显示视频升级图标; 配置为 true,则表示支持视频电话能力 <boolean name="carrier_vt_available_bool" value="true" />
+参考FAQ: FAQ202275461
+### 问题: 无 sensor机器 5 秒自动灭屏功能
+解决方案: 无sensor机器 5 秒自动灭屏功能是展锐定义的一个防误触的feature,如果不想要此功能,请将下列代码注释即可: /packages/services/Telecomm/src/com/android/server/telecom/CallsManager.java
+
+// IncallScreenOffController.getInstance().init(mContext, this);
+参考FAQ: FAQ202275462
+### 问题: google dialer 无法关闭camera 问题
+解决方案: google dialer 点击关闭camera,一般会下发 setcameraid 为 null 给telephony,但是异常时候 google dialer 不会下发,所以需要由 modem 去控制camera 数据的传输, 请在对应运营商配置: <boolean name="support_video_call_tx_rx_control" value="true"/>
+参考FAQ: FAQ202275463
+### 问题: 产线校准中如何避免sensor校准文件被误修改？
+解决方案: 可以通过修改校准系数文件读写权限以避免系数被修改,以proximity为例,通过adb 命令进行修改 adb root adb shell cd mnt/vendor/productinfo/sensor_calibration_data/ chmod 400 proximity 可通过ls -l命令查看修改后的文件权限
+参考FAQ: FAQ202275464
+### 问题: 展锐 dialer 视频彩铃功能
+解决方案: 展锐 dialer 有实现视频彩铃功能,只对展锐dialer 适用. 1)如果 ap 版本安卓为 10,11 ,将下列配置项在对应的运营商设置为 true <boolean name="support_video_ring_tone" value="true"/>
+ 2)如果 ap 版本安卓为 12,将将下列配置项在对应的运营商设置为 true <boolean name="support_customized_alerting_tone" value="true"/>
+参考FAQ: FAQ202275465
+### 问题: AndroidR/S设置中“热点和网络共享”界面中”以太网络共享“如何使用？
+解决方案: 该功能是在需要通过以太网络分享手机移动流量的场景.需要一个 usb转以太网的适配器,适配器的usb接口接上手机端,以太口接上其他需要上网的终端(比如电脑等). 这样就可以将手机的移动网络分享给终端设备了．通过usb这个介质进行网络共享的则属于打开USB网络共享．
+参考FAQ: FAQ202275474
+### 问题: 国内三大运营商关于B41频段是怎样划分的？
+解决方案: 3GPP标准里面,B41频段划分是2496~2690Mhz总带宽是196M,那么实际国内三大运营商关于B41频段是如何分配的呢? 中国联通 2555MHz-2575MHz 中国移动 2575MHz-2635MHz 中国电信 2635MHz-2655MHz
+参考FAQ: FAQ202275476
+### 问题: 如何关闭人脸解锁
+解决方案: [A12] 要关闭展锐自带的faceid,请参考如下方法: 在如下文件中添加一行语句: device/sprd/qogirl6/ums9230_1h10/product/var.mk $(call md-disable, security/faceid) [A11] 关闭人脸解锁功能与贵司项目使用的工程有关. 如要关闭9863a1h10_Natv工程的人脸解锁功能: 将device/sprd/sharkl3/s9863a1h10/product/s9863a1h10_Natv/var.mk中的以下语句注释掉或删除掉 $(call md-mfeature-add, security/faceid=tee-full/false) 其他工程类似处理.
+参考FAQ: FAQ202275478
+### 问题: UIS8850 编译报类似“__assert_func”函数无定义问题
+解决方案: UIS8850 编译报类似"__assert_func"函数无定义问题 在open app中编译时经常碰到报某函数无定义的错误,主要原因是SDK中或newlib库的对应函数接口未透漏给app. 修改方法:在components\apploader\src\core_export.list中添加对应的接口声明.
+参考FAQ: FAQ202275483
+### 问题: UMS9230平台RFCTL16~20使用规则
+解决方案: RF CTRL管脚区分为LTE专用(RFCTL16~20)和ALL通用(RFCTL0~15)两组 1、Tunner和dpdt这种器件是所有制式都用的,只能用RFCTL0~15这一组来控制. 2、LTE频段如果使用了RFCTRL16-20,那么这个频段的TX, PRX, DRX用到的RFCTRL都是用的RFCTRL16-20,不能混着使用RFCTRL0-15 参考文档如下: 《UMS9230+SR3595D RF NV配置指南V1.2.pdf》(编号:34399)中描述RFCTL16/17/19/20只能用于LTE
+参考FAQ: FAQ202275489,含图片
+### 问题: GCF认证中GSM相关case在R&D TS8980跟TS8950测试系统中的差异
+解决方案: 主要原因是测试信道的差异,例如case 14.6.1 GSM900 TS8950系统的测试信道为5、62、120,而TS8980系统测试信道为977、63、122 ,又例如case 14.18.4 PCS1900 TS8950系统测试的信道为513、660、805,而TS8980系统测试信道为518、660、804
+参考FAQ: FAQ202275490
+### 问题: 关于GSM RX DFE相关ADC时钟跳频配置NV项说明
+解决方案: 以NV2.0为例,打开RDNV,DFE的位置为gsm_platform\system_param_dsp_use_platform\rf_dfe_switch\HPF_coef\ HPF_coef[0]=0XA,表示配置10组信道,即HPF_coef[1]~HPF_coef[20],每2个值为一组,分别为起始信道跟截止信道,通常为需要打开ADC时钟跳频功能信道的前一个跟后一个信道,改为0x0即关闭跳频功能. 如下图所示:HPF_coef[1]~HPF_coef[20]中高4bit(bit15~bit12)表示band,0代表GSM900,1代表DCS1800,2代表PCS1900,3代表GSM850,低12bit(bit11~bit0)为信道号 GCF认证中,部分GSM RX相关case需要关闭相关信道的ADC时钟跳频功能以提升接收的抗扰动性能,此为work around方案,会对相关信道灵敏度有1dB左右的恶化.
+参考FAQ: FAQ202275495,含图片
+### 问题: 6533G平台自动接听如何起作用
+解决方案: 目前的代码实现中会判断是否是耳机模式,只有在耳机模式下才会判断是否开启了自动接听功能.因此,如果要测试自动接听功能,需要插入耳机才能起作用.
+参考FAQ: FAQ202275497
+### 问题: GO版本桌面添加微件
+解决方案: 从Android 9.0开始,Google原生在Go版本中不支持微件功能,即微件界面入口只在Full版本中暴露给用户
+参考FAQ: FAQ202275501
+### 问题: A11多个Launcher如何设置默认Launcher
+解决方案: 展锐平台配置默认Launcher请按照下述方式验证:
+1.在贵司对应项目的board下进行配置prop属性,按照如下示例,添加属性值:
+ro.default.home.component=com.xxx.xxx/com.xxx.xxx.xxx
+以上分别为第三方Launcher的包名与类名,注意填写正确
+
+2.重新编译版本,烧写pac包开机,验证是否配置成功.
+参考FAQ: FAQ202275502
+### 问题: ylog设置
+解决方案: 修改模块日志状态可参考如下,如关闭tcpdump日志
+
+1、默认关闭
+/vendor/sprd/tools/ylog/ylog_common/conf/ylog.conf.debug
+
+--   tcpdump,1
+++   tcpdump,0
+
+
+2、使用adb指令操作
+
+ylogctl cl tcpdump     //关闭
+ylogctl op tcpdump     //打开
+参考FAQ: FAQ202275504
+### 问题: 如何调整WCN_26M_IN 驱动能力?
+解决方案: UMS9230参考图纸中,WCN_26M_IN 和 UMP510G V1(REF_OUT1)相连. 调整UMP510G REF_OUT1 驱动能力,需要修改TSX_CTRL14 bit DCXO_26M_REF_BUF1_DRV_LEVEL_CTRL
+参考FAQ: FAQ202275505,含图片
+### 问题: LTE B1\B3\B8测试吞吐量时，当信号强度在-100dBm左右会出现下降的情况。
+解决方案: LTE B1\B3\B8测试吞吐量时,当信号强度在-100dBm左右会出现下降的情况. 现象:在信号强度为-100db左右时出现下行吞吐量下降,而在-103db之后又回复正常. 原因:SC9832E平台需要兼容SR3595D1和SR3593A两款Transceiver芯片,因两者rx gain table不一样,LNA分别为3档和4档. 例如:当LTE B8 RSRP在-100dBm时,AGain在0x14和0x15两档(LNA切换点附近)来回跳,就会带来吞吐量下降的现象. 软件已经在如下modem分支中合入兼容方案: 4G_MODEM_20A_W21.47.7(含此版本或之后版本); 4G_MODEM_20A_W21.42.2_P2(含此版本或之后版本); 4G_MODEM_20A_W21.15.3_P22(含此版本或之后版本).
+参考FAQ: FAQ202275509
+### 问题: Camera效果参数ALSC模块Level或load_level引起color shading
+解决方案: 参数位置: ALSC->Level&load_level; 参数意义: Level:控制算法的复杂度,目前选项为"simple(0)"和"normal(1)",默认值"normal(1)" 要求同一台机器上多个镜头的调试参数中的Level 值必须相同; 参数影响: 若当前项目强烈要求低功耗,可选择"simple",影响是部分场景下去除color shading的能力不够;
+参考FAQ: FAQ202275510,含图片
+### 问题: UMP9620/UMP9621/UMP9622/UMPS9621之间的区别
+解决方案: UMS9620系列芯片搭配的PMIC有UMP9620+UMP9621+UMP9622+UMPS9621,不同PMIC区别如下:
+参考FAQ: FAQ202275517,含图片

@@ -1,0 +1,308 @@
+### 问题: 6531平台通过armlog工具抓取bt.cap log
+解决方案: 回答: 1.channelserver/uart连接armlog 工具抓log 打开armlog/BT log开关输出log 1)手机工程模式#*8378#1#,para set----Arm log----Open 2)再确认开启BT log:para set----BT log----选择USB 2.完成bt相关的操作,如测试机和其他机器互相搜索配对,配对完成后文件bt分享等 3.BT寻求配对过程中会产生较小的bt.cap log,如十几KB BT 文件传输会产生比较大的bt.cap log 在抓armlog抓log过程中或者回放时,这些信息都在armlog message 信息窗口有显示
+参考FAQ: FAQ103243
+### 问题: 设置闹钟，拔电池关机，关机闹钟无效
+解决方案: 是因为RTC是由电池供电,拔电池后RTC会复位,RTC中不会存在设置的闹钟信息,所以会存在这种情况
+参考FAQ: FAQ103268
+### 问题: 设置两分钟后的关机闹钟，不会自动开机，更不会闹铃
+解决方案: 因为关机和接口写入到RTC都需要时间,闹钟设置又是仅能精确到分钟,如果按准点设置,存在一个最大为59秒的时间差,会给人以错觉.所以设置到RTC的时间是在当前基础上减120秒后再写入到RTC.为了避免误测,建议设置5分钟后的关机闹钟验证.
+参考FAQ: FAQ103269
+### 问题: 拔电池关机等情况下，关机又开机，发现开机过程中偶尔会有闹钟铃声响起
+解决方案: 拔电池关机或者插着SIM卡或者连接wifi的情况下,关机又开机,导致RTC复位后再根据NITZ或者wifi时间自动同步.手机时间会在跳变到当前时间过程中触发闹钟,正常现象, 如果要修改的话,可以加入如下samplecode: AlarmServices.java @Override public int onStartCommand(Intent intent, int flags, int startId) { ....... + if (AlarmUtils.getFormattedTime(mContext, + Calendar.getInstance()).equals( + AlarmUtils.getFormattedTime(mContext,mInstance.getAlarmTime()))) { + startAlarm(mInstance); + } ...... }
+参考FAQ: FAQ103270
+### 问题: 第三方闹钟如何基于展讯平台实现关机闹钟功能?
+解决方案: 除了要按特定格式写/productinfo/alarm_flag文件外,还要在关机的时候加入关机原因,即在 GlobalActions.java: @Override public void onPress() { //mWindowManagerFuncs.shutdown(true /* confirm */); mWindowManagerFuncs.shutdown(true, "power_shutdown");//关机原因为power_shutdown }
+参考FAQ: FAQ103272
+### 问题: 从SD卡选择音乐作为闹钟铃声，删除音乐后，再进入闹钟查看，闹钟铃声仍然是删除的音乐名称
+解决方案: 用户删除铃声后,重新进入闹钟,由于原来的界面没有进行及时刷新所以给人以错觉; 此现象为正常现象,不建议修改,如果非要修改,请参考如下sample code: 即onpause状态重新折叠所有的闹钟. AlarmClockFragment.java public void onPause() { ………… + CollapseAllAlarm(); } } + private void CollapseAllAlarm() { + final int alarmCount = mAlarmTimeAdapter.getItemCount(); + for (int i = 0; i < alarmCount; i++) { + mAlarmTimeAdapter.collapse(i); + } + + }
+参考FAQ: FAQ103276
+### 问题: disktest工具使用说明
+解决方案: disktest工具是我司自研的测试文件读写、对比、删除的测试工具,现汇总测试工具使用说明如下: 1.目前工具仅支持debug版本测试 2.测试手机连接PC,保证驱动安装正常,adb可以正常使用 3.运行autotest.bat文件,此时执行的是run_dtest文件的写入,默认写入路径为/system/xbin(此处需要特别注意). 4.在3的运行界面输入测试命令开始测试,例如/system/xbin/run_dtest -d 1024 48(d代表date分区,t代表SD卡,1024是文件大小,48[H]是测试时长),测试参数可自行更改设置. 测试文件生成路径参照如下定义,文件达到规定大小后自动删除并重新生成,以此往复直到规定的测试时长: -D:生成/data/test.txt -T:生成/storage/sdcard0/test.txt
+参考FAQ: FAQ103281
+### 问题: Questions about the Spreadtrum Logel Tool
+解决方案: 1. in the left-upper sub-window, you can see every Uu message. after you click "rrcconnectionsetupcomplete" in right-down sub-window, you can find it's asn.1 struct in left-upper sub-window. we report all the AS capability in the meesage. 2. real-time ul and dl channel rate are not be displayed in the logel tool. we observe it by third part software tools, just like DU-Meter and so on.
+参考FAQ: FAQ113492
+### 问题: 在支持sensorhub的平台上如何处理打静电导致psensor被打死的问题？
+解决方案: 打静电的过程中有遇到psensor被打死,导致无法使用,需要重新启动手机才可以使用 一般此情况下,主要采取以下措施: 1, 硬件上做防静电的保护,如果还是不行则需要软件配合改善 2, 软件上sensor采用动态加载的方式调试,需要在我司提供的patch_table_sensor.c中做相应的操作: 打静电后如果 psensor的I2C地址发生了改变,那么需要跟sensor厂商沟通做重置I2C地址,并重新进行初始化等操作等,并填写到我们的接口函数中; 打静电后如果I2C仍然可以正常工作,则需要做重新初始化的动作,具体的可以请sensor厂商将需要进行的操作填写到我们的接口函数中
+参考FAQ: FAQ113529
+### 问题: 关于二合一喇叭电路
+解决方案: 喇叭听筒二合一方案: 推荐使用喇叭通路直接去推喇叭及听筒; 这个方案听筒模式下底噪可以满足3GPP标准,且有较大余量; 听筒模式走听筒通路需要外接模拟开关并在通路串接12R电阻.
+参考FAQ: FAQ106402
+### 问题: SC9850 3M/4M/5M几种产品模式的NV配置
+解决方案: CMCC 3M/5M, Open market 4M/5M, Oversea 3M分别对应的NV配置见如下表格. 其中,Open market 4M和Oversea 3M不支持TDS.
+参考FAQ: FAQ103501
+### 问题: 展讯平台是否支持GOTA升级功能
+解决方案: 1) GOTA功能是GOOGLE GMS就有的功能,展讯平台是支持的,软件上不需要修改,但需要在GOOGLE的GOTA服务器上进行部署,部署方面是需要联系GOOGLE的TAM的,以下是参考链接:https://support.google.com/androidpartners/answer/7313159; 2) 另GOTA使用的升级包和本地升级使用的整包/差分包是一样的; 3) 在支持GMS功能的手机上,GOTA的操作界面是"Settings->System->System update",其界面如下:
+参考FAQ: FAQ113466
+### 问题: SIMBA工具测试WIFI非信令功率时，是否可以调整WIFI发射功率大小？
+解决方案: SIMBA工具测试WIFI功率时仅有一条指令,即测试WIFI 的MAX Power,非信令不支持控制其他功率的指令. 可以通过更改WIFI的配置文件来调整WIFI MAX Power.
+参考FAQ: FAQ113473
+### 问题: 更改了Phasecheck的工站信息，MMI测试站位信息界面软件需要做哪些更改？
+解决方案: 软件方面不需要做任何更改. 因MMI测试APP读取Phasecheck区域是整个区域读取,然后通过结构树来提取相应内容,显示在MMI测试界面.增加或者缩减测试工站不影响软件获取对应工站的信息以及FLAG.
+参考FAQ: FAQ113480
+### 问题: 如何关闭HSDPA和HSUPA
+解决方案: NV item路径为TD_TIANJI12_NV_TYPE\NV_PARAM_TYPE_PREV_UMTS_FDD_RA_CAPABILITY 通过NV Editor打开NV工程,
+搜索HS_DSCH_supported,把对应的item value从0x1改为0x0;
+搜索E_DCH_Supported,把对应的item value从0x1改为0x0;
+搜索rlc_mac_ehs_supported,把对应的item value从0x1改为0x0;
+搜索rlc_mac_ehs_supported,把对应的item value从0x1改为0x0;
+
+修改完成后保存NV,然后重新生成NV bin文件,烧录到手机里即可生效
+参考FAQ: FAQ103572
+### 问题: 如何禁止Volte视频通话功能
+解决方案: 两种方式 1 at命令关闭视频通话功能 AT+SPENGMDVOLTE=31,1,0 返回ok即可. 2 nv配置 port_video =0 //视频通话端口 VedioConf_Enable = 0 //视频电话会议能力
+参考FAQ: FAQ103586
+### 问题: SC9820E/SC9832E/SC7731E/SC9863A  IIC支持的模式
+解决方案: SC9820E/SC9832E/SC7731E/SC9863A平台的IIC均不支持slave模式,只支持master模式
+参考FAQ: FAQ113574
+### 问题: 针对SD卡存储，系统是否为MTP配置了保留空间？
+解决方案: 目前未针对SD卡存储配置MTP的保留空间. 所谓保留空间, 原本是为了防止手机内部存储被MTP操作填满导致系统不稳定而预留的一部分存储大小,而SD卡被填满不会影响系统稳定性,所以默认未配置保留空间,用户可以使用整个SD卡的可用空间.
+参考FAQ: FAQ103646
+### 问题: 如何统一关闭Heart beat心跳功能
+解决方案: 调试功耗问题有时候会需要关闭系统心跳功能,统一关闭心跳功能的adb命令如下:(请使用debug版本) adb root adb shell setprop persist.sys.heartbeat.enable 0 getprop persist.sys.heartbeat.enable //确认一下是否为0 reboot //重启手机
+参考FAQ: FAQ103669
+### 问题: GSM Dummy PCH产生的背景
+解决方案: GSM系统中4个burst数据构成一个block,对于正常的PCH接收,需要接收4帧(每帧一个burst).但是由于PCH数据结构的特殊性,可能只接收1或2或3个burst就能够解码正确.对于BCCH,同样存在只接收2或3个burst就能够解码正确的场景.这样就使得提前结束该block 数据的接收提供了可能.
+参考FAQ: FAQ111960
+### 问题: SC9863A CSI phy与CSI controller是如何分配连接的？
+解决方案: SC9863A 具有3个DCAM: DCAM0最大支持16M(4672x3504); DCAM1最大支持8M(3264x2448); DCAM2最大支持2M的IR sensor,lite版本,无ISP能力. 传输支持8bits、10bits和12bits的Raw RGB数据,8bits和10bits的YUV 数据; CSI PHY与Controller分配配置连接如下:
+参考FAQ: FAQ111948
+### 问题: 7731E android8.1如何支持OTG功能
+解决方案: 7731E android8.1 OTG功能配置如下: 1.pinmap配置: 例如: 使用RFCTL9/EXTINT7/DBG_BUS9GO/GPIO71为OTG中断检测脚,所以需要在UBOOT的相关pinmap-xxx.c中,将其配置成EXTINT7功能并默认上拉:(管脚功能选择参见SP7731E芯片spec) 2. Dts配置: 3.Config配置: 配置USB模式为HOST和DEVICE的双模单工模式.
+参考FAQ: FAQ103791
+### 问题: SC9832E TSX和TCXO是否可以共焊盘设计？
+解决方案: 不可以共焊盘.设计使用TCXO是为提升GPS性能,但TCXO在TSX位置时,GPS性能比较TSX无提升.
+参考FAQ: FAQ103838
+### 问题: SC9820E TSX和TCXO是否可以共焊盘？
+解决方案: 不可以共焊盘.设计使用TCXO是为提升GPS性能,但TCXO在TSX位置时,GPS性能比较TSX无提升.
+参考FAQ: FAQ103839
+### 问题: TTFF全是显示N/A
+解决方案: [Root cause] 在测试前有其他定位软件请求定位,对GPS传导测试有影响.TTFF的统计原理为,当gps开始定位请求时记录当前时刻,在定位成功后再次记录当前时间,将两个时间做差计算出GPS首次定位时间用于判断gps的定位性能.但当系统中已经有应用请求定位并成功定位后,再使用测试工具进行测试时将不会重新发起定位(前一个应用已请求gps定位,当前系统已处于定位状态)并且当前已经定位成功无法提供TTFF,所以没有TTFF的测试信息. [Solution] 在测试前请确认系统中没有其他应用已经请求gps定位,保证在测试前和过程中仅有测试软件请求gps定位,保证测试的有效性.
+参考FAQ: FAQ103935
+### 问题: SC2720A芯片N5 Pin FLASH_IB脚驱动电流多大？
+解决方案:  Flash_IB 最大驱动电流240mA
+参考FAQ: FAQ103920
+### 问题: SC7731E平台PMU芯片IB0-IB3 pin每路驱动电流多大？
+解决方案: 每路最大电流54.6mA,可以软件每路单独控制.
+参考FAQ: FAQ103922
+### 问题: Android4.4 6.0版本GPS可以搜到星，但不能定位
+解决方案: 原因: 6.0及以前的版本中Android原生仅支持gps卫星的定位,称之为Native版本,为了支持除GPS以外的GLONASS和北斗卫星,展讯平台对原生部分进行扩展,称之为非原生;该问题是由于上层代码没有拓展适配导致的卫星信息不准确,故而应用程序不能正确获取定位状态. 解决方案: 对native的代码进行相应修改,适配非native的多星座支持. Patch:Support_multi_gnss(gps_cannot_fix)
+参考FAQ: FAQ103945
+### 问题: 手机显示搜到的星号和仪器上面设置的星号不对应
+解决方案: 原因: 在进行星座拓展的修改时,对prn的处理错误导致每个卫星编号比实际小1. 解决方案: 修改对prn的处理. Patch:Prn_value_less_1
+参考FAQ: FAQ103960
+### 问题: GPS定位的上报时间间隔
+解决方案: 原因: 应用请求定位时可以设置定位的时间间隔,GPS底层根据设置的时间来确定上报的频率,展讯平台有两种上报频率1秒上报一次和2秒上报一次,所以2秒上报一次为正常现象. 解决方案: 由于芯片限制,目前只支持1秒上报一次和2秒上报一次两种,暂没有解决方案;
+参考FAQ: FAQ103973
+### 问题: SUPL1.0 _013_3& SUPL1.0 _013_4 SUPL-2.0-con-001 fail
+解决方案: 原因: 接收到无效的PUSH message后,直接下发给libGPS进行处理,而测试预期为接收无效的PUSH message后不继续SUPL流程.因此, 测试结果与预期不符导致失败. 添加对无效消息的过滤保证消息处理的有效性. 解决方案: 添加对无效消息的过滤保证消息处理的有效性. Patch:Incorrect_PUSH_message
+参考FAQ: FAQ103983
+### 问题: VOLTE普通多方通话和一键多方通话的建立流程？
+解决方案: (1)普通多方,也称传统多方会议电话,建立步骤: A与B处于保持状态,A与C处于通话状态. A向会议中心发起建立会议的请求,A与会议中心建立连接成功后,A向会议中心发REFER消息,其中Refer-To头域携带B的号码,请求将会议中心将B加入会议,会议中心将B加入会议后,A与B之间原来的点对点电话被网络释放;A再向会议中心发一个REFER消息,其中Refer-To头域携带C的号码,请求将会议中心将C加入会议,会议中心将C加入会议后,A与C之间原来的点对点电话被网络释放. 这样ABC之间就通过会议中心的连接建立了一个会议电话,其中A是会议主席,BC是会议参与方. (2)一键多方,也称增强型多方会议电话,建立步骤: A携带BC的号码向会议中心发起建立会议的请求,A与会议中心建立连接成功后,会议中心分别向B、C发INVITE消息,B、C收到来电后接听. 这样ABC之间就通过会议中心的连接建立了一个会议电话,其中A是会议主席,BC是会议参与方.
+参考FAQ: FAQ114675
+### 问题: CTS verifier测试有失败项,BYOD Managed Provisioning->Enable location fail
+解决方案: 原因: 该case用于测试GPS能否在15s内成功定位. 如果成功定位则弹出位置信息变化的提示信息, 否则提示timeout, 但是,无论是那种结果都属于正常. 解决方案:如果希望得到定位及轨迹变化, 不弹出超时提示,请按以下步骤测试, 1.在室外进行测试保证卫星信号接收 2.手机插入SIM卡,开启数据流量 3.配置正确的SUPL服务地址(展讯默认为supl.qxwz.com) 此项配置可以通过在拨号盘输入*#*#2266#*#* 第一个TAB页中的"SPL Address"和"SLP Port"确认 默认显示为 "SPL Address" supl.qxwz.com "SLP Port" 7275
+参考FAQ: FAQ103986
+### 问题: 【位置信息】点击“Google位置信息分享”时，屏幕跳动闪屏，且无法跳转至下一页面
+解决方案: 原因: 此问题为Google原生,Google机器也有此现象.具体原因为LocationSharingSettingsActivity被连续启动了两次所以导致闪屏. 解决方案: 将Google Play Services版本升级为11.8以上,登入Google帐号且连接Wi-Fi即可解决.
+参考FAQ: FAQ104002
+### 问题: 如何修改adb的传输包长度
+解决方案: 平台默认adb传送数据包长度为16K 文件路径:system/core/adb/daemon/usb.cpp #define USB_FFS_BULK_SIZE 16384 可以调整传输包长度为:32K和64K 32k: #define USB_FFS_BULK_SIZE 32768 64k: #define USB_FFS_BULK_SIZE 65536
+参考FAQ: FAQ104019
+### 问题: SC7731E 的PI仿真要求割地是什么意思?
+解决方案: SC7731E 的PI仿真要求割地,即 PMU VBAT_DRV 的旁路电容/VSS_DRV管脚/DCDC POWER最近一个旁路电容,要求直接打地孔到主地层,其他层的地要割掉,不连接,具体可以参考《SC7731E_PDN_Design_Guide_V1.0.0》.
+参考FAQ: FAQ104240
+### 问题: 6531E内部PA
+解决方案: 6531E内部PA不支持classD,只支持classAB,输出功率0.7W@4.2V.
+参考FAQ: FAQ104243
+### 问题: 6531E支持双MIC吗？
+解决方案: 6531E只有一路audio ADC,所以不支持双MIC降噪.
+参考FAQ: FAQ104249
+### 问题: SC9820E 的PI仿真要求割地是什么意思?
+解决方案: SC9820E 的PI仿真要求割地,即 PMU VBAT_DRV 的旁路电容/VSS_DRV管脚/DCDC POWER最近一个旁路电容,要求直接打地孔到主地层,其他层的地要割掉,不连接,具体可以参考《SC9820E_PDN_Design_Guide_V1.0》.
+参考FAQ: FAQ104250
+### 问题: SC9850K/KL 的PI仿真要求割地是什么意思?
+解决方案: SC9850K/KL的PI仿真要求割地,即 PMU VBAT_DRV 的旁路电容/VSS_DRV管脚/DCDC POWER最近一个旁路电容,要求直接打地孔到主地层,其他层的地要割掉,不连接,具体可以参考《SC9850K_PCB_Design_Guide_V1.1》p58页 "SC2721G-DCDC Isolated to Main GND SUM"
+参考FAQ: FAQ104254
+### 问题: 展讯SCH评审要求的文件格式
+解决方案: 展讯支持如下格式的原理图预览: 1 .sch格式要求PADS LOGIC VIEWER VX.0及其以下版本,VX.0展讯只有DEMO版本 2 .txt格式要求PADS LOGIC 9.4 及其以下版本 3 .pdf格式要求带网络和器件属性,最好不要图片格式/PDF format need NET and Part attribute 4 .dsn格式要求Allegro 16.2版本或者ORCAD 10.5 及其以下版本
+参考FAQ: FAQ104270
+### 问题: 展讯PCB评审要求的文件格式
+解决方案: 展讯要求PCB格式如下: 1 .PCB格式要求PADS LOGIC LAYOUT VX.0及其以下版本,VX.0展讯只有DEMO版本 2 .asc格式要求PADS LOGIC 9.4 及其以下版本 3 .brd格式要求Allegro PCB Designer Version 16.6 及其以下版本 4 Mentor BoardStation EN2004 file
+参考FAQ: FAQ104271
+### 问题: 原理图评审需要上传RF框图
+解决方案: 客户在提及ISUPPORT 原理图评审的时候,要求同步上传RF框图. RF框图需要客户提CQ给展讯;展讯根据客户具体频段需求,给出RF接法的示意图;客户要按照此RF框图设计RF部分的原理图.
+参考FAQ: FAQ104273
+### 问题: SC9832E平台使用TCXO时钟，能否省掉32K晶体
+解决方案: SC9832E平台支持两种时钟方案:1)TSX+32Kless, 2)share TCXO + 32K . 使用share TCXO方案,必须搭配32K晶体. 因为TCXO晶体工作时电流相对比较大,有几个mA,所以如果没有32K晶体,系统休眠时使用TCXO分频提供系统所需的32K时钟,会造成功耗过大. 有32K晶体后,TCXO电源在系统休眠和关机时关闭,TCXO不会耗电. TSX晶体在系统休眠时分频提供32K时钟,只会增加0.3mA以内电流增加,相比TCXO小一个数量级,一般可以接受,所以为了节省成本采用32Kless.
+参考FAQ: FAQ104279
+### 问题: SC9832E的EMMC和DDR，最小和最大分别支持多大容量？
+解决方案: SC9832E 对memory的要求最小是4GB+512MB(emmc+DDR). SC9832E上对DDR的支持最大4GB,对EMMC的支持无上限.
+参考FAQ: FAQ104272
+### 问题: RF框图的意义
+解决方案: RF框图是用来指导客户设计RF原理图.避免TRANSCEIVER PRX port口和PA TRX端口,相邻频段之间有频率重叠,造成串扰;同时可以防止客户TRANSCEIVER PRX por口H/M/L 频段接错.
+参考FAQ: FAQ104274
+### 问题: 平台PCB仿真，增加重要信号和小电源仿真
+解决方案: 平台PCB仿真在原来SI&PI仿真基础上增加了 重要信号和小电源仿真,请客户在完成PCB所以走线后,在ISUPPORT上选择 类型 IP Power&Interface Simulation,提效仿真即可.不要忘了提供PCB叠层.
+参考FAQ: FAQ104280
+### 问题: Simlock方案的手机IMEI是否支持重写？
+解决方案: 支持!但前提是重写IMEI时的密钥对需要与首次写入时相同,否则会因为鉴权失败而引起写号失败.具体可参照文档《SPRD Simlock User Guide》.
+参考FAQ: FAQ104281
+### 问题: PI&SI/IP Power&Interface 仿真复审需要客户提供仿真反馈单
+解决方案: 不管PI&SI仿真还是IP Power&Interface 仿真,只要是仿真复审,客户要提供仿真反馈单,即在给客户的仿真报告里有一列"Customer Feedback",要求客户 填写确认后,作为附件上传,才可以进行复审.
+参考FAQ: FAQ104300
+### 问题: 6531E蓝牙认证书相关讯息
+解决方案: SC6531E蓝牙证书证书链接: 6531E Classic 2.1+EDR Host Subsystem https://launchstudio.bluetooth.com/ListingDetails/25377 6531E Classic 2.1+EDR Controller Subsystem https://launchstudio.bluetooth.com/ListingDetails/12901
+参考FAQ: FAQ104320
+### 问题: 耳机左右通路上33R电阻和22uf电容串联的设计用途是什么
+解决方案: 电阻是分压,目的是降低noise.电容是隔直,9832E的耳机是classAB的,需要隔直,电容用0805封装的,目的是THD下降的少一些.
+参考FAQ: FAQ104322
+### 问题: 展讯最近的平台是否支持EVS
+解决方案: EVS是在VOLTE模式下的一种编解码方式,因此要支持VOLTE的平台才可能支持,另外9820E由于是功能机,因此也不支持. 所以9850K/9832E是支持的;7731E/9820E是不支持的.
+参考FAQ: FAQ104323
+### 问题: SC2721 DCDCWPA电源震荡问题
+解决方案: 为了避免SC2721 DCDCWPA电源震荡问题.要求SC2721 DCDCWPA电源,PMU端 4.7uf改为 10uf;PA端要有一颗4.7uf电容.
+参考FAQ: FAQ104338
+### 问题: SC9832E  3组NTC电路布局要求
+解决方案: SC9832E 如果客户要求精细温度控制,要求增加3组NTC电路,分别放在 PA附件/charge附件/ BB和PMU之间.如下图所示
+参考FAQ: FAQ104339
+### 问题: SC9832E不支持前双摄或者后双摄
+解决方案: SC9832E不支持前双摄或者后双摄;真假都不支持,请知悉!
+参考FAQ: FAQ104340
+### 问题: 6531E平台抑制上行电流噪声
+解决方案: 6531E平台容易出现上行电流噪声,SCH方面需要从如下两个角度加以预防: 1,耳机MIC的电源BIAS的下地电容,100nf改为2.2uf,加强低频滤波能力,加强电源稳定性. 2,SC6531E的主MIC偏执电压最好兼容预留SC6531E 的U14管脚AVDDVB电源,抑制上行电流噪声.因为AVDDVB有更大的电流能力,能够比VDDMICBIAS提供更好的噪声抑制能力.
+参考FAQ: FAQ104342
+### 问题: SC9850K/SC9850KL/SC9850KH  SI/PI/重要信号/小电源仿真标准一致
+解决方案: SC9850K/SC9850KL/SC9850KH SI/PI/重要信号/小电源仿真标准一致,相互替换时不用重新仿真;但是请注意各个平台之间的BOM差异.
+参考FAQ: FAQ104343
+### 问题: UART0/UART1必须预留测试点，不能删除
+解决方案: 平台解决主板无法下载问题,要从UART0抓取LOG;UART1 作为NBOOT和开机LOG抓取管脚;因此UART0/UART1必须预留测试点,不能删除.
+参考FAQ: FAQ104345
+### 问题: 如何预防6531E平台频率误差超标问题
+解决方案: 抑制6531E平台PCBA级别频率误差,从如下几个方面加以考虑: 1,T卡信号线预留下地电容位置,先不要贴片,看OTA测试结果以及频率误差而定. 2,SC6531E&F&G的IIS信号G18/G19/F18/F19,建议接地,解决RF 频差问题.如果一定要用,距离Adie远的可以优先使用,即使用优先级为 IIS_DO>IIS_LRCK>IIS_CLK>IIS_DI,请预留33pf下地电容,走线保护好,未使用的继续接地. 3,按键线内层走线,万一表层有较长走线,建议客户预留47pF电容
+参考FAQ: FAQ104344
+### 问题: SC6531E&F&G的B2/D2/E2/A2 不推荐客户作为GPIO使用
+解决方案: 是的,这四个PIN只能作为UART使用,而且只能系统用来输出log,不能当作GPIO来用,也不能用来连接其他UART外设. 原因在于这4个PIN在芯片生产阶段有其他debug功能,由于兼容性的问题,导致这四个PIN用作GPIO时会出现电流倒灌.6531E的UART应用见文档《NEMOG UART Application Guide》.
+参考FAQ: FAQ104346
+### 问题: 平台软件自适应LPDDR2/LPDDR3，硬件设计要求。
+解决方案: 平台软件自适应LPDDR2/LPDDR3,硬件设计要求如下: 1 针对EMCP的 LPDDR2/LPDDR3物料,请客户参考SPM: SPM_SC9832E_B_V0.2.0_EMCP_LPDDR3..... SPM_SC9832E_B_V0.2.0_EMCP_LPDDR2..... SPM_SC9820E_V0.1.0_EMCPLPDDR2..... 2 针对分离式的LPDDR2/LPDDR3物料, 如果是分离式LPDDR2和LPDDR3兼容的封装物料, CA/DQ接法请参考SPM SPM_SC9832E_B_V0.2.0_DISCRETE_LPDDR3的管脚定义来接 如果是分离式LPDDR2物料,此器件封装没有兼容的LPDDR3物料, CA/DQ接法接法参考 SPM_SC9832E_B_V0.2.0_EMCP_LPDDR2..... 还有提问请客户提CQ找展讯确认.
+参考FAQ: FAQ104347
+### 问题: “景深Pro” CAM设计注意事项
+解决方案: "景深Pro"设计请参考《SC9850K Rear Dual Camera Design Guide V0.6》
+参考FAQ: FAQ104353
+### 问题: SC9850K/KL/KH 3组NTC电路布局要求
+解决方案: SC9850K/KL/KH 要预留3组NTC电路.分别放在 PA附件/charge附件/ BB和PMU之间.
+参考FAQ: FAQ104355
+### 问题: SC2721 的P11管脚VDDKPLED推荐使用LDO模式
+解决方案: SC2721 的P11管脚VDDKPLED虽然有电流源和LDO两种工作模式,但是电流源在关机条件下有6uA的微弱漏电,造成LED灯微亮,因此建议客户使用LDO模式.
+参考FAQ: FAQ104356
+### 问题: SC7731E只支持TSX的方案，不支持TCXO+32K的方案。
+解决方案: SC7731E只支持TSX的方案,不支持TCXO+32K的方案. 由于芯片设计问题,TCXO+32K less方案会有漏电,因此7731E无法像展讯其他平台那样支持TCXO+32K less方案.
+参考FAQ: FAQ104357
+### 问题: 9820E平台UART0/UART1必须预留测试点
+解决方案: 是的,9820E平台UART0/UART1必须预留测试点. 展讯大部分平台只保留UART1的测试点打log即可,但9820E和9832E不同.由于芯片设计原因,在CPU的ROM code阶段,log只能从UART0出来.其他阶段的各种Log依旧如同其他展讯芯片,从UART1出来.因此UART0/UART1都要预留测试点.
+参考FAQ: FAQ104365
+### 问题: 9820E分离式LPDDR如何连接原理图
+解决方案: 我司9820E/9832E芯片LPDDR接口的data pin和CA pin是支持组内SWAP的,这样可以方便的支持不同的LPDDR封装形式,优化走线性能. eMCP形式的存储器由于封装单一,我司提供仿真pass的SPM供参考,保证产品性能. 而分离式LPDDR2/分离式LPDDR3封装比较多,针对各种封装都做SPM有困难,而我们又希望软件能够自适应LPDDR2和LPDDR3,因此要求如下: 1,那种LPDDR2和LPDDR3封装兼容的物料,按照SPM_SC9832E_B_V0.2.0_DISCRETE_LPDDR3接法设计; 2,其余分离式 LPDDR2,ballmap 是 LPDDR2 的器件,按照 eMCP+LPDDR2 的 ballmap 的走线.
+参考FAQ: FAQ104370
+### 问题: 9820E平台支持16bit nand吗
+解决方案: 平台只支持8BIT SLC NAND,请知悉,注意BB端按照参考设计,将AUD_DAD1和ADI_SCLK通过4.7K电阻下拉选择010
+参考FAQ: FAQ104367
+### 问题: 9820W/9820A如果需要的按键超过3×3怎么办
+解决方案: 按键扩展方案,不推荐使用展讯曾经推出的二极管扩展按键阵列方案,该方案性能有缺陷,不推荐使用,请使用GPIO单点接地的扩展方案. 如果需要的按键很多,GPIO不够用,请使用按键扩展芯片.
+参考FAQ: FAQ104373
+### 问题: 9820A/9820W平台nand和EMMC兼容设计时CPU侧供电
+解决方案: 9820A/W平台MEM兼容NAND接口,注意SC9820的G6管脚要兼容VDD1V8的供电;使用NAND此管脚 要求供电VDD1V8;EMMC使用VDDEMMCIO供电.
+参考FAQ: FAQ104375
+### 问题: 9820+2393方案功耗优化硬件注意
+解决方案: SC9820+SC2393方案,SC2393的E1管脚GE2_XTLEN必须接到SC9820的D27管脚,优化GPS跟踪功耗.这个PIN的作用是系统可以进入deep sleep状态保持低功耗,只有2393需要AP工作的时候才去唤醒AP.
+参考FAQ: FAQ104380
+### 问题: audio tester可以连接到COM口，但是无法get到音频参数。
+解决方案: 需要在工程模式里面将modem to PC打开,不同的android版本,打开的位置稍有不同. android 8.1:拨号键按*#*#83781#*#*进入工程模式-->选择DEBUG&LOG-->选择YLog-->点击右上角的setting-->Debug Setting&Tools-->将Modem To PC打开. android7.0:拨号键按*#*#83781#*#*进入工程模式-->选择DEBUG&LOG-->选择Logmanager-->点击右下角tools-->将Modem To PC打开(点成绿色).
+参考FAQ: FAQ104396
+### 问题: SC9832E/SC9820E T卡能够支持到的最大容量
+解决方案: T卡能够支持的最大容量和T卡所使用的文件系统有关,目前SC9832E/SC9820E能够支持的文件系统有Ext4、FAT、exfat、f2fs、sdcardfs、fuse,支持到的最大容量有SD(<=2GB)、SDHC(2GB-32GB)、SDXC(32GB-2TB)
+参考FAQ: FAQ104402
+### 问题: T卡信号线上预留的电容可以省掉吗？
+解决方案: T卡CLK/CMD/DATA信号线上一般会预留电容,防止T卡信号干扰射频,这些电容建议不要省掉. T卡没干扰到射频时,这些电容不需要上件.如果因为某些原因需要上件,请先量测T卡信号的timing是否符合spec要求. 如果不符合要求,可以通过修改pinmap增强CLK/CMD/DATA 信号的驱动能力进行微调,以满足T卡接口timing时序要求.
+参考FAQ: FAQ104416
+### 问题: SC9820E GPIO扩展按键PINMAP配置方法
+解决方案: SC9820E一个GPIO只支持扩展一个按键,不支持键盘扫描模式.GPIO扩展按键的PINMAP方法如下:需特别注意,必须添加"BIT_PIN_SE"关键字,这个关键字是打开施密特触发器功能,用于防止按一次显示多次的问题. {REG_PIN_SCL3, BITS_PIN_AF(3)}, {REG_MISC_PIN_SCL3, BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_SE|BIT_PIN_WPU|BIT_PIN_SLP_AP|BIT_PIN_SLP_WPU|BIT_PIN_SLP_IE},//KEYIN11
+参考FAQ: FAQ104602
+### 问题: simba校准TSX fail初步分析
+解决方案: 在生产过程中,经常遇到TSX校准fail,对于此,可初步分析一下原因: 1、Simba校准时首先log等级要选择5-verbose 2、fail之后可以点击左下角的Trace查看最底部的fail描述 校准方式:在AFC校准完成之后会取一组温度vs频偏的值,然后在校准(如果有综测是在综测完成之后)之后再取一组温度vs频偏,其中每组取样10次,这里特别强调第一组的10次取样和第二组的10次取样,每次温度值之间不能超过0.25度且每次频偏不能超过300HZ,然后取平均值作为第一组和第二组的值,同时要求第一组和第二组的温度gap要大于1度 3、一般情况下第一组温度为室温,基本在25度附近,如果第一组温度较高,可以排查是不是fail之后立即拿来测试,可放置一会儿再进行测试,温度是否有0度的情况,排查晶体本身是否不良等 4、如果硬件排查完毕,怀疑软件问题的情况下,最好附上工具log,有条件的情况下最好附上串口log以便于更快的解决生产问题.
+参考FAQ: FAQ104427
+### 问题: SIMBA antenna耦合测试LTE分集时，调整分集线损工具测试到的值没有变化
+解决方案: 1、请确认端口设置:天线耦合板只接了仪器端口port1,需要在simba工具仪器设置界面、点击Port Mapping、把辅天线端口也改成port1,然后确定,点击应用. 2、请确认手机分集天线是否组装正常、仪器等其他环境是否正常.
+参考FAQ: FAQ104442
+### 问题: 【BBAT】自动测试是否支持单项标志位的写入和读取？
+解决方案: 1.如何写入BBAT单项标志位? 可通过修改BBAT工具端的配置,工具目录下打开SP_BBAutoTester.ini,将EnableWriteMMIFlags = 0改为1保存,重新打开工具测试,可在测试log里查看是否写入,如下: "[单项标志位机制]命令pass, sleep 1000" --说明单项标志位结果已写入; 2.如何读取BBAT已写入的单项标志位? 可通过展讯NPI工具Pandora来读取,具体参考如下图片
+参考FAQ: FAQ104474
+### 问题: 【BBAT】自动测试工具端如何配置FM选项？
+解决方案: BBAT工具支持三种方式测试FM: 方案一: 通过测试耳机线将PCB与控制盒连接,采用外部FM发射方式,搜索固定频道发出的1KHZ正弦波声音,可手动进行调节搜索的频段; 方案二:软件自动搜台并上报RSSI,此方式软件自动搜索频率87.5~108MHZ,不需要特定声源,当搜到信号强度在设定的范围内才可pass,测试效率上搜索时间相对方案三较长,方案舍弃使用,在SP_BBAutoTester_R20.0.0001之后的工具版本已经删掉此方案; 方案三:搜索指定频率并上报RSSI,不需要特定声源,工具端配置合适的RSSI spec和搜索频段进行测试; >老功能机平台SC6531D,SC7701只支持方案一测试; >SC6531E/F,SC9820A,SC9820W,SC9820E,SC9832E,SC9850K,SC7731E,SC9853平台请使用方案三测试.
+参考FAQ: FAQ104478
+### 问题: ConnectivityTest测试报错“LP_VsaDataCapture() failed”
+解决方案: 此项报错提示IQ仪表无法获取从DUT发射出来的信号,需确保ConnectivityTest setting里面设置的RF PORT与仪表实际连接的PORT是一致的.
+参考FAQ: FAQ104480
+### 问题: CheckX工具如何检查Native MMI测试的标志位
+解决方案: 1.CheckX工具只支持检查Native MMI测试的总标志位(Final Result),不支持检查具体每项的测试结果; 2.可在CheckX.ini中打开配置进行检查: Check Whole Phone MMI Flag=0 ---整机测试结果flag Check PCBA MMI Flag=0 ---PCBA测试结果flag "0"为不检查,"1"为打开检查.
+参考FAQ: FAQ104479
+### 问题: ConnectivityTest测试GPS报错“Fail to load scenario fail,error 32”
+解决方案: ConnectivityTest整个存放路径中含有"中文字符"会导致此项失败,把工具存放在不含"中文字符"的路径下可以正常测试.
+参考FAQ: FAQ104484
+### 问题: 使用audio tester调试SC6531E录音机音效调试位置
+解决方案: SC6531E/F/M的record音效调试位置在,audio mode information-->record模块中. 如果UL_PGA0和UL_dgain的增益全加满,响度依旧不足,可以调试NS中的ul_dgain.
+参考FAQ: FAQ104492
+### 问题: TVS管走线注意事项
+解决方案: 1.越靠近被保护器件,效果越佳,建议放在同层 2.不要被旁路 3.在表层两个1-2孔,然后一个大孔下主地,当然更多的地孔更好
+参考FAQ: FAQ104495
+### 问题: 插入耳机收听fm时，打开speaker，speaker和耳机中均有声音。
+解决方案: HANDSFREE 模式下FM选项里的TWO IN SPK改为NORMAL模式就OK了
+参考FAQ: FAQ106520
+### 问题: 不连接仪器，GPS耦合测试仍然可以通过
+解决方案: 因为测试时没用屏蔽箱或者屏蔽箱效果差,导致DUT直接获取到了实网的GPS信号,所以ConnectivityTest工具会显示PASS.
+参考FAQ: FAQ104500
+### 问题: Fuel Gauge 20毫欧接地注意事项
+解决方案: Fuel Gauge 20毫欧接地的时候不能只是按照根据每个孔的过流能力,和使用过程中电池输出的最大电流来计算.需要考虑生产使用过程中的浪涌问题.较多的地孔对浪涌泄防比较有利.推荐接地10个大地孔20个小地孔.
+参考FAQ: FAQ104503
+### 问题: 脉冲群干扰测试如何应对
+解决方案: 脉冲群测试属于在220V电源上耦合高频高压脉冲信号,相比EOS测试能量更小,频率和电压更高.单纯采用TVS管,抑制效果较差,采用磁珠或者在充电线上添加磁环会有比较好的效果
+参考FAQ: FAQ104508
+### 问题: BBAT测试,MIC声音大小，工具SPEC如何设置?
+解决方案: 1,在工具设置里面,麦克风配置区域,分主辅MIC功能测试,需测试SNR,PEAK两项指标及麦克风的偏置电压检测. 2,取五片正常功能的pcba,取五片主板麦克风的SNR和PEAK,不要用平台推荐的默认参数. 3,参数中的SNR以及幅值下限都可以根据实际测试数据进行调整,用于拦截声音质量不良的产品 4,SNR:信噪比,又称为讯噪比,即放大器的输出信号的电压与同时输出的噪声电压的比,常常用分贝数表示.设备的信噪比越高表明它产生的杂音越少. 一般来说,信噪比越大,说明混在信号里的噪声越小,声音回放的音质量越高,否则相反. Peak:计算出的幅值越大,说明声音响度越高,声音质量越高.
+参考FAQ: FAQ104511
+### 问题: BBAT RGB sensor9820E平台测试方案夹具设计及工具设置
+解决方案: 1,RGB测试方案:通过RGB sensor判断手机LCD是否亮对应颜色,需要勾选RGB测试方案,测试时工具控制手机LCD分别亮红蓝两种颜色,然后通过RGB sensor分别判断各颜色的色彩指标. 2,有些方案公司的软件屏幕软件只显示在左上角,所以夹具设计的时候把RGB sensor模块设计在左上角,不管怎么显示都可以兼容测试 3,因为功能机屏幕色彩指标没有智能机高,具体的以测试出来的log记录,工具做对应的spec,不要用工具默认的参数.
+参考FAQ: FAQ104533
+### 问题: SC6531E是否能同时使用SPI接口的LCM和CAM
+解决方案: SC6531E不可以同时使用CCIR接口的CAM和并口的LCM,因为CCIR接口和并口的LCM存在共用的pin脚.但是可以使用以下组合: 1.CCIR接口的CAM+SPI接口LCM 2.SPI接口CAM+并口LCM 3.SPI接口CAM+SPI接口LCM
+参考FAQ: FAQ104514
+### 问题: SC6531E/M/F 是否支持USB HID协议、模拟HID设备？
+解决方案: 不支持,SC6531E/M/F USB无法解析HID 的get_descriptor 命令request type 0x81, 所以无法模拟为HID设备.
+参考FAQ: FAQ104692
+### 问题: 展锐平台USB ID功能应该选择那些管脚？
+解决方案: 展锐所有平台USB ID管脚优先选择具备Debance(硬件去抖)的中断输入, 即EXTINT[0,1,2,3....]管脚.
+参考FAQ: FAQ104536
+### 问题: 不在QVL列表中的memory如何申请验证支持？
+解决方案: 不在QVL列表中的memory,但又需要验证的,请按如下步骤进行验证申请: 1.提memory验证 CQ, 在CQ中提供准确型号和spec. 2.根据CQ中反馈的建议,提供20pcs 样片或者15pcs样机. 3.若提供的是样机,硬件方面需要留JTAG,UART1等测试点;软件需提供基于我司最新大版本的userdebug版本pac包和Vmlinux. 4.从提出申请到验证完毕,一般耗时4周(不包含验证过程中问题调试时间,以及物料和样机提供时间).
+参考FAQ: FAQ104725
+### 问题: SC9820e 是否支持GPIO KEY 唤醒
+解决方案: SC9820E平台不支持 GPIO key 的唤醒,继承于 9820A/9820W
+参考FAQ: FAQ104543
+### 问题: SC9820E平台飞行待机状态下哪些电源是打开的
+解决方案: 飞行待机状态下,平台默认打开的电源如下: DCDCCORE , DCDCMEM , LDOMEM , DCDCGEN , VDD2V8 , VDDDCXO . 对应电压和耗流数据请参考SC9820E_×××× Power Test Report.PDF .
+参考FAQ: FAQ104544
+### 问题: SC9820E 是否支持MIPI LCD
+解决方案: SC9820E只支持SPI LCD
+参考FAQ: FAQ104545
+### 问题: SC9832E平台飞行待机状态下哪些电源是打开的
+解决方案: 飞行待机状态下,平台默认打开的电源如下: DCDCCORE , DCDCMEM , LDOMEM , DCDCGEN , VDD2V8 , VDDDCXO . 对应电压和耗流数据请参考SC9832E_×××× Power Test Report.PDF .
+参考FAQ: FAQ104547
+### 问题: GPIO 触发方式分类
+解决方案: 1. level 触发,支持睡眠唤醒 2. edge触发,不支持睡眠唤醒
+参考FAQ: FAQ104548
+### 问题: 使用外置充电IC时，CHG_PD脚的功能和电气特性
+解决方案: CHG_PD用于接外部充电芯片使能.
+CHG-PD信号的power domain是来自Vchg内部的capless-LDO,输出高电平为1.8V,低电平为0V.
+软件上可以由BC1P2和POCV状态机控制,也可以由软件寄存器来控制.
+参考FAQ: FAQ104549

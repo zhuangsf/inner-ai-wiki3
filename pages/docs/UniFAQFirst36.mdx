@@ -1,0 +1,300 @@
+### 问题: USB模块的otg功能的关键宏控制
+解决方案: 针对7731芯片,多家客户要求支持otg的功能: 我在这里做下关键宏控制的说明: 首先,在硬件保证支持IDpin和外部5V供电的前提下,这些宏控制才能表现出相应的功能: CONFIG_SPRD_USB_DEVICE_ONLY=y 说明:这个宏是用来打开和关闭USB的slve和host角色的宏,关闭之后,手机的usb模块才能使能相应的Host功能. CONFIG_USB_STORAGE is not set 说明:这个宏用来打开和关闭USB的底层挂载外部存储的功能,比如U盘. CONFIG_HID=y 说明:这个宏用来打开和关闭USB底层挂载HID设备,比如鼠标、键盘等.
+参考FAQ: FAQ70085
+### 问题: 如何获取usb的工作模式
+解决方案: dwc控制器的驱动程序提供了文件节点可供上层读取: shel命令可以通过adb执行和串口执行:cat下面路径的节点 /sys/bus/platform/drivers/dwc_otg/f5116000.usb/mode 返回1表示设备的USB core工作在Host模式. 返回0表示设备的USB core工作在Slave模式.
+参考FAQ: FAQ70093
+### 问题: 如何获取USB当前的工作速度（Full speed，Low speed，High speed）
+解决方案: 针对7731,dwc的控制器驱动提供了,可供上层读取USB速度的当前配置的文件节点devspeed,通过获取该节点的值,我们可以得到当前USB core工作的速度模式.另外,该节点是RW的权限,我们既可以读取也可以设置. 该节点值,可以通过adb shell获取和串口获取两种方式: cat /sys/bus/platform/drivers/dwc_otg/f5116000.usb/devspeed 返回值说明: 返回值格式:Device Speed = 0x0 返回0:说明USB core 没有工作在任何速度上 返回1:说明USB core工作在Low speed速度上 返回2:说明USB core工作在Full speed速度上 返回3:说明USB core工作在High speed速度上 相同的,我们也可以设置这个节点来操作USB core的工作模式.
+参考FAQ: FAQ70097
+### 问题: 使用资源着色（Asset Tinting）的方式修改图片颜色
+解决方案: 联系人的浮动添加按钮上显示的是白色图片,而实际的资源文件却是黑色的图片.这是由于使用了ImageView的android:tint属性,制定其tint(染色)颜色为白色. 使用这种方式可以减少图片的使用,比如在线/不在线可以使用同一张图片,根据不同的状态修改tint属性.Instagram在升级版本的过程中使用这种方式缩小apk安装包.
+参考FAQ: FAQ70098
+### 问题: 如何才能去掉选取联系人界面的联系人分组信息
+解决方案: 在联系人列表界面,联系人分组信息占用了很大一部分页面空间,导致其他信息显示的位置变小.这种情况在短信选取联系人的时候尤为突出,以至于11位(号码格式化后是13位)的手机号码都不能显示完全. 这种情况可以通过不显示联系人分组来解决,需要调用对应fragment的setSectionHeaderDisplayEnabled(false) 方法来设置不显示联系人分组信息.
+参考FAQ: FAQ70123
+### 问题: Chrome浏览器如何预置主页
+解决方案: 要预置Chrome主页需要preload一个客制化的apk,此apk定义该主页的url要设成什么,需要设定的变数如下, private static String HOMEPAGE_URI = "your main page"; 只要与google签约拿到相关的授权都能得对应的文件与sample code,不知道如何客制化可以寻求展讯的协助.
+参考FAQ: FAQ70153
+### 问题: 如何通过音量下键+power键进入java版的工厂测试模式
+解决方案: 以版本MocorDroid5.1_3.10_Tshark_15a_W15.32.3为例: 做如下修改即可满足要求: \u-boot64\board\spreadtrum\sp7731gea_hd\sprd_kp.c(sp7731gea_hd:对应项目用的屏的分辨率) unsigned int check_key_boot(unsigned char key) { if(KEY_VOLUMEUP == key) return CMD_FACTORYTEST_MODE; //将其修改为:CMD_ENGTEST_MODE 即可 else if(KEY_HOME == key) return CMD_FASTBOOT_MODE; else if(KEY_VOLUMEDOWN== key) return CMD_RECOVERY_MODE; else return 0; }
+参考FAQ: FAQ70190
+### 问题: 为何Google voice search无"Offline speech recognition"选项
+解决方案: Google voice "Offline speech recognition"选项会依倨手机ram的大小来决定要不要开, Velvet.apk有设定ram size大于667MB才会开启此选项.
+参考FAQ: FAQ70151
+### 问题: 如何客制化google launcher上的collection folder
+解决方案: google GMS 3.0的标准对于桌面collection folder里面放的捷径以及排序有规范,需要另外内置google launcher客制化的apk才有办法做相关的设定,只要与google签约拿到相关的授权都能得对应的文件与sample code,不知道如何客制化可以寻求展讯的协助 .
+参考FAQ: FAQ70152
+### 问题: FM2351 log中IOCTL的值都对应什么操作
+解决方案: ioclt的值 对应操作 0x40045200 FM_IOCTL_ENABLE 使能 0x40045201 FM_IOCTL_GET_ENABLE 使能获取 0x40045202 FM_IOCTL_SET_TUNE 调台 0x40045203 FM_IOCTL_GET_FREQ 台获取 0x40045204 FM_IOCTL_SEARCH 搜台 0x40045205 FM_IOCTL_STOP_SEARCH 停止搜台 0x40045207 FM_IOCTL_SET_VOLUME 音量设置 0x40045208 FM_IOCTL_GET_VOLUME 音量获取 0x40045210 FM_IOCTL_GET_RSSI 信号强度获取
+参考FAQ: FAQ70177
+### 问题: p2p全信道扫描时，扫描哪些信道？
+解决方案: 全信道扫描时和sta一样,根据设定的区域码来.当前区域码支持哪些信道,就扫描哪些信道. [nl80211.c] static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info) { for (band = 0; band < IEEE80211_NUM_BANDS; band++) if (wiphy->bands[band]) n_channels += wiphy->bands[band]->n_channels; }
+参考FAQ: FAQ70252
+### 问题: 为什么不能收藏SIM卡联系人
+解决方案: 这个是正常现象.由于每次开机,都会将数据库中SIM卡相关联系人删除然后重新导入,所以每次开机,数据库中的SIM卡联系人URI会发生变化,SIM卡联系人的收藏标识无法保存,SIM卡中也没有栏位记录SIM卡联系人是否加入收藏,所以平台不支持收藏SIM卡联系人.
+参考FAQ: FAQ79429
+### 问题: 开机logo切换到动画白屏
+解决方案: 解决: bootanimation启动的时候会clear一次屏幕,设置为白色的(展讯logo是白色的) ,如果是黑色的logo,需要做相应修改. /frameworks/base/cmds/bootanimation/BootAnimation.cpp glShadeModel(GL_FLAT); // clear screen glDisable(GL_DITHER); glDisable(GL_SCISSOR_TEST); glDisable(GL_BLEND); --glClearColor(0,0,0,1); //适用于白色logo ++glClearColor(1,1,1,1); //适用于黑色logo
+参考FAQ: FAQ79430
+### 问题: 2351芯片是否支持wifi漫游（2015年以后版本）
+解决方案: 支持. 漫游其实就是当信号差事,切换到同一认证方式信号更好的bss上. 2351芯片没有做固件侧实现漫游功能,而是在wpa_supplicant里实现了wifi 的漫游.在2015年7月份以后的版本中都陆续支持了.
+参考FAQ: FAQ70261
+### 问题: marlin芯片是否支持wifi漫游功能
+解决方案: 支持. marlin芯片也是没有在固件侧实现漫游功能,而是在wpa_supplicant里实现了wifi 的漫游.
+参考FAQ: FAQ70263
+### 问题: 横屏模式下进入浏览器，输入百度小说进入，然后旋转屏幕，显示的图片被拉长，这是什么原因？
+解决方案: 分析百度小说网页内容, 图片所在div的高度固定为72px,宽度按页面百分比计算,所以横屏时图片被拉长. .app .page .page-choice .choice-content .content-topbar .topbar-recommend .recommend-item { border: 1px solid #c3b6a1; width: 46%; height: 72px; }
+参考FAQ: FAQ70269
+### 问题: 如何修改状态栏上SIM信号图标的默认颜色？
+解决方案: 请在/frameworks/opt/telephony/src/java/com/android/internal/telephony/SubscriptionController.java中, 找到addSubInfoRecord()方法, int color = getUnusedColor(); 将上述color变量的取值修改为想要的默认颜色即可.
+参考FAQ: FAQ79414
+### 问题: pin脚状态软件如何动态修改
+解决方案: 软件上使用如下函数: drivers/platform/sprd/pin_switch.c int pinmap_set(u32 offset, u32 value) offset表示pin脚寄存器地址偏移量,value表示地址写入的值.
+参考FAQ: FAQ70282
+### 问题: 如何recovery模式文字显示成英文
+解决方案: 在以下文件中按照如下修改: --- bootable/recovery/recovery.cpp +++ bootable/recovery/recovery.cpp @@ -1137,7 +1137,8 @@ main(int argc, char **argv) { case 'c': wipe_cache = 1; break; case 't': show_text = 1; break; case 'x': just_exit = true; break; - case 'l': locale = optarg; break; + //case 'l': locale = optarg; break; + case 'l': locale = "en_US"; break; case 'g': {
+参考FAQ: FAQ70286
+### 问题: 设置关机闹钟，然后拔电池关机，再装上电池，为什么手机没有自动开机，闹钟也没有响
+解决方案: 5.1上的关机闹钟,是提前2分钟开机,到时间后再起闹. 提前2分钟的动作是在关机的时候做的(所谓的关机闹钟),起闹时间减去2分钟写入寄存器. 直接拔电池,上面的操作结果还来不及写入寄存器,所以发生了手机不能按时启动、闹钟不能起闹的问题.
+参考FAQ: FAQ70384
+### 问题: 设置关机闹钟，闹钟响铃时选择pause，为什么闹钟进入暂停界面几秒后自动关机
+解决方案: 属于正常现象,因为暂停的还是这个关机闹钟,所以该闹钟暂停后,手机会关机.
+参考FAQ: FAQ70385
+### 问题: 出现wifi概率性断线及连接失败时请首先确认天线状态及AP信号强度
+解决方案: 1.请确认参加测试的手机是否已经接上天线并校准过(博通芯片需要每台校准).一定要用整机(有的手机壳上有线圈). 2.请下载类似"wifi分析仪"之类的apk,查看要测试的AP信号强度,通常低于-50db连接失败开始比较明显,越低概率越大.
+参考FAQ: FAQ71568
+### 问题: 设置一个单次闹钟，然后修改系统时间，该闹钟是否会正常起闹
+解决方案: 如手机当前系统时间为2015/9/3 10:00,设置一个单次闹钟,时间为10:30,然后到设置-》日期和时间: 1.修改系统时间,只要在10:30之前,闹钟会在10:30正常起闹. 2.修改系统时间为10:30之后,则在状态栏中会显示"错过的闹钟",因为闹钟时间已经是过去时间. 3.修改系统日期为昨天,即2015/9/2,则闹钟会在2015/9/3 10:30正常起闹,因为单次闹钟仅仅在2015/9/3有效. 4.修改系统日期为明天,即2015/9/4,则闹钟关闭,因为该单次闹钟已无效.
+参考FAQ: FAQ70434
+### 问题: 设置一个重复的闹钟，然后修改系统时间，该闹钟是否会正常起闹
+解决方案: 如手机当前系统时间为2015/9/3 10:00,设置一个每周四重复闹钟,时间为10:30,然后到设置-》日期和时间: 1.修改系统时间,只要在10:30之前,闹钟会在10:30正常响起. 2.修改系统时间为10:30之后,则闹钟会在下周四,即2015/9/10 10:30起闹. 3.修改系统日期为上周四,即2015/8/27,则闹钟会在2015/9/3 10:30起闹,因为闹钟设置为2015/9/3及之后的每周四,在2015/9/3之前并没有任何闹钟. 4.修改系统日期为下周四,即2015/9/10,则闹钟会在2015/9/10 10:30起闹.
+参考FAQ: FAQ70435
+### 问题: 秒表累积记次到#98，为什么第98个记录后边的值还在一直走
+解决方案: 进入时钟,选择秒表界面,开始计时,点击左下角的计次按钮,记录次数,累积记录到最高次数#98,第98个记录后边显示两个数值:一个是和前一个记录的间隔时间,一个是总的时间,因为秒表还一直在走,所以和前一个记录的间隔以及总的时间也是一直在变的,因此第98个记录后边的值还在一直走. 如果要停下,需要按下中间的暂停按钮,请知悉.
+参考FAQ: FAQ70437
+### 问题: android字符资源中如何代表特殊字符'&'
+解决方案: 经常做程序的时候,程序名会含有&的字符 比如想在/packages/apps/Settings/res/values/strings.xml中添加一个新的字符,在界面上显示为"Boy & Girl" 因为&在string中是特殊字符,所以此时,会出现编译不通过,如: <string name="app_name">Boy & Girl</string> 只需将&进行转义即可,转义方式如下: <string name="app_name">Boy &amp; Girl</string>
+参考FAQ: FAQ81331
+### 问题: 如何打开多用户功能
+解决方案: 1,ro.build.id属性值不要以 "JVP" 开始 2,ro.config.low_ram属性值设置为false //此处修改贵司对应的device/sprd/项目名/system.prop中属性值 3, 修改frameworks/base/core/res/res/values/config中 <!-- Maximum number of supported users --> <integer name="config_multiuserMaximumUsers">1</integer> // 此处需修改为大于1的整数 <!-- Whether UI for multi user should be shown --> <bool name="config_enableMultiUserUI">false</bool> // 此处需修改为true
+参考FAQ: FAQ70433
+### 问题: 如何打开固定屏幕功能
+解决方案: 1,修改frameworks/base/core/res/res/values/config.xml中config_showNavigationBar属性值 <bool name="config_showNavigationBar">false</bool> //此处需要打开为true 2,在frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java中 loadSystemSettings(SQLiteDatabase db)方法中添加 loadSetting(stmt, Settings.System.LOCK_TO_APP_ENABLED, 1);
+参考FAQ: FAQ70449
+### 问题: 为何第一次开登入google play商店会无法看到已经安装的app
+解决方案: 第一次开机登入google play商店会需要一些时间从网络下载"已经安装的app"资料下来,所以刚进去无法看到有可能是网速不够或着不稳定,如果过了几分钟还是不行建议先检查网络是有异常,另外翻牆也是必须的.
+参考FAQ: FAQ70467
+### 问题: android.telephony.cts.SmsManagerTest#testSendMessages有时候测试FAIL，是什么原因？
+解决方案: 这个CASE使用卡1测试本机给本机发送文本短信和数据短信,文本短信所有运营商都支持,数据短信目前只有联通的SIM卡才能发送成功.所以测试前需要执行以下设置: (1)联通的SIM卡,移动的SIM卡在发送数据短信时会被运营商拒绝,发送失败造成测试超时; (2)设置本机号码(一般智能机不带本机号码设置功能,可用老的功能机进行设置); (3)必须是放在卡槽1,经常有放在卡槽2测试FAIL的;
+参考FAQ: FAQ70479
+### 问题: CTS Verifer  "Notification Package Priority Test" 测试执行到"Check that ranker defaults to time order"步骤时失败？
+解决方案: 测试步骤如下: (1)安装NotificationBot.apk; (2)执行到第一个"I'M DONE"时,直接按下即可; (3)执行到第二个"I'M DONE"时,进入setting,有一个prompt & notification,进入app notifications, 找到CTS Verifier,点击进入,将Priority这个开关打开,然后按下"I'M DONE"按钮; 大多数情况下,执行到第3个步骤时没有进行设置直接按"I'M DONE"出错; 也有的是在第2个步骤抢先设置了Priority造成第2步测试FAIL.
+参考FAQ: FAQ70480
+### 问题: SC7731,如何实现非锁屏来电，和锁屏时一样弹出全屏接听界面？
+解决方案: 实现非锁屏来电,和锁屏时一样弹出全屏接听界面,请做以下修改: packages/apps/InCallUI/src/com/android/incallui/InCallPresenter.java } else { ++ showInCall(false, false); -- mStatusBarNotifier.updateNotification(inCallState, mCallList); } return true; } /** * Checks to see if both the UI is gone and the service is disconnected. If so, tear it all * down. */ private void attemptCleanup() {
+参考FAQ: FAQ70505
+### 问题: 低色温环境下闪光灯打闪偏红问题
+解决方案: 该问题产生原因: 在预闪过程中,ISP在当前环境(闪光灯色温与原始环境色温混合)计算出AWB所需R G B gain值,闪红主要出现在预闪结束后及主闪开始前,以低色温环境为例,因为闪光灯打闪过程中,将实际色温拉高,因此在预闪结束时候,主闪开始前,会有几帧预览数据是将混合光计算出的R G B gain值直接用于原始环境,导致会存在几帧色彩异常数据.(因为数据传输处理缘故,实际异常数据一般是在主闪后出现) 解决思路: 目前因为在预闪关闭跟主闪打开这段时间内的帧数受实际帧率的影响无法直接去除,因此采用两种方式来规避改善该问题: 1,在预闪阶段开启AWB quick mode模式加速AWB的收敛速度,以减少异常帧的数量. 2,通过丢弃预闪结束之后异常帧来降低因异常帧导致的异常效果.
+参考FAQ: FAQ78065
+### 问题: LatinIME输入法是否支持滑动输入？
+解决方案: LatinIME不支持滑动输入,google keyboard和触宝输入法支持.
+参考FAQ: FAQ70514
+### 问题: 怎样除掉google拼音输入法和日文输入法？
+解决方案: 请将如下文件中在PRODUCT_PACKAGES中包含PinyinIME(拼音输入法)或者OpenWnn(日语输入法)的行注释掉即可,在该行的前面添加"#"号即可. /build/target/product/full_base.mk /build/target/product/sdk.mk /vendor/sprd/open-source/common_packages.mk
+参考FAQ: FAQ70515
+### 问题: 偏好设置菜单说明
+解决方案: 此菜单:设置->无线和网络->更多->移动网络->sim卡移动玩过设置->偏好设置 为之前uplmn设置菜单,只有usim卡中才会有uplmn参数,因此如插入不是usim卡会提示"请插入usim卡再试". 另外,目前根据移动入库最新需求,不允许用户手动修改uplmn参数,因此实网中测试,有些usim卡没有uplmn相关参数会显示一个空菜单,这个是正常的现象.
+参考FAQ: FAQ70552
+### 问题: 如何解决android5.1工程模式下后置摄像头的闪光灯不亮问题
+解决方案: 1.首先要确定当前闪光灯硬件如何配置,目前有2种闪光灯硬件配置 a.使用平台LED接口控制 b.外部闪光灯IC控制 2.如果使用的是外部闪光灯IC,还要确定闪光灯供电方式,目前外部闪光灯IC有2种供电方式 a.GPIO供电 b.PWM供电 即一共有3种对应硬件的驱动配置方式 1.使用平台LED接口控制sci_adi_set() 2.gpio 3.pwm 确定当前闪光灯硬件配置后, 在kernel\drivers\media\sprd_dcam\common\flash_test.c int setflash(uint32_t flash_mode) { ... //修改闪光灯对应的硬件驱动控制方式即可 ... }
+参考FAQ: FAQ70573
+### 问题: 如何将手机的data分区使用download工具导出来
+解决方案: 1: Researchdownload只勾fdl1、fdl2,flash operation页面勾上Active Read Flash,下面的框里面填userdata、读取size(16进制)、PC存储路径 2: 读取size根据客户对应版本的device/sprd/客户工程/BoardConfig.mk的USERDATAIMAGE镜像size配置的值来换算 用途:可以在data 分区出问题后,将内容dump出来和机器正常的时候的img 进行对比.
+参考FAQ: FAQ70581
+### 问题: 如何查看对应的android版本支持的时区和城市的名称？
+解决方案: 在添加时区的时候,需要注意,应该首先查一下自己添加的城市是否是在时区的城市列表中. 查看方法在famework/base/core/res/res/xml/time_zones_by_country.xml文件中,搜索添加的城市名称.
+参考FAQ: FAQ70585
+### 问题: android:installLocation 对应用存储位置的影响
+解决方案: 通过配置 AndroidManifest.xml中android:installLocation参数可以选择应用的安装位置. android:installLocation 有三个选择,分别为"auto"|"internalOnly"|"preferExternal" auto:默认安装手机内存,如果内存满了,会安装外置存储卡上;这种方式在程序安装好之后,可以通过手机设置,去移动位置,例如:从内存移到SD卡 internalOnly:只能安装在内存,这种情况下,应用无法移动到SD卡上. preferExternal:优先安装在外置SD卡上,除非没有装SD卡或SD卡已满(会选择安装在内存),也可以在安装后移动位置 所以如果应用安装在手机内置存储可以使用,移动到T卡,就不可以使用了,需要首先检查android:installLocation是否设置了internalOnly属性.
+参考FAQ: FAQ70586
+### 问题: 黑屏，亮屏慢相关问题的log分析思路
+解决方案: 主要步骤:首先要找到出现问题的时间点或时间段. 步骤1: 在main log 中搜索 关键字"keycode=26" 和在kernel log 中 搜索 "116d" 确定是否有集中按power键的log 如果有,多数为问题点, 这种情况说明出现问题时系统还工作进入步骤3.如果没有则进入步骤2 步骤2:如果没有发现有按power键的log ,需要查看重启前后的log时间是否相差很长时间,如果是则可能在出问题时slog已经不工作了.往往是手机整个hang住了.需要分析sysdump了. 步骤3:android4.4 系统可以在system log 中搜索如下关键字"actual set backlight",在main中搜索"set_light_backlight"主要查看在集中按power键时每次是否都有点亮背光的log.进一步缩小问题点的范围.再根据具体log 具体处理.
+参考FAQ: FAQ70588
+### 问题: 如何在 uboot 里面知道 power key 是否被按住
+解决方案: uboot是通过读取PB_INT口状态来判断power键是否按下, boot_pwr_check() >= PWR_KEY_DETECT_CNT kernel阶段: value = (gpio_get_value(PB_INT))
+参考FAQ: FAQ70628
+### 问题: 进入网址hao123.com，切换为电脑版显示，电脑版显示中部分网页刷新不全
+解决方案: 在PC上打开保存的hao123.com电脑版离线网页后通过选择不同设备调整屏幕分别率后,现象同样存在, 保存网页文件后分析,显示风格是在qruzzzilel.css, 显示不下问题,是因为css文件中,设置了默认的显示高度 .hao123-coolsite .coolsite-bar { padding: 0px 2px 0px 6px; position: relative; overflow: hidden; height: 32px; line-height: 2.3; color: rgb(213, 213, 213); margin-bottom: 10px; } 文字放大太多导致显示不下,展讯机在浏览器设置中设置辅助功能缩放比例为100%正常是因为分辨率更大,相对放大比例较小. 这是网页的问题,浏览器不用修改.
+参考FAQ: FAQ70632
+### 问题: 如何修改浏览器导航图片大小
+解决方案: layout中设定的图片宽度和高度太小,需要根据分辨率自行调整,由于展讯的样机分辨率比较低,所以调整之后可能不适用贵司的机器,请按照如下方法进行修改测试 修改文件:packages\apps\Browser\res\layout\speed_dial_item.xml 修改位置: <ImageView android:id="@+id/favicon" android:layout_width="25dip" android:layout_height="25dip" android:layout_centerHorizontal="true" android:layout_centerVertical="true" android:scaleType="fitXY" /> </RelativeLayout>
+参考FAQ: FAQ70635
+### 问题: 应用中如何判断系统中有其他应用正在录音或录像？
+解决方案: AudioManager中的isAudioRecording()可以判读系统中有应用正在录音. 定义: boolean android.media.AudioManager.isAudioRecording() 使用方法: AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE); result = audioManager.isAudioRecording(); 录像时只要设置了audio source,就会录制声音,所以用这个方法也是有效的.
+参考FAQ: FAQ70679
+### 问题: 如何打开dom和render开关
+解决方案: 设置如下prop为true即可打开上述开关: persist.sys.br.log persist.sys.br.save persist.sys.br.dump 文件的保存路径及形式为: /mnt/sdcard/slog/2015-03-21-10-25-22/browser/baidu
+参考FAQ: FAQ70714
+### 问题: 同一项目的后摄使用同一模组厂相同senor的模组，无额外otp信息，AF和FF不同如何区分效果
+解决方案: 要求在同一个pac包中解决不同模组关于AF和FF的识别,模组自身身份特征寄存器信息相同.区分FF和AF就应该从VCM马达的识别入手. 将该两个模组的sensor各用一套驱动和参数文件与之对应,比如af的模组用sensor_xx_af与之对应,FF用sensor_xx_ff与之对应. 在AF的poweron函数中打开vcm马达并init它,此时可用写i2c的返回值来判断vcm马达是否能init成功,并用全局变量记录改值.如果vcm马达init成功则标记为true,否则为false.在sensor identify函数中与vcm的init标记取与,如果最后结果为true则是AF模组无疑. 类似,在FF的poweron函数中打开vcm马达并init它,用全局变量标记之,失败记为true,成功记为false.在sensor identify时与之取与,如果最后为true则为FF模组无疑.
+参考FAQ: FAQ81538
+### 问题: 收音机因为非用户操作中断录音时，录音状态图标不会更新，如何解决？
+解决方案: 首先打开main log文件查看下是否有如下的log, FMUtil : Exception:java.lang.NullPointerException: Attempt to invoke virtual method 'void android.widget.TextView.setVisibility(int)' on a null object reference. 如果有的话是由于record_time的TextView的为空导致的.目前我司android 5.1 上FM的录音时间的显示只有在layout-854x480的分辨率下是支持的,如果您使用的是其他的layout,请把layout-854x480下的radio_overlay.xml里的record_time的TextView移植到相应的layout分辨率下面.
+参考FAQ: FAQ70736
+### 问题: 展讯芯片蓝牙地址查询官方网站
+解决方案: http://standards.ieee.org/regauth/oui/index.shtml
+参考FAQ: FAQ72422
+### 问题: 为什么有时进入wifi列表会显示已连接，但桌面下拉快捷按钮中wifi图标显示是一个加了感叹号的wifi图标?
+解决方案: 在android 5.0,android 5.1中: Settings 菜单中的 wifi 界面的AP列表中,热点连接状态显示已连接,表示表示手机wifi已经与AP连接成功. 桌面下拉 快捷按钮 中 wifi 图标有以下几种状态: 1)没有感叹号的wifi图标,该图标显示信号强度 --> 表示手机wifi已经与AP连接成功,并连接到互联网 2)加了感叹号的wifi图标,该图标显示信号强度 --> 表示手机wifi已经与AP连接成功,但没接到互联网 3)加了感叹号的wifi图标,该图标没有信号强度 --> 表示手机wifi没有连接AP.
+参考FAQ: FAQ72600
+### 问题: 手机蓝牙是否支持HS
+解决方案: 目前5.1的手机蓝牙支持2.1+EDR或4.0,不支持HS.
+参考FAQ: FAQ70794
+### 问题: 什么是蓝牙HDP
+解决方案: HDP (Health Device Profile) 蓝牙医疗设备模式 可以创建支持蓝牙的医疗设备,使用蓝牙通信的应用程序,例如心率监视器,血液,温度计和秤
+参考FAQ: FAQ70795
+### 问题: 什么是蓝牙DIP
+解决方案: DIP(Device ID Profile):增加一些设备特定的信息到EIR,这样在SDP时可以被发现,从而让对方设备获取自己的一些特有信息,如厂商ID或其它有用信息.
+参考FAQ: FAQ70797
+### 问题: 什么是蓝牙BIP
+解决方案: BIP(BASIC IMAGING PROFILE):基本成像配置文件定义了如何远程控制成像设备,成像设备如何打印,及成像设备如何将图像传输至存储设备.典型的应用如使用手机控制数码相机的快门操作.
+参考FAQ: FAQ70799
+### 问题: 如何在蓝牙官网上查询芯片的FeatureList?
+解决方案: 查询网址: https://www.bluetooth.org/tpg/listings.cfm Marlin Controller ID:D026183 对应SharL Host ID: D026184 Marlin Controller ID:D023277 对应7715/7731等 Host ID:D023279
+参考FAQ: FAQ70798
+### 问题: 蓝牙BLE模块的抗干扰能力怎么样？穿墙能力如何？
+解决方案: 使用调频通讯方式,37个通讯频点,3个广播频点. 可有效避免一些频点干扰. 不建议穿墙使用,如果是空心木质墙体可以.
+参考FAQ: FAQ70823
+### 问题: SC2341B(MARLIN)支持的电气接口？
+解决方案: UART Transport Layer
+参考FAQ: FAQ70890
+### 问题: 蓝牙被搜索的可见性问题。
+解决方案: Google在AndroidL版本后对蓝牙模块做出的改变,取消了后台蓝牙可见性的开关. 可见性为开的条件:蓝牙设置界面下,并且蓝牙打开时,并且保持屏幕点亮状态,三个条件缺一不可. 可见性为关的条件:退出蓝牙设置界面,或者灭屏,或者蓝牙关闭.
+参考FAQ: FAQ76910
+### 问题: SC2341B(MARLIN) 支持的Profile ?
+解决方案: Core Specification 4.0 Core 4.0
+参考FAQ: FAQ70889
+### 问题: 如何让应用的数据不被设置中的清除数据按钮一键清除，可以对其选择性清除？
+解决方案: 1.在需要管理的应用的AndroidManifest.xml中application属性中添加manageSpaceActivity <application android:manageSpaceActivity=".***activity" > </application> 2.进入设置 -> 应用 点击对应的应用查看应用信息 3.在应用信息中存储中,无清除数据按钮,出现了管理空间按钮,点击管理空间按钮,就可以跳转到在AndroidManifest中配置的×××activity中 4.在×××activity中进行配置即可选择性清除应用的数据
+参考FAQ: FAQ70902
+### 问题: wifi中国频段
+解决方案: 2.4GHz中国信道划分 802.11b和802.11g的工作频段在2.4GHz(2.4GHz-2.4835GHz),其可用带宽为83.5MHz,中国划分为13个信道,每个信道带宽为22MHz. 北美/FCC 2.412-2.461GHz(11信道) 欧洲/ETSI 2.412-2.472GHz(13信道) 日本/ARIB 2.412-2.484GHz(14信道) 2.4GHz频段WLAN信道配置表 信道 中心频率(MHz) 信道低端/高端频率 1 2412 2401/2423 2 2417 2406/2428 3 2422 2411/2433 4 2427 2416/2438 5 2432 2421/2443 6 2437 2426/2448 7 2442 2431/2453 8 2447 2426/2448 9 2452 2441/2463 10 2457 2446/2468 11 2462 2451/2473 12 2467 2456/2478 13 2472 2461/2483
+参考FAQ: FAQ70955
+### 问题: FM中NCO模块的功能
+解决方案: 数字控制振荡器(NCO,numerical controlled oscillator)是软件无线电、直接数据频 率合成器(DDS,Direct digital synthesizer)、快速傅立叶变换(FFT,Fast Fourier Transform)等的重要组成部分,同时也是决定其性能的主要因素之一,用于产生可控的正弦波或余弦波.随着芯片集成度的提高、在信号处理、数字通信领域、调制解调、变频调速、制导控制、电力电子等方面得到越来越广泛的应用.
+参考FAQ: FAQ70937
+### 问题: FM中LPF模块的功能
+解决方案: 低通滤波器LPF,是"Low Pass Filter"的缩写,意为"低通滤波器". 低通滤波器,顾名思义,就是让低频信号通过,阻止高频信号通过.低通滤波器一般用于去掉输入信号中不必要的高频成分,去除高频干扰.另外,在选频网络中也有应用.电源滤波器就是一个典型的RC低通滤波器,设计的截止频率为50HZ以下,它让直流通过,阻止50HZ以上的频率通过.在一些好些的音箱,有高音、中音、低音三种喇叭,为了将音频中的各频率段分别提供给给它们,往往内部装有三分频网络,这是LC低通滤波器、高通滤波器、带通滤波器一起使用的应用实例.
+参考FAQ: FAQ70938
+### 问题: FM2341A和2341B驱动层大体架构
+解决方案: 2341A芯片和2341B芯片的FM Hal层结构基本一致,都与蓝牙一起放在了bluedroid中.2341B的FM与2341A的函数接口名字不仅完全一样,而且参数和相关数据结构也是完全一致的,不同的是2341A的FM函数接口的实现是不开源的,以库的形式存在,而2341B函数接口的源码实现完全是开源的的,可以清楚的了解到每一个操作发送的是什么指令,通过指令码结合程序也可以了解到这是什么操作. 函数接口的通用也意味着在使用2341A的项目中如果要将WCN部分更换为2341B,FM的HAL层以上是不需要有任何改动的,Hal层也只是修改一下Makefile就可以了,这样具有更大的通用性. 2341A使用的FM接口函数文件:\btif\src\btif_fm.c 2341B使用的FM接口函数文件:\btif\src\ sprd_btif_fm.c
+参考FAQ: FAQ70939
+### 问题: wifi信道与国家码间的关系
+解决方案: 北美/FCC 2.412-2.461GHz(11信道) 欧洲/ETSI 2.412-2.472GHz(13信道) 日本/ARIB 2.412-2.484GHz(14信道) 中国 2.4G 2.401-2.483GHz(13信道) 每个sim卡内都是有手机号码等信息的,这其中就有国家码的信息,只是我们平时显示的时候不会显示而已. 当打开wifi时候,会读取国家码的信息,会相应的去匹配上述的不同区域的频率及信道.
+参考FAQ: FAQ71211
+### 问题: wifi漫游阀值是多少？
+解决方案: 2351芯片和marlin芯片,wifi的漫游都是在android上层实现的. 阀值为-75
+参考FAQ: FAQ70958
+### 问题: wpa_supplicant.conf变成root用户组导致wifi无法打开
+解决方案: wpa_supplicant.conf 有时会变成root.root 用户组,一般是因为第一次开wifi是root的方式.概率性没改过权限来,导致出现问题. 之前 平台有在wifi.c 里修改,但是正常模式下打开wifi权限没有root权限,会导致正常开wifi时失败.为了兼容各种场景建议出现问题时在 init.board.rc里添加如下改动: chown system wifi /data/misc/wifi/wpa_supplicant.conf chmod 0660 /data/misc/wifi/wpa_supplicant.conf
+参考FAQ: FAQ70960
+### 问题: td_nv_type.nvm中wg_cap_swth是控制什么功能
+解决方案: td_nv_type.nvm中wg_cap_swth bit0:0-not support dualsim hotswap, 1- support; ----双卡热拔插,不是切卡 bit1:0-sim2 support wcdma, 0-not support, ----卡二支持WCDMA
+参考FAQ: FAQ71019
+### 问题: 修改apn手机卡导致上不了网
+解决方案: authtype="aucun".此项类型错误,导致文件无法解析成功. authtype不能为空字串"",也不能输入错误的信息,否则即使对应apn项不是实际使用的apn也会导致任何apn都无法使用的问题.
+参考FAQ: FAQ71021
+### 问题: 查应用的UID
+解决方案: 方法一、 从手机中将data/system/packages.xml pull出来 方法二、 adb shell中用ps命令查询
+参考FAQ: FAQ71023
+### 问题: SIM PBR电话本的ANR GRP ADN含义
+解决方案: ADN:abbreviated dialling number 快速拨号码 GRP:Grouping File 表示每个ADN记录的分组信息 ANR:Additional number 保存附加号码
+参考FAQ: FAQ82028
+### 问题: 对于raw sensor，如何在拍照时抓取raw图片(dump raw图)
+解决方案: 1. 通过adb shell设置指定property adb root adb remount adb shell #setprop persist.sys.camera.raw.mode raw #stop media #start media 2. 做拍照操作,通过adb pull把raw图从device导出到本地. 拍照获取raw图,raw图存在/data/misc/media/目录. 用如下命令导出raw图. adb pull /data/misc/media/2592X1944_20120214080806_gain_0_shutter_0_awbgain_r_1329178086_g_0_b_0_afpos_0.mipi_raw . 3. 查看raw图 保存的是sensor 10 bit raw format(bayer rgb). 可以使用展讯IspTool查看图片,注意选择big endian. IspTool可以找展讯PM获取.
+参考FAQ: FAQ71035
+### 问题: 如何用adb命令来进行手机截屏。
+解决方案: 我们可以用通过下面的两个步骤,将手机屏幕保存到电脑上 1、adb shell /system/bin/screencap -p /sdcard/screenshot.png(保存到SDCard) 2、adb pull /sdcard/screenshot.png d:/screenshot.png(保存到电脑)
+参考FAQ: FAQ81333
+### 问题: 如何修改闹钟的默认铃声为Platinum
+解决方案: 请做如下修改: diff --git a/target/product/core_base.mk b/target/product/core_base.mk --- a/target/product/core_base.mk +++ b/target/product/core_base.mk @@ -18,7 +18,7 @@ PRODUCT_PROPERTY_OVERRIDES := \ ro.config.notification_sound=OnTheHunt.ogg \ - ro.config.alarm_alert=Alarm_Classic.ogg + ro.config.alarm_alert=Platinum.ogg PRODUCT_PACKAGES += \
+参考FAQ: FAQ72101
+### 问题: 安装omnipeek时，输入密钥提示失败该如何处理？
+解决方案: 1、Omnipeek版本与生成密钥工具版本相同,如图所示: 2、使用omnipeek 6.5版本,则需要设置Product Version为65后,点击Generate生成Serial Number与Activation Key
+参考FAQ: FAQ71069
+### 问题: 如何设置系统只读权限？
+解决方案: 设置userdebug版本系统只读权限: mount -o ro,remount /system
+参考FAQ: FAQ71071
+### 问题: 如何设置系统读写权限？
+解决方案: 设置userdebug版本系统读写权限: mount -o rw,remount /system
+参考FAQ: FAQ71072
+### 问题: 哪个参数可以调整挂电话时提示音的音量
+解决方案: packages/services/Telecomm/src/com/android/server/telecom/InCallTonePlayer.java 文件中 case TONE_CALL_ENDED: toneType = ToneGenerator.TONE_PROP_PROMPT; toneVolume = RELATIVE_VOLUME_HIPRI; //目前默认80,可以自行调整toneVolume 大小 toneLengthMillis = 200; break;
+参考FAQ: FAQ80768
+### 问题: SD卡FAT32无法储存4G以上文件如何处理？
+解决方案: 当使用FAT32存储卡时,无法保存大于4G以上的文件,可进行分包压缩,修改压缩包大小进行存储文件,如图所示: 对需要压缩的文件点击"添加到压缩文件"后,选择红框中FAT32,点击确认进行压缩.
+参考FAQ: FAQ71094
+### 问题: Android L通知栏的新特性
+解决方案: Android L的通知栏添加了浮动通知(heads up)的新特性,新消息到来时,会先在通知栏弹出提示框提醒用户,从而不会打断正在使用的应用.
+参考FAQ: FAQ71103
+### 问题: 如何修改VCard使用的版本
+解决方案: 目前平台使用的VCard版本是2.1,可以更改VCardConfig.java (\frameworks\opt\vcard\java\com\android\vcard)文件的 public static int VCARD_TYPE_DEFAULT = VCARD_TYPE_V21_GENERIC;的配置. ->VCARD_TYPE_V21_GENERIC //Vcard 2.1 ->VCARD_TYPE_V30_GENERIC //Vcard 3.0 ->VCARD_TYPE_V40_GENERIC //Vcard 4.0
+参考FAQ: FAQ78326
+### 问题: 当使用Log4Android2PCv2.3.4无法导出log文件或者导出log文件不全时，如何获取工具Log4Android2PCv2.3.4问题的日志文件
+解决方案: 请到本地安装Log4Android2PCv2.3.4的本地目录下查找,路径:\Log4Android2PCv2.3.4\v2.3.4\logs\slog_时间_runtimelogs(此时间与同一级目录的生成对应的log文件夹的时间一样). 将找到的日志文件"slog_时间_runtimelogs"上传到CQ附件上.我们会根据此日志文件对工具Log4Android2PCv2.3.4进行分析.
+参考FAQ: FAQ71108
+### 问题: 蓝牙耳机功耗测试注意事项
+解决方案: 需要客户提供在sleep状态下的slog,或者提供一下客户的手机,我们来分析验证; 测试功耗需要注意以下几项 1、请在测试功耗的时候使用user版本 2、请在slog中关掉所有的log 3、请在setting->wifi->advance->always scan关掉 4、请确认已经关掉wifi,gps 5、请确认gms包是否已经同步,请同步后1小时再测试 6、请将后台引用全部stop掉
+参考FAQ: FAQ71135
+### 问题: 蓝牙加密方式
+解决方案: 蓝牙采用加密方式可以保护用户信息,但接入码和报头不加密.在蓝牙技术中,用序列加密算法E0加密用户信息. 序列加密算法E0由三部分组成,即载荷密钥生成、密钥比特流生成、加／解密运算.载荷密钥发生器按一定顺序组合输入比特流,并将它们移入密钥比特流发生器的线性反馈移位寄存器(LFSRｓ);密钥比特流发生器是序列加密体系的核心部分,它采用Massey和Rueppel提出的组合序列密码发生器,该方法已通过全面论证,其性能优异.
+参考FAQ: FAQ71144
+### 问题: 蓝牙最大连接距离？
+解决方案: 一般情况下在无遮挡的情况下最长距离为10米. 一般来说蓝牙耳机连接手机的使用有效距离可以达到10米. 有些增强性适配器距离能达到10米,但这是指手机与蓝牙耳机无障碍物情况下的最远距离. 使用中受环境影响,实际的有效通话范围在5-8米之间. 现在大部分手机与移动装置所使用的是PowerClass2标准传输距离10米.
+参考FAQ: FAQ71145
+### 问题: 蓝牙安全模式有几种？
+解决方案: 蓝牙安全体系结构为蓝牙设备提出了三种安全模式: 1. 蓝牙设备没有收到任何安全保护的模式; 2. 服务级安全模式,它是建立在L2CAP层以上的安全保护模式,这种模式同时支持各种不同应用程序的安全性要求; 3. 链路级安全模式,即在LMP连接建立之前要进行鉴权或数据加密.
+参考FAQ: FAQ71148
+### 问题: SC7731G平台支持电池在位检测功能吗？
+解决方案: 不支持.
+参考FAQ: FAQ72895
+### 问题: Battery配置fgu-mode功能
+解决方案: 该参数配置在dts文件里面,文件路径kernel\arch\arm\boot\dts\sprd-battery.dtsi,不同项目名字可能不一样,board文件中只要include设定的名字即可. 1.fgu-mode=1 电量显示通过查表方式,通过计算当前电池的电压,结合该电池的ocv电量表,得到对应电池的电量. 2.fgu-mode=0 电量显示通过库仑积分的方式,通过初始电量以及电流积分,得到对应电池的电量.
+参考FAQ: FAQ71951
+### 问题: libnl 作用
+解决方案: 由于netlink原有的API不够好用,所以其又把netlink的API进行了封装,更利于交互. Libnl以面向对象的方式封装了netlink原有的API,是提供基于linux内核的netlink协议的API的库套件.
+参考FAQ: FAQ71216
+### 问题: FM2351设备驱动在7731平台是怎么挂接的？
+解决方案: 1.文件/kernel/arch/arm/mach-sc/board-sp7730ec.c中挂接FM设备 static struct platform_device *devices[] __initdata = { &sprd_serial_device0, &sprd_serial_device1, …… &sprd_headset_device, #ifdef CONFIG_RF_SHARK &trout_fm_device, #endif }; 2.文件:~/code/sprdroid4.4_3.10_14b_tshark/kernel/arch/arm/mach-sc/devices-sc8830.c中定义设备 #ifdef CONFIG_RF_SHARK struct platform_device trout_fm_device = { .name = "trout_fm", .id = -1, };
+参考FAQ: FAQ71244
+### 问题: Trout FM的RF和Modem与主芯片是怎么交互的？
+解决方案: Trout FM的RF和Modem与主芯片是怎么交互的? RF与MODEM整合到一个单独的芯片,整个芯片为Slave,主芯片为Host,RF与MODEM的初始化以及操作需要主芯片完成.主芯片通过SDIO与Trout芯片进行通信,如配置寄存器,开始/停止搜台等操作,Trout输出的音频信号通过IIS总线传送给主芯片进行处理及播放; 主芯片通过SDIO接口操作Trout FM寄存器接口:host_write_trout_reg(val
+参考FAQ: FAQ71245
+### 问题: SC77731G支持二合一喇叭吗？
+解决方案: 支持;
+参考FAQ: FAQ71539
+### 问题: 7731平台打开FM2351时没有权限
+解决方案: 由于设备文件是在内核驱动里面通过device_create创建的,而device_create创建的设备文件默认只有root 用户可读写,而open fm 一般是由上层APP来调用的,这些APP一般不具有root权限,这时候就会导致打开设备文件失败: Hello Stub: failed to open /dev/Trout_Fm – Permission denied. 解决办法类似于Linux的udev规则,打开Android 源代码工程目录下,打开device/sprd/scx35/ueventd.scx35.rc文件,为FM添加权限. /dev/Trout_FM 0660 system audio 例如:
+参考FAQ: FAQ71250
+### 问题: 联系人如何让按本地化姓名排序
+解决方案: 可以加上排序语句COLLATE LOCALIZED ASC,意思是,按本地语言升序排序,示例如下: ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC "
+参考FAQ: FAQ71326
+### 问题: 如何抓取userdebug版本的native mmi工厂测试模式下的modem log
+解决方案: 在native mmi工厂测试模式下,抓取modem log,通过如下命令来完成 1,通过power+音量上键 进入工厂测试模式后,通过adb shell进入 2. 执行 adb root adb shell cat /dev/slog_w > /data/slog/modem.log 3,复现问题 4,将其pull出来即可:adb pull /data/slog/modem.log d:/
+参考FAQ: FAQ71329
+### 问题: gcf 射频测试前设置自动接听
+解决方案: gcf测试射频时,最好提前设置为自动接听,会减少fail的概率和减少测试时间. 展讯功能机 默认输入#*8378#1#之后,进入工程模式,选择App SetàAuto Answer CallàOpen. 展讯智能机 默认输入*#*#83781#*#*之后,进入工程模式,选择App SetàAuto Answer CallàOpen.
+参考FAQ: FAQ71361
+### 问题: gcf 功能机测试 关闭高层业务
+解决方案: 呼叫转移: 输入暗码 #*8378#1# -〉进入App Set->进入 Call Forward Query -> Off 时间跟新: SettingàPhone SettingsàData&timeàAuto update time设为activate
+参考FAQ: FAQ71358
+### 问题: gcf测试 sms前关闭短信重发机制
+解决方案: 由于短信重发机制会影响到相关SMS case的测试流程,使case fail ,所以在测试sms前需要把短信重发机制关闭. 关闭短信重发机制:短信--à设置--à短信重发 关闭.
+参考FAQ: FAQ71366
+### 问题: gcf 31.6.1.5 AOC 计费case
+解决方案: gcf AOC计费相关case31.6.1.5: AT+SPTEST=3,1先开启计费 AT+CACM? 读取通话累计费用 得到的是十六进制需转换成十进制后输入.
+参考FAQ: FAQ71368
+### 问题: gcf sms短信填满case34.2.3
+解决方案: gcf case34.2.3需要短信填满,可以使用at命令完成短信填满的功能. at+spsmsfull=1 填满空间,at+cmgd=1,4释放空间
+参考FAQ: FAQ71370
